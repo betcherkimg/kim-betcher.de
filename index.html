@@ -22,36 +22,40 @@
         .text-bsh-red { color: #dc2626; }
         .hover\:bg-bsh-red:hover { background-color: #b91c1c; }
 
-        /* Typewriter Effect ohne Cursor */
-        .typewriter h3 {
-            overflow: hidden; 
-            white-space: nowrap; 
-            margin: 0 auto; 
-            width: 0; /* Startet unsichtbar */
-        }
-
-        /* Animation startet erst beim Hover über die Gruppe - NUR DESKTOP */
+        /* Typewriter Effect - NUR DESKTOP */
         @media (min-width: 768px) {
+            .typewriter h3 {
+                overflow: hidden; 
+                white-space: nowrap; 
+                margin: 0 auto; 
+                width: 0; 
+            }
             .group:hover .typewriter h3 {
                 animation: typing 2.5s steps(35, end) forwards;
             }
         }
-        
-        /* Mobile: Text einfach anzeigen oder anders animieren */
+
+        /* Mobile Optimierung */
         @media (max-width: 767px) {
             .typewriter h3 {
                 width: auto;
-                white-space: normal; /* Umbruch erlauben */
-                overflow: visible;
+                white-space: normal; /* Textumbruch erlauben */
+                text-align: center;
                 opacity: 0;
-                transform: translateY(10px);
-                transition: opacity 0.5s ease, transform 0.5s ease;
+                transform: scale(0.9);
+                transition: opacity 0.3s ease, transform 0.3s ease;
             }
-            /* Auf Mobile zeigen wir den Text vielleicht einfach an, wenn man draufklickt/tippt */
-             .group:active .typewriter h3, .group:hover .typewriter h3 {
+            
+            /* Wenn gedrückt (active), Text einblenden */
+            .group:active .typewriter h3 {
                 opacity: 1;
-                transform: translateY(0);
-                width: auto; /* Kein Typing effekt mobil */
+                transform: scale(1);
+            }
+
+            /* Wenn gedrückt (active), normalen Text ausblenden */
+            .group:active .normal-content {
+                opacity: 0;
+                visibility: hidden;
             }
         }
 
@@ -68,7 +72,6 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
                 <div class="flex items-center space-x-2">
-                    <!-- Kleines Logo Icon -->
                     <div class="w-10 h-10 bg-bsh-red rounded-lg flex items-center justify-center text-white font-bold text-xl overflow-hidden p-1">
                        <img src="ressources/Logo.png" alt="Logo" class="w-full h-auto object-contain">
                     </div>
@@ -136,10 +139,7 @@
                     <div class="absolute inset-0 flex">
                         <!-- Left Side: Handwerker -->
                         <div class="w-1/2 bg-slate-800 relative overflow-hidden border-r border-slate-700">
-                            <!-- BILD: Zimmerer Projektleiter -->
                             <img src="ressources/zimmerer-projektleiter.jpg" alt="Handwerker Zimmerer" class="object-cover w-full h-full opacity-90 transition duration-700 group-hover:scale-105">
-                            
-                            <!-- Overlay Text -->
                             <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent p-6 pt-20">
                                 <div class="flex items-center text-white mb-1">
                                     <i data-lucide="hard-hat" class="mr-2 w-5 h-5 text-bsh-yellow"></i>
@@ -148,13 +148,9 @@
                                 <h3 class="text-white font-bold text-lg leading-tight">Zimmerer &<br>Projektleiter</h3>
                             </div>
                         </div>
-                        
                         <!-- Right Side: Berater -->
                         <div class="w-1/2 bg-white relative overflow-hidden">
-                            <!-- BILD: Finanzprofi -->
                             <img src="ressources/finanzprofi.jpg" alt="Kim Betcher Finanzprofi" class="object-cover w-full h-full transition duration-700 group-hover:scale-105" style="object-position: center top;">
-                            
-                            <!-- Overlay Text -->
                             <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-bsh-red via-bsh-red/80 to-transparent p-6 pt-20">
                                 <div class="flex items-center text-white mb-1">
                                     <i data-lucide="calculator" class="mr-2 w-5 h-5"></i>
@@ -164,8 +160,6 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Center Badge mit Logo -->
                     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-xl z-20 border-4 border-yellow-400 w-20 h-20 flex items-center justify-center">
                         <img src="ressources/Logo.png" alt="BSH Steine" class="w-14 h-auto">
                     </div>
@@ -197,7 +191,6 @@
                         Aufgewachsen im väterlichen Betrieb. Von der Pike auf gelernt. Als Vorarbeiter und Projektleiter habe ich Verantwortung übernommen – für Teams, für Budgets und für Bauherren.
                     </p>
                 </div>
-
                 <!-- Step 2 -->
                 <div class="bg-yellow-50 p-8 rounded-2xl border border-yellow-100 hover:shadow-lg transition relative overflow-hidden group">
                     <div class="absolute top-0 right-0 p-4 opacity-10 text-yellow-600 group-hover:opacity-20 transition">
@@ -209,7 +202,6 @@
                         Ich wollte nicht mehr nur ausführen, sondern <strong>gestalten</strong>. Ich erkannte eine Lücke: Banken verstehen Zahlen, Handwerker den Bau. Wer übersetzt?
                     </p>
                 </div>
-
                 <!-- Step 3 -->
                 <div class="bg-red-50 p-8 rounded-2xl border border-red-100 hover:shadow-lg transition relative overflow-hidden group">
                     <div class="absolute top-0 right-0 p-4 opacity-10 text-red-600 group-hover:opacity-20 transition">
@@ -293,7 +285,7 @@
         </div>
     </section>
 
-    <!-- Goals Section (INTERAKTIVER FUCHS & TYPEWRITER) -->
+    <!-- Goals Section (INTERAKTIVER FUCHS) -->
     <section id="ziele" class="py-20 bg-slate-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -301,17 +293,18 @@
                 <div class="w-20 h-1.5 bg-bsh-red mx-auto rounded-full"></div>
             </div>
 
-            <!-- Container mit Hover-Effekt -->
-            <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg relative overflow-hidden group cursor-default transition-all duration-500 hover:shadow-2xl">
+            <!-- Container mit Hover/Active Effekt -->
+            <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg relative overflow-hidden group cursor-pointer transition-all duration-500 hover:shadow-2xl active:shadow-inner active:scale-[0.99]">
                  
-                 <!-- FUCHS BILD (Wird größer beim Hover) -->
-                 <img src="ressources/fuchs klein.png" alt="Bausparfuchs" class="absolute -right-4 -bottom-4 w-32 md:w-40 z-10 pointer-events-none drop-shadow-lg transition-transform duration-500 ease-in-out group-hover:scale-[1.6] group-hover:-translate-y-6 group-hover:-translate-x-6">
+                 <!-- FUCHS BILD -->
+                 <img src="ressources/fuchs klein.png" alt="Bausparfuchs" class="absolute -right-4 -bottom-4 w-32 md:w-40 z-10 pointer-events-none drop-shadow-lg transition-transform duration-500 ease-in-out group-hover:scale-[1.6] group-hover:-translate-y-6 group-hover:-translate-x-6 group-active:scale-[1.6] group-active:-translate-y-6 group-active:-translate-x-6">
 
                 <div class="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-bl-full -mr-8 -mt-8 z-0"></div>
                 
-                <div class="relative z-10 pr-20 pb-4 text-center md:text-left min-h-[200px] flex flex-col justify-center">
-                    <!-- Normaler Inhalt (Verschwindet beim Hover) -->
-                    <div class="transition-opacity duration-500 group-hover:opacity-0 group-hover:invisible absolute inset-0 flex flex-col justify-center">
+                <!-- Angepasstes Padding für Mobile, damit Text lesbar ist -->
+                <div class="relative z-10 pr-4 md:pr-20 pb-4 text-center md:text-left min-h-[250px] flex flex-col justify-center">
+                    <!-- Normaler Inhalt (Verschwindet beim Hover/Active) -->
+                    <div class="normal-content transition-opacity duration-500 group-hover:opacity-0 group-hover:invisible group-active:opacity-0 group-active:invisible absolute inset-0 flex flex-col justify-center">
                         <p class="text-xl text-slate-800 italic mb-6 relative z-20">
                             "Ich bin nicht hier für das schnelle Geschäft. Ich baue ein Unternehmen auf, das Bestand hat."
                         </p>
@@ -334,14 +327,16 @@
                         </div>
                     </div>
 
-                    <!-- Hover Inhalt (Erscheint beim Hover mit Typewriter Effekt - NUR DESKTOP) -->
-                    <div class="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-500 absolute inset-0 flex items-center justify-center pr-20 typewriter">
+                    <!-- Hover Inhalt (Erscheint beim Hover/Active) -->
+                    <div class="typewriter opacity-0 invisible group-hover:opacity-100 group-hover:visible group-active:opacity-100 group-active:visible transition-all duration-500 absolute inset-0 flex items-center justify-center md:justify-start">
                         <h3 class="text-2xl md:text-4xl font-extrabold text-bsh-red leading-tight drop-shadow-sm text-center md:text-left">
                             Auf diese Steine können Sie bauen
                         </h3>
                     </div>
                 </div>
             </div>
+            
+            <p class="text-center text-sm text-slate-400 mt-4 md:hidden">(Tippen und halten, um das Geheimnis zu lüften)</p>
         </div>
     </section>
 
