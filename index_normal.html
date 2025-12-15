@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kim Betcher | Frohes Fest & Guten Rutsch</title>
+    <title>Kim Betcher | Vom Dach in die Bank</title>
     <meta name="description" content="Bezirksleiter Bausparkasse Schwäbisch Hall für Oberkochen, Ebnat & Aalen. Der Technical Controller für Ihre Finanzierung.">
     
     <!-- Tailwind CSS -->
@@ -14,9 +14,6 @@
 
     <!-- Schriftart Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Weihnachtliche Schriftart -->
-    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -24,8 +21,6 @@
         .bg-bsh-yellow { background-color: #facc15; }
         .text-bsh-red { color: #dc2626; }
         .hover\:bg-bsh-red:hover { background-color: #b91c1c; }
-        
-        .font-christmas { font-family: 'Mountains of Christmas', cursive; }
 
         /* Typewriter Effect - NUR DESKTOP */
         @media (min-width: 768px) {
@@ -72,40 +67,13 @@
             from { width: 0 }
             to { width: 100% }
         }
-
-        /* Schneeflocken Animation */
-        .snowflake {
-            position: fixed;
-            top: -20px;
-            z-index: 9999; /* Über allem liegen */
-            user-select: none;
-            pointer-events: none;
-            color: #fff;
-            text-shadow: 0 0 5px rgba(0,0,0,0.1); /* Leichter Schatten für Sichtbarkeit auf weiß */
-        }
-
-        @keyframes fall {
-            0% {
-                transform: translateY(-10vh) translateX(0px) rotate(0deg);
-                opacity: 0.8;
-            }
-            100% {
-                transform: translateY(110vh) translateX(20px) rotate(360deg);
-                opacity: 0.2;
-            }
-        }
     </style>
 </head>
-<body class="text-slate-900 antialiased selection:bg-yellow-200 bg-white relative">
-
-    <!-- Lichterkette: Z-Index 55 (zwischen Hintergrund und Logo), Höhe reduziert auf h-12 -->
-    <div class="fixed top-0 left-0 w-full h-12 z-[55] pointer-events-none bg-[url('ressources/lichterkette.png')] bg-repeat-x bg-[length:auto_100%] drop-shadow-md"></div>
+<body class="text-slate-900 antialiased selection:bg-yellow-200 bg-white">
 
     <!-- Navigation -->
-    <!-- Z-Index 50 für die Leiste selbst -->
-    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm mt-4 md:mt-0">
-        <!-- Innerer Container: Z-Index 60 (Damit Logo & Text VOR der Lichterkette liegen) -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-[60]">
+    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
                 <div class="flex items-center space-x-2">
                     <div class="w-10 h-10 bg-bsh-red rounded-lg flex items-center justify-center text-white font-bold text-xl overflow-hidden p-1">
@@ -118,8 +86,7 @@
                     <a href="#story" class="text-slate-600 hover:text-bsh-red font-medium transition">Meine Story</a>
                     <a href="#usp" class="text-slate-600 hover:text-bsh-red font-medium transition">Mein USP</a>
                     <a href="#ziele" class="text-slate-600 hover:text-bsh-red font-medium transition">Ziele</a>
-                    <!-- Kontakt Button festlicher -->
-                    <a href="#kontakt" class="px-5 py-2.5 bg-bsh-red hover:bg-red-700 text-white font-medium rounded-full transition shadow-md border-2 border-yellow-400">
+                    <a href="#kontakt" class="px-5 py-2.5 bg-bsh-red hover:bg-red-700 text-white font-medium rounded-full transition shadow-md">
                         Kontakt aufnehmen
                     </a>
                 </div>
@@ -132,7 +99,7 @@
             </div>
         </div>
 
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 absolute w-full shadow-xl relative z-[60]">
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 absolute w-full shadow-xl">
             <div class="px-4 pt-2 pb-6 space-y-2">
                 <a href="#story" onclick="toggleMenu()" class="block px-3 py-3 text-slate-600 hover:bg-red-50 hover:text-bsh-red rounded-lg">Meine Story</a>
                 <a href="#usp" onclick="toggleMenu()" class="block px-3 py-3 text-slate-600 hover:bg-red-50 hover:text-bsh-red rounded-lg">Mein USP</a>
@@ -149,22 +116,13 @@
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <!-- Text -->
                 <div>
-                    <!-- Status Badge (Geändert für Weihnachten) -->
-                    <div class="inline-flex items-center space-x-2 bg-red-50 text-red-700 px-4 py-1.5 rounded-full text-sm font-bold mb-2 border border-red-100 shadow-sm">
+                    <div class="inline-flex items-center space-x-2 bg-red-50 text-red-700 px-4 py-1.5 rounded-full text-sm font-bold mb-6 border border-red-100">
                         <span class="relative flex h-2 w-2">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-bsh-red"></span>
                         </span>
-                        <span>Ab Januar 2026 für Sie verfügbar</span>
+                        <span>Ab 01.01.2026 für Sie da</span>
                     </div>
-                    
-                    <!-- Weihnachtsgruß (Schrift verkleinert) -->
-                    <div class="mb-6">
-                        <p class="font-christmas text-xl md:text-2xl text-green-700 font-bold transform -rotate-2 origin-left drop-shadow-sm">
-                            Frohes Fest und guten Rutsch ins neue Jahr! 🎄
-                        </p>
-                    </div>
-
                     <h1 class="text-5xl md:text-6xl font-extrabold text-slate-900 leading-tight mb-6">
                         Vom Dach <br/>
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-yellow-500">in die Bank.</span>
@@ -174,7 +132,7 @@
                         Ihr Bezirksleiter für Oberkochen, Ebnat & Aalen.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="#kontakt" class="px-8 py-4 bg-bsh-red hover:bg-red-700 text-white font-bold rounded-lg text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center border-b-4 border-red-800 active:border-b-0 active:translate-y-1">
+                        <a href="#kontakt" class="px-8 py-4 bg-bsh-red hover:bg-red-700 text-white font-bold rounded-lg text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center">
                             Jetzt Termin vereinbaren <i data-lucide="arrow-right" class="ml-2 w-5 h-5"></i>
                         </a>
                     </div>
@@ -342,8 +300,8 @@
             <!-- Container mit Hover/Active Effekt -->
             <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg relative overflow-hidden group cursor-pointer transition-all duration-500 hover:shadow-2xl active:shadow-inner active:scale-[0.98]">
                  
-                 <!-- FUCHS BILD WEIHNACHTLICH -->
-                 <img src="ressources/fuchs_christmas.png" alt="Bausparfuchs Weihnachten" class="absolute -right-4 -bottom-4 w-32 md:w-40 z-10 pointer-events-none drop-shadow-lg transition-transform duration-500 ease-in-out 
+                 <!-- FUCHS BILD (Mobile angepasst: unten rechts) -->
+                 <img src="ressources/fuchs klein.png" alt="Bausparfuchs" class="absolute -right-4 -bottom-4 w-32 md:w-40 z-10 pointer-events-none drop-shadow-lg transition-transform duration-500 ease-in-out 
                  group-hover:scale-[1.6] group-hover:-translate-y-6 group-hover:-translate-x-6 
                  group-active:scale-[1.3] group-active:-translate-y-2 group-active:translate-x-6 md:group-active:scale-[1.6] md:group-active:-translate-y-6 md:group-active:-translate-x-6">
 
@@ -399,10 +357,8 @@
             </p>
 
             <div class="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                <!-- E-MAIL ersetzt durch GESCHENK ICON -->
                 <a href="mailto:betcherkimg@gmail.com" class="group flex items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-slate-100 hover:border-red-600 hover:shadow-lg transition cursor-pointer">
-                    <!-- ICON: Gift statt Mail -->
-                    <i data-lucide="gift" class="w-8 h-8 text-slate-400 group-hover:text-red-600 transition mb-1 mr-4"></i>
+                    <i data-lucide="mail" class="w-8 h-8 text-slate-400 group-hover:text-red-600 transition mb-1 mr-4"></i>
                     <div class="text-left">
                         <div class="text-xs text-slate-500 uppercase font-bold tracking-wider">Email schreiben</div>
                         <div class="font-bold text-slate-900">Kontakt aufnehmen</div>
@@ -460,38 +416,6 @@
             const menu = document.getElementById('mobile-menu');
             menu.classList.toggle('hidden');
         }
-
-        // Schneeflocken erzeugen
-        function createSnowflake() {
-            const snowflake = document.createElement('div');
-            snowflake.classList.add('snowflake');
-            snowflake.innerText = '❄';
-            
-            // Zufällige Position (0-100vw)
-            snowflake.style.left = Math.random() * 100 + 'vw';
-            
-            // Zufällige Dauer
-            const duration = Math.random() * 3 + 5;
-            snowflake.style.animationDuration = duration + 's'; 
-            
-            // Zufällige Opazität & Größe
-            snowflake.style.opacity = Math.random() * 0.5 + 0.3;
-            snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
-            
-            // Animation setzen
-            snowflake.style.animationName = 'fall';
-            snowflake.style.animationTimingFunction = 'linear';
-
-            document.body.appendChild(snowflake);
-
-            // Löschen wenn Animation vorbei
-            setTimeout(() => {
-                snowflake.remove();
-            }, duration * 1000); 
-        }
-
-        // Interval für Schneeflocken
-        setInterval(createSnowflake, 200);
     </script>
 </body>
 </html>
