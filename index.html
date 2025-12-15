@@ -94,12 +94,49 @@
                 opacity: 0.2;
             }
         }
+
+        /* Musik Button Animation - Ring Effekt wenn aktiv */
+        @keyframes pulse-ring {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(220, 38, 38, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+        }
+        
+        /* Sanftes Wippen um Aufmerksamkeit zu erregen (im Ruhezustand) */
+        @keyframes gentle-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .music-playing {
+            animation: pulse-ring 2s infinite;
+        }
+        
+        .music-idle {
+            animation: gentle-bounce 3s infinite ease-in-out;
+        }
     </style>
 </head>
 <body class="text-slate-900 antialiased selection:bg-yellow-200 bg-white relative">
 
     <!-- Lichterkette: Z-Index 55 (zwischen Hintergrund und Logo), Höhe reduziert auf h-12 -->
     <div class="fixed top-0 left-0 w-full h-12 z-[55] pointer-events-none bg-[url('ressources/lichterkette.png')] bg-repeat-x bg-[length:auto_100%] drop-shadow-md"></div>
+
+    <!-- AUDIO PLAYER (Versteckt) -->
+    <!-- Mit 'autoplay' Attribut für den ersten Versuch -->
+    <audio id="christmas-audio" loop autoplay>
+        <source src="ressources/weihnachtsmusik.mp3" type="audio/mpeg">
+        Dein Browser unterstützt kein Audio.
+    </audio>
+
+    <!-- MUSIK BUTTON (Unten Links) - AUFFÄLLIGER -->
+    <button id="music-toggle" onclick="toggleMusic()" class="music-idle fixed bottom-6 left-6 z-[100] bg-bsh-red text-white p-4 rounded-full shadow-2xl border-4 border-yellow-400 hover:scale-110 hover:shadow-red-500/50 transition-all duration-300 group" title="Weihnachtsmusik an/aus">
+        <div class="relative">
+            <i data-lucide="music" id="music-icon" class="w-8 h-8"></i>
+            <!-- Kleines 'X' wenn aus, wird per JS gesteuert -->
+            <div id="music-strike" class="absolute top-1/2 left-0 w-full h-1 bg-white rotate-45 transform -translate-y-1/2 hidden"></div>
+        </div>
+    </button>
 
     <!-- Navigation -->
     <!-- Z-Index 50 für die Leiste selbst -->
@@ -492,6 +529,80 @@
 
         // Interval für Schneeflocken
         setInterval(createSnowflake, 200);
+
+        // --- MUSIK LOGIK MIT AGGRESSIVEM AUTOSTART-WORKAROUND ---
+        const audio = document.getElementById('christmas-audio');
+        const musicBtn = document.getElementById('music-toggle');
+        const strike = document.getElementById('music-strike');
+
+        function updateButtonState(isPlaying) {
+            if (isPlaying) {
+                strike.classList.add('hidden');
+                musicBtn.classList.remove('music-idle');
+                musicBtn.classList.add('music-playing');
+            } else {
+                strike.classList.remove('hidden');
+                musicBtn.classList.remove('music-playing');
+                musicBtn.classList.add('music-idle');
+            }
+        }
+
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play().then(() => {
+                    updateButtonState(true);
+                }).catch(error => {
+                    console.log("Audio Play prevented:", error);
+                });
+            } else {
+                audio.pause();
+                updateButtonState(false);
+            }
+        }
+
+        // AUTOSTART FUNKTIONEN
+        
+        // 1. Sofort versuchen (Klappt selten, aber schadet nicht)
+        function attemptImmediatePlay() {
+            audio.play().then(() => {
+                updateButtonState(true);
+                // Wenn es geklappt hat, brauchen wir die Listener nicht mehr
+                removeUnlockListeners();
+            }).catch(e => {
+                console.log("Autoplay blocked, waiting for interaction.");
+            });
+        }
+
+        // 2. Unlock bei erster Interaktion (Der "Trick")
+        function unlockAudio() {
+            audio.play().then(() => {
+                updateButtonState(true);
+                // Erfolgreich gestartet -> Listener entfernen
+                removeUnlockListeners();
+            }).catch(e => {
+                // Könnte passieren, wenn Interaktion zu kurz war
+                console.log("Unlock failed:", e);
+            });
+        }
+
+        function removeUnlockListeners() {
+            document.removeEventListener('click', unlockAudio);
+            document.removeEventListener('scroll', unlockAudio);
+            document.removeEventListener('keydown', unlockAudio);
+            document.removeEventListener('touchstart', unlockAudio);
+            document.removeEventListener('mousemove', unlockAudio);
+        }
+
+        // Listener registrieren (einmalig reicht meist, aber sicher ist sicher)
+        document.addEventListener('click', unlockAudio, { once: true });
+        document.addEventListener('scroll', unlockAudio, { once: true });
+        document.addEventListener('keydown', unlockAudio, { once: true });
+        document.addEventListener('touchstart', unlockAudio, { once: true });
+        document.addEventListener('mousemove', unlockAudio, { once: true });
+
+        // Startversuch beim Laden
+        attemptImmediatePlay();
+
     </script>
 </body>
 </html>
