@@ -4,18 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kim Betcher | Frohes Fest & Guten Rutsch</title>
-    <meta name="description" content="Bezirksleiter Bausparkasse Schwäbisch Hall für Oberkochen, Ebnat & Aalen. Der Technical Controller für Ihre Finanzierung.">
+    <meta name="description" content="Bezirksleiter Bausparkasse Schwäbisch Hall für Oberkochen, Ebnat & Aalen.">
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Icons (Lucide) -->
     <script src="https://unpkg.com/lucide@latest"></script>
-
-    <!-- Schriftart Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Weihnachtliche Schriftart -->
     <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
@@ -24,585 +17,382 @@
         .bg-bsh-yellow { background-color: #facc15; }
         .text-bsh-red { color: #dc2626; }
         .hover\:bg-bsh-red:hover { background-color: #b91c1c; }
-        
         .font-christmas { font-family: 'Mountains of Christmas', cursive; }
 
-        /* Typewriter Effect - NUR DESKTOP */
+        /* Typewriter Effect */
         @media (min-width: 768px) {
-            .typewriter h3 {
-                overflow: hidden; 
-                white-space: nowrap; 
-                margin: 0 auto; 
-                width: 0; 
-            }
-            .group:hover .typewriter h3 {
-                animation: typing 2.5s steps(35, end) forwards;
-            }
+            .typewriter h3 { overflow: hidden; white-space: nowrap; margin: 0 auto; width: 0; }
+            .group:hover .typewriter h3 { animation: typing 2.5s steps(35, end) forwards; }
         }
-
-        /* Mobile Optimierung */
         @media (max-width: 767px) {
-            .typewriter h3 {
-                width: 100%;
-                white-space: normal; /* Textumbruch erlauben */
-                text-align: center;
-                opacity: 0;
-                transform: scale(0.95);
-                transition: opacity 0.2s ease, transform 0.2s ease;
-                font-size: 1.5rem; 
-                line-height: 1.2;
-                font-weight: 800;
-                color: #dc2626;
-            }
-            
-            /* Wenn gedrückt (active), Text einblenden */
-            .group:active .typewriter h3 {
-                opacity: 1;
-                transform: scale(1);
-            }
+            .typewriter h3 { width: 100%; white-space: normal; text-align: center; opacity: 0; transform: scale(0.95); transition: opacity 0.2s ease, transform 0.2s ease; font-size: 1.5rem; line-height: 1.2; font-weight: 800; color: #dc2626; }
+            .group:active .typewriter h3 { opacity: 1; transform: scale(1); }
+            .group:active .normal-content { opacity: 0; visibility: hidden; }
+        }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
 
-            /* Wenn gedrückt (active), normalen Text ausblenden */
-            .group:active .normal-content {
-                opacity: 0;
-                visibility: hidden;
-            }
-        }
+        /* Schneeflocken */
+        .snowflake { position: fixed; top: -20px; z-index: 9999; pointer-events: none; color: #fff; text-shadow: 0 0 5px rgba(0,0,0,0.1); }
+        @keyframes fall { 0% { transform: translateY(-10vh) translateX(0px) rotate(0deg); opacity: 0.8; } 100% { transform: translateY(110vh) translateX(20px) rotate(360deg); opacity: 0.2; } }
 
-        @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
-        }
-
-        /* Schneeflocken Animation */
-        .snowflake {
-            position: fixed;
-            top: -20px;
-            z-index: 9999; /* Über allem liegen */
-            user-select: none;
-            pointer-events: none;
-            color: #fff;
-            text-shadow: 0 0 5px rgba(0,0,0,0.1); /* Leichter Schatten für Sichtbarkeit auf weiß */
-        }
-
-        @keyframes fall {
-            0% {
-                transform: translateY(-10vh) translateX(0px) rotate(0deg);
-                opacity: 0.8;
-            }
-            100% {
-                transform: translateY(110vh) translateX(20px) rotate(360deg);
-                opacity: 0.2;
-            }
-        }
-
-        /* Musik Button Animation - Ring Effekt wenn aktiv */
-        @keyframes pulse-ring {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(220, 38, 38, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
-        }
-        
-        /* Sanftes Wippen um Aufmerksamkeit zu erregen (im Ruhezustand) */
-        @keyframes gentle-bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
-        .music-playing {
-            animation: pulse-ring 2s infinite;
-        }
-        
-        .music-idle {
-            animation: gentle-bounce 3s infinite ease-in-out;
-        }
+        /* Musik Button */
+        @keyframes pulse-ring { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(220, 38, 38, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
+        @keyframes gentle-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .music-playing { animation: pulse-ring 2s infinite; }
+        .music-idle { animation: gentle-bounce 3s infinite ease-in-out; }
     </style>
 </head>
 <body class="text-slate-900 antialiased selection:bg-yellow-200 bg-white relative">
 
-    <!-- Lichterkette: Z-Index 55 (zwischen Hintergrund und Logo), Höhe reduziert auf h-12 -->
+    <!-- === PERSISTENTE ELEMENTE === -->
     <div class="fixed top-0 left-0 w-full h-12 z-[55] pointer-events-none bg-[url('ressources/lichterkette.png')] bg-repeat-x bg-[length:auto_100%] drop-shadow-md"></div>
-
-    <!-- AUDIO PLAYER (Versteckt) -->
-    <!-- Mit 'autoplay' Attribut für den ersten Versuch -->
-    <audio id="christmas-audio" loop autoplay>
+    
+    <audio id="christmas-audio" loop>
         <source src="ressources/weihnachtsmusik.mp3" type="audio/mpeg">
-        Dein Browser unterstützt kein Audio.
     </audio>
 
-    <!-- MUSIK BUTTON (Unten Links) - AUFFÄLLIGER -->
-    <button id="music-toggle" onclick="toggleMusic()" class="music-idle fixed bottom-6 left-6 z-[100] bg-bsh-red text-white p-4 rounded-full shadow-2xl border-4 border-yellow-400 hover:scale-110 hover:shadow-red-500/50 transition-all duration-300 group" title="Weihnachtsmusik an/aus">
+    <button id="music-toggle" onclick="toggleMusic()" class="music-idle fixed bottom-6 left-6 z-[100] bg-bsh-red text-white p-4 rounded-full shadow-2xl border-4 border-yellow-400 hover:scale-110 hover:shadow-red-500/50 transition-all duration-300 group" title="Musik an/aus">
         <div class="relative">
             <i data-lucide="music" id="music-icon" class="w-8 h-8"></i>
-            <!-- Kleines 'X' wenn aus, wird per JS gesteuert -->
             <div id="music-strike" class="absolute top-1/2 left-0 w-full h-1 bg-white rotate-45 transform -translate-y-1/2 hidden"></div>
         </div>
     </button>
 
-    <!-- Navigation -->
-    <!-- Z-Index 50 für die Leiste selbst -->
-    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm mt-4 md:mt-0">
-        <!-- Innerer Container: Z-Index 60 (Damit Logo & Text VOR der Lichterkette liegen) -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-[60]">
-            <div class="flex justify-between h-20 items-center">
-                <div class="flex items-center space-x-2">
-                    <div class="w-10 h-10 bg-bsh-red rounded-lg flex items-center justify-center text-white font-bold text-xl overflow-hidden p-1">
-                       <img src="ressources/Logo.png" alt="Logo" class="w-full h-auto object-contain">
-                    </div>
-                    <span class="font-bold text-xl tracking-tight">KIM BETCHER</span>
-                </div>
-                
-                <div class="hidden md:flex space-x-8 items-center">
-                    <a href="#story" class="text-slate-600 hover:text-bsh-red font-medium transition">Meine Story</a>
-                    <a href="#usp" class="text-slate-600 hover:text-bsh-red font-medium transition">Mein USP</a>
-                    <a href="#ziele" class="text-slate-600 hover:text-bsh-red font-medium transition">Ziele</a>
-                    <!-- Kontakt Button festlicher -->
-                    <a href="#kontakt" class="px-5 py-2.5 bg-bsh-red hover:bg-red-700 text-white font-medium rounded-full transition shadow-md border-2 border-yellow-400">
-                        Kontakt aufnehmen
-                    </a>
-                </div>
-
-                <div class="md:hidden flex items-center">
-                    <button onclick="toggleMenu()" class="text-slate-600 hover:text-bsh-red">
-                        <i data-lucide="menu" id="menu-icon" class="w-7 h-7"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 absolute w-full shadow-xl relative z-[60]">
-            <div class="px-4 pt-2 pb-6 space-y-2">
-                <a href="#story" onclick="toggleMenu()" class="block px-3 py-3 text-slate-600 hover:bg-red-50 hover:text-bsh-red rounded-lg">Meine Story</a>
-                <a href="#usp" onclick="toggleMenu()" class="block px-3 py-3 text-slate-600 hover:bg-red-50 hover:text-bsh-red rounded-lg">Mein USP</a>
-                <a href="#ziele" onclick="toggleMenu()" class="block px-3 py-3 text-slate-600 hover:bg-red-50 hover:text-bsh-red rounded-lg">Ziele</a>
-                <a href="#kontakt" onclick="toggleMenu()" class="block px-3 py-3 text-bsh-red font-bold">Kontakt</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-        <div class="absolute top-0 right-0 w-1/3 h-full bg-yellow-50 -skew-x-12 translate-x-20 z-0 opacity-60 pointer-events-none"></div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid md:grid-cols-2 gap-12 items-center">
-                <!-- Text -->
-                <div>
-                    <!-- Status Badge (Geändert für Weihnachten) -->
-                    <div class="inline-flex items-center space-x-2 bg-red-50 text-red-700 px-4 py-1.5 rounded-full text-sm font-bold mb-2 border border-red-100 shadow-sm">
-                        <span class="relative flex h-2 w-2">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-bsh-red"></span>
-                        </span>
-                        <span>Ab Januar 2026 für Sie verfügbar</span>
-                    </div>
-                    
-                    <!-- Weihnachtsgruß (Schrift verkleinert) -->
-                    <div class="mb-6">
-                        <p class="font-christmas text-xl md:text-2xl text-green-700 font-bold transform -rotate-2 origin-left drop-shadow-sm">
-                            Frohes Fest und guten Rutsch ins neue Jahr! 🎄
-                        </p>
-                    </div>
-
-                    <h1 class="text-5xl md:text-6xl font-extrabold text-slate-900 leading-tight mb-6">
-                        Vom Dach <br/>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-yellow-500">in die Bank.</span>
-                    </h1>
-                    <p class="text-xl text-slate-600 mb-8 max-w-lg leading-relaxed">
-                        Ich plane nicht nur Ihre Finanzierung – ich verstehe Ihr Haus. 
-                        Ihr Bezirksleiter für Oberkochen, Ebnat & Aalen.
-                    </p>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="#kontakt" class="px-8 py-4 bg-bsh-red hover:bg-red-700 text-white font-bold rounded-lg text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center border-b-4 border-red-800 active:border-b-0 active:translate-y-1">
-                            Jetzt Termin vereinbaren <i data-lucide="arrow-right" class="ml-2 w-5 h-5"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Visual / Image Split -->
-                <div class="relative h-[500px] w-full bg-slate-100 rounded-2xl overflow-hidden shadow-2xl group border-4 border-white">
-                    <div class="absolute inset-0 flex">
-                        <!-- Left Side: Handwerker -->
-                        <div class="w-1/2 bg-slate-800 relative overflow-hidden border-r border-slate-700">
-                            <img src="ressources/zimmerer-projektleiter.jpg" alt="Handwerker Zimmerer" class="object-cover w-full h-full opacity-90 transition duration-700 group-hover:scale-105">
-                            <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent p-6 pt-20">
-                                <div class="flex items-center text-white mb-1">
-                                    <i data-lucide="hard-hat" class="mr-2 w-5 h-5 text-bsh-yellow"></i>
-                                    <span class="font-bold uppercase tracking-wider text-xs">Der Ursprung</span>
-                                </div>
-                                <h3 class="text-white font-bold text-lg leading-tight">Zimmerer &<br>Projektleiter</h3>
-                            </div>
-                        </div>
-                        <!-- Right Side: Berater -->
-                        <div class="w-1/2 bg-white relative overflow-hidden">
-                            <img src="ressources/finanzprofi.jpg" alt="Kim Betcher Finanzprofi" class="object-cover w-full h-full transition duration-700 group-hover:scale-105" style="object-position: center top;">
-                            <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-bsh-red via-bsh-red/80 to-transparent p-6 pt-20">
-                                <div class="flex items-center text-white mb-1">
-                                    <i data-lucide="calculator" class="mr-2 w-5 h-5"></i>
-                                    <span class="font-bold uppercase tracking-wider text-xs">Die Zukunft</span>
-                                </div>
-                                <h3 class="text-white font-bold text-lg leading-tight">Bezirksleiter<br>BSH</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-xl z-20 border-4 border-yellow-400 w-20 h-20 flex items-center justify-center">
-                        <img src="ressources/Logo.png" alt="BSH Steine" class="w-14 h-auto">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Story Section -->
-    <section id="story" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Meine Geschichte</h2>
-                <div class="w-20 h-1.5 bg-bsh-yellow mx-auto rounded-full"></div>
-                <p class="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
-                    Vom Geruch frischen Holzes zur Strategie des Vermögensaufbaus. Ein ungewöhnlicher Weg, der zu Ihrem Vorteil wird.
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- Step 1 -->
-                <div class="bg-slate-50 p-8 rounded-2xl border border-slate-100 hover:shadow-lg transition relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition">
-                        <i data-lucide="hammer" class="w-24 h-24"></i>
-                    </div>
-                    <div class="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center text-white font-bold mb-6">01</div>
-                    <h3 class="text-xl font-bold mb-3">Die Wurzeln</h3>
-                    <p class="text-slate-600 leading-relaxed">
-                        Aufgewachsen im väterlichen Betrieb. Von der Pike auf gelernt. Als Vorarbeiter und Projektleiter habe ich Verantwortung übernommen – für Teams, für Budgets und für Bauherren.
-                    </p>
-                </div>
-                <!-- Step 2 -->
-                <div class="bg-yellow-50 p-8 rounded-2xl border border-yellow-100 hover:shadow-lg transition relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 text-yellow-600 group-hover:opacity-20 transition">
-                        <i data-lucide="trending-up" class="w-24 h-24"></i>
-                    </div>
-                    <div class="w-12 h-12 bg-bsh-yellow rounded-full flex items-center justify-center text-white font-bold mb-6">02</div>
-                    <h3 class="text-xl font-bold mb-3">Der Wendepunkt</h3>
-                    <p class="text-slate-700 leading-relaxed">
-                        Ich wollte nicht mehr nur ausführen, sondern <strong>gestalten</strong>. Ich erkannte eine Lücke: Banken verstehen Zahlen, Handwerker den Bau. Wer übersetzt?
-                    </p>
-                </div>
-                <!-- Step 3 -->
-                <div class="bg-red-50 p-8 rounded-2xl border border-red-100 hover:shadow-lg transition relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 text-red-600 group-hover:opacity-20 transition">
-                        <i data-lucide="briefcase" class="w-24 h-24"></i>
-                    </div>
-                    <div class="w-12 h-12 bg-bsh-red rounded-full flex items-center justify-center text-white font-bold mb-6">03</div>
-                    <h3 class="text-xl font-bold mb-3">Die Mission</h3>
-                    <p class="text-slate-700 leading-relaxed">
-                        Ab 2026 Ihr <strong>Bezirksleiter</strong> bei der 
-                        <a href="https://www.schwaebisch-hall.de/" target="_blank" rel="noopener noreferrer" class="font-bold text-bsh-red hover:underline hover:text-red-800 transition" title="Zur Website der Bausparkasse Schwäbisch Hall">
-                            Bausparkasse Schwäbisch Hall
-                        </a>. 
-                        Finanzstrategie gepaart mit ehrlichem Handwerkswissen. Für Oberkochen, Ebnat und Aalen.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- USP Section (Rechtlich optimiert) -->
-    <section id="usp" class="py-20 bg-slate-900 text-white relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#fbbf24 1px, transparent 1px); background-size: 30px 30px;"></div>
+    <!-- === INHALTS-CONTAINER === -->
+    <div id="swappable-content">
         
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="flex flex-col md:flex-row gap-16 items-center">
-                <div class="md:w-1/2">
-                    <div class="inline-block px-4 py-1 border border-yellow-500 text-yellow-400 rounded-full text-sm font-bold mb-6">
-                        MEIN ALLEINSTELLUNGSMERKMAL
+        <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm mt-4 md:mt-0">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-[60]">
+                <div class="flex justify-between h-20 items-center">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-10 h-10 bg-bsh-red rounded-lg flex items-center justify-center text-white font-bold text-xl overflow-hidden p-1">
+                           <img src="ressources/Logo.png" alt="Logo" class="w-full h-auto object-contain">
+                        </div>
+                        <span class="font-bold text-xl tracking-tight">KIM BETCHER</span>
                     </div>
-                    <h2 class="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
-                        Der Technical Controller
-                    </h2>
-                    <p class="text-xl text-slate-300 mb-8 leading-relaxed">
-                        "Die Bank prüft das Geld. Ich prüfe die Substanz."
-                    </p>
-                    <div class="space-y-6">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 w-12 h-12 bg-bsh-red rounded-lg flex items-center justify-center mt-1">
-                                <i data-lucide="check-circle" class="text-white w-6 h-6"></i>
+                    <div class="hidden md:flex space-x-8 items-center">
+                        <a href="index.html#story" class="text-slate-600 hover:text-bsh-red font-medium transition">Meine Story</a>
+                        <a href="index.html#usp" class="text-slate-600 hover:text-bsh-red font-medium transition">Mein USP</a>
+                        <a href="index.html#ziele" class="text-slate-600 hover:text-bsh-red font-medium transition">Ziele</a>
+                        <a href="index.html#kontakt" class="px-5 py-2.5 bg-bsh-red hover:bg-red-700 text-white font-medium rounded-full transition shadow-md border-2 border-yellow-400">Kontakt aufnehmen</a>
+                    </div>
+                    <div class="md:hidden flex items-center">
+                        <button onclick="toggleMenu()" class="text-slate-600 hover:text-bsh-red"><i data-lucide="menu" id="menu-icon" class="w-7 h-7"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 absolute w-full shadow-xl relative z-[60]">
+                <div class="px-4 pt-2 pb-6 space-y-2">
+                    <a href="index.html#story" onclick="toggleMenu()" class="block px-3 py-3 text-slate-600 hover:bg-red-50 hover:text-bsh-red rounded-lg">Meine Story</a>
+                    <a href="index.html#usp" onclick="toggleMenu()" class="block px-3 py-3 text-slate-600 hover:bg-red-50 hover:text-bsh-red rounded-lg">Mein USP</a>
+                    <a href="index.html#ziele" onclick="toggleMenu()" class="block px-3 py-3 text-slate-600 hover:bg-red-50 hover:text-bsh-red rounded-lg">Ziele</a>
+                    <a href="index.html#kontakt" onclick="toggleMenu()" class="block px-3 py-3 text-bsh-red font-bold">Kontakt</a>
+                </div>
+            </div>
+        </nav>
+
+        <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+            <div class="absolute top-0 right-0 w-1/3 h-full bg-yellow-50 -skew-x-12 translate-x-20 z-0 opacity-60 pointer-events-none"></div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <div class="inline-flex items-center space-x-2 bg-red-50 text-red-700 px-4 py-1.5 rounded-full text-sm font-bold mb-2 border border-red-100 shadow-sm">
+                            <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-bsh-red"></span></span>
+                            <span>Ab Januar 2026 für Sie verfügbar</span>
+                        </div>
+                        <div class="mb-6"><p class="font-christmas text-xl md:text-2xl text-green-700 font-bold transform -rotate-2 origin-left drop-shadow-sm">Frohes Fest und guten Rutsch ins neue Jahr! 🎄</p></div>
+                        <h1 class="text-5xl md:text-6xl font-extrabold text-slate-900 leading-tight mb-6">Vom Dach <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-yellow-500">in die Bank.</span></h1>
+                        <p class="text-xl text-slate-600 mb-8 max-w-lg leading-relaxed">Ich plane nicht nur Ihre Finanzierung – ich verstehe Ihr Haus. Ihr Bezirksleiter für Oberkochen, Ebnat & Aalen.</p>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <a href="#kontakt" class="px-8 py-4 bg-bsh-red hover:bg-red-700 text-white font-bold rounded-lg text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center border-b-4 border-red-800 active:border-b-0 active:translate-y-1">Jetzt Termin vereinbaren <i data-lucide="arrow-right" class="ml-2 w-5 h-5"></i></a>
+                        </div>
+                    </div>
+                    <div class="relative h-[500px] w-full bg-slate-100 rounded-2xl overflow-hidden shadow-2xl group border-4 border-white">
+                        <div class="absolute inset-0 flex">
+                            <div class="w-1/2 bg-slate-800 relative overflow-hidden border-r border-slate-700">
+                                <img src="ressources/zimmerer-projektleiter.jpg" alt="Handwerker Zimmerer" class="object-cover w-full h-full opacity-90 transition duration-700 group-hover:scale-105">
+                                <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent p-6 pt-20">
+                                    <div class="flex items-center text-white mb-1"><i data-lucide="hard-hat" class="mr-2 w-5 h-5 text-bsh-yellow"></i><span class="font-bold uppercase tracking-wider text-xs">Der Ursprung</span></div>
+                                    <h3 class="text-white font-bold text-lg leading-tight">Zimmerer &<br>Projektleiter</h3>
+                                </div>
                             </div>
-                            <div class="ml-4">
-                                <h4 class="text-xl font-bold text-white">Echter Realitäts-Check</h4>
-                                <p class="text-slate-400 mt-1">Wenn ich eine Modernisierung empfehle, dann weil ich als Zimmerer sehe, dass Ihr Dach in 5 Jahren fällig ist.</p>
+                            <div class="w-1/2 bg-white relative overflow-hidden">
+                                <img src="ressources/finanzprofi.jpg" alt="Kim Betcher Finanzprofi" class="object-cover w-full h-full transition duration-700 group-hover:scale-105" style="object-position: center top;">
+                                <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-bsh-red via-bsh-red/80 to-transparent p-6 pt-20">
+                                    <div class="flex items-center text-white mb-1"><i data-lucide="calculator" class="mr-2 w-5 h-5"></i><span class="font-bold uppercase tracking-wider text-xs">Die Zukunft</span></div>
+                                    <h3 class="text-white font-bold text-lg leading-tight">Bezirksleiter<br>BSH</h3>
+                                </div>
                             </div>
                         </div>
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 w-12 h-12 bg-bsh-yellow rounded-lg flex items-center justify-center mt-1">
-                                <i data-lucide="check-circle" class="text-white w-6 h-6"></i>
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-xl z-20 border-4 border-yellow-400 w-20 h-20 flex items-center justify-center">
+                            <img src="ressources/Logo.png" alt="BSH Steine" class="w-14 h-auto">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="story" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Meine Geschichte</h2>
+                    <div class="w-20 h-1.5 bg-bsh-yellow mx-auto rounded-full"></div>
+                    <p class="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">Vom Geruch frischen Holzes zur Strategie des Vermögensaufbaus. Ein ungewöhnlicher Weg, der zu Ihrem Vorteil wird.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-slate-50 p-8 rounded-2xl border border-slate-100 hover:shadow-lg transition relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition"><i data-lucide="hammer" class="w-24 h-24"></i></div>
+                        <div class="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center text-white font-bold mb-6">01</div>
+                        <h3 class="text-xl font-bold mb-3">Die Wurzeln</h3>
+                        <p class="text-slate-600 leading-relaxed">Aufgewachsen im väterlichen Betrieb. Von der Pike auf gelernt. Als Vorarbeiter und Projektleiter habe ich Verantwortung übernommen.</p>
+                    </div>
+                    <div class="bg-yellow-50 p-8 rounded-2xl border border-yellow-100 hover:shadow-lg transition relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 text-yellow-600 group-hover:opacity-20 transition"><i data-lucide="trending-up" class="w-24 h-24"></i></div>
+                        <div class="w-12 h-12 bg-bsh-yellow rounded-full flex items-center justify-center text-white font-bold mb-6">02</div>
+                        <h3 class="text-xl font-bold mb-3">Der Wendepunkt</h3>
+                        <p class="text-slate-700 leading-relaxed">Ich wollte nicht mehr nur ausführen, sondern <strong>gestalten</strong>. Banken verstehen Zahlen, Handwerker den Bau. Wer übersetzt?</p>
+                    </div>
+                    <div class="bg-red-50 p-8 rounded-2xl border border-red-100 hover:shadow-lg transition relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 text-red-600 group-hover:opacity-20 transition"><i data-lucide="briefcase" class="w-24 h-24"></i></div>
+                        <div class="w-12 h-12 bg-bsh-red rounded-full flex items-center justify-center text-white font-bold mb-6">03</div>
+                        <h3 class="text-xl font-bold mb-3">Die Mission</h3>
+                        <p class="text-slate-700 leading-relaxed">Ab 2026 Ihr <strong>Bezirksleiter</strong> bei der Bausparkasse Schwäbisch Hall. Finanzstrategie gepaart mit ehrlichem Handwerkswissen.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="usp" class="py-20 bg-slate-900 text-white relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#fbbf24 1px, transparent 1px); background-size: 30px 30px;"></div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="flex flex-col md:flex-row gap-16 items-center">
+                    <div class="md:w-1/2">
+                        <div class="inline-block px-4 py-1 border border-yellow-500 text-yellow-400 rounded-full text-sm font-bold mb-6">MEIN ALLEINSTELLUNGSMERKMAL</div>
+                        <h2 class="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">Der Technical Controller</h2>
+                        <p class="text-xl text-slate-300 mb-8 leading-relaxed">"Die Bank prüft das Geld. Ich prüfe die Substanz."</p>
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 w-12 h-12 bg-bsh-red rounded-lg flex items-center justify-center mt-1"><i data-lucide="check-circle" class="text-white w-6 h-6"></i></div>
+                                <div class="ml-4"><h4 class="text-xl font-bold text-white">Echter Realitäts-Check</h4><p class="text-slate-400 mt-1">Wenn ich eine Modernisierung empfehle, dann weil ich als Zimmerer sehe, dass Ihr Dach in 5 Jahren fällig ist.</p></div>
                             </div>
-                            <div class="ml-4">
-                                <h4 class="text-xl font-bold text-white">Projektleiter-Mindset</h4>
-                                <p class="text-slate-400 mt-1">Ich kann Baupläne lesen, Gewerke koordinieren und Kosten realistisch einschätzen. Ich nehme Ihnen die Angst.</p>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 w-12 h-12 bg-bsh-yellow rounded-lg flex items-center justify-center mt-1"><i data-lucide="check-circle" class="text-white w-6 h-6"></i></div>
+                                <div class="ml-4"><h4 class="text-xl font-bold text-white">Projektleiter-Mindset</h4><p class="text-slate-400 mt-1">Ich kann Baupläne lesen, Gewerke koordinieren und Kosten realistisch einschätzen.</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2 bg-white text-slate-900 p-8 rounded-2xl shadow-2xl transition duration-300 hover:scale-105 border-b-4 border-bsh-yellow">
+                        <h3 class="text-2xl font-bold mb-6 border-b pb-4">Vergleich: Beratung</h3>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Klassische Finanzberatung</div>
+                            <div class="text-sm font-semibold text-red-600 uppercase tracking-wider">Kim Betcher</div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4 items-center py-3 border-b border-slate-100">
+                                <div class="text-slate-600 text-sm">Prüft Bonität & Zinsen</div>
+                                <div class="font-bold text-sm flex items-center"><i data-lucide="check-circle" class="text-red-500 w-4 h-4 mr-2"></i> + Prüft Bausubstanz</div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 items-center py-3 border-b border-slate-100">
+                                <div class="text-slate-600 text-sm">Verkauft Finanzprodukte</div>
+                                <div class="font-bold text-sm flex items-center"><i data-lucide="check-circle" class="text-red-500 w-4 h-4 mr-2"></i> Begleitet "Heimat schaffen"</div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 items-center py-3">
+                                <div class="text-slate-600 text-sm">Produktvermittler</div>
+                                <div class="font-bold text-sm flex items-center"><i data-lucide="check-circle" class="text-red-500 w-4 h-4 mr-2"></i> Unternehmer & Partner</div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <!-- Comparison Card -->
-                <div class="md:w-1/2 bg-white text-slate-900 p-8 rounded-2xl shadow-2xl transition duration-300 hover:scale-105 border-b-4 border-bsh-yellow">
-                    <h3 class="text-2xl font-bold mb-6 border-b pb-4">Vergleich: Beratung</h3>
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Klassische Finanzberatung</div>
-                        <div class="text-sm font-semibold text-red-600 uppercase tracking-wider">Kim Betcher</div>
-                    </div>
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4 items-center py-3 border-b border-slate-100">
-                            <div class="text-slate-600 text-sm">Prüft Bonität & Zinsen</div>
-                            <div class="font-bold text-sm flex items-center"><i data-lucide="check-circle" class="text-red-500 w-4 h-4 mr-2"></i> + Prüft Bausubstanz</div>
+        <section id="ziele" class="py-20 bg-slate-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Meine Vision</h2>
+                    <div class="w-20 h-1.5 bg-bsh-red mx-auto rounded-full"></div>
+                </div>
+                <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg relative overflow-hidden group cursor-pointer transition-all duration-500 hover:shadow-2xl active:shadow-inner active:scale-[0.98]">
+                     <img src="ressources/fuchs_christmas.png" alt="Bausparfuchs Weihnachten" class="absolute -right-4 -bottom-4 w-32 md:w-40 z-10 pointer-events-none drop-shadow-lg transition-transform duration-500 ease-in-out group-hover:scale-[1.6] group-hover:-translate-y-6 group-hover:-translate-x-6 group-active:scale-[1.3] group-active:-translate-y-2 group-active:translate-x-6">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-bl-full -mr-8 -mt-8 z-0"></div>
+                    <div class="relative z-10 pr-0 md:pr-20 pb-4 text-center md:text-left h-auto md:min-h-[250px] flex flex-col justify-center">
+                        <div class="normal-content transition-opacity duration-500 group-hover:opacity-0 group-hover:invisible group-active:opacity-0 group-active:invisible relative flex flex-col justify-center w-full z-20">
+                            <p class="text-xl text-slate-800 italic mb-6">"Ich bin nicht hier für das schnelle Geschäft. Ich baue ein Unternehmen auf, das Bestand hat."</p>
+                            <div class="grid md:grid-cols-3 gap-6 text-left">
+                                <div class="flex flex-col items-center md:items-start text-center md:text-left"><i data-lucide="trending-up" class="text-bsh-red w-8 h-8 mb-2"></i><span class="font-bold">Langfristige Partnerschaft</span><span class="text-sm text-slate-500">In der Region verwurzelt.</span></div>
+                                <div class="flex flex-col items-center md:items-start text-center md:text-left"><i data-lucide="users" class="text-bsh-red w-8 h-8 mb-2"></i><span class="font-bold">Familiäre Werte</span><span class="text-sm text-slate-500">Gemeinsam mit meiner Frau.</span></div>
+                                 <div class="flex flex-col items-center md:items-start text-center md:text-left"><i data-lucide="shield-check" class="text-bsh-red w-8 h-8 mb-2"></i><span class="font-bold">Finanzielle Freiheit</span><span class="text-sm text-slate-500">Durch ehrliche Arbeit.</span></div>
+                            </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4 items-center py-3 border-b border-slate-100">
-                            <div class="text-slate-600 text-sm">Verkauft Finanzprodukte</div>
-                            <div class="font-bold text-sm flex items-center"><i data-lucide="check-circle" class="text-red-500 w-4 h-4 mr-2"></i> Begleitet "Heimat schaffen"</div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4 items-center py-3">
-                            <div class="text-slate-600 text-sm">Produktvermittler</div>
-                            <div class="font-bold text-sm flex items-center"><i data-lucide="check-circle" class="text-red-500 w-4 h-4 mr-2"></i> Unternehmer & Partner</div>
+                        <div class="typewriter opacity-0 invisible group-hover:opacity-100 group-hover:visible group-active:opacity-100 group-active:visible transition-all duration-500 absolute inset-0 flex items-center justify-center md:justify-start px-2 md:px-0 z-30 pointer-events-none">
+                            <h3 class="text-2xl md:text-4xl font-extrabold text-bsh-red leading-tight drop-shadow-sm text-center md:text-left bg-white/95 md:bg-transparent p-4 md:p-0 rounded-xl shadow-md md:shadow-none">Auf diese Steine können Sie bauen</h3>
                         </div>
                     </div>
                 </div>
+                <p class="text-center text-sm text-slate-400 mt-4 md:hidden">(Tippen und halten)</p>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Goals Section (Mobile Optimiert & Interaktiv) -->
-    <section id="ziele" class="py-20 bg-slate-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Meine Vision</h2>
-                <div class="w-20 h-1.5 bg-bsh-red mx-auto rounded-full"></div>
-            </div>
-
-            <!-- Container mit Hover/Active Effekt -->
-            <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg relative overflow-hidden group cursor-pointer transition-all duration-500 hover:shadow-2xl active:shadow-inner active:scale-[0.98]">
-                 
-                 <!-- FUCHS BILD WEIHNACHTLICH -->
-                 <img src="ressources/fuchs_christmas.png" alt="Bausparfuchs Weihnachten" class="absolute -right-4 -bottom-4 w-32 md:w-40 z-10 pointer-events-none drop-shadow-lg transition-transform duration-500 ease-in-out 
-                 group-hover:scale-[1.6] group-hover:-translate-y-6 group-hover:-translate-x-6 
-                 group-active:scale-[1.3] group-active:-translate-y-2 group-active:translate-x-6 md:group-active:scale-[1.6] md:group-active:-translate-y-6 md:group-active:-translate-x-6">
-
-                <div class="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-bl-full -mr-8 -mt-8 z-0"></div>
-                
-                <!-- Layout für Inhalt: Auf Mobile keine festen Paddings rechts, damit Text Platz hat -->
-                <div class="relative z-10 pr-0 md:pr-20 pb-4 text-center md:text-left h-auto md:min-h-[250px] flex flex-col justify-center">
-                    <!-- Normaler Inhalt (Verschwindet beim Hover/Active) -->
-                    <div class="normal-content transition-opacity duration-500 group-hover:opacity-0 group-hover:invisible group-active:opacity-0 group-active:invisible relative flex flex-col justify-center w-full z-20">
-                        <p class="text-xl text-slate-800 italic mb-6">
-                            "Ich bin nicht hier für das schnelle Geschäft. Ich baue ein Unternehmen auf, das Bestand hat."
-                        </p>
-                        <div class="grid md:grid-cols-3 gap-6 text-left">
-                            <div class="flex flex-col items-center md:items-start text-center md:text-left mb-4 md:mb-0">
-                                <i data-lucide="trending-up" class="text-bsh-red w-8 h-8 mb-2"></i>
-                                <span class="font-bold">Langfristige Partnerschaft</span>
-                                <span class="text-sm text-slate-500">In der Region verwurzelt.</span>
-                            </div>
-                            <div class="flex flex-col items-center md:items-start text-center md:text-left mb-4 md:mb-0">
-                                <i data-lucide="users" class="text-bsh-red w-8 h-8 mb-2"></i>
-                                <span class="font-bold">Familiäre Werte</span>
-                                <span class="text-sm text-slate-500">Gemeinsam mit meiner Frau.</span>
-                            </div>
-                             <div class="flex flex-col items-center md:items-start text-center md:text-left">
-                                <i data-lucide="shield-check" class="text-bsh-red w-8 h-8 mb-2"></i>
-                                <span class="font-bold">Finanzielle Freiheit</span>
-                                <span class="text-sm text-slate-500">Durch ehrliche Arbeit.</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Hover Inhalt (Erscheint beim Hover/Active) -->
-                    <div class="typewriter opacity-0 invisible group-hover:opacity-100 group-hover:visible group-active:opacity-100 group-active:visible transition-all duration-500 absolute inset-0 flex items-center justify-center md:justify-start px-2 md:px-0 z-30 pointer-events-none">
-                        <h3 class="text-2xl md:text-4xl font-extrabold text-bsh-red leading-tight drop-shadow-sm text-center md:text-left bg-white/95 md:bg-transparent p-4 md:p-0 rounded-xl shadow-md md:shadow-none">
-                            Auf diese Steine können Sie bauen
-                        </h3>
-                    </div>
-                </div>
-            </div>
-            
-            <p class="text-center text-sm text-slate-400 mt-4 md:hidden">(Tippen und halten, um das Geheimnis zu lüften)</p>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="kontakt" class="py-20 bg-white">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-4xl font-extrabold text-slate-900 mb-6">Lassen Sie uns Ihre Zukunft bauen.</h2>
-            <p class="text-xl text-slate-600 mb-10">
-                Ihr Ansprechpartner für <strong>Oberkochen, Ebnat & Aalen</strong>.
-                <br class="hidden md:block" />
-                Vereinbaren Sie jetzt einen Termin.
-            </p>
-
-            <div class="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                <!-- E-MAIL ersetzt durch GESCHENK ICON -->
-                <a href="mailto:betcherkimg@gmail.com" class="group flex items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-slate-100 hover:border-red-600 hover:shadow-lg transition cursor-pointer">
-                    <!-- ICON: Gift statt Mail -->
-                    <i data-lucide="gift" class="w-8 h-8 text-slate-400 group-hover:text-red-600 transition mb-1 mr-4"></i>
-                    <div class="text-left">
-                        <div class="text-xs text-slate-500 uppercase font-bold tracking-wider">Email schreiben</div>
-                        <div class="font-bold text-slate-900">Kontakt aufnehmen</div>
-                    </div>
-                </a>
-
-                <a href="tel:+4915140411184" class="group flex items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-slate-100 hover:border-yellow-500 hover:shadow-lg transition cursor-pointer">
-                    <i data-lucide="phone" class="w-8 h-8 text-slate-400 group-hover:text-yellow-500 transition mb-1 mr-4"></i>
-                    <div class="text-left">
-                        <div class="text-xs text-slate-500 uppercase font-bold tracking-wider">Anrufen</div>
-                        <div class="font-bold text-slate-900">0151 40411184</div>
-                    </div>
-                </a>
-            </div>
-
-            <div class="mt-12 flex items-center justify-center space-x-2 text-slate-500">
-                <i data-lucide="map-pin" class="w-4 h-4"></i>
-                <span>Unterwegs für Sie in Oberkochen, Ebnat und Aalen.</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-4 md:mb-0">
-                <!-- BSH Logo im Footer -->
-                <div class="bg-white/90 p-2 rounded mb-6 inline-block">
-                    <img src="ressources/sh2.png" alt="Schwäbisch Hall" class="h-8 md:h-10">
-                </div>
-
-                <span class="font-bold text-white text-lg tracking-tight block">KIM BETCHER</span>
-                <p class="text-sm mt-1">Selbstständiger Handelsvertreter der Bausparkasse Schwäbisch Hall AG</p>
-                <!-- Social Media Icons -->
-                <div class="flex space-x-4 mt-4">
-                    <a href="https://www.linkedin.com/in/kim-betcher-5a764b397/" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-bsh-yellow transition" aria-label="LinkedIn">
-                        <i data-lucide="linkedin" class="w-5 h-5"></i>
+        <section id="kontakt" class="py-20 bg-white">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-4xl font-extrabold text-slate-900 mb-6">Lassen Sie uns Ihre Zukunft bauen.</h2>
+                <p class="text-xl text-slate-600 mb-10">Ihr Ansprechpartner für <strong>Oberkochen, Ebnat & Aalen</strong>.<br class="hidden md:block" />Vereinbaren Sie jetzt einen Termin.</p>
+                <div class="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                    <a href="mailto:betcherkimg@gmail.com" class="group flex items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-slate-100 hover:border-red-600 hover:shadow-lg transition cursor-pointer">
+                        <i data-lucide="gift" class="w-8 h-8 text-slate-400 group-hover:text-red-600 transition mb-1 mr-4"></i>
+                        <div class="text-left"><div class="text-xs text-slate-500 uppercase font-bold tracking-wider">Email schreiben</div><div class="font-bold text-slate-900">Kontakt aufnehmen</div></div>
                     </a>
-                    <a href="https://www.instagram.com/kimbetcher/" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-bsh-red transition" aria-label="Instagram">
-                        <i data-lucide="instagram" class="w-5 h-5"></i>
+                    <a href="tel:+4915140411184" class="group flex items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-slate-100 hover:border-yellow-500 hover:shadow-lg transition cursor-pointer">
+                        <i data-lucide="phone" class="w-8 h-8 text-slate-400 group-hover:text-yellow-500 transition mb-1 mr-4"></i>
+                        <div class="text-left"><div class="text-xs text-slate-500 uppercase font-bold tracking-wider">Anrufen</div><div class="font-bold text-slate-900">0151 40411184</div></div>
                     </a>
                 </div>
+                <div class="mt-12 flex items-center justify-center space-x-2 text-slate-500"><i data-lucide="map-pin" class="w-4 h-4"></i><span>Unterwegs für Sie in Oberkochen, Ebnat und Aalen.</span></div>
             </div>
-            <div class="flex space-x-6 text-sm items-center mt-4 md:mt-0">
-                <a href="impressum.html" class="hover:text-white transition">Impressum</a>
-                <a href="datenschutz.html" class="hover:text-white transition">Datenschutz</a>
-                <a href="private-einblicke.html" class="hover:text-white transition">Private Einblicke</a>
-            </div>
-        </div>
-    </footer>
+        </section>
 
+        <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="bg-white/90 p-2 rounded mb-6 inline-block"><img src="ressources/sh2.png" alt="Schwäbisch Hall" class="h-8 md:h-10"></div>
+                    <span class="font-bold text-white text-lg tracking-tight block">KIM BETCHER</span>
+                    <p class="text-sm mt-1">Selbstständiger Handelsvertreter der Bausparkasse Schwäbisch Hall AG</p>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="https://www.linkedin.com/in/kim-betcher-5a764b397/" target="_blank" class="text-slate-400 hover:text-bsh-yellow transition"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                        <a href="https://www.instagram.com/kimbetcher/" target="_blank" class="text-slate-400 hover:text-bsh-red transition"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                    </div>
+                </div>
+                <div class="flex space-x-6 text-sm items-center mt-4 md:mt-0">
+                    <a href="impressum.html" class="hover:text-white transition">Impressum</a>
+                    <a href="datenschutz.html" class="hover:text-white transition">Datenschutz</a>
+                    <a href="private-einblicke.html" class="hover:text-white transition">Private Einblicke</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- HIER IST DIE LOGIK FÜR MUSIK UND NAVIGATION -->
     <script>
         lucide.createIcons();
-        function toggleMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-        }
+        function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
 
-        // Schneeflocken erzeugen
+        // --- SCHNEEFLOCKEN ---
         function createSnowflake() {
-            const snowflake = document.createElement('div');
-            snowflake.classList.add('snowflake');
-            snowflake.innerText = '❄';
-            
-            // Zufällige Position (0-100vw)
-            snowflake.style.left = Math.random() * 100 + 'vw';
-            
-            // Zufällige Dauer
-            const duration = Math.random() * 3 + 5;
-            snowflake.style.animationDuration = duration + 's'; 
-            
-            // Zufällige Opazität & Größe
-            snowflake.style.opacity = Math.random() * 0.5 + 0.3;
-            snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
-            
-            // Animation setzen
-            snowflake.style.animationName = 'fall';
-            snowflake.style.animationTimingFunction = 'linear';
-
-            document.body.appendChild(snowflake);
-
-            // Löschen wenn Animation vorbei
-            setTimeout(() => {
-                snowflake.remove();
-            }, duration * 1000); 
+            const s = document.createElement('div'); s.classList.add('snowflake'); s.innerText = '❄';
+            s.style.left = Math.random() * 100 + 'vw';
+            const dur = Math.random() * 3 + 5; s.style.animationDuration = dur + 's'; 
+            s.style.opacity = Math.random() * 0.5 + 0.3; s.style.fontSize = Math.random() * 10 + 10 + 'px';
+            s.style.animationName = 'fall'; s.style.animationTimingFunction = 'linear';
+            document.body.appendChild(s); setTimeout(() => s.remove(), dur * 1000); 
         }
-
-        // Interval für Schneeflocken
         setInterval(createSnowflake, 200);
 
-        // --- MUSIK LOGIK MIT AGGRESSIVEM AUTOSTART-WORKAROUND ---
+        // --- MUSIK & PERSISTENZ (Gedächtnis für lokale Nutzung) ---
         const audio = document.getElementById('christmas-audio');
         const musicBtn = document.getElementById('music-toggle');
         const strike = document.getElementById('music-strike');
 
-        function updateButtonState(isPlaying) {
-            if (isPlaying) {
-                strike.classList.add('hidden');
-                musicBtn.classList.remove('music-idle');
-                musicBtn.classList.add('music-playing');
+        // Funktion: Zustand speichern bevor Seite neu lädt
+        window.addEventListener('beforeunload', () => {
+            sessionStorage.setItem('musicTime', audio.currentTime);
+            sessionStorage.setItem('musicPlaying', !audio.paused);
+        });
+
+        // Funktion: Zustand wiederherstellen beim Laden
+        window.addEventListener('load', () => {
+            const savedTime = parseFloat(sessionStorage.getItem('musicTime'));
+            const wasPlaying = sessionStorage.getItem('musicPlaying') === 'true';
+            
+            // Zeit wiederherstellen
+            if (!isNaN(savedTime)) { audio.currentTime = savedTime; }
+            
+            // Wenn Musik lief, wieder starten (Browser könnte es blockieren, dann Klick nötig)
+            if (wasPlaying) {
+                audio.play().then(() => updateButtonState(true)).catch(() => {
+                    // Falls Autoplay blockiert wird, warten auf ersten Klick
+                    document.addEventListener('click', () => {
+                        audio.play().then(() => updateButtonState(true));
+                    }, { once: true });
+                });
             } else {
-                strike.classList.remove('hidden');
-                musicBtn.classList.remove('music-playing');
-                musicBtn.classList.add('music-idle');
+                // Versuch Autoplay beim ersten Besuch
+                attemptAutoplay();
             }
+        });
+
+        function attemptAutoplay() {
+            // Versuchen sofort zu spielen
+            audio.play().then(() => updateButtonState(true)).catch(() => {
+                // Wenn nicht, dann beim ersten Klick/Scrollen/Tippen
+                const unlock = () => {
+                    audio.play().then(() => {
+                        updateButtonState(true);
+                        ['click', 'scroll', 'touchstart', 'keydown'].forEach(e => document.removeEventListener(e, unlock));
+                    });
+                };
+                ['click', 'scroll', 'touchstart', 'keydown'].forEach(e => document.addEventListener(e, unlock, { once: true }));
+            });
+        }
+
+        function updateButtonState(playing) {
+            if (playing) { strike.classList.add('hidden'); musicBtn.classList.remove('music-idle'); musicBtn.classList.add('music-playing'); }
+            else { strike.classList.remove('hidden'); musicBtn.classList.remove('music-playing'); musicBtn.classList.add('music-idle'); }
         }
 
         function toggleMusic() {
-            if (audio.paused) {
-                audio.play().then(() => {
-                    updateButtonState(true);
-                }).catch(error => {
-                    console.log("Audio Play prevented:", error);
+            if (audio.paused) audio.play().then(() => updateButtonState(true));
+            else { audio.pause(); updateButtonState(false); }
+        }
+
+        // --- NAVIGATION (SPA LOGIK) ---
+        // Verhindert Neuladen, wenn möglich (funktioniert meist nur auf Servern)
+        document.addEventListener('click', e => {
+            const link = e.target.closest('a');
+            if (link && link.href.startsWith(window.location.origin) && !link.target) {
+                const url = new URL(link.href);
+                if (url.pathname === window.location.pathname && url.hash) return; 
+                e.preventDefault();
+                loadPage(link.href);
+            }
+        });
+
+        async function loadPage(url) {
+            try {
+                const res = await fetch(url);
+                const text = await res.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                
+                // Inhalt austauschen
+                const newContent = doc.getElementById('swappable-content');
+                if(!newContent) { 
+                    // Fallback: Wenn Struktur nicht passt, normal laden (Speicher greift dann)
+                    window.location.href = url; 
+                    return; 
+                }
+                
+                document.getElementById('swappable-content').innerHTML = newContent.innerHTML;
+                document.title = doc.title;
+                history.pushState({}, '', url);
+                window.scrollTo(0,0);
+                lucide.createIcons();
+                
+                // Skripte im neuen Inhalt finden und ausführen
+                const scripts = document.getElementById('swappable-content').querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    if(oldScript.src) newScript.src = oldScript.src;
+                    else newScript.textContent = oldScript.textContent;
+                    document.body.appendChild(newScript);
                 });
-            } else {
-                audio.pause();
-                updateButtonState(false);
+
+            } catch (err) {
+                // Fallback für lokale Nutzung (Speicher greift hier!)
+                console.log("SPA Navigation failed (likely local), falling back to reload.");
+                window.location.href = url; 
             }
         }
-
-        // AUTOSTART FUNKTIONEN
-        
-        // 1. Sofort versuchen (Klappt selten, aber schadet nicht)
-        function attemptImmediatePlay() {
-            audio.play().then(() => {
-                updateButtonState(true);
-                // Wenn es geklappt hat, brauchen wir die Listener nicht mehr
-                removeUnlockListeners();
-            }).catch(e => {
-                console.log("Autoplay blocked, waiting for interaction.");
-            });
-        }
-
-        // 2. Unlock bei erster Interaktion (Der "Trick")
-        function unlockAudio() {
-            audio.play().then(() => {
-                updateButtonState(true);
-                // Erfolgreich gestartet -> Listener entfernen
-                removeUnlockListeners();
-            }).catch(e => {
-                // Könnte passieren, wenn Interaktion zu kurz war
-                console.log("Unlock failed:", e);
-            });
-        }
-
-        function removeUnlockListeners() {
-            document.removeEventListener('click', unlockAudio);
-            document.removeEventListener('scroll', unlockAudio);
-            document.removeEventListener('keydown', unlockAudio);
-            document.removeEventListener('touchstart', unlockAudio);
-            document.removeEventListener('mousemove', unlockAudio);
-        }
-
-        // Listener registrieren (einmalig reicht meist, aber sicher ist sicher)
-        document.addEventListener('click', unlockAudio, { once: true });
-        document.addEventListener('scroll', unlockAudio, { once: true });
-        document.addEventListener('keydown', unlockAudio, { once: true });
-        document.addEventListener('touchstart', unlockAudio, { once: true });
-        document.addEventListener('mousemove', unlockAudio, { once: true });
-
-        // Startversuch beim Laden
-        attemptImmediatePlay();
-
+        window.addEventListener('popstate', () => loadPage(window.location.href));
     </script>
 </body>
 </html>
