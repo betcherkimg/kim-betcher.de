@@ -1,151 +1,332 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Impressum | Kim Betcher</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
         body { font-family: 'Inter', sans-serif; }
+        .bg-bsh-red { background-color: #dc2626; }
+        .bg-bsh-yellow { background-color: #facc15; }
         .text-bsh-red { color: #dc2626; }
-        .hover\:text-bsh-red:hover { color: #dc2626; }
+        
+        /* Schneeflocken */
+        .snowflake { position: fixed; top: -20px; z-index: 9999; pointer-events: none; color: #fff; text-shadow: 0 0 5px rgba(0,0,0,0.1); }
+        @keyframes fall { 0% { transform: translateY(-10vh) translateX(0px) rotate(0deg); opacity: 0.8; } 100% { transform: translateY(110vh) translateX(20px) rotate(360deg); opacity: 0.2; } }
+
+        /* Musik Button */
+        @keyframes pulse-ring { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(220, 38, 38, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
+        @keyframes gentle-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .music-playing { animation: pulse-ring 2s infinite; }
+        .music-idle { animation: gentle-bounce 3s infinite ease-in-out; }
     </style>
 </head>
-<body class="bg-white text-slate-900 selection:bg-yellow-200">
+<body class="text-slate-900 antialiased selection:bg-yellow-200 bg-slate-50 relative">
 
-    <!-- Navigation -->
-    <nav class="border-b border-slate-100 py-4">
-        <div class="max-w-4xl mx-auto px-4 flex justify-between items-center">
-            <a href="index.html" class="font-bold text-xl tracking-tight flex items-center">
-                <!-- Einheitliches Logo wie auf Startseite -->
-                <div class="w-8 h-8 bg-red-600 rounded flex items-center justify-center text-white mr-2 overflow-hidden p-1">
-                    <img src="ressources/Logo.png" alt="Logo" class="w-full h-auto object-contain">
+    <!-- === PERSISTENTE ELEMENTE === -->
+    <div class="fixed top-0 left-0 w-full h-12 z-[55] pointer-events-none bg-[url('ressources/lichterkette.png')] bg-repeat-x bg-[length:auto_100%] drop-shadow-md"></div>
+    
+    <audio id="christmas-audio" loop>
+        <source src="ressources/weihnachtsmusik.mp3" type="audio/mpeg">
+    </audio>
+
+    <button id="music-toggle" onclick="toggleMusic()" class="music-idle fixed bottom-6 left-6 z-[100] bg-bsh-red text-white p-4 rounded-full shadow-2xl border-4 border-yellow-400 hover:scale-110 hover:shadow-red-500/50 transition-all duration-300 group" title="Musik an/aus">
+        <div class="relative">
+            <i data-lucide="music" id="music-icon" class="w-8 h-8"></i>
+            <div id="music-strike" class="absolute top-1/2 left-0 w-full h-1 bg-white rotate-45 transform -translate-y-1/2 hidden"></div>
+        </div>
+    </button>
+
+    <!-- === INHALTS-CONTAINER === -->
+    <div id="swappable-content">
+        
+        <!-- Navigation -->
+        <nav class="bg-white border-b border-slate-100 shadow-sm sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16 items-center">
+                    <a href="index.html" class="flex items-center space-x-2 text-slate-600 hover:text-bsh-red transition">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                        <span class="font-medium">Zurück zur Startseite</span>
+                    </a>
+                    <div class="font-bold text-xl tracking-tight">IMPRESSUM</div>
                 </div>
-                KIM BETCHER
-            </a>
-            <a href="index.html" class="text-sm font-medium text-slate-600 hover:text-bsh-red flex items-center transition">
-                <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Zurück zur Startseite
-            </a>
-        </div>
-    </nav>
+            </div>
+        </nav>
 
-    <!-- Inhalt -->
-    <main class="max-w-3xl mx-auto px-4 py-16">
-        <h1 class="text-3xl font-bold mb-8 text-slate-900">Impressum</h1>
-
-        <div class="space-y-8 text-slate-700">
-            <section>
-                <h2 class="text-xl font-bold mb-2 text-slate-900">Angaben gemäß § 5 TMG</h2>
-                <p>
-                    <strong>Kim Betcher</strong><br>
-                    Selbstständiger Handelsvertreter der Bausparkasse Schwäbisch Hall AG<br>
-                    Am Hohlgraben 13<br>
-                    89518 Heidenheim an der Brenz
-                </p>
-            </section>
-
-            <section>
-                <h2 class="text-xl font-bold mb-2 text-slate-900">Kontakt</h2>
-                <p>
-                    Telefon: 0151 40411184<br>
-                    E-Mail: betcherkimg@gmail.com
-                </p>
-            </section>
-
-            <section>
-                <h2 class="text-xl font-bold mb-2 text-slate-900">Tätigkeitsart und Status</h2>
-                <p class="mb-4">
-                    <strong>Bausparkassenvertreter:</strong><br>
-                    Handelsvertreter nach § 84 HGB für die Bausparkasse Schwäbisch Hall AG.<br>
-                    Vermittlernummer (VO): 640815-7<br>
-                    Gebietsnummer: 01034371-3
-                </p>
-                <p class="mb-4">
-                    <strong>Darlehensvermittler:</strong><br>
-                    Erlaubnis nach § 34c Absatz 1 Satz 1 Nummer 2 GewO (Darlehensvermittler) erteilt durch die Industrie- und Handelskammer Ostwürttemberg.
-                </p>
-                <p>
-                    <strong>Versicherungsvermittler:</strong><br>
-                    Gebundener Versicherungsvertreter nach § 34d Abs. 7 GewO ausschließlich für die R+V Versicherungsgruppe.
-                </p>
-            </section>
-
-            <section>
-                <h2 class="text-xl font-bold mb-2 text-slate-900">Aufsichtsbehörde</h2>
-                <p>
-                    Industrie- und Handelskammer Ostwürttemberg<br>
-                    Ludwig-Erhard-Straße 1<br>
-                    89520 Heidenheim<br>
-                    <a href="https://www.ostwuerttemberg.ihk.de" target="_blank" class="underline hover:text-bsh-red">www.ostwuerttemberg.ihk.de</a>
-                </p>
-            </section>
-
-            <section>
-                <h2 class="text-xl font-bold mb-2 text-slate-900">Berufsrechtliche Regelungen</h2>
-                <ul class="list-disc pl-5 space-y-1">
-                    <li>§ 84 Handelsgesetzbuch (HGB)</li>
-                    <li>§ 34c Gewerbeordnung (GewO)</li>
-                    <li>§ 34d Gewerbeordnung (GewO)</li>
-                    <li>§§ 59-68 Versicherungsvertragsgesetz (VVG)</li>
-                    <li>Verordnung über die Versicherungsvermittlung und -beratung (VersVermV)</li>
-                </ul>
-                <p class="mt-2 text-sm">Die berufsrechtlichen Regelungen können über die vom Bundesministerium der Justiz und von der juris GmbH betriebenen Homepage <a href="https://www.gesetze-im-internet.de" target="_blank" class="underline">www.gesetze-im-internet.de</a> eingesehen und abgerufen werden.</p>
-            </section>
-
-            <section>
-                <h2 class="text-xl font-bold mb-2 text-slate-900">Umsatzsteuer-ID</h2>
-                <p>
-                    Umsatzsteuer-Identifikationsnummer gemäß § 27 a Umsatzsteuergesetz:<br>
-                    <em>[Folgt / Befreit als Bausparkassenvertreter]</em>
-                </p>
-            </section>
-
-            <section>
-                <h2 class="text-xl font-bold mb-2 text-slate-900">Schlichtungsstellen</h2>
-                <p class="mb-2">Zur Beilegung von Streitigkeiten können folgende Schlichtungsstellen angerufen werden:</p>
+        <!-- Main Content -->
+        <main class="max-w-4xl mx-auto px-4 py-12">
+            <div class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-slate-100">
                 
-                <p class="mb-4">
-                    <strong>Für Bausparverträge:</strong><br>
-                    Schlichtungsstelle Bausparen<br>
-                    Klingelhöferstraße 4, 10785 Berlin<br>
-                    <a href="https://www.schlichtungsstelle-bausparen.de" target="_blank" class="underline hover:text-bsh-red">www.schlichtungsstelle-bausparen.de</a>
-                </p>
-                
-                <p class="mb-4">
-                    <strong>Für Versicherungen:</strong><br>
-                    Versicherungsombudsmann e.V.<br>
-                    Postfach 08 06 32, 10006 Berlin<br>
-                    <a href="https://www.versicherungsombudsmann.de" target="_blank" class="underline hover:text-bsh-red">www.versicherungsombudsmann.de</a>
-                </p>
-                
-                <p>
-                    <strong>Hinweis zur Online-Streitbeilegung:</strong><br>
-                    Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: 
-                    <a href="https://ec.europa.eu/consumers/odr" target="_blank" class="underline hover:text-bsh-red">https://ec.europa.eu/consumers/odr</a>.<br>
-                    Unsere E-Mail-Adresse finden Sie oben im Impressum.
-                </p>
-            </section>
+                <h1 class="text-3xl font-bold mb-8 border-b pb-4">Impressum</h1>
 
-            <section>
-                <h2 class="text-xl font-bold mb-2 text-slate-900">Haftungsausschluss</h2>
-                <p class="mb-2"><strong>Haftung für Inhalte</strong><br>
-                Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.</p>
+                <!-- 1. Angaben gemäß § 5 TMG -->
+                <section class="mb-10">
+                    <h2 class="text-xl font-bold mb-4 text-bsh-red flex items-center">
+                        <i data-lucide="user" class="w-5 h-5 mr-2"></i> Angaben gemäß § 5 TMG
+                    </h2>
+                    <p class="mb-2 text-slate-700 font-medium">
+                        Kim Betcher<br>
+                        Bezirksleiter der Bausparkasse Schwäbisch Hall AG
+                    </p>
+                    <p class="text-slate-600 mb-6">
+                        Am Hohlgraben 13<br>
+                        89518 Heidenheim
+                    </p>
+
+                    <h3 class="font-bold mb-2 flex items-center text-slate-800">
+                        <i data-lucide="phone" class="w-4 h-4 mr-2 text-bsh-yellow"></i> Kontakt
+                    </h3>
+                    <p class="text-slate-600 mb-6">
+                        Telefon: +49 151 40411184<br>
+                        E-Mail: betcherkimg@gmail.com
+                    </p>
+
+                    <h3 class="font-bold mb-2 flex items-center text-slate-800">
+                        <i data-lucide="briefcase" class="w-4 h-4 mr-2 text-bsh-yellow"></i> Berufsbezeichnung
+                    </h3>
+                    <p class="text-slate-600">
+                        Selbstständiger Handelsvertreter nach § 84 HGB für die Bausparkasse Schwäbisch Hall AG.
+                    </p>
+                </section>
+
+                <!-- 2. Tätigkeitsart und Register -->
+                <section class="mb-10 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                    <h2 class="text-xl font-bold mb-4 text-bsh-red flex items-center">
+                        <i data-lucide="file-text" class="w-5 h-5 mr-2"></i> Tätigkeitsart & Erlaubnisse
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Bausparen -->
+                        <div>
+                            <strong class="block text-slate-800 mb-1">Bausparkassenvertreter</strong>
+                            <p class="text-slate-600 text-sm">
+                                Handelsvertreter nach § 84 HGB für die Bausparkasse Schwäbisch Hall AG.<br>
+                                Vermittlernummer (VO): 640815-7<br>
+                                Gebietsnummer: 01034371-3
+                            </p>
+                        </div>
+
+                        <!-- Darlehen (§ 34c) -->
+                        <div>
+                            <strong class="block text-slate-800 mb-1">Immobiliardarlehensvermittler (§ 34c GewO)</strong>
+                            <p class="text-slate-600 text-sm">
+                                Erlaubnis nach § 34c Absatz 1 Satz 1 Nummer 2 GewO (Darlehensvermittler) erteilt durch die zuständige Aufsichtsbehörde: Industrie- und Handelskammer Ostwürttemberg.
+                            </p>
+                        </div>
+
+                        <!-- Versicherung (§ 34d) -->
+                        <div>
+                            <strong class="block text-slate-800 mb-1">Versicherungsvermittler (§ 34d GewO)</strong>
+                            <p class="text-slate-600 text-sm">
+                                Gebundener Versicherungsvertreter nach § 34d Abs. 7 GewO ausschließlich für die R+V Versicherungsgruppe.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. Aufsichtsbehörde & Register -->
+                <section class="mb-10">
+                    <h2 class="text-xl font-bold mb-4 text-bsh-red flex items-center">
+                        <i data-lucide="building-2" class="w-5 h-5 mr-2"></i> Aufsichtsbehörde
+                    </h2>
+                    <p class="text-slate-600 mb-6">
+                        Industrie- und Handelskammer Ostwürttemberg<br>
+                        Ludwig-Erhard-Straße 1<br>
+                        89520 Heidenheim<br>
+                        <a href="https://www.ostwuerttemberg.ihk.de" target="_blank" class="underline hover:text-bsh-red">www.ostwuerttemberg.ihk.de</a>
+                    </p>
+
+                    <h3 class="font-bold mb-2 text-slate-800">Berufsrechtliche Regelungen</h3>
+                    <ul class="list-disc pl-5 space-y-1 text-slate-600 text-sm mb-4">
+                        <li>§ 84 Handelsgesetzbuch (HGB)</li>
+                        <li>§ 34c Gewerbeordnung (GewO)</li>
+                        <li>§ 34d Gewerbeordnung (GewO)</li>
+                        <li>§§ 59-68 Versicherungsvertragsgesetz (VVG)</li>
+                        <li>Verordnung über die Versicherungsvermittlung und -beratung (VersVermV)</li>
+                    </ul>
+                    <p class="text-xs text-slate-500">
+                        Die berufsrechtlichen Regelungen können über die vom Bundesministerium der Justiz und von der juris GmbH betriebenen Homepage <a href="https://www.gesetze-im-internet.de" target="_blank" class="underline hover:text-bsh-red">www.gesetze-im-internet.de</a> eingesehen und abgerufen werden.
+                    </p>
+                </section>
+
+                <!-- 4. Streitschlichtung -->
+                <section class="mb-10 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                    <h2 class="text-xl font-bold mb-4 text-bsh-red flex items-center">
+                        <i data-lucide="gavel" class="w-5 h-5 mr-2"></i> Schlichtungsstellen
+                    </h2>
+                    <p class="text-slate-600 text-sm mb-4">
+                        Zur Beilegung von Streitigkeiten können folgende Schlichtungsstellen angerufen werden:
+                    </p>
+                    
+                    <div class="grid md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <strong>Für Bausparverträge:</strong><br>
+                            Schlichtungsstelle Bausparen<br>
+                            Klingelhöferstraße 4, 10785 Berlin<br>
+                            <a href="https://www.schlichtungsstelle-bausparen.de" target="_blank" class="text-bsh-red hover:underline">Website</a>
+                        </div>
+                        <div>
+                            <strong>Für Versicherungen:</strong><br>
+                            Versicherungsombudsmann e.V.<br>
+                            Postfach 08 06 32, 10006 Berlin<br>
+                            <a href="https://www.versicherungsombudsmann.de" target="_blank" class="text-bsh-red hover:underline">Website</a>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 pt-4 border-t border-slate-200 text-sm">
+                        <strong>EU-Streitschlichtung:</strong><br>
+                        Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: 
+                        <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer" class="text-bsh-red hover:underline">https://ec.europa.eu/consumers/odr/</a>.
+                    </div>
+                </section>
+
+                <!-- 5. Haftung & Urheberrecht -->
+                <section class="mb-10">
+                    <h2 class="text-xl font-bold mb-4 text-bsh-red flex items-center">
+                        <i data-lucide="scale" class="w-5 h-5 mr-2"></i> Haftung & Urheberrecht
+                    </h2>
+                    <div class="space-y-4 text-slate-600 text-sm">
+                        <p>
+                            <strong>Haftung für Inhalte:</strong> Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich.
+                        </p>
+                        <p>
+                            <strong>Haftung für Links:</strong> Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.
+                        </p>
+                        <p>
+                            <strong>Urheberrecht:</strong> Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht.
+                        </p>
+                    </div>
+                </section>
+
+                <p class="text-xs text-slate-400 mt-8 pt-4 border-t border-slate-100">
+                    Dieses Impressum gilt auch für unsere Social-Media-Präsenzen (z.B. Instagram, LinkedIn).
+                </p>
+
+            </div>
+        </main>
+
+        <footer class="bg-slate-50 border-t border-slate-100 py-8 mt-12 text-center text-sm text-slate-500">
+            &copy; 2026 Kim Betcher. 
+            <a href="index.html" class="underline hover:text-bsh-red ml-2">Startseite</a>
+            <a href="datenschutz.html" class="underline hover:text-bsh-red ml-2">Datenschutz</a>
+            <a href="private-einblicke.html" class="underline hover:text-bsh-red ml-2">Private Einblicke</a>
+        </footer>
+
+        <!-- Skript Logik für Icons -->
+        <script>
+            lucide.createIcons();
+        </script>
+    </div>
+
+    <!-- PERSISTENTE SKRIPTE (Musik Gedächtnis & Navigation) -->
+    <script>
+        lucide.createIcons();
+
+        // --- SCHNEEFLOCKEN ---
+        function createSnowflake() {
+            const s = document.createElement('div'); s.classList.add('snowflake'); s.innerText = '❄';
+            s.style.left = Math.random() * 100 + 'vw';
+            const dur = Math.random() * 3 + 5; s.style.animationDuration = dur + 's'; 
+            s.style.opacity = Math.random() * 0.5 + 0.3; s.style.fontSize = Math.random() * 10 + 10 + 'px';
+            s.style.animationName = 'fall'; s.style.animationTimingFunction = 'linear';
+            document.body.appendChild(s); setTimeout(() => s.remove(), dur * 1000); 
+        }
+        setInterval(createSnowflake, 200);
+
+        // --- MUSIK & PERSISTENZ ---
+        const audio = document.getElementById('christmas-audio');
+        const musicBtn = document.getElementById('music-toggle');
+        const strike = document.getElementById('music-strike');
+
+        window.addEventListener('beforeunload', () => {
+            sessionStorage.setItem('musicTime', audio.currentTime);
+            sessionStorage.setItem('musicPlaying', !audio.paused);
+        });
+
+        window.addEventListener('load', () => {
+            const savedTime = parseFloat(sessionStorage.getItem('musicTime'));
+            const wasPlaying = sessionStorage.getItem('musicPlaying') === 'true';
+            if (!isNaN(savedTime)) { audio.currentTime = savedTime; }
+            if (wasPlaying) {
+                audio.play().then(() => updateButtonState(true)).catch(() => {
+                    document.addEventListener('click', () => {
+                        audio.play().then(() => updateButtonState(true));
+                    }, { once: true });
+                });
+            } else {
+                attemptAutoplay();
+            }
+        });
+
+        function attemptAutoplay() {
+            audio.play().then(() => updateButtonState(true)).catch(() => {
+                const unlock = () => {
+                    audio.play().then(() => {
+                        updateButtonState(true);
+                        ['click', 'scroll', 'touchstart', 'keydown'].forEach(e => document.removeEventListener(e, unlock));
+                    });
+                };
+                ['click', 'scroll', 'touchstart', 'keydown'].forEach(e => document.addEventListener(e, unlock, { once: true }));
+            });
+        }
+
+        function updateButtonState(playing) {
+            if (playing) { strike.classList.add('hidden'); musicBtn.classList.remove('music-idle'); musicBtn.classList.add('music-playing'); }
+            else { strike.classList.remove('hidden'); musicBtn.classList.remove('music-playing'); musicBtn.classList.add('music-idle'); }
+        }
+
+        function toggleMusic() {
+            if (audio.paused) audio.play().then(() => updateButtonState(true));
+            else { audio.pause(); updateButtonState(false); }
+        }
+
+        // --- NAVIGATION (SPA LOGIK) ---
+        document.addEventListener('click', e => {
+            const link = e.target.closest('a');
+            if (link && link.href.startsWith(window.location.origin) && !link.target) {
+                const url = new URL(link.href);
+                if (url.pathname === window.location.pathname && url.hash) return; 
+                e.preventDefault();
+                loadPage(link.href);
+            }
+        });
+
+        async function loadPage(url) {
+            try {
+                const res = await fetch(url);
+                const text = await res.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
                 
-                <p class="mb-2"><strong>Haftung für Links</strong><br>
-                Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.</p>
-            </section>
-        </div>
-    </main>
+                const newContent = doc.getElementById('swappable-content');
+                if(!newContent) { window.location.href = url; return; }
+                
+                document.getElementById('swappable-content').innerHTML = newContent.innerHTML;
+                document.title = doc.title;
+                history.pushState({}, '', url);
+                window.scrollTo(0,0);
+                lucide.createIcons();
+                
+                const scripts = document.getElementById('swappable-content').querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    if(oldScript.src) newScript.src = oldScript.src;
+                    else newScript.textContent = oldScript.textContent;
+                    document.body.appendChild(newScript);
+                });
 
-    <footer class="bg-slate-50 border-t border-slate-100 py-8 mt-12 text-center text-sm text-slate-500">
-        &copy; 2026 Kim Betcher. 
-        <a href="index.html" class="underline hover:text-bsh-red ml-2">Startseite</a>
-        <a href="datenschutz.html" class="underline hover:text-bsh-red ml-2">Datenschutz</a>
-        <a href="private-einblicke.html" class="underline hover:text-bsh-red ml-2">Private Einblicke</a>
-    </footer>
-
-    <script>lucide.createIcons();</script>
+            } catch (err) {
+                console.log("SPA Navigation failed, falling back to reload.");
+                window.location.href = url; 
+            }
+        }
+        window.addEventListener('popstate', () => loadPage(window.location.href));
+    </script>
 </body>
 </html>
