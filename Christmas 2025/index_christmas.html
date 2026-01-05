@@ -3,16 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kim Betcher | Frohes neues Jahr 2026</title>
-    <meta name="description" content="Bezirksleiter Bausparkasse Schwäbisch Hall für Oberkochen, Ebnat & Aalen. Der Technical Controller für Ihre Finanzierung.">
+    <title>Kim Betcher | Frohes Fest & Guten Rutsch</title>
+    <meta name="description" content="Bezirksleiter Bausparkasse Schwäbisch Hall für Oberkochen, Ebnat & Aalen.">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- Confetti Library für das Feuerwerk -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -20,6 +17,7 @@
         .bg-bsh-yellow { background-color: #facc15; }
         .text-bsh-red { color: #dc2626; }
         .hover\:bg-bsh-red:hover { background-color: #b91c1c; }
+        .font-christmas { font-family: 'Mountains of Christmas', cursive; }
 
         /* Typewriter Effect */
         @media (min-width: 768px) {
@@ -32,28 +30,53 @@
             .group:active .normal-content { opacity: 0; visibility: hidden; }
         }
         @keyframes typing { from { width: 0 } to { width: 100% } }
+
+        /* Schneeflocken */
+        .snowflake { position: fixed; top: -20px; z-index: 9999; pointer-events: none; color: #fff; text-shadow: 0 0 5px rgba(0,0,0,0.1); }
+        @keyframes fall { 0% { transform: translateY(-10vh) translateX(0px) rotate(0deg); opacity: 0.8; } 100% { transform: translateY(110vh) translateX(20px) rotate(360deg); opacity: 0.2; } }
+
+        /* Musik Button */
+        @keyframes pulse-ring { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(220, 38, 38, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
+        @keyframes gentle-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .music-playing { animation: pulse-ring 2s infinite; }
+        .music-idle { animation: gentle-bounce 3s infinite ease-in-out; }
     </style>
 </head>
 <body class="text-slate-900 antialiased selection:bg-yellow-200 bg-white relative">
 
-    <!-- Social Media Buttons (Rechts Unten) -->
-    <div class="fixed bottom-6 right-6 z-[100] flex flex-col space-y-3">
-        <a href="https://www.instagram.com/kimbetcher/" target="_blank" rel="noopener noreferrer" 
-           class="bg-white text-pink-600 p-3 rounded-full shadow-xl border-2 border-pink-100 hover:bg-pink-50 hover:scale-110 hover:border-pink-300 transition-all duration-300 flex items-center justify-center group"
-           title="Instagram">
-            <i data-lucide="instagram" class="w-6 h-6 group-hover:rotate-12 transition-transform"></i>
-        </a>
-        <a href="https://www.linkedin.com/in/kim-betcher-5a764b397/" target="_blank" rel="noopener noreferrer"
-           class="bg-white text-blue-700 p-3 rounded-full shadow-xl border-2 border-blue-100 hover:bg-blue-50 hover:scale-110 hover:border-blue-300 transition-all duration-300 flex items-center justify-center group"
-           title="LinkedIn">
-            <i data-lucide="linkedin" class="w-6 h-6 group-hover:rotate-12 transition-transform"></i>
-        </a>
-    </div>
+    <!-- === PERSISTENTE ELEMENTE === -->
+    <div class="fixed top-0 left-0 w-full h-12 z-[55] pointer-events-none bg-[url('ressources/lichterkette.png')] bg-repeat-x bg-[length:auto_100%] drop-shadow-md"></div>
+    
+    <audio id="christmas-audio" loop>
+        <source src="ressources/weihnachtsmusik.mp3" type="audio/mpeg">
+    </audio>
 
-    <!-- Inhalt Container für SPA Navigation -->
+    <!-- Musik Button Links Unten -->
+    <button id="music-toggle" onclick="toggleMusic()" class="music-idle fixed bottom-6 left-6 z-[100] bg-bsh-red text-white p-4 rounded-full shadow-2xl border-4 border-yellow-400 hover:scale-110 hover:shadow-red-500/50 transition-all duration-300 group" title="Musik an/aus">
+        <div class="relative">
+            <i data-lucide="music" id="music-icon" class="w-8 h-8"></i>
+            <div id="music-strike" class="absolute top-1/2 left-0 w-full h-1 bg-white rotate-45 transform -translate-y-1/2 hidden"></div>
+        </div>
+    </button>
+
+    <!-- === INHALTS-CONTAINER === -->
     <div id="swappable-content">
         
-        <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm mt-0">
+        <!-- SOCIAL MEDIA BUTTONS RECHTS UNTEN (Nur auf Index) -->
+        <div class="fixed bottom-6 right-6 z-[100] flex flex-col space-y-3">
+            <a href="https://www.instagram.com/kimbetcher/" target="_blank" rel="noopener noreferrer" 
+               class="bg-white text-pink-600 p-3 rounded-full shadow-xl border-2 border-pink-100 hover:bg-pink-50 hover:scale-110 hover:border-pink-300 transition-all duration-300 flex items-center justify-center group"
+               title="Instagram">
+                <i data-lucide="instagram" class="w-6 h-6 group-hover:rotate-12 transition-transform"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/kim-betcher-5a764b397/" target="_blank" rel="noopener noreferrer"
+               class="bg-white text-blue-700 p-3 rounded-full shadow-xl border-2 border-blue-100 hover:bg-blue-50 hover:scale-110 hover:border-blue-300 transition-all duration-300 flex items-center justify-center group"
+               title="LinkedIn">
+                <i data-lucide="linkedin" class="w-6 h-6 group-hover:rotate-12 transition-transform"></i>
+            </a>
+        </div>
+
+        <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm mt-4 md:mt-0">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-[60]">
                 <div class="flex justify-between h-20 items-center">
                     <div class="flex items-center space-x-2">
@@ -66,7 +89,7 @@
                         <a href="index.html#story" class="text-slate-600 hover:text-bsh-red font-medium transition">Meine Story</a>
                         <a href="index.html#usp" class="text-slate-600 hover:text-bsh-red font-medium transition">Mein USP</a>
                         <a href="index.html#ziele" class="text-slate-600 hover:text-bsh-red font-medium transition">Ziele</a>
-                        <a href="index.html#kontakt" class="px-5 py-2.5 bg-bsh-red hover:bg-red-700 text-white font-medium rounded-full transition shadow-md">Kontakt aufnehmen</a>
+                        <a href="index.html#kontakt" class="px-5 py-2.5 bg-bsh-red hover:bg-red-700 text-white font-medium rounded-full transition shadow-md border-2 border-yellow-400">Kontakt aufnehmen</a>
                     </div>
                     <div class="md:hidden flex items-center">
                         <button onclick="toggleMenu()" class="text-slate-600 hover:text-bsh-red"><i data-lucide="menu" id="menu-icon" class="w-7 h-7"></i></button>
@@ -88,26 +111,15 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="grid md:grid-cols-2 gap-12 items-center">
                     <div>
-                        <!-- STATUS BADGE -->
-                        <div class="inline-flex items-center space-x-2 bg-green-50 text-green-700 px-4 py-1.5 rounded-full text-sm font-bold mb-2 border border-green-100">
-                            <span class="relative flex h-2 w-2">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-600"></span>
-                            </span>
-                            <span>Ab sofort verfügbar</span>
+                        <div class="inline-flex items-center space-x-2 bg-red-50 text-red-700 px-4 py-1.5 rounded-full text-sm font-bold mb-2 border border-red-100 shadow-sm">
+                            <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-bsh-red"></span></span>
+                            <span>Ab Januar 2026 für Sie verfügbar</span>
                         </div>
-                        
-                        <!-- NEUJAHRSGRUẞ -->
-                        <div class="mb-6">
-                            <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 to-red-600 drop-shadow-sm">
-                                Frohes neues Jahr 2026! 🚀
-                            </span>
-                        </div>
-                        
+                        <div class="mb-6"><p class="font-christmas text-xl md:text-2xl text-green-700 font-bold transform -rotate-2 origin-left drop-shadow-sm">Frohes Fest und guten Rutsch ins neue Jahr! 🎄</p></div>
                         <h1 class="text-5xl md:text-6xl font-extrabold text-slate-900 leading-tight mb-6">Vom Dach <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-yellow-500">in die Bank.</span></h1>
                         <p class="text-xl text-slate-600 mb-8 max-w-lg leading-relaxed">Ich plane nicht nur Ihre Finanzierung – ich verstehe Ihr Haus. Ihr Bezirksleiter für Oberkochen, Ebnat & Aalen.</p>
                         <div class="flex flex-col sm:flex-row gap-4">
-                            <a href="#kontakt" class="px-8 py-4 bg-bsh-red hover:bg-red-700 text-white font-bold rounded-lg text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center">Jetzt Termin vereinbaren <i data-lucide="arrow-right" class="ml-2 w-5 h-5"></i></a>
+                            <a href="#kontakt" class="px-8 py-4 bg-bsh-red hover:bg-red-700 text-white font-bold rounded-lg text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center border-b-4 border-red-800 active:border-b-0 active:translate-y-1">Jetzt Termin vereinbaren <i data-lucide="arrow-right" class="ml-2 w-5 h-5"></i></a>
                         </div>
                     </div>
                     <div class="relative h-[500px] w-full bg-slate-100 rounded-2xl overflow-hidden shadow-2xl group border-4 border-white">
@@ -216,7 +228,7 @@
                     <div class="w-20 h-1.5 bg-bsh-red mx-auto rounded-full"></div>
                 </div>
                 <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg relative overflow-hidden group cursor-pointer transition-all duration-500 hover:shadow-2xl active:shadow-inner active:scale-[0.98]">
-                     <img src="ressources/fuchs klein.png" alt="Bausparfuchs" class="absolute -right-4 -bottom-4 w-32 md:w-40 z-10 pointer-events-none drop-shadow-lg transition-transform duration-500 ease-in-out group-hover:scale-[1.6] group-hover:-translate-y-6 group-hover:-translate-x-6 group-active:scale-[1.3] group-active:-translate-y-2 group-active:translate-x-6">
+                     <img src="ressources/fuchs_christmas.png" alt="Bausparfuchs Weihnachten" class="absolute -right-4 -bottom-4 w-32 md:w-40 z-10 pointer-events-none drop-shadow-lg transition-transform duration-500 ease-in-out group-hover:scale-[1.6] group-hover:-translate-y-6 group-hover:-translate-x-6 group-active:scale-[1.3] group-active:-translate-y-2 group-active:translate-x-6">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-bl-full -mr-8 -mt-8 z-0"></div>
                     <div class="relative z-10 pr-0 md:pr-20 pb-4 text-center md:text-left h-auto md:min-h-[250px] flex flex-col justify-center">
                         <div class="normal-content transition-opacity duration-500 group-hover:opacity-0 group-hover:invisible group-active:opacity-0 group-active:invisible relative flex flex-col justify-center w-full z-20">
@@ -241,8 +253,7 @@
                 <h2 class="text-4xl font-extrabold text-slate-900 mb-6">Lassen Sie uns Ihre Zukunft bauen.</h2>
                 <p class="text-xl text-slate-600 mb-10">Ihr Ansprechpartner für <strong>Oberkochen, Ebnat & Aalen</strong>.<br class="hidden md:block" />Vereinbaren Sie jetzt einen Termin.</p>
                 <div class="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                    <!-- EMAIL BUTTON UPDATE -->
-                    <a href="mailto:kim.betcher@schwaebisch-hall.de" class="group flex items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-slate-100 hover:border-red-600 hover:shadow-lg transition cursor-pointer">
+                    <a href="mailto:betcherkimg@gmail.com" class="group flex items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-slate-100 hover:border-red-600 hover:shadow-lg transition cursor-pointer">
                         <i data-lucide="gift" class="w-8 h-8 text-slate-400 group-hover:text-red-600 transition mb-1 mr-4"></i>
                         <div class="text-left"><div class="text-xs text-slate-500 uppercase font-bold tracking-wider">Email schreiben</div><div class="font-bold text-slate-900">Kontakt aufnehmen</div></div>
                     </a>
@@ -275,40 +286,81 @@
         </footer>
     </div>
 
-    <!-- Navigation Logic (SPA) -->
+    <!-- HIER IST DIE LOGIK FÜR MUSIK UND NAVIGATION -->
     <script>
         lucide.createIcons();
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
 
-        // --- FEUERWERK LOGIK ---
-        window.addEventListener('load', () => {
-            var duration = 3000;
-            var end = Date.now() + duration;
+        // --- SCHNEEFLOCKEN ---
+        function createSnowflake() {
+            const s = document.createElement('div'); s.classList.add('snowflake'); s.innerText = '❄';
+            s.style.left = Math.random() * 100 + 'vw';
+            const dur = Math.random() * 3 + 5; s.style.animationDuration = dur + 's'; 
+            s.style.opacity = Math.random() * 0.5 + 0.3; s.style.fontSize = Math.random() * 10 + 10 + 'px';
+            s.style.animationName = 'fall'; s.style.animationTimingFunction = 'linear';
+            document.body.appendChild(s); setTimeout(() => s.remove(), dur * 1000); 
+        }
+        setInterval(createSnowflake, 200);
 
-            (function frame() {
-                // Konfetti Explosionen
-                confetti({
-                    particleCount: 5,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0 },
-                    colors: ['#ef4444', '#eab308', '#ffffff'] // BSH Farben (Rot, Gelb, Weiß)
-                });
-                confetti({
-                    particleCount: 5,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1 },
-                    colors: ['#ef4444', '#eab308', '#ffffff']
-                });
+        // --- MUSIK & PERSISTENZ (Gedächtnis für lokale Nutzung) ---
+        const audio = document.getElementById('christmas-audio');
+        const musicBtn = document.getElementById('music-toggle');
+        const strike = document.getElementById('music-strike');
 
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
-                }
-            }());
+        // Funktion: Zustand speichern bevor Seite neu lädt
+        window.addEventListener('beforeunload', () => {
+            sessionStorage.setItem('musicTime', audio.currentTime);
+            sessionStorage.setItem('musicPlaying', !audio.paused);
         });
 
-        // Router Logic (SPA)
+        // Funktion: Zustand wiederherstellen beim Laden
+        window.addEventListener('load', () => {
+            const savedTime = parseFloat(sessionStorage.getItem('musicTime'));
+            const wasPlaying = sessionStorage.getItem('musicPlaying') === 'true';
+            
+            // Zeit wiederherstellen
+            if (!isNaN(savedTime)) { audio.currentTime = savedTime; }
+            
+            // Wenn Musik lief, wieder starten (Browser könnte es blockieren, dann Klick nötig)
+            if (wasPlaying) {
+                audio.play().then(() => updateButtonState(true)).catch(() => {
+                    // Falls Autoplay blockiert wird, warten auf ersten Klick
+                    document.addEventListener('click', () => {
+                        audio.play().then(() => updateButtonState(true));
+                    }, { once: true });
+                });
+            } else {
+                // Versuch Autoplay beim ersten Besuch
+                attemptAutoplay();
+            }
+        });
+
+        function attemptAutoplay() {
+            // Versuchen sofort zu spielen
+            audio.play().then(() => updateButtonState(true)).catch(() => {
+                // Wenn nicht, dann beim ersten Klick/Scrollen/Tippen
+                const unlock = () => {
+                    audio.play().then(() => {
+                        updateButtonState(true);
+                        ['click', 'scroll', 'touchstart', 'keydown'].forEach(e => document.removeEventListener(e, unlock));
+                    });
+                };
+                ['click', 'scroll', 'touchstart', 'keydown'].forEach(e => document.addEventListener(e, unlock, { once: true }));
+            });
+        }
+
+        function updateButtonState(playing) {
+            if (playing) { strike.classList.add('hidden'); musicBtn.classList.remove('music-idle'); musicBtn.classList.add('music-playing'); }
+            else { strike.classList.remove('hidden'); musicBtn.classList.remove('music-playing'); musicBtn.classList.add('music-idle'); }
+        }
+
+        function toggleMusic() {
+            if (audio.paused) audio.play().then(() => updateButtonState(true));
+            else { audio.pause(); updateButtonState(false); }
+        }
+
+        // --- NAVIGATION (SPA LOGIK) ---
+        // Verhindert Neuladen, wenn möglich (funktioniert meist nur auf Servern)
         document.addEventListener('click', e => {
             const link = e.target.closest('a');
             if (link && link.href.startsWith(window.location.origin) && !link.target) {
@@ -326,16 +378,21 @@
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(text, 'text/html');
                 
+                // Inhalt austauschen
                 const newContent = doc.getElementById('swappable-content');
-                if(!newContent) { window.location.href = url; return; }
+                if(!newContent) { 
+                    // Fallback: Wenn Struktur nicht passt, normal laden (Speicher greift dann)
+                    window.location.href = url; 
+                    return; 
+                }
                 
                 document.getElementById('swappable-content').innerHTML = newContent.innerHTML;
                 document.title = doc.title;
                 history.pushState({}, '', url);
                 window.scrollTo(0,0);
-                
                 lucide.createIcons();
                 
+                // Skripte im neuen Inhalt finden und ausführen
                 const scripts = document.getElementById('swappable-content').querySelectorAll('script');
                 scripts.forEach(oldScript => {
                     const newScript = document.createElement('script');
@@ -345,7 +402,8 @@
                 });
 
             } catch (err) {
-                console.error("Navigation failed", err);
+                // Fallback für lokale Nutzung (Speicher greift hier!)
+                console.log("SPA Navigation failed (likely local), falling back to reload.");
                 window.location.href = url; 
             }
         }

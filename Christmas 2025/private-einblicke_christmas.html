@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -15,12 +16,30 @@
         .bg-bsh-yellow { background-color: #facc15; }
         .text-bsh-red { color: #dc2626; }
         
-        /* Galerie Animationen */
         .gallery-overlay { transition: opacity 0.3s ease; }
         .gallery-image { transition: transform 0.3s ease; }
+
+        /* Schneeflocken */
+        .snowflake { position: fixed; top: -20px; z-index: 9999; pointer-events: none; color: #fff; text-shadow: 0 0 5px rgba(0,0,0,0.1); }
+        @keyframes fall { 0% { transform: translateY(-10vh) translateX(0px) rotate(0deg); opacity: 0.8; } 100% { transform: translateY(110vh) translateX(20px) rotate(360deg); opacity: 0.2; } }
+
+        /* Musik Button */
+        @keyframes pulse-ring { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(220, 38, 38, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
+        @keyframes gentle-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .music-playing { animation: pulse-ring 2s infinite; }
+        .music-idle { animation: gentle-bounce 3s infinite ease-in-out; }
     </style>
 </head>
 <body class="text-slate-900 antialiased selection:bg-yellow-200 bg-slate-50 relative">
+
+    <!-- === PERSISTENTE ELEMENTE === -->
+    <div class="fixed top-0 left-0 w-full h-12 z-[55] pointer-events-none bg-[url('ressources/lichterkette.png')] bg-repeat-x bg-[length:auto_100%] drop-shadow-md"></div>
+    <audio id="christmas-audio" loop>
+        <source src="ressources/weihnachtsmusik.mp3" type="audio/mpeg">
+    </audio>
+    <button id="music-toggle" onclick="toggleMusic()" class="music-idle fixed bottom-6 left-6 z-[100] bg-bsh-red text-white p-4 rounded-full shadow-2xl border-4 border-yellow-400 hover:scale-110 hover:shadow-red-500/50 transition-all duration-300 group" title="Musik an/aus">
+        <div class="relative"><i data-lucide="music" id="music-icon" class="w-8 h-8"></i><div id="music-strike" class="absolute top-1/2 left-0 w-full h-1 bg-white rotate-45 transform -translate-y-1/2 hidden"></div></div>
+    </button>
 
     <!-- === INHALTS-CONTAINER === -->
     <div id="swappable-content">
@@ -51,7 +70,6 @@
                     <div class="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-bold mb-4">PRIVAT</div>
                     <h2 class="text-3xl font-bold mb-6">Wer ich bin</h2>
                     <p class="text-slate-700 leading-relaxed mb-6">Ich bin 28 Jahre alt, komme aus Heidenheim und bin glücklich verheiratet. Wenn ich nicht gerade arbeite, brauche ich einen Ausgleich, der mich erdet.</p>
-                    
                     <div class="space-y-4">
                         <div onclick="openGallery('mountain', 0)" class="flex items-center p-4 bg-white rounded-xl shadow-sm border border-slate-100 cursor-pointer hover:shadow-md hover:border-bsh-red transition group">
                             <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 mr-4 group-hover:bg-green-200 transition"><i data-lucide="mountain" class="w-5 h-5"></i></div>
@@ -164,11 +182,77 @@
         </script>
     </div>
 
-    <!-- Navigation Logic (SPA) -->
+    <!-- HIER IST DIE LOGIK FÜR MUSIK UND NAVIGATION (GLEICH WIE INDEX.HTML) -->
     <script>
         lucide.createIcons();
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
 
+        // --- SCHNEEFLOCKEN ---
+        function createSnowflake() {
+            const s = document.createElement('div'); s.classList.add('snowflake'); s.innerText = '❄';
+            s.style.left = Math.random() * 100 + 'vw';
+            const dur = Math.random() * 3 + 5; s.style.animationDuration = dur + 's'; 
+            s.style.opacity = Math.random() * 0.5 + 0.3; s.style.fontSize = Math.random() * 10 + 10 + 'px';
+            s.style.animationName = 'fall'; s.style.animationTimingFunction = 'linear';
+            document.body.appendChild(s); setTimeout(() => s.remove(), dur * 1000); 
+        }
+        setInterval(createSnowflake, 200);
+
+        // --- MUSIK & PERSISTENZ ---
+        const audio = document.getElementById('christmas-audio');
+        const musicBtn = document.getElementById('music-toggle');
+        const strike = document.getElementById('music-strike');
+
+        // Funktion: Zustand speichern bevor Seite neu lädt
+        window.addEventListener('beforeunload', () => {
+            sessionStorage.setItem('musicTime', audio.currentTime);
+            sessionStorage.setItem('musicPlaying', !audio.paused);
+        });
+
+        // Funktion: Zustand wiederherstellen beim Laden
+        window.addEventListener('load', () => {
+            const savedTime = parseFloat(sessionStorage.getItem('musicTime'));
+            const wasPlaying = sessionStorage.getItem('musicPlaying') === 'true';
+            
+            // Zeit wiederherstellen
+            if (!isNaN(savedTime)) { audio.currentTime = savedTime; }
+            
+            // Wenn Musik lief, wieder starten
+            if (wasPlaying) {
+                audio.play().then(() => updateButtonState(true)).catch(() => {
+                    document.addEventListener('click', () => {
+                        audio.play().then(() => updateButtonState(true));
+                    }, { once: true });
+                });
+            } else {
+                // Versuch Autoplay beim ersten Besuch (wenn nichts gespeichert war)
+                attemptAutoplay();
+            }
+        });
+
+        function attemptAutoplay() {
+            audio.play().then(() => updateButtonState(true)).catch(() => {
+                const unlock = () => {
+                    audio.play().then(() => {
+                        updateButtonState(true);
+                        ['click', 'scroll', 'touchstart', 'keydown'].forEach(e => document.removeEventListener(e, unlock));
+                    });
+                };
+                ['click', 'scroll', 'touchstart', 'keydown'].forEach(e => document.addEventListener(e, unlock, { once: true }));
+            });
+        }
+
+        function updateButtonState(playing) {
+            if (playing) { strike.classList.add('hidden'); musicBtn.classList.remove('music-idle'); musicBtn.classList.add('music-playing'); }
+            else { strike.classList.remove('hidden'); musicBtn.classList.remove('music-playing'); musicBtn.classList.add('music-idle'); }
+        }
+
+        function toggleMusic() {
+            if (audio.paused) audio.play().then(() => updateButtonState(true));
+            else { audio.pause(); updateButtonState(false); }
+        }
+
+        // --- NAVIGATION (SPA LOGIK) ---
         document.addEventListener('click', e => {
             const link = e.target.closest('a');
             if (link && link.href.startsWith(window.location.origin) && !link.target) {
@@ -193,9 +277,9 @@
                 document.title = doc.title;
                 history.pushState({}, '', url);
                 window.scrollTo(0,0);
-                
                 lucide.createIcons();
                 
+                // Skripte im neuen Inhalt finden und ausführen
                 const scripts = document.getElementById('swappable-content').querySelectorAll('script');
                 scripts.forEach(oldScript => {
                     const newScript = document.createElement('script');
@@ -205,7 +289,8 @@
                 });
 
             } catch (err) {
-                console.error("Navigation failed", err);
+                // Fallback für lokale Nutzung (Speicher greift hier!)
+                console.log("SPA Navigation failed, falling back to reload.");
                 window.location.href = url; 
             }
         }

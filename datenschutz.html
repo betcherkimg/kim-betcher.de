@@ -8,7 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -29,24 +28,9 @@
 </head>
 <body class="text-slate-900 antialiased selection:bg-yellow-200 bg-slate-50 relative">
 
-    <!-- === PERSISTENTE ELEMENTE === -->
-    <div class="fixed top-0 left-0 w-full h-12 z-[55] pointer-events-none bg-[url('ressources/lichterkette.png')] bg-repeat-x bg-[length:auto_100%] drop-shadow-md"></div>
-    
-    <audio id="christmas-audio" loop>
-        <source src="ressources/weihnachtsmusik.mp3" type="audio/mpeg">
-    </audio>
-
-    <button id="music-toggle" onclick="toggleMusic()" class="music-idle fixed bottom-6 left-6 z-[100] bg-bsh-red text-white p-4 rounded-full shadow-2xl border-4 border-yellow-400 hover:scale-110 hover:shadow-red-500/50 transition-all duration-300 group" title="Musik an/aus">
-        <div class="relative">
-            <i data-lucide="music" id="music-icon" class="w-8 h-8"></i>
-            <div id="music-strike" class="absolute top-1/2 left-0 w-full h-1 bg-white rotate-45 transform -translate-y-1/2 hidden"></div>
-        </div>
-    </button>
-
     <!-- === INHALTS-CONTAINER === -->
     <div id="swappable-content">
         
-        <!-- Navigation -->
         <nav class="bg-white border-b border-slate-100 shadow-sm sticky top-0 z-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16 items-center">
@@ -59,169 +43,55 @@
             </div>
         </nav>
 
-        <!-- Main Content -->
         <main class="max-w-4xl mx-auto px-4 py-12">
             <div class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-slate-100">
                 
                 <h1 class="text-3xl font-bold mb-8 border-b pb-4">Datenschutzerklärung</h1>
 
-                <!-- 1. Datenschutz auf einen Blick -->
                 <section class="mb-10">
-                    <h2 class="text-xl font-bold mb-4 text-bsh-red flex items-center">
-                        <i data-lucide="shield" class="w-5 h-5 mr-2"></i> 1. Datenschutz auf einen Blick
-                    </h2>
-                    <p class="mb-4 text-slate-600">
-                        <strong>Allgemeine Hinweise</strong><br>
-                        Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen. Personenbezogene Daten sind alle Daten, mit denen Sie persönlich identifiziert werden können.
-                    </p>
-                    <p class="mb-4 text-slate-600">
-                        <strong>Datenerfassung auf dieser Website</strong><br>
-                        Die Datenverarbeitung auf dieser Website erfolgt durch den Websitebetreiber. Dessen Kontaktdaten können Sie dem Impressum dieser Website entnehmen.<br><br>
-                        <strong>Wie erfassen wir Ihre Daten?</strong><br>
-                        Ihre Daten werden zum einen dadurch erhoben, dass Sie uns diese mitteilen (z.B. per E-Mail). Andere Daten werden automatisch beim Besuch der Website durch unsere IT-Systeme erfasst (z.B. Internetbrowser, Betriebssystem oder Uhrzeit des Seitenaufrufs).
-                    </p>
+                    <h2 class="text-xl font-bold mb-4 text-bsh-red flex items-center"><i data-lucide="shield" class="w-5 h-5 mr-2"></i> 1. Datenschutz auf einen Blick</h2>
+                    <p class="mb-4 text-slate-600"><strong>Allgemeine Hinweise</strong><br>Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen. Personenbezogene Daten sind alle Daten, mit denen Sie persönlich identifiziert werden können.</p>
+                    <p class="mb-4 text-slate-600"><strong>Datenerfassung auf dieser Website</strong><br>Die Datenverarbeitung auf dieser Website erfolgt durch den Websitebetreiber. Dessen Kontaktdaten können Sie dem Impressum dieser Website entnehmen.<br><br><strong>Wie erfassen wir Ihre Daten?</strong><br>Ihre Daten werden zum einen dadurch erhoben, dass Sie uns diese mitteilen (z.B. per E-Mail). Andere Daten werden automatisch beim Besuch der Website durch unsere IT-Systeme erfasst (z.B. Internetbrowser, Betriebssystem oder Uhrzeit des Seitenaufrufs).</p>
                 </section>
 
-                <!-- 2. Hosting -->
                 <section class="mb-10 bg-slate-50 p-6 rounded-xl border border-slate-200">
-                    <h2 class="text-xl font-bold mb-4 text-bsh-red flex items-center">
-                        <i data-lucide="server" class="w-5 h-5 mr-2"></i> 2. Hosting
-                    </h2>
-                    <p class="mb-4 text-slate-700">
-                        Wir hosten die Inhalte unserer Website bei folgendem Anbieter:
-                    </p>
+                    <h2 class="text-xl font-bold mb-4 text-bsh-red flex items-center"><i data-lucide="server" class="w-5 h-5 mr-2"></i> 2. Hosting</h2>
+                    <p class="mb-4 text-slate-700">Wir hosten die Inhalte unserer Website bei folgendem Anbieter:</p>
                     <h3 class="font-bold mb-2">GitHub Pages</h3>
-                    <p class="text-slate-600 mb-4">
-                        Anbieter ist die GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA (nachfolgend GitHub).<br><br>
-                        Wenn Sie unsere Website besuchen, erfasst GitHub Ihre IP-Adresse sowie Informationen über den verwendeten Browser und das Betriebssystem, um die Sicherheit und Stabilität der Website zu gewährleisten.<br><br>
-                        Die Verwendung von GitHub Pages erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Wir haben ein berechtigtes Interesse an einer möglichst zuverlässigen Darstellung unserer Website. Sofern eine entsprechende Einwilligung abgefragt wurde, erfolgt die Verarbeitung ausschließlich auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO; die Einwilligung ist jederzeit widerrufbar.<br><br>
-                        GitHub verfügt über eine Zertifizierung nach dem „EU-US Data Privacy Framework“ (DPF). Das DPF ist ein Übereinkommen zwischen der Europäischen Union und den USA, der die Einhaltung europäischer Datenschutzstandards bei Datenverarbeitungen in den USA gewährleisten soll. Jedes nach dem DPF zertifizierte Unternehmen verpflichtet sich, diese Datenschutzstandards einzuhalten.
-                    </p>
+                    <p class="text-slate-600 mb-4">Anbieter ist die GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA (nachfolgend GitHub).<br><br>Wenn Sie unsere Website besuchen, erfasst GitHub Ihre IP-Adresse sowie Informationen über den verwendeten Browser und das Betriebssystem, um die Sicherheit und Stabilität der Website zu gewährleisten.<br><br>Die Verwendung von GitHub Pages erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Wir haben ein berechtigtes Interesse an einer möglichst zuverlässigen Darstellung unserer Website. Sofern eine entsprechende Einwilligung abgefragt wurde, erfolgt die Verarbeitung ausschließlich auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO; die Einwilligung ist jederzeit widerrufbar.<br><br>GitHub verfügt über eine Zertifizierung nach dem „EU-US Data Privacy Framework“ (DPF). Das DPF ist ein Übereinkommen zwischen der Europäischen Union und den USA, der die Einhaltung europäischer Datenschutzstandards bei Datenverarbeitungen in den USA gewährleisten soll. Jedes nach dem DPF zertifizierte Unternehmen verpflichtet sich, diese Datenschutzstandards einzuhalten.</p>
                 </section>
 
-                <!-- 3. Allgemeine Hinweise -->
                 <section class="mb-10">
-                    <h2 class="text-xl font-bold mb-4 text-bsh-red flex items-center">
-                        <i data-lucide="info" class="w-5 h-5 mr-2"></i> 3. Allgemeine Hinweise
-                    </h2>
-                    <p class="mb-4 text-slate-600">
-                        <strong>Datenschutz</strong><br>
-                        Die Betreiber dieser Seiten nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Wir behandeln Ihre personenbezogenen Daten vertraulich und entsprechend der gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerklärung.
-                    </p>
-                    <p class="mb-4 text-slate-600">
-                        <strong>Hinweis zur verantwortlichen Stelle</strong><br>
-                        Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:<br><br>
-                        Kim Betcher<br>
-                        Bezirksleiter Bausparkasse Schwäbisch Hall<br>
-                        Schubartweg 12<br>
-                        89522 Heidenheim<br><br>
-                        Telefon: +49 151 40411184<br>
-                        E-Mail: betcherkimg@gmail.com
-                    </p>
-                    <p class="mb-4 text-slate-600">
-                        <strong>SSL- bzw. TLS-Verschlüsselung</strong><br>
-                        Diese Seite nutzt aus Sicherheitsgründen und zum Schutz der Übertragung vertraulicher Inhalte eine SSL- bzw. TLS-Verschlüsselung. Eine verschlüsselte Verbindung erkennen Sie daran, dass die Adresszeile des Browsers von „http://“ auf „https://“ wechselt und an dem Schloss-Symbol in Ihrer Browserzeile.
-                    </p>
+                    <h2 class="text-xl font-bold mb-4 text-bsh-red flex items-center"><i data-lucide="info" class="w-5 h-5 mr-2"></i> 3. Allgemeine Hinweise</h2>
+                    <p class="mb-4 text-slate-600"><strong>Datenschutz</strong><br>Die Betreiber dieser Seiten nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Wir behandeln Ihre personenbezogenen Daten vertraulich und entsprechend der gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerklärung.</p>
+                    <!-- E-MAIL UPDATE -->
+                    <p class="mb-4 text-slate-600"><strong>Hinweis zur verantwortlichen Stelle</strong><br>Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:<br><br>Kim Betcher<br>Bezirksleiter Bausparkasse Schwäbisch Hall<br>Am Hohlgraben 13<br>89518 Heidenheim<br><br>Telefon: +49 151 40411184<br>E-Mail: kim.betcher@schwaebisch-hall.de</p>
+                    <p class="mb-4 text-slate-600"><strong>SSL- bzw. TLS-Verschlüsselung</strong><br>Diese Seite nutzt aus Sicherheitsgründen und zum Schutz der Übertragung vertraulicher Inhalte eine SSL- bzw. TLS-Verschlüsselung. Eine verschlüsselte Verbindung erkennen Sie daran, dass die Adresszeile des Browsers von „http://“ auf „https://“ wechselt und an dem Schloss-Symbol in Ihrer Browserzeile.</p>
                 </section>
 
-                <!-- 4. Datenerfassung -->
                 <section class="mb-10">
-                    <h2 class="text-xl font-bold mb-4 text-bsh-red flex items-center">
-                        <i data-lucide="database" class="w-5 h-5 mr-2"></i> 4. Datenerfassung auf dieser Website
-                    </h2>
-                    <p class="mb-4 text-slate-600">
-                        <strong>Kontaktanfragen (E-Mail, Telefon)</strong><br>
-                        Wenn Sie uns per E-Mail oder Telefon kontaktieren, wird Ihre Anfrage inklusive aller daraus hervorgehenden personenbezogenen Daten (Name, Anfrage) zum Zwecke der Bearbeitung Ihres Anliegens bei uns gespeichert und verarbeitet. Diese Daten geben wir nicht ohne Ihre Einwilligung weiter.
-                    </p>
-                    <p class="text-slate-600">
-                        <strong>Speicherdauer</strong><br>
-                        Die von Ihnen an uns per Kontaktanfragen übersandten Daten verbleiben bei uns, bis Sie uns zur Löschung auffordern, Ihre Einwilligung zur Speicherung widerrufen oder der Zweck für die Datenspeicherung entfällt (z. B. nach abgeschlossener Bearbeitung Ihres Anliegens). Zwingende gesetzliche Bestimmungen – insbesondere gesetzliche Aufbewahrungsfristen – bleiben unberührt.
-                    </p>
+                    <h2 class="text-xl font-bold mb-4 text-bsh-red flex items-center"><i data-lucide="database" class="w-5 h-5 mr-2"></i> 4. Datenerfassung auf dieser Website</h2>
+                    <p class="mb-4 text-slate-600"><strong>Kontaktanfragen (E-Mail, Telefon)</strong><br>Wenn Sie uns per E-Mail oder Telefon kontaktieren, wird Ihre Anfrage inklusive aller daraus hervorgehenden personenbezogenen Daten (Name, Anfrage) zum Zwecke der Bearbeitung Ihres Anliegens bei uns gespeichert und verarbeitet. Diese Daten geben wir nicht ohne Ihre Einwilligung weiter.</p>
+                    <p class="text-slate-600"><strong>Speicherdauer</strong><br>Die von Ihnen an uns per Kontaktanfragen übersandten Daten verbleiben bei uns, bis Sie uns zur Löschung auffordern, Ihre Einwilligung zur Speicherung widerrufen oder der Zweck für die Datenspeicherung entfällt (z. B. nach abgeschlossener Bearbeitung Ihres Anliegens). Zwingende gesetzliche Bestimmungen – insbesondere gesetzliche Aufbewahrungsfristen – bleiben unberührt.</p>
                 </section>
 
-                <p class="text-xs text-slate-400 mt-8 pt-4 border-t border-slate-100">
-                    Stand: Dezember 2025
-                </p>
+                <p class="text-xs text-slate-400 mt-8 pt-4 border-t border-slate-100">Stand: Dezember 2025</p>
 
             </div>
         </main>
 
         <footer class="bg-slate-50 border-t border-slate-100 py-8 mt-12 text-center text-sm text-slate-500">
-            &copy; 2026 Kim Betcher. 
-            <a href="index.html" class="underline hover:text-bsh-red ml-2">Startseite</a>
-            <a href="impressum.html" class="underline hover:text-bsh-red ml-2">Impressum</a>
-            <a href="private-einblicke.html" class="underline hover:text-bsh-red ml-2">Private Einblicke</a>
+            &copy; 2026 Kim Betcher. <a href="index.html" class="underline hover:text-bsh-red ml-2">Startseite</a> <a href="impressum.html" class="underline hover:text-bsh-red ml-2">Impressum</a> <a href="private-einblicke.html" class="underline hover:text-bsh-red ml-2">Private Einblicke</a>
         </footer>
 
-        <!-- Skript Logik für Icons -->
-        <script>
-            lucide.createIcons();
-        </script>
+        <script>lucide.createIcons();</script>
     </div>
 
-    <!-- PERSISTENTE SKRIPTE (Musik Gedächtnis & Navigation) -->
+    <!-- Navigation Logic (SPA) -->
     <script>
         lucide.createIcons();
+        function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
 
-        // --- SCHNEEFLOCKEN ---
-        function createSnowflake() {
-            const s = document.createElement('div'); s.classList.add('snowflake'); s.innerText = '❄';
-            s.style.left = Math.random() * 100 + 'vw';
-            const dur = Math.random() * 3 + 5; s.style.animationDuration = dur + 's'; 
-            s.style.opacity = Math.random() * 0.5 + 0.3; s.style.fontSize = Math.random() * 10 + 10 + 'px';
-            s.style.animationName = 'fall'; s.style.animationTimingFunction = 'linear';
-            document.body.appendChild(s); setTimeout(() => s.remove(), dur * 1000); 
-        }
-        setInterval(createSnowflake, 200);
-
-        // --- MUSIK & PERSISTENZ ---
-        const audio = document.getElementById('christmas-audio');
-        const musicBtn = document.getElementById('music-toggle');
-        const strike = document.getElementById('music-strike');
-
-        window.addEventListener('beforeunload', () => {
-            sessionStorage.setItem('musicTime', audio.currentTime);
-            sessionStorage.setItem('musicPlaying', !audio.paused);
-        });
-
-        window.addEventListener('load', () => {
-            const savedTime = parseFloat(sessionStorage.getItem('musicTime'));
-            const wasPlaying = sessionStorage.getItem('musicPlaying') === 'true';
-            if (!isNaN(savedTime)) { audio.currentTime = savedTime; }
-            if (wasPlaying) {
-                audio.play().then(() => updateButtonState(true)).catch(() => {
-                    document.addEventListener('click', () => {
-                        audio.play().then(() => updateButtonState(true));
-                    }, { once: true });
-                });
-            } else {
-                attemptAutoplay();
-            }
-        });
-
-        function attemptAutoplay() {
-            audio.play().then(() => updateButtonState(true)).catch(() => {
-                const unlock = () => {
-                    audio.play().then(() => {
-                        updateButtonState(true);
-                        ['click', 'scroll', 'touchstart', 'keydown'].forEach(e => document.removeEventListener(e, unlock));
-                    });
-                };
-                ['click', 'scroll', 'touchstart', 'keydown'].forEach(e => document.addEventListener(e, unlock, { once: true }));
-            });
-        }
-
-        function updateButtonState(playing) {
-            if (playing) { strike.classList.add('hidden'); musicBtn.classList.remove('music-idle'); musicBtn.classList.add('music-playing'); }
-            else { strike.classList.remove('hidden'); musicBtn.classList.remove('music-playing'); musicBtn.classList.add('music-idle'); }
-        }
-
-        function toggleMusic() {
-            if (audio.paused) audio.play().then(() => updateButtonState(true));
-            else { audio.pause(); updateButtonState(false); }
-        }
-
-        // --- NAVIGATION (SPA LOGIK) ---
         document.addEventListener('click', e => {
             const link = e.target.closest('a');
             if (link && link.href.startsWith(window.location.origin) && !link.target) {
@@ -246,6 +116,7 @@
                 document.title = doc.title;
                 history.pushState({}, '', url);
                 window.scrollTo(0,0);
+                
                 lucide.createIcons();
                 
                 const scripts = document.getElementById('swappable-content').querySelectorAll('script');
@@ -257,7 +128,7 @@
                 });
 
             } catch (err) {
-                console.log("SPA Navigation failed, falling back to reload.");
+                console.error("Navigation failed", err);
                 window.location.href = url; 
             }
         }
