@@ -3,15 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kim Betcher | Frohes neues Jahr 2026</title>
+    <title>Kim Betcher | Vom Dach in die Bank</title>
     <meta name="description" content="Bezirksleiter Bausparkasse Schwäbisch Hall für Oberkochen, Ebnat & Aalen. Der Technical Controller für Ihre Finanzierung.">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- Confetti Library für das Feuerwerk -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
@@ -89,7 +85,7 @@
                 <div class="grid md:grid-cols-2 gap-12 items-center">
                     <div>
                         <!-- STATUS BADGE -->
-                        <div class="inline-flex items-center space-x-2 bg-green-50 text-green-700 px-4 py-1.5 rounded-full text-sm font-bold mb-2 border border-green-100">
+                        <div class="inline-flex items-center space-x-2 bg-green-50 text-green-700 px-4 py-1.5 rounded-full text-sm font-bold mb-6 border border-green-100">
                             <span class="relative flex h-2 w-2">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-2 w-2 bg-green-600"></span>
@@ -97,15 +93,9 @@
                             <span>Ab sofort verfügbar</span>
                         </div>
                         
-                        <!-- NEUJAHRSGRUẞ -->
-                        <div class="mb-6">
-                            <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 to-red-600 drop-shadow-sm">
-                                Frohes neues Jahr 2026! 🚀
-                            </span>
-                        </div>
-                        
                         <h1 class="text-5xl md:text-6xl font-extrabold text-slate-900 leading-tight mb-6">Vom Dach <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-yellow-500">in die Bank.</span></h1>
                         <p class="text-xl text-slate-600 mb-8 max-w-lg leading-relaxed">Ich plane nicht nur Ihre Finanzierung – ich verstehe Ihr Haus. Ihr Bezirksleiter für Oberkochen, Ebnat & Aalen.</p>
+                        
                         <div class="flex flex-col sm:flex-row gap-4">
                             <a href="#kontakt" class="px-8 py-4 bg-bsh-red hover:bg-red-700 text-white font-bold rounded-lg text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center">Jetzt Termin vereinbaren <i data-lucide="arrow-right" class="ml-2 w-5 h-5"></i></a>
                         </div>
@@ -240,17 +230,34 @@
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h2 class="text-4xl font-extrabold text-slate-900 mb-6">Lassen Sie uns Ihre Zukunft bauen.</h2>
                 <p class="text-xl text-slate-600 mb-10">Ihr Ansprechpartner für <strong>Oberkochen, Ebnat & Aalen</strong>.<br class="hidden md:block" />Vereinbaren Sie jetzt einen Termin.</p>
-                <div class="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                    <!-- EMAIL BUTTON UPDATE -->
+                <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                    <!-- EMAIL BUTTON -->
                     <a href="mailto:kim.betcher@schwaebisch-hall.de" class="group flex items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-slate-100 hover:border-red-600 hover:shadow-lg transition cursor-pointer">
-                        <i data-lucide="gift" class="w-8 h-8 text-slate-400 group-hover:text-red-600 transition mb-1 mr-4"></i>
-                        <div class="text-left"><div class="text-xs text-slate-500 uppercase font-bold tracking-wider">Email schreiben</div><div class="font-bold text-slate-900">Kontakt aufnehmen</div></div>
+                        <i data-lucide="mail" class="w-6 h-6 text-slate-400 group-hover:text-red-600 transition mr-2"></i>
+                        <span class="font-bold text-slate-900">Email schreiben</span>
                     </a>
+                    
+                    <!-- TERMIN BUCHEN BUTTON -->
+                    <a href="https://outlook.office.com/bookwithme/user/37140107f554451d99a4627fb44b46aa@schwaebisch-hall.de?anonymous&ep=pcard" target="_blank" rel="noopener noreferrer" class="group flex items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-slate-100 hover:border-blue-600 hover:shadow-lg transition cursor-pointer">
+                        <i data-lucide="calendar" class="w-6 h-6 text-slate-400 group-hover:text-blue-600 transition mr-2"></i>
+                        <span class="font-bold text-slate-900">Termin buchen</span>
+                    </a>
+
+                    <!-- PHONE BUTTON -->
                     <a href="tel:+4915222686361" class="group flex items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-slate-100 hover:border-yellow-500 hover:shadow-lg transition cursor-pointer">
-                        <i data-lucide="phone" class="w-8 h-8 text-slate-400 group-hover:text-yellow-500 transition mb-1 mr-4"></i>
-                        <div class="text-left"><div class="text-xs text-slate-500 uppercase font-bold tracking-wider">Anrufen</div><div class="font-bold text-slate-900">+49 152 22686361</div></div>
+                        <i data-lucide="phone" class="w-6 h-6 text-slate-400 group-hover:text-yellow-500 transition mr-2"></i>
+                        <span class="font-bold text-slate-900">+49 152 22686361</span>
                     </a>
                 </div>
+
+                <!-- QR CODE SECTION -->
+                <div class="mt-12 flex flex-col items-center">
+                    <span class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Digitale Visitenkarte</span>
+                    <div class="bg-white p-3 rounded-2xl shadow-lg border border-slate-100 hover:scale-105 transition duration-300">
+                        <img src="ressources/QR.png" alt="Digitale Visitenkarte QR Code" class="w-32 h-32 md:w-40 md:h-40 object-contain">
+                    </div>
+                </div>
+
                 <div class="mt-12 flex items-center justify-center space-x-2 text-slate-500"><i data-lucide="map-pin" class="w-4 h-4"></i><span>Unterwegs für Sie in Oberkochen, Ebnat und Aalen.</span></div>
             </div>
         </section>
@@ -280,35 +287,6 @@
         lucide.createIcons();
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
 
-        // --- FEUERWERK LOGIK ---
-        window.addEventListener('load', () => {
-            var duration = 3000;
-            var end = Date.now() + duration;
-
-            (function frame() {
-                // Konfetti Explosionen
-                confetti({
-                    particleCount: 5,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0 },
-                    colors: ['#ef4444', '#eab308', '#ffffff'] // BSH Farben (Rot, Gelb, Weiß)
-                });
-                confetti({
-                    particleCount: 5,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1 },
-                    colors: ['#ef4444', '#eab308', '#ffffff']
-                });
-
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
-                }
-            }());
-        });
-
-        // Router Logic (SPA)
         document.addEventListener('click', e => {
             const link = e.target.closest('a');
             if (link && link.href.startsWith(window.location.origin) && !link.target) {
