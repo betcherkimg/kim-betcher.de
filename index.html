@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de" class="scroll-smooth">
+<html lang="de" class="scroll-smooth scroll-pt-28">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,6 +28,10 @@
             .group:active .normal-content { opacity: 0; visibility: hidden; }
         }
         @keyframes typing { from { width: 0 } to { width: 100% } }
+
+        /* Smooth fade for modal content */
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="text-slate-900 antialiased selection:bg-yellow-200 bg-white relative">
@@ -237,11 +241,11 @@
                         <span class="font-bold text-slate-900">Email schreiben</span>
                     </a>
                     
-                    <!-- TERMIN BUCHEN BUTTON -->
-                    <a href="https://outlook.office.com/bookwithme/user/37140107f554451d99a4627fb44b46aa@schwaebisch-hall.de?anonymous&ep=pcard" target="_blank" rel="noopener noreferrer" class="group flex items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-slate-100 hover:border-blue-600 hover:shadow-lg transition cursor-pointer">
+                    <!-- TERMIN BUCHEN BUTTON (MIT NEUEM INTERAKTIVEN MODAL) -->
+                    <button onclick="openBookingModal()" class="group flex items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-slate-100 hover:border-blue-600 hover:shadow-lg transition cursor-pointer w-full">
                         <i data-lucide="calendar" class="w-6 h-6 text-slate-400 group-hover:text-blue-600 transition mr-2"></i>
                         <span class="font-bold text-slate-900">Termin buchen</span>
-                    </a>
+                    </button>
 
                     <!-- PHONE BUTTON -->
                     <a href="tel:+4915222686361" class="group flex items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-slate-100 hover:border-yellow-500 hover:shadow-lg transition cursor-pointer">
@@ -282,16 +286,222 @@
         </footer>
     </div>
 
-    <!-- Navigation Logic (SPA) -->
+    <!-- BUCHUNG MODAL (Interaktiver Fragebogen) -->
+    <div id="booking-modal" class="fixed inset-0 z-[200] hidden" aria-modal="true">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeBookingModal()"></div>
+        
+        <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8 pointer-events-auto relative transform transition-all scale-100 flex flex-col max-h-[90vh]">
+                
+                <!-- Close Button -->
+                <button onclick="closeBookingModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition z-10">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+
+                <!-- DYNAMIC CONTENT CONTAINER -->
+                <div id="modal-content" class="flex-1 overflow-y-auto">
+                    <!-- Wird durch JS befüllt -->
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation & Logic -->
     <script>
         lucide.createIcons();
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
 
+        // --- INTERAKTIVER BUCHUNGS-FLOW ---
+        const bookingFlow = {
+            "Geld vom Staat": {
+                icon: "coins",
+                questions: [
+                    { q: "Wofür möchten Sie staatliche Förderung nutzen?", options: ["Immobilienkauf / Bau", "Modernisierung / Renovierung", "Allgemeiner Vermögensaufbau"] },
+                    { q: "Wie ist Ihr beruflicher Status?", options: ["Angestellt", "Selbstständig", "Beamter / Öffentlicher Dienst"] },
+                    { q: "Haben Sie Kinder?", options: ["Ja", "Nein", "Unterwegs"] }
+                ]
+            },
+            "Immobilien finanzieren": {
+                icon: "home",
+                questions: [
+                    { q: "Was ist Ihr Vorhaben?", options: ["Kauf einer Immobilie", "Neubau", "Anschlussfinanzierung / Umschuldung"] },
+                    { q: "Gibt es bereits ein konkretes Objekt?", options: ["Ja, gefunden", "Nein, noch auf Suche", "Besitze ich bereits"] },
+                    { q: "Wann benötigen Sie die Finanzierung?", options: ["So schnell wie möglich", "In 2-5 Jahren", "In 10-15 Jahren"] }
+                ]
+            },
+            "Sparen": {
+                icon: "piggy-bank",
+                questions: [
+                    { q: "Worauf möchten Sie sparen?", options: ["Eigenheim", "Modernisierung", "Eiserne Reserve / Konsum"] },
+                    { q: "Welchen monatlichen Betrag stellen Sie sich vor?", options: ["Bis 100 €", "100 € - 300 €", "Über 300 €"] },
+                    { q: "Wie lange möchten Sie sparen?", options: ["Kurzfristig (unter 3 Jahre)", "Mittelfristig (3-7 Jahre)", "Langfristig (über 7 Jahre)"] }
+                ]
+            }
+        };
+
+        let currentTopic = null;
+        let currentStep = 0;
+        let answers = [];
+
+        function openBookingModal() {
+            resetModal();
+            document.getElementById('booking-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeBookingModal() {
+            document.getElementById('booking-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function resetModal() {
+            currentTopic = null;
+            currentStep = 0;
+            answers = [];
+            renderTopicSelection();
+        }
+
+        function renderTopicSelection() {
+            const container = document.getElementById('modal-content');
+            container.innerHTML = `
+                <div class="text-center mb-6 fade-in">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-50 rounded-full text-blue-600 mb-4">
+                        <i data-lucide="calendar-days" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-900">Worum geht es bei Ihrem Termin?</h3>
+                    <p class="text-slate-500 mt-2">Wählen Sie ein Thema für eine passgenaue Beratung.</p>
+                </div>
+                <div class="grid grid-cols-1 gap-3 fade-in">
+                    ${Object.keys(bookingFlow).map(topic => `
+                        <button onclick="startFlow('${topic}')" class="flex items-center p-4 rounded-xl border-2 border-slate-100 hover:border-blue-500 hover:bg-blue-50 transition group text-left">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-400 group-hover:text-blue-600 shadow-sm mr-4 transition">
+                                <i data-lucide="${bookingFlow[topic].icon}" class="w-5 h-5"></i>
+                            </div>
+                            <span class="font-bold text-slate-700 group-hover:text-blue-700 text-lg">${topic}</span>
+                            <i data-lucide="chevron-right" class="w-5 h-5 ml-auto text-slate-300 group-hover:text-blue-400"></i>
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function startFlow(topic) {
+            currentTopic = topic;
+            currentStep = 0;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const topicData = bookingFlow[currentTopic];
+            const questionData = topicData.questions[currentStep];
+            const container = document.getElementById('modal-content');
+            
+            // Progress Bar
+            const progress = ((currentStep + 1) / topicData.questions.length) * 100;
+
+            container.innerHTML = `
+                <div class="mb-6 fade-in">
+                    <div class="flex justify-between items-center mb-4">
+                        <button onclick="${currentStep === 0 ? 'resetModal()' : 'prevStep()'}" class="text-sm text-slate-400 hover:text-slate-600 flex items-center">
+                            <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Zurück
+                        </button>
+                        <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">SCHRITT ${currentStep + 1} / ${topicData.questions.length}</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">${questionData.q}</h3>
+                    <div class="w-full bg-slate-100 rounded-full h-1.5 mt-4">
+                        <div class="bg-blue-600 h-1.5 rounded-full transition-all duration-300" style="width: ${progress}%"></div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 gap-3 fade-in">
+                    ${questionData.options.map(option => `
+                        <button onclick="handleAnswer('${option}')" class="p-4 rounded-xl border-2 border-slate-100 hover:border-blue-500 hover:bg-blue-50 transition text-left font-medium text-slate-700 hover:text-blue-700">
+                            ${option}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function handleAnswer(answer) {
+            answers.push(answer);
+            const topicData = bookingFlow[currentTopic];
+            
+            if (currentStep < topicData.questions.length - 1) {
+                currentStep++;
+                renderQuestion();
+            } else {
+                finishBooking();
+            }
+        }
+
+        function prevStep() {
+            answers.pop();
+            currentStep--;
+            renderQuestion();
+        }
+
+        function finishBooking() {
+            const container = document.getElementById('modal-content');
+            container.innerHTML = `
+                <div class="text-center py-8 fade-in">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full text-green-600 mb-6 animate-bounce">
+                        <i data-lucide="check" class="w-10 h-10"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-2">Fast geschafft!</h3>
+                    <p class="text-slate-600 mb-8">
+                        Vielen Dank für die Informationen. Klicken Sie unten, um die Anfrage zu senden. Ich antworte Ihnen umgehend mit meinem Buchungslink.
+                    </p>
+                    <button onclick="sendFinalMail()" class="block w-full py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition shadow-lg hover:shadow-green-200 flex items-center justify-center">
+                        <i data-lucide="send" class="w-5 h-5 mr-2"></i> Anfrage absenden
+                    </button>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function sendFinalMail() {
+            const email = "kim.betcher@schwaebisch-hall.de";
+            const subject = `Anfrage: ${currentTopic}`;
+            
+            // Antworten formatieren
+            const topicData = bookingFlow[currentTopic];
+            let details = "";
+            topicData.questions.forEach((q, index) => {
+                details += `- ${q.q}: ${answers[index]}%0D%0A`;
+            });
+
+            const body = `Hallo Herr Betcher,%0D%0A%0D%0Aich interessiere mich für das Thema "${currentTopic}".%0D%0A%0D%0AHier sind meine Details:%0D%0A${details}%0D%0ABitte senden Sie mir einen Terminlink zu.%0D%0A%0D%0AViele Grüße`;
+            
+            window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${body}`;
+            closeBookingModal();
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !document.getElementById('booking-modal').classList.contains('hidden')) {
+                closeBookingModal();
+            }
+        });
+
+        // Router Logic (SPA)
         document.addEventListener('click', e => {
             const link = e.target.closest('a');
-            if (link && link.href.startsWith(window.location.origin) && !link.target) {
+            if (!link) return;
+            if (link.href.startsWith(window.location.origin) && !link.target) {
                 const url = new URL(link.href);
-                if (url.pathname === window.location.pathname && url.hash) return; 
+                const currentPath = window.location.pathname;
+                const normalizedPath = url.pathname === '/' ? '/index.html' : url.pathname;
+                const normalizedCurrentPath = currentPath === '/' ? '/index.html' : currentPath;
+
+                if (normalizedPath === normalizedCurrentPath && url.hash) {
+                    e.preventDefault();
+                    const targetId = url.hash.substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth' });
+                    return;
+                }
                 e.preventDefault();
                 loadPage(link.href);
             }
@@ -303,17 +513,21 @@
                 const text = await res.text();
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(text, 'text/html');
-                
                 const newContent = doc.getElementById('swappable-content');
                 if(!newContent) { window.location.href = url; return; }
-                
                 document.getElementById('swappable-content').innerHTML = newContent.innerHTML;
                 document.title = doc.title;
+                const destUrl = new URL(url);
                 history.pushState({}, '', url);
-                window.scrollTo(0,0);
-                
+                if (destUrl.hash) {
+                    const targetId = destUrl.hash.substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) setTimeout(() => targetElement.scrollIntoView({ behavior: 'smooth' }), 100);
+                    else window.scrollTo(0,0);
+                } else {
+                    window.scrollTo(0,0);
+                }
                 lucide.createIcons();
-                
                 const scripts = document.getElementById('swappable-content').querySelectorAll('script');
                 scripts.forEach(oldScript => {
                     const newScript = document.createElement('script');
@@ -321,7 +535,6 @@
                     else newScript.textContent = oldScript.textContent;
                     document.body.appendChild(newScript);
                 });
-
             } catch (err) {
                 console.error("Navigation failed", err);
                 window.location.href = url; 
