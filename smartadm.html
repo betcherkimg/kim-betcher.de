@@ -389,6 +389,29 @@
     text-align:center;
   }
 
+  .abmelden{
+    display:block;
+    width:100%;
+    margin-top:20px;
+    background:transparent;
+    border:1.5px solid var(--rot);
+    border-radius:999px;
+    padding:12px 18px;
+    font-weight:500;
+    color:var(--rot);
+    transition:background .15s ease, color .15s ease;
+  }
+
+  .abmelden:hover{background:var(--rot);color:#fff;}
+
+  .abmelden-hinweis{
+    margin:10px 0 0;
+    font-size:12.5px;
+    line-height:1.45;
+    color:var(--ink-faint);
+    text-align:center;
+  }
+
   .mangel-hinweis{
     background:var(--gelb-wash);
     color:var(--gelb);
@@ -1150,32 +1173,48 @@
     background:linear-gradient(150deg,#12518F 0%,#0B3A70 100%);
     color:#fff;
     border-radius:16px;
-    padding:18px;
+    padding:18px 20px;
     margin-bottom:16px;
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:14px;
   }
 
-  .prov-summe div:first-child{grid-column:1 / -1;}
+  .prov-zeile-rechnung{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:16px;
+    padding:7px 0;
+    font-size:14.5px;
+  }
 
-  .prov-summe b{
-    display:block;
-    font-size:24px;
+  .prov-zeile-rechnung span{color:rgba(255,255,255,.72);}
+  .prov-zeile-rechnung b{font-weight:600;white-space:nowrap;}
+
+  .prov-zeile-rechnung.abzug b{color:#FFB3A6;}
+
+  .prov-zeile-rechnung.zwischen{
+    border-top:1px solid rgba(255,255,255,.2);
+    margin-top:4px;
+    padding-top:11px;
+  }
+
+  .prov-zeile-rechnung.zwischen span{color:rgba(255,255,255,.9);}
+
+  .prov-zeile-rechnung.ergebnis{
+    border-top:1px solid rgba(255,255,255,.28);
+    margin-top:6px;
+    padding-top:13px;
+  }
+
+  .prov-zeile-rechnung.ergebnis span{
+    color:#fff;
+    font-weight:500;
+  }
+
+  .prov-zeile-rechnung.ergebnis b{
+    font-size:26px;
     font-weight:700;
-    letter-spacing:-0.03em;
-    line-height:1.2;
+    letter-spacing:-0.025em;
   }
-
-  .prov-summe div:first-child b{font-size:32px;}
-
-  .prov-summe span{
-    font-size:12px;
-    color:rgba(255,255,255,.62);
-    display:block;
-  }
-
-  .prov-summe .minus b{color:#FFB4A8;}
 
   .prov-zeile{
     background:var(--surface);
@@ -1339,9 +1378,7 @@
   .prov-archiv-monat b{font-weight:600;}
 
   @media (min-width:600px){
-    .prov-summe{grid-template-columns:repeat(3,1fr);}
-    .prov-summe div:first-child{grid-column:auto;}
-    .prov-summe div:first-child b{font-size:24px;}
+    .prov-summe{padding:8px 22px 16px;}
     .prov-raster{grid-template-columns:repeat(4,1fr);}
   }
 
@@ -2486,6 +2523,11 @@
       <button class="btn btn-quiet" data-close="veil-profil">Abbrechen</button>
       <button class="btn" id="profil-speichern">Speichern</button>
     </div>
+
+    <button class="abmelden" id="abmelden">Abmelden</button>
+    <p class="abmelden-hinweis">Beendet die Sitzung auf diesem Ger&auml;t. Die Speicherdatei
+    bleibt erhalten und l&auml;sst sich jederzeit wieder &ouml;ffnen.</p>
+
   </div>
 </div>
 
@@ -3714,6 +3756,10 @@ var SPEICHER = (function(){
       ersatz[schluessel] = wert;
       return false;
     },
+    entfernen: function(schluessel){
+      try{ if(nutzbar) window.localStorage.removeItem(schluessel); }catch(e){}
+      delete ersatz[schluessel];
+    },
     dauerhaft: function(){ return nutzbar; }
   };
 })();
@@ -4720,15 +4766,60 @@ function provZeichnen(){
 
   var g = provErgebnis(PROVISIONEN, PROV_STEUER);
 
-  document.getElementById("prov-summe").innerHTML =
-      '<div><b>' + euro(g.nachSteuern) + '</b><span>Ergebnis nach Steuern</span></div>'
-    + '<div><b>' + euro(g.einnahmen) + '</b><span>Einnahmen</span></div>'
-    + '<div' + (g.ausgaben ? ' class="minus"' : '') + '><b>' + euro(g.ausgaben) + '</b><span>Ausgaben'
-    + (g.ausgabenNach ? ' \u00b7 ' + euro(g.ausgabenNach) + ' nach Steuer' : '') + '</span></div>'
-    + '<div><b>' + euro(g.vorSteuern) + '</b><span>Vor Steuern</span></div>'
-    + '<div' + (g.steuer ? ' class="minus"' : '') + '><b>' + euro(g.steuer) + '</b><span>Steuer ('
-    + PROV_STEUER.toLocaleString("de-DE") + ' %)</span></div>'
-    + '<div><b>' + PROVISIONEN.length + '</b><span>Eintr\u00e4ge</span></div>';
+  // Rechenweg von oben nach unten, damit klar ist, was wann abgeht
+  function posten(bez, wert, klasse){
+    return '<div class="posten' + (klasse ? " " + klasse : "") + '">'
+         +   '<span>' + bez + '</span>'
+         +   '<b>' + euro(wert) + '</b>'
+         + '</div>';
+  }
+
+  var karte = posten("Einnahmen", g.einnahmen);
+
+  if(g.ausgabenVor){
+    karte += posten("Betriebsausgaben", -g.ausgabenVor, "abzug");
+  }
+
+  karte += posten("Ergebnis vor Steuern", g.vorSteuern, "summe");
+  karte += posten("Steuer (" + PROV_STEUER.toLocaleString("de-DE") + " %)", -g.steuer, "abzug");
+
+  if(g.ausgabenNach){
+    karte += posten("Ausgaben nach Steuer", -g.ausgabenNach, "abzug");
+  }
+
+  karte += posten("Ergebnis nach Steuern", g.nachSteuern, "summe schluss");
+
+  // Als Rechenweg von oben nach unten, damit die Reihenfolge sichtbar ist
+  var zeilen = [
+    {text:"Einnahmen", wert:g.einnahmen}
+  ];
+
+  if(g.ausgabenVor) zeilen.push({text:"Betriebsausgaben", wert:-g.ausgabenVor, abzug:true});
+
+  zeilen.push({text:"Ergebnis vor Steuern", wert:g.vorSteuern, zwischen:true});
+  zeilen.push({text:"Steuer (" + PROV_STEUER.toLocaleString("de-DE") + " %)",
+               wert:-g.steuer, abzug:true});
+
+  if(g.ausgabenNach){
+    zeilen.push({text:"Ergebnis nach Steuern", wert:g.vorSteuern - g.steuer, zwischen:true});
+    zeilen.push({text:"Ausgaben nach Steuer", wert:-g.ausgabenNach, abzug:true});
+  }
+
+  var html = "";
+  zeilen.forEach(function(z){
+    html += '<div class="prov-zeile-rechnung' + (z.zwischen ? " zwischen" : "")
+          +   (z.abzug ? " abzug" : "") + '">'
+          +   '<span>' + z.text + '</span>'
+          +   '<b>' + (z.abzug && z.wert ? "\u2212 " + euro(Math.abs(z.wert)) : euro(z.wert)) + '</b>'
+          + '</div>';
+  });
+
+  html += '<div class="prov-zeile-rechnung ergebnis">'
+        +   '<span>' + (g.ausgabenNach ? "Verbleibt" : "Ergebnis nach Steuern") + '</span>'
+        +   '<b>' + euro(g.nachSteuern) + '</b>'
+        + '</div>';
+
+  document.getElementById("prov-summe").innerHTML = html;
 
   var d = new Date();
   var monate = ["Januar","Februar","M\u00e4rz","April","Mai","Juni",
@@ -5402,6 +5493,54 @@ document.addEventListener("keydown", function(e){
   if(e.key !== "Escape") return;
   FENSTER.forEach(function(id){
     if(!document.getElementById(id).hidden) schliessen(id);
+  });
+});
+
+/* ---------- Abmelden ---------- */
+
+document.getElementById("abmelden").addEventListener("click", function(){
+  schliessen("veil-profil");
+
+  var text = DATEI.griff
+    ? "Die Sitzung wird beendet. Deine Daten stehen weiterhin in "
+      + DATEI.name + " und lassen sich darüber wieder öffnen."
+    : "Die Sitzung wird beendet. Es ist keine Speicherdatei verbunden – "
+      + "lade vorher eine Sicherung herunter, sonst sind die Daten weg.";
+
+  frage(text, "Abmelden", function(){
+    // Offene Änderungen noch wegschreiben, dann alles zurücksetzen
+    offenesSchreiben();
+
+    DATEI.griff = null;
+    DATEI.name = "";
+    griffVergessen();
+
+    PROFIL = {anrede:"Herr", funktion:"Bezirksleiter", vorname:"", nachname:"",
+              strasse:"", plz:"", ort:"", mobil:"", mail:"", vo:"", gebiet:"", bild:""};
+    BANKEN = [];
+    BMA = [];
+    TERMINE = [];
+    ABSTIMMUNG = {};
+    PROVISIONEN = [];
+    PROV_ARCHIV = [];
+    PROV_STEUER = 0;
+    abAktiv = "";
+    LISTEN.bank.daten = BANKEN;
+    LISTEN.bma.daten = BMA;
+
+    try{
+      window.localStorage.removeItem(ABLAGE);
+      window.localStorage.removeItem(START_ABLAGE);
+    }catch(e){}
+
+    seiteZeigen("dashboard");
+    profilAnzeigen();
+    kopfAktualisieren();
+    zeichnen();
+    abBmaFuellen();
+    abZeichnen();
+    dateiStandAnzeigen();
+    startZeigen();
   });
 });
 
