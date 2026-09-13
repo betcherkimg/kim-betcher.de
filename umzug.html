@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>SmartADM &ndash; Umzug aus Excel</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ground:#F3F5F6;
+    --surface:#FFFFFF;
+    --ink:#1D2733;
+    --ink-soft:#5D6875;
+    --ink-faint:#949EAA;
+    --line:#E4E8EB;
+    --accent:#0D417F;
+    --accent-hi:#092F5E;
+    --accent-wash:#E6EEF8;
+    --hell:#147BF9;
+    --gruen:#1F7A52;   --gruen-wash:#E3F2EA;
+    --gelb:#9A6B00;    --gelb-wash:#FAF1DC;
+    --rot:#A5342C;     --rot-wash:#F7E9E7;
+    --shadow:0 1px 2px rgba(29,39,51,.05), 0 6px 20px rgba(29,39,51,.055);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    font-size:15px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  button{font-family:inherit;font-size:inherit;cursor:pointer;}
+
+  .wrap{max-width:720px;margin:0 auto;padding:32px 20px 72px;}
+
+  h1{
+    margin:0 0 6px;
+    font-size:26px;
+    font-weight:700;
+    letter-spacing:-0.025em;
+  }
+
+  .unter{margin:0 0 28px;font-size:15px;color:var(--ink-soft);}
+
+  .karte{
+    background:var(--surface);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+    padding:20px;
+    margin-bottom:16px;
+  }
+
+  .karte h2{
+    margin:0 0 4px;
+    font-size:17px;
+    font-weight:600;
+    letter-spacing:-0.015em;
+  }
+
+  .karte p{margin:0 0 14px;font-size:13.5px;color:var(--ink-soft);}
+
+  .ablage{
+    border:2px dashed #CFD6DD;
+    border-radius:14px;
+    padding:34px 20px;
+    text-align:center;
+    color:var(--ink-soft);
+    transition:border-color .15s ease, background .15s ease;
+    cursor:pointer;
+  }
+
+  .ablage:hover,.ablage.drueber{border-color:var(--accent);background:var(--accent-wash);}
+
+  .ablage strong{display:block;font-size:16px;color:var(--ink);margin-bottom:3px;}
+  .ablage span{font-size:13px;}
+
+  .btn{
+    background:var(--accent);
+    color:#fff;
+    border:1px solid transparent;
+    border-radius:999px;
+    padding:11px 22px;
+    font-weight:500;
+    transition:background .15s ease;
+  }
+
+  .btn:hover{background:var(--accent-hi);}
+  .btn:disabled{opacity:.45;cursor:not-allowed;}
+
+  .btn-quiet{background:var(--surface);color:var(--ink-soft);border-color:var(--line);}
+  .btn-quiet:hover{background:var(--ground);color:var(--ink);}
+
+  .meldung{
+    border-radius:12px;
+    padding:13px 15px;
+    font-size:14px;
+    margin-bottom:16px;
+  }
+
+  .meldung.gut{background:var(--gruen-wash);color:var(--gruen);}
+  .meldung.warn{background:var(--gelb-wash);color:var(--gelb);}
+  .meldung.fehler{background:var(--rot-wash);color:var(--rot);}
+
+  .zahlen{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    margin-bottom:16px;
+  }
+
+  .zahl{
+    background:var(--ground);
+    border-radius:12px;
+    padding:13px 15px;
+  }
+
+  .zahl b{
+    display:block;
+    font-size:23px;
+    font-weight:700;
+    letter-spacing:-0.02em;
+    line-height:1.2;
+  }
+
+  .zahl span{font-size:12.5px;color:var(--ink-soft);}
+  .zahl.luecke b{color:var(--gelb);}
+
+  .liste{
+    list-style:none;
+    margin:0;
+    padding:0;
+    max-height:260px;
+    overflow-y:auto;
+  }
+
+  .liste li{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:9px 0;
+    border-bottom:1px solid var(--line);
+    font-size:14px;
+  }
+
+  .liste li:last-child{border-bottom:none;}
+  .liste .name{flex:1;min-width:0;font-weight:500;}
+
+  .marke{
+    font-size:11.5px;
+    font-weight:600;
+    padding:3px 9px;
+    border-radius:999px;
+    background:var(--gruen-wash);
+    color:var(--gruen);
+    flex:none;
+  }
+
+  .marke.luecke{background:var(--gelb-wash);color:var(--gelb);}
+
+  .fehlt{
+    font-size:12.5px;
+    color:var(--ink-faint);
+    flex:none;
+  }
+
+  .schritte{
+    counter-reset:s;
+    list-style:none;
+    margin:0;
+    padding:0;
+  }
+
+  .schritte li{
+    counter-increment:s;
+    position:relative;
+    padding:0 0 14px 34px;
+    font-size:14px;
+    color:var(--ink-soft);
+  }
+
+  .schritte li::before{
+    content:counter(s);
+    position:absolute;
+    left:0; top:1px;
+    width:23px; height:23px;
+    border-radius:50%;
+    background:var(--accent-wash);
+    color:var(--accent);
+    font-size:12.5px;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .knoepfe{display:flex;gap:10px;flex-wrap:wrap;}
+  .versteckt{display:none;}
+
+  @media (min-width:560px){
+    .zahlen{grid-template-columns:repeat(4,1fr);}
+  }
+</style>
+</head>
+<body>
+
+<main class="wrap">
+
+  <h1>Umzug aus der Excel</h1>
+  <p class="unter">Aus der SmartADM5-Arbeitsmappe wird eine Datei, die du im Werkzeug
+  &ouml;ffnen kannst. Alles l&auml;uft in deinem Browser &ndash; die Mappe wird nirgendwo hochgeladen.</p>
+
+  <div class="karte">
+    <h2>Arbeitsmappe w&auml;hlen</h2>
+    <p>&Uuml;bernommen werden Bankmitarbeiter, Terminprotokoll und Adressabstimmungen.</p>
+    <div class="ablage" id="ablage">
+      <strong>Datei hierher ziehen</strong>
+      <span>oder klicken, um sie auszuw&auml;hlen &middot; .xlsm oder .xlsx</span>
+    </div>
+    <input type="file" id="datei" accept=".xlsm,.xlsx" hidden>
+  </div>
+
+  <div id="ergebnis" class="versteckt">
+    <div id="meldung"></div>
+
+    <div class="karte">
+      <h2>Das wurde gefunden</h2>
+      <div class="zahlen" id="zahlen"></div>
+      <div class="knoepfe">
+        <button class="btn" id="herunterladen">Datei herunterladen</button>
+        <button class="btn btn-quiet" id="nochmal">Andere Mappe w&auml;hlen</button>
+      </div>
+    </div>
+
+    <div class="karte" id="bma-karte">
+      <h2>Bankmitarbeiter</h2>
+      <p>Gelb markierte Eintr&auml;ge sind unvollst&auml;ndig und lassen sich im Werkzeug erg&auml;nzen.</p>
+      <ul class="liste" id="bma-liste"></ul>
+    </div>
+
+    <div class="karte">
+      <h2>So geht es weiter</h2>
+      <ol class="schritte">
+        <li>Datei herunterladen und an einem festen Ort ablegen, etwa im Dokumente-Ordner.</li>
+        <li>SmartADM &ouml;ffnen und beim Willkommensbildschirm auf &bdquo;Datensatz &ouml;ffnen&ldquo; gehen.</li>
+        <li>Die heruntergeladene Datei ausw&auml;hlen &ndash; ab dann wird direkt dort gespeichert.</li>
+        <li>Profil ausf&uuml;llen, Banken anlegen und die gelb markierten Bankmitarbeiter erg&auml;nzen.</li>
+      </ol>
+    </div>
+  </div>
+
+</main>
+
+<script>
+/* ---------- Arbeitsmappe lesen ---------- */
+
+// Eine xlsx-Datei ist ein ZIP-Archiv. Der Browser kann selbst entpacken,
+// deshalb kommt dieses Werkzeug ohne Fremdbibliothek aus.
+async function zipLesen(puffer){
+  var sicht = new DataView(puffer);
+  var bytes = new Uint8Array(puffer);
+
+  // Ende des Inhaltsverzeichnisses suchen
+  var ende = -1;
+  for(var i = bytes.length - 22; i >= 0 && i > bytes.length - 66000; i--){
+    if(sicht.getUint32(i, true) === 0x06054b50){ ende = i; break; }
+  }
+  if(ende < 0) throw new Error("Kein gültiges Archiv");
+
+  var anzahl = sicht.getUint16(ende + 10, true);
+  var start = sicht.getUint32(ende + 16, true);
+  var eintraege = {};
+  var pos = start;
+
+  for(var n = 0; n < anzahl; n++){
+    if(sicht.getUint32(pos, true) !== 0x02014b50) break;
+    var verfahren = sicht.getUint16(pos + 10, true);
+    var gepackt   = sicht.getUint32(pos + 20, true);
+    var namenLang = sicht.getUint16(pos + 28, true);
+    var extraLang = sicht.getUint16(pos + 30, true);
+    var kommLang  = sicht.getUint16(pos + 32, true);
+    var lokal     = sicht.getUint32(pos + 42, true);
+    var name = new TextDecoder().decode(bytes.subarray(pos + 46, pos + 46 + namenLang));
+
+    eintraege[name] = {verfahren:verfahren, gepackt:gepackt, lokal:lokal};
+    pos += 46 + namenLang + extraLang + kommLang;
+  }
+
+  async function holen(name){
+    var e = eintraege[name];
+    if(!e) return null;
+    var nLang = sicht.getUint16(e.lokal + 26, true);
+    var xLang = sicht.getUint16(e.lokal + 28, true);
+    var ab = e.lokal + 30 + nLang + xLang;
+    var roh = bytes.subarray(ab, ab + e.gepackt);
+
+    if(e.verfahren === 0) return new TextDecoder().decode(roh);
+
+    var strom = new Blob([roh]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+    return await new Response(strom).text();
+  }
+
+  return {namen: Object.keys(eintraege), holen: holen};
+}
+
+function xmlLesen(text){
+  return new DOMParser().parseFromString(text, "application/xml");
+}
+
+// Spaltenbuchstaben in eine Nummer wandeln, A wird zu 1
+function spalteNummer(bezug){
+  var buchstaben = bezug.replace(/[0-9]/g, "");
+  var n = 0;
+  for(var i = 0; i < buchstaben.length; i++){
+    n = n * 26 + (buchstaben.charCodeAt(i) - 64);
+  }
+  return n;
+}
+
+function exceldatum(zahl){
+  // Excel zählt ab dem 30.12.1899
+  var ms = Math.round((zahl - 25569) * 86400 * 1000);
+  var d = new Date(ms);
+  if(isNaN(d.getTime())) return "";
+  return d.getFullYear() + "-" +
+         String(d.getMonth() + 1).padStart(2, "0") + "-" +
+         String(d.getDate()).padStart(2, "0");
+}
+
+async function blattLesen(archiv, pfad, texte){
+  var xml = xmlLesen(await archiv.holen(pfad));
+  var zeilen = [];
+
+  xml.querySelectorAll("sheetData row").forEach(function(zeile){
+    var nr = Number(zeile.getAttribute("r"));
+    var werte = [];
+
+    zeile.querySelectorAll("c").forEach(function(zelle){
+      var bezug = zelle.getAttribute("r") || "";
+      var typ = zelle.getAttribute("t");
+      var sp = spalteNummer(bezug);
+      var inhalt = "";
+
+      if(typ === "s"){
+        var v = zelle.querySelector("v");
+        if(v) inhalt = texte[Number(v.textContent)] || "";
+      }else if(typ === "inlineStr"){
+        var is = zelle.querySelector("is");
+        if(is) inhalt = is.textContent;
+      }else{
+        var w = zelle.querySelector("v");
+        if(w) inhalt = w.textContent;
+      }
+
+      werte[sp] = {wert:inhalt, stil:zelle.getAttribute("s")};
+    });
+
+    zeilen[nr] = werte;
+  });
+
+  return zeilen;
+}
+
+function text(zeile, spalte){
+  if(!zeile || !zeile[spalte]) return "";
+  return String(zeile[spalte].wert || "").trim();
+}
+
+function datum(zeile, spalte){
+  var w = text(zeile, spalte);
+  if(!w) return "";
+  if(/^\d+(\.\d+)?$/.test(w)) return exceldatum(Number(w));
+  // Bereits als Text gespeichert, etwa 09.07.2026
+  var t = w.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+  if(t) return t[3] + "-" + t[2].padStart(2,"0") + "-" + t[1].padStart(2,"0");
+  return "";
+}
+
+/* ---------- Umwandeln ---------- */
+
+var STATUSKARTE = {
+  "offen":"offen", "in bearbeitung":"bearbeitung", "wiedervorlage":"wiedervorlage",
+  "folgetermin":"folgetermin", "erledigt":"erledigt", "storno":"storno"
+};
+
+var AB_FELDER = {F1:"fragenBma", F2:"fragenAdm", F3:"infos", F4:"erfolge", F5:"feedback", NOTIZ:"notizen"};
+
+function leererSatz(){
+  return {datum:"", termin:"", sonstiges:"", vonBma:[], vonAdm:[],
+          bloecke:{fragenBma:"", fragenAdm:"", infos:"", erfolge:"", feedback:"", notizen:""}};
+}
+
+async function umwandeln(datei){
+  var archiv = await zipLesen(await datei.arrayBuffer());
+
+  // Gemeinsame Zeichenketten
+  var texte = [];
+  var stTxt = await archiv.holen("xl/sharedStrings.xml");
+  if(stTxt){
+    xmlLesen(stTxt).querySelectorAll("si").forEach(function(si){
+      var teile = si.querySelectorAll("t");
+      var s = "";
+      teile.forEach(function(t){ s += t.textContent; });
+      texte.push(s);
+    });
+  }
+
+  // Blattnamen den Dateien zuordnen
+  var mappe = xmlLesen(await archiv.holen("xl/workbook.xml"));
+  var rels  = xmlLesen(await archiv.holen("xl/_rels/workbook.xml.rels"));
+  var ziele = {};
+  rels.querySelectorAll("Relationship").forEach(function(r){
+    ziele[r.getAttribute("Id")] = r.getAttribute("Target");
+  });
+
+  var blaetter = {};
+  mappe.querySelectorAll("sheets sheet").forEach(function(b){
+    var id = b.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id")
+          || b.getAttribute("r:id");
+    var ziel = ziele[id] || "";
+    if(ziel.charAt(0) === "/") ziel = ziel.slice(1);
+    else ziel = "xl/" + ziel.replace(/^\.\//, "");
+    blaetter[b.getAttribute("name")] = ziel;
+  });
+
+  var fehlend = ["Daten","Terminprotokoll"].filter(function(n){ return !blaetter[n]; });
+  if(fehlend.length) throw new Error("Diese Blätter fehlen: " + fehlend.join(", "));
+
+  /* --- Bankmitarbeiter --- */
+  var bmaZeilen = await blattLesen(archiv, blaetter["Daten"], texte);
+  var BMA = [];
+
+  for(var z = 3; z < bmaZeilen.length; z++){
+    var name = text(bmaZeilen[z], 1);
+    if(!name) continue;
+    var ist_service = /^service\b/i.test(name);
+
+    BMA.push({
+      name: name,
+      mail: text(bmaZeilen[z], 2),
+      nick: text(bmaZeilen[z], 3),
+      du:   text(bmaZeilen[z], 4).toLowerCase() !== "nein",
+      g:    text(bmaZeilen[z], 5).toLowerCase() === "w" ? "w" : "m",
+      rolle: ist_service ? "ser" : "pkb",
+      bank: "", geno: "", filiale: ""
+    });
+  }
+
+  /* --- Terminprotokoll --- */
+  var tZeilen = await blattLesen(archiv, blaetter["Terminprotokoll"], texte);
+  var TERMINE = [];
+  var orte = [];
+  var bekannt = BMA.map(function(p){ return p.name; });
+
+  for(var z2 = 3; z2 < tZeilen.length; z2++){
+    var kunde = text(tZeilen[z2], 4);
+    var tag = datum(tZeilen[z2], 1);
+    if(!kunde && !tag) continue;
+
+    var ort = text(tZeilen[z2], 2);
+    var mitarbeiter = text(tZeilen[z2], 3);
+    if(bekannt.indexOf(mitarbeiter) === -1) mitarbeiter = "";
+
+    var ortTyp = "bank";
+    if(/^(teams|video)/i.test(ort)) ortTyp = "video";
+    else if(/telefon/i.test(ort)) ortTyp = "telefon";
+    else if(!ort) ortTyp = "";
+    else if(orte.indexOf(ort) === -1) orte.push(ort);
+
+    var status = STATUSKARTE[text(tZeilen[z2], 8).toLowerCase()] || "offen";
+
+    TERMINE.push({
+      datum: tag,
+      kunde: kunde,
+      ort: ort,
+      ortTyp: ortTyp,
+      bma: mitarbeiter,
+      wv: datum(tZeilen[z2], 5),
+      status: status,
+      protokoll: text(tZeilen[z2], 6)
+    });
+  }
+
+  TERMINE.sort(function(a,b){ return (b.datum||"").localeCompare(a.datum||""); });
+
+  /* --- Banken aus den Bankstellen ableiten --- */
+  var BANKEN = orte.map(function(o, i){
+    return {id:"b" + (i+1), name:o, adresse:"", blz:"", betreuung:"voll"};
+  });
+
+  /* --- Adressabstimmungen --- */
+  var ABSTIMMUNG = {};
+  if(blaetter["AT_Daten"]){
+    var aZeilen = await blattLesen(archiv, blaetter["AT_Daten"], texte);
+
+    for(var z3 = 2; z3 < aZeilen.length; z3++){
+      var wer = text(aZeilen[z3], 1);
+      var typ = text(aZeilen[z3], 2);
+      if(!wer || !typ) continue;
+
+      if(!ABSTIMMUNG[wer]) ABSTIMMUNG[wer] = leererSatz();
+      var satz = ABSTIMMUNG[wer];
+      var w1 = text(aZeilen[z3], 3);
+      var w2 = text(aZeilen[z3], 4);
+
+      if(typ === "KOPF"){
+        satz.datum = datum(aZeilen[z3], 3);
+        satz.termin = w2;
+        satz.sonstiges = text(aZeilen[z3], 5);
+      }else if(typ.charAt(0) === "L"){
+        satz.vonBma.push({kunde:w1, bsnr:"", notiz:w2, zust:"", fertig:false});
+      }else if(typ.charAt(0) === "R"){
+        satz.vonAdm.push({kunde:w1, bsnr:"", notiz:w2, zust:"", fertig:false});
+      }else if(AB_FELDER[typ]){
+        satz.bloecke[AB_FELDER[typ]] = w1;
+      }
+    }
+  }
+
+  return {
+    profil: {anrede:"Herr", funktion:"Bezirksleiter", vorname:"", nachname:"",
+             strasse:"", plz:"", ort:"", mobil:"", mail:"", vo:"", gebiet:"", bild:""},
+    banken: BANKEN,
+    bma: BMA,
+    termine: TERMINE,
+    abstimmung: ABSTIMMUNG,
+    provisionen: [],
+    provArchiv: [],
+    provSteuer: 0
+  };
+}
+
+/* ---------- Oberfläche ---------- */
+
+var daten = null;
+
+function luecken(p){
+  var fehlt = [];
+  if(!p.bank) fehlt.push("Bank");
+  if(!p.mail) fehlt.push("E-Mail");
+  if(!p.filiale) fehlt.push("Filiale");
+  if(!p.nick) fehlt.push("Anrede");
+  return fehlt;
+}
+
+function esc(s){
+  return String(s).replace(/[&<>"]/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];
+  });
+}
+
+function anzeigen(d){
+  daten = d;
+
+  var unvollstaendig = d.bma.filter(function(p){ return luecken(p).length; }).length;
+  var abstimmungen = Object.keys(d.abstimmung).length;
+
+  document.getElementById("zahlen").innerHTML =
+      '<div class="zahl"><b>' + d.bma.length + '</b><span>Bankmitarbeiter</span></div>'
+    + '<div class="zahl"><b>' + d.termine.length + '</b><span>Termine</span></div>'
+    + '<div class="zahl"><b>' + abstimmungen + '</b><span>Abstimmungen</span></div>'
+    + '<div class="zahl' + (d.banken.length ? '' : ' luecke') + '"><b>' + d.banken.length
+    + '</b><span>Banken erkannt</span></div>';
+
+  var m = document.getElementById("meldung");
+  if(unvollstaendig){
+    m.className = "meldung warn";
+    m.textContent = "Alles gelesen. " + unvollstaendig
+      + (unvollstaendig === 1 ? " Bankmitarbeiter braucht" : " Bankmitarbeiter brauchen")
+      + " noch Angaben – das kannst du im Werkzeug nachholen.";
+  }else{
+    m.className = "meldung gut";
+    m.textContent = "Alles gelesen, es fehlt nichts.";
+  }
+
+  var liste = "";
+  d.bma.forEach(function(p){
+    var f = luecken(p);
+    liste += '<li>'
+           +   '<span class="name">' + esc(p.name) + '</span>'
+           +   (f.length ? '<span class="fehlt">fehlt: ' + esc(f.join(", ")) + '</span>'
+                           + '<span class="marke luecke">!</span>'
+                         : '<span class="marke">vollständig</span>')
+           + '</li>';
+  });
+  document.getElementById("bma-liste").innerHTML = liste;
+
+  document.getElementById("ergebnis").classList.remove("versteckt");
+  window.scrollTo({top: document.getElementById("ergebnis").offsetTop - 20, behavior:"smooth"});
+}
+
+function fehlerZeigen(text){
+  var m = document.getElementById("meldung");
+  m.className = "meldung fehler";
+  m.textContent = text;
+  document.getElementById("ergebnis").classList.remove("versteckt");
+  document.getElementById("zahlen").innerHTML = "";
+  document.getElementById("bma-liste").innerHTML = "";
+}
+
+function verarbeiten(datei){
+  if(!datei) return;
+  if(!/\.xls[xm]$/i.test(datei.name)){
+    fehlerZeigen("Bitte eine Datei mit der Endung .xlsm oder .xlsx wählen.");
+    return;
+  }
+
+  umwandeln(datei).then(anzeigen).catch(function(e){
+    fehlerZeigen("Die Mappe konnte nicht gelesen werden: " + (e.message || e));
+  });
+}
+
+var ablage = document.getElementById("ablage");
+var feld = document.getElementById("datei");
+
+ablage.addEventListener("click", function(){ feld.click(); });
+feld.addEventListener("change", function(){ verarbeiten(feld.files[0]); feld.value = ""; });
+
+["dragenter","dragover"].forEach(function(e){
+  ablage.addEventListener(e, function(ev){ ev.preventDefault(); ablage.classList.add("drueber"); });
+});
+
+["dragleave","drop"].forEach(function(e){
+  ablage.addEventListener(e, function(ev){ ev.preventDefault(); ablage.classList.remove("drueber"); });
+});
+
+ablage.addEventListener("drop", function(ev){
+  verarbeiten(ev.dataTransfer.files[0]);
+});
+
+document.getElementById("herunterladen").addEventListener("click", function(){
+  if(!daten) return;
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(daten, null, 2)], {type:"application/json"}));
+  a.download = "smartadm-daten.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+document.getElementById("nochmal").addEventListener("click", function(){
+  daten = null;
+  document.getElementById("ergebnis").classList.add("versteckt");
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+</script>
+
+</body>
+</html>
