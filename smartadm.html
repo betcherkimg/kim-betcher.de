@@ -292,7 +292,8 @@
 
   .menu[hidden]{display:none;}
 
-  .menu button{
+  .menu button,
+  .menu .menu-link{
     display:block;
     width:100%;
     text-align:left;
@@ -302,9 +303,12 @@
     padding:10px 12px;
     font-size:14.5px;
     color:var(--ink);
+    text-decoration:none;
+    font-family:inherit;
   }
 
-  .menu button:hover{background:var(--ground);}
+  .menu button:hover,
+  .menu .menu-link:hover{background:var(--ground);}
 
   .menu .menu-rot{
     color:var(--rot);
@@ -802,7 +806,7 @@
   }
 
   @media (min-width:1240px){
-    .widget-raster{grid-template-columns:repeat(3,minmax(0,1fr));}
+    .widget-raster{grid-template-columns:repeat(2,minmax(0,1fr));}
   }
 
   .block-head{
@@ -946,6 +950,192 @@
   .widget-datensatz.unvollstaendig{
     background:var(--gelb-wash);
     border-color:var(--gelb);
+  }
+
+  .aw-zahlen{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    margin-bottom:18px;
+  }
+
+  .aw-zahl{
+    background:var(--ground);
+    border-radius:12px;
+    padding:13px 15px;
+  }
+
+  .aw-zahl b{
+    display:block;
+    font-size:25px;
+    font-weight:700;
+    letter-spacing:-0.03em;
+    line-height:1.15;
+  }
+
+  .aw-zahl span{font-size:12.5px;color:var(--ink-soft);}
+  .aw-zahl.warn b{color:var(--gelb);}
+
+  .aw-reiter{
+    display:flex;
+    gap:6px;
+    background:var(--ground);
+    border-radius:999px;
+    padding:4px;
+    margin-bottom:16px;
+    width:fit-content;
+    max-width:100%;
+    overflow-x:auto;
+  }
+
+  .aw-reiter-knopf{
+    background:none;
+    border:none;
+    border-radius:999px;
+    padding:8px 16px;
+    font-size:14px;
+    font-weight:500;
+    color:var(--ink-soft);
+    white-space:nowrap;
+    transition:background .13s ease, color .13s ease;
+  }
+
+  .aw-reiter-knopf:hover{color:var(--ink);}
+  .aw-reiter-knopf.aktiv{background:var(--surface);color:var(--accent);font-weight:600;box-shadow:var(--shadow);}
+
+  .aw-treffer{
+    margin:0 0 12px;
+    font-size:13px;
+    color:var(--ink-faint);
+  }
+
+  .aw-zeile{
+    background:var(--surface);
+    border:1px solid transparent;
+    border-radius:12px;
+    box-shadow:var(--shadow);
+    margin-bottom:8px;
+    overflow:hidden;
+  }
+
+  .aw-kopf{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    width:100%;
+    background:none;
+    border:none;
+    padding:12px 14px;
+    text-align:left;
+    color:inherit;
+    font-family:inherit;
+  }
+
+  .aw-kopf:hover{background:var(--ground);}
+
+  .aw-haupt{flex:1;min-width:0;}
+
+  .aw-name{
+    display:block;
+    font-weight:600;
+    font-size:14.5px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .aw-meta{
+    display:block;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .aw-anzahl{
+    flex:none;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-soft);
+    background:var(--ground);
+    border-radius:999px;
+    padding:3px 10px;
+  }
+
+  .aw-detail{
+    padding:0 14px 14px;
+    border-top:1px solid var(--line);
+  }
+
+  .aw-wv{
+    margin:12px 0 0;
+    font-size:13px;
+    font-weight:500;
+    color:var(--hell);
+  }
+
+  .aw-verlauf{
+    padding:11px 0;
+    border-bottom:1px solid var(--line);
+  }
+
+  .aw-verlauf:last-child{border-bottom:none;}
+
+  .aw-verlauf-kopf{
+    display:block;
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-bottom:3px;
+  }
+
+  .aw-verlauf-text{
+    display:block;
+    font-size:14px;
+    line-height:1.5;
+    white-space:pre-wrap;
+  }
+
+  .aw-wv-zeile{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    padding:11px 14px;
+  }
+
+  .aw-wv-zeile.faellig{border-color:var(--gelb);background:var(--gelb-wash);}
+
+  .aw-haken{
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    border:1.5px solid var(--line);
+    background:var(--surface);
+    color:transparent;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:none;
+    padding:0;
+    transition:background .13s ease, border-color .13s ease, color .13s ease;
+  }
+
+  .aw-haken:hover{background:var(--gruen);border-color:var(--gruen);color:#fff;}
+
+  .aw-frist{
+    flex:none;
+    font-size:12.5px;
+    font-weight:500;
+    color:var(--ink-faint);
+    white-space:nowrap;
+  }
+
+  .aw-frist.faellig{color:var(--gelb);}
+
+  .kennzahl-zeile b.warn{color:var(--gelb);}
+
+  @media (min-width:700px){
+    .aw-zahlen{grid-template-columns:repeat(4,1fr);}
   }
 
   .mangel-hinweis{
@@ -2816,6 +3006,8 @@
     <div class="menu" id="konto-menu" hidden>
       <button id="menu-profil">Profil bearbeiten</button>
       <button id="menu-speicher">Datenspeicher</button>
+      <a class="menu-link" href="https://kim-betcher.de/umzug.html" target="_blank" rel="noopener noreferrer">Umzugsservice</a>
+      <a class="menu-link" href="https://kim-betcher.de/wasistneu.html" target="_blank" rel="noopener noreferrer">Was ist neu?</a>
       <button id="abmelden" class="menu-rot">Abmelden</button>
     </div>
   </div>
@@ -2879,12 +3071,56 @@
   </section>
 </main>
 
+<main class="wrap" id="seite-auswertung" hidden>
+  <section class="block">
+    <div class="block-head">
+      <div>
+        <h2>Auswertung</h2>
+        <p id="aw-stand">&nbsp;</p>
+      </div>
+    </div>
+
+    <div class="aw-zahlen" id="aw-zahlen"></div>
+
+    <div class="aw-reiter" role="tablist">
+      <button class="aw-reiter-knopf aktiv" data-aw="termine" role="tab">Termine</button>
+      <button class="aw-reiter-knopf" data-aw="kunden" role="tab">Kunden</button>
+      <button class="aw-reiter-knopf" data-aw="wv" role="tab">Wiedervorlagen</button>
+    </div>
+
+    <div class="filter">
+      <div class="filter-feld">
+        <label for="aw-suche">Suche</label>
+        <input id="aw-suche" type="search" placeholder="Kunde, Protokoll, Bankmitarbeiter" autocomplete="off">
+      </div>
+      <div class="filter-feld">
+        <label for="aw-jahr">Monat</label>
+        <select id="aw-jahr"></select>
+      </div>
+      <div class="filter-feld">
+        <label for="aw-status">Status</label>
+        <select id="aw-status"></select>
+      </div>
+      <div class="filter-feld">
+        <label for="aw-bma">Bankmitarbeiter</label>
+        <select id="aw-bma"></select>
+      </div>
+    </div>
+
+    <p class="aw-treffer" id="aw-treffer">&nbsp;</p>
+    <div id="aw-inhalt"></div>
+  </section>
+</main>
+
 <main class="wrap" id="seite-termine" hidden>
 
   <section class="block">
     <div class="block-head">
       <div>
         <p id="anzahl-termin-seite">0 erfasst</p>
+      </div>
+      <div class="head-tools">
+        <button class="btn btn-quiet" id="termine-leeren">Protokoll leeren</button>
       </div>
     </div>
 
@@ -4596,7 +4832,8 @@ function sichern(){
     abstimmung: ABSTIMMUNG,
     provisionen: PROVISIONEN,
     provArchiv: PROV_ARCHIV,
-    provSteuer: PROV_STEUER
+    provSteuer: PROV_STEUER,
+    auswertung: AUSWERTUNG
   }));
 }
 
@@ -4613,6 +4850,7 @@ function laden(){
     if(d.provisionen) PROVISIONEN = d.provisionen;
     if(d.provArchiv) PROV_ARCHIV = d.provArchiv;
     if(typeof d.provSteuer === "number") PROV_STEUER = d.provSteuer;
+    if(Array.isArray(d.auswertung)) AUSWERTUNG = d.auswertung;
     LISTEN.bank.daten = BANKEN;
     LISTEN.bma.daten = BMA;
     return true;
@@ -4957,8 +5195,10 @@ document.getElementById("termin-speichern").addEventListener("click", function()
 
   bearbeite.termin = null;
   termineSortieren();
+  awUebernehmen(satz);
   sichern();
   zeichnen();
+  awZeichnen();
   schliessen("veil-termin");
 });
 
@@ -5025,9 +5265,11 @@ document.getElementById("detail-loeschen").addEventListener("click", function(){
   if(typ === "termin"){
     schliessen("veil-detail");
     frage("Termin von " + TERMINE[i].kunde + " wird entfernt.", "L\u00f6schen", function(){
+      awEntfernen(TERMINE[i]);
       TERMINE.splice(i, 1);
       sichern();
       zeichnen();
+      awZeichnen();
       melden("Termin gel\u00f6scht");
     });
   }
@@ -6127,7 +6369,8 @@ function datenAlsText(){
     abstimmung: ABSTIMMUNG,
     provisionen: PROVISIONEN,
     provArchiv: PROV_ARCHIV,
-    provSteuer: PROV_STEUER
+    provSteuer: PROV_STEUER,
+    auswertung: AUSWERTUNG
   }, null, 2);
 }
 
@@ -6141,6 +6384,7 @@ function datenUebernehmen(d){
   if(d.provisionen) PROVISIONEN = d.provisionen;
   if(d.provArchiv) PROV_ARCHIV = d.provArchiv;
   if(typeof d.provSteuer === "number") PROV_STEUER = d.provSteuer;
+  if(Array.isArray(d.auswertung)) AUSWERTUNG = d.auswertung;
   LISTEN.bank.daten = BANKEN;
   LISTEN.bma.daten = BMA;
   return true;
@@ -6327,8 +6571,10 @@ function dateiOeffnen(){
         return griffAblegen(griff).then(function(){
           if(geklappt){
             termineSortieren();
+            awAbgleichen();
             profilAnzeigen();
             zeichnen();
+            awZeichnen();
             sichern();
             melden("Daten aus " + griff.name + " geladen");
           }else{
@@ -6408,8 +6654,10 @@ document.getElementById("datei-freigeben").addEventListener("click", function(){
     return dateiLesen(DATEI.griff).then(function(){
       document.getElementById("datei-balken").hidden = true;
       termineSortieren();
+      awAbgleichen();
       profilAnzeigen();
       zeichnen();
+      awZeichnen();
       dateiStandAnzeigen();
       melden("Speicherdatei verbunden");
     });
@@ -6431,8 +6679,8 @@ document.getElementById("datei-sicherung").addEventListener("click", dateiSicher
 
 var WIDGET_ABLAGE = "smartadm.widgets";
 var TARIF_WIDGET_ABLAGE = "smartadm.tarifwidget";
-var WIDGET_VERFUEGBAR = ["banken", "bma", "termine", "wiedervorlagen", "prov", "tarif"];
-var WIDGET_MAX = WIDGET_VERFUEGBAR.length;
+var WIDGET_VERFUEGBAR = ["banken", "bma", "termine", "auswertung", "wiedervorlagen", "prov", "tarif"];
+var WIDGET_MAX = 4;
 var WIDGETS = ["banken", "bma", "termine"];
 var tarifWidgetMenueOffen = false;
 var tarifWidgetIndex = -1;
@@ -6442,7 +6690,7 @@ try{
   if(gemerkt){
     var geladen = JSON.parse(gemerkt);
     if(Array.isArray(geladen)){
-      WIDGETS = geladen.filter(function(k){ return WIDGET_VERFUEGBAR.indexOf(k) !== -1; });
+      WIDGETS = geladen.filter(function(k){ return WIDGET_VERFUEGBAR.indexOf(k) !== -1; }).slice(0, WIDGET_MAX);
       if(!WIDGETS.length) WIDGETS = ["banken", "bma", "termine"];
     }
   }
@@ -6542,6 +6790,24 @@ var WIDGET_ARTEN = {
       if(!TERMINE.length) html = '<p class="leer-hinweis">Noch kein Termin erfasst</p>';
       html += '<button class="widget-add" data-oeffnen="veil-termin"><span class="plus">+</span><span class="add-label">Termin erfassen</span></button>';
       return {inhalt:'<div class="widget-datensaetze">' + html + '</div>', zahl:TERMINE.length + " erfasst"};
+    }
+  },
+
+  auswertung: {
+    titel: "Auswertung",
+    seite: "auswertung",
+    pfad: '<path d="M4 20h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>'
+        + '<path d="M7 20v-6M12 20V6M17 20v-9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+    beschreibung: "Termine, Kunden und Wiedervorlagen im \u00dcberblick",
+    zeichnen: function(){
+      var k = awKennzahlen();
+      return {inhalt:'<div class="kennzahl">' + k.termine + '</div>'
+                   + '<p class="kennzahl-text">Termine gesammelt</p>'
+                   + '<div class="kennzahl-zeile"><span>Kunden</span><b>' + k.kunden + '</b></div>'
+                   + '<div class="kennzahl-zeile"><span>Wiedervorlagen offen</span><b'
+                   + (k.wvFaellig ? ' class="warn"' : '') + '>' + k.wvOffen + '</b></div>'
+                   + '<div class="kennzahl-zeile"><span>Termine diesen Monat</span><b>' + k.monat + '</b></div>',
+              zahl:"", rest:0};
     }
   },
 
@@ -6725,7 +6991,7 @@ document.addEventListener("click", function(e){
   var neu = e.target.closest("[data-widget-neu]");
   if(neu){
     var kennung = neu.getAttribute("data-widget-neu");
-    if(WIDGETS.indexOf(kennung) === -1) WIDGETS.push(kennung);
+    if(WIDGETS.indexOf(kennung) === -1 && WIDGETS.filter(widgetSichtbar).length < WIDGET_MAX) WIDGETS.push(kennung);
     widgetsSichern(); widgetsZeichnen(); schliessen("veil-widget"); melden(WIDGET_ARTEN[kennung].titel + " hinzugefügt"); return;
   }
   var punkte = e.target.closest("[data-widget-punkte]");
@@ -6745,6 +7011,355 @@ document.addEventListener("click", function(e){
     if(ziel === "mail") mailEmpfaengerFuellen();
     seiteZeigen(ziel);
   }
+});
+
+document.getElementById("termine-leeren").addEventListener("click", function(){
+  if(TERMINE.length === 0){ melden("Das Protokoll ist bereits leer."); return; }
+
+  var anzahl = TERMINE.length;
+  frage("Das laufende Protokoll wird geleert. Alle " + anzahl
+      + (anzahl === 1 ? " Termin bleibt" : " Termine bleiben")
+      + " in der Auswertung erhalten und lassen sich dort weiter einsehen.",
+        "Leeren", function(){
+    awAbgleichen();
+    TERMINE = [];
+    bearbeite.termin = null;
+    sichern();
+    zeichnen();
+    awZeichnen();
+    melden(anzahl + (anzahl === 1 ? " Termin" : " Termine") + " in die Auswertung \u00fcbernommen");
+  });
+});
+
+/* ---------- Auswertung ---------- */
+
+// Sammelt alle Termine dauerhaft, auch wenn das Protokoll geleert wird.
+var AUSWERTUNG = [];
+var awReiter = "termine";
+var awOffen = {};
+
+function awSchluessel(t){
+  var name = String(t.kunde || "").toLowerCase().replace(/[^a-z0-9äöüß]/g, "");
+  return (t.datum || "") + "|" + name;
+}
+
+// Einen Termin in die Sammlung aufnehmen oder dort auffrischen
+function awUebernehmen(t){
+  var s = awSchluessel(t);
+  for(var i = 0; i < AUSWERTUNG.length; i++){
+    if(awSchluessel(AUSWERTUNG[i]) === s){
+      var fertig = AUSWERTUNG[i].wvFertig;
+      AUSWERTUNG[i] = {datum:t.datum, kunde:t.kunde, ort:t.ort, ortTyp:t.ortTyp,
+                       bma:t.bma, wv:t.wv, status:t.status, protokoll:t.protokoll,
+                       wvFertig: fertig};
+      return;
+    }
+  }
+  AUSWERTUNG.push({datum:t.datum, kunde:t.kunde, ort:t.ort, ortTyp:t.ortTyp,
+                   bma:t.bma, wv:t.wv, status:t.status, protokoll:t.protokoll,
+                   wvFertig:false});
+  awSortieren();
+}
+
+function awEntfernen(t){
+  var s = awSchluessel(t);
+  AUSWERTUNG = AUSWERTUNG.filter(function(e){ return awSchluessel(e) !== s; });
+}
+
+function awSortieren(){
+  AUSWERTUNG.sort(function(a, b){ return (b.datum || "").localeCompare(a.datum || ""); });
+}
+
+// Alles aus dem laufenden Protokoll in die Sammlung spiegeln
+function awAbgleichen(){
+  TERMINE.forEach(awUebernehmen);
+}
+
+/* ---------- Kennzahlen ---------- */
+
+function awKunden(){
+  var karte = {};
+  AUSWERTUNG.forEach(function(t){
+    if(!t.kunde) return;
+    var s = t.kunde.toLowerCase().replace(/[^a-z0-9äöüß]/g, "");
+    if(!karte[s]){
+      karte[s] = {name:t.kunde, termine:[], bma:[], orte:[]};
+    }
+    karte[s].termine.push(t);
+    if(t.bma && karte[s].bma.indexOf(t.bma) === -1) karte[s].bma.push(t.bma);
+    if(t.ort && karte[s].orte.indexOf(t.ort) === -1) karte[s].orte.push(t.ort);
+  });
+
+  return Object.keys(karte).map(function(k){
+    var e = karte[k];
+    var daten = e.termine.map(function(t){ return t.datum; }).filter(Boolean).sort();
+    e.erster = daten[0] || "";
+    e.letzter = daten[daten.length - 1] || "";
+    e.status = e.termine[0] ? e.termine[0].status : "offen";
+    return e;
+  }).sort(function(a, b){ return (b.letzter || "").localeCompare(a.letzter || ""); });
+}
+
+function awWiedervorlagen(){
+  return AUSWERTUNG.filter(function(t){
+    return t.wv && !t.wvFertig && t.status !== "erledigt" && t.status !== "storno";
+  }).sort(function(a, b){ return (a.wv || "").localeCompare(b.wv || ""); });
+}
+
+function awKennzahlen(){
+  var heute = heuteIso();
+  var monat = heute.slice(0, 7);
+  var wv = awWiedervorlagen();
+
+  return {
+    termine: AUSWERTUNG.length,
+    kunden: awKunden().length,
+    wvOffen: wv.length,
+    wvFaellig: wv.filter(function(t){ return t.wv <= heute; }).length,
+    monat: AUSWERTUNG.filter(function(t){ return (t.datum || "").slice(0, 7) === monat; }).length
+  };
+}
+
+/* ---------- Filter ---------- */
+
+function awFilterFuellen(){
+  var monate = [], bmas = [];
+
+  AUSWERTUNG.forEach(function(t){
+    var m = (t.datum || "").slice(0, 7);
+    if(m && monate.indexOf(m) === -1) monate.push(m);
+    if(t.bma && bmas.indexOf(t.bma) === -1) bmas.push(t.bma);
+  });
+
+  monate.sort().reverse();
+  bmas.sort();
+
+  var MONATSNAMEN = ["Januar","Februar","M\u00e4rz","April","Mai","Juni",
+                     "Juli","August","September","Oktober","November","Dezember"];
+
+  var jahr = document.getElementById("aw-jahr");
+  var vorherJ = jahr.value;
+  jahr.innerHTML = '<option value="">Alle</option>'
+    + monate.map(function(m){
+        var t = m.split("-");
+        return '<option value="' + m + '">' + MONATSNAMEN[Number(t[1]) - 1] + " " + t[0] + '</option>';
+      }).join("");
+  jahr.value = vorherJ;
+
+  var st = document.getElementById("aw-status");
+  var vorherS = st.value;
+  st.innerHTML = '<option value="">Alle</option>'
+    + STATUS.map(function(x){ return '<option value="' + x.id + '">' + x.label + '</option>'; }).join("");
+  st.value = vorherS;
+
+  var b = document.getElementById("aw-bma");
+  var vorherB = b.value;
+  b.innerHTML = '<option value="">Alle</option>'
+    + bmas.map(function(n){ return '<option value="' + esc(n) + '">' + esc(n) + '</option>'; }).join("");
+  b.value = vorherB;
+}
+
+function awGefiltert(liste){
+  var suche = document.getElementById("aw-suche").value.trim().toLowerCase();
+  var monat = document.getElementById("aw-jahr").value;
+  var status = document.getElementById("aw-status").value;
+  var bma = document.getElementById("aw-bma").value;
+
+  return liste.filter(function(t){
+    if(monat && (t.datum || "").slice(0, 7) !== monat) return false;
+    if(status && t.status !== status) return false;
+    if(bma && t.bma !== bma) return false;
+    if(suche){
+      var text = [t.kunde, t.protokoll, t.bma, t.ort].join(" ").toLowerCase();
+      if(text.indexOf(suche) === -1) return false;
+    }
+    return true;
+  });
+}
+
+/* ---------- Darstellung ---------- */
+
+function awZeichnen(){
+  if(!document.getElementById("aw-inhalt")) return;
+
+  var k = awKennzahlen();
+  document.getElementById("aw-zahlen").innerHTML =
+      '<div class="aw-zahl"><b>' + k.termine + '</b><span>Termine gesamt</span></div>'
+    + '<div class="aw-zahl"><b>' + k.kunden + '</b><span>Kunden</span></div>'
+    + '<div class="aw-zahl' + (k.wvFaellig ? ' warn' : '') + '"><b>' + k.wvOffen
+    + '</b><span>Wiedervorlagen offen</span></div>'
+    + '<div class="aw-zahl"><b>' + k.monat + '</b><span>Termine diesen Monat</span></div>';
+
+  var daten = AUSWERTUNG.map(function(t){ return t.datum; }).filter(Boolean).sort();
+  document.getElementById("aw-stand").textContent = daten.length
+    ? datumKurz(daten[0]) + " bis " + datumKurz(daten[daten.length - 1])
+    : "Noch nichts gesammelt";
+
+  awFilterFuellen();
+
+  var ziel = document.getElementById("aw-inhalt");
+  var treffer = document.getElementById("aw-treffer");
+
+  if(awReiter === "termine"){
+    var liste = awGefiltert(AUSWERTUNG);
+    treffer.textContent = liste.length + (liste.length === 1 ? " Termin" : " Termine");
+    ziel.innerHTML = liste.length
+      ? '<div class="zeilen">' + liste.map(awTerminZeile).join("") + '</div>'
+      : '<p class="leer-hinweis">Keine Termine gefunden</p>';
+
+  }else if(awReiter === "kunden"){
+    var kunden = awKunden().filter(function(e){
+      var suche = document.getElementById("aw-suche").value.trim().toLowerCase();
+      var bma = document.getElementById("aw-bma").value;
+      var monat = document.getElementById("aw-jahr").value;
+      var status = document.getElementById("aw-status").value;
+      if(bma && e.bma.indexOf(bma) === -1) return false;
+      if(status && e.status !== status) return false;
+      if(monat && !e.termine.some(function(t){ return (t.datum||"").slice(0,7) === monat; })) return false;
+      if(suche && e.name.toLowerCase().indexOf(suche) === -1) return false;
+      return true;
+    });
+    treffer.textContent = kunden.length + (kunden.length === 1 ? " Kunde" : " Kunden");
+    ziel.innerHTML = kunden.length
+      ? '<div class="zeilen">' + kunden.map(awKundenZeile).join("") + '</div>'
+      : '<p class="leer-hinweis">Keine Kunden gefunden</p>';
+
+  }else{
+    var wv = awGefiltert(awWiedervorlagen());
+    var heute = heuteIso();
+    var faellig = wv.filter(function(t){ return t.wv <= heute; }).length;
+    treffer.textContent = wv.length + " offen" + (faellig ? " \u00b7 " + faellig + " davon f\u00e4llig" : "");
+    ziel.innerHTML = wv.length
+      ? '<div class="zeilen">' + wv.map(awWvZeile).join("") + '</div>'
+      : '<p class="leer-hinweis">Keine offenen Wiedervorlagen</p>';
+  }
+}
+
+function awTerminZeile(t){
+  var s = STATUS.filter(function(x){ return x.id === t.status; })[0] || STATUS[0];
+  var kennung = awSchluessel(t);
+  var offen = !!awOffen[kennung];
+
+  return '<div class="aw-zeile">'
+       +   '<button class="aw-kopf" data-aw-klapp="' + esc(kennung) + '" aria-expanded="' + offen + '">'
+       +     '<svg class="ab-chev" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true" '
+       +       'style="transform:rotate(' + (offen ? 90 : 0) + 'deg)">'
+       +       '<path d="M6 3.5 10.5 8 6 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'
+       +     '</svg>'
+       +     '<span class="aw-haupt">'
+       +       '<span class="aw-name">' + esc(t.kunde || "Ohne Namen") + '</span>'
+       +       '<span class="aw-meta">' + esc(datumKurz(t.datum))
+       +         (t.ort ? ' \u00b7 ' + esc(t.ort) : '')
+       +         (t.bma ? ' \u00b7 ' + esc(t.bma) : '') + '</span>'
+       +     '</span>'
+       +     '<span class="pill ' + s.klasse + '">' + s.label + '</span>'
+       +   '</button>'
+       +   (offen
+            ? '<div class="aw-detail">'
+              + (t.wv ? '<p class="aw-wv">Wiedervorlage: ' + esc(datumKurz(t.wv)) + '</p>' : '')
+              + '<p class="protokoll' + (t.protokoll ? '' : ' leer') + '">'
+              + (t.protokoll ? esc(t.protokoll) : "Kein Protokoll hinterlegt") + '</p>'
+              + '</div>'
+            : '')
+       + '</div>';
+}
+
+function awKundenZeile(e){
+  var kennung = "k-" + e.name.toLowerCase().replace(/[^a-z0-9äöüß]/g, "");
+  var offen = !!awOffen[kennung];
+
+  return '<div class="aw-zeile">'
+       +   '<button class="aw-kopf" data-aw-klapp="' + esc(kennung) + '" aria-expanded="' + offen + '">'
+       +     '<svg class="ab-chev" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true" '
+       +       'style="transform:rotate(' + (offen ? 90 : 0) + 'deg)">'
+       +       '<path d="M6 3.5 10.5 8 6 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'
+       +     '</svg>'
+       +     '<span class="aw-haupt">'
+       +       '<span class="aw-name">' + esc(e.name) + '</span>'
+       +       '<span class="aw-meta">' + esc(datumKurz(e.erster))
+       +         (e.letzter !== e.erster ? " bis " + esc(datumKurz(e.letzter)) : "")
+       +         (e.bma.length ? ' \u00b7 ' + esc(e.bma.join(", ")) : '') + '</span>'
+       +     '</span>'
+       +     '<span class="aw-anzahl">' + e.termine.length + '</span>'
+       +   '</button>'
+       +   (offen
+            ? '<div class="aw-detail">'
+              + e.termine.map(function(t){
+                  var s = STATUS.filter(function(x){ return x.id === t.status; })[0] || STATUS[0];
+                  return '<div class="aw-verlauf">'
+                       +   '<span class="aw-verlauf-kopf">' + esc(datumKurz(t.datum))
+                       +     (t.ort ? ' \u00b7 ' + esc(t.ort) : '')
+                       +     ' <span class="pill ' + s.klasse + '">' + s.label + '</span></span>'
+                       +   (t.protokoll ? '<span class="aw-verlauf-text">' + esc(t.protokoll) + '</span>' : '')
+                       + '</div>';
+                }).join("")
+              + '</div>'
+            : '')
+       + '</div>';
+}
+
+function awWvZeile(t){
+  var heute = heuteIso();
+  var faellig = t.wv <= heute;
+  var tage = Math.round((new Date(t.wv) - new Date(heute)) / 86400000);
+
+  return '<div class="aw-zeile aw-wv-zeile' + (faellig ? " faellig" : "") + '">'
+       +   '<button class="aw-haken" data-aw-fertig="' + esc(awSchluessel(t)) + '"'
+       +     ' aria-label="Wiedervorlage abhaken">'
+       +     '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">'
+       +       '<path d="m3.5 8.5 3 3 6-6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+       +     '</svg>'
+       +   '</button>'
+       +   '<span class="aw-haupt">'
+       +     '<span class="aw-name">' + esc(t.kunde || "Ohne Namen") + '</span>'
+       +     '<span class="aw-meta">' + esc(datumKurz(t.wv))
+       +       (t.bma ? ' \u00b7 ' + esc(t.bma) : '')
+       +       (t.protokoll ? ' \u00b7 ' + esc(t.protokoll.slice(0, 60)) : '') + '</span>'
+       +   '</span>'
+       +   '<span class="aw-frist' + (faellig ? " faellig" : "") + '">'
+       +     (faellig ? (tage === 0 ? "heute" : Math.abs(tage) + " Tage \u00fcberf\u00e4llig")
+                      : "in " + tage + " Tagen")
+       +   '</span>'
+       + '</div>';
+}
+
+/* ---------- Bedienung ---------- */
+
+document.addEventListener("click", function(e){
+  var reiter = e.target.closest(".aw-reiter-knopf");
+  if(reiter){
+    awReiter = reiter.getAttribute("data-aw");
+    document.querySelectorAll(".aw-reiter-knopf").forEach(function(k){
+      k.classList.toggle("aktiv", k === reiter);
+    });
+    awOffen = {};
+    awZeichnen();
+    return;
+  }
+
+  var klapp = e.target.closest("[data-aw-klapp]");
+  if(klapp){
+    var kk = klapp.getAttribute("data-aw-klapp");
+    awOffen[kk] = !awOffen[kk];
+    awZeichnen();
+    return;
+  }
+
+  var haken = e.target.closest("[data-aw-fertig]");
+  if(haken){
+    var s = haken.getAttribute("data-aw-fertig");
+    AUSWERTUNG.forEach(function(t){ if(awSchluessel(t) === s) t.wvFertig = true; });
+    sichern();
+    awZeichnen();
+    widgetsZeichnen();
+    melden("Wiedervorlage abgehakt");
+  }
+});
+
+["aw-suche","aw-jahr","aw-status","aw-bma"].forEach(function(id){
+  var el = document.getElementById(id);
+  if(el) el.addEventListener("input", awZeichnen);
+  if(el) el.addEventListener("change", awZeichnen);
 });
 
 function oeffnen(veilId){
@@ -6798,15 +7413,15 @@ var LEISTE = [
       + '<circle cx="9" cy="6" r="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.6"/>'
       + '<circle cx="15" cy="12" r="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.6"/>'
       + '<circle cx="8" cy="18" r="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.6"/>'},
+  {seite:"auswertung", text:"Auswertung", aktiv:true,
+   pfad:'<path d="M4 20h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'
+      + '<path d="M7 20v-6M12 20V6M17 20v-9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'},
   {trenner:true},
   {titel:"In Vorbereitung"},
   {seite:"", text:"Synergie-Rechner", aktiv:false,
    pfad:'<path d="M4 19V5M4 19h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'
       + '<path d="M7 16.5c3.5-2 6-6.5 7.5-10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'
       + '<path d="M14.5 6.5H18V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'},
-  {seite:"", text:"Auswertung", aktiv:false,
-   pfad:'<path d="M4 20h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'
-      + '<path d="M7 20v-6M12 20V6M17 20v-9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'}
 ];
 
 function leisteBauen(){
@@ -6866,14 +7481,14 @@ document.addEventListener("click", function(e){
 /* ---------- Seitenwechsel ---------- */
 
 function seiteZeigen(name){
-  ["dashboard","banken","bma","termine","abstimmung","mail","tarif","prov"].forEach(function(seite){
+  ["dashboard","banken","bma","termine","auswertung","abstimmung","mail","tarif","prov"].forEach(function(seite){
     document.getElementById("seite-" + seite).hidden = (seite !== name);
   });
   document.getElementById("zurueck").hidden = name === "dashboard";
   document.body.classList.toggle("unterseite", name !== "dashboard");
   leisteMarkieren(name);
 
-  var titel = {dashboard:"Dashboard", banken:"Banken", bma:"Bankmitarbeiter", termine:"Terminprotokoll", abstimmung:"Adressabstimmung",
+  var titel = {dashboard:"Dashboard", banken:"Banken", bma:"Bankmitarbeiter", auswertung:"Auswertung", termine:"Terminprotokoll", abstimmung:"Adressabstimmung",
                mail:"Mail-Generator", prov:"Provisions-Rechner", tarif:"Tariftool"}[name] || "";
   document.getElementById("seitentitel").textContent = titel;
   bandAnwenden();
@@ -7030,9 +7645,11 @@ document.getElementById("start-laden").addEventListener("click", function(){
     if(!geklappt) return;
     startFertig();
     termineSortieren();
+    awAbgleichen();
     profilAnzeigen();
     kopfAktualisieren();
     zeichnen();
+    awZeichnen();
   });
 });
 
@@ -7044,9 +7661,11 @@ laden();
 dateiStarten().then(function(geladen){
   if(geladen){
     termineSortieren();
+    awAbgleichen();
     profilAnzeigen();
     kopfAktualisieren();
     zeichnen();
+    awZeichnen();
   }
   dateiStandAnzeigen();
 
@@ -7060,6 +7679,8 @@ leisteBauen();
 leisteMarkieren("dashboard");
 bandAnwenden();
 schlossAnwenden();
+awAbgleichen();
+awZeichnen();
 tarifAuswahlFuellen();
 tarifZeichnen();
 rolleGeaendert();
