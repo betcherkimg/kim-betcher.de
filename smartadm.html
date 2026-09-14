@@ -76,6 +76,61 @@
 
   .kopf-links{display:flex;align-items:center;gap:10px;min-width:0;}
 
+  .speicher-knopf{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--ink-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    position:relative;
+    flex:none;
+    transition:background .15s ease,color .15s ease,border-color .15s ease,transform .05s ease;
+  }
+
+  .speicher-knopf:hover{background:var(--ground);color:var(--ink);}
+  .speicher-knopf:active{transform:translateY(1px);}
+  .speicher-knopf svg{display:block;}
+
+  .speicher-knopf::after{
+    content:"";
+    position:absolute;
+    right:6px;
+    bottom:6px;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:currentColor;
+    box-shadow:0 0 0 2px var(--surface);
+  }
+
+  .speicher-knopf.gespeichert{
+    background:var(--gruen-wash);
+    border-color:rgba(31,122,82,.22);
+    color:var(--gruen);
+  }
+
+  .speicher-knopf.gespeichert:hover{background:#D7EDE1;}
+
+  .speicher-knopf.ungespeichert{
+    background:var(--rot-wash);
+    border-color:rgba(165,52,44,.22);
+    color:var(--rot);
+  }
+
+  .speicher-knopf.ungespeichert:hover{background:#F3DEDB;}
+
+  .speicher-knopf.schreibt svg{animation:speicher-wippen 1s ease-in-out infinite;}
+
+  @keyframes speicher-wippen{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-1px);}
+  }
+
   .seitentitel{
     display:none;
     font-size:17px;
@@ -2728,6 +2783,16 @@
   </div>
 
   <div class="kopf-rechts">
+  <button class="speicher-knopf gespeichert" id="speicher-knopf"
+          title="Im Browser gespeichert – jetzt speichern"
+          aria-label="Im Browser gespeichert – jetzt speichern">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M5 4.75h11.5l2.75 2.75v11A1.5 1.5 0 0 1 17.75 20h-11.5A1.5 1.5 0 0 1 4.75 18.5V6.25A1.5 1.5 0 0 1 6.25 4.75Z" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 4.75v5h7v-5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      <rect x="8" y="13" width="8" height="5" rx="1.2" stroke="currentColor" stroke-width="1.8"/>
+    </svg>
+  </button>
+
   <button class="schloss" id="schloss" aria-pressed="false"
           title="Provisions-Rechner verbergen" aria-label="Provisions-Rechner verbergen">
     <svg class="schloss-offen" width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -4521,6 +4586,7 @@ var SPEICHER = (function(){
 var ABLAGE = "smartadm.v1";
 
 function sichern(){
+  speicherVormerken();
   if(typeof dateiSchreiben === "function") dateiSchreiben();
   SPEICHER.schreiben(ABLAGE, JSON.stringify({
     profil: PROFIL,
@@ -5950,6 +6016,66 @@ var DATEI = {
   erneut: false
 };
 
+var SPEICHER_STATUS = {
+  unsauber: false,
+  schreibt: false,
+  fehler: ""
+};
+
+function speicherKnopfAktualisieren(){
+  var knopf = document.getElementById("speicher-knopf");
+  if(!knopf) return;
+
+  var klasse = "speicher-knopf ";
+  var titel = "";
+
+  if(SPEICHER_STATUS.fehler){
+    klasse += "ungespeichert";
+    titel = SPEICHER_STATUS.fehler + " – jetzt speichern";
+  }else if(SPEICHER_STATUS.unsauber || SPEICHER_STATUS.schreibt || DATEI.uhr || DATEI.laeuft){
+    klasse += "ungespeichert";
+    if(SPEICHER_STATUS.schreibt || DATEI.laeuft) klasse += " schreibt";
+    titel = (SPEICHER_STATUS.schreibt || DATEI.laeuft)
+      ? "Speichern läuft – jetzt speichern"
+      : "Noch nicht gespeichert – jetzt speichern";
+  }else{
+    klasse += "gespeichert";
+    titel = DATEI.griff
+      ? ("Gespeichert in " + DATEI.name + " – jetzt speichern")
+      : "Im Browser gespeichert – jetzt speichern";
+  }
+
+  knopf.className = klasse;
+  knopf.title = titel;
+  knopf.setAttribute("aria-label", titel);
+}
+
+function speicherVormerken(){
+  SPEICHER_STATUS.fehler = "";
+  if(DATEI.griff){
+    SPEICHER_STATUS.unsauber = true;
+    SPEICHER_STATUS.schreibt = true;
+  }else{
+    SPEICHER_STATUS.unsauber = false;
+    SPEICHER_STATUS.schreibt = false;
+  }
+  speicherKnopfAktualisieren();
+}
+
+function speicherErfolg(){
+  SPEICHER_STATUS.unsauber = false;
+  SPEICHER_STATUS.schreibt = false;
+  SPEICHER_STATUS.fehler = "";
+  speicherKnopfAktualisieren();
+}
+
+function speicherFehler(meldung){
+  SPEICHER_STATUS.unsauber = true;
+  SPEICHER_STATUS.schreibt = false;
+  SPEICHER_STATUS.fehler = meldung || "Schreiben fehlgeschlagen";
+  speicherKnopfAktualisieren();
+}
+
 function dbOeffnen(){
   return new Promise(function(fertig, fehler){
     var a = indexedDB.open("smartadm", 1);
@@ -6024,6 +6150,9 @@ function datenUebernehmen(d){
 function dateiSchreiben(){
   if(!DATEI.griff) return;
 
+  SPEICHER_STATUS.schreibt = true;
+  speicherKnopfAktualisieren();
+
   clearTimeout(DATEI.uhr);
   DATEI.uhr = setTimeout(function(){
     if(DATEI.laeuft){ DATEI.erneut = true; return; }
@@ -6039,9 +6168,11 @@ function dateiSchreiben(){
         return strom.write(inhalt).then(function(){ return strom.close(); });
       })
       .then(function(){
+        speicherErfolg();
         dateiStandAnzeigen();
       })
       .catch(function(){
+        speicherFehler("Schreiben fehlgeschlagen");
         dateiStandAnzeigen("Schreiben fehlgeschlagen");
       })
       .then(function(){
@@ -6060,21 +6191,29 @@ function sofortSpeichern(){
   SPEICHER.schreiben(ABLAGE, inhalt);
 
   if(!DATEI.griff){
+    speicherErfolg();
     melden(SPEICHER.dauerhaft()
       ? "Im Browser gespeichert"
       : "Speicher gesperrt \u2013 bitte eine Sicherung herunterladen");
     return;
   }
 
+  SPEICHER_STATUS.unsauber = true;
+  SPEICHER_STATUS.schreibt = true;
+  SPEICHER_STATUS.fehler = "";
+  speicherKnopfAktualisieren();
+
   DATEI.griff.createWritable()
     .then(function(strom){
       return strom.write(inhalt).then(function(){ return strom.close(); });
     })
     .then(function(){
+      speicherErfolg();
       dateiStandAnzeigen();
       melden("Gespeichert in " + DATEI.name);
     })
     .catch(function(){
+      speicherFehler("Schreiben fehlgeschlagen");
       dateiStandAnzeigen("Schreiben fehlgeschlagen");
       melden("Konnte nicht in die Datei schreiben");
     });
@@ -6096,11 +6235,20 @@ function offenesSchreiben(){
   var inhalt = datenAlsText();
   SPEICHER.schreiben(ABLAGE, inhalt);
 
-  if(!DATEI.griff) return Promise.resolve();
+  if(!DATEI.griff){
+    speicherErfolg();
+    return Promise.resolve();
+  }
+
+  SPEICHER_STATUS.schreibt = true;
+  speicherKnopfAktualisieren();
 
   return DATEI.griff.createWritable()
     .then(function(strom){
       return strom.write(inhalt).then(function(){ return strom.close(); });
+    })
+    .then(function(){
+      speicherErfolg();
     })
     .catch(function(){});
 }
@@ -6111,6 +6259,12 @@ document.addEventListener("visibilitychange", function(){
 
 window.addEventListener("blur", offenesSchreiben);
 window.addEventListener("pagehide", offenesSchreiben);
+
+window.addEventListener("beforeunload", function(e){
+  if(!(SPEICHER_STATUS.unsauber || SPEICHER_STATUS.fehler || DATEI.uhr || DATEI.laeuft)) return;
+  e.preventDefault();
+  e.returnValue = "";
+});
 
 function dateiLesen(griff){
   return griff.getFile()
@@ -6205,7 +6359,12 @@ function dateiStandAnzeigen(meldung){
   var feld = document.getElementById("speicher-stand");
   if(!feld) return;
 
-  if(meldung){ feld.textContent = meldung; feld.className = "speicher-stand warn"; return; }
+  if(meldung){
+    feld.textContent = meldung;
+    feld.className = "speicher-stand warn";
+    speicherKnopfAktualisieren();
+    return;
+  }
 
   if(DATEI.griff){
     feld.textContent = "Gespeichert in " + DATEI.name;
@@ -6219,6 +6378,7 @@ function dateiStandAnzeigen(meldung){
     feld.className = "speicher-stand";
   }
 
+  speicherKnopfAktualisieren();
 }
 
 // Beim Start: bekannte Datei suchen und, wenn erlaubt, daraus laden
@@ -6255,6 +6415,8 @@ document.getElementById("datei-freigeben").addEventListener("click", function(){
     });
   });
 });
+
+document.getElementById("speicher-knopf").addEventListener("click", sofortSpeichern);
 
 document.getElementById("menu-speicher").addEventListener("click", function(){
   dateiStandAnzeigen();
@@ -6902,6 +7064,8 @@ tarifAuswahlFuellen();
 tarifZeichnen();
 rolleGeaendert();
 zeichnen();
+
+speicherKnopfAktualisieren();
 
 if(!SPEICHER.dauerhaft()){
   console.warn("SmartADM: Der Browserspeicher ist gesperrt. "
