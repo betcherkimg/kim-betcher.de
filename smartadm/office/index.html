@@ -1538,6 +1538,349 @@ window.addEventListener("load", async () => {
     }
   }
 
+  function setSaveBusy(busy, text = "") {
+    const button = $("saveBtn");
+    const reset = $("resetBtn");
+
+    if (!button || !reset) return;
+
+    button.disabled = busy;
+    reset.disabled = busy;
+
+    if (busy && text) {
+      button.dataset.oldText =
+        button.dataset.oldText || button.textContent;
+      button.textContent = text;
+    } else if (!busy && button.dataset.oldText) {
+      button.textContent = button.dataset.oldText;
+      delete button.dataset.oldText;
+    }
+  }
+
+  $("entryForm").addEventListener("submit", async ev => {
+    ev.preventDefault();
+
+    const workDate = $("date").value;
+
+    if (!isAllowedWorkDate(workDate)) {
+      const range = allowedDateRange();
+      return alert(`Das Datum muss zwischen ${new Intl.DateTimeFormat("de-DE").format(new Date(range.min + "T00:00:00"))} und heute liegen.`);
+    }
+
+    const start = $("start").value;
+    const end = $("end").value;
+    const breakMinutes = Number($("break").value || 0);
+    const minutes = minutesBetween(start, end, breakMinutes);
+
+    if (minutes <= 0) {
+      return alert("Bitte prüfe Beginn, Ende und Pause.");
+    }
+
+    const appointments = Number(
+      $("appointments").value || 0
+    );
+
+    const eligible = Number(
+      $("eligible").value || 0
+    );
+
+    if (eligible > appointments) {
+      return alert(
+        "Provisionsfähige Termine können nicht höher als die Gesamtzahl der Termine sein."
+      );
+    }
+
+    const editId = $("editId").value;
+    const existing = entries.find(e => e.id === editId);
+
+    const workPayload = {
+      work_date: workDate,
+      start_time: start,
+      end_time: end,
+      break_minutes: breakMinutes,
+      work_minutes: minutes
+    };
+
+    const performancePayload = {
+      work_date: workDate,
+      appointments,
+      commissionable_appointments: eligible
+    };
+
+    setSaveBusy(
+      true,
+      existing ? "Wird gespeichert …" : "Wird angelegt …"
+    );
+
+    try {
+      if (existing) {
+        await apiFetch(
+          `/work-entries/${existing.workId}`,
+          {
+            method: "PUT",
+            body: JSON.stringify(workPayload)
+          }
+        );
+
+        if (existing.performanceId) {
+          await apiFetch(
+            `/performance/${existing.performanceId}`,
+            {
+              method: "PUT",
+              body: JSON.stringify(performancePayload)
+            }
+          );
+        } else {
+          await apiFetch(
+            "/performance",
+            {
+              method: "POST",
+              body: JSON.stringify(performancePayload)
+            }
+          );
+        }
+      } else {
+        await apiFetch(
+          "/work-entries",
+          {
+            method: "POST",
+            body: JSON.stringify(workPayload)
+          }
+        );
+
+        await apiFetch(
+          "/performance",
+          {
+            method: "POST",
+            body: JSON.stringify(performancePayload)
+          }
+        );
+      }
+
+      resetForm();
+      await loadData(true);
+    } catch (error) {
+      console.error(error);
+      alert("Eintrag konnte nicht gespeichert werden: " + error.message);
+    } finally {
+      setSaveBusy(false);
+    }
+  });
+
+  $("resetBtn").onclick = resetForm;
+
+  function normalizeRole(value) {
+    const role = String(value || "").toLowerCase().trim();
+    return ["boss", "admin", "owner"].includes(role) ? "boss" : "employee";
+  }
+
+  function officeDisplayName(user) {
+    if (!user) return "Mitarbeiter";
+    const full = [user.first_name || user.firstName, user.last_name || user.lastName]
+      .filter(Boolean).join(" ").trim();
+    return full || user.name || user.full_name || user.fullName ||
+      user.email || user.email_address || user.clerk_user_id || user.id || "Mitarbeiter";
+  }
+
+  function officeUserId(user) {
+    return user?.clerk_user_id || user?.clerkUserId || user?.user_id || user?.id || "";
+  }
+
+  function officeUserRole(user) {
+    return normalizeRole(user?.role || user?.office_role || user?.officeRole);
+  }
+
+  function showPage(pageId) {
+    document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+
+    const button = document.querySelector(`.nav button[data-page="${pageId}"]`);
+    const page = $(pageId);
+    if (button) button.classList.add("active");
+    if (page) page.classList.add("active");
+
+    if (titles[pageId]) {
+      $("pageTitle").textContent = titles[pageId][0];
+      $("pageSub").textContent = titles[pageId][1];
+    }
+  }
+
+  function applyRole(role) {
+    currentRole = role;
+    document.body.dataset.officeRole = role;
+
+    const badge = $("roleBadge");
+    if (badge) {
+      badge.textContent = role === "boss" ? "Boss" : "Mitarbeiter";
+      badge.classList.toggle("boss", role === "boss");
+    }
+
+    // Nur beim ersten Rollenwechsel auf das jeweilige Dashboard springen.
+    // Token-/Session-Refreshes von Clerk dürfen die aktuell geöffnete Seite nicht verlassen.
+    const activePage = document.querySelector(".page.active");
+    const activeRole = activePage?.dataset?.role || "";
+    const activePageAllowed = activePage && (!activeRole || activeRole === role);
+    if (!activePageAllowed) {
+      showPage(role === "boss" ? "boss-dashboard" : "dashboard");
+    }
+  }
+
+  async function syncOwnOfficeProfile() {
+    const user = window.Clerk?.user;
+    if (!user) return;
+
+    const displayName = [user.firstName, user.lastName].filter(Boolean).join(" ").trim() ||
+      user.fullName || "";
+    const email = user.primaryEmailAddress?.emailAddress ||
+      user.emailAddresses?.[0]?.emailAddress || "";
+
+    try {
+      await apiFetch("/me/profile", {
+        method: "PUT",
+        body: JSON.stringify({
+          display_name: displayName,
+          email
+        })
+      });
+    } catch (error) {
+      console.warn("Office-Profil konnte nicht synchronisiert werden:", error);
+    }
+  }
+
+  async function resolveRole() {
+    let apiMe = null;
+
+    try {
+      apiMe = await apiFetch("/me");
+    } catch (error) {
+      console.warn("Rolle konnte nicht über /me geladen werden:", error);
+    }
+
+    const apiRole = apiMe?.role || apiMe?.user?.role || apiMe?.office_role;
+    const clerkRole = Clerk?.user?.publicMetadata?.role ||
+      Clerk?.user?.publicMetadata?.officeRole;
+
+    return normalizeRole(apiRole || clerkRole);
+  }
+
+  function bossMonthEntries() {
+    const month = $("bossMonth")?.value || bossLoadedMonth;
+    return bossEntries.filter(e => e.date && e.date.slice(0, 7) === month);
+  }
+
+  function payrollMonthEntries() {
+    const month = $("payrollMonth")?.value || bossLoadedMonth;
+    return bossEntries.filter(e => e.date && e.date.slice(0, 7) === month);
+  }
+
+  function renderBossEmployeeOptions() {
+    const selects = [$("bossEmployeeSelect"), $("payrollEmployeeSelect")].filter(Boolean);
+
+    selects.forEach(select => {
+      const oldValue = select.value;
+      select.innerHTML = '<option value="">Mitarbeiter auswählen</option>';
+
+      bossEmployees.forEach(user => {
+        const id = officeUserId(user);
+        if (!id) return;
+        const option = document.createElement("option");
+        option.value = id;
+        option.textContent = officeDisplayName(user);
+        select.appendChild(option);
+      });
+
+      if (bossSelectedUserId && bossEmployees.some(u => officeUserId(u) === bossSelectedUserId)) {
+        select.value = bossSelectedUserId;
+      } else if (oldValue && bossEmployees.some(u => officeUserId(u) === oldValue)) {
+        select.value = oldValue;
+      }
+    });
+  }
+
+  function renderBossEmployeeList() {
+    const host = $("bossEmployeeList");
+    if (!host) return;
+
+    if (!bossEmployees.length) {
+      host.innerHTML = '<div class="notice">Noch keine Mitarbeiter-Accounts gefunden.</div>';
+      return;
+    }
+
+    host.innerHTML = "";
+
+    bossEmployees.forEach(user => {
+      const id = officeUserId(user);
+      const row = document.createElement("div");
+      row.className = "employee-row";
+      row.innerHTML = `
+        <div>
+          <strong>${escapeHtml(officeDisplayName(user))}</strong>
+          <small>${escapeHtml(user.email || user.email_address || id)}</small>
+        </div>
+        <div class="employee-meta">
+          <span class="stat-chip">Mitarbeiter</span>
+          <button class="btn ghost" type="button" data-open-employee="${escapeHtml(id)}">Öffnen</button>
+        </div>
+      `;
+      host.appendChild(row);
+    });
+
+    host.querySelectorAll("[data-open-employee]").forEach(button => {
+      button.addEventListener("click", async () => {
+        const id = button.dataset.openEmployee;
+        bossSelectedUserId = id;
+        renderBossEmployeeOptions();
+        showPage("mitarbeiter");
+        await loadBossEmployeeData(id);
+      });
+    });
+  }
+
+  function renderBossEntries() {
+    const monthEntries = bossMonthEntries();
+    const mins = monthEntries.reduce((sum, e) => sum + Number(e.minutes || 0), 0);
+    const appts = monthEntries.reduce((sum, e) => sum + Number(e.appointments || 0), 0);
+    const eligible = monthEntries.reduce((sum, e) => sum + Number(e.eligible || 0), 0);
+    const days = new Set(monthEntries.map(e => e.date)).size;
+
+    $("bossEmpHours").textContent = fmtMinutes(mins);
+    $("bossEmpDays").textContent = days;
+    $("bossEmpAppointments").textContent = appts;
+    $("bossEmpEligible").textContent = eligible;
+
+    $("bossTotalHours").textContent = fmtMinutes(mins);
+    $("bossTotalAppointments").textContent = appts;
+    $("bossPayrollReady").textContent = bossSelectedUserId ? "bereit" : "–";
+
+    const rows = $("bossEntryRows");
+    rows.innerHTML = "";
+
+    const sorted = [...monthEntries].sort(
+      (a, b) => b.date.localeCompare(a.date) || String(b.start).localeCompare(String(a.start))
+    );
+
+    if (!sorted.length) {
+      rows.innerHTML = '<tr><td class="empty" colspan="7">Keine Einträge im gewählten Monat.</td></tr>';
+    } else {
+      sorted.forEach(e => {
+        const d = new Date(e.date + "T00:00:00");
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${escapeHtml(new Intl.DateTimeFormat("de-DE").format(d))}</td>
+          <td>${escapeHtml(e.start || "–")}</td>
+          <td>${escapeHtml(e.end || "–")}</td>
+          <td>${Number(e.break) || 0} min</td>
+          <td><b>${fmtMinutes(Number(e.minutes) || 0)}</b></td>
+          <td>${Number(e.appointments) || 0}</td>
+          <td>${Number(e.eligible) || 0}</td>
+        `;
+        rows.appendChild(tr);
+      });
+    }
+
+    renderPayrollPreview();
+  }
+
   function euro(value) {
     return new Intl.NumberFormat("de-DE", {
       style: "currency",
