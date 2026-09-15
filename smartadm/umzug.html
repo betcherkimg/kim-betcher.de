@@ -329,11 +329,10 @@
       <label for="version">Version der Mappe</label>
       <select id="version">
         <option value="auto" selected>Automatisch erkennen</option>
-        <option value="v1">Version 1 &ndash; ADM-Tool</option>
+        <option value="v1">Version 1 &ndash; ADM-Tool (1.1 und 1.2)</option>
         <option value="v2">Version 2 &ndash; ADM-Tool</option>
-        <option value="v3">Version 3 &ndash; SmartADM</option>
+        <option value="v3">Version 3 &ndash; SmartADM (3 und 3.5)</option>
         <option value="v4">Version 4 &ndash; SmartADM</option>
-        <option value="v5">Version 5 &ndash; SmartADM</option>
       </select>
     </div>
     <div class="ablage" id="ablage">
@@ -506,16 +505,17 @@ var VERSIONEN = {
   v1: {name:"Version 1", termine:"ADM-Protokoll", abstimmung:"liste", abBlatt:"BMA-Protokoll"},
   v2: {name:"Version 2", termine:"ADM-Protokoll", abstimmung:"paare", abBlatt:"AT_Daten", sicht:"BMA-Protokoll"},
   v3: {name:"Version 3", termine:"Terminprotokoll", abstimmung:"typen", abBlatt:"AT_Daten"},
-  v4: {name:"Version 4", termine:"Terminprotokoll", abstimmung:"typen", abBlatt:"AT_Daten", zustaendig:true},
-  v5: {name:"Version 5", termine:"Terminprotokoll", abstimmung:"typen", abBlatt:"AT_Daten"}
+  v4: {name:"Version 4", termine:"Terminprotokoll", abstimmung:"typen", abBlatt:"AT_Daten"}
 };
 
 function versionErkennen(blaetter){
   var hat = function(n){ return blaetter.indexOf(n) !== -1; };
 
   if(hat("Terminprotokoll")){
-    if(hat("Synergie-Rechner") || hat("ADM_Archiv")) return "v5";
-    if(hat("Technical Controller") || hat("TC_Daten")) return "v4";
+    // Sp\u00e4te Mappen erkennt man am Technical Controller; manche haben
+    // zus\u00e4tzlich ein Archiv, gelesen werden sie gleich.
+    if(hat("Technical Controller") || hat("TC_Daten")
+       || hat("Synergie-Rechner") || hat("ADM_Archiv")) return "v4";
     return "v3";
   }
   if(hat("ADM-Protokoll")){
@@ -691,11 +691,15 @@ async function umwandeln(datei, gewaehlt){
   var tZeilen = await blattLesen(archiv, blaetter[v.termine], texte);
   var TERMINE = [], orte = [];
 
-  function ortEinstufen(ort){
-    if(!ort) return "";
-    if(/^(teams|video)/i.test(ort)) return "video";
+  function ortEinstufen(ort, sammeln){
+    if(!ort || ort === "-") return "";
+    if(/teams|video/i.test(ort)) return "video";
     if(/telefon/i.test(ort)) return "telefon";
-    if(orte.indexOf(ort) === -1) orte.push(ort);
+
+    // Orte wie "Zuhause" oder "Beim Kunden" sind keine Bankstellen
+    if(!/^(vrb|vr-bank|vr bank|volksbank|raiffeisen|filiale|sparkasse|vmp)/i.test(ort)) return "frei";
+
+    if(sammeln && orte.indexOf(ort) === -1) orte.push(ort);
     return "bank";
   }
 
@@ -709,7 +713,7 @@ async function umwandeln(datei, gewaehlt){
     if(bekannt.indexOf(mitarbeiter) === -1) mitarbeiter = "";
 
     TERMINE.push({
-      datum: tag, kunde: kunde, ort: ort, ortTyp: ortEinstufen(ort),
+      datum: tag, kunde: kunde, ort: ort, ortTyp: ortEinstufen(ort, true),
       bma: mitarbeiter, wv: datum(tZeilen[z2], 5),
       status: STATUSKARTE[text(tZeilen[z2], 8).toLowerCase()] || "offen",
       protokoll: text(tZeilen[z2], 6)
@@ -743,6 +747,58 @@ async function umwandeln(datei, gewaehlt){
 
   TERMINE.sort(function(a, b){ return (b.datum || "").localeCompare(a.datum || ""); });
 
+  /* --- Gesamte Historie fuer die Auswertung --- */
+  // Sp\u00e4te Mappen f\u00fchren ein Archiv; daraus kommt der volle Verlauf.
+  var HISTORIE = [], gesehen = {};
+
+  function merken(t){
+    var name = String(t.kunde || "").toLowerCase().replace(/[^a-z0-9\u00e4\u00f6\u00fc\u00df]/g, "");
+    var s = (t.datum || "") + "|" + name;
+    if(gesehen[s]) return false;
+    gesehen[s] = true;
+    HISTORIE.push({datum:t.datum, kunde:t.kunde, ort:t.ort, ortTyp:t.ortTyp, bma:t.bma,
+                   wv:t.wv, status:t.status, protokoll:t.protokoll, wvFertig:false});
+    return true;
+  }
+
+  TERMINE.forEach(merken);
+
+  var archivBlatt = blaetter["Termine"] || blaetter["ADM_Archiv"];
+  var archiviert = 0;
+
+  if(archivBlatt){
+    var hZeilen = await blattLesen(archiv, archivBlatt, texte);
+    var istTermine = !!blaetter["Termine"];
+
+    // Das Blatt Termine hat eine Monatsspalte, das Archiv nicht
+    var sOrt    = istTermine ? 3 : 2;
+    var sBma    = istTermine ? 4 : 3;
+    var sKunde  = istTermine ? 5 : 4;
+    var sWv     = istTermine ? 7 : 5;
+    var sStatus = istTermine ? 8 : 7;
+    var sProt   = istTermine ? 9 : 6;
+
+    for(var h = 3; h < hZeilen.length; h++){
+      var hKunde = text(hZeilen[h], sKunde);
+      var hTag = datum(hZeilen[h], 1);
+      if(!hKunde && !hTag) continue;
+
+      var hOrt = text(hZeilen[h], sOrt);
+      if(hOrt === "-") hOrt = "";
+      var hBma = text(hZeilen[h], sBma);
+      if(bekannt.indexOf(hBma) === -1) hBma = "";
+
+      if(merken({
+        datum: hTag, kunde: hKunde, ort: hOrt, ortTyp: ortEinstufen(hOrt, false), bma: hBma,
+        wv: datum(hZeilen[h], sWv),
+        status: STATUSKARTE[text(hZeilen[h], sStatus).toLowerCase()] || "offen",
+        protokoll: text(hZeilen[h], sProt)
+      })) archiviert++;
+    }
+  }
+
+  HISTORIE.sort(function(a, b){ return (b.datum || "").localeCompare(a.datum || ""); });
+
   /* --- Banken aus den Bankstellen --- */
   var BANKEN = orte.map(function(o, i){
     return {id:"b" + (i + 1), name:o, adresse:"", blz:"", betreuung:"voll"};
@@ -756,7 +812,7 @@ async function umwandeln(datei, gewaehlt){
     var aZeilen = await blattLesen(archiv, abQuelle, texte);
     var roh = v.abstimmung === "liste" ? abstimmungAusListe(aZeilen)
             : v.abstimmung === "paare" ? abstimmungAusPaaren(aZeilen)
-            :                            abstimmungAusTypen(aZeilen, !!v.zustaendig);
+            :                            abstimmungAusTypen(aZeilen, true);
 
     Object.keys(roh).forEach(function(k){
       if(satzHatInhalt(roh[k])) ABSTIMMUNG[k] = roh[k];
@@ -767,11 +823,13 @@ async function umwandeln(datei, gewaehlt){
     version: kennung,
     versionName: v.name,
     telefonate: telefonate,
+    archiviert: archiviert,
     daten: {
       profil: {anrede:"Herr", funktion:"Bezirksleiter", vorname:"", nachname:"",
                strasse:"", plz:"", ort:"", mobil:"", mail:"", vo:"", gebiet:"", bild:""},
       banken: BANKEN, bma: BMA, termine: TERMINE, abstimmung: ABSTIMMUNG,
-      provisionen: [], provArchiv: [], provSteuer: 0
+      provisionen: [], provArchiv: [], provSteuer: 0,
+      auswertung: HISTORIE
     }
   };
 }
@@ -807,21 +865,26 @@ function anzeigen(ergebnis){
       '<div class="zahl"><b>' + d.bma.length + '</b><span>Bankmitarbeiter</span></div>'
     + '<div class="zahl"><b>' + d.termine.length + '</b><span>Termine</span></div>'
     + '<div class="zahl"><b>' + abstimmungen + '</b><span>Abstimmungen</span></div>'
+    + '<div class="zahl"><b>' + (d.auswertung || []).length + '</b><span>in der Auswertung</span></div>'
     + '<div class="zahl' + (d.banken.length ? '' : ' luecke') + '"><b>' + d.banken.length
     + '</b><span>Banken erkannt</span></div>';
 
   var m = document.getElementById("meldung");
-  var erkannt = ergebnis.versionName
-    + (ergebnis.telefonate ? " \u00b7 " + ergebnis.telefonate + " Telefonate als Termine \u00fcbernommen" : "");
+  var zusatz = [];
+  if(ergebnis.telefonate) zusatz.push(ergebnis.telefonate + " Telefonate als Termine \u00fcbernommen");
+  if(ergebnis.archiviert) zusatz.push(ergebnis.archiviert + " archivierte Termine gefunden");
+
+  var erkannt = ergebnis.versionName + " erkannt"
+    + (zusatz.length ? ", " + zusatz.join(", ") : "");
 
   if(unvollstaendig){
     m.className = "meldung warn";
-    m.textContent = erkannt + " erkannt. " + unvollstaendig
+    m.textContent = erkannt + ". " + unvollstaendig
       + (unvollstaendig === 1 ? " Bankmitarbeiter braucht" : " Bankmitarbeiter brauchen")
       + " noch Angaben – das kannst du im Werkzeug nachholen.";
   }else{
     m.className = "meldung gut";
-    m.textContent = erkannt + " erkannt \u2013 es fehlt nichts.";
+    m.textContent = erkannt + " \u2013 es fehlt nichts.";
   }
 
   var liste = "";
