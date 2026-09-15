@@ -1,0 +1,25 @@
+{
+  "id": "/smartadm/office/",
+  "name": "SmartADM 5 Office",
+  "short_name": "Office",
+  "description": "SmartADM 5 Office – Arbeitszeit, Aufgaben und Abrechnung",
+  "start_url": "/smartadm/office/",
+  "scope": "/smartadm/office/",
+  "display": "standalone",
+  "background_color": "#f4f7fa",
+  "theme_color": "#0d5ca8",
+  "icons": [
+    {
+      "src": "/smartadm/office/office-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/smartadm/office/office-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
