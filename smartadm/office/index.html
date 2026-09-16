@@ -1978,10 +1978,13 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   $("pushTestBtn").addEventListener("click", event => withBusy(event.currentTarget, async () => {
     try {
       const result = await api("/push/test", "POST");
+      const details = (result.results || [])
+        .map(r => `${r.service || "?"}: ${r.status}${r.detail ? ` – ${r.detail}` : ""}`)
+        .join(" · ");
       showPushCard(result.sent
-        ? "Testbenachrichtigung gesendet – sie sollte in wenigen Sekunden erscheinen."
-        : "Der Push-Dienst hat die Nachricht abgelehnt. Bitte Benachrichtigungen neu aktivieren.",
-        { test: Boolean(result.sent), enable: !result.sent });
+        ? `Test an ${result.sent} von ${result.total} Gerät(en) zugestellt – sollte gleich erscheinen. (${details})`
+        : `Der Push-Dienst hat die Nachricht abgelehnt: ${details}`,
+        { test: true, enable: !result.sent });
     } catch (error) {
       showPushCard("Test fehlgeschlagen: " + error.message, { test: true });
     }
