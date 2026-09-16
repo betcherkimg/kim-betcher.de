@@ -2107,7 +2107,7 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     }
 
     try {
-      await Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } });
+            await Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor }, afterSignOutUrl: APP_URL });
       const update = () => (Clerk.session && Clerk.user ? showApp(Clerk.user) : showLogin());
       update();
       Clerk.addListener?.(update);
