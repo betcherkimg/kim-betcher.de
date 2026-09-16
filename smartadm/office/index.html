@@ -411,6 +411,15 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
           <button class="btn ghost" type="button" data-jump-page="organisation">Aufgaben öffnen</button>
         </div>
 
+        <div class="card shortcut" id="pushCard" hidden>
+          <div><strong>Benachrichtigungen</strong><span id="pushText"></span></div>
+          <div class="btn-row">
+            <button class="btn ghost" type="button" id="pushLaterBtn">Später</button>
+            <button class="btn primary" type="button" id="pushEnableBtn">Aktivieren</button>
+            <button class="btn ghost" type="button" id="pushTestBtn">Test senden</button>
+          </div>
+        </div>
+
         <div class="grid-4">
           <div class="card kpi">
             <div class="kpi-top">
@@ -962,6 +971,12 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   }
 
   const homePage = () => (state.role === "boss" ? "boss-dashboard" : "dashboard");
+
+  function pageAllowed(pageId) {
+    const page = pageId && $(pageId);
+    if (!page?.classList.contains("page")) return false;
+    return page.dataset.role === state.role || page.dataset.role === "shared";
+  }
 
   document.addEventListener("click", event => {
     const target = event.target.closest("[data-page], [data-jump-page]");
@@ -1601,7 +1616,10 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     $$("[data-task-summary]").forEach(el => (el.textContent = summary));
   }
 
+  let tasksLoadedAt = 0;
+
   async function loadTasks() {
+    tasksLoadedAt = Date.now();
     try {
       state.tasks = asArray(await api(state.role === "boss" ? "/admin/tasks" : "/tasks"));
       renderTasks();
@@ -1866,9 +1884,122 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   });
 
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register(`${APP_URL}sw.js`)
+    navigator.serviceWorker.register(`${APP_URL}sw.js`, { updateViaCache: "none" })
       .catch(error => console.warn("Service Worker konnte nicht registriert werden:", error));
   }
+
+  /* ================= Push-Benachrichtigungen ================= */
+
+  const pushState = { publicKey: null };
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const pushSupported = () =>
+    "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+
+  function base64UrlToBytes(value) {
+    const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
+    const binary = atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, "="));
+    return Uint8Array.from(binary, c => c.charCodeAt(0));
+  }
+
+  function sameKey(buffer, bytes) {
+    if (!buffer) return false;
+    const a = new Uint8Array(buffer);
+    return a.length === bytes.length && a.every((v, i) => v === bytes[i]);
+  }
+
+  function showPushCard(text, { enable = false, test = false } = {}) {
+    $("pushCard").hidden = false;
+    setText("pushText", text);
+    $("pushEnableBtn").hidden = !enable;
+    $("pushTestBtn").hidden = !test;
+    $("pushLaterBtn").hidden = test;
+  }
+
+  // Gerät beim Push-Dienst anmelden und die Anmeldung im Worker speichern.
+  async function registerPush() {
+    const key = base64UrlToBytes(pushState.publicKey);
+    const registration = await navigator.serviceWorker.ready;
+    let subscription = await registration.pushManager.getSubscription();
+
+    if (subscription && !sameKey(subscription.options?.applicationServerKey, key)) {
+      await subscription.unsubscribe(); // Schlüssel wurde gewechselt
+      subscription = null;
+    }
+    subscription ||= await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: key
+    });
+
+    await api("/push/subscription", "PUT", subscription.toJSON());
+  }
+
+  async function initPush() {
+    if (state.role !== "employee") return;
+
+    if (!pushSupported()) {
+      if (isIOS && !isInstalled()) {
+        showPushCard("Für Benachrichtigungen auf dem iPhone: Office über „Teilen“ → „Zum Home-Bildschirm“ installieren und von dort öffnen.");
+      }
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API}/push/public-key`);
+      pushState.publicKey = (await res.json())?.publicKey || null;
+    } catch {}
+    if (!pushState.publicKey) return; // Push im Worker noch nicht eingerichtet
+
+    if (Notification.permission === "granted") {
+      // Bei jedem Start still aktualisieren – so bleibt die Anmeldung im Worker aktuell.
+      registerPush().catch(error => console.warn("Push-Anmeldung fehlgeschlagen:", error));
+    } else if (Notification.permission === "default") {
+      showPushCard("Lass dich aufs Handy benachrichtigen, sobald du eine neue Aufgabe bekommst.", { enable: true });
+    } else {
+      showPushCard("Benachrichtigungen sind blockiert. Du kannst sie in den Browser- bzw. App-Einstellungen für diese Seite wieder erlauben.");
+    }
+  }
+
+  // requestPermission muss direkt im Klick passieren (Pflicht auf iPhone).
+  $("pushEnableBtn").addEventListener("click", event => withBusy(event.currentTarget, async () => {
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      showPushCard("Benachrichtigungen wurden nicht erlaubt. Du kannst das später in den Einstellungen des Browsers ändern.");
+      return;
+    }
+    try {
+      await registerPush();
+      showPushCard("Benachrichtigungen sind aktiv ✓ Neue Aufgaben erscheinen jetzt direkt auf diesem Gerät.", { test: true });
+    } catch (error) {
+      console.error(error);
+      showPushCard("Aktivierung fehlgeschlagen: " + error.message, { enable: true });
+    }
+  }));
+
+  $("pushTestBtn").addEventListener("click", event => withBusy(event.currentTarget, async () => {
+    try {
+      const result = await api("/push/test", "POST");
+      showPushCard(result.sent
+        ? "Testbenachrichtigung gesendet – sie sollte in wenigen Sekunden erscheinen."
+        : "Der Push-Dienst hat die Nachricht abgelehnt. Bitte Benachrichtigungen neu aktivieren.",
+        { test: Boolean(result.sent), enable: !result.sent });
+    } catch (error) {
+      showPushCard("Test fehlgeschlagen: " + error.message, { test: true });
+    }
+  }));
+
+  $("pushLaterBtn").addEventListener("click", () => ($("pushCard").hidden = true));
+
+  // Nachrichten vom Service Worker: neue Aufgabe eingegangen / Benachrichtigung angetippt
+  navigator.serviceWorker?.addEventListener("message", event => {
+    if (!state.role) return;
+    if (event.data?.type === "open-page" && pageAllowed(event.data.page)) showPage(event.data.page);
+    if (["tasks-changed", "open-page"].includes(event.data?.type)) loadTasks();
+  });
+
+  // Zurück in die App: Aufgaben auffrischen (höchstens alle 30 Sekunden)
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && state.role && Date.now() - tasksLoadedAt > 30000) loadTasks();
+  });
 
   /* ================= Start & Anmeldung ================= */
 
@@ -1898,8 +2029,11 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     state.role = role;
     document.body.dataset.officeRole = state.role;
 
-    const active = document.querySelector(".page.active")?.dataset.role;
-    if (active !== state.role && active !== "shared") showPage(homePage());
+    // Direktlink aus einer Benachrichtigung (?page=organisation) oder aktuelle Seite behalten
+    const requested = new URLSearchParams(location.search).get("page");
+    const active = document.querySelector(".page.active")?.id;
+    showPage([requested, active].find(pageAllowed) || homePage());
+    if (requested) history.replaceState(null, "", location.pathname);
 
     if (state.role === "boss") {
       await loadBossData();
@@ -1909,6 +2043,7 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
       await loadOwnEntries(); // rendert das Dashboard mit den zentralen Zielwerten
     }
     await loadTasks();
+    initPush();
   }
 
   const displayName = user =>
