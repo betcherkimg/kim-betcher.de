@@ -143,8 +143,8 @@ body[data-office-role="boss"] [data-role="employee"] { display: none !important;
 
 .content { padding: 22px 24px 30px; max-width: 1420px; margin: 0 auto; }
 .page { display: none; }
-.page.active { display: block; }
-.page > * + * { margin-top: 18px; }
+.page.active { display: flex; flex-direction: column; gap: 18px; }
+.page > * { min-width: 0; }
 
 /* ================= Bausteine ================= */
 .card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); }
@@ -200,11 +200,22 @@ body[data-office-role="boss"] [data-role="employee"] { display: none !important;
   width: 100%; padding: 11px 12px; outline: none;
   border: 1px solid #d5e0ea; border-radius: 11px; background: var(--soft); color: var(--ink);
 }
+.field textarea {
+  width: 100%; min-height: 72px; padding: 11px 12px; outline: none; resize: vertical;
+  border: 1px solid #d5e0ea; border-radius: 11px; background: var(--soft); color: var(--ink);
+  font: inherit; line-height: 1.45;
+}
+.field textarea:focus,
 .field input:focus, .field select:focus { border-color: #6eb1ff; box-shadow: 0 0 0 3px rgba(14, 126, 255, .10); }
 
 .actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 15px; }
 .actions.start { justify-content: flex-start; }
 .btn { border: 0; border-radius: 11px; padding: 11px 15px; font-weight: 800; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
+a.btn { text-decoration: none; }
+.btn svg.i { width: 17px; height: 17px; }
+.btn.good { background: #e6f6ef; color: #137252; }
+.btn.warn { background: #fff4e2; color: #94600f; }
 .btn.primary { color: #fff; background: linear-gradient(135deg, var(--blue), var(--blue2)); box-shadow: 0 6px 18px rgba(8, 105, 219, .18); }
 .btn.ghost { background: #eef4f9; color: #3f5e7a; }
 .btn.danger { background: #fff0f0; color: var(--danger); }
@@ -252,6 +263,17 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
 }
 .chip.high { background: #fff0f0; color: #b13a3a; }
 .chip.low { background: #eef7f3; color: #25765d; }
+.chip.good { background: #e6f6ef; color: #137252; }
+.chip.warn { background: #fff4e2; color: #94600f; }
+.chip.data { background: #f1ecfb; color: #6a3fb5; }
+.chip.from { background: #e8f1fc; color: var(--blue); }
+.chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin: -4px 0 14px; }
+.chip-btn {
+  border: 1px solid #cfe0f1; background: #f7fbff; color: var(--blue);
+  border-radius: 999px; padding: 7px 12px; font-size: 12px; font-weight: 800;
+}
+.chip-btn:hover { background: #eaf3fd; }
+.card-head.split { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 
 /* Aufgaben */
 .task-item {
@@ -264,6 +286,59 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
 .task-description { color: #5f7488; font-size: 12px; line-height: 1.45; margin-top: 5px; white-space: pre-wrap; }
 .task-meta { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 8px; }
 .task-actions { display: flex; gap: 7px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* Filialen & Terminbuchung */
+.branch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+.branch-tile {
+  display: flex; align-items: center; gap: 13px; padding: 16px;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--soft);
+  color: inherit; text-decoration: none;
+  transition: border-color .16s ease, background .16s ease;
+}
+.branch-tile:hover { border-color: #9cc6f3; background: #f2f8ff; }
+.branch-tile .kpi-icon { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 11px; }
+.branch-tile .kpi-icon svg.i { width: 21px; height: 21px; }
+.branch-text { min-width: 0; flex: 1; }
+.branch-text strong { display: block; font-size: 15px; }
+.branch-text small { display: block; color: var(--muted); font-size: 12px; margin-top: 3px; }
+.branch-go { flex: 0 0 auto; font-size: 12px; font-weight: 800; color: var(--blue); white-space: nowrap; }
+.branch-row small { word-break: break-all; }
+.branch-row .row-actions { flex-wrap: wrap; }
+
+/* Telefonliste */
+.call-list { display: grid; gap: 12px; }
+.call-card {
+  display: grid; gap: 12px; padding: 16px;
+  border: 1px solid var(--line); border-radius: 14px; background: #fff;
+}
+.call-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.call-name { font-size: 17px; font-weight: 850; }
+.call-brief { padding: 11px 13px; white-space: pre-wrap; }
+.call-btn { font-variant-numeric: tabular-nums; }
+.phone-group { display: inline-flex; gap: 6px; }
+.phone-flag { padding: 11px 13px; font-weight: 800; }
+.call-btn.is-bad {
+  background: #f1f4f7; color: #97a6b4; box-shadow: none; cursor: default; text-decoration: line-through;
+}
+.call-help { margin: -4px 0 0; color: var(--muted); font-size: 11px; }
+.call-row s { color: var(--danger); }
+.dots { display: inline-flex; gap: 4px; padding-top: 6px; flex: 0 0 auto; }
+.dots i { width: 9px; height: 9px; border-radius: 50%; background: #e1e8ef; }
+.dots i.on { background: var(--blue2); }
+.dots.full i.on { background: var(--danger); }
+.call-row {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 14px;
+  padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--soft);
+}
+.call-row-main { min-width: 0; flex: 1; }
+.call-row small { display: block; color: var(--muted); margin-top: 3px; line-height: 1.45; }
+.call-row small a { color: var(--blue); font-weight: 700; text-decoration: none; }
+.call-note {
+  margin-top: 8px; padding: 9px 11px; border-radius: 9px; font-size: 12px; line-height: 1.45;
+  background: #fff; border: 1px solid #e3eaf1; color: #415d78; white-space: pre-wrap; word-break: break-word;
+}
+.call-note b { color: var(--ink); }
+.call-row .row-actions { flex-wrap: wrap; flex: 0 0 auto; }
 
 /* Abrechnung */
 .payroll-profile { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -318,7 +393,12 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   .grid-4, .form-grid, .quick-grid { grid-template-columns: 1fr; }
   .shortcut { flex-direction: column; align-items: flex-start; }
   .shortcut .btn-row, .shortcut .btn { width: 100%; }
-  .task-item { display: block; }
+  .task-item, .call-row { display: block; }
+  .card-head.split { flex-direction: column; }
+  .call-row .row-actions { justify-content: flex-start; margin-top: 10px; }
+  .call-card .btn-row > .btn { flex: 1 1 auto; }
+  .call-card .btn-row > .phone-group { display: flex; flex: 1 1 100%; }
+  .phone-group .call-btn { flex: 1 1 auto; }
   .task-actions { justify-content: flex-start; margin-top: 10px; }
 
   #entryRows td:last-child {
@@ -365,6 +445,10 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.8h9l3 3V20H6z"/><path d="M15 3.8V7h3M8.7 11h6.6M8.7 14.3h6.6M8.7 17.6h4.5"/></svg>Monatsarchiv</button>
       <button data-role="shared" data-page="organisation">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5.2 12 4.2 4.2L18.8 6.8"/></svg>Aufgaben</button>
+      <button data-role="shared" data-page="telefon">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/></svg>Telefonliste</button>
+      <button data-role="shared" data-page="termine">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/><path d="m9.5 15 1.8 1.8 3.4-3.6"/></svg>Terminvereinbarung</button>
       <button data-role="boss" data-page="einstellungen">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.1-1.1l2-1.5-2-3.4-2.4 1a7 7 0 0 0-1.9-1.1L14.3 3h-4.6l-.3 2.9A7 7 0 0 0 7.5 7l-2.4-1-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.1l-2 1.5 2 3.4 2.4-1a7 7 0 0 0 1.9 1.1l.3 2.9h4.6l.3-2.9a7 7 0 0 0 1.9-1.1l2.4 1 2-3.4-2-1.5c.1-.3.1-.7.1-1.1Z"/></svg>Einstellungen</button>
     </nav>
@@ -407,14 +491,24 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
         </div>
 
         <div class="card shortcut">
+          <div><strong>Telefonliste</strong><span data-call-summary>Kontakte werden geladen …</span></div>
+          <button class="btn primary" type="button" data-jump-page="telefon">Telefonliste öffnen</button>
+        </div>
+
+        <div class="card shortcut">
           <div><strong>Aufgaben</strong><span data-task-summary>Aufgaben werden geladen …</span></div>
           <button class="btn ghost" type="button" data-jump-page="organisation">Aufgaben öffnen</button>
+        </div>
+
+        <div class="card shortcut">
+          <div><strong>Terminvereinbarung</strong><span data-branch-summary>Filialen werden geladen …</span></div>
+          <button class="btn primary" type="button" data-jump-page="termine">Termin buchen</button>
         </div>
 
         <div class="card shortcut" id="pushCard" hidden>
           <div><strong>Benachrichtigungen</strong><span id="pushText"></span></div>
           <div class="btn-row">
-            <button class="btn ghost" type="button" id="pushLaterBtn">Später</button>
+            <button class="btn ghost" type="button" id="pushLaterBtn">Ausblenden</button>
             <button class="btn primary" type="button" id="pushEnableBtn">Aktivieren</button>
             <button class="btn ghost" type="button" id="pushTestBtn">Test senden</button>
           </div>
@@ -489,7 +583,7 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
               <div class="quick"><span>Provisionsfähig</span><b id="qEligible">0</b></div>
             </div>
             <div class="notice" style="margin-top:14px">
-              SmartADM 5 Office enthält bewusst keine Felder für Kundennamen, Telefonnummern oder Vertragsdaten.
+              Kundendaten nur in der Telefonliste pflegen und dort knapp halten – keine Vertrags-, Konto- oder Gesundheitsdaten notieren.
             </div>
           </div>
         </div>
@@ -524,10 +618,16 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
         </div>
 
         <div class="card shortcut">
+          <div><strong>Telefonliste</strong><span data-call-summary>Kontakte werden geladen …</span></div>
+          <button class="btn primary" type="button" data-jump-page="telefon">Telefonliste</button>
+        </div>
+
+        <div class="card shortcut">
           <div><strong>Aufgaben &amp; Monatsarchiv</strong><span data-task-summary>Aufgaben werden geladen …</span></div>
           <div class="btn-row">
             <button class="btn ghost" type="button" data-jump-page="organisation">Aufgaben</button>
             <button class="btn ghost" type="button" data-jump-page="nachweise">Monatsarchiv</button>
+            <button class="btn ghost" type="button" data-jump-page="termine">Filialen</button>
           </div>
         </div>
 
@@ -574,6 +674,29 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
           </div>
         </div>
 
+        <div class="card section-card">
+          <div class="card-head">
+            <h2>Stammdaten für den Gehaltsnachweis</h2>
+            <p>Pflichtangaben für die Entgeltabrechnung – nur für dich sichtbar.</p>
+          </div>
+          <form id="employeeProfileForm">
+            <div class="form-grid">
+              <div class="field"><label>Vollständiger Name</label><input data-emp="full_name" type="text" maxlength="120" required placeholder="z. B. Saskia Schreiter"></div>
+              <div class="field"><label>Personalnummer (optional)</label><input data-emp="personnel_number" type="text" maxlength="30" placeholder="z. B. 001"></div>
+              <div class="field"><label>Straße und Hausnummer</label><input data-emp="street" type="text" maxlength="120"></div>
+              <div class="field"><label>PLZ und Ort</label><input data-emp="zip_city" type="text" maxlength="120"></div>
+              <div class="field"><label>Geburtsdatum</label><input data-emp="birth_date" type="date"></div>
+              <div class="field"><label>Rentenversicherungsnummer</label><input data-emp="insurance_number" type="text" maxlength="16" placeholder="12 345678 A 123"></div>
+              <div class="field"><label>Eintritt</label><input data-emp="start_date" type="date"></div>
+              <div class="field"><label>Austritt (optional)</label><input data-emp="end_date" type="date"></div>
+            </div>
+            <div class="actions start">
+              <button class="btn primary" type="submit">Stammdaten speichern</button>
+              <span id="employeeProfileStatus" class="status-text" style="margin:0"></span>
+            </div>
+          </form>
+        </div>
+
         <div class="grid-4">
           <div class="card kpi"><div class="kpi-label">Netto-Arbeitszeit</div><div class="kpi-value" id="bossEmpHours">0:00 h</div><div class="kpi-foot"><span>im gewählten Monat</span></div></div>
           <div class="card kpi"><div class="kpi-label">Arbeitstage</div><div class="kpi-value" id="bossEmpDays">0</div><div class="kpi-foot"><span>erfasste Tage</span></div></div>
@@ -618,6 +741,8 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
               <div class="check-list">
                 <label class="check-row"><input data-profile="employeeRv" type="checkbox">
                   <span>Rentenversicherungspflichtig (3,6 %)<small>Eigenanteil des Mitarbeiters; bei Befreiung deaktivieren.</small></span></label>
+                <label class="check-row"><input data-profile="rvMinBaseApplies" type="checkbox">
+                  <span>Mindestbeitragsbemessungsgrundlage anwenden<small>Aktiv lassen, wenn die 175-€-Mindestbemessung gilt. Deaktivieren z. B. bei rentenversicherungspflichtiger Hauptbeschäftigung oder sonstiger anderweitiger RV-Pflicht.</small></span></label>
                 <label class="check-row"><input data-profile="flatTax" type="checkbox">
                   <span>2 % Pauschsteuer anwenden<small>Für den Minijob wird die einheitliche Pauschsteuer verwendet.</small></span></label>
                 <label class="check-row"><input data-profile="flatTaxEmployee" type="checkbox">
@@ -671,12 +796,15 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
               <div><span>Arbeitgeber-Abgaben</span><strong id="payrollEmployerContributions">0,00 €</strong></div>
               <div><span>Gesamtkosten Arbeitgeber</span><strong id="payrollEmployerCost">0,00 €</strong></div>
             </div>
+            <div id="payrollRvNote" class="status-text"></div>
             <div id="payrollLimitStatus" class="limit-status"></div>
+            <div id="payrollYearStatus" class="limit-status"></div>
+            <div id="payrollDataStatus" class="notice warn" style="margin-top:12px" hidden></div>
           </div>
 
           <div class="actions">
-            <button class="btn ghost" id="createEmployerPayrollPdf" type="button">Arbeitgeber-Abrechnung erstellen</button>
-            <button class="btn primary" id="createPayrollPdf" type="button">Lohnabrechnung Mitarbeiter erstellen</button>
+            <button class="btn ghost" id="createEmployerPayrollPdf" type="button">Arbeitgeber-Abrechnung als PDF</button>
+            <button class="btn primary" id="createPayrollPdf" type="button">Gehaltsnachweis als PDF</button>
           </div>
         </div>
       </section>
@@ -714,14 +842,24 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
 
       <!-- ===== Beide: Aufgaben ===== -->
       <section class="page" id="organisation" data-role="shared">
+
+        <!-- Boss: Posteingang von Mitarbeitern -->
         <div class="card section-card" data-role="boss">
           <div class="card-head">
-            <h2>Aufgabe erstellen</h2>
+            <h2>Von deinen Mitarbeitern</h2>
+            <p>Rückrufwünsche, Nachschub für die Telefonliste und andere Anliegen an dich.</p>
+          </div>
+          <div id="taskInboxList" class="task-list"><div class="notice">Aufgaben werden geladen …</div></div>
+        </div>
+
+        <div class="card section-card" data-role="boss">
+          <div class="card-head">
+            <h2>Aufgabe an Mitarbeiter</h2>
             <p>Aufgaben werden einem Mitarbeiter zugewiesen und bleiben bis zur Erledigung offen.</p>
           </div>
           <form id="taskForm">
             <div class="form-grid">
-              <div class="field"><label>Mitarbeiter</label><select id="taskEmployeeSelect" data-employee-select required></select></div>
+              <div class="field"><label>Mitarbeiter</label><select id="taskEmployeeSelect" data-employee-select data-independent required></select></div>
               <div class="field"><label for="taskPriority">Priorität</label>
                 <select id="taskPriority"><option value="normal">Normal</option><option value="high">Hoch</option><option value="low">Niedrig</option></select></div>
               <div class="field full"><label for="taskTitle">Aufgabe</label><input id="taskTitle" type="text" maxlength="160" required placeholder="z. B. Rückrufliste für Freitag vorbereiten"></div>
@@ -734,10 +872,40 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
 
         <div class="card section-card">
           <div class="card-head">
-            <h2>Offene Aufgaben</h2>
+            <h2 id="taskOpenTitle">Offene Aufgaben</h2>
             <p id="taskOpenSub">Noch zu erledigen.</p>
           </div>
           <div id="taskOpenList" class="task-list"><div class="notice">Aufgaben werden geladen …</div></div>
+        </div>
+
+        <!-- Mitarbeiter: Aufgabe an den Boss -->
+        <div class="card section-card" data-role="employee">
+          <div class="card-head">
+            <h2>Aufgabe an den Boss</h2>
+            <p>Kunde möchte den Boss sprechen, Telefonliste geht zu Ende oder etwas anderes – direkt hier statt per WhatsApp.</p>
+          </div>
+          <div class="chip-row">
+            <button class="chip-btn" type="button" data-task-template="callback">Rückrufwunsch Kunde</button>
+            <button class="chip-btn" type="button" data-task-template="numbers">Neue Nummern</button>
+          </div>
+          <form id="taskRequestForm">
+            <div class="form-grid">
+              <div class="field full"><label for="requestTitle">Worum geht es?</label><input id="requestTitle" type="text" maxlength="160" required placeholder="z. B. Kunde wünscht Rückruf vom Boss"></div>
+              <div class="field full"><label for="requestDescription">Details</label><textarea id="requestDescription" rows="3" maxlength="2000" placeholder="Name, Telefonnummer, Anliegen, Wunschzeit"></textarea></div>
+              <div class="field"><label for="requestPriority">Dringlichkeit</label>
+                <select id="requestPriority"><option value="normal">Normal</option><option value="high">Dringend</option><option value="low">Hat Zeit</option></select></div>
+              <div class="field"><label for="requestDueDate">Bis wann? (optional)</label><input id="requestDueDate" type="date"></div>
+            </div>
+            <div class="actions"><button class="btn primary" type="submit">An den Boss senden</button></div>
+          </form>
+        </div>
+
+        <div class="card section-card" data-role="employee">
+          <div class="card-head">
+            <h2>An den Boss gesendet</h2>
+            <p>Hier siehst du, ob der Boss sich schon gekümmert hat.</p>
+          </div>
+          <div id="taskOutList" class="task-list"></div>
         </div>
 
         <div class="card section-card">
@@ -749,8 +917,127 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
         </div>
       </section>
 
+      <!-- ===== Beide: Telefonliste ===== -->
+      <section class="page" id="telefon" data-role="shared">
+
+        <!-- Boss -->
+        <div class="card section-card" data-role="boss">
+          <div class="card-head">
+            <h2 id="callFormTitle">Kontakt einstellen</h2>
+            <p>Kunde, Nummern und Terminort hinterlegen – plus ein kurzer Hinweis, worum es im Gespräch geht.</p>
+          </div>
+          <form id="callForm">
+            <input type="hidden" id="callEditId">
+            <div class="form-grid">
+              <div class="field"><label>Mitarbeiter</label><select id="callEmployeeSelect" data-employee-select data-independent required></select></div>
+              <div class="field"><label for="callName">Kundenname</label><input id="callName" type="text" maxlength="120" required placeholder="z. B. Familie Müller"></div>
+              <div class="field"><label for="callPhones">Telefonnummer(n)</label><textarea id="callPhones" rows="2" required placeholder="Eine Nummer pro Zeile"></textarea></div>
+              <div class="field"><label for="callPlace">Termin bei</label><select id="callPlace"></select><small>Filiale oder Teams – Filialen pflegst du unter „Terminvereinbarung“.</small></div>
+              <div class="field full"><label for="callBriefing">Hinweis für das Gespräch</label><textarea id="callBriefing" rows="3" maxlength="2000" placeholder="z. B. Bausparvertrag läuft aus – Termin zur Anschlussfinanzierung anbieten"></textarea></div>
+            </div>
+            <div class="actions">
+              <button class="btn ghost" type="button" id="callCancelBtn" hidden>Abbrechen</button>
+              <button class="btn primary" type="submit" id="callSaveBtn">Kontakt speichern</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card section-card" data-role="boss">
+          <div class="card-head">
+            <h2>Rückläufer</h2>
+            <p>R_TA_mT mit Termin · R_TA_oT ohne Termin · R_TA_kK nach 5 Versuchen ohne Kontakt · R_TA_fK falsche Kontaktdaten</p>
+          </div>
+          <div id="callReturnedList" class="employee-list"><div class="notice">Wird geladen …</div></div>
+        </div>
+
+        <div class="card section-card" data-role="boss">
+          <div class="card-head">
+            <h2>In Bearbeitung</h2>
+            <p>Offene Kontakte mit aktuellem Versuchsstand.</p>
+          </div>
+          <div id="callOpenList" class="employee-list"><div class="notice">Wird geladen …</div></div>
+        </div>
+
+        <div class="card section-card" data-role="boss">
+          <div class="card-head">
+            <h2>Erledigt</h2>
+            <p>Die letzten 100 als erledigt markierten Rückläufer.</p>
+          </div>
+          <div id="callArchiveList" class="employee-list"></div>
+        </div>
+
+        <!-- Mitarbeiter -->
+        <div class="card section-card" data-role="employee">
+          <div class="card-head split">
+            <div>
+              <h2>Telefonliste</h2>
+              <p>Nummer antippen zum Anrufen. Nicht erreicht? Versuch zählen – nach 5 Versuchen geht der Kontakt zurück.</p>
+            </div>
+            <button class="btn ghost" type="button" id="requestNumbersBtn">Neue Nummern anfordern</button>
+          </div>
+          <div id="callList" class="call-list"><div class="notice">Kontakte werden geladen …</div></div>
+        </div>
+      </section>
+
+      <!-- ===== Beide: Terminvereinbarung ===== -->
+      <section class="page" id="termine" data-role="shared">
+        <div class="card section-card" data-role="boss">
+          <div class="card-head">
+            <h2 id="branchFormTitle">Filiale anlegen</h2>
+            <p>Filiale mit ihrem Bookings-Link hinterlegen. Mitarbeiter buchen darüber mit einem Klick.</p>
+          </div>
+          <form id="branchForm">
+            <input type="hidden" id="branchEditId">
+            <div class="form-grid">
+              <div class="field"><label for="branchName">Filiale</label><input id="branchName" type="text" maxlength="120" required placeholder="z. B. VR-Bank Oberkochen"></div>
+              <div class="field"><label for="branchNote">Hinweis (optional)</label><input id="branchNote" type="text" maxlength="200" placeholder="z. B. Adresse oder Ansprechpartner"></div>
+              <div class="field full"><label for="branchUrl">Bookings-Link</label><input id="branchUrl" type="url" required placeholder="https://outlook.office365.com/owa/calendar/…"></div>
+            </div>
+            <div class="actions">
+              <button class="btn ghost" type="button" id="branchCancelBtn" hidden>Abbrechen</button>
+              <button class="btn primary" type="submit" id="branchSaveBtn">Filiale speichern</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card section-card" data-role="boss">
+          <div class="card-head">
+            <h2>Deine Filialen</h2>
+            <p>Diese Filialen sehen deine Mitarbeiter unter „Terminvereinbarung“.</p>
+          </div>
+          <div id="branchAdminList" class="employee-list"><div class="notice">Filialen werden geladen …</div></div>
+        </div>
+
+        <div class="card section-card" data-role="employee">
+          <div class="card-head">
+            <h2>Termin buchen</h2>
+            <p>Filiale antippen – der Buchungskalender öffnet sich direkt.</p>
+          </div>
+          <div id="branchTiles" class="branch-grid"><div class="notice">Filialen werden geladen …</div></div>
+        </div>
+      </section>
+
       <!-- ===== Boss: Einstellungen ===== -->
       <section class="page" id="einstellungen" data-role="boss">
+        <div class="card section-card">
+          <div class="card-head">
+            <h2>Arbeitgeber</h2>
+            <p>Erscheint im Kopf jedes Gehaltsnachweises.</p>
+          </div>
+          <form id="employerForm">
+            <div class="form-grid narrow">
+              <div class="field"><label>Name / Firma</label><input data-employer-field="name" type="text" maxlength="120" required placeholder="z. B. Kim Betcher"></div>
+              <div class="field"><label>Betriebsnummer (optional)</label><input data-employer-field="company_number" type="text" inputmode="numeric" maxlength="9" placeholder="8 Ziffern"></div>
+              <div class="field"><label>Straße und Hausnummer</label><input data-employer-field="street" type="text" maxlength="120"></div>
+              <div class="field"><label>PLZ und Ort</label><input data-employer-field="zip_city" type="text" maxlength="120"></div>
+            </div>
+            <div class="actions start">
+              <button class="btn primary" type="submit">Arbeitgeber speichern</button>
+              <span id="employerStatus" class="status-text" style="margin:0"></span>
+            </div>
+          </form>
+        </div>
+
         <div class="card section-card">
           <div class="card-head">
             <h2>Einstellungen</h2>
@@ -773,6 +1060,9 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   </main>
 </div>
 
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+  integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script defer crossorigin="anonymous"
   src="https://clerk.kim-betcher.de/npm/@clerk/ui@1/dist/ui.browser.js"></script>
 <script defer crossorigin="anonymous"
@@ -789,24 +1079,24 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   const APP_URL = "/smartadm/office/";
   const HOURLY_RATE_CENTS = 1390;
   const COMMISSION_RATE_CENTS = 500;
-  const MINIJOB_LIMIT = 603;
+  const MINIJOB_LIMIT = 603;                 // Geringfügigkeitsgrenze 2026 je Monat
+  const RV_MIN_BASE_CENTS = 17500;           // Mindestbeitragsbemessungsgrundlage (§ 163 Abs. 8 SGB VI)
+  const RV_FULL_RATE = 0.186;
+  const RV_EMPLOYER_RATE = 0.15;
+  const RV_EMPLOYEE_RATE = 0.036;
   const MAX_BACKDATE_DAYS = 7;
   const AUTO_CLOSING_START_MONTH = "2026-09";
 
   const DEFAULT_PROFILE = {
-    employeeRv: true, flatTax: true, flatTaxEmployee: false,
+    employeeRv: true, rvMinBaseApplies: true, flatTax: true, flatTaxEmployee: false,
     employerKv: true, employerRv: true, u1: true, u2: true,
     insolvency: true, accident: false, accidentRate: 0
   };
 
-  // Gleiche Sätze wie im Worker – Vorschau und Monatsabschluss rechnen identisch.
-  const EMPLOYEE_RATES = {
-    employeeRv: p => (p.employeeRv ? 0.036 : 0),
-    employeeFlatTax: p => (p.flatTax && p.flatTaxEmployee ? 0.02 : 0)
-  };
+  // Gleiche Logik wie im Worker – Vorschau und Monatsabschluss rechnen identisch.
   const EMPLOYER_RATES = {
     employerKv: p => (p.employerKv ? 0.13 : 0),
-    employerRv: p => (p.employerRv ? 0.15 : 0),
+    employerRv: p => (p.employerRv ? RV_EMPLOYER_RATE : 0),
     u1: p => (p.u1 ? 0.008 : 0),
     u2: p => (p.u2 ? 0.0022 : 0),
     insolvency: p => (p.insolvency ? 0.0015 : 0),
@@ -821,11 +1111,15 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     lohn: ["Lohn & Abrechnung", "Vergütung und Monatsabrechnung"],
     nachweise: ["Monatsarchiv", "Abgeschlossene Monate und Abrechnungen"],
     organisation: ["Aufgaben", "Offene und erledigte Aufgaben"],
+    termine: ["Terminvereinbarung", "Filialen und Buchungslinks"],
+    telefon: ["Telefonliste", "Kontakte anrufen und Ergebnisse zurückmelden"],
     einstellungen: ["Einstellungen", "Ziele und zentrale Datenhaltung"]
   };
 
   const ICONS = {
     edit: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></svg>',
+    phone: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/></svg>',
+    calendar: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>',
     trash: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M7 7l1 13h8l1-13"/><path d="M10 11v5M14 11v5"/></svg>'
   };
 
@@ -839,7 +1133,13 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     selectedUserId: null,
     profiles: {},            // Boss: Abgabenprofile je Mitarbeiter
     tasks: [],
+    branches: [],
+    calls: [],                                         // Mitarbeiter: eigene offene Kontakte
+    callDrafts: {},                                    // ungespeicherte Protokolle je Kontakt
+    adminCalls: { open: [], returned: [], archived: [] },
     closings: [],
+    employer: {},
+    employeeProfiles: {},
     settings: { goalHours: 24, goalAppointments: 40, cutAppointments: 50 },
     loading: false,
     bootstrappedFor: null,
@@ -874,9 +1174,16 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   const euroFmt = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" });
 
   const fmtDate = iso => (iso ? dateFmt.format(new Date(`${iso.slice(0, 10)}T12:00:00`)) : "–");
-  const fmtTimestamp = ts => (ts ? dateFmt.format(new Date(ts)) : "–");
+  const dateTimeFmt = new Intl.DateTimeFormat("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  const parseTimestamp = ts => new Date(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(ts) ? `${ts.replace(" ", "T")}Z` : ts);
+  const fmtTimestamp = ts => (ts ? dateFmt.format(parseTimestamp(ts)) : "–");
+  const fmtDateTime = ts => (ts ? dateTimeFmt.format(parseTimestamp(ts)) : "–");
   const fmtMonth = ym => monthFmt.format(new Date(`${ym}-01T12:00:00`));
   const euro = v => euroFmt.format(Number(v || 0));
+  const fmtMonthShort = ym => `${ym.slice(5, 7)}/${ym.slice(2, 4)}`;
+  const weekdayFmt = new Intl.DateTimeFormat("de-DE", { weekday: "short" });
+  const fmtWeekday = iso => weekdayFmt.format(new Date(`${iso}T12:00:00`));
+  const fmtInsurance = v => (v ? `${v.slice(0, 2)} ${v.slice(2, 8)} ${v.slice(8, 9)} ${v.slice(9)}` : "–");
   const decimal = (v, digits = 1) => Number(v).toFixed(digits).replace(".", ",");
 
   function fmtMinutes(m) {
@@ -1186,7 +1493,7 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
       .join("");
 
     $$("[data-employee-select]").forEach(select => {
-      const keep = select.id === "taskEmployeeSelect" ? select.value : state.selectedUserId;
+      const keep = select.hasAttribute("data-independent") ? select.value : state.selectedUserId;
       select.innerHTML = options;
       select.value = findEmployee(keep) ? keep : "";
     });
@@ -1217,7 +1524,7 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   // Die Aufgaben-Auswahl bleibt eigenständig, damit das Formular nicht mitspringt.
   document.addEventListener("change", event => {
     const select = event.target.closest("[data-employee-select]");
-    if (select && select.id !== "taskEmployeeSelect") selectEmployee(select.value || null);
+    if (select && !select.hasAttribute("data-independent")) selectEmployee(select.value || null);
   });
 
   async function selectEmployee(userId) {
@@ -1233,6 +1540,9 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     renderEmployeeSelects();
     setProfileInputs(state.profiles[userId]);
 
+    fillFields("data-emp", state.employeeProfiles[userId]);
+    setStatus("employeeProfileStatus", "");
+
     if (!userId) {
       state.employeeEntries = [];
       state.closings = [];
@@ -1246,12 +1556,18 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
 
   async function loadEmployeeData(userId) {
     try {
-      const [rows, profile] = await Promise.all([
+      const [rows, profile, master] = await Promise.all([
         api(forUser("/admin/entries", userId)),
-        api(forUser("/admin/payroll-settings", userId))
+        api(forUser("/admin/payroll-settings", userId)),
+        api(forUser("/admin/employee-profile", userId)).catch(error => {
+          console.warn("Stammdaten nicht verfügbar:", error);
+          return {};
+        })
       ]);
       if (state.selectedUserId !== userId) return; // inzwischen anderer Mitarbeiter gewählt
       state.employeeEntries = toEntries(rows);
+      state.employeeProfiles[userId] = master || {};
+      fillFields("data-emp", master);
       state.profiles[userId] = { ...DEFAULT_PROFILE, ...profile };
       setProfileInputs(state.profiles[userId]);
     } catch (error) {
@@ -1305,6 +1621,53 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
 
   $("bossMonth").addEventListener("change", renderEmployeeData);
 
+  /* ================= Boss: Stammdaten ================= */
+
+  const readFields = attr => Object.fromEntries($$(`[${attr}]`).map(i => [i.getAttribute(attr), i.value.trim()]));
+  const fillFields = (attr, data) => $$(`[${attr}]`).forEach(i => (i.value = data?.[i.getAttribute(attr)] || ""));
+
+  async function loadEmployer() {
+    try {
+      state.employer = await api("/admin/employer");
+      fillFields("data-employer-field", state.employer);
+      renderPayrollPreview();
+    } catch (error) {
+      console.warn("Arbeitgeberdaten nicht verfügbar:", error);
+    }
+  }
+
+  $("employerForm").addEventListener("submit", event => {
+    event.preventDefault();
+    withBusy(event.submitter, async () => {
+      try {
+        state.employer = await api("/admin/employer", "PUT", readFields("data-employer-field"));
+        fillFields("data-employer-field", state.employer);
+        setStatus("employerStatus", "Gespeichert ✓");
+        renderPayrollPreview();
+      } catch (error) {
+        setStatus("employerStatus", error.message, true);
+      }
+    });
+  });
+
+  $("employeeProfileForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const userId = state.selectedUserId;
+    if (!userId) return alert("Bitte zuerst einen Mitarbeiter auswählen.");
+
+    withBusy(event.submitter, async () => {
+      try {
+        const saved = await api(forUser("/admin/employee-profile", userId), "PUT", readFields("data-emp"));
+        state.employeeProfiles[userId] = saved;
+        if (state.selectedUserId === userId) fillFields("data-emp", saved);
+        setStatus("employeeProfileStatus", "Gespeichert ✓");
+        renderPayrollPreview();
+      } catch (error) {
+        setStatus("employeeProfileStatus", error.message, true);
+      }
+    });
+  });
+
   /* ================= Boss: Abrechnung ================= */
 
   const profileInputs = () => $$("[data-profile]");
@@ -1334,22 +1697,56 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     const flatTaxEmployee = get("flatTaxEmployee");
     flatTaxEmployee.disabled = !get("flatTax").checked;
     if (flatTaxEmployee.disabled) flatTaxEmployee.checked = false;
+
+    // Die 175-€-Mindestbemessung spielt nur bei RV-Pflicht eine Rolle.
+    // Die Auswahl bleibt beim Deaktivieren erhalten, damit sie bei späterer RV-Pflicht nicht verloren geht.
+    const rvMinBase = get("rvMinBaseApplies");
+    if (rvMinBase) rvMinBase.disabled = !get("employeeRv").checked;
+
     get("accidentRate").disabled = !get("accident").checked;
   }
 
-  function calculatePayroll(list, profile) {
+  // Sozialversicherungstage: voller Monat = 30, sonst Kalendertage der Beschäftigung
+  function insuredDays(month, start, end) {
+    const [y, m] = month.split("-").map(Number);
+    const daysInMonth = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    const first = `${month}-01`;
+    const last = `${month}-${pad(daysInMonth)}`;
+    const from = start && start > first ? start : first;
+    const to = end && end < last ? end : last;
+    if (to < from) return 0;
+    const days = Math.round((Date.parse(to) - Date.parse(from)) / 86400000) + 1;
+    return days >= daysInMonth ? 30 : Math.min(30, days);
+  }
+
+  const contributionGroup = p => `${p.employerKv ? "6" : "0"}${p.employeeRv ? "1" : "5"}00`;
+
+  function calculatePayroll(list, profile, month, employment = {}) {
     const { mins, appts, eligible, days } = summarize(list);
     const timePay = Math.round((mins * HOURLY_RATE_CENTS) / 60);
     const commission = eligible * COMMISSION_RATE_CENTS;
     const gross = timePay + commission;
+    const svDays = insuredDays(month, employment.start_date, employment.end_date);
 
-    const apply = rates => Object.fromEntries(
-      Object.entries(rates).map(([key, rate]) => [key, Math.round(gross * rate(profile))])
+    // RV-Eigenanteil; unter 175 € (anteilig) gilt der Mindestbeitrag
+    let employeeRv = 0;
+    let rvMinBase = 0;
+    if (profile.employeeRv && gross > 0) {
+      employeeRv = Math.round(gross * RV_EMPLOYEE_RATE);
+      const base = Math.round((RV_MIN_BASE_CENTS * svDays) / 30);
+      if (profile.rvMinBaseApplies && gross < base) {
+        rvMinBase = base;
+        employeeRv = Math.round(base * RV_FULL_RATE) - Math.round(gross * RV_EMPLOYER_RATE);
+      }
+    }
+    const employee = {
+      employeeRv,
+      employeeFlatTax: profile.flatTax && profile.flatTaxEmployee ? Math.round(gross * 0.02) : 0
+    };
+    const employer = Object.fromEntries(
+      Object.entries(EMPLOYER_RATES).map(([key, rate]) => [key, Math.round(gross * rate(profile))])
     );
     const total = obj => Object.values(obj).reduce((a, b) => a + b, 0);
-
-    const employee = apply(EMPLOYEE_RATES);
-    const employer = apply(EMPLOYER_RATES);
     const employeeDeductions = total(employee);
     const employerContributions = total(employer);
 
@@ -1357,19 +1754,57 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
       timePay, commission, gross, ...employee, employeeDeductions,
       net: gross - employeeDeductions,
       ...employer, employerContributions,
-      employerCost: gross + employerContributions
+      employerCost: gross + employerContributions,
+      rvMinBase
     };
 
     return {
-      mins, appts, eligible, days,
+      mins, appts, eligible, days, svDays, contributionGroup: contributionGroup(profile),
       ...Object.fromEntries(Object.entries(cents).map(([k, v]) => [k, v / 100]))
     };
   }
 
+  // Brutto der letzten 12 Monate inkl. Abrechnungsmonat
+  function rollingYear(entries, month) {
+    const [y, m] = month.split("-").map(Number);
+    const from = isoMonth(new Date(y, m - 12, 1));
+    const months = {};
+    entries.forEach(e => {
+      const key = e.date.slice(0, 7);
+      if (key < from || key > month) return;
+      months[key] ??= { mins: 0, eligible: 0 };
+      months[key].mins += e.minutes;
+      months[key].eligible += e.eligible;
+    });
+    const values = Object.values(months).map(v =>
+      Math.round((v.mins * HOURLY_RATE_CENTS) / 60) + v.eligible * COMMISSION_RATE_CENTS);
+    return {
+      from,
+      to: month,
+      gross: values.reduce((a, b) => a + b, 0) / 100,
+      limit: MINIJOB_LIMIT * 12,
+      monthsOver: values.filter(v => v > MINIJOB_LIMIT * 100).length
+    };
+  }
+
   const payrollMonth = () => $("payrollMonth").value || isoMonth();
+  const selectedEmployment = () => state.employeeProfiles[state.selectedUserId] || {};
 
   function currentPayroll() {
-    return calculatePayroll(inMonth(state.employeeEntries, payrollMonth()), readProfileInputs());
+    const month = payrollMonth();
+    return calculatePayroll(inMonth(state.employeeEntries, month), readProfileInputs(), month, selectedEmployment());
+  }
+
+  function missingMasterData(employer, employee) {
+    return [
+      !employer?.name && "Arbeitgeber: Name",
+      !(employer?.street && employer?.zip_city) && "Arbeitgeber: Anschrift",
+      !employee?.full_name && "Mitarbeiter: vollständiger Name",
+      !(employee?.street && employee?.zip_city) && "Mitarbeiter: Anschrift",
+      !employee?.birth_date && "Mitarbeiter: Geburtsdatum",
+      !employee?.insurance_number && "Mitarbeiter: Rentenversicherungsnummer",
+      !employee?.start_date && "Mitarbeiter: Eintrittsdatum"
+    ].filter(Boolean);
   }
 
   function renderPayrollPreview() {
@@ -1389,12 +1824,37 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     };
     Object.entries(values).forEach(([id, text]) => setText(id, text));
 
+    const rvMinBaseWouldApply = readProfileInputs().employeeRv && !readProfileInputs().rvMinBaseApplies &&
+      p.gross > 0 && p.gross < (RV_MIN_BASE_CENTS * p.svDays / 30) / 100;
+    setText("payrollRvNote", p.rvMinBase
+      ? `RV-Mindestbeitrag aktiv: Bemessungsgrundlage ${euro(p.rvMinBase)} (${p.svDays} SV-Tage) – Arbeitnehmeranteil ${euro(p.employeeRv)}.`
+      : rvMinBaseWouldApply
+        ? "RV-Mindestbemessung ist für diesen Mitarbeiter deaktiviert; der Arbeitnehmeranteil wird vom tatsächlichen Verdienst mit 3,6 % berechnet."
+        : "");
+
     const over = p.gross > MINIJOB_LIMIT;
     const status = $("payrollLimitStatus");
     status.classList.toggle("warn", over);
     status.textContent = over
-      ? `Achtung: ${euro(p.gross)} brutto überschreiten die Minijob-Grenze von ${euro(MINIJOB_LIMIT)}.`
-      : `Minijob-Grenze: ${euro(p.gross)} von ${euro(MINIJOB_LIMIT)} – noch ${euro(MINIJOB_LIMIT - p.gross)} frei.`;
+      ? `Hinweis: ${euro(p.gross)} brutto liegen über ${euro(MINIJOB_LIMIT)} in diesem Monat. Für die Minijob-Beurteilung zählt zusätzlich die 12-Monats-Betrachtung; Ausnahmen bei unvorhersehbarem Überschreiten separat prüfen.`
+      : `Monatswert: ${euro(p.gross)} von ${euro(MINIJOB_LIMIT)} – noch ${euro(MINIJOB_LIMIT - p.gross)} bis zur monatlichen Richtgröße.`;
+
+    const year = rollingYear(state.employeeEntries, payrollMonth());
+    const yearStatus = $("payrollYearStatus");
+    const yearWarn = year.gross > year.limit || year.monthsOver > 2;
+    yearStatus.classList.toggle("warn", yearWarn);
+    yearStatus.textContent =
+      `Letzte 12 Monate (${fmtMonthShort(year.from)}–${fmtMonthShort(year.to)}): ${euro(year.gross)} von ${euro(year.limit)}`
+      + (year.monthsOver ? ` · ${year.monthsOver} Monat(e) über ${euro(MINIJOB_LIMIT)}` : "")
+      + (year.gross > year.limit ? " · Jahresrichtwert überschritten – Einordnung des Beschäftigungsverhältnisses prüfen." : "");
+
+    const missing = state.selectedUserId ? missingMasterData(state.employer, selectedEmployment()) : [];
+    const dataStatus = $("payrollDataStatus");
+    dataStatus.hidden = !missing.length;
+    dataStatus.innerHTML = missing.length
+      ? `<b>Für einen vollständigen Gehaltsnachweis fehlen noch:</b> ${missing.map(esc).join(", ")}.
+         Arbeitgeber unter „Einstellungen“, Mitarbeiter unter „Mitarbeiter“ ergänzen.`
+      : "";
   }
 
   let profileSaveTimer = null;
@@ -1478,12 +1938,22 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
       payroll: currentPayroll(),
       profile: readProfileInputs(),
       note: $("payrollNote").value.trim(),
-      created: dateFmt.format(new Date())
+      created: dateFmt.format(new Date()),
+      employer: state.employer,
+      employee: selectedEmployment(),
+      entries: inMonth(state.employeeEntries, month)
+        .sort((a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start))
+        .map(e => ({
+          work_date: e.date, start_time: e.start, end_time: e.end, break_minutes: e.break,
+          work_minutes: e.minutes, appointments: e.appointments, eligible: e.eligible
+        })),
+      year: rollingYear(state.employeeEntries, month),
+      preview: true
     };
   }
 
-  $("createPayrollPdf").addEventListener("click", () => printDocument(payrollDocument(), false));
-  $("createEmployerPayrollPdf").addEventListener("click", () => printDocument(payrollDocument(), true));
+  $("createPayrollPdf").addEventListener("click", () => downloadDocumentPdf(payrollDocument(), false));
+  $("createEmployerPayrollPdf").addEventListener("click", () => downloadDocumentPdf(payrollDocument(), true));
 
   /* ================= Boss: Monatsarchiv ================= */
 
@@ -1512,7 +1982,7 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
             <td>${euro(row.net ?? p.net)}</td>
             <td>${esc(fmtTimestamp(row.closed_at))}</td>
             <td><div class="row-actions">
-              <button class="icon-btn" type="button" data-closing="${row.id}" title="Lohnabrechnung Mitarbeiter">PDF</button>
+              <button class="icon-btn" type="button" data-closing="${row.id}" title="Gehaltsnachweis drucken">PDF</button>
               <button class="icon-btn" type="button" data-closing="${row.id}" data-employer title="Arbeitgeber-Abrechnung">AG</button>
             </div></td>
           </tr>`;
@@ -1527,14 +1997,19 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     const snap = row?.snapshot;
     if (!snap?.payroll) return alert("Der gespeicherte Monatsabschluss ist unvollständig.");
 
-    printDocument({
+    downloadDocumentPdf({
       employeeName: snap.employeeName || employeeName(findEmployee(row.clerk_user_id)),
       month: snap.month || row.payroll_month,
       monthLabel: snap.monthLabel || row.payroll_month,
       payroll: snap.payroll,
       profile: snap.profile || DEFAULT_PROFILE,
       note: snap.note || "",
-      created: snap.created ? fmtDate(snap.created) : fmtTimestamp(row.closed_at)
+      created: snap.created ? fmtDate(snap.created) : fmtTimestamp(row.closed_at),
+      employer: snap.employer || null,
+      employee: snap.employee || null,
+      entries: snap.entries || null,
+      year: snap.year || null,
+      preview: false
     }, button.hasAttribute("data-employer"));
   });
 
@@ -1569,22 +2044,40 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   /* ================= Aufgaben ================= */
 
   const PRIORITY_LABELS = { high: "Hoch", normal: "Normal", low: "Niedrig" };
+  const BOSS_INBOX = "boss";
+  const isInbox = task => task.assigned_to === BOSS_INBOX;
 
   function taskHtml(task) {
     const done = task.status === "completed";
-    const isBoss = state.role === "boss";
-    const chips = [
-      isBoss && `<span class="chip">${esc(task.display_name || task.email || employeeName(findEmployee(task.assigned_to)))}</span>`,
-      `<span class="chip ${task.priority === "normal" ? "" : esc(task.priority)}">${PRIORITY_LABELS[task.priority] || "Normal"}</span>`,
-      `<span class="chip">${task.due_date ? `Fällig ${esc(fmtDate(task.due_date))}` : "Ohne Frist"}</span>`,
-      done && task.completed_at && `<span class="chip">Erledigt ${esc(fmtTimestamp(task.completed_at))}</span>`
-    ].filter(Boolean).join("");
+    const inbox = isInbox(task);
+    const boss = state.role === "boss";
+    const button = (action, label, cls) =>
+      `<button class="btn ${cls}" type="button" data-task-action="${action}" data-id="${task.id}">${label}</button>`;
 
-    const actions = isBoss
-      ? `${done ? `<button class="btn ghost" type="button" data-task-action="reopen" data-id="${task.id}">Wieder öffnen</button>` : ""}
-         <button class="btn danger" type="button" data-task-action="delete" data-id="${task.id}">Löschen</button>`
-      : done ? ""
-      : `<button class="btn primary" type="button" data-task-action="complete" data-id="${task.id}">Als erledigt markieren</button>`;
+    const person = boss
+      ? inbox
+        ? `<span class="chip from">Von: ${esc(task.creator_name || task.creator_email || "Mitarbeiter")}</span>`
+        : `<span class="chip">An: ${esc(task.display_name || task.email || employeeName(findEmployee(task.assigned_to)))}</span>`
+      : inbox ? '<span class="chip from">An: Boss</span>' : "";
+
+    const chips = [
+      person,
+      `<span class="chip ${task.priority === "normal" ? "" : esc(task.priority)}">${PRIORITY_LABELS[task.priority] || "Normal"}</span>`,
+      task.due_date ? `<span class="chip">Fällig ${esc(fmtDate(task.due_date))}</span>` : "",
+      inbox ? `<span class="chip">Gesendet ${esc(fmtDateTime(task.created_at))}</span>` : "",
+      done && task.completed_at ? `<span class="chip good">Erledigt ${esc(fmtDateTime(task.completed_at))}</span>` : ""
+    ].join("");
+
+    let actions = "";
+    if (boss) {
+      if (!done && inbox) actions += button("adminComplete", "Erledigt", "primary");
+      if (done) actions += button("reopen", "Wieder öffnen", "ghost");
+      actions += button("delete", "Löschen", "danger");
+    } else if (!done) {
+      actions = inbox
+        ? button("withdraw", "Zurückziehen", "ghost")
+        : button("complete", "Als erledigt markieren", "primary");
+    }
 
     return `<div class="task-item ${done ? "completed" : ""}">
       <div class="task-main">
@@ -1596,22 +2089,43 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     </div>`;
   }
 
+  function renderTaskList(id, items, empty) {
+    $(id).innerHTML = items.length ? items.map(taskHtml).join("") : `<div class="notice">${empty}</div>`;
+  }
+
   function renderTasks() {
+    const boss = state.role === "boss";
     const open = state.tasks.filter(t => t.status === "open");
     const done = state.tasks.filter(t => t.status === "completed");
+    const inboxOpen = open.filter(isInbox);
+    const ownOpen = open.filter(t => !isInbox(t)); // Boss: an Mitarbeiter · Mitarbeiter: an mich
 
-    setText("taskOpenSub", state.role === "boss" ? "Aufgaben aller Mitarbeiter." : "Deine noch offenen Aufgaben.");
-    $("taskOpenList").innerHTML = open.length ? open.map(taskHtml).join("") : '<div class="notice">Keine offenen Aufgaben. ✓</div>';
-    $("taskArchiveList").innerHTML = done.length ? done.map(taskHtml).join("") : '<div class="notice">Noch keine erledigten Aufgaben.</div>';
+    if (boss) {
+      setText("taskOpenTitle", "An Mitarbeiter – offen");
+      setText("taskOpenSub", "Aufgaben, die deine Mitarbeiter noch erledigen müssen.");
+      renderTaskList("taskInboxList", inboxOpen, "Keine offenen Anliegen deiner Mitarbeiter. ✓");
+      renderTaskList("taskOpenList", ownOpen, "Keine offenen Aufgaben. ✓");
+      renderTaskList("taskArchiveList", done, "Noch keine erledigten Aufgaben.");
+    } else {
+      setText("taskOpenTitle", "Deine Aufgaben");
+      setText("taskOpenSub", "Vom Boss an dich – noch zu erledigen.");
+      renderTaskList("taskOpenList", ownOpen, "Keine offenen Aufgaben. ✓");
+      // Gesendete: offene zuerst, erledigte nur die letzten 10
+      const sent = state.tasks.filter(isInbox);
+      const sentShown = [...sent.filter(t => t.status === "open"), ...sent.filter(t => t.status !== "open").slice(0, 10)];
+      renderTaskList("taskOutList", sentShown, "Noch nichts an den Boss gesendet.");
+      renderTaskList("taskArchiveList", done.filter(t => !isInbox(t)), "Noch keine erledigten Aufgaben.");
+    }
 
     const today = isoDate();
     const weekEnd = shiftDays(7);
-    const dueSoon = open.filter(t => t.due_date >= today && t.due_date <= weekEnd).length;
-    const overdue = open.filter(t => t.due_date && t.due_date < today).length;
+    const dueSoon = ownOpen.filter(t => t.due_date >= today && t.due_date <= weekEnd).length;
+    const overdue = ownOpen.filter(t => t.due_date && t.due_date < today).length;
     const summary = [
-      `${open.length} offen`,
-      dueSoon && `${dueSoon} diese Woche fällig`,
-      overdue && `${overdue} überfällig`
+      boss ? `${inboxOpen.length} von Mitarbeitern` : "",
+      `${ownOpen.length} offen`,
+      dueSoon ? `${dueSoon} diese Woche fällig` : "",
+      overdue ? `${overdue} überfällig` : ""
     ].filter(Boolean).join(", ");
     $$("[data-task-summary]").forEach(el => (el.textContent = summary));
   }
@@ -1633,26 +2147,30 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
 
   const TASK_ACTIONS = {
     complete: { path: id => `/tasks/${id}/complete`, method: "PUT", error: "Aufgabe konnte nicht erledigt werden" },
+    withdraw: { path: id => `/tasks/${id}`, method: "DELETE", error: "Aufgabe konnte nicht zurückgezogen werden",
+                confirm: "Anfrage an den Boss zurückziehen?" },
+    adminComplete: { path: id => `/admin/tasks/${id}/complete`, method: "PUT", error: "Aufgabe konnte nicht erledigt werden" },
     reopen: { path: id => `/admin/tasks/${id}/reopen`, method: "PUT", error: "Aufgabe konnte nicht wieder geöffnet werden" },
     delete: { path: id => `/admin/tasks/${id}`, method: "DELETE", error: "Aufgabe konnte nicht gelöscht werden",
               confirm: "Aufgabe wirklich löschen?" }
   };
 
-  ["taskOpenList", "taskArchiveList"].forEach(listId => $(listId).addEventListener("click", event => {
-    const button = event.target.closest("[data-task-action]");
-    if (!button) return;
-    const action = TASK_ACTIONS[button.dataset.taskAction];
-    if (action.confirm && !confirm(action.confirm)) return;
+  ["taskInboxList", "taskOpenList", "taskOutList", "taskArchiveList"].forEach(listId =>
+    $(listId).addEventListener("click", event => {
+      const button = event.target.closest("[data-task-action]");
+      if (!button) return;
+      const action = TASK_ACTIONS[button.dataset.taskAction];
+      if (action.confirm && !confirm(action.confirm)) return;
 
-    withBusy(button, async () => {
-      try {
-        await api(action.path(button.dataset.id), action.method);
-        await loadTasks();
-      } catch (error) {
-        alert(`${action.error}: ${error.message}`);
-      }
-    });
-  }));
+      withBusy(button, async () => {
+        try {
+          await api(action.path(button.dataset.id), action.method);
+          await loadTasks();
+        } catch (error) {
+          alert(`${action.error}: ${error.message}`);
+        }
+      });
+    }));
 
   $("taskForm").addEventListener("submit", event => {
     event.preventDefault();
@@ -1670,6 +2188,504 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
         await loadTasks();
       } catch (error) {
         alert("Aufgabe konnte nicht erstellt werden: " + error.message);
+      }
+    });
+  });
+
+  /* --- Mitarbeiter → Boss --- */
+
+  const openCallsText = () => {
+    const n = state.calls.length;
+    return `Noch ${n} ${n === 1 ? "offener Kontakt" : "offene Kontakte"} in der Telefonliste.`;
+  };
+
+  const TASK_TEMPLATES = {
+    callback: () => ({
+      title: "Kunde wünscht Rückruf vom Boss",
+      description: "Name: \nTelefon: \nAnliegen: \nErreichbar: ",
+      priority: "normal"
+    }),
+    numbers: () => ({
+      title: "Neue Nummern für die Telefonliste",
+      description: openCallsText(),
+      priority: "high"
+    })
+  };
+
+  document.querySelectorAll("[data-task-template]").forEach(chip =>
+    chip.addEventListener("click", () => {
+      const t = TASK_TEMPLATES[chip.dataset.taskTemplate]();
+      $("requestTitle").value = t.title;
+      $("requestDescription").value = t.description;
+      $("requestPriority").value = t.priority;
+      const field = $("requestDescription");
+      field.focus();
+      const gap = field.value.indexOf(": ");
+      const cursor = gap >= 0 ? gap + 2 : field.value.length; // Cursor hinter „Name: “
+      field.setSelectionRange(cursor, cursor);
+    }));
+
+  async function sendTaskToBoss(payload) {
+    await api("/tasks", "POST", payload);
+    await loadTasks();
+  }
+
+  $("taskRequestForm").addEventListener("submit", event => {
+    event.preventDefault();
+    withBusy(event.submitter, async () => {
+      try {
+        await sendTaskToBoss({
+          title: $("requestTitle").value.trim(),
+          description: $("requestDescription").value.trim(),
+          priority: $("requestPriority").value,
+          due_date: $("requestDueDate").value || null
+        });
+        ["requestTitle", "requestDescription", "requestDueDate"].forEach(id => ($(id).value = ""));
+        $("requestPriority").value = "normal";
+        alert("An den Boss gesendet ✓");
+      } catch (error) {
+        alert("Senden fehlgeschlagen: " + error.message);
+      }
+    });
+  });
+
+  $("requestNumbersBtn").addEventListener("click", event => {
+    const open = state.tasks.find(t => isInbox(t) && t.status === "open" && t.title === TASK_TEMPLATES.numbers().title);
+    if (open) return alert("Du hast bereits neue Nummern angefordert – der Boss kümmert sich darum.");
+    if (!confirm("Den Boss um neue Nummern für die Telefonliste bitten?")) return;
+
+    withBusy(event.currentTarget, async () => {
+      try {
+        await sendTaskToBoss(TASK_TEMPLATES.numbers());
+        alert("Anfrage gesendet ✓ Du findest sie unter „Aufgaben“.");
+      } catch (error) {
+        alert("Senden fehlgeschlagen: " + error.message);
+      }
+    });
+  });
+
+  /* ================= Telefonliste ================= */
+
+  const CALL_MAX_ATTEMPTS = 5;
+  const CALL_STATUS = {
+    R_TA_mT: { label: "R_TA_mT · mit Termin", cls: "good" },
+    R_TA_oT: { label: "R_TA_oT · ohne Termin", cls: "warn" },
+    R_TA_kK: { label: "R_TA_kK · kein Kontakt", cls: "high" },
+    R_TA_fK: { label: "R_TA_fK · falsche Kontaktdaten", cls: "data" }
+  };
+
+  const telHref = phone => `tel:${String(phone).replace(/[^\d+]/g, "")}`;
+
+  function placeLabel(c) {
+    if (c.teams) return "Microsoft Teams";
+    if (c.branch_name) return c.branch_name;
+    return c.branch_id ? "Filiale gelöscht" : "Terminort offen";
+  }
+
+  function attemptDots(n) {
+    const dots = Array.from({ length: CALL_MAX_ATTEMPTS }, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("");
+    return `<span class="dots ${n >= CALL_MAX_ATTEMPTS ? "full" : ""}" title="${n} von ${CALL_MAX_ATTEMPTS} Versuchen">${dots}</span>`;
+  }
+
+  const phoneLinks = c => c.phones
+    .map(p => c.bad_phones.includes(p)
+      ? `<s title="als falsch markiert">${esc(p)}</s>`
+      : `<a href="${esc(telHref(p))}">${esc(p)}</a>`)
+    .join(", ");
+
+  function renderCallPlaceSelect() {
+    const select = $("callPlace");
+    const current = select.value;
+    select.innerHTML = '<option value="">Noch offen</option><option value="teams">Microsoft Teams</option>'
+      + state.branches.map(b => `<option value="${b.id}">${esc(b.name)}</option>`).join("");
+    select.value = [...select.options].some(o => o.value === current) ? current : "";
+  }
+
+  function updateCallSummary() {
+    const text = state.role === "boss"
+      ? `${state.adminCalls.open.length} in Bearbeitung · ${state.adminCalls.returned.length} Rückläufer`
+      : state.calls.length === 1 ? "1 Kontakt offen" : `${state.calls.length} Kontakte offen`;
+    $$("[data-call-summary]").forEach(el => (el.textContent = text));
+  }
+
+  /* --- Mitarbeiter --- */
+
+  function callCardHtml(c) {
+    const last = c.attempt_log.at(-1);
+    const draft = state.callDrafts[c.id] ?? c.protocol ?? "";
+    const phones = c.phones.map((p, i) => c.bad_phones.includes(p)
+      ? `<span class="phone-group">
+           <span class="btn call-btn is-bad">${ICONS.phone}${esc(p)}</span>
+           <button class="btn ghost phone-flag" type="button" data-phone-flag="${i}" title="Doch richtig" aria-label="Nummer doch richtig">↺</button>
+         </span>`
+      : `<span class="phone-group">
+           <a class="btn primary call-btn" href="${esc(telHref(p))}">${ICONS.phone}${esc(p)}</a>
+           <button class="btn ghost phone-flag" type="button" data-phone-flag="${i}" title="Nummer falsch" aria-label="Nummer als falsch markieren">✕</button>
+         </span>`).join("");
+    const booking = c.booking_url
+      ? `<a class="btn ghost" href="${esc(c.booking_url)}" target="_blank" rel="noopener noreferrer">${ICONS.calendar}Termin buchen</a>`
+      : "";
+
+    return `<div class="call-card" data-call="${c.id}">
+      <div class="call-head">
+        <div>
+          <div class="call-name">${esc(c.customer_name)}</div>
+          <div class="task-meta">
+            <span class="chip">Termin: ${esc(placeLabel(c))}</span>
+            <span class="chip ${c.attempts >= CALL_MAX_ATTEMPTS - 1 ? "high" : ""}">Versuch ${c.attempts} von ${CALL_MAX_ATTEMPTS}</span>
+            ${last ? `<span class="chip">Zuletzt ${esc(fmtDateTime(last))}</span>` : ""}
+          </div>
+        </div>
+        ${attemptDots(c.attempts)}
+      </div>
+      ${c.briefing ? `<div class="notice call-brief"><b>Hinweis:</b> ${esc(c.briefing)}</div>` : ""}
+      <div class="btn-row">${phones}${booking}</div>
+      <p class="call-help">✕ = Nummer falsch. Sind alle Nummern falsch, geht der Kontakt als R_TA_fK zurück.</p>
+      <div class="field">
+        <label for="protocol-${c.id}">Protokoll</label>
+        <textarea id="protocol-${c.id}" data-protocol="${c.id}" rows="2" maxlength="2000"
+          placeholder="Kurz notieren: Mailbox, Rückruf gewünscht, Termin am …">${esc(draft)}</textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn ghost" type="button" data-call-action="attempt">Nicht erreicht (+1)</button>
+        <button class="btn good" type="button" data-call-action="R_TA_mT">✓ Mit Termin</button>
+        <button class="btn warn" type="button" data-call-action="R_TA_oT">Ohne Termin</button>
+      </div>
+    </div>`;
+  }
+
+  function renderOwnCalls() {
+    $("callList").innerHTML = state.calls.length
+      ? state.calls.map(callCardHtml).join("")
+      : '<div class="notice">Keine offenen Kontakte. ✓</div>';
+    updateCallSummary();
+  }
+
+  $("callList").addEventListener("input", event => {
+    const field = event.target.closest("[data-protocol]");
+    if (field) state.callDrafts[field.dataset.protocol] = field.value;
+  });
+
+  $("callList").addEventListener("click", event => {
+    const flag = event.target.closest("[data-phone-flag]");
+    if (flag) return toggleWrongPhone(flag);
+
+    const button = event.target.closest("[data-call-action]");
+    if (!button) return;
+
+    const card = button.closest("[data-call]");
+    const id = card.dataset.call;
+    const call = state.calls.find(c => String(c.id) === id);
+    const action = button.dataset.callAction;
+    const protocol = card.querySelector("[data-protocol]").value.trim();
+
+    let question = null;
+    if (action === "attempt") {
+      if (call.attempts + 1 >= CALL_MAX_ATTEMPTS) {
+        question = `Das ist der ${CALL_MAX_ATTEMPTS}. Versuch. „${call.customer_name}“ geht danach als R_TA_kK zurück. Fortfahren?`;
+      }
+    } else {
+      question = `„${call.customer_name}“ als ${CALL_STATUS[action].label} abschließen?`;
+    }
+    if (question && !confirm(question)) return;
+
+    withBusy(button, async () => {
+      try {
+        await (action === "attempt"
+          ? api(`/calls/${id}/attempt`, "POST", { protocol })
+          : api(`/calls/${id}/close`, "POST", { result: action, protocol }));
+        delete state.callDrafts[id];
+        await loadCalls();
+      } catch (error) {
+        alert("Speichern fehlgeschlagen: " + error.message);
+      }
+    });
+  });
+
+  function toggleWrongPhone(button) {
+    const card = button.closest("[data-call]");
+    const id = card.dataset.call;
+    const call = state.calls.find(c => String(c.id) === id);
+    const phone = call.phones[Number(button.dataset.phoneFlag)];
+    const wrong = !call.bad_phones.includes(phone);
+    const lastGood = wrong && call.phones.filter(p => !call.bad_phones.includes(p)).length === 1;
+
+    if (lastGood && !confirm(`Damit sind alle Nummern falsch. „${call.customer_name}“ geht als R_TA_fK zurück. Fortfahren?`)) return;
+
+    const protocol = card.querySelector("[data-protocol]").value.trim();
+    withBusy(button, async () => {
+      try {
+        const result = await api(`/calls/${id}/phone`, "POST", { phone, wrong, protocol });
+        if (result.status !== "open") delete state.callDrafts[id];
+        await loadCalls();
+      } catch (error) {
+        alert("Markierung fehlgeschlagen: " + error.message);
+        await loadCalls();
+      }
+    });
+  }
+
+  /* --- Boss --- */
+
+  function adminCallHtml(c, scope) {
+    const status = CALL_STATUS[c.status];
+    const attempts = c.attempt_log.length
+      ? `Versuche: ${c.attempt_log.map(fmtDateTime).join(", ")}`
+      : "Noch kein Versuch";
+
+    const actions = {
+      open: [["edit", "Bearbeiten", "ghost"], ["delete", "Löschen", "danger"]],
+      returned: [["archive", "Erledigt", "primary"], ["reopen", "Erneut zuweisen", "ghost"], ["edit", "Bearbeiten", "ghost"]],
+      archived: [["reopen", "Erneut zuweisen", "ghost"], ["delete", "Löschen", "danger"]]
+    }[scope].map(([act, label, cls]) =>
+      `<button class="btn ${cls}" type="button" data-call-admin="${act}" data-id="${c.id}">${label}</button>`).join("");
+
+    return `<div class="call-row">
+      <div class="call-row-main">
+        <strong>${esc(c.customer_name)}</strong>
+        <small>${phoneLinks(c)} · Termin: ${esc(placeLabel(c))} · ${esc(c.display_name || c.email || "Mitarbeiter")}</small>
+        <div class="task-meta">
+          ${status ? `<span class="chip ${status.cls}">${status.label}</span>` : ""}
+          ${scope === "open" ? attemptDots(c.attempts) : ""}
+          <span class="chip">${c.attempts} / ${CALL_MAX_ATTEMPTS} Versuche</span>
+          ${c.closed_at && scope !== "open" ? `<span class="chip">Zurück ${esc(fmtDateTime(c.closed_at))}</span>` : ""}
+        </div>
+        <small>${esc(attempts)}</small>
+        ${c.protocol ? `<div class="call-note"><b>Protokoll:</b> ${esc(c.protocol)}</div>` : ""}
+        ${c.briefing && scope === "open" ? `<div class="call-note"><b>Hinweis:</b> ${esc(c.briefing)}</div>` : ""}
+      </div>
+      <div class="row-actions">${actions}</div>
+    </div>`;
+  }
+
+  function renderAdminCalls() {
+    const { open, returned, archived } = state.adminCalls;
+    const list = (items, scope, empty) => items.length
+      ? items.map(c => adminCallHtml(c, scope)).join("")
+      : `<div class="notice">${empty}</div>`;
+
+    $("callReturnedList").innerHTML = list(returned, "returned", "Keine neuen Rückläufer.");
+    $("callOpenList").innerHTML = list(open, "open", "Keine offenen Kontakte.");
+    $("callArchiveList").innerHTML = list(archived, "archived", "Noch nichts erledigt.");
+    updateCallSummary();
+  }
+
+  async function loadCalls() {
+    try {
+      if (state.role === "boss") {
+        const [open, returned, archived] = await Promise.all(
+          ["open", "returned", "archived"].map(scope => api(`/admin/calls?scope=${scope}`)));
+        state.adminCalls = { open: asArray(open), returned: asArray(returned), archived: asArray(archived) };
+        renderAdminCalls();
+      } else if (state.role === "employee") {
+        state.calls = asArray(await api("/calls"));
+        renderOwnCalls();
+      }
+    } catch (error) {
+      console.error(error);
+      const text = `<div class="notice warn">Telefonliste konnte nicht geladen werden: ${esc(error.message)}</div>`;
+      ["callList", "callOpenList", "callReturnedList"].forEach(id => ($(id).innerHTML = text));
+      $$("[data-call-summary]").forEach(el => (el.textContent = "Telefonliste nicht verfügbar."));
+    }
+  }
+
+  function resetCallForm() {
+    ["callEditId", "callName", "callPhones", "callBriefing"].forEach(id => ($(id).value = ""));
+    $("callPlace").value = "";
+    setText("callFormTitle", "Kontakt einstellen");
+    setText("callSaveBtn", "Kontakt speichern");
+    $("callCancelBtn").hidden = true;
+  }
+
+  function editCall(id) {
+    const { open, returned, archived } = state.adminCalls;
+    const c = [...open, ...returned, ...archived].find(x => String(x.id) === String(id));
+    if (!c) return;
+    $("callEditId").value = c.id;
+    $("callEmployeeSelect").value = c.assigned_to;
+    $("callName").value = c.customer_name;
+    $("callPhones").value = c.phones.join("\n");
+    $("callPlace").value = c.teams ? "teams" : c.branch_id ? String(c.branch_id) : "";
+    $("callBriefing").value = c.briefing || "";
+    setText("callFormTitle", `Kontakt bearbeiten: ${c.customer_name}`);
+    setText("callSaveBtn", "Änderungen speichern");
+    $("callCancelBtn").hidden = false;
+    $("callForm").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  $("callCancelBtn").addEventListener("click", resetCallForm);
+
+  $("callForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const id = $("callEditId").value;
+    const payload = {
+      assigned_to: $("callEmployeeSelect").value,
+      customer_name: $("callName").value.trim(),
+      phones: $("callPhones").value,
+      place: $("callPlace").value,
+      briefing: $("callBriefing").value.trim()
+    };
+
+    withBusy(event.submitter, async () => {
+      try {
+        await (id ? api(`/admin/calls/${id}`, "PUT", payload) : api("/admin/calls", "POST", payload));
+        const keepEmployee = payload.assigned_to;
+        resetCallForm();
+        $("callEmployeeSelect").value = keepEmployee; // mehrere Kontakte hintereinander einstellen
+        await loadCalls();
+      } catch (error) {
+        alert("Kontakt konnte nicht gespeichert werden: " + error.message);
+      }
+    });
+  });
+
+  const CALL_ADMIN_ACTIONS = {
+    archive: { path: id => `/admin/calls/${id}/archive`, method: "PUT" },
+    reopen: { path: id => `/admin/calls/${id}/reopen`, method: "PUT",
+              confirm: "Kontakt erneut zuweisen? Die Versuche starten wieder bei 0, das Protokoll bleibt sichtbar." },
+    delete: { path: id => `/admin/calls/${id}`, method: "DELETE",
+              confirm: "Kontakt endgültig löschen?" }
+  };
+
+  ["callReturnedList", "callOpenList", "callArchiveList"].forEach(listId =>
+    $(listId).addEventListener("click", event => {
+      const button = event.target.closest("[data-call-admin]");
+      if (!button) return;
+      const act = button.dataset.callAdmin;
+      if (act === "edit") return editCall(button.dataset.id);
+
+      const action = CALL_ADMIN_ACTIONS[act];
+      if (action.confirm && !confirm(action.confirm)) return;
+      withBusy(button, async () => {
+        try {
+          await api(action.path(button.dataset.id), action.method);
+          if (act === "delete" && $("callEditId").value === button.dataset.id) resetCallForm();
+          await loadCalls();
+        } catch (error) {
+          alert("Aktion fehlgeschlagen: " + error.message);
+        }
+      });
+    }));
+
+  /* ================= Filialen & Terminbuchung ================= */
+
+  function branchHost(url) {
+    try { return new URL(url).host; } catch { return ""; }
+  }
+
+  function renderBranches() {
+    renderCallPlaceSelect();
+    const list = state.branches;
+    const count = list.length;
+
+    $$("[data-branch-summary]").forEach(el => (el.textContent = count
+      ? `${count} ${count === 1 ? "Filiale" : "Filialen"} – direkt online buchen`
+      : "Noch keine Filialen hinterlegt."));
+
+    // Mitarbeiter: klickbare Kacheln
+    $("branchTiles").innerHTML = count
+      ? list.map(b => `
+          <a class="branch-tile" href="${esc(b.booking_url)}" target="_blank" rel="noopener noreferrer">
+            <span class="kpi-icon">${ICONS.calendar}</span>
+            <span class="branch-text">
+              <strong>${esc(b.name)}</strong>
+              ${b.note ? `<small>${esc(b.note)}</small>` : ""}
+            </span>
+            <span class="branch-go">Buchen →</span>
+          </a>`).join("")
+      : '<div class="notice">Es sind noch keine Filialen hinterlegt. Bitte beim Boss melden.</div>';
+
+    // Boss: Verwaltung
+    $("branchAdminList").innerHTML = count
+      ? list.map(b => `
+          <div class="employee-row branch-row">
+            <div>
+              <strong>${esc(b.name)}</strong>
+              <small>${b.note ? `${esc(b.note)} · ` : ""}${esc(branchHost(b.booking_url))}</small>
+            </div>
+            <div class="row-actions">
+              <a class="btn ghost" href="${esc(b.booking_url)}" target="_blank" rel="noopener noreferrer" style="text-decoration:none">Öffnen</a>
+              <button class="btn ghost" type="button" data-branch-edit="${b.id}">Bearbeiten</button>
+              <button class="btn danger" type="button" data-branch-delete="${b.id}">Löschen</button>
+            </div>
+          </div>`).join("")
+      : '<div class="notice">Noch keine Filialen angelegt.</div>';
+  }
+
+  async function loadBranches() {
+    try {
+      state.branches = asArray(await api("/branches"));
+      renderBranches();
+    } catch (error) {
+      console.error(error);
+      const text = `<div class="notice warn">Filialen konnten nicht geladen werden: ${esc(error.message)}</div>`;
+      $("branchTiles").innerHTML = text;
+      $("branchAdminList").innerHTML = text;
+      $$("[data-branch-summary]").forEach(el => (el.textContent = "Filialen nicht verfügbar."));
+    }
+  }
+
+  function resetBranchForm() {
+    ["branchEditId", "branchName", "branchNote", "branchUrl"].forEach(id => ($(id).value = ""));
+    setText("branchFormTitle", "Filiale anlegen");
+    setText("branchSaveBtn", "Filiale speichern");
+    $("branchCancelBtn").hidden = true;
+  }
+
+  function editBranch(id) {
+    const branch = state.branches.find(b => String(b.id) === String(id));
+    if (!branch) return;
+    $("branchEditId").value = branch.id;
+    $("branchName").value = branch.name;
+    $("branchNote").value = branch.note || "";
+    $("branchUrl").value = branch.booking_url;
+    setText("branchFormTitle", `Filiale bearbeiten: ${branch.name}`);
+    setText("branchSaveBtn", "Änderungen speichern");
+    $("branchCancelBtn").hidden = false;
+    $("branchName").focus();
+    $("branchForm").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  $("branchCancelBtn").addEventListener("click", resetBranchForm);
+
+  $("branchForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const id = $("branchEditId").value;
+    const payload = {
+      name: $("branchName").value.trim(),
+      note: $("branchNote").value.trim(),
+      booking_url: $("branchUrl").value.trim()
+    };
+
+    withBusy(event.submitter, async () => {
+      try {
+        await (id
+          ? api(`/admin/branches/${id}`, "PUT", payload)
+          : api("/admin/branches", "POST", payload));
+        resetBranchForm();
+        await loadBranches();
+      } catch (error) {
+        alert("Filiale konnte nicht gespeichert werden: " + error.message);
+      }
+    });
+  });
+
+  $("branchAdminList").addEventListener("click", event => {
+    const edit = event.target.closest("[data-branch-edit]");
+    if (edit) return editBranch(edit.dataset.branchEdit);
+
+    const del = event.target.closest("[data-branch-delete]");
+    if (!del) return;
+    const branch = state.branches.find(b => String(b.id) === del.dataset.branchDelete);
+    if (!confirm(`Filiale „${branch?.name || ""}“ wirklich löschen?`)) return;
+
+    withBusy(del, async () => {
+      try {
+        await api(`/admin/branches/${del.dataset.branchDelete}`, "DELETE");
+        if ($("branchEditId").value === del.dataset.branchDelete) resetBranchForm();
+        await loadBranches();
+      } catch (error) {
+        alert("Filiale konnte nicht gelöscht werden: " + error.message);
       }
     });
   });
@@ -1710,60 +2726,110 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
 
   const PRINT_CSS = `
     *{box-sizing:border-box}
-    @page{size:A4;margin:13mm}
-    body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:0;background:#fff;font-size:11px}
-    .sheet{max-width:190mm;margin:0 auto}
-    .head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;border-bottom:2px solid #222;padding-bottom:8px;margin-bottom:12px}
-    .title{font-size:19px;font-weight:700}
-    .period{text-align:right;font-size:13px;font-weight:700}
-    .subtle{color:#666;font-size:9px;font-weight:400}
-    .info{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 12px}
-    .info div{border:1px solid #bfc4c8;padding:8px 10px;min-height:48px}
-    .info label{display:block;color:#666;font-size:8px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
-    h2{font-size:11px;margin:14px 0 5px;padding:5px 7px;background:#eceff1;border:1px solid #c7ccd0}
-    table{width:100%;border-collapse:collapse;table-layout:fixed}
-    th,td{border:1px solid #c7ccd0;padding:5px 6px;vertical-align:top}
-    th{background:#f3f4f5;font-size:8.5px;text-align:left}
-    .num{text-align:right;font-variant-numeric:tabular-nums}
-    .totals{width:54%;margin-left:auto;margin-top:10px;border:1px solid #9fa5aa}
-    .totals div{display:flex;justify-content:space-between;gap:18px;padding:5px 7px;border-bottom:1px solid #d5d9dc}
+    @page{size:A4;margin:14mm 14mm 12mm}
+    body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:0;background:#fff;font-size:10.5px;line-height:1.35}
+    .sheet{max-width:182mm;margin:0 auto}
+    .page-break{break-before:page;page-break-before:always}
+    .top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
+    .employer{font-size:10px}
+    .employer b{font-size:12px}
+    .doc-title{text-align:right}
+    .doc-title .title{font-size:18px;font-weight:700}
+    .doc-title .period{font-size:12px;font-weight:700;margin-top:2px}
+    .subtle{color:#666;font-size:8.5px}
+    .address{margin:16px 0 14px;min-height:22mm}
+    .address .sender{font-size:7.5px;color:#666;border-bottom:1px solid #999;display:inline-block;margin-bottom:5px;padding-bottom:1px}
+    .address b{font-size:12px}
+    .master{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #bfc4c8;border-right:0;border-bottom:0;margin-bottom:10px}
+    .master div{border-right:1px solid #bfc4c8;border-bottom:1px solid #bfc4c8;padding:4px 6px;min-height:30px}
+    .master label{display:block;color:#666;font-size:7.5px;text-transform:uppercase;letter-spacing:.03em}
+    h2{font-size:10.5px;margin:12px 0 4px;padding:4px 6px;background:#eceff1;border:1px solid #c7ccd0}
+    table{width:100%;border-collapse:collapse}
+    th,td{border:1px solid #c7ccd0;padding:4px 6px;vertical-align:top}
+    th{background:#f3f4f5;font-size:8px;text-align:left}
+    .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+    tfoot td{font-weight:700;background:#f7f8f9}
+    .totals{width:60%;margin-left:auto;margin-top:8px;border:1px solid #9fa5aa}
+    .totals div{display:flex;justify-content:space-between;gap:18px;padding:4px 7px;border-bottom:1px solid #d5d9dc}
     .totals div:last-child{border-bottom:0}
     .totals .strong{font-weight:700;background:#f3f4f5}
-    .totals .payout{font-size:14px;font-weight:700;border-top:2px solid #222}
-    .basis{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
-    .basis div{border:1px solid #c7ccd0;padding:6px}
-    .basis span{display:block;color:#666;font-size:8px;margin-bottom:2px}
-    .note{margin-top:10px;border:1px solid #c7ccd0;padding:7px;font-size:9px}
-    .footer{margin-top:14px;padding-top:7px;border-top:1px solid #c7ccd0;color:#666;font-size:8px;display:flex;justify-content:space-between;gap:12px}
-    .internal{border:2px solid #222;padding:5px 8px;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.05em}
+    .totals .payout{font-size:13px;font-weight:700;border-top:2px solid #222}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .box{border:1px solid #c7ccd0;padding:6px 8px;font-size:9px}
+    .box b{display:block;margin-bottom:3px;font-size:9.5px}
+    .box div{display:flex;justify-content:space-between;gap:10px}
+    .note{margin-top:10px;border:1px solid #c7ccd0;padding:6px;font-size:9px}
+    .footer{margin-top:14px;padding-top:6px;border-top:1px solid #c7ccd0;color:#666;font-size:7.5px;display:flex;justify-content:space-between;gap:12px}
+    .preview{border:2px solid #b36b00;color:#b36b00;padding:3px 7px;font-weight:700;font-size:8.5px;display:inline-block;margin-top:5px}
+    .internal{border:2px solid #222;padding:4px 8px;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.05em;display:inline-block}
+    .sign{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:34px}
+    .sign div{border-top:1px solid #333;padding-top:4px;font-size:8.5px;color:#444}
     @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.sheet{max-width:none}}
   `;
 
   const totalRow = (label, value, cls = "") => `<div class="${cls}"><span>${esc(label)}</span><b>${esc(value)}</b></div>`;
+  const orDash = v => (v === null || v === undefined || v === "" ? "–" : v);
 
-  function basisHtml(p) {
-    return `<div class="basis">${[
-      ["Netto-Arbeitszeit", fmtMinutes(p.mins)],
-      ["Arbeitstage", p.days],
-      ["Termine gesamt", p.appts],
-      ["Provisionsfähig", p.eligible]
-    ].map(([l, v]) => `<div><span>${l}</span><b>${esc(v)}</b></div>`).join("")}</div>`;
+  function employerBlock(employer) {
+    if (!employer?.name) return '<div class="employer"><b>Arbeitgeber</b><br><span class="subtle">Arbeitgeberdaten fehlen</span></div>';
+    return `<div class="employer">
+      <b>${esc(employer.name)}</b><br>
+      ${esc(employer.street || "")}<br>${esc(employer.zip_city || "")}
+      ${employer.company_number ? `<br><span class="subtle">Betriebsnummer ${esc(employer.company_number)}</span>` : ""}
+    </div>`;
   }
 
-  function employeeDocHtml({ employeeName, monthLabel, payroll: p, created, note }) {
-    return `
-      <div class="head">
-        <div><div class="title">Abrechnung der Brutto-Netto-Bezüge</div><div class="subtle">Entgeltabrechnung</div></div>
-        <div class="period">${esc(monthLabel)}<div class="subtle">Erstellt am ${esc(created)}</div></div>
+  function docHead(doc, title) {
+    return `<div class="top">
+      ${employerBlock(doc.employer)}
+      <div class="doc-title">
+        <div class="title">${title}</div>
+        <div class="period">${esc(doc.monthLabel)}</div>
+        <div class="subtle">Erstellt am ${esc(doc.created)}</div>
+        ${doc.preview ? '<div class="preview">Vorschau – Monat nicht abgeschlossen</div>' : ""}
       </div>
-      <div class="info">
-        <div><label>Arbeitnehmer</label><strong>${esc(employeeName)}</strong></div>
-        <div><label>Abrechnungszeitraum</label><strong>${esc(monthLabel)}</strong></div>
+    </div>`;
+  }
+
+  function employeeDocHtml(doc) {
+    const { payroll: p, profile, employer, note } = doc;
+    const emp = doc.employee || {};
+    const name = emp.full_name || doc.employeeName;
+    const master = [
+      ["Personalnummer", orDash(emp.personnel_number)],
+      ["Geburtsdatum", emp.birth_date ? fmtDate(emp.birth_date) : "–"],
+      ["Rentenversicherungsnr.", fmtInsurance(emp.insurance_number)],
+      ["Eintritt / Austritt", `${emp.start_date ? fmtDate(emp.start_date) : "–"} / ${emp.end_date ? fmtDate(emp.end_date) : "–"}`],
+      ["Personengruppe", "109 · geringfügig entlohnt"],
+      ["Beitragsgruppe", `${p.contributionGroup || contributionGroup(profile)} (KV·RV·AV·PV)`],
+      ["Einzugsstelle", "Minijob-Zentrale"],
+      ["Besteuerung", profile.flatTax ? "pauschal 2 % (§ 40a Abs. 2 EStG)" : "individuell"],
+    ];
+    const rvLabel = p.rvMinBase
+      ? `Rentenversicherung AN (Mindestbeitrag, Bemessung ${euro(p.rvMinBase)})`
+      : profile.employeeRv && profile.rvMinBaseApplies === false
+        ? "Rentenversicherung AN (3,6 %, Mindestbemessung nicht anzuwenden)"
+        : "Rentenversicherung AN (3,6 %)";
+    const employerShares = [
+      ["Krankenversicherung (13 %)", p.employerKv],
+      ["Rentenversicherung (15 %)", p.employerRv],
+      ["Pauschsteuer (2 %)", p.employerFlatTax],
+      ["Umlagen U1/U2/Insolvenz", (p.u1 || 0) + (p.u2 || 0) + (p.insolvency || 0)]
+    ].filter(([, v]) => Number(v) > 0);
+    const year = doc.year;
+
+    return `
+      ${docHead(doc, "Entgeltabrechnung")}
+      <div class="address">
+        ${employer?.name ? `<span class="sender">${esc([employer.name, employer.street, employer.zip_city].filter(Boolean).join(" · "))}</span><br>` : ""}
+        <b>${esc(name)}</b><br>${esc(emp.street || "")}<br>${esc(emp.zip_city || "")}
       </div>
 
-      <h2>Brutto-Bezüge</h2>
+      <div class="master">${master.map(([l, v]) => `<div><label>${l}</label>${esc(v)}</div>`).join("")}</div>
+
+      <h2>Bezüge</h2>
       <table>
-        <thead><tr><th style="width:12%">Lohnart</th><th>Bezeichnung</th><th class="num" style="width:15%">Menge</th><th class="num" style="width:17%">Satz</th><th class="num" style="width:19%">Betrag</th></tr></thead>
+        <thead><tr><th style="width:11%">Lohnart</th><th>Bezeichnung</th><th class="num" style="width:16%">Menge</th><th class="num" style="width:15%">Faktor</th><th class="num" style="width:17%">Betrag</th></tr></thead>
         <tbody>
           <tr><td>1000</td><td>Stundenlohn</td><td class="num">${decimal(p.mins / 60, 2)} Std.</td><td class="num">${euro(HOURLY_RATE_CENTS / 100)}</td><td class="num">${euro(p.timePay)}</td></tr>
           <tr><td>2000</td><td>Terminprovision</td><td class="num">${p.eligible} Termine</td><td class="num">${euro(COMMISSION_RATE_CENTS / 100)}</td><td class="num">${euro(p.commission)}</td></tr>
@@ -1772,20 +2838,83 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
 
       <div class="totals">
         ${totalRow("Gesamtbrutto", euro(p.gross), "strong")}
-        ${totalRow(p.employeeRv ? "Rentenversicherung Arbeitnehmer (3,6 %)" : "Rentenversicherung Arbeitnehmer",
-                   p.employeeRv ? `− ${euro(p.employeeRv)}` : euro(0))}
+        ${totalRow("Steuer-Brutto (pauschal versteuert)", euro(p.gross))}
+        ${totalRow("SV-Brutto", euro(p.gross))}
+        ${totalRow("RV-Bemessungsgrundlage", euro(p.rvMinBase || p.gross))}
+        ${p.employeeRv ? totalRow(rvLabel, `− ${euro(p.employeeRv)}`) : totalRow("Rentenversicherung AN (befreit)", euro(0))}
         ${p.employeeFlatTax ? totalRow("Pauschsteuer vom Arbeitsentgelt (2 %)", `− ${euro(p.employeeFlatTax)}`) : ""}
-        ${totalRow("Abzüge gesamt", `− ${euro(p.employeeDeductions)}`)}
+        ${totalRow("Gesetzliche Abzüge", `− ${euro(p.employeeDeductions)}`)}
+        ${totalRow("Nettobezug", euro(p.net), "strong")}
         ${totalRow("Auszahlungsbetrag", euro(p.net), "payout")}
       </div>
 
-      <h2>Abrechnungsgrundlagen</h2>
-      ${basisHtml(p)}
+      <div class="two" style="margin-top:10px">
+        <div class="box">
+          <b>Vom Arbeitgeber zusätzlich getragen</b>
+          ${employerShares.length
+            ? employerShares.map(([l, v]) => `<div><span>${l}</span><span>${euro(v)}</span></div>`).join("")
+            : "<div><span>keine</span></div>"}
+        </div>
+        <div class="box">
+          <b>Arbeitszeit & Kumulation</b>
+          <div><span>Arbeitsstunden</span><span>${fmtMinutes(p.mins)}</span></div>
+          <div><span>Arbeitstage / SV-Tage</span><span>${p.days} / ${p.svDays ?? 30}</span></div>
+          ${year ? `<div><span>Brutto ${fmtMonthShort(year.from)}–${fmtMonthShort(year.to)}</span><span>${euro(year.gross)}</span></div>
+                    <div><span>Jahresgrenze (12 × ${euro(MINIJOB_LIMIT)})</span><span>${euro(year.limit)}</span></div>` : ""}
+        </div>
+      </div>
+
       ${note ? `<div class="note"><b>Hinweis:</b> ${esc(note)}</div>` : ""}
-      <div class="footer"><span>Maschinell erstellte Abrechnung.</span><span>${esc(monthLabel)}</span></div>`;
+      <div class="footer"><span>Maschinell erstellte Entgeltabrechnung – ohne Unterschrift gültig. Arbeitszeitnachweis siehe Folgeseite.</span><span>${esc(name)} · ${esc(doc.monthLabel)}</span></div>
+
+      <div class="page-break"></div>
+      ${timesheetHtml(doc)}`;
   }
 
-  function employerDocHtml({ employeeName, monthLabel, payroll: p, profile, created, note }) {
+  function timesheetHtml(doc) {
+    const emp = doc.employee || {};
+    const name = emp.full_name || doc.employeeName;
+    const rows = doc.entries;
+    const sum = key => (rows || []).reduce((a, e) => a + Number(e[key] || 0), 0);
+
+    const table = rows?.length
+      ? `<table>
+          <thead><tr><th>Datum</th><th>Tag</th><th class="num">Beginn</th><th class="num">Ende</th><th class="num">Pause</th><th class="num">Arbeitszeit</th><th class="num">Termine</th><th class="num">davon prov.</th></tr></thead>
+          <tbody>${rows.map(e => `<tr>
+            <td>${esc(fmtDate(e.work_date))}</td>
+            <td>${esc(fmtWeekday(e.work_date))}</td>
+            <td class="num">${esc(e.start_time)}</td>
+            <td class="num">${esc(e.end_time)}</td>
+            <td class="num">${Number(e.break_minutes || 0)} min</td>
+            <td class="num">${fmtMinutes(e.work_minutes)}</td>
+            <td class="num">${Number(e.appointments || 0)}</td>
+            <td class="num">${Number(e.eligible || 0)}</td>
+          </tr>`).join("")}</tbody>
+          <tfoot><tr><td colspan="4">Summe · ${new Set(rows.map(e => e.work_date)).size} Arbeitstage</td>
+            <td class="num">${sum("break_minutes")} min</td><td class="num">${fmtMinutes(sum("work_minutes"))}</td>
+            <td class="num">${sum("appointments")}</td><td class="num">${sum("eligible")}</td></tr></tfoot>
+        </table>`
+      : `<div class="note">Für diesen Abschluss wurden keine Tageseinträge gespeichert (Abschluss vor Einführung des Arbeitszeitnachweises).</div>`;
+
+    return `
+      ${docHead(doc, "Arbeitszeitnachweis")}
+      <div class="master" style="margin-top:14px;grid-template-columns:2fr 1fr 1fr">
+        <div><label>Mitarbeiter</label>${esc(name)}</div>
+        <div><label>Personalnummer</label>${esc(orDash(emp.personnel_number))}</div>
+        <div><label>Zeitraum</label>${esc(doc.monthLabel)}</div>
+      </div>
+      <h2>Beginn, Ende und Dauer der täglichen Arbeitszeit (§ 17 MiLoG)</h2>
+      ${table}
+      <div class="sign">
+        <div>Datum, Unterschrift Arbeitgeber</div>
+        <div>Datum, Unterschrift Mitarbeiter</div>
+      </div>
+      <div class="footer"><span>Aufbewahrung mindestens zwei Jahre. Erfasst jeweils spätestens 7 Tage nach dem Arbeitstag.</span><span>${esc(name)} · ${esc(doc.monthLabel)}</span></div>`;
+  }
+
+  function employerDocHtml(doc) {
+    const { payroll: p, profile, note, year } = doc;
+    const name = doc.employee?.full_name || doc.employeeName;
     const rows = [
       ["Krankenversicherung Arbeitgeber (13 %)", p.employerKv],
       ["Rentenversicherung Arbeitgeber (15 %)", p.employerRv],
@@ -1798,30 +2927,30 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
 
     const moneyRow = (label, value, bold = false) =>
       `<tr><td>${bold ? `<b>${esc(label)}</b>` : esc(label)}</td><td class="num">${bold ? `<b>${euro(value)}</b>` : euro(value)}</td></tr>`;
+    const minijobZentrale = (p.employerContributions || 0) - (p.accident || 0) + (p.employeeDeductions || 0);
 
     return `
-      <div class="head">
-        <div><div class="title">Arbeitgeber-Abrechnung</div><div class="subtle">Interne Kostenübersicht</div></div>
-        <div><div class="internal">Nur intern</div><div class="subtle" style="text-align:right;margin-top:4px">${esc(monthLabel)}</div></div>
-      </div>
-      <div class="info">
-        <div><label>Mitarbeiter</label><strong>${esc(employeeName)}</strong></div>
-        <div><label>Erstellt am</label><strong>${esc(created)}</strong></div>
+      ${docHead(doc, "Arbeitgeber-Abrechnung")}
+      <div style="margin:10px 0"><span class="internal">Nur intern</span></div>
+      <div class="master" style="grid-template-columns:2fr 1fr 1fr">
+        <div><label>Mitarbeiter</label>${esc(name)}</div>
+        <div><label>Beitragsgruppe</label>${esc(p.contributionGroup || contributionGroup(profile))}</div>
+        <div><label>SV-Tage</label>${p.svDays ?? 30}</div>
       </div>
 
       <h2>Vergütung</h2>
       <table>
-        <thead><tr><th>Position</th><th class="num" style="width:28%">Betrag</th></tr></thead>
         <tbody>
           ${moneyRow("Zeitlohn", p.timePay)}
           ${moneyRow("Provision", p.commission)}
           ${moneyRow("Bruttovergütung", p.gross, true)}
+          ${moneyRow("Abzüge beim Mitarbeiter", p.employeeDeductions)}
+          ${moneyRow("Auszahlung an Mitarbeiter", p.net, true)}
         </tbody>
       </table>
 
       <h2>Arbeitgeber-Abgaben</h2>
       <table>
-        <thead><tr><th>Abgabe</th><th class="num" style="width:28%">Betrag</th></tr></thead>
         <tbody>${rows.length
           ? rows.map(([label, amount]) => moneyRow(label, amount)).join("")
           : '<tr><td colspan="2">Keine Arbeitgeber-Abgaben im Profil aktiviert.</td></tr>'}</tbody>
@@ -1829,21 +2958,62 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
 
       <div class="totals">
         ${totalRow("Arbeitgeber-Abgaben gesamt", euro(p.employerContributions), "strong")}
+        ${totalRow("An Minijob-Zentrale (inkl. AN-Abzüge, ohne BG)", euro(minijobZentrale))}
         ${totalRow("Gesamtkosten Arbeitgeber", euro(p.employerCost), "payout")}
       </div>
 
-      <h2>Kontrollwerte</h2>
-      ${basisHtml(p)}
+      ${year ? `<h2>Verdienstgrenze</h2>
+        <table><tbody>
+          ${moneyRow(`Brutto ${fmtMonthShort(year.from)}–${fmtMonthShort(year.to)}`, year.gross)}
+          ${moneyRow("Jahresgrenze (12 Monate)", year.limit)}
+          <tr><td>Monate über ${euro(MINIJOB_LIMIT)}</td><td class="num">${year.monthsOver}</td></tr>
+        </tbody></table>` : ""}
+
       ${note ? `<div class="note"><b>Interne Notiz:</b> ${esc(note)}</div>` : ""}
-      <div class="footer"><span>Interne Arbeitgeberübersicht – nicht für die Mitarbeiterabrechnung bestimmt.</span><span>${esc(monthLabel)}</span></div>`;
+      <div class="footer"><span>Interne Arbeitgeberübersicht – nicht für den Mitarbeiter bestimmt.</span><span>${esc(doc.monthLabel)}</span></div>`;
+  }
+
+  async function downloadDocumentPdf(doc, employer) {
+    if (!doc) return;
+
+    // Direkter PDF-Download. Falls die PDF-Bibliothek nicht geladen werden konnte,
+    // bleibt der vorhandene Druckdialog als zuverlässiger Fallback erhalten.
+    if (typeof window.html2pdf !== "function") {
+      printDocument(doc, employer);
+      return;
+    }
+
+    const employee = doc.employee?.full_name || doc.employeeName || "Mitarbeiter";
+    const kind = employer ? "Arbeitgeber-Abrechnung" : "Gehaltsnachweis";
+    const safe = `${kind}_${employee}_${doc.month}`.replace(/[^a-zA-Z0-9äöüÄÖÜß._-]+/g, "_");
+    const host = document.createElement("div");
+    host.style.cssText = "position:fixed;left:-100000px;top:0;width:182mm;background:#fff;z-index:-1";
+    host.innerHTML = `<style>${PRINT_CSS}</style><div class="sheet">${employer ? employerDocHtml(doc) : employeeDocHtml(doc)}</div>`;
+    document.body.appendChild(host);
+
+    try {
+      await window.html2pdf().set({
+        margin: [14, 14, 12, 14],
+        filename: `${safe}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["css", "legacy"] }
+      }).from(host.querySelector(".sheet")).save();
+    } catch (error) {
+      console.warn("Direkter PDF-Export fehlgeschlagen, Druckdialog wird verwendet:", error);
+      printDocument(doc, employer);
+    } finally {
+      host.remove();
+    }
   }
 
   function printDocument(doc, employer) {
     if (!doc) return;
-    const title = `${employer ? "Arbeitgeber-Abrechnung" : "Lohnabrechnung"} ${doc.employeeName} ${doc.month}`;
+    const title = `${employer ? "Arbeitgeber-Abrechnung" : "Gehaltsnachweis"} ${doc.employee?.full_name || doc.employeeName} ${doc.month}`;
     const popup = window.open("", "_blank");
     if (!popup) {
-      alert("Das PDF-Fenster wurde vom Browser blockiert. Bitte Pop-ups für SmartADM 5 Office erlauben.");
+      alert("Das Druckfenster wurde vom Browser blockiert. Bitte Pop-ups für SmartADM 5 Office erlauben.");
       return;
     }
     popup.opener = null;
@@ -1891,6 +3061,11 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   /* ================= Push-Benachrichtigungen ================= */
 
   const pushState = { publicKey: null };
+  const PUSH_HIDE_KEY = "smartadm.office.pushCardHidden";
+
+  function pushCardHidden() {
+    try { return localStorage.getItem(PUSH_HIDE_KEY) === "1"; } catch { return false; }
+  }
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
   const pushSupported = () =>
     "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
@@ -1912,7 +3087,6 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     setText("pushText", text);
     $("pushEnableBtn").hidden = !enable;
     $("pushTestBtn").hidden = !test;
-    $("pushLaterBtn").hidden = test;
   }
 
   // Gerät beim Push-Dienst anmelden und die Anmeldung im Worker speichern.
@@ -1934,7 +3108,11 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   }
 
   async function initPush() {
-    if (state.role !== "employee") return;
+    if (!state.role) return;
+
+    // Karte ins passende Dashboard setzen (Mitarbeiter oder Boss)
+    const home = $(homePage());
+    home.insertBefore($("pushCard"), home.children[1] || null);
 
     if (!pushSupported()) {
       if (isIOS && !isInstalled()) {
@@ -1952,8 +3130,13 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     if (Notification.permission === "granted") {
       // Bei jedem Start still aktualisieren – so bleibt die Anmeldung im Worker aktuell.
       registerPush().catch(error => console.warn("Push-Anmeldung fehlgeschlagen:", error));
+      if (!pushCardHidden()) {
+        showPushCard("Benachrichtigungen sind auf diesem Gerät aktiv ✓", { test: true });
+      }
     } else if (Notification.permission === "default") {
-      showPushCard("Lass dich aufs Handy benachrichtigen, sobald du eine neue Aufgabe bekommst.", { enable: true });
+      showPushCard(state.role === "boss"
+        ? "Lass dich aufs Handy benachrichtigen, wenn dir ein Mitarbeiter eine Aufgabe schickt."
+        : "Lass dich aufs Handy benachrichtigen, sobald du eine neue Aufgabe bekommst.", { enable: true });
     } else {
       showPushCard("Benachrichtigungen sind blockiert. Du kannst sie in den Browser- bzw. App-Einstellungen für diese Seite wieder erlauben.");
     }
@@ -1990,18 +3173,30 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     }
   }));
 
-  $("pushLaterBtn").addEventListener("click", () => ($("pushCard").hidden = true));
+  $("pushLaterBtn").addEventListener("click", () => {
+    $("pushCard").hidden = true;
+    // Bei aktiven Benachrichtigungen dauerhaft ausblenden (pro Gerät)
+    if (Notification.permission === "granted") {
+      try { localStorage.setItem(PUSH_HIDE_KEY, "1"); } catch {}
+    }
+  });
 
   // Nachrichten vom Service Worker: neue Aufgabe eingegangen / Benachrichtigung angetippt
   navigator.serviceWorker?.addEventListener("message", event => {
     if (!state.role) return;
     if (event.data?.type === "open-page" && pageAllowed(event.data.page)) showPage(event.data.page);
-    if (["tasks-changed", "open-page"].includes(event.data?.type)) loadTasks();
+    if (["tasks-changed", "open-page"].includes(event.data?.type)) {
+      loadTasks();
+      loadCalls();
+    }
   });
 
   // Zurück in die App: Aufgaben auffrischen (höchstens alle 30 Sekunden)
   document.addEventListener("visibilitychange", () => {
-    if (!document.hidden && state.role && Date.now() - tasksLoadedAt > 30000) loadTasks();
+    if (!document.hidden && state.role && Date.now() - tasksLoadedAt > 30000) {
+      loadTasks();
+      loadCalls();
+    }
   });
 
   /* ================= Start & Anmeldung ================= */
@@ -2039,13 +3234,13 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     if (requested) history.replaceState(null, "", location.pathname);
 
     if (state.role === "boss") {
-      await loadBossData();
+      await Promise.all([loadBossData(), loadEmployer()]);
       await autoClosePreviousMonth();
       if (state.selectedUserId) await loadClosings(state.selectedUserId);
     } else {
       await loadOwnEntries(); // rendert das Dashboard mit den zentralen Zielwerten
     }
-    await loadTasks();
+    await Promise.all([loadTasks(), loadBranches(), loadCalls()]);
     initPush();
   }
 
@@ -2060,6 +3255,7 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     $("payrollMonth").value = isoMonth();
     $("closingMonth").value = previousMonth();
     setProfileInputs();
+    renderCallPlaceSelect();
     resetForm();
     renderEmployeeDashboard();
     renderEmployeeData();
@@ -2107,7 +3303,7 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     }
 
     try {
-            await Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor }, afterSignOutUrl: APP_URL });
+      await Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor }, afterSignOutUrl: APP_URL });
       const update = () => (Clerk.session && Clerk.user ? showApp(Clerk.user) : showLogin());
       update();
       Clerk.addListener?.(update);
