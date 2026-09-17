@@ -744,6 +744,45 @@ td { border-bottom-color: var(--line); }
 .phone-fix .btn { justify-self: start; }
 
 
+/* Mitarbeiter-Dashboard: Kacheln wie Zeiterfassung */
+#dashboard > .shortcut:not(#pushCard) {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+#dashboard > .shortcut:not(#pushCard) > div:first-child {
+  min-width: 0;
+}
+#dashboard > .shortcut:not(#pushCard) strong {
+  display: block;
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+}
+#dashboard > .shortcut:not(#pushCard) span {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink-soft);
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+#dashboard > .shortcut:not(#pushCard) > .btn {
+  width: 100%;
+  justify-content: center;
+}
+#dashboard > .shortcut:not(#pushCard) > .btn.ghost,
+#dashboard > .shortcut:not(#pushCard) > .btn.primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: none;
+}
+#dashboard > .shortcut:not(#pushCard) > .btn.ghost:hover,
+#dashboard > .shortcut:not(#pushCard) > .btn.primary:hover {
+  background: #0f4a90;
+}
+
 /* Zeiterfassung */
 .time-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
 .time-head h2 { margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -.02em; }
@@ -752,6 +791,7 @@ td { border-bottom-color: var(--line); }
 @media (max-width: 760px) {
   .time-head { flex-direction: column; align-items: stretch; }
   #openTimeFormBtn { width: 100%; }
+  #dashboard > .shortcut:not(#pushCard) > .btn { width: 100%; }
   .name-pair { grid-template-columns: 1fr; }
 }
 
@@ -845,17 +885,17 @@ td { border-bottom-color: var(--line); }
 
         <div class="card shortcut">
           <div><strong>Telefonliste</strong><span data-call-summary>Kontakte werden geladen …</span></div>
-          <button class="btn primary" type="button" data-jump-page="telefon">Telefonliste öffnen</button>
+          <button class="btn primary" type="button" data-jump-page="telefon"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/></svg>Telefonliste öffnen</button>
         </div>
 
         <div class="card shortcut">
           <div><strong>Aufgaben</strong><span data-task-summary>Aufgaben werden geladen …</span></div>
-          <button class="btn ghost" type="button" data-jump-page="organisation">Aufgaben öffnen</button>
+          <button class="btn ghost" type="button" data-jump-page="organisation"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5.2 12 4.2 4.2L18.8 6.8"/></svg>Aufgaben öffnen</button>
         </div>
 
         <div class="card shortcut">
           <div><strong>Terminvereinbarung</strong><span data-branch-summary>Filialen werden geladen …</span></div>
-          <button class="btn primary" type="button" data-jump-page="termine">Termin buchen</button>
+          <button class="btn primary" type="button" data-jump-page="termine"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/><path d="m9.5 15 1.8 1.8 3.4-3.6"/></svg>Termin buchen</button>
         </div>
 
         <div class="card shortcut" id="pushCard" hidden>
@@ -1365,22 +1405,6 @@ td { border-bottom-color: var(--line); }
       <section class="page" id="termine" data-role="shared">
         <div class="card section-card" data-role="boss">
           <div class="card-head">
-            <h2>Microsoft Teams</h2>
-            <p>Bookings-Link für Online-Termine hinterlegen. Dieser Link wird auch beim Termin-Button in der Telefonliste verwendet.</p>
-          </div>
-          <form id="teamsBookingForm">
-            <div class="form-grid">
-              <div class="field full"><label for="teamsBookingUrl">Teams Bookings-Link</label><input id="teamsBookingUrl" type="url" required placeholder="https://outlook.office365.com/owa/calendar/…"></div>
-            </div>
-            <div class="actions start">
-              <button class="btn primary" type="submit">Teams-Link speichern</button>
-              <span id="teamsBookingStatus" class="status-text" style="margin:0"></span>
-            </div>
-          </form>
-        </div>
-
-        <div class="card section-card" data-role="boss">
-          <div class="card-head">
             <h2 id="branchFormTitle">Filiale anlegen</h2>
             <p>Filiale mit ihrem Bookings-Link hinterlegen. Mitarbeiter buchen darüber mit einem Klick.</p>
           </div>
@@ -1409,7 +1433,7 @@ td { border-bottom-color: var(--line); }
         <div class="card section-card" data-role="employee">
           <div class="card-head">
             <h2>Termin buchen</h2>
-            <p>Terminort antippen – der Buchungskalender öffnet sich direkt.</p>
+            <p>Filiale antippen – der Buchungskalender öffnet sich direkt.</p>
           </div>
           <div id="branchTiles" class="branch-grid"><div class="notice">Filialen werden geladen …</div></div>
         </div>
@@ -2689,11 +2713,6 @@ td { border-bottom-color: var(--line); }
 
   /* --- Termin buchen: Filialauswahl --- */
 
-  const isTeamsBranch = b => String(b?.name || "").trim().toLowerCase() === "microsoft teams";
-  const teamsBranch = () => state.branches.find(isTeamsBranch) || null;
-  const teamsBookingUrl = () => teamsBranch()?.booking_url || "";
-  const physicalBranches = () => state.branches.filter(b => !isTeamsBranch(b));
-
   function renderBookingPicker() {
     const list = state.branches.filter(b => b.booking_url);
     $("bookingPickerList").innerHTML = list.length
@@ -2703,7 +2722,7 @@ td { border-bottom-color: var(--line); }
             <span><b>${esc(b.name)}</b>${b.note ? `<small>${esc(b.note)}</small>` : ""}</span>
             ${CHEVRON}
           </a>`).join("")
-      : '<div class="notice">Noch keine Buchungslinks hinterlegt – bitte beim Boss melden.</div>';
+      : '<div class="notice">Noch keine Filialen hinterlegt – bitte beim Boss melden.</div>';
   }
 
   $("bookingPickerBtn").addEventListener("click", () => {
@@ -2767,7 +2786,7 @@ td { border-bottom-color: var(--line); }
     const select = $("callPlace");
     const current = select.value;
     select.innerHTML = '<option value="">Noch offen</option><option value="teams">Microsoft Teams</option>'
-      + physicalBranches().map(b => `<option value="${b.id}">${esc(b.name)}</option>`).join("");
+      + state.branches.map(b => `<option value="${b.id}">${esc(b.name)}</option>`).join("");
     select.value = [...select.options].some(o => o.value === current) ? current : "";
   }
 
@@ -2852,9 +2871,8 @@ td { border-bottom-color: var(--line); }
            <a class="btn primary call-btn" href="${esc(telHref(p))}">${ICONS.phone}${esc(p)}</a>
            <button class="btn ghost phone-flag" type="button" data-phone-flag="${i}" title="Nummer falsch" aria-label="Nummer als falsch markieren">✕</button>
          </span>`).join("");
-    const bookingUrl = c.booking_url || (c.teams ? teamsBookingUrl() : "");
-    const booking = bookingUrl
-      ? `<a class="btn ghost" href="${esc(bookingUrl)}" target="_blank" rel="noopener noreferrer">${ICONS.calendar}Termin buchen</a>`
+    const booking = c.booking_url
+      ? `<a class="btn ghost" href="${esc(c.booking_url)}" target="_blank" rel="noopener noreferrer">${ICONS.calendar}Termin buchen</a>`
       : "";
 
     return `<div class="call-card${open ? " is-open" : ""}" data-call="${c.id}">
@@ -3290,22 +3308,16 @@ td { border-bottom-color: var(--line); }
 
   function renderBranches() {
     renderCallPlaceSelect();
-    const list = physicalBranches();
-    const team = teamsBranch();
-    const bookingLocations = [team, ...list].filter(Boolean).filter(b => b.booking_url);
+    const list = state.branches;
     const count = list.length;
-
-    if ($("teamsBookingUrl")) $("teamsBookingUrl").value = team?.booking_url || "";
-    // Falls Telefonliste und Buchungslinks parallel laden: Teams-Button nachziehen.
-    if (state.role === "employee" && state.calls.length) renderOwnCalls();
 
     $$("[data-branch-summary]").forEach(el => (el.textContent = count
       ? `${count} ${count === 1 ? "Filiale" : "Filialen"} – direkt online buchen`
       : "Noch keine Filialen hinterlegt."));
 
-    // Mitarbeiter: Teams + Filialen als klickbare Kacheln
-    $("branchTiles").innerHTML = bookingLocations.length
-      ? bookingLocations.map(b => `
+    // Mitarbeiter: klickbare Kacheln
+    $("branchTiles").innerHTML = count
+      ? list.map(b => `
           <a class="branch-tile" href="${esc(b.booking_url)}" target="_blank" rel="noopener noreferrer">
             <span class="kpi-icon">${ICONS.calendar}</span>
             <span class="branch-text">
@@ -3314,9 +3326,9 @@ td { border-bottom-color: var(--line); }
             </span>
             <span class="branch-go">Buchen →</span>
           </a>`).join("")
-      : '<div class="notice">Es sind noch keine Buchungslinks hinterlegt. Bitte beim Boss melden.</div>';
+      : '<div class="notice">Es sind noch keine Filialen hinterlegt. Bitte beim Boss melden.</div>';
 
-    // Boss: Filialverwaltung (Teams wird im eigenen Feld darüber gepflegt)
+    // Boss: Verwaltung
     $("branchAdminList").innerHTML = count
       ? list.map(b => `
           <div class="employee-row branch-row">
@@ -3332,26 +3344,6 @@ td { border-bottom-color: var(--line); }
           </div>`).join("")
       : '<div class="notice">Noch keine Filialen angelegt.</div>';
   }
-
-  $("teamsBookingForm").addEventListener("submit", event => {
-    event.preventDefault();
-    const url = $("teamsBookingUrl").value.trim();
-    if (!url) return;
-    const existing = teamsBranch();
-
-    withBusy(event.submitter, async () => {
-      try {
-        const payload = { name: "Microsoft Teams", note: "Online-Termin", booking_url: url };
-        await (existing
-          ? api(`/admin/branches/${existing.id}`, "PUT", payload)
-          : api("/admin/branches", "POST", payload));
-        await loadBranches();
-        setStatus("teamsBookingStatus", "Gespeichert ✓ – gilt auch für die Telefonliste.");
-      } catch (error) {
-        setStatus("teamsBookingStatus", "Speichern fehlgeschlagen: " + error.message, true);
-      }
-    });
-  });
 
   async function loadBranches() {
     try {
