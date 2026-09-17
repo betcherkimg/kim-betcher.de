@@ -340,6 +340,29 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
 .call-note b { color: var(--ink); }
 .call-row .row-actions { flex-wrap: wrap; flex: 0 0 auto; }
 
+/* Telefonliste: Halten / Zu klären */
+.call-group-title { margin: 4px 0 -2px; font-size: 13px; font-weight: 850; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+.call-group-title .chip { margin: 0; }
+.hold-list { display: grid; gap: 8px; }
+.hold-card {
+  border: 1px solid #efd29c; border-left: 5px solid #e0a232; border-radius: 12px; background: #fffaf0;
+}
+.hold-summary {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  width: 100%; padding: 12px 14px; border: 0; background: none; text-align: left; font: inherit; color: inherit; cursor: pointer;
+}
+.hold-summary strong { display: block; font-size: 15px; }
+.hold-summary q { display: block; margin-top: 3px; color: #805d1d; font-size: 13px; line-height: 1.4; white-space: pre-wrap; word-break: break-word; }
+.hold-toggle { flex: 0 0 auto; font-size: 12px; font-weight: 800; color: #94600f; white-space: nowrap; }
+.hold-body { display: grid; gap: 10px; padding: 0 14px 14px; }
+.hold-body .call-note { margin-top: 0; }
+.hold-body .phone-list a { color: var(--blue); font-weight: 700; text-decoration: none; }
+.hold-editor { display: grid; gap: 8px; padding: 12px; border-radius: 10px; background: #fffaf0; border: 1px dashed #e0a232; }
+.hold-editor label { font-size: 12px; font-weight: 800; }
+.call-note.hold { background: #fffaf0; border-color: #efd29c; color: #805d1d; }
+.call-row.is-reviewed { opacity: .55; }
+.kk-meta b { color: var(--ink); }
+
 /* Abrechnung */
 .payroll-profile { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .panel { border: 1px solid var(--line); border-radius: 12px; padding: 16px; background: var(--soft); }
@@ -945,7 +968,7 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
         <div class="card section-card" data-role="boss">
           <div class="card-head">
             <h2>Rückläufer</h2>
-            <p>R_TA_mT mit Termin · R_TA_oT ohne Termin · R_TA_kK nach 5 Versuchen ohne Kontakt · R_TA_fK falsche Kontaktdaten</p>
+            <p>R_TA_mT mit Termin · R_TA_oT ohne Termin · R_TA_fK falsche Kontaktdaten · R_TA_kK landet im Kein-Kontakt-Archiv</p>
           </div>
           <div id="callReturnedList" class="employee-list"><div class="notice">Wird geladen …</div></div>
         </div>
@@ -953,9 +976,20 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
         <div class="card section-card" data-role="boss">
           <div class="card-head">
             <h2>In Bearbeitung</h2>
-            <p>Offene Kontakte mit aktuellem Versuchsstand.</p>
+            <p>Offene Kontakte mit aktuellem Versuchsstand – gehaltene Kontakte mit ihrer Notiz.</p>
           </div>
           <div id="callOpenList" class="employee-list"><div class="notice">Wird geladen …</div></div>
+        </div>
+
+        <div class="card section-card" data-role="boss">
+          <div class="card-head split">
+            <div>
+              <h2>Kein-Kontakt-Archiv</h2>
+              <p>R_TA_kK nach 5 Versuchen. Älteste zuerst – wieder freigeben startet einen neuen Durchlauf, die Historie bleibt.</p>
+            </div>
+            <button class="btn primary" type="button" id="kkReleaseOldestBtn">5 älteste erneut freigeben</button>
+          </div>
+          <div id="callKkList" class="employee-list"><div class="notice">Wird geladen …</div></div>
         </div>
 
         <div class="card section-card" data-role="boss">
@@ -971,7 +1005,7 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
           <div class="card-head split">
             <div>
               <h2>Telefonliste</h2>
-              <p>Nummer antippen zum Anrufen. Nicht erreicht? Versuch zählen – nach 5 Versuchen geht der Kontakt zurück.</p>
+              <p>Nummer antippen zum Anrufen. Nicht erreicht? Versuch zählen – nach 5 Versuchen geht der Kontakt zurück. Muss erst etwas geklärt werden? „Halten“.</p>
             </div>
             <button class="btn ghost" type="button" id="requestNumbersBtn">Neue Nummern anfordern</button>
           </div>
@@ -1136,7 +1170,11 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     branches: [],
     calls: [],                                         // Mitarbeiter: eigene offene Kontakte
     callDrafts: {},                                    // ungespeicherte Protokolle je Kontakt
-    adminCalls: { open: [], returned: [], archived: [] },
+    holdDrafts: {},                                    // ungespeicherte Halten-Notizen je Kontakt
+    holdEditing: new Set(),                            // offene Halten-Notizfelder (normale Kontakte)
+    holdExpanded: new Set(),                           // aufgeklappte gehaltene Kontakte
+    kkReviewed: new Set(),                             // Boss: „Im Archiv lassen“ (nur diese Sitzung)
+    adminCalls: { open: [], returned: [], archived: [], kk: [] },
     closings: [],
     employer: {},
     employeeProfiles: {},
@@ -2304,11 +2342,60 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   function updateCallSummary() {
     const text = state.role === "boss"
       ? `${state.adminCalls.open.length} in Bearbeitung · ${state.adminCalls.returned.length} Rückläufer`
-      : state.calls.length === 1 ? "1 Kontakt offen" : `${state.calls.length} Kontakte offen`;
+      : employeeCallSummary();
     $$("[data-call-summary]").forEach(el => (el.textContent = text));
   }
 
   /* --- Mitarbeiter --- */
+
+  const isHeld = c => c.hold_note !== null && c.hold_note !== undefined;
+
+  function employeeCallSummary() {
+    const held = state.calls.filter(isHeld).length;
+    const open = state.calls.length - held;
+    const text = open === 1 ? "1 Kontakt offen" : `${open} Kontakte offen`;
+    return held ? `${text} · ${held} zu klären` : text;
+  }
+
+  function holdEditorHtml(c, mode) {
+    const value = state.holdDrafts[c.id] ?? c.hold_note ?? "";
+    const held = mode === "held";
+    return `<div class="hold-editor">
+      <label for="hold-${c.id}">${held ? "Was ist noch zu klären?" : "Was muss vor dem nächsten Anruf geklärt werden?"}</label>
+      <textarea id="hold-${c.id}" data-hold-note="${c.id}" rows="2" maxlength="500"
+        placeholder="z. B. Mit Kim klären, ob die Finanzierung bereits geprüft wurde.">${esc(value)}</textarea>
+      <div class="btn-row">
+        ${held
+          ? `<button class="btn ghost" type="button" data-hold-action="save">Notiz speichern</button>
+             <button class="btn primary" type="button" data-hold-action="unhold">Weiter bearbeiten / Halten aufheben</button>`
+          : `<button class="btn ghost" type="button" data-hold-action="cancel">Abbrechen</button>
+             <button class="btn warn" type="button" data-hold-action="save">Halten</button>`}
+      </div>
+    </div>`;
+  }
+
+  function heldCardHtml(c) {
+    const open = state.holdExpanded.has(String(c.id));
+    const last = c.attempt_log.at(-1);
+    return `<div class="hold-card" data-call="${c.id}">
+      <button class="hold-summary" type="button" data-hold-toggle aria-expanded="${open}">
+        <span><strong>${esc(c.customer_name)}</strong><q>${esc(c.hold_note)}</q></span>
+        <span class="hold-toggle">${open ? "Schließen" : "Öffnen"}</span>
+      </button>
+      ${open ? `<div class="hold-body">
+        <div class="task-meta">
+          <span class="chip">Termin: ${esc(placeLabel(c))}</span>
+          <span class="chip">Versuch ${c.attempts} von ${CALL_MAX_ATTEMPTS}</span>
+          ${last ? `<span class="chip">Zuletzt ${esc(fmtDateTime(last))}</span>` : ""}
+          ${c.held_at ? `<span class="chip warn">Gehalten seit ${esc(fmtDateTime(c.held_at))}</span>` : ""}
+        </div>
+        <small class="phone-list">Telefon: ${phoneLinks(c)}</small>
+        ${c.briefing ? `<div class="call-note"><b>Hinweis:</b> ${esc(c.briefing)}</div>` : ""}
+        ${c.protocol ? `<div class="call-note"><b>Protokoll:</b> ${esc(c.protocol)}</div>` : ""}
+        ${holdEditorHtml(c, "held")}
+      </div>` : ""}
+    </div>`;
+  }
 
   function callCardHtml(c) {
     const last = c.attempt_log.at(-1);
@@ -2350,23 +2437,88 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
         <button class="btn ghost" type="button" data-call-action="attempt">Nicht erreicht (+1)</button>
         <button class="btn good" type="button" data-call-action="R_TA_mT">✓ Mit Termin</button>
         <button class="btn warn" type="button" data-call-action="R_TA_oT">Ohne Termin</button>
+        <button class="btn ghost" type="button" data-hold-action="open">Halten</button>
       </div>
+      ${state.holdEditing.has(String(c.id)) ? holdEditorHtml(c, "open") : ""}
     </div>`;
   }
 
   function renderOwnCalls() {
-    $("callList").innerHTML = state.calls.length
-      ? state.calls.map(callCardHtml).join("")
-      : '<div class="notice">Keine offenen Kontakte. ✓</div>';
+    const held = state.calls.filter(isHeld);
+    const open = state.calls.filter(c => !isHeld(c));
+    const heldHtml = held.length
+      ? `<div class="call-group-title">Zu klären <span class="chip warn">${held.length}</span></div>
+         <div class="hold-list">${held.map(heldCardHtml).join("")}</div>`
+      : "";
+    const openHtml = open.length
+      ? `${held.length ? '<div class="call-group-title">Offene Kontakte</div>' : ""}${open.map(callCardHtml).join("")}`
+      : `<div class="notice">Keine offenen Kontakte${held.length ? " zum Anrufen" : ""}. ✓</div>`;
+    $("callList").innerHTML = heldHtml + openHtml;
     updateCallSummary();
   }
 
   $("callList").addEventListener("input", event => {
     const field = event.target.closest("[data-protocol]");
     if (field) state.callDrafts[field.dataset.protocol] = field.value;
+    const note = event.target.closest("[data-hold-note]");
+    if (note) state.holdDrafts[note.dataset.holdNote] = note.value;
   });
 
+  function handleHoldAction(button) {
+    const card = button.closest("[data-call]");
+    const id = card.dataset.call;
+    const call = state.calls.find(c => String(c.id) === id);
+    const action = button.dataset.holdAction;
+
+    if (action === "open") {
+      state.holdEditing.add(id);
+      renderOwnCalls();
+      $(`hold-${id}`)?.focus();
+      return;
+    }
+    if (action === "cancel") {
+      state.holdEditing.delete(id);
+      delete state.holdDrafts[id];
+      return renderOwnCalls();
+    }
+
+    withBusy(button, async () => {
+      try {
+        if (action === "save") {
+          const note = card.querySelector("[data-hold-note]").value.trim();
+          if (!note) {
+            alert("Bitte kurz notieren, was noch zu klären ist.");
+            return;
+          }
+          // Ungespeichertes Protokoll der Karte nicht verlieren
+          const protocol = card.querySelector("[data-protocol]");
+          if (protocol) state.callDrafts[id] = protocol.value;
+          await api(`/calls/${id}/hold`, "POST", { note });
+          state.holdEditing.delete(id);
+        } else if (action === "unhold") {
+          if (!confirm(`„${call?.customer_name || ""}“ wieder normal in der Telefonliste bearbeiten?`)) return;
+          await api(`/calls/${id}/unhold`, "POST");
+          state.holdExpanded.delete(id);
+        }
+        delete state.holdDrafts[id];
+        await loadCalls();
+      } catch (error) {
+        alert("Speichern fehlgeschlagen: " + error.message);
+      }
+    });
+  }
+
   $("callList").addEventListener("click", event => {
+    const toggle = event.target.closest("[data-hold-toggle]");
+    if (toggle) {
+      const id = toggle.closest("[data-call]").dataset.call;
+      state.holdExpanded.has(id) ? state.holdExpanded.delete(id) : state.holdExpanded.add(id);
+      return renderOwnCalls();
+    }
+
+    const hold = event.target.closest("[data-hold-action]");
+    if (hold) return handleHoldAction(hold);
+
     const flag = event.target.closest("[data-phone-flag]");
     if (flag) return toggleWrongPhone(flag);
 
@@ -2447,10 +2599,14 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
         <div class="task-meta">
           ${status ? `<span class="chip ${status.cls}">${status.label}</span>` : ""}
           ${scope === "open" ? attemptDots(c.attempts) : ""}
+          ${isHeld(c) ? '<span class="chip warn">Zu klären</span>' : ""}
           <span class="chip">${c.attempts} / ${CALL_MAX_ATTEMPTS} Versuche</span>
+          ${c.rounds > 1 ? `<span class="chip">${c.rounds}. Durchlauf</span>` : ""}
+          ${c.kk_state === "task" ? '<span class="chip from">In Aufgaben verschoben</span>' : ""}
           ${c.closed_at && scope !== "open" ? `<span class="chip">Zurück ${esc(fmtDateTime(c.closed_at))}</span>` : ""}
         </div>
         <small>${esc(attempts)}</small>
+        ${isHeld(c) && scope === "open" ? `<div class="call-note hold"><b>Zu klären:</b> ${esc(c.hold_note)}</div>` : ""}
         ${c.protocol ? `<div class="call-note"><b>Protokoll:</b> ${esc(c.protocol)}</div>` : ""}
         ${c.briefing && scope === "open" ? `<div class="call-note"><b>Hinweis:</b> ${esc(c.briefing)}</div>` : ""}
       </div>
@@ -2458,8 +2614,44 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     </div>`;
   }
 
+  function kkRowHtml(c) {
+    const reviewed = state.kkReviewed.has(String(c.id));
+    const earlier = c.round_log.slice(0, -1);
+    const rounds = c.round_log.length || c.rounds;
+    const btn = (act, label, cls) =>
+      `<button class="btn ${cls}" type="button" data-kk="${act}" data-id="${c.id}">${label}</button>`;
+    return `<div class="call-row${reviewed ? " is-reviewed" : ""}">
+      <div class="call-row-main">
+        <strong>${esc(c.customer_name)}</strong>
+        <small class="kk-meta">Archiviert <b>${esc(fmtDateTime(c.kk_archived_at))}</b> · ${esc(c.display_name || c.email || "Mitarbeiter")}</small>
+        <div class="task-meta">
+          <span class="chip ${rounds >= 3 ? "high" : rounds === 2 ? "warn" : ""}">${rounds} ${rounds === 1 ? "Durchlauf" : "Durchläufe"}</span>
+          <span class="chip">${c.attempt_log.length} Versuche gesamt</span>
+          ${reviewed ? '<span class="chip">Bleibt im Archiv</span>' : ""}
+        </div>
+        <small>${phoneLinks(c)}</small>
+        ${earlier.length ? `<small>Frühere Archivierungen: ${earlier.map(r => esc(fmtDateTime(r.archived_at))).join(", ")}</small>` : ""}
+        <div class="call-note"><b>Letztes Protokoll:</b> ${c.protocol ? esc(c.protocol) : "–"}</div>
+      </div>
+      <div class="row-actions">
+        ${btn("release", `${esc(firstName(c))} wieder freigeben`, "primary")}
+        ${btn("task", "In Aufgaben verschieben", "ghost")}
+        ${reviewed ? "" : btn("keep", "Im Archiv lassen", "ghost")}
+        ${btn("done", "Endgültig erledigt", "danger")}
+      </div>
+    </div>`;
+  }
+
+  const firstName = c => String(c.display_name || c.email || "Mitarbeiter").split(/[\s@]/)[0] || "Mitarbeiter";
+
   function renderAdminCalls() {
     const { open, returned, archived } = state.adminCalls;
+    const kk = state.adminCalls.kk || [];
+    $("callKkList").innerHTML = kk.length
+      ? kk.map(kkRowHtml).join("")
+      : '<div class="notice">Kein-Kontakt-Archiv ist leer.</div>';
+    $("kkReleaseOldestBtn").disabled = !kk.length;
+    setText("kkReleaseOldestBtn", kk.length && kk.length < 5 ? `${kk.length} älteste erneut freigeben` : "5 älteste erneut freigeben");
     const list = (items, scope, empty) => items.length
       ? items.map(c => adminCallHtml(c, scope)).join("")
       : `<div class="notice">${empty}</div>`;
@@ -2473,9 +2665,11 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   async function loadCalls() {
     try {
       if (state.role === "boss") {
-        const [open, returned, archived] = await Promise.all(
-          ["open", "returned", "archived"].map(scope => api(`/admin/calls?scope=${scope}`)));
-        state.adminCalls = { open: asArray(open), returned: asArray(returned), archived: asArray(archived) };
+        const [open, returned, archived, kk] = await Promise.all(
+          ["open", "returned", "archived", "kk"].map(scope => api(`/admin/calls?scope=${scope}`)));
+        state.adminCalls = {
+          open: asArray(open), returned: asArray(returned), archived: asArray(archived), kk: asArray(kk)
+        };
         renderAdminCalls();
       } else if (state.role === "employee") {
         state.calls = asArray(await api("/calls"));
@@ -2484,7 +2678,7 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     } catch (error) {
       console.error(error);
       const text = `<div class="notice warn">Telefonliste konnte nicht geladen werden: ${esc(error.message)}</div>`;
-      ["callList", "callOpenList", "callReturnedList"].forEach(id => ($(id).innerHTML = text));
+      ["callList", "callOpenList", "callReturnedList", "callKkList"].forEach(id => ($(id).innerHTML = text));
       $$("[data-call-summary]").forEach(el => (el.textContent = "Telefonliste nicht verfügbar."));
     }
   }
@@ -2498,8 +2692,8 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   }
 
   function editCall(id) {
-    const { open, returned, archived } = state.adminCalls;
-    const c = [...open, ...returned, ...archived].find(x => String(x.id) === String(id));
+    const { open, returned, archived, kk = [] } = state.adminCalls;
+    const c = [...open, ...returned, ...archived, ...kk].find(x => String(x.id) === String(id));
     if (!c) return;
     $("callEditId").value = c.id;
     $("callEmployeeSelect").value = c.assigned_to;
@@ -2566,6 +2760,57 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
         }
       });
     }));
+
+  const KK_ACTIONS = {
+    release: { path: id => `/admin/calls/${id}/kk-release`,
+               confirm: c => `„${c.customer_name}“ wieder freigeben? Neuer Durchlauf mit 0 Versuchen – die bisherige Historie bleibt.` },
+    task: { path: id => `/admin/calls/${id}/kk-task`,
+            confirm: c => `„${c.customer_name}“ als eigene Aufgabe übernehmen? Der Kontakt wandert mit Historie nach „Erledigt“.` },
+    done: { path: id => `/admin/calls/${id}/kk-done`,
+            confirm: c => `„${c.customer_name}“ endgültig erledigen? Der Kontakt verschwindet aus Office – bitte anschließend im BSH-System als erledigt setzen.` }
+  };
+
+  $("callKkList").addEventListener("click", event => {
+    const button = event.target.closest("[data-kk]");
+    if (!button) return;
+    const id = button.dataset.id;
+    const act = button.dataset.kk;
+    const c = (state.adminCalls.kk || []).find(x => String(x.id) === id);
+    if (!c) return;
+
+    if (act === "keep") {
+      state.kkReviewed.add(id);
+      return renderAdminCalls();
+    }
+
+    const action = KK_ACTIONS[act];
+    if (!confirm(action.confirm(c))) return;
+    withBusy(button, async () => {
+      try {
+        await api(action.path(id), "PUT");
+        state.kkReviewed.delete(id);
+        await loadCalls();
+        if (act === "task") await loadTasks();
+      } catch (error) {
+        alert("Aktion fehlgeschlagen: " + error.message);
+      }
+    });
+  });
+
+  $("kkReleaseOldestBtn").addEventListener("click", event => {
+    const n = Math.min(5, (state.adminCalls.kk || []).length);
+    if (!n || !confirm(`Die ${n} ältesten Kontakte aus dem Kein-Kontakt-Archiv wieder zum Anrufen freigeben?`)) return;
+    withBusy(event.currentTarget, async () => {
+      try {
+        const result = await api("/admin/calls/kk/release-oldest", "POST", { count: 5 });
+        state.kkReviewed.clear();
+        await loadCalls();
+        alert(`${result?.released ?? n} Kontakt(e) wieder freigegeben ✓`);
+      } catch (error) {
+        alert("Freigabe fehlgeschlagen: " + error.message);
+      }
+    });
+  });
 
   /* ================= Filialen & Terminbuchung ================= */
 
@@ -2724,71 +2969,125 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
 
   /* ================= Druckvorlagen ================= */
 
+  // Alle Regeln sind unter .pdoc gekapselt, damit sie beim PDF-Export nicht in die App wirken.
+  // Nutzbreite = A4 (210 mm) minus 2 × 13 mm Rand = 184 mm.
+  const PRINT_MARGIN_MM = [11, 13, 11, 13]; // oben, rechts, unten, links (wie CSS)
+  const PRINT_WIDTH_MM = 184;
+
   const PRINT_CSS = `
-    *{box-sizing:border-box}
-    @page{size:A4;margin:14mm 14mm 12mm}
-    body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:0;background:#fff;font-size:10.5px;line-height:1.35}
-    .sheet{max-width:182mm;margin:0 auto}
-    .page-break{break-before:page;page-break-before:always}
-    .top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
-    .employer{font-size:10px}
-    .employer b{font-size:12px}
-    .doc-title{text-align:right}
-    .doc-title .title{font-size:18px;font-weight:700}
-    .doc-title .period{font-size:12px;font-weight:700;margin-top:2px}
-    .subtle{color:#666;font-size:8.5px}
-    .address{margin:16px 0 14px;min-height:22mm}
-    .address .sender{font-size:7.5px;color:#666;border-bottom:1px solid #999;display:inline-block;margin-bottom:5px;padding-bottom:1px}
-    .address b{font-size:12px}
-    .master{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #bfc4c8;border-right:0;border-bottom:0;margin-bottom:10px}
-    .master div{border-right:1px solid #bfc4c8;border-bottom:1px solid #bfc4c8;padding:4px 6px;min-height:30px}
-    .master label{display:block;color:#666;font-size:7.5px;text-transform:uppercase;letter-spacing:.03em}
-    h2{font-size:10.5px;margin:12px 0 4px;padding:4px 6px;background:#eceff1;border:1px solid #c7ccd0}
-    table{width:100%;border-collapse:collapse}
-    th,td{border:1px solid #c7ccd0;padding:4px 6px;vertical-align:top}
-    th{background:#f3f4f5;font-size:8px;text-align:left}
-    .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-    tfoot td{font-weight:700;background:#f7f8f9}
-    .totals{width:60%;margin-left:auto;margin-top:8px;border:1px solid #9fa5aa}
-    .totals div{display:flex;justify-content:space-between;gap:18px;padding:4px 7px;border-bottom:1px solid #d5d9dc}
-    .totals div:last-child{border-bottom:0}
-    .totals .strong{font-weight:700;background:#f3f4f5}
-    .totals .payout{font-size:13px;font-weight:700;border-top:2px solid #222}
-    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .box{border:1px solid #c7ccd0;padding:6px 8px;font-size:9px}
-    .box b{display:block;margin-bottom:3px;font-size:9.5px}
-    .box div{display:flex;justify-content:space-between;gap:10px}
-    .note{margin-top:10px;border:1px solid #c7ccd0;padding:6px;font-size:9px}
-    .footer{margin-top:14px;padding-top:6px;border-top:1px solid #c7ccd0;color:#666;font-size:7.5px;display:flex;justify-content:space-between;gap:12px}
-    .preview{border:2px solid #b36b00;color:#b36b00;padding:3px 7px;font-weight:700;font-size:8.5px;display:inline-block;margin-top:5px}
-    .internal{border:2px solid #222;padding:4px 8px;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.05em;display:inline-block}
-    .sign{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:34px}
-    .sign div{border-top:1px solid #333;padding-top:4px;font-size:8.5px;color:#444}
-    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.sheet{max-width:none}}
+    .pdoc,.pdoc *{box-sizing:border-box}
+    .pdoc{width:100%;max-width:${PRINT_WIDTH_MM}mm;margin:0 auto;background:#fff;color:#111;
+      font-family:Arial,Helvetica,sans-serif;font-size:8.4pt;line-height:1.3;
+      -webkit-print-color-adjust:exact;print-color-adjust:exact;overflow-wrap:anywhere}
+    .pdoc .pd-page2{break-before:page;page-break-before:always}
+    .pdoc table{width:100%;border-collapse:collapse;table-layout:fixed}
+    .pdoc td,.pdoc th{padding:1.1mm 1.6mm;vertical-align:top;text-align:left}
+    .pdoc thead{display:table-header-group}
+    .pdoc tr,.pdoc .pd-keep{break-inside:avoid;page-break-inside:avoid}
+    .pdoc .num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+    .pdoc .muted{color:#5f6b75}
+    .pdoc .small{font-size:7pt}
+
+    /* Kopf */
+    .pdoc .pd-head{border-bottom:0.6mm solid #1f3b57;margin-bottom:3mm}
+    .pdoc .pd-head td{padding:0 0 2mm}
+    .pdoc .pd-employer b{font-size:10pt}
+    .pdoc .pd-title{text-align:right}
+    .pdoc .pd-title .t{font-size:13pt;font-weight:700;color:#1f3b57}
+    .pdoc .pd-title .m{font-size:10pt;font-weight:700;margin-top:0.5mm}
+    .pdoc .pd-flag{display:inline-block;margin-top:1mm;padding:0.6mm 1.8mm;border:0.35mm solid #b36b00;color:#b36b00;font-weight:700;font-size:7pt}
+    .pdoc .pd-flag.internal{border-color:#111;color:#111;text-transform:uppercase;letter-spacing:.04em}
+
+    /* Anschrift + Stammdaten */
+    .pdoc .pd-top > tbody > tr > td{padding:0}
+    .pdoc .pd-address{padding-right:6mm !important}
+    .pdoc .pd-sender{display:inline-block;font-size:6.5pt;color:#5f6b75;border-bottom:0.2mm solid #8a949c;margin:1mm 0 1.8mm;padding-bottom:0.3mm}
+    .pdoc .pd-address b{font-size:10pt}
+    .pdoc .pd-kv{border:0.25mm solid #9aa4ac}
+    .pdoc .pd-kv td{padding:0.7mm 1.6mm;border-bottom:0.2mm solid #dde2e6}
+    .pdoc .pd-kv tr:last-child td{border-bottom:0}
+    .pdoc .pd-kv td:first-child{color:#5f6b75;width:42%}
+
+    /* Abschnitte */
+    .pdoc .pd-sec{margin-top:3.2mm}
+    .pdoc .pd-sec-title{font-size:8.4pt;font-weight:700;color:#fff;background:#1f3b57;padding:0.9mm 1.6mm}
+    .pdoc .pd-grid{border:0.25mm solid #9aa4ac;border-top:0}
+    .pdoc .pd-grid th{background:#eef1f4;font-size:7pt;font-weight:700;color:#33414d;border-bottom:0.25mm solid #9aa4ac}
+    .pdoc .pd-grid td{border-bottom:0.2mm solid #dde2e6}
+    .pdoc .pd-grid tbody tr:last-child td{border-bottom:0}
+    .pdoc .pd-grid tfoot td{font-weight:700;background:#f4f6f8;border-top:0.35mm solid #33414d;border-bottom:0}
+    .pdoc .pd-grid tr.b td{font-weight:700}
+    .pdoc .pd-grid.zebra tbody tr:nth-child(even) td{background:#fafbfc}
+
+    /* Bruttoleiste */
+    .pdoc .pd-strip{border:0.25mm solid #9aa4ac}
+    .pdoc .pd-strip td{border-right:0.2mm solid #dde2e6;padding:1.2mm 1.6mm}
+    .pdoc .pd-strip td:last-child{border-right:0}
+    .pdoc .pd-strip .l{display:block;font-size:6.6pt;color:#5f6b75}
+    .pdoc .pd-strip .v{display:block;font-size:9.5pt;font-weight:700;text-align:right;white-space:nowrap}
+
+    /* Netto-Block */
+    .pdoc .pd-net{width:58%;margin-left:auto;border:0.25mm solid #9aa4ac}
+    .pdoc .pd-net td{border-bottom:0.2mm solid #dde2e6}
+    .pdoc .pd-net .sub td{font-weight:700;background:#f4f6f8}
+    .pdoc .pd-net .pay td{font-weight:700;font-size:10.5pt;border-top:0.5mm solid #111;border-bottom:0;background:#e8eef4}
+
+    /* Zweispaltig */
+    .pdoc .pd-cols > tbody > tr > td{padding:0}
+    .pdoc .pd-cols > tbody > tr > td:first-child{padding-right:2mm}
+    .pdoc .pd-cols > tbody > tr > td:last-child{padding-left:2mm}
+
+    .pdoc .pd-note{margin-top:3mm;border:0.25mm solid #9aa4ac;border-left:1mm solid #1f3b57;padding:1.5mm 2mm;white-space:pre-wrap}
+    .pdoc .pd-sign{margin-top:14mm}
+    .pdoc .pd-sign td{padding:0}
+    .pdoc .pd-sign td:first-child{padding-right:10mm}
+    .pdoc .pd-sign td:last-child{padding-left:10mm}
+    .pdoc .pd-sign div{border-top:0.25mm solid #333;padding-top:1mm;font-size:7pt;color:#444}
+    .pdoc .pd-foot{margin-top:4mm;border-top:0.25mm solid #9aa4ac;font-size:6.6pt;color:#5f6b75}
+    .pdoc .pd-foot td{padding:1mm 0 0}
   `;
 
-  const totalRow = (label, value, cls = "") => `<div class="${cls}"><span>${esc(label)}</span><b>${esc(value)}</b></div>`;
+  // Nur für das Druckfenster (nicht beim PDF-Export in die App einfügen).
+  const PRINT_PAGE_CSS = `
+    @page{size:A4 portrait;margin:${PRINT_MARGIN_MM[0]}mm ${PRINT_MARGIN_MM[1]}mm ${PRINT_MARGIN_MM[2]}mm ${PRINT_MARGIN_MM[3]}mm}
+    html,body{margin:0;padding:0;background:#fff}
+    @media screen{body{padding:8mm 0;background:#e9edf1}.pdoc{padding:${PRINT_MARGIN_MM[0]}mm ${PRINT_MARGIN_MM[1]}mm;max-width:210mm;background:#fff}}
+  `;
+
   const orDash = v => (v === null || v === undefined || v === "" ? "–" : v);
+  const minus = v => `− ${euro(v)}`;
+  const kvRow = (label, value) => `<tr><td>${esc(label)}</td><td>${esc(value)}</td></tr>`;
+  const moneyTr = (label, value, cls = "") =>
+    `<tr class="${cls}"><td>${esc(label)}</td><td class="num">${esc(value)}</td></tr>`;
+  const section = (title, body, extraCls = "") =>
+    `<div class="pd-sec pd-keep ${extraCls}"><div class="pd-sec-title">${esc(title)}</div>${body}</div>`;
 
   function employerBlock(employer) {
-    if (!employer?.name) return '<div class="employer"><b>Arbeitgeber</b><br><span class="subtle">Arbeitgeberdaten fehlen</span></div>';
-    return `<div class="employer">
+    if (!employer?.name) return '<div class="pd-employer"><b>Arbeitgeber</b><br><span class="muted">Arbeitgeberdaten fehlen</span></div>';
+    return `<div class="pd-employer">
       <b>${esc(employer.name)}</b><br>
       ${esc(employer.street || "")}<br>${esc(employer.zip_city || "")}
-      ${employer.company_number ? `<br><span class="subtle">Betriebsnummer ${esc(employer.company_number)}</span>` : ""}
+      ${employer.company_number ? `<br><span class="muted small">Betriebsnummer ${esc(employer.company_number)}</span>` : ""}
     </div>`;
   }
 
-  function docHead(doc, title) {
-    return `<div class="top">
-      ${employerBlock(doc.employer)}
-      <div class="doc-title">
-        <div class="title">${title}</div>
-        <div class="period">${esc(doc.monthLabel)}</div>
-        <div class="subtle">Erstellt am ${esc(doc.created)}</div>
-        ${doc.preview ? '<div class="preview">Vorschau – Monat nicht abgeschlossen</div>' : ""}
-      </div>
-    </div>`;
+  function docHead(doc, title, flag = "") {
+    return `<table class="pd-head"><tbody><tr>
+      <td style="width:55%">${employerBlock(doc.employer)}</td>
+      <td class="pd-title">
+        <div class="t">${esc(title)}</div>
+        <div class="m">${esc(doc.monthLabel)}</div>
+        <div class="muted small">Erstellt am ${esc(doc.created)}</div>
+        ${flag}
+        ${doc.preview ? '<div><span class="pd-flag">Vorschau – Monat nicht abgeschlossen</span></div>' : ""}
+      </td>
+    </tr></tbody></table>`;
+  }
+
+  function docFoot(left, right) {
+    return `<table class="pd-foot"><tbody><tr>
+      <td>${left}</td><td class="num" style="width:40%">${right}</td>
+    </tr></tbody></table>`;
   }
 
   function employeeDocHtml(doc) {
@@ -2818,57 +3117,83 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     ].filter(([, v]) => Number(v) > 0);
     const year = doc.year;
 
-    return `
+    const deductions = [
+      p.employeeRv
+        ? [rvLabel, euro(p.rvMinBase || p.gross), minus(p.employeeRv)]
+        : ["Rentenversicherung AN (befreit)", "–", euro(0)],
+      p.employeeFlatTax ? ["Pauschsteuer vom Arbeitsentgelt (2 %)", euro(p.gross), minus(p.employeeFlatTax)] : null
+    ].filter(Boolean);
+
+    const page1 = `
       ${docHead(doc, "Entgeltabrechnung")}
-      <div class="address">
-        ${employer?.name ? `<span class="sender">${esc([employer.name, employer.street, employer.zip_city].filter(Boolean).join(" · "))}</span><br>` : ""}
-        <b>${esc(name)}</b><br>${esc(emp.street || "")}<br>${esc(emp.zip_city || "")}
+
+      <table class="pd-top pd-keep"><tbody><tr>
+        <td class="pd-address" style="width:50%">
+          ${employer?.name ? `<span class="pd-sender">${esc([employer.name, employer.street, employer.zip_city].filter(Boolean).join(" · "))}</span><br>` : ""}
+          <b>${esc(name)}</b><br>${esc(emp.street || "")}<br>${esc(emp.zip_city || "")}
+        </td>
+        <td><table class="pd-kv"><tbody>${master.map(([l, v]) => kvRow(l, v)).join("")}</tbody></table></td>
+      </tr></tbody></table>
+
+      <div class="pd-sec pd-keep">
+        <table class="pd-strip"><tbody><tr>
+          <td><span class="l">Gesamtbrutto</span><span class="v">${euro(p.gross)}</span></td>
+          <td><span class="l">Steuer-Brutto (pauschal versteuert)</span><span class="v">${euro(p.gross)}</span></td>
+          <td><span class="l">SV-Brutto</span><span class="v">${euro(p.gross)}</span></td>
+          <td><span class="l">RV-Bemessungsgrundlage</span><span class="v">${euro(p.rvMinBase || p.gross)}</span></td>
+        </tr></tbody></table>
       </div>
 
-      <div class="master">${master.map(([l, v]) => `<div><label>${l}</label>${esc(v)}</div>`).join("")}</div>
-
-      <h2>Bezüge</h2>
-      <table>
-        <thead><tr><th style="width:11%">Lohnart</th><th>Bezeichnung</th><th class="num" style="width:16%">Menge</th><th class="num" style="width:15%">Faktor</th><th class="num" style="width:17%">Betrag</th></tr></thead>
+      ${section("Bezüge", `<table class="pd-grid">
+        <colgroup><col style="width:12%"><col><col style="width:18%"><col style="width:15%"><col style="width:17%"></colgroup>
+        <thead><tr><th>Lohnart</th><th>Bezeichnung</th><th class="num">Menge</th><th class="num">Faktor</th><th class="num">Betrag</th></tr></thead>
         <tbody>
           <tr><td>1000</td><td>Stundenlohn</td><td class="num">${decimal(p.mins / 60, 2)} Std.</td><td class="num">${euro(HOURLY_RATE_CENTS / 100)}</td><td class="num">${euro(p.timePay)}</td></tr>
           <tr><td>2000</td><td>Terminprovision</td><td class="num">${p.eligible} Termine</td><td class="num">${euro(COMMISSION_RATE_CENTS / 100)}</td><td class="num">${euro(p.commission)}</td></tr>
         </tbody>
-      </table>
+        <tfoot><tr><td colspan="4">Gesamtbrutto</td><td class="num">${euro(p.gross)}</td></tr></tfoot>
+      </table>`)}
 
-      <div class="totals">
-        ${totalRow("Gesamtbrutto", euro(p.gross), "strong")}
-        ${totalRow("Steuer-Brutto (pauschal versteuert)", euro(p.gross))}
-        ${totalRow("SV-Brutto", euro(p.gross))}
-        ${totalRow("RV-Bemessungsgrundlage", euro(p.rvMinBase || p.gross))}
-        ${p.employeeRv ? totalRow(rvLabel, `− ${euro(p.employeeRv)}`) : totalRow("Rentenversicherung AN (befreit)", euro(0))}
-        ${p.employeeFlatTax ? totalRow("Pauschsteuer vom Arbeitsentgelt (2 %)", `− ${euro(p.employeeFlatTax)}`) : ""}
-        ${totalRow("Gesetzliche Abzüge", `− ${euro(p.employeeDeductions)}`)}
-        ${totalRow("Nettobezug", euro(p.net), "strong")}
-        ${totalRow("Auszahlungsbetrag", euro(p.net), "payout")}
+      ${section("Gesetzliche Abzüge", `<table class="pd-grid">
+        <colgroup><col><col style="width:22%"><col style="width:17%"></colgroup>
+        <thead><tr><th>Bezeichnung</th><th class="num">Bemessungsgrundlage</th><th class="num">Betrag</th></tr></thead>
+        <tbody>${deductions.map(([l, b, v]) => `<tr><td>${esc(l)}</td><td class="num">${esc(b)}</td><td class="num">${esc(v)}</td></tr>`).join("")}</tbody>
+        <tfoot><tr><td colspan="2">Gesetzliche Abzüge</td><td class="num">${minus(p.employeeDeductions)}</td></tr></tfoot>
+      </table>`)}
+
+      <div class="pd-sec pd-keep">
+        <table class="pd-net"><tbody>
+          ${moneyTr("Gesamtbrutto", euro(p.gross))}
+          ${moneyTr("Gesetzliche Abzüge", minus(p.employeeDeductions))}
+          ${moneyTr("Nettobezug", euro(p.net), "sub")}
+          ${moneyTr("Auszahlungsbetrag", euro(p.net), "pay")}
+        </tbody></table>
       </div>
 
-      <div class="two" style="margin-top:10px">
-        <div class="box">
-          <b>Vom Arbeitgeber zusätzlich getragen</b>
-          ${employerShares.length
-            ? employerShares.map(([l, v]) => `<div><span>${l}</span><span>${euro(v)}</span></div>`).join("")
-            : "<div><span>keine</span></div>"}
-        </div>
-        <div class="box">
-          <b>Arbeitszeit & Kumulation</b>
-          <div><span>Arbeitsstunden</span><span>${fmtMinutes(p.mins)}</span></div>
-          <div><span>Arbeitstage / SV-Tage</span><span>${p.days} / ${p.svDays ?? 30}</span></div>
-          ${year ? `<div><span>Brutto ${fmtMonthShort(year.from)}–${fmtMonthShort(year.to)}</span><span>${euro(year.gross)}</span></div>
-                    <div><span>Jahresgrenze (12 × ${euro(MINIJOB_LIMIT)})</span><span>${euro(year.limit)}</span></div>` : ""}
-        </div>
-      </div>
+      <table class="pd-cols pd-sec pd-keep"><tbody><tr>
+        <td style="width:50%">
+          <div class="pd-sec-title">Vom Arbeitgeber zusätzlich getragen</div>
+          <table class="pd-grid"><tbody>${employerShares.length
+            ? employerShares.map(([l, v]) => moneyTr(l, euro(v))).join("")
+            : '<tr><td>keine</td></tr>'}</tbody></table>
+        </td>
+        <td>
+          <div class="pd-sec-title">Arbeitszeit &amp; Kumulation</div>
+          <table class="pd-grid"><tbody>
+            ${moneyTr("Arbeitsstunden", fmtMinutes(p.mins))}
+            ${moneyTr("Arbeitstage / SV-Tage", `${p.days} / ${p.svDays ?? 30}`)}
+            ${year ? `${moneyTr(`Brutto ${fmtMonthShort(year.from)}–${fmtMonthShort(year.to)}`, euro(year.gross))}
+                      ${moneyTr(`Jahresgrenze (12 × ${euro(MINIJOB_LIMIT)})`, euro(year.limit))}` : ""}
+          </tbody></table>
+        </td>
+      </tr></tbody></table>
 
-      ${note ? `<div class="note"><b>Hinweis:</b> ${esc(note)}</div>` : ""}
-      <div class="footer"><span>Maschinell erstellte Entgeltabrechnung – ohne Unterschrift gültig. Arbeitszeitnachweis siehe Folgeseite.</span><span>${esc(name)} · ${esc(doc.monthLabel)}</span></div>
+      ${note ? `<div class="pd-note pd-keep"><b>Hinweis:</b> ${esc(note)}</div>` : ""}
+      ${docFoot("Maschinell erstellte Entgeltabrechnung – ohne Unterschrift gültig. Arbeitszeitnachweis siehe Seite 2.",
+                `${esc(name)} · ${esc(doc.monthLabel)} · Seite 1/2`)}`;
 
-      <div class="page-break"></div>
-      ${timesheetHtml(doc)}`;
+    return `<div class="pd-page">${page1}</div>
+      <div class="pd-page pd-page2">${timesheetHtml(doc)}</div>`;
   }
 
   function timesheetHtml(doc) {
@@ -2878,7 +3203,8 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     const sum = key => (rows || []).reduce((a, e) => a + Number(e[key] || 0), 0);
 
     const table = rows?.length
-      ? `<table>
+      ? `<table class="pd-grid zebra">
+          <colgroup><col style="width:14%"><col style="width:9%"><col style="width:11%"><col style="width:11%"><col style="width:12%"><col style="width:15%"><col style="width:13%"><col style="width:15%"></colgroup>
           <thead><tr><th>Datum</th><th>Tag</th><th class="num">Beginn</th><th class="num">Ende</th><th class="num">Pause</th><th class="num">Arbeitszeit</th><th class="num">Termine</th><th class="num">davon prov.</th></tr></thead>
           <tbody>${rows.map(e => `<tr>
             <td>${esc(fmtDate(e.work_date))}</td>
@@ -2894,22 +3220,25 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
             <td class="num">${sum("break_minutes")} min</td><td class="num">${fmtMinutes(sum("work_minutes"))}</td>
             <td class="num">${sum("appointments")}</td><td class="num">${sum("eligible")}</td></tr></tfoot>
         </table>`
-      : `<div class="note">Für diesen Abschluss wurden keine Tageseinträge gespeichert (Abschluss vor Einführung des Arbeitszeitnachweises).</div>`;
+      : `<div class="pd-note">Für diesen Abschluss wurden keine Tageseinträge gespeichert (Abschluss vor Einführung des Arbeitszeitnachweises).</div>`;
 
     return `
       ${docHead(doc, "Arbeitszeitnachweis")}
-      <div class="master" style="margin-top:14px;grid-template-columns:2fr 1fr 1fr">
-        <div><label>Mitarbeiter</label>${esc(name)}</div>
-        <div><label>Personalnummer</label>${esc(orDash(emp.personnel_number))}</div>
-        <div><label>Zeitraum</label>${esc(doc.monthLabel)}</div>
+      <table class="pd-strip pd-keep"><tbody><tr>
+        <td style="width:50%"><span class="l">Mitarbeiter</span><b>${esc(name)}</b></td>
+        <td><span class="l">Personalnummer</span><b>${esc(orDash(emp.personnel_number))}</b></td>
+        <td><span class="l">Zeitraum</span><b>${esc(doc.monthLabel)}</b></td>
+      </tr></tbody></table>
+      <div class="pd-sec">
+        <div class="pd-sec-title">Beginn, Ende und Dauer der täglichen Arbeitszeit (§ 17 MiLoG)</div>
+        ${table}
       </div>
-      <h2>Beginn, Ende und Dauer der täglichen Arbeitszeit (§ 17 MiLoG)</h2>
-      ${table}
-      <div class="sign">
-        <div>Datum, Unterschrift Arbeitgeber</div>
-        <div>Datum, Unterschrift Mitarbeiter</div>
-      </div>
-      <div class="footer"><span>Aufbewahrung mindestens zwei Jahre. Erfasst jeweils spätestens 7 Tage nach dem Arbeitstag.</span><span>${esc(name)} · ${esc(doc.monthLabel)}</span></div>`;
+      <table class="pd-sign pd-keep"><tbody><tr>
+        <td style="width:50%"><div>Datum, Unterschrift Arbeitgeber</div></td>
+        <td><div>Datum, Unterschrift Mitarbeiter</div></td>
+      </tr></tbody></table>
+      ${docFoot("Aufbewahrung mindestens zwei Jahre. Erfasst jeweils spätestens 7 Tage nach dem Arbeitstag.",
+                `${esc(name)} · ${esc(doc.monthLabel)} · Seite 2/2`)}`;
   }
 
   function employerDocHtml(doc) {
@@ -2925,53 +3254,53 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
       [`Unfallversicherung / BG (${decimal(profile.accidentRate || 0, 2)} %)`, p.accident]
     ].filter(([, amount]) => Number(amount) > 0);
 
-    const moneyRow = (label, value, bold = false) =>
-      `<tr><td>${bold ? `<b>${esc(label)}</b>` : esc(label)}</td><td class="num">${bold ? `<b>${euro(value)}</b>` : euro(value)}</td></tr>`;
     const minijobZentrale = (p.employerContributions || 0) - (p.accident || 0) + (p.employeeDeductions || 0);
+    const grid = (body, foot = "") =>
+      `<table class="pd-grid"><colgroup><col><col style="width:24%"></colgroup><tbody>${body}</tbody>${foot}</table>`;
 
-    return `
-      ${docHead(doc, "Arbeitgeber-Abrechnung")}
-      <div style="margin:10px 0"><span class="internal">Nur intern</span></div>
-      <div class="master" style="grid-template-columns:2fr 1fr 1fr">
-        <div><label>Mitarbeiter</label>${esc(name)}</div>
-        <div><label>Beitragsgruppe</label>${esc(p.contributionGroup || contributionGroup(profile))}</div>
-        <div><label>SV-Tage</label>${p.svDays ?? 30}</div>
+    return `<div class="pd-page">
+      ${docHead(doc, "Arbeitgeber-Abrechnung", '<div><span class="pd-flag internal">Nur intern</span></div>')}
+
+      <table class="pd-strip pd-keep"><tbody><tr>
+        <td style="width:46%"><span class="l">Mitarbeiter</span><b>${esc(name)}</b></td>
+        <td><span class="l">Beitragsgruppe</span><b>${esc(p.contributionGroup || contributionGroup(profile))}</b></td>
+        <td><span class="l">SV-Tage</span><b>${p.svDays ?? 30}</b></td>
+        <td><span class="l">Zeitraum</span><b>${esc(doc.monthLabel)}</b></td>
+      </tr></tbody></table>
+
+      ${section("Vergütung", grid(`
+        ${moneyTr("Zeitlohn", euro(p.timePay))}
+        ${moneyTr("Provision", euro(p.commission))}
+        ${moneyTr("Bruttovergütung", euro(p.gross), "b")}
+        ${moneyTr("Abzüge beim Mitarbeiter", euro(p.employeeDeductions))}`,
+        `<tfoot><tr><td>Auszahlung an Mitarbeiter</td><td class="num">${euro(p.net)}</td></tr></tfoot>`))}
+
+      ${section("Arbeitgeber-Abgaben", grid(
+        rows.length
+          ? rows.map(([label, amount]) => moneyTr(label, euro(amount))).join("")
+          : '<tr><td colspan="2">Keine Arbeitgeber-Abgaben im Profil aktiviert.</td></tr>',
+        `<tfoot><tr><td>Arbeitgeber-Abgaben gesamt</td><td class="num">${euro(p.employerContributions)}</td></tr></tfoot>`))}
+
+      <div class="pd-sec pd-keep">
+        <table class="pd-net"><tbody>
+          ${moneyTr("Arbeitgeber-Abgaben gesamt", euro(p.employerContributions), "sub")}
+          ${moneyTr("An Minijob-Zentrale (inkl. AN-Abzüge, ohne BG)", euro(minijobZentrale))}
+          ${moneyTr("Gesamtkosten Arbeitgeber", euro(p.employerCost), "pay")}
+        </tbody></table>
       </div>
 
-      <h2>Vergütung</h2>
-      <table>
-        <tbody>
-          ${moneyRow("Zeitlohn", p.timePay)}
-          ${moneyRow("Provision", p.commission)}
-          ${moneyRow("Bruttovergütung", p.gross, true)}
-          ${moneyRow("Abzüge beim Mitarbeiter", p.employeeDeductions)}
-          ${moneyRow("Auszahlung an Mitarbeiter", p.net, true)}
-        </tbody>
-      </table>
+      ${year ? section("Verdienstgrenze", grid(`
+        ${moneyTr(`Brutto ${fmtMonthShort(year.from)}–${fmtMonthShort(year.to)}`, euro(year.gross))}
+        ${moneyTr("Jahresgrenze (12 Monate)", euro(year.limit))}
+        ${moneyTr(`Monate über ${euro(MINIJOB_LIMIT)}`, String(year.monthsOver))}`)) : ""}
 
-      <h2>Arbeitgeber-Abgaben</h2>
-      <table>
-        <tbody>${rows.length
-          ? rows.map(([label, amount]) => moneyRow(label, amount)).join("")
-          : '<tr><td colspan="2">Keine Arbeitgeber-Abgaben im Profil aktiviert.</td></tr>'}</tbody>
-      </table>
-
-      <div class="totals">
-        ${totalRow("Arbeitgeber-Abgaben gesamt", euro(p.employerContributions), "strong")}
-        ${totalRow("An Minijob-Zentrale (inkl. AN-Abzüge, ohne BG)", euro(minijobZentrale))}
-        ${totalRow("Gesamtkosten Arbeitgeber", euro(p.employerCost), "payout")}
-      </div>
-
-      ${year ? `<h2>Verdienstgrenze</h2>
-        <table><tbody>
-          ${moneyRow(`Brutto ${fmtMonthShort(year.from)}–${fmtMonthShort(year.to)}`, year.gross)}
-          ${moneyRow("Jahresgrenze (12 Monate)", year.limit)}
-          <tr><td>Monate über ${euro(MINIJOB_LIMIT)}</td><td class="num">${year.monthsOver}</td></tr>
-        </tbody></table>` : ""}
-
-      ${note ? `<div class="note"><b>Interne Notiz:</b> ${esc(note)}</div>` : ""}
-      <div class="footer"><span>Interne Arbeitgeberübersicht – nicht für den Mitarbeiter bestimmt.</span><span>${esc(doc.monthLabel)}</span></div>`;
+      ${note ? `<div class="pd-note pd-keep"><b>Interne Notiz:</b> ${esc(note)}</div>` : ""}
+      ${docFoot("Interne Arbeitgeberübersicht – nicht für den Mitarbeiter bestimmt.", esc(doc.monthLabel))}
+    </div>`;
   }
+
+  const documentBody = (doc, employer) =>
+    `<div class="pdoc">${employer ? employerDocHtml(doc) : employeeDocHtml(doc)}</div>`;
 
   async function downloadDocumentPdf(doc, employer) {
     if (!doc) return;
@@ -2986,25 +3315,36 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     const employee = doc.employee?.full_name || doc.employeeName || "Mitarbeiter";
     const kind = employer ? "Arbeitgeber-Abrechnung" : "Gehaltsnachweis";
     const safe = `${kind}_${employee}_${doc.month}`.replace(/[^a-zA-Z0-9äöüÄÖÜß._-]+/g, "_");
-    const host = document.createElement("div");
-    host.style.cssText = "position:fixed;left:-100000px;top:0;width:182mm;background:#fff;z-index:-1";
-    host.innerHTML = `<style>${PRINT_CSS}</style><div class="sheet">${employer ? employerDocHtml(doc) : employeeDocHtml(doc)}</div>`;
-    document.body.appendChild(host);
+
+    // Quelle bleibt außerhalb des DOM – html2pdf klont sie in einen eigenen Container
+    // mit exakt der A4-Nutzbreite. Die Styles reisen im Klon mit.
+    // html2pdf zentriert seinen Container – html2canvas misst aber ab links. Deshalb fest links ausrichten.
+    const PIN_CSS = ".html2pdf__container{margin:0!important;left:0!important;right:auto!important;top:0!important}";
+    const source = document.createElement("div");
+    source.innerHTML = `<style>${PIN_CSS}${PRINT_CSS}</style>${documentBody(doc, employer)}`;
+
+    // Gescrollte Seite erzeugt sonst Leerraum oben; schmale Handy-Viewports schneiden rechts ab.
+    const scroll = { x: window.scrollX, y: window.scrollY };
+    window.scrollTo(0, 0);
+    const [mt, mr, mb, ml] = PRINT_MARGIN_MM;
 
     try {
       await window.html2pdf().set({
-        margin: [14, 14, 12, 14],
+        margin: [mt, ml, mb, mr],
         filename: `${safe}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        pagebreak: { mode: ["css", "legacy"] }
-      }).from(host.querySelector(".sheet")).save();
+        html2canvas: {
+          scale: 2, useCORS: true, backgroundColor: "#ffffff",
+          scrollX: 0, scrollY: 0, windowWidth: 800
+        },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait", compress: true },
+        pagebreak: { mode: ["css"], before: ".pd-page2", avoid: [".pd-keep", "tr"] }
+      }).from(source).save();
     } catch (error) {
       console.warn("Direkter PDF-Export fehlgeschlagen, Druckdialog wird verwendet:", error);
       printDocument(doc, employer);
     } finally {
-      host.remove();
+      window.scrollTo(scroll.x, scroll.y);
     }
   }
 
@@ -3018,11 +3358,13 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
     }
     popup.opener = null;
     popup.document.write(`<!doctype html><html lang="de"><head><meta charset="utf-8">
-      <title>${esc(title)}</title><style>${PRINT_CSS}</style></head>
-      <body><div class="sheet">${employer ? employerDocHtml(doc) : employeeDocHtml(doc)}</div>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>${esc(title)}</title><style>${PRINT_PAGE_CSS}${PRINT_CSS}</style></head>
+      <body>${documentBody(doc, employer)}
       <script>window.addEventListener("load",()=>setTimeout(()=>window.print(),180));<\/script></body></html>`);
     popup.document.close();
   }
+
 
   /* ================= PWA ================= */
 
