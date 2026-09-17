@@ -768,8 +768,12 @@ td { border-bottom-color: var(--line); }
   line-height: 1.45;
 }
 #dashboard > .shortcut:not(#pushCard) > .btn {
-  width: 100%;
+  width: 100% !important;
+  min-width: 100%;
+  display: flex;
   justify-content: center;
+  justify-self: stretch;
+  align-self: stretch;
 }
 #dashboard > .shortcut:not(#pushCard) > .btn.ghost,
 #dashboard > .shortcut:not(#pushCard) > .btn.primary {
