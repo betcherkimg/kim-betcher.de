@@ -723,6 +723,38 @@ td { border-bottom-color: var(--line); }
   .head-btns, .head-btns .btn { width: 100%; }
 }
 
+
+/* Ausgegraut: Inhalt blass, Buttons normal */
+.task-item.completed, .call-row.is-reviewed { opacity: 1; }
+.task-item.completed .task-main, .call-row.is-reviewed .call-row-main { opacity: .55; }
+
+/* Nachname / Vorname */
+.name-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.name-pair > div { display: grid; gap: 6px; }
+
+/* Rückläufer: Nummer tauschen */
+.phone-fix { display: grid; gap: 8px; margin-top: 10px; padding: 12px; border-radius: 12px; background: var(--lila-wash); max-width: 520px; }
+.phone-fix label { font-size: 13px; font-weight: 500; color: var(--lila); }
+.phone-fix textarea {
+  width: 100%; min-height: 56px; padding: 9px 12px; resize: vertical;
+  border: 1.5px solid transparent; border-radius: 10px; background: var(--surface);
+  font: inherit; font-size: 16px; color: var(--ink);
+}
+.phone-fix textarea:focus { outline: none; border-color: var(--accent); }
+.phone-fix .btn { justify-self: start; }
+
+
+/* Zeiterfassung */
+.time-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.time-head h2 { margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -.02em; }
+.time-head p { margin: 3px 0 0; color: var(--ink-soft); font-size: 13.5px; }
+.time-card.is-open .time-head { margin-bottom: 16px; }
+@media (max-width: 760px) {
+  .time-head { flex-direction: column; align-items: stretch; }
+  #openTimeFormBtn { width: 100%; }
+  .name-pair { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 760px) {
   .topbar { height: 64px; }
   .content { padding: 14px 12px 60px; }
@@ -835,6 +867,34 @@ td { border-bottom-color: var(--line); }
           </div>
         </div>
 
+        <div class="card section-card time-card" id="timeCard">
+          <div class="time-head">
+            <div>
+              <h2>Zeiterfassung</h2>
+              <p id="timeCardHint">Beginn und Ende werden auf volle 5 Minuten aufgerundet.</p>
+            </div>
+            <button class="btn primary" type="button" id="openTimeFormBtn">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2"/></svg>Arbeitszeit erfassen</button>
+          </div>
+          <div id="timeFormWrap" hidden>
+            <form id="entryForm">
+              <input type="hidden" id="editId">
+              <div class="form-grid">
+                <div class="field"><label for="date">Datum</label><input id="date" type="date" required><small>Heute oder maximal 7 Tage rückwirkend.</small></div>
+                <div class="field"><label for="break">Pause in Minuten</label><input id="break" type="number" min="0" step="5" value="0"></div>
+                <div class="field"><label for="start">Beginn</label><input id="start" type="time" step="300" required></div>
+                <div class="field"><label for="end">Ende</label><input id="end" type="time" step="300" required></div>
+                <div class="field"><label for="appointments">Termine</label><input id="appointments" type="number" min="0" step="1" value="0"></div>
+                <div class="field"><label for="eligible">davon provisionsfähig</label><input id="eligible" type="number" min="0" step="1" value="0"></div>
+              </div>
+              <div class="actions">
+                <button type="button" class="btn ghost" id="resetBtn">Abbrechen</button>
+                <button type="submit" class="btn primary" id="saveBtn">Eintrag speichern</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
         <div class="grid-4">
           <div class="card kpi">
             <div class="kpi-top">
@@ -869,29 +929,6 @@ td { border-bottom-color: var(--line); }
           </div>
         </div>
 
-        <div class="two-col">
-          <div class="card section-card">
-            <div class="card-head">
-              <h2>Arbeitszeit erfassen</h2>
-              <p>Datum, Beginn, Ende und Pause – die Dauer wird automatisch berechnet.</p>
-            </div>
-            <form id="entryForm">
-              <input type="hidden" id="editId">
-              <div class="form-grid">
-                <div class="field"><label for="date">Datum</label><input id="date" type="date" required><small>Heute oder maximal 7 Tage rückwirkend.</small></div>
-                <div class="field"><label for="break">Pause in Minuten</label><input id="break" type="number" min="0" step="5" value="0"></div>
-                <div class="field"><label for="start">Beginn</label><input id="start" type="time" required></div>
-                <div class="field"><label for="end">Ende</label><input id="end" type="time" required></div>
-                <div class="field"><label for="appointments">Termine</label><input id="appointments" type="number" min="0" step="1" value="0"></div>
-                <div class="field"><label for="eligible">davon provisionsfähig</label><input id="eligible" type="number" min="0" step="1" value="0"></div>
-              </div>
-              <div class="actions">
-                <button type="button" class="btn ghost" id="resetBtn">Zurücksetzen</button>
-                <button type="submit" class="btn primary" id="saveBtn">Eintrag speichern</button>
-              </div>
-            </form>
-          </div>
-
           <div class="card section-card">
             <div class="card-head">
               <h2>Monatsübersicht</h2>
@@ -907,7 +944,6 @@ td { border-bottom-color: var(--line); }
               Kundendaten nur in der Telefonliste pflegen und dort knapp halten – keine Vertrags-, Konto- oder Gesundheitsdaten notieren.
             </div>
           </div>
-        </div>
 
         <div class="card section-card">
           <div class="card-head">
@@ -1251,7 +1287,10 @@ td { border-bottom-color: var(--line); }
             <input type="hidden" id="callEditId">
             <div class="form-grid">
               <div class="field"><label>Mitarbeiter</label><select id="callEmployeeSelect" data-employee-select data-independent required></select></div>
-              <div class="field"><label for="callName">Kundenname</label><input id="callName" type="text" maxlength="120" required placeholder="z. B. Familie Müller"></div>
+              <div class="field name-pair">
+                <div><label for="callLastName">Nachname</label><input id="callLastName" type="text" maxlength="60" required autocomplete="off" placeholder="Mustermann"></div>
+                <div><label for="callFirstName">Vorname</label><input id="callFirstName" type="text" maxlength="55" required autocomplete="off" placeholder="Max"></div>
+              </div>
               <div class="field"><label for="callPhones">Telefonnummer(n)</label><textarea id="callPhones" rows="2" required placeholder="Eine Nummer pro Zeile"></textarea></div>
               <div class="field"><label for="callPlace">Termin bei</label><select id="callPlace"></select><small>Filiale oder Teams – Filialen pflegst du unter „Terminvereinbarung“.</small></div>
               <div class="field full"><label for="callBriefing">Hinweis für das Gespräch</label><textarea id="callBriefing" rows="3" maxlength="2000" placeholder="z. B. Bausparvertrag läuft aus – Termin zur Anschlussfinanzierung anbieten"></textarea></div>
@@ -1326,6 +1365,22 @@ td { border-bottom-color: var(--line); }
       <section class="page" id="termine" data-role="shared">
         <div class="card section-card" data-role="boss">
           <div class="card-head">
+            <h2>Microsoft Teams</h2>
+            <p>Bookings-Link für Online-Termine hinterlegen. Dieser Link wird auch beim Termin-Button in der Telefonliste verwendet.</p>
+          </div>
+          <form id="teamsBookingForm">
+            <div class="form-grid">
+              <div class="field full"><label for="teamsBookingUrl">Teams Bookings-Link</label><input id="teamsBookingUrl" type="url" required placeholder="https://outlook.office365.com/owa/calendar/…"></div>
+            </div>
+            <div class="actions start">
+              <button class="btn primary" type="submit">Teams-Link speichern</button>
+              <span id="teamsBookingStatus" class="status-text" style="margin:0"></span>
+            </div>
+          </form>
+        </div>
+
+        <div class="card section-card" data-role="boss">
+          <div class="card-head">
             <h2 id="branchFormTitle">Filiale anlegen</h2>
             <p>Filiale mit ihrem Bookings-Link hinterlegen. Mitarbeiter buchen darüber mit einem Klick.</p>
           </div>
@@ -1354,7 +1409,7 @@ td { border-bottom-color: var(--line); }
         <div class="card section-card" data-role="employee">
           <div class="card-head">
             <h2>Termin buchen</h2>
-            <p>Filiale antippen – der Buchungskalender öffnet sich direkt.</p>
+            <p>Terminort antippen – der Buchungskalender öffnet sich direkt.</p>
           </div>
           <div id="branchTiles" class="branch-grid"><div class="notice">Filialen werden geladen …</div></div>
         </div>
@@ -1482,7 +1537,8 @@ td { border-bottom-color: var(--line); }
     holdDrafts: {},                                    // ungespeicherte Halten-Notizen je Kontakt
     holdEditing: new Set(),                            // offene Halten-Notizfelder (normale Kontakte)
     callExpanded: new Set(),                           // aufgeklappte Kontaktkarten
-    kkReviewed: new Set(),                             // Boss: „Im Archiv lassen“ (nur diese Sitzung)
+    kkReviewed: new Set(),
+    phoneFixDrafts: {},                                // Boss: neue Nummern für R_TA_fK-Rückläufer                             // Boss: „Im Archiv lassen“ (nur diese Sitzung)
     adminCalls: { open: [], returned: [], archived: [], kk: [] },
     closings: [],
     employer: {},
@@ -1750,6 +1806,34 @@ td { border-bottom-color: var(--line); }
     applyDateLimits();
   }
 
+  /* --- Zeiterfassung: Formular erst auf Knopfdruck --- */
+
+  function setTimeFormOpen(open) {
+    $("timeFormWrap").hidden = !open;
+    $("openTimeFormBtn").hidden = open;
+    $("timeCard").classList.toggle("is-open", open);
+  }
+
+  $("openTimeFormBtn").addEventListener("click", () => {
+    resetForm();
+    setTimeFormOpen(true);
+    $("start").focus();
+  });
+
+  // Auf volle 5 Minuten aufrunden: 19:43 → 19:45, 12:32 → 12:35, 12:30 bleibt.
+  function roundUpTime(value) {
+    const m = /^(\d{1,2}):(\d{2})/.exec(String(value || ""));
+    if (!m) return value;
+    const total = Math.min(Math.ceil((Number(m[1]) * 60 + Number(m[2])) / 5) * 5, 23 * 60 + 55);
+    return `${pad(Math.floor(total / 60))}:${pad(total % 60)}`;
+  }
+
+  ["start", "end"].forEach(id => $(id).addEventListener("change", () => {
+    const el = $(id);
+    const rounded = roundUpTime(el.value);
+    if (rounded !== el.value) el.value = rounded;
+  }));
+
   function editEntry(id) {
     const entry = state.entries.find(e => e.id === id);
     if (!entry) return;
@@ -1757,7 +1841,8 @@ td { border-bottom-color: var(--line); }
     FORM_FIELDS.forEach(key => ($(key).value = entry[key]));
     applyDateLimits();
     $("saveBtn").textContent = "Änderungen speichern";
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeFormOpen(true);
+    $("timeCard").scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   async function deleteEntry(id) {
@@ -1785,7 +1870,10 @@ td { border-bottom-color: var(--line); }
     if (del) deleteEntry(del.dataset.delete);
   });
 
-  $("resetBtn").addEventListener("click", resetForm);
+  $("resetBtn").addEventListener("click", () => {
+    resetForm();
+    setTimeFormOpen(false);
+  });
 
   $("entryForm").addEventListener("submit", async event => {
     event.preventDefault();
@@ -1795,6 +1883,8 @@ td { border-bottom-color: var(--line); }
       return alert(`Das Datum muss zwischen ${fmtDate(dateRange().min)} und heute liegen.`);
     }
 
+    $("start").value = roundUpTime($("start").value);
+    $("end").value = roundUpTime($("end").value);
     const start = $("start").value;
     const end = $("end").value;
     const breakMinutes = Number($("break").value || 0);
@@ -1819,6 +1909,7 @@ td { border-bottom-color: var(--line); }
         ? api(`/entries/${existing.id}`, "PUT", payload)
         : api("/entries", "POST", payload));
       resetForm();
+      setTimeFormOpen(false);
       await loadOwnEntries();
     } catch (error) {
       console.error(error);
@@ -2598,6 +2689,11 @@ td { border-bottom-color: var(--line); }
 
   /* --- Termin buchen: Filialauswahl --- */
 
+  const isTeamsBranch = b => String(b?.name || "").trim().toLowerCase() === "microsoft teams";
+  const teamsBranch = () => state.branches.find(isTeamsBranch) || null;
+  const teamsBookingUrl = () => teamsBranch()?.booking_url || "";
+  const physicalBranches = () => state.branches.filter(b => !isTeamsBranch(b));
+
   function renderBookingPicker() {
     const list = state.branches.filter(b => b.booking_url);
     $("bookingPickerList").innerHTML = list.length
@@ -2607,7 +2703,7 @@ td { border-bottom-color: var(--line); }
             <span><b>${esc(b.name)}</b>${b.note ? `<small>${esc(b.note)}</small>` : ""}</span>
             ${CHEVRON}
           </a>`).join("")
-      : '<div class="notice">Noch keine Filialen hinterlegt – bitte beim Boss melden.</div>';
+      : '<div class="notice">Noch keine Buchungslinks hinterlegt – bitte beim Boss melden.</div>';
   }
 
   $("bookingPickerBtn").addEventListener("click", () => {
@@ -2671,7 +2767,7 @@ td { border-bottom-color: var(--line); }
     const select = $("callPlace");
     const current = select.value;
     select.innerHTML = '<option value="">Noch offen</option><option value="teams">Microsoft Teams</option>'
-      + state.branches.map(b => `<option value="${b.id}">${esc(b.name)}</option>`).join("");
+      + physicalBranches().map(b => `<option value="${b.id}">${esc(b.name)}</option>`).join("");
     select.value = [...select.options].some(o => o.value === current) ? current : "";
   }
 
@@ -2756,8 +2852,9 @@ td { border-bottom-color: var(--line); }
            <a class="btn primary call-btn" href="${esc(telHref(p))}">${ICONS.phone}${esc(p)}</a>
            <button class="btn ghost phone-flag" type="button" data-phone-flag="${i}" title="Nummer falsch" aria-label="Nummer als falsch markieren">✕</button>
          </span>`).join("");
-    const booking = c.booking_url
-      ? `<a class="btn ghost" href="${esc(c.booking_url)}" target="_blank" rel="noopener noreferrer">${ICONS.calendar}Termin buchen</a>`
+    const bookingUrl = c.booking_url || (c.teams ? teamsBookingUrl() : "");
+    const booking = bookingUrl
+      ? `<a class="btn ghost" href="${esc(bookingUrl)}" target="_blank" rel="noopener noreferrer">${ICONS.calendar}Termin buchen</a>`
       : "";
 
     return `<div class="call-card${open ? " is-open" : ""}" data-call="${c.id}">
@@ -2948,6 +3045,11 @@ td { border-bottom-color: var(--line); }
         <small>${esc(attempts)}</small>
         ${isHeld(c) && scope === "open" ? `<div class="call-note hold"><b>Zu klären:</b> ${esc(c.hold_note)}</div>` : ""}
         ${c.protocol ? `<div class="call-note"><b>Protokoll:</b> ${esc(c.protocol)}</div>` : ""}
+        ${scope === "returned" && c.status === "R_TA_fK" ? `<div class="phone-fix">
+          <label for="fix-${c.id}">Neue Nummer(n) – eine pro Zeile</label>
+          <textarea id="fix-${c.id}" data-phone-fix="${c.id}" rows="2" placeholder="z. B. 07361 123456">${esc(state.phoneFixDrafts[c.id] ?? "")}</textarea>
+          <button class="btn primary" type="button" data-call-admin="phones" data-id="${c.id}">Nummer speichern &amp; erneut zuweisen</button>
+        </div>` : ""}
         ${c.briefing && scope === "open" ? `<div class="call-note"><b>Hinweis:</b> ${esc(c.briefing)}</div>` : ""}
       </div>
       <div class="row-actions">${actions}</div>
@@ -2975,7 +3077,6 @@ td { border-bottom-color: var(--line); }
       </div>
       <div class="row-actions">
         ${btn("release", `${esc(firstName(c))} wieder freigeben`, "primary")}
-        ${btn("task", "In Aufgaben verschieben", "ghost")}
         ${reviewed ? "" : btn("keep", "Im Archiv lassen", "ghost")}
         ${btn("done", "Endgültig erledigt", "danger")}
       </div>
@@ -3024,7 +3125,7 @@ td { border-bottom-color: var(--line); }
   }
 
   function resetCallForm() {
-    ["callEditId", "callName", "callPhones", "callBriefing"].forEach(id => ($(id).value = ""));
+    ["callEditId", "callLastName", "callFirstName", "callPhones", "callBriefing"].forEach(id => ($(id).value = ""));
     $("callPlace").value = "";
     setText("callFormTitle", "Kontakt einstellen");
     setText("callSaveBtn", "Kontakt speichern");
@@ -3037,7 +3138,10 @@ td { border-bottom-color: var(--line); }
     if (!c) return;
     $("callEditId").value = c.id;
     $("callEmployeeSelect").value = c.assigned_to;
-    $("callName").value = c.customer_name;
+    // „Nachname, Vorname“ – ältere Einträge ohne Komma landen komplett im Nachnamen
+    const [last, ...rest] = String(c.customer_name || "").split(",");
+    $("callLastName").value = last.trim();
+    $("callFirstName").value = rest.join(",").trim();
     $("callPhones").value = c.phones.join("\n");
     $("callPlace").value = c.teams ? "teams" : c.branch_id ? String(c.branch_id) : "";
     $("callBriefing").value = c.briefing || "";
@@ -3049,12 +3153,18 @@ td { border-bottom-color: var(--line); }
 
   $("callCancelBtn").addEventListener("click", resetCallForm);
 
+  const cleanNamePart = v => String(v || "").replace(/,/g, " ").replace(/\s+/g, " ").trim();
+  const joinName = (last, first) => `${cleanNamePart(last)}, ${cleanNamePart(first)}`;
+
   $("callForm").addEventListener("submit", event => {
     event.preventDefault();
+    if (!cleanNamePart($("callLastName").value) || !cleanNamePart($("callFirstName").value)) {
+      return alert("Bitte Nachname und Vorname eingeben.");
+    }
     const id = $("callEditId").value;
     const payload = {
       assigned_to: $("callEmployeeSelect").value,
-      customer_name: $("callName").value.trim(),
+      customer_name: joinName($("callLastName").value, $("callFirstName").value),
       phones: $("callPhones").value,
       place: $("callPlace").value,
       briefing: $("callBriefing").value.trim()
@@ -3087,6 +3197,7 @@ td { border-bottom-color: var(--line); }
       if (!button) return;
       const act = button.dataset.callAdmin;
       if (act === "edit") return editCall(button.dataset.id);
+      if (act === "phones") return replacePhones(button);
 
       const action = CALL_ADMIN_ACTIONS[act];
       if (action.confirm && !confirm(action.confirm)) return;
@@ -3101,11 +3212,31 @@ td { border-bottom-color: var(--line); }
       });
     }));
 
+  $("callReturnedList").addEventListener("input", event => {
+    const field = event.target.closest("[data-phone-fix]");
+    if (field) state.phoneFixDrafts[field.dataset.phoneFix] = field.value;
+  });
+
+  function replacePhones(button) {
+    const id = button.dataset.id;
+    const phones = $(`fix-${id}`).value.trim();
+    if (!phones) return alert("Bitte mindestens eine neue Nummer eintragen.");
+    const c = state.adminCalls.returned.find(x => String(x.id) === id);
+    if (!confirm(`„${c?.customer_name || ""}“ mit der neuen Nummer wieder an ${c?.display_name || "den Mitarbeiter"} geben? Die Versuche starten bei 0.`)) return;
+    withBusy(button, async () => {
+      try {
+        await api(`/admin/calls/${id}/phones`, "PUT", { phones });
+        delete state.phoneFixDrafts[id];
+        await Promise.all([loadCalls(), loadTasks()]);
+      } catch (error) {
+        alert("Nummer konnte nicht gespeichert werden: " + error.message);
+      }
+    });
+  }
+
   const KK_ACTIONS = {
     release: { path: id => `/admin/calls/${id}/kk-release`,
                confirm: c => `„${c.customer_name}“ wieder freigeben? Neuer Durchlauf mit 0 Versuchen – die bisherige Historie bleibt.` },
-    task: { path: id => `/admin/calls/${id}/kk-task`,
-            confirm: c => `„${c.customer_name}“ als eigene Aufgabe übernehmen? Der Kontakt wandert mit Historie nach „Erledigt“.` },
     done: { path: id => `/admin/calls/${id}/kk-done`,
             confirm: c => `„${c.customer_name}“ endgültig erledigen? Der Kontakt verschwindet aus Office – bitte anschließend im BSH-System als erledigt setzen.` }
   };
@@ -3130,7 +3261,6 @@ td { border-bottom-color: var(--line); }
         await api(action.path(id), "PUT");
         state.kkReviewed.delete(id);
         await loadCalls();
-        if (act === "task") await loadTasks();
       } catch (error) {
         alert("Aktion fehlgeschlagen: " + error.message);
       }
@@ -3160,16 +3290,22 @@ td { border-bottom-color: var(--line); }
 
   function renderBranches() {
     renderCallPlaceSelect();
-    const list = state.branches;
+    const list = physicalBranches();
+    const team = teamsBranch();
+    const bookingLocations = [team, ...list].filter(Boolean).filter(b => b.booking_url);
     const count = list.length;
+
+    if ($("teamsBookingUrl")) $("teamsBookingUrl").value = team?.booking_url || "";
+    // Falls Telefonliste und Buchungslinks parallel laden: Teams-Button nachziehen.
+    if (state.role === "employee" && state.calls.length) renderOwnCalls();
 
     $$("[data-branch-summary]").forEach(el => (el.textContent = count
       ? `${count} ${count === 1 ? "Filiale" : "Filialen"} – direkt online buchen`
       : "Noch keine Filialen hinterlegt."));
 
-    // Mitarbeiter: klickbare Kacheln
-    $("branchTiles").innerHTML = count
-      ? list.map(b => `
+    // Mitarbeiter: Teams + Filialen als klickbare Kacheln
+    $("branchTiles").innerHTML = bookingLocations.length
+      ? bookingLocations.map(b => `
           <a class="branch-tile" href="${esc(b.booking_url)}" target="_blank" rel="noopener noreferrer">
             <span class="kpi-icon">${ICONS.calendar}</span>
             <span class="branch-text">
@@ -3178,9 +3314,9 @@ td { border-bottom-color: var(--line); }
             </span>
             <span class="branch-go">Buchen →</span>
           </a>`).join("")
-      : '<div class="notice">Es sind noch keine Filialen hinterlegt. Bitte beim Boss melden.</div>';
+      : '<div class="notice">Es sind noch keine Buchungslinks hinterlegt. Bitte beim Boss melden.</div>';
 
-    // Boss: Verwaltung
+    // Boss: Filialverwaltung (Teams wird im eigenen Feld darüber gepflegt)
     $("branchAdminList").innerHTML = count
       ? list.map(b => `
           <div class="employee-row branch-row">
@@ -3196,6 +3332,26 @@ td { border-bottom-color: var(--line); }
           </div>`).join("")
       : '<div class="notice">Noch keine Filialen angelegt.</div>';
   }
+
+  $("teamsBookingForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const url = $("teamsBookingUrl").value.trim();
+    if (!url) return;
+    const existing = teamsBranch();
+
+    withBusy(event.submitter, async () => {
+      try {
+        const payload = { name: "Microsoft Teams", note: "Online-Termin", booking_url: url };
+        await (existing
+          ? api(`/admin/branches/${existing.id}`, "PUT", payload)
+          : api("/admin/branches", "POST", payload));
+        await loadBranches();
+        setStatus("teamsBookingStatus", "Gespeichert ✓ – gilt auch für die Telefonliste.");
+      } catch (error) {
+        setStatus("teamsBookingStatus", "Speichern fehlgeschlagen: " + error.message, true);
+      }
+    });
+  });
 
   async function loadBranches() {
     try {
@@ -3642,11 +3798,453 @@ td { border-bottom-color: var(--line); }
   const documentBody = (doc, employer) =>
     `<div class="pdoc">${employer ? employerDocHtml(doc) : employeeDocHtml(doc)}</div>`;
 
+  /* ================= PDF als Vektor-Dokument =================
+   * Gezeichnet mit jsPDF in festen mm-Koordinaten – unabhängig von Bildschirmbreite,
+   * Schriftskalierung oder Browser. Inhalte entsprechen 1:1 den HTML-Druckvorlagen.
+   */
+  const VP = {
+    L: 13, R: 197, T: 11, B: 286,
+    ink: [17, 17, 17], soft: [95, 107, 117], head: [31, 59, 87], white: [255, 255, 255],
+    line: [221, 226, 230], frame: [154, 164, 172], thFill: [238, 241, 244], footFill: [244, 246, 248],
+    payFill: [232, 238, 244], zebra: [250, 251, 252], warn: [179, 107, 0], strong: [51, 65, 77]
+  };
+  VP.W = VP.R - VP.L;
+
+  // Standardschrift Helvetica kennt nur WinAnsi – Sonderzeichen passend ersetzen.
+  const pdfText = v => String(v ?? "")
+    .replace(/\u2212/g, "-")
+    .replace(/[\u00A0\u202F\u2009\u2007]/g, " ")
+    .replace(/[^\x09\x0A\x0D\x20-\x7E\u00A0-\u00FF\u20AC\u2013\u2014\u2018\u2019\u201A\u201C\u201D\u201E\u2022\u2026]/g, "");
+
+  function pdfKit(pdf) {
+    const k = {
+      pdf,
+      font(size = 8.4, bold = false, color = VP.ink) {
+        pdf.setFont("helvetica", bold ? "bold" : "normal");
+        pdf.setFontSize(size);
+        pdf.setTextColor(...color);
+      },
+      fit(text, width) {
+        let t = pdfText(text);
+        if (pdf.getTextWidth(t) <= width) return t;
+        while (t.length > 1 && pdf.getTextWidth(t + "…") > width) t = t.slice(0, -1);
+        return t + "…";
+      },
+      // Text in einer Spalte (links/rechts/mittig), passend gekürzt
+      cell(text, x, y, w, { size = 8.4, bold = false, color = VP.ink, align = "left", pad = 1.6 } = {}) {
+        k.font(size, bold, color);
+        const t = k.fit(text, w - pad * 2);
+        const tx = align === "right" ? x + w - pad : align === "center" ? x + w / 2 : x + pad;
+        pdf.text(t, tx, y, { align, baseline: "alphabetic" });
+      },
+      wrap(text, width, size = 8.4, bold = false) {
+        k.font(size, bold);
+        return pdf.splitTextToSize(pdfText(text), width);
+      },
+      fill(x, y, w, h, color) { pdf.setFillColor(...color); pdf.rect(x, y, w, h, "F"); },
+      frame(x, y, w, h, color = VP.frame, lw = 0.25) { pdf.setDrawColor(...color); pdf.setLineWidth(lw); pdf.rect(x, y, w, h, "S"); },
+      hline(x1, x2, y, color = VP.line, lw = 0.2) { pdf.setDrawColor(...color); pdf.setLineWidth(lw); pdf.line(x1, y, x2, y); },
+      vline(x, y1, y2, color = VP.line, lw = 0.2) { pdf.setDrawColor(...color); pdf.setLineWidth(lw); pdf.line(x, y1, x, y2); }
+    };
+    return k;
+  }
+
+  // Kopf: Arbeitgeber links, Titel rechts, Linie darunter. Liefert neue y-Position.
+  function vHead(k, doc, title, flag) {
+    const { L, R, T } = VP;
+    const e = doc.employer || {};
+    let y = T + 4;
+    if (e.name) {
+      k.cell(e.name, L, y, 100, { size: 10, bold: true, pad: 0 });
+      k.cell(e.street || "", L, y + 4.2, 100, { pad: 0 });
+      k.cell(e.zip_city || "", L, y + 8, 100, { pad: 0 });
+      if (e.company_number) k.cell(`Betriebsnummer ${e.company_number}`, L, y + 11.8, 100, { size: 7, color: VP.soft, pad: 0 });
+    } else {
+      k.cell("Arbeitgeber", L, y, 100, { size: 10, bold: true, pad: 0 });
+      k.cell("Arbeitgeberdaten fehlen", L, y + 4.2, 100, { color: VP.soft, pad: 0 });
+    }
+    k.cell(title, R - 80, y + 0.6, 80, { size: 13, bold: true, color: VP.head, align: "right", pad: 0 });
+    k.cell(doc.monthLabel, R - 80, y + 5.4, 80, { size: 10, bold: true, align: "right", pad: 0 });
+    k.cell(`Erstellt am ${doc.created}`, R - 80, y + 9, 80, { size: 7, color: VP.soft, align: "right", pad: 0 });
+    let fy = y + 11;
+    const badge = (text, color) => {
+      k.font(7, true, color);
+      const w = k.pdf.getTextWidth(pdfText(text)) + 3.6;
+      k.frame(R - w, fy, w, 4.2, color, 0.35);
+      k.pdf.text(pdfText(text), R - w / 2, fy + 2.95, { align: "center" });
+      fy += 5.2;
+    };
+    if (flag) badge(flag, VP.ink);
+    if (doc.preview) badge("Vorschau – Monat nicht abgeschlossen", VP.warn);
+    const bottom = Math.max(y + 14, fy) + 1.5;
+    k.hline(L, R, bottom, VP.head, 0.6);
+    return bottom + 3.5;
+  }
+
+  // Leiste mit mehreren beschrifteten Werten
+  function vStrip(k, y, items, { big = false } = {}) {
+    const { L, W } = VP;
+    const h = big ? 10.5 : 9.5;
+    const total = items.reduce((a, i) => a + (i.w || 1), 0);
+    let x = L;
+    k.frame(L, y, W, h);
+    items.forEach((it, n) => {
+      const w = W * (it.w || 1) / total;
+      if (n) k.vline(x, y, y + h);
+      k.cell(it.label, x, y + 3.3, w, { size: 6.6, color: VP.soft });
+      k.cell(it.value, x, y + (big ? 8.2 : 7.6), w, { size: big ? 9.5 : 8.6, bold: true, align: big ? "right" : "left" });
+      x += w;
+    });
+    return y + h;
+  }
+
+  function vSectionTitle(k, y, text, x = VP.L, w = VP.W) {
+    k.fill(x, y, w, 5.2, VP.head);
+    k.cell(text, x, y + 3.65, w, { bold: true, color: VP.white });
+    return y + 5.2;
+  }
+
+  /* Tabelle: cols = [{ w (Anteil), align }], head = [..], rows = [[..]], foot = [..] (optional)
+   * onPageBreak(y) wird aufgerufen, wenn eine neue Seite nötig ist, und liefert die neue Startposition. */
+  function vTable(k, y, { cols, head, rows, foot, x = VP.L, w = VP.W, rowH = 5.4, zebra = false, bold = [], limit = VP.B - 12, onPageBreak }) {
+    const total = cols.reduce((a, c) => a + c.w, 0);
+    const widths = cols.map(c => w * c.w / total);
+    const drawRow = (cells, top, opt = {}) => {
+      if (opt.fillColor) k.fill(x, top, w, rowH, opt.fillColor);
+      let cx = x;
+      cells.forEach((v, i) => {
+        // Linksbündiger Text darf über leere Nachbarzellen laufen (z. B. „Gesamtbrutto“ in der Summenzeile)
+        let span = widths[i];
+        if ((cols[i].align || "left") === "left") {
+          for (let j = i + 1; j < cells.length && cells[j] === ""; j++) span += widths[j];
+        }
+        if (v !== "") k.cell(v, cx, top + rowH - 1.75, span, {
+          size: opt.size || 8.2, bold: !!opt.bold, color: opt.color || VP.ink, align: cols[i].align || "left"
+        });
+        cx += widths[i];
+      });
+    };
+    let top = y;
+    let sectionTop = y;
+    const drawHead = () => {
+      if (!head) return;
+      drawRow(head, top, { fillColor: VP.thFill, size: 6.8, bold: true, color: VP.strong });
+      k.hline(x, x + w, top + rowH, VP.frame, 0.25);
+      top += rowH;
+    };
+    const closeFrame = () => {
+      k.pdf.setDrawColor(...VP.frame); k.pdf.setLineWidth(0.25);
+      k.pdf.line(x, sectionTop, x, top); k.pdf.line(x + w, sectionTop, x + w, top); k.pdf.line(x, top, x + w, top);
+    };
+    drawHead();
+    rows.forEach((r, n) => {
+      if (onPageBreak && top + rowH > limit) {
+        closeFrame();
+        top = sectionTop = onPageBreak();
+        drawHead();
+      }
+      if (zebra && n % 2) k.fill(x, top, w, rowH, VP.zebra);
+      drawRow(r, top, { bold: bold.includes(n) });
+      if (n < rows.length - 1) k.hline(x, x + w, top + rowH);
+      top += rowH;
+    });
+    if (foot) {
+      k.fill(x, top, w, rowH, VP.footFill);
+      k.hline(x, x + w, top, VP.strong, 0.35);
+      drawRow(foot, top, { bold: true });
+      top += rowH;
+    }
+    closeFrame();
+    return top;
+  }
+
+  // Kompakte Summenbox rechts
+  function vNetBox(k, y, rows) {
+    const w = VP.W * 0.58, x = VP.R - w;
+    let top = y;
+    rows.forEach(([label, value, kind]) => {
+      const h = kind === "pay" ? 6.6 : 5.4;
+      if (kind === "sub") k.fill(x, top, w, h, VP.footFill);
+      if (kind === "pay") { k.fill(x, top, w, h, VP.payFill); k.hline(x, x + w, top, VP.ink, 0.5); }
+      const size = kind === "pay" ? 10.5 : 8.2;
+      const bold = kind === "sub" || kind === "pay";
+      k.cell(label, x, top + h - 1.8, w * 0.68, { size, bold });
+      k.cell(value, x + w * 0.68, top + h - 1.8, w * 0.32, { size, bold, align: "right" });
+      if (!kind) k.hline(x, x + w, top + h);
+      top += h;
+    });
+    k.frame(x, y, w, top - y);
+    return top;
+  }
+
+  function vNote(k, y, label, text) {
+    const lines = k.wrap(`${label} ${text}`, VP.W - 6);
+    const h = lines.length * 3.6 + 3;
+    k.frame(VP.L, y, VP.W, h);
+    k.fill(VP.L, y, 1, h, VP.head);
+    k.font(8.2, false);
+    lines.forEach((line, i) => k.pdf.text(line, VP.L + 3, y + 4.3 + i * 3.6));
+    return y + h;
+  }
+
+  function vFooters(k, left, right) {
+    const n = k.pdf.getNumberOfPages();
+    for (let p = 1; p <= n; p++) {
+      k.pdf.setPage(p);
+      k.hline(VP.L, VP.R, VP.B - 4.2, VP.frame, 0.25);
+      k.cell(left(p, n), VP.L, VP.B - 1, VP.W * 0.66, { size: 6.6, color: VP.soft, pad: 0 });
+      k.cell(right(p, n), VP.L + VP.W * 0.66, VP.B - 1, VP.W * 0.34, { size: 6.6, color: VP.soft, align: "right", pad: 0 });
+    }
+  }
+
+  function drawEmployeePdf(k, doc) {
+    const { payroll: p, profile, employer, note } = doc;
+    const emp = doc.employee || {};
+    const name = emp.full_name || doc.employeeName;
+    const year = doc.year;
+    const { L, R, W } = VP;
+
+    let y = vHead(k, doc, "Entgeltabrechnung");
+
+    // Anschrift links, Stammdaten rechts
+    const master = [
+      ["Personalnummer", orDash(emp.personnel_number)],
+      ["Geburtsdatum", emp.birth_date ? fmtDate(emp.birth_date) : "–"],
+      ["Rentenversicherungsnr.", fmtInsurance(emp.insurance_number)],
+      ["Eintritt / Austritt", `${emp.start_date ? fmtDate(emp.start_date) : "–"} / ${emp.end_date ? fmtDate(emp.end_date) : "–"}`],
+      ["Personengruppe", "109 · geringfügig entlohnt"],
+      ["Beitragsgruppe", `${p.contributionGroup || contributionGroup(profile)} (KV·RV·AV·PV)`],
+      ["Einzugsstelle", "Minijob-Zentrale"],
+      ["Besteuerung", profile.flatTax ? "pauschal 2 % (§ 40a Abs. 2 EStG)" : "individuell"]
+    ];
+    const addrW = W * 0.49;
+    if (employer?.name) {
+      const sender = [employer.name, employer.street, employer.zip_city].filter(Boolean).join(" · ");
+      k.cell(sender, L, y + 2.5, addrW, { size: 6.5, color: VP.soft, pad: 0 });
+      k.hline(L, L + addrW, y + 3.4, VP.frame, 0.2);
+    }
+    k.cell(name, L, y + 8.5, addrW, { size: 10, bold: true, pad: 0 });
+    k.cell(emp.street || "", L, y + 12.6, addrW, { pad: 0 });
+    k.cell(emp.zip_city || "", L, y + 16.6, addrW, { pad: 0 });
+
+    const kvX = L + W * 0.5, kvW = W * 0.5, kvH = 4.4;
+    master.forEach(([label, value], i) => {
+      const ty = y + i * kvH;
+      k.cell(label, kvX, ty + kvH - 1.3, kvW * 0.42, { size: 7.8, color: VP.soft });
+      k.cell(value, kvX + kvW * 0.42, ty + kvH - 1.3, kvW * 0.58, { size: 7.8 });
+      if (i < master.length - 1) k.hline(kvX, kvX + kvW, ty + kvH);
+    });
+    k.frame(kvX, y, kvW, master.length * kvH);
+    y += master.length * kvH + 4;
+
+    y = vStrip(k, y, [
+      { label: "Gesamtbrutto", value: euro(p.gross) },
+      { label: "Steuer-Brutto (pauschal versteuert)", value: euro(p.gross) },
+      { label: "SV-Brutto", value: euro(p.gross) },
+      { label: "RV-Bemessungsgrundlage", value: euro(p.rvMinBase || p.gross) }
+    ], { big: true }) + 4;
+
+    y = vSectionTitle(k, y, "Bezüge");
+    y = vTable(k, y, {
+      cols: [{ w: 12 }, { w: 38 }, { w: 18, align: "right" }, { w: 15, align: "right" }, { w: 17, align: "right" }],
+      head: ["Lohnart", "Bezeichnung", "Menge", "Faktor", "Betrag"],
+      rows: [
+        ["1000", "Stundenlohn", `${decimal(p.mins / 60, 2)} Std.`, euro(HOURLY_RATE_CENTS / 100), euro(p.timePay)],
+        ["2000", "Terminprovision", `${p.eligible} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.commission)]
+      ],
+      foot: ["Gesamtbrutto", "", "", "", euro(p.gross)]
+    }) + 4;
+
+    const rvLabel = p.rvMinBase
+      ? `Rentenversicherung AN (Mindestbeitrag, Bemessung ${euro(p.rvMinBase)})`
+      : profile.employeeRv && profile.rvMinBaseApplies === false
+        ? "Rentenversicherung AN (3,6 %, Mindestbemessung nicht anzuwenden)"
+        : "Rentenversicherung AN (3,6 %)";
+    const deductions = [
+      p.employeeRv
+        ? [rvLabel, euro(p.rvMinBase || p.gross), minus(p.employeeRv)]
+        : ["Rentenversicherung AN (befreit)", "–", euro(0)],
+      p.employeeFlatTax ? ["Pauschsteuer vom Arbeitsentgelt (2 %)", euro(p.gross), minus(p.employeeFlatTax)] : null
+    ].filter(Boolean);
+
+    y = vSectionTitle(k, y, "Gesetzliche Abzüge");
+    y = vTable(k, y, {
+      cols: [{ w: 61 }, { w: 22, align: "right" }, { w: 17, align: "right" }],
+      head: ["Bezeichnung", "Bemessungsgrundlage", "Betrag"],
+      rows: deductions,
+      foot: ["Gesetzliche Abzüge", "", minus(p.employeeDeductions)]
+    }) + 4;
+
+    y = vNetBox(k, y, [
+      ["Gesamtbrutto", euro(p.gross)],
+      ["Gesetzliche Abzüge", minus(p.employeeDeductions)],
+      ["Nettobezug", euro(p.net), "sub"],
+      ["Auszahlungsbetrag", euro(p.net), "pay"]
+    ]) + 5;
+
+    // Zwei Spalten: AG-Anteile | Arbeitszeit & Kumulation
+    const colW = (W - 4) / 2;
+    const shares = [
+      ["Krankenversicherung (13 %)", p.employerKv],
+      ["Rentenversicherung (15 %)", p.employerRv],
+      ["Pauschsteuer (2 %)", p.employerFlatTax],
+      ["Umlagen U1/U2/Insolvenz", (p.u1 || 0) + (p.u2 || 0) + (p.insolvency || 0)]
+    ].filter(([, v]) => Number(v) > 0).map(([l, v]) => [l, euro(v)]);
+    const kum = [
+      ["Arbeitsstunden", fmtMinutes(p.mins)],
+      ["Arbeitstage / SV-Tage", `${p.days} / ${p.svDays ?? 30}`],
+      ...(year ? [
+        [`Brutto ${fmtMonthShort(year.from)}–${fmtMonthShort(year.to)}`, euro(year.gross)],
+        [`Jahresgrenze (12 × ${euro(MINIJOB_LIMIT)})`, euro(year.limit)]
+      ] : [])
+    ];
+    const twoCols = [{ w: 68 }, { w: 32, align: "right" }];
+    const y1 = vTable(k, vSectionTitle(k, y, "Vom Arbeitgeber zusätzlich getragen", L, colW),
+      { x: L, w: colW, cols: twoCols, rows: shares.length ? shares : [["keine", ""]] });
+    const y2 = vTable(k, vSectionTitle(k, y, "Arbeitszeit & Kumulation", L + colW + 4, colW),
+      { x: L + colW + 4, w: colW, cols: twoCols, rows: kum });
+    y = Math.max(y1, y2) + 4;
+
+    if (note) vNote(k, y, "Hinweis:", note);
+
+    // Seite 2: Arbeitszeitnachweis
+    k.pdf.addPage();
+    drawTimesheetPdf(k, doc);
+
+    vFooters(k,
+      p1 => p1 === 1
+        ? "Maschinell erstellte Entgeltabrechnung – ohne Unterschrift gültig. Arbeitszeitnachweis siehe Seite 2."
+        : "Aufbewahrung mindestens zwei Jahre. Erfasst jeweils spätestens 7 Tage nach dem Arbeitstag.",
+      (pn, n) => `${name} · ${doc.monthLabel} · Seite ${pn}/${n}`);
+  }
+
+  function drawTimesheetPdf(k, doc) {
+    const emp = doc.employee || {};
+    const name = emp.full_name || doc.employeeName;
+    const rows = doc.entries || [];
+    const sum = key => rows.reduce((a, e) => a + Number(e[key] || 0), 0);
+
+    const pageTop = () => {
+      let y = vHead(k, doc, "Arbeitszeitnachweis");
+      y = vStrip(k, y, [
+        { label: "Mitarbeiter", value: name, w: 2 },
+        { label: "Personalnummer", value: orDash(emp.personnel_number) },
+        { label: "Zeitraum", value: doc.monthLabel }
+      ]) + 4;
+      return vSectionTitle(k, y, "Beginn, Ende und Dauer der täglichen Arbeitszeit (§ 17 MiLoG)");
+    };
+
+    let y = pageTop();
+    if (rows.length) {
+      y = vTable(k, y, {
+        cols: [{ w: 14 }, { w: 9 }, { w: 11, align: "right" }, { w: 11, align: "right" }, { w: 12, align: "right" },
+               { w: 15, align: "right" }, { w: 13, align: "right" }, { w: 15, align: "right" }],
+        head: ["Datum", "Tag", "Beginn", "Ende", "Pause", "Arbeitszeit", "Termine", "davon prov."],
+        rows: rows.map(e => [
+          fmtDate(e.work_date), fmtWeekday(e.work_date), e.start_time, e.end_time,
+          `${Number(e.break_minutes || 0)} min`, fmtMinutes(e.work_minutes),
+          String(Number(e.appointments || 0)), String(Number(e.eligible || 0))
+        ]),
+        foot: [`Summe · ${new Set(rows.map(e => e.work_date)).size} Arbeitstage`, "", "", "",
+               `${sum("break_minutes")} min`, fmtMinutes(sum("work_minutes")), String(sum("appointments")), String(sum("eligible"))],
+        rowH: 5.2, zebra: true,
+        onPageBreak: () => { k.pdf.addPage(); return pageTop(); }
+      });
+    } else {
+      y = vNote(k, y + 2, "Hinweis:",
+        "Für diesen Abschluss wurden keine Tageseinträge gespeichert (Abschluss vor Einführung des Arbeitszeitnachweises).");
+    }
+
+    // Unterschriften – bei Platzmangel auf eine neue Seite
+    if (y + 22 > VP.B - 8) { k.pdf.addPage(); y = pageTop(); }
+    const sy = y + 18, half = (VP.W - 20) / 2;
+    k.hline(VP.L, VP.L + half, sy, [51, 51, 51], 0.25);
+    k.hline(VP.R - half, VP.R, sy, [51, 51, 51], 0.25);
+    k.cell("Datum, Unterschrift Arbeitgeber", VP.L, sy + 3.2, half, { size: 7, color: [68, 68, 68], pad: 0 });
+    k.cell("Datum, Unterschrift Mitarbeiter", VP.R - half, sy + 3.2, half, { size: 7, color: [68, 68, 68], pad: 0 });
+  }
+
+  function drawEmployerPdf(k, doc) {
+    const { payroll: p, profile, note, year } = doc;
+    const name = doc.employee?.full_name || doc.employeeName;
+
+    let y = vHead(k, doc, "Arbeitgeber-Abrechnung", "NUR INTERN");
+    y = vStrip(k, y, [
+      { label: "Mitarbeiter", value: name, w: 2 },
+      { label: "Beitragsgruppe", value: p.contributionGroup || contributionGroup(profile) },
+      { label: "SV-Tage", value: String(p.svDays ?? 30) },
+      { label: "Zeitraum", value: doc.monthLabel }
+    ]) + 4;
+
+    const cols = [{ w: 76 }, { w: 24, align: "right" }];
+    y = vSectionTitle(k, y, "Vergütung");
+    y = vTable(k, y, {
+      cols,
+      rows: [
+        ["Zeitlohn", euro(p.timePay)],
+        ["Provision", euro(p.commission)],
+        ["Bruttovergütung", euro(p.gross)],
+        ["Abzüge beim Mitarbeiter", euro(p.employeeDeductions)]
+      ],
+      bold: [2],
+      foot: ["Auszahlung an Mitarbeiter", euro(p.net)]
+    }) + 4;
+
+    const shares = [
+      ["Krankenversicherung Arbeitgeber (13 %)", p.employerKv],
+      ["Rentenversicherung Arbeitgeber (15 %)", p.employerRv],
+      ["Umlage U1 (0,80 %)", p.u1],
+      ["Umlage U2 (0,22 %)", p.u2],
+      ["Insolvenzgeldumlage (0,15 %)", p.insolvency],
+      ["Pauschsteuer Arbeitgeber (2 %)", p.employerFlatTax],
+      [`Unfallversicherung / BG (${decimal(profile.accidentRate || 0, 2)} %)`, p.accident]
+    ].filter(([, a]) => Number(a) > 0).map(([l, a]) => [l, euro(a)]);
+    y = vSectionTitle(k, y, "Arbeitgeber-Abgaben");
+    y = vTable(k, y, {
+      cols,
+      rows: shares.length ? shares : [["Keine Arbeitgeber-Abgaben im Profil aktiviert.", ""]],
+      foot: ["Arbeitgeber-Abgaben gesamt", euro(p.employerContributions)]
+    }) + 4;
+
+    const minijobZentrale = (p.employerContributions || 0) - (p.accident || 0) + (p.employeeDeductions || 0);
+    y = vNetBox(k, y, [
+      ["Arbeitgeber-Abgaben gesamt", euro(p.employerContributions), "sub"],
+      ["An Minijob-Zentrale (inkl. AN-Abzüge, ohne BG)", euro(minijobZentrale)],
+      ["Gesamtkosten Arbeitgeber", euro(p.employerCost), "pay"]
+    ]) + 5;
+
+    if (year) {
+      y = vSectionTitle(k, y, "Verdienstgrenze");
+      y = vTable(k, y, {
+        cols,
+        rows: [
+          [`Brutto ${fmtMonthShort(year.from)}–${fmtMonthShort(year.to)}`, euro(year.gross)],
+          ["Jahresgrenze (12 Monate)", euro(year.limit)],
+          [`Monate über ${euro(MINIJOB_LIMIT)}`, String(year.monthsOver)]
+        ]
+      }) + 4;
+    }
+    if (note) vNote(k, y, "Interne Notiz:", note);
+
+    vFooters(k,
+      () => "Interne Arbeitgeberübersicht – nicht für den Mitarbeiter bestimmt.",
+      () => doc.monthLabel);
+  }
+
+  // jsPDF-Instanz aus der vorhandenen html2pdf-Bibliothek holen (leere Startseite).
+  async function newPdfDocument() {
+    const blank = document.createElement("div");
+    blank.style.cssText = "width:10px;height:1px;background:#fff";
+    return window.html2pdf()
+      .set({ margin: 0, image: { type: "jpeg", quality: 0.5 }, html2canvas: { scale: 1, backgroundColor: "#ffffff" },
+             jsPDF: { unit: "mm", format: "a4", orientation: "portrait", compress: true } })
+      .from(blank)
+      .toPdf()
+      .get("pdf");
+  }
+
   async function downloadDocumentPdf(doc, employer) {
     if (!doc) return;
-
-    // Direkter PDF-Download. Falls die PDF-Bibliothek nicht geladen werden konnte,
-    // bleibt der vorhandene Druckdialog als zuverlässiger Fallback erhalten.
     if (typeof window.html2pdf !== "function") {
       printDocument(doc, employer);
       return;
@@ -3656,36 +4254,15 @@ td { border-bottom-color: var(--line); }
     const kind = employer ? "Arbeitgeber-Abrechnung" : "Gehaltsnachweis";
     const safe = `${kind}_${employee}_${doc.month}`.replace(/[^a-zA-Z0-9äöüÄÖÜß._-]+/g, "_");
 
-    // Quelle bleibt außerhalb des DOM – html2pdf klont sie in einen eigenen Container
-    // mit exakt der A4-Nutzbreite. Die Styles reisen im Klon mit.
-    // html2pdf zentriert seinen Container – html2canvas misst aber ab links. Deshalb fest links ausrichten.
-    const PIN_CSS = ".html2pdf__container{margin:0!important;left:0!important;right:auto!important;top:0!important}"
-      + `.html2pdf__container .pdoc{max-width:${PRINT_WIDTH_MM - 6}mm!important;margin:0 auto!important}`;
-    const source = document.createElement("div");
-    source.innerHTML = `<style>${PIN_CSS}${PRINT_CSS}</style>${documentBody(doc, employer)}`;
-
-    // Gescrollte Seite erzeugt sonst Leerraum oben; schmale Handy-Viewports schneiden rechts ab.
-    const scroll = { x: window.scrollX, y: window.scrollY };
-    window.scrollTo(0, 0);
-    const [mt, mr, mb, ml] = PRINT_MARGIN_MM;
-
     try {
-      await window.html2pdf().set({
-        margin: [mt, ml, mb, mr],
-        filename: `${safe}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: {
-          scale: 2, useCORS: true, backgroundColor: "#ffffff",
-          scrollX: 0, scrollY: 0, windowWidth: 800
-        },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait", compress: true },
-        pagebreak: { mode: ["css"], before: ".pd-page2", avoid: [".pd-keep", "tr"] }
-      }).from(source).save();
+      const pdf = await newPdfDocument();
+      const kit = pdfKit(pdf);
+      pdf.setProperties({ title: `${kind} ${employee} ${doc.monthLabel}`, creator: "SmartADM 5 Office" });
+      employer ? drawEmployerPdf(kit, doc) : drawEmployeePdf(kit, doc);
+      pdf.save(`${safe}.pdf`);
     } catch (error) {
       console.warn("Direkter PDF-Export fehlgeschlagen, Druckdialog wird verwendet:", error);
       printDocument(doc, employer);
-    } finally {
-      window.scrollTo(scroll.x, scroll.y);
     }
   }
 
