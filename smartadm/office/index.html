@@ -1110,6 +1110,9 @@ td { border-bottom-color: var(--line); }
               <div class="field"><label>PLZ und Ort</label><input data-emp="zip_city" type="text" maxlength="120"></div>
               <div class="field"><label>Geburtsdatum</label><input data-emp="birth_date" type="date"></div>
               <div class="field"><label>Rentenversicherungsnummer</label><input data-emp="insurance_number" type="text" maxlength="16" placeholder="12 345678 A 123"></div>
+              <div class="field"><label>Steuer-ID</label><input data-emp="tax_id" type="text" inputmode="numeric" maxlength="14" placeholder="12 345 678 901"></div>
+              <div class="field"><label>Krankenkasse</label><input data-emp="health_insurance" type="text" maxlength="120" placeholder="z. B. AOK Baden-Württemberg"></div>
+              <div class="field"><label>IBAN</label><input data-emp="iban" type="text" maxlength="42" placeholder="DE00 0000 0000 0000 0000 00"></div>
               <div class="field"><label>Eintritt</label><input data-emp="start_date" type="date"></div>
               <div class="field"><label>Austritt (optional)</label><input data-emp="end_date" type="date"></div>
             </div>
@@ -1118,6 +1121,47 @@ td { border-bottom-color: var(--line); }
               <span id="employeeProfileStatus" class="status-text" style="margin:0"></span>
             </div>
           </form>
+        </div>
+
+        <div class="card section-card">
+          <div class="card-head">
+            <h2>Abwesenheiten &amp; Urlaub</h2>
+            <p>Urlaub nur für einen Tag erfassen, an dem ohne Urlaub tatsächlich gearbeitet worden wäre. Vertraglich gelten 6 Stunden pro Woche auf maximal 3 Arbeitstage; für den Urlaub zählt jeder tatsächlich bzw. durch Abwesenheit ersetzte Arbeitstag unabhängig von der Stundenzahl.</p>
+          </div>
+          <div class="quick-grid">
+            <div class="quick"><span>Arbeitstage im Jahr</span><b id="vacationWorkedDays">0</b></div>
+            <div class="quick"><span>Urlaubsanspruch</span><b id="vacationEntitlement">0 Tage</b></div>
+            <div class="quick"><span>Urlaub genommen</span><b id="vacationTaken">0 Tage</b></div>
+            <div class="quick"><span>Resturlaub</span><b id="vacationRemaining">0 Tage</b></div>
+          </div>
+          <div id="vacationCalcNote" class="status-text" style="margin-top:10px"></div>
+          <div id="contractWorkdayStatus" class="limit-status warn" style="display:none"></div>
+          <form id="absenceForm" style="margin-top:16px">
+            <input id="absenceId" type="hidden">
+            <div class="form-grid">
+              <div class="field"><label for="absenceDate">Datum</label><input id="absenceDate" type="date" required></div>
+              <div class="field"><label for="absenceType">Art</label><select id="absenceType" required>
+                <option value="vacation">Urlaub</option>
+                <option value="sick">Krankheit</option>
+                <option value="holiday">Feiertag</option>
+                <option value="paid_leave">Bezahlte Freistellung</option>
+              </select></div>
+              <div class="field"><label for="absencePaidHours">Bezahlte Stunden</label><input id="absencePaidHours" type="number" min="0" max="24" step="0.25" value="0"></div>
+              <div class="field"><label for="absencePaidAmount">Entgeltfortzahlung</label><input id="absencePaidAmount" type="number" min="0" max="100000" step="0.01" value="0"></div>
+              <div class="field full"><label for="absenceNote">Notiz (optional)</label><input id="absenceNote" type="text" maxlength="240" placeholder="z. B. genehmigter Urlaub"></div>
+            </div>
+            <div class="actions start">
+              <button class="btn primary" id="saveAbsenceBtn" type="submit">Abwesenheit speichern</button>
+              <button class="btn ghost" id="resetAbsenceBtn" type="button">Zurücksetzen</button>
+              <span id="absenceStatus" class="status-text" style="margin:0"></span>
+            </div>
+          </form>
+          <div class="table-wrap" style="margin-top:16px">
+            <table>
+              <thead><tr><th>Datum</th><th>Art</th><th>Bezahlte Zeit</th><th>Entgelt</th><th>Notiz</th><th></th></tr></thead>
+              <tbody id="absenceRows"></tbody>
+            </table>
+          </div>
         </div>
 
         <div class="grid-4">
@@ -1154,6 +1198,7 @@ td { border-bottom-color: var(--line); }
             <div class="field"><label for="payrollMonth">Abrechnungsmonat</label><input id="payrollMonth" type="month"></div>
             <div class="field"><label>Stundenlohn</label><input value="13,90 € / Stunde" disabled></div>
             <div class="field"><label>Provision</label><input value="5,00 € / provisionsfähigem Termin" disabled></div>
+            <div class="field"><label for="payrollPaymentDate">Zahlungsdatum</label><input id="payrollPaymentDate" type="date"></div>
             <div class="field full"><label for="payrollNote">Notiz</label><input id="payrollNote" type="text" maxlength="180" placeholder="Optionaler interner Hinweis"></div>
           </div>
 
@@ -1203,14 +1248,15 @@ td { border-bottom-color: var(--line); }
 
           <div class="panel" style="margin-top:16px">
             <div class="quick-grid">
-              <div class="quick"><span>Arbeitszeit</span><b id="payrollHours">0:00 h</b></div>
+              <div class="quick"><span>Ist-Arbeitszeit</span><b id="payrollHours">0:00 h</b></div>
               <div class="quick"><span>Arbeitstage</span><b id="payrollDays">0</b></div>
-              <div class="quick"><span>Termine</span><b id="payrollAppointments">0</b></div>
-              <div class="quick"><span>Provisionsfähig</span><b id="payrollEligible">0</b></div>
+              <div class="quick"><span>Urlaub / Rest</span><b id="payrollVacation">0 / 0</b></div>
+              <div class="quick"><span>Krankheitstage</span><b id="payrollSickDays">0</b></div>
             </div>
             <div class="payroll-summary">
-              <div class="quick"><span>Zeitlohn</span><b id="payrollTimePay">0,00 €</b></div>
+              <div class="quick"><span>Grundlohn</span><b id="payrollTimePay">0,00 €</b></div>
               <div class="quick"><span>Provision</span><b id="payrollCommission">0,00 €</b></div>
+              <div class="quick"><span>Entgeltfortzahlung</span><b id="payrollAbsencePay">0,00 €</b></div>
               <div class="quick emphasis"><span>Brutto</span><b id="payrollGross">0,00 €</b></div>
               <div class="quick emphasis"><span>Auszahlung</span><b id="payrollNet">0,00 €</b></div>
             </div>
@@ -1220,6 +1266,7 @@ td { border-bottom-color: var(--line); }
               <div><span>Gesamtkosten Arbeitgeber</span><strong id="payrollEmployerCost">0,00 €</strong></div>
             </div>
             <div id="payrollRvNote" class="status-text"></div>
+            <div id="payrollWorkdayStatus" class="limit-status warn" style="display:none"></div>
             <div id="payrollLimitStatus" class="limit-status"></div>
             <div id="payrollYearStatus" class="limit-status"></div>
             <div id="payrollDataStatus" class="notice warn" style="margin-top:12px" hidden></div>
@@ -1239,9 +1286,10 @@ td { border-bottom-color: var(--line); }
             <h2>Monatsarchiv</h2>
             <p>Abgeschlossene Monate werden als unveränderlicher Abrechnungs-Snapshot gespeichert.</p>
           </div>
-          <div class="form-grid narrow">
+          <div class="form-grid">
             <div class="field"><label>Mitarbeiter</label><select data-employee-select></select></div>
             <div class="field"><label for="closingMonth">Monat</label><input id="closingMonth" type="month"></div>
+            <div class="field"><label for="closingPaymentDate">Zahlungsdatum</label><input id="closingPaymentDate" type="date"></div>
           </div>
           <div class="actions start">
             <button class="btn primary" id="closeMonthBtn" type="button">Monat abschließen</button>
@@ -1542,6 +1590,8 @@ td { border-bottom-color: var(--line); }
   const RV_EMPLOYER_RATE = 0.15;
   const RV_EMPLOYEE_RATE = 0.036;
   const MAX_BACKDATE_DAYS = 7;
+  const CONTRACT_WEEKLY_HOURS = 6;
+  const CONTRACT_MAX_WORKDAYS_PER_WEEK = 3;
   const AUTO_CLOSING_START_MONTH = "2026-09";
 
   const DEFAULT_PROFILE = {
@@ -1588,6 +1638,7 @@ td { border-bottom-color: var(--line); }
     entries: [],             // eigene Einträge (Mitarbeiter)
     employees: [],           // Boss: Mitarbeiterliste
     employeeEntries: [],     // Boss: Einträge des gewählten Mitarbeiters
+    employeeAbsences: [],    // Boss: Urlaub, Krankheit, Feiertage, bezahlte Freistellung
     selectedUserId: null,
     profiles: {},            // Boss: Abgabenprofile je Mitarbeiter
     tasks: [],
@@ -1650,6 +1701,8 @@ td { border-bottom-color: var(--line); }
   const weekdayFmt = new Intl.DateTimeFormat("de-DE", { weekday: "short" });
   const fmtWeekday = iso => weekdayFmt.format(new Date(`${iso}T12:00:00`));
   const fmtInsurance = v => (v ? `${v.slice(0, 2)} ${v.slice(2, 8)} ${v.slice(8, 9)} ${v.slice(9)}` : "–");
+  const fmtTaxId = v => (v ? `${v.slice(0, 2)} ${v.slice(2, 5)} ${v.slice(5, 8)} ${v.slice(8)}` : "–");
+  const fmtVacation = v => `${Number(v || 0).toLocaleString("de-DE", { maximumFractionDigits: 2 })} ${Math.abs(Number(v || 0)) === 1 ? "Tag" : "Tage"}`;
   const decimal = (v, digits = 1) => Number(v).toFixed(digits).replace(".", ",");
 
   function fmtMinutes(m) {
@@ -1732,6 +1785,16 @@ td { border-bottom-color: var(--line); }
     eligible: Number(row.commissionable_appointments || 0)
   });
   const toEntries = rows => asArray(rows).map(toEntry);
+  const toAbsence = row => ({
+    id: String(row.id),
+    date: row.absence_date,
+    type: row.absence_type,
+    paidMinutes: Number(row.paid_minutes || 0),
+    paidAmountCents: Number(row.paid_amount_cents || 0),
+    note: row.note || ""
+  });
+  const toAbsences = rows => asArray(rows).map(toAbsence);
+  const inMonthAbsences = (list, ym) => list.filter(a => a.date?.slice(0, 7) === ym);
 
   /* ================= Navigation ================= */
 
@@ -2046,6 +2109,7 @@ td { border-bottom-color: var(--line); }
 
     if (!userId) {
       state.employeeEntries = [];
+      state.employeeAbsences = [];
       state.closings = [];
       renderEmployeeData();
       renderClosings();
@@ -2057,8 +2121,12 @@ td { border-bottom-color: var(--line); }
 
   async function loadEmployeeData(userId) {
     try {
-      const [rows, profile, master] = await Promise.all([
+      const [rows, absences, profile, master] = await Promise.all([
         api(forUser("/admin/entries", userId)),
+        api(forUser("/admin/absences", userId)).catch(error => {
+          console.warn("Abwesenheiten nicht verfügbar:", error);
+          return [];
+        }),
         api(forUser("/admin/payroll-settings", userId)),
         api(forUser("/admin/employee-profile", userId)).catch(error => {
           console.warn("Stammdaten nicht verfügbar:", error);
@@ -2067,6 +2135,7 @@ td { border-bottom-color: var(--line); }
       ]);
       if (state.selectedUserId !== userId) return; // inzwischen anderer Mitarbeiter gewählt
       state.employeeEntries = toEntries(rows);
+      state.employeeAbsences = toAbsences(absences);
       state.employeeProfiles[userId] = master || {};
       fillFields("data-emp", master);
       state.profiles[userId] = { ...DEFAULT_PROFILE, ...profile };
@@ -2074,6 +2143,7 @@ td { border-bottom-color: var(--line); }
     } catch (error) {
       console.error(error);
       state.employeeEntries = [];
+      state.employeeAbsences = [];
       alert("Mitarbeiterdaten konnten nicht geladen werden: " + error.message);
     }
     renderEmployeeData();
@@ -2097,6 +2167,7 @@ td { border-bottom-color: var(--line); }
       ? entryRowsHtml(list, false, "Keine Einträge im gewählten Monat.")
       : '<tr><td class="empty" colspan="7">Mitarbeiter auswählen.</td></tr>';
 
+    renderAbsenceData();
     renderPayrollPreview();
   }
 
@@ -2169,6 +2240,237 @@ td { border-bottom-color: var(--line); }
     });
   });
 
+  function mondayOfWeek(date) {
+    const d = new Date(`${date}T12:00:00Z`);
+    const day = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() - day + 1);
+    return d.toISOString().slice(0, 10);
+  }
+
+  function isoWeekLabel(weekStart) {
+    const monday = new Date(`${weekStart}T12:00:00Z`);
+    const thursday = new Date(monday);
+    thursday.setUTCDate(monday.getUTCDate() + 3);
+    const year = thursday.getUTCFullYear();
+    const jan4 = new Date(Date.UTC(year, 0, 4, 12));
+    const jan4Day = jan4.getUTCDay() || 7;
+    const firstMonday = new Date(jan4);
+    firstMonday.setUTCDate(jan4.getUTCDate() - jan4Day + 1);
+    const week = 1 + Math.round((monday - firstMonday) / 604800000);
+    return `KW ${week}/${year}`;
+  }
+
+  function weeklyWorkdayWarnings(entries, month = null) {
+    const weeks = new Map();
+    entries.forEach(entry => {
+      if (!entry?.date) return;
+      const weekStart = mondayOfWeek(entry.date);
+      if (!weeks.has(weekStart)) weeks.set(weekStart, new Set());
+      weeks.get(weekStart).add(entry.date);
+    });
+    return [...weeks.entries()]
+      .map(([weekStart, dates]) => ({
+        weekStart,
+        label: isoWeekLabel(weekStart),
+        days: dates.size,
+        dates: [...dates].sort()
+      }))
+      .filter(row => row.days > CONTRACT_MAX_WORKDAYS_PER_WEEK)
+      .filter(row => !month || row.dates.some(date => date.slice(0, 7) === month))
+      .sort((a, b) => b.weekStart.localeCompare(a.weekStart));
+  }
+
+  function renderContractWorkdayWarning(elementId, month = null) {
+    const el = $(elementId);
+    if (!el) return;
+    const warnings = weeklyWorkdayWarnings(state.employeeEntries, month);
+    if (!state.selectedUserId || !warnings.length) {
+      el.style.display = "none";
+      el.textContent = "";
+      return;
+    }
+    const shown = warnings.slice(0, 3).map(w => `${w.label}: ${w.days} Arbeitstage`).join(" · ");
+    const more = warnings.length > 3 ? ` · +${warnings.length - 3} weitere` : "";
+    el.textContent = `Vertragshinweis: ${CONTRACT_WEEKLY_HOURS}:00 Std./Woche auf maximal ${CONTRACT_MAX_WORKDAYS_PER_WEEK} Arbeitstage. ${shown}${more}. Die zusätzlichen tatsächlichen Arbeitstage bleiben vollständig erfasst und werden bei der Urlaubsberechnung berücksichtigt.`;
+    el.style.display = "block";
+  }
+
+  /* ================= Boss: Abwesenheiten & Urlaub ================= */
+
+  const ABSENCE_LABELS = {
+    vacation: "Urlaub",
+    sick: "Krankheit",
+    holiday: "Feiertag",
+    paid_leave: "Bezahlte Freistellung"
+  };
+
+  function vacationRound(value) {
+    const safe = Math.max(0, Number(value) || 0);
+    const whole = Math.floor(safe);
+    return safe - whole >= 0.5 ? whole + 1 : Math.round(safe * 100) / 100;
+  }
+
+  function monthEnd(ym) {
+    const [y, m] = ym.split("-").map(Number);
+    return isoDate(new Date(y, m, 0));
+  }
+
+  function fullMonthsBetween(start, end) {
+    if (!start || !end || end < start) return 0;
+    const [sy, sm, sd] = start.split("-").map(Number);
+    const [ey, em, ed] = end.split("-").map(Number);
+    let months = (ey - sy) * 12 + (em - sm);
+    if (ed < sd) months -= 1;
+    return Math.max(0, months);
+  }
+
+  function calculateVacationStats(entries, absences, employment, month) {
+    const year = Number(month.slice(0, 4));
+    const yearStart = `${year}-01-01`;
+    const yearEnd = `${year}-12-31`;
+    const asOf = [monthEnd(month), employment?.end_date || yearEnd, yearEnd].sort()[0];
+    const activeStart = employment?.start_date && employment.start_date > yearStart ? employment.start_date : yearStart;
+
+    const worked = new Set(entries
+      .map(e => e.date)
+      .filter(d => d >= activeStart && d <= asOf));
+    const relevantAbsences = absences.filter(a => a.date >= activeStart && a.date <= asOf);
+    const equivalent = new Set([...worked, ...relevantAbsences.map(a => a.date)]);
+
+    const activeDays = asOf >= activeStart
+      ? Math.max(7, Math.round((Date.parse(asOf) - Date.parse(activeStart)) / 86400000) + 1)
+      : 7;
+    const averageWorkdaysPerWeek = Math.min(6, equivalent.size / activeDays * 7);
+    const annualBase = Math.min(24, averageWorkdaysPerWeek * 4);
+
+    let factor = 1;
+    if (employment?.start_date && employment.start_date >= yearStart) {
+      const months = fullMonthsBetween(employment.start_date, asOf);
+      if (months < 6) factor = Math.min(1, months / 12);
+    }
+    if (employment?.end_date && employment.end_date <= `${year}-06-30`) {
+      const from = employment.start_date && employment.start_date > yearStart ? employment.start_date : yearStart;
+      factor = Math.min(factor, fullMonthsBetween(from, employment.end_date) / 12);
+    }
+
+    const entitlement = vacationRound(annualBase * factor);
+    const taken = new Set(relevantAbsences.filter(a => a.type === "vacation").map(a => a.date)).size;
+    return {
+      year, asOf, workedDays: worked.size, equivalentDays: equivalent.size,
+      averageWorkdaysPerWeek: Math.round(averageWorkdaysPerWeek * 100) / 100,
+      entitlement, taken, remaining: Math.round((entitlement - taken) * 100) / 100,
+      provisional: asOf < yearEnd && (!employment?.end_date || employment.end_date > asOf)
+    };
+  }
+
+  function absencePayload() {
+    return {
+      absence_date: $("absenceDate").value,
+      absence_type: $("absenceType").value,
+      paid_minutes: Math.max(0, Math.round(Number($("absencePaidHours").value || 0) * 60)),
+      paid_amount_cents: Math.max(0, Math.round(Number($("absencePaidAmount").value || 0) * 100)),
+      note: $("absenceNote").value.trim()
+    };
+  }
+
+  function resetAbsenceForm() {
+    $("absenceId").value = "";
+    $("absenceDate").value = isoDate();
+    $("absenceType").value = "vacation";
+    $("absencePaidHours").value = "0";
+    $("absencePaidAmount").value = "0";
+    $("absenceNote").value = "";
+    $("saveAbsenceBtn").textContent = "Abwesenheit speichern";
+    setStatus("absenceStatus", "");
+  }
+
+  function renderAbsenceData() {
+    const month = $("bossMonth").value || isoMonth();
+    const year = month.slice(0, 4);
+    const employment = selectedEmployment();
+    const stats = calculateVacationStats(state.employeeEntries, state.employeeAbsences, employment, month);
+    setText("vacationWorkedDays", stats.workedDays);
+    setText("vacationEntitlement", fmtVacation(stats.entitlement));
+    setText("vacationTaken", fmtVacation(stats.taken));
+    setText("vacationRemaining", fmtVacation(stats.remaining));
+    setText("vacationCalcNote",
+      `${stats.provisional ? "Hochrechnung" : "Berechnung"} ${stats.year}: Ø ${decimal(stats.averageWorkdaysPerWeek, 2)} Arbeitstage/Woche aus ${stats.workedDays} tatsächlichen Arbeitstagen` +
+      (stats.equivalentDays > stats.workedDays ? ` + ${stats.equivalentDays - stats.workedDays} ersetzten Soll-Arbeitstag(en)` : "") +
+      `. Vertraglicher Regelfall: ${CONTRACT_WEEKLY_HOURS}:00 Std./Woche auf maximal ${CONTRACT_MAX_WORKDAYS_PER_WEEK} Arbeitstage; seltene zusätzliche tatsächliche Arbeitstage werden nicht gekappt.`);
+    renderContractWorkdayWarning("contractWorkdayStatus");
+
+    const rows = state.employeeAbsences.filter(a => a.date?.slice(0, 4) === year)
+      .sort((a, b) => b.date.localeCompare(a.date));
+    $("absenceRows").innerHTML = !state.selectedUserId
+      ? '<tr><td class="empty" colspan="6">Mitarbeiter auswählen.</td></tr>'
+      : rows.length ? rows.map(a => `<tr>
+          <td>${esc(fmtDate(a.date))}</td>
+          <td>${esc(ABSENCE_LABELS[a.type] || a.type)}</td>
+          <td>${fmtMinutes(a.paidMinutes)}</td>
+          <td>${euro(a.paidAmountCents / 100)}</td>
+          <td>${esc(a.note || "–")}</td>
+          <td><div class="row-actions">
+            <button class="icon-btn" type="button" data-absence-edit="${a.id}" title="Bearbeiten">${ICONS.edit}</button>
+            <button class="icon-btn danger" type="button" data-absence-delete="${a.id}" title="Löschen">${ICONS.trash}</button>
+          </div></td>
+        </tr>`).join("")
+      : '<tr><td class="empty" colspan="6">Keine Abwesenheiten in diesem Kalenderjahr.</td></tr>';
+  }
+
+  async function reloadAbsences(userId) {
+    state.employeeAbsences = toAbsences(await api(forUser("/admin/absences", userId)));
+    renderEmployeeData();
+  }
+
+  $("absenceForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const userId = state.selectedUserId;
+    if (!userId) return alert("Bitte zuerst einen Mitarbeiter auswählen.");
+    const id = $("absenceId").value;
+    withBusy(event.submitter, async () => {
+      try {
+        await api(forUser(id ? `/admin/absences/${id}` : "/admin/absences", userId), id ? "PUT" : "POST", absencePayload());
+        resetAbsenceForm();
+        setStatus("absenceStatus", "Gespeichert ✓");
+        await reloadAbsences(userId);
+      } catch (error) {
+        setStatus("absenceStatus", error.message, true);
+      }
+    });
+  });
+
+  $("resetAbsenceBtn").addEventListener("click", resetAbsenceForm);
+
+  $("absenceRows").addEventListener("click", event => {
+    const edit = event.target.closest("[data-absence-edit]");
+    const del = event.target.closest("[data-absence-delete]");
+    if (edit) {
+      const a = state.employeeAbsences.find(x => x.id === edit.dataset.absenceEdit);
+      if (!a) return;
+      $("absenceId").value = a.id;
+      $("absenceDate").value = a.date;
+      $("absenceType").value = a.type;
+      $("absencePaidHours").value = decimal(a.paidMinutes / 60, 2).replace(",", ".");
+      $("absencePaidAmount").value = (a.paidAmountCents / 100).toFixed(2);
+      $("absenceNote").value = a.note || "";
+      $("saveAbsenceBtn").textContent = "Änderungen speichern";
+      $("absenceForm").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    if (del) {
+      const a = state.employeeAbsences.find(x => x.id === del.dataset.absenceDelete);
+      if (!a || !confirm(`${ABSENCE_LABELS[a.type] || "Abwesenheit"} vom ${fmtDate(a.date)} wirklich löschen?`)) return;
+      withBusy(del, async () => {
+        try {
+          await api(forUser(`/admin/absences/${a.id}`, state.selectedUserId), "DELETE");
+          resetAbsenceForm();
+          await reloadAbsences(state.selectedUserId);
+        } catch (error) {
+          alert("Abwesenheit konnte nicht gelöscht werden: " + error.message);
+        }
+      });
+    }
+  });
+
   /* ================= Boss: Abrechnung ================= */
 
   const profileInputs = () => $$("[data-profile]");
@@ -2222,11 +2524,20 @@ td { border-bottom-color: var(--line); }
 
   const contributionGroup = p => `${p.employerKv ? "6" : "0"}${p.employeeRv ? "1" : "5"}00`;
 
-  function calculatePayroll(list, profile, month, employment = {}) {
+  function calculatePayroll(list, profile, month, employment = {}, absences = []) {
     const { mins, appts, eligible, days } = summarize(list);
     const timePay = Math.round((mins * HOURLY_RATE_CENTS) / 60);
     const commission = eligible * COMMISSION_RATE_CENTS;
-    const gross = timePay + commission;
+    const absenceMoney = type => absences.filter(a => a.type === type).reduce((sum, a) => sum + a.paidAmountCents, 0);
+    const vacationPay = absenceMoney("vacation");
+    const sickPay = absenceMoney("sick");
+    const holidayPay = absenceMoney("holiday");
+    const paidLeavePay = absenceMoney("paid_leave");
+    const absencePay = vacationPay + sickPay + holidayPay + paidLeavePay;
+    const targetBonus = 0;
+    const gross = timePay + commission + targetBonus + absencePay;
+    const paidMinutes = absences.reduce((sum, a) => sum + a.paidMinutes, 0);
+    const count = type => absences.filter(a => a.type === type).length;
     const svDays = insuredDays(month, employment.start_date, employment.end_date);
 
     // RV-Eigenanteil; unter 175 € (anteilig) gilt der Mindestbeitrag
@@ -2252,7 +2563,8 @@ td { border-bottom-color: var(--line); }
     const employerContributions = total(employer);
 
     const cents = {
-      timePay, commission, gross, ...employee, employeeDeductions,
+      timePay, commission, targetBonus, vacationPay, sickPay, holidayPay, paidLeavePay, absencePay,
+      gross, ...employee, employeeDeductions,
       net: gross - employeeDeductions,
       ...employer, employerContributions,
       employerCost: gross + employerContributions,
@@ -2260,13 +2572,19 @@ td { border-bottom-color: var(--line); }
     };
 
     return {
-      mins, appts, eligible, days, svDays, contributionGroup: contributionGroup(profile),
+      mins, appts, eligible, days,
+      goalMinutes: Math.round(Number(state.settings.goalHours || 24) * 60),
+      paidMinutes, overtimeMinutes: 0,
+      vacationDays: count("vacation"), sickDays: count("sick"),
+      holidayDays: count("holiday"), paidLeaveDays: count("paid_leave"),
+      svDays, taxDays: profile.flatTax ? null : svDays,
+      contributionGroup: contributionGroup(profile),
       ...Object.fromEntries(Object.entries(cents).map(([k, v]) => [k, v / 100]))
     };
   }
 
   // Brutto der letzten 12 Monate inkl. Abrechnungsmonat
-  function rollingYear(entries, month) {
+  function rollingYear(entries, absences, month) {
     const [y, m] = month.split("-").map(Number);
     const from = isoMonth(new Date(y, m - 12, 1));
     const months = {};
@@ -2277,8 +2595,14 @@ td { border-bottom-color: var(--line); }
       months[key].mins += e.minutes;
       months[key].eligible += e.eligible;
     });
+    absences.forEach(a => {
+      const key = a.date.slice(0, 7);
+      if (key < from || key > month) return;
+      months[key] ??= { mins: 0, eligible: 0, absence: 0 };
+      months[key].absence = (months[key].absence || 0) + a.paidAmountCents;
+    });
     const values = Object.values(months).map(v =>
-      Math.round((v.mins * HOURLY_RATE_CENTS) / 60) + v.eligible * COMMISSION_RATE_CENTS);
+      Math.round((v.mins * HOURLY_RATE_CENTS) / 60) + v.eligible * COMMISSION_RATE_CENTS + Number(v.absence || 0));
     return {
       from,
       to: month,
@@ -2293,30 +2617,39 @@ td { border-bottom-color: var(--line); }
 
   function currentPayroll() {
     const month = payrollMonth();
-    return calculatePayroll(inMonth(state.employeeEntries, month), readProfileInputs(), month, selectedEmployment());
+    return calculatePayroll(
+      inMonth(state.employeeEntries, month), readProfileInputs(), month, selectedEmployment(),
+      inMonthAbsences(state.employeeAbsences, month)
+    );
   }
 
   function missingMasterData(employer, employee) {
     return [
       !employer?.name && "Arbeitgeber: Name",
       !(employer?.street && employer?.zip_city) && "Arbeitgeber: Anschrift",
+      !employer?.company_number && "Arbeitgeber: Betriebsnummer",
       !employee?.full_name && "Mitarbeiter: vollständiger Name",
       !(employee?.street && employee?.zip_city) && "Mitarbeiter: Anschrift",
       !employee?.birth_date && "Mitarbeiter: Geburtsdatum",
       !employee?.insurance_number && "Mitarbeiter: Rentenversicherungsnummer",
+      !employee?.tax_id && "Mitarbeiter: Steuer-ID",
+      !employee?.health_insurance && "Mitarbeiter: Krankenkasse",
+      !employee?.iban && "Mitarbeiter: IBAN",
       !employee?.start_date && "Mitarbeiter: Eintrittsdatum"
     ].filter(Boolean);
   }
 
   function renderPayrollPreview() {
     const p = currentPayroll();
+    const vacation = calculateVacationStats(state.employeeEntries, state.employeeAbsences, selectedEmployment(), payrollMonth());
     const values = {
       payrollHours: fmtMinutes(p.mins),
       payrollDays: p.days,
-      payrollAppointments: p.appts,
-      payrollEligible: p.eligible,
+      payrollVacation: `${p.vacationDays} / ${Number(vacation.remaining).toLocaleString("de-DE", { maximumFractionDigits: 2 })}`,
+      payrollSickDays: p.sickDays,
       payrollTimePay: euro(p.timePay),
       payrollCommission: euro(p.commission),
+      payrollAbsencePay: euro(p.absencePay),
       payrollGross: euro(p.gross),
       payrollNet: euro(p.net),
       payrollEmployeeDeductions: euro(p.employeeDeductions),
@@ -2324,6 +2657,7 @@ td { border-bottom-color: var(--line); }
       payrollEmployerCost: euro(p.employerCost)
     };
     Object.entries(values).forEach(([id, text]) => setText(id, text));
+    renderContractWorkdayWarning("payrollWorkdayStatus", payrollMonth());
 
     const rvMinBaseWouldApply = readProfileInputs().employeeRv && !readProfileInputs().rvMinBaseApplies &&
       p.gross > 0 && p.gross < (RV_MIN_BASE_CENTS * p.svDays / 30) / 100;
@@ -2340,7 +2674,7 @@ td { border-bottom-color: var(--line); }
       ? `Hinweis: ${euro(p.gross)} brutto liegen über ${euro(MINIJOB_LIMIT)} in diesem Monat. Für die Minijob-Beurteilung zählt zusätzlich die 12-Monats-Betrachtung; Ausnahmen bei unvorhersehbarem Überschreiten separat prüfen.`
       : `Monatswert: ${euro(p.gross)} von ${euro(MINIJOB_LIMIT)} – noch ${euro(MINIJOB_LIMIT - p.gross)} bis zur monatlichen Richtgröße.`;
 
-    const year = rollingYear(state.employeeEntries, payrollMonth());
+    const year = rollingYear(state.employeeEntries, state.employeeAbsences, payrollMonth());
     const yearStatus = $("payrollYearStatus");
     const yearWarn = year.gross > year.limit || year.monthsOver > 2;
     yearStatus.classList.toggle("warn", yearWarn);
@@ -2439,6 +2773,7 @@ td { border-bottom-color: var(--line); }
       payroll: currentPayroll(),
       profile: readProfileInputs(),
       note: $("payrollNote").value.trim(),
+      paymentDate: $("payrollPaymentDate").value || null,
       created: dateFmt.format(new Date()),
       employer: state.employer,
       employee: selectedEmployment(),
@@ -2448,7 +2783,19 @@ td { border-bottom-color: var(--line); }
           work_date: e.date, start_time: e.start, end_time: e.end, break_minutes: e.break,
           work_minutes: e.minutes, appointments: e.appointments, eligible: e.eligible
         })),
-      year: rollingYear(state.employeeEntries, month),
+      absences: inMonthAbsences(state.employeeAbsences, month)
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .map(a => ({
+          absence_date: a.date, absence_type: a.type, paid_minutes: a.paidMinutes,
+          paid_amount_cents: a.paidAmountCents, note: a.note
+        })),
+      vacation: calculateVacationStats(state.employeeEntries, state.employeeAbsences, selectedEmployment(), month),
+      contract: {
+        weeklyHours: CONTRACT_WEEKLY_HOURS,
+        maxWorkdaysPerWeek: CONTRACT_MAX_WORKDAYS_PER_WEEK,
+        workdayWarnings: weeklyWorkdayWarnings(state.employeeEntries, month)
+      },
+      year: rollingYear(state.employeeEntries, state.employeeAbsences, month),
       preview: true
     };
   }
@@ -2505,10 +2852,14 @@ td { border-bottom-color: var(--line); }
       payroll: snap.payroll,
       profile: snap.profile || DEFAULT_PROFILE,
       note: snap.note || "",
+      paymentDate: snap.paymentDate || null,
       created: snap.created ? fmtDate(snap.created) : fmtTimestamp(row.closed_at),
       employer: snap.employer || null,
       employee: snap.employee || null,
       entries: snap.entries || null,
+      absences: snap.absences || [],
+      vacation: snap.vacation || null,
+      contract: snap.contract || null,
       year: snap.year || null,
       preview: false
     }, button.hasAttribute("data-employer"));
@@ -2521,7 +2872,10 @@ td { border-bottom-color: var(--line); }
 
     setStatus("closingStatus", "Monat wird abgeschlossen …");
     try {
-      const result = await api(forUser("/admin/monthly-closings", userId), "POST", { month });
+      const result = await api(forUser("/admin/monthly-closings", userId), "POST", {
+        month,
+        payment_date: $("closingPaymentDate").value || null
+      });
       setStatus("closingStatus",
         result?.skipped ? "Für diesen Monat sind keine Arbeits- oder Leistungsdaten vorhanden."
         : result?.already_exists ? "Der Monat war bereits abgeschlossen."
@@ -3839,34 +4193,34 @@ td { border-bottom-color: var(--line); }
     const { payroll: p, profile, employer, note } = doc;
     const emp = doc.employee || {};
     const name = emp.full_name || doc.employeeName;
+    const vacation = doc.vacation || {};
     const master = [
       ["Personalnummer", orDash(emp.personnel_number)],
       ["Geburtsdatum", emp.birth_date ? fmtDate(emp.birth_date) : "–"],
       ["Rentenversicherungsnr.", fmtInsurance(emp.insurance_number)],
-      ["Eintritt / Austritt", `${emp.start_date ? fmtDate(emp.start_date) : "–"} / ${emp.end_date ? fmtDate(emp.end_date) : "–"}`],
-      ["Personengruppe", "109 · geringfügig entlohnt"],
-      ["Beitragsgruppe", `${p.contributionGroup || contributionGroup(profile)} (KV·RV·AV·PV)`],
-      ["Einzugsstelle", "Minijob-Zentrale"],
-      ["Besteuerung", profile.flatTax ? "pauschal 2 % (§ 40a Abs. 2 EStG)" : "individuell"],
+      ["Steuer-ID", fmtTaxId(emp.tax_id)],
+      ["Krankenkasse", orDash(emp.health_insurance)],
+      ["Eintritt / Austritt", `${emp.start_date ? fmtDate(emp.start_date) : "–"} / ${emp.end_date ? fmtDate(emp.end_date) : "–"}`]
     ];
     const rvLabel = p.rvMinBase
       ? `Rentenversicherung AN (Mindestbeitrag, Bemessung ${euro(p.rvMinBase)})`
       : profile.employeeRv && profile.rvMinBaseApplies === false
         ? "Rentenversicherung AN (3,6 %, Mindestbemessung nicht anzuwenden)"
         : "Rentenversicherung AN (3,6 %)";
-    const employerShares = [
-      ["Krankenversicherung (13 %)", p.employerKv],
-      ["Rentenversicherung (15 %)", p.employerRv],
-      ["Pauschsteuer (2 %)", p.employerFlatTax],
-      ["Umlagen U1/U2/Insolvenz", (p.u1 || 0) + (p.u2 || 0) + (p.insolvency || 0)]
-    ].filter(([, v]) => Number(v) > 0);
-    const year = doc.year;
-
     const deductions = [
       p.employeeRv
         ? [rvLabel, euro(p.rvMinBase || p.gross), minus(p.employeeRv)]
         : ["Rentenversicherung AN (befreit)", "–", euro(0)],
       p.employeeFlatTax ? ["Pauschsteuer vom Arbeitsentgelt (2 %)", euro(p.gross), minus(p.employeeFlatTax)] : null
+    ].filter(Boolean);
+    const earnings = [
+      ["1000", "Grundlohn / Stundenvergütung", `${decimal(p.mins / 60, 2)} Std.`, euro(HOURLY_RATE_CENTS / 100), euro(p.timePay)],
+      ["2000", "Terminprovision", `${p.eligible} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.commission)],
+      ["2100", "Zielbonus", "–", "–", euro(p.targetBonus || 0)],
+      p.vacationPay ? ["3000", "Urlaubsentgelt", `${p.vacationDays} Tag(e)`, "", euro(p.vacationPay)] : null,
+      p.sickPay ? ["3010", "Krankheitsentgelt", `${p.sickDays} Tag(e)`, "", euro(p.sickPay)] : null,
+      p.holidayPay ? ["3020", "Feiertagsentgelt", `${p.holidayDays} Tag(e)`, "", euro(p.holidayPay)] : null,
+      p.paidLeavePay ? ["3030", "Bezahlte Freistellung", `${p.paidLeaveDays} Tag(e)`, "", euro(p.paidLeavePay)] : null
     ].filter(Boolean);
 
     const page1 = `
@@ -3880,110 +4234,91 @@ td { border-bottom-color: var(--line); }
         <td><table class="pd-kv"><tbody>${master.map(([l, v]) => kvRow(l, v)).join("")}</tbody></table></td>
       </tr></tbody></table>
 
-      <div class="pd-sec pd-keep">
-        <table class="pd-strip"><tbody><tr>
-          <td><span class="l">Gesamtbrutto</span><span class="v">${euro(p.gross)}</span></td>
-          <td><span class="l">Steuer-Brutto (pauschal versteuert)</span><span class="v">${euro(p.gross)}</span></td>
-          <td><span class="l">SV-Brutto</span><span class="v">${euro(p.gross)}</span></td>
-          <td><span class="l">RV-Bemessungsgrundlage</span><span class="v">${euro(p.rvMinBase || p.gross)}</span></td>
-        </tr></tbody></table>
-      </div>
+      ${section("Beschäftigung & Zeitraum", `<table class="pd-grid"><tbody>
+        <tr><td>Beschäftigung</td><td><b>Minijob · geringfügig entlohnt</b></td><td>Abrechnungsmonat</td><td><b>${esc(doc.monthLabel)}</b></td></tr>
+        <tr><td>Personengruppe</td><td><b>109</b></td><td>SV-Tage</td><td><b>${p.svDays ?? 30}</b></td></tr>
+        <tr><td>Beitragsgruppe</td><td><b>${esc(p.contributionGroup || contributionGroup(profile))}</b></td><td>Steuertage</td><td><b>${p.taxDays == null ? "– (Pauschsteuer)" : p.taxDays}</b></td></tr>
+        <tr><td>Einzugsstelle</td><td><b>Minijob-Zentrale</b></td><td>Besteuerung</td><td><b>${profile.flatTax ? "pauschal 2 %" : "individuell"}</b></td></tr>
+      </tbody></table>`)}
 
-      ${section("Bezüge", `<table class="pd-grid">
+      <div class="pd-sec pd-keep"><table class="pd-strip"><tbody><tr>
+        <td><span class="l">Gesamtbrutto</span><span class="v">${euro(p.gross)}</span></td>
+        <td><span class="l">Steuer-Brutto</span><span class="v">${euro(p.gross)}</span></td>
+        <td><span class="l">SV-Brutto</span><span class="v">${euro(p.gross)}</span></td>
+        <td><span class="l">RV-Bemessungsgrundlage</span><span class="v">${euro(p.rvMinBase || p.gross)}</span></td>
+      </tr></tbody></table></div>
+
+      ${section("Vergütung", `<table class="pd-grid">
         <colgroup><col style="width:12%"><col><col style="width:18%"><col style="width:15%"><col style="width:17%"></colgroup>
         <thead><tr><th>Lohnart</th><th>Bezeichnung</th><th class="num">Menge</th><th class="num">Faktor</th><th class="num">Betrag</th></tr></thead>
-        <tbody>
-          <tr><td>1000</td><td>Stundenlohn</td><td class="num">${decimal(p.mins / 60, 2)} Std.</td><td class="num">${euro(HOURLY_RATE_CENTS / 100)}</td><td class="num">${euro(p.timePay)}</td></tr>
-          <tr><td>2000</td><td>Terminprovision</td><td class="num">${p.eligible} Termine</td><td class="num">${euro(COMMISSION_RATE_CENTS / 100)}</td><td class="num">${euro(p.commission)}</td></tr>
-        </tbody>
+        <tbody>${earnings.map(r => `<tr>${r.map((v,i)=>`<td${i>1?' class="num"':''}>${esc(v)}</td>`).join("")}</tr>`).join("")}</tbody>
         <tfoot><tr><td colspan="4">Gesamtbrutto</td><td class="num">${euro(p.gross)}</td></tr></tfoot>
       </table>`)}
 
-      ${section("Gesetzliche Abzüge", `<table class="pd-grid">
+      ${section("Arbeitnehmer-Abzüge & Steuer", `<table class="pd-grid">
         <colgroup><col><col style="width:22%"><col style="width:17%"></colgroup>
         <thead><tr><th>Bezeichnung</th><th class="num">Bemessungsgrundlage</th><th class="num">Betrag</th></tr></thead>
         <tbody>${deductions.map(([l, b, v]) => `<tr><td>${esc(l)}</td><td class="num">${esc(b)}</td><td class="num">${esc(v)}</td></tr>`).join("")}</tbody>
-        <tfoot><tr><td colspan="2">Gesetzliche Abzüge</td><td class="num">${minus(p.employeeDeductions)}</td></tr></tfoot>
+        <tfoot><tr><td colspan="2">Arbeitnehmer-Abzüge</td><td class="num">${minus(p.employeeDeductions)}</td></tr></tfoot>
       </table>`)}
 
-      <div class="pd-sec pd-keep">
-        <table class="pd-net"><tbody>
-          ${moneyTr("Gesamtbrutto", euro(p.gross))}
-          ${moneyTr("Gesetzliche Abzüge", minus(p.employeeDeductions))}
-          ${moneyTr("Nettobezug", euro(p.net), "sub")}
-          ${moneyTr("Auszahlungsbetrag", euro(p.net), "pay")}
-        </tbody></table>
-      </div>
+      <div class="pd-sec pd-keep"><table class="pd-net"><tbody>
+        ${moneyTr("Gesamtbrutto", euro(p.gross))}
+        ${moneyTr("Arbeitnehmer-Abzüge", minus(p.employeeDeductions))}
+        ${moneyTr("Nettoentgelt", euro(p.net), "sub")}
+        ${moneyTr("Tatsächlicher Auszahlungsbetrag", euro(p.net), "pay")}
+      </tbody></table></div>
+
+      ${section("Auszahlung", `<table class="pd-grid"><tbody>
+        ${moneyTr("Zahlungsdatum", doc.paymentDate ? fmtDate(doc.paymentDate) : "–")}
+        ${moneyTr("Bankverbindung (IBAN)", orDash(emp.iban))}
+      </tbody></table>`)}
 
       <table class="pd-cols pd-sec pd-keep"><tbody><tr>
-        <td style="width:50%">
-          <div class="pd-sec-title">Vom Arbeitgeber zusätzlich getragen</div>
-          <table class="pd-grid"><tbody>${employerShares.length
-            ? employerShares.map(([l, v]) => moneyTr(l, euro(v))).join("")
-            : '<tr><td>keine</td></tr>'}</tbody></table>
-        </td>
-        <td>
-          <div class="pd-sec-title">Arbeitszeit &amp; Kumulation</div>
-          <table class="pd-grid"><tbody>
-            ${moneyTr("Arbeitsstunden", fmtMinutes(p.mins))}
-            ${moneyTr("Arbeitstage / SV-Tage", `${p.days} / ${p.svDays ?? 30}`)}
-            ${year ? `${moneyTr(`Brutto ${fmtMonthShort(year.from)}–${fmtMonthShort(year.to)}`, euro(year.gross))}
-                      ${moneyTr(`Jahresgrenze (12 × ${euro(MINIJOB_LIMIT)})`, euro(year.limit))}` : ""}
-          </tbody></table>
-        </td>
+        <td style="width:50%"><div class="pd-sec-title">Arbeitszeit</div><table class="pd-grid"><tbody>
+          ${moneyTr("Sollstunden", fmtMinutes(p.goalMinutes || 0))}
+          ${moneyTr("Ist-Stunden", fmtMinutes(p.mins))}
+          ${moneyTr("Bezahlte Freistellung", fmtMinutes(p.paidMinutes || 0))}
+          ${moneyTr("Überstunden", "0:00 h · nicht vorgesehen")}
+        </tbody></table></td>
+        <td><div class="pd-sec-title">Abwesenheit & Urlaub</div><table class="pd-grid"><tbody>
+          ${moneyTr("Urlaub im Monat", `${p.vacationDays || 0} Tag(e)`) }
+          ${moneyTr(vacation.provisional ? "Urlaubsanspruch (Hochrechnung)" : "Urlaubsanspruch", fmtVacation(vacation.entitlement || 0))}
+          ${moneyTr("Resturlaub", fmtVacation(vacation.remaining || 0))}
+          ${moneyTr("Krankheitstage", `${p.sickDays || 0}`)}
+          ${moneyTr("Feiertage", `${p.holidayDays || 0}`)}
+        </tbody></table></td>
       </tr></tbody></table>
 
       ${note ? `<div class="pd-note pd-keep"><b>Hinweis:</b> ${esc(note)}</div>` : ""}
-      ${docFoot("Maschinell erstellte Entgeltabrechnung – ohne Unterschrift gültig. Arbeitszeitnachweis siehe Seite 2.",
-                `${esc(name)} · ${esc(doc.monthLabel)} · Seite 1/2`)}`;
+      ${docFoot("Maschinell erstellte Entgeltabrechnung – ohne Unterschrift gültig. Arbeitszeit-/Abwesenheitsnachweis siehe Folgeseite.",
+                `${esc(name)} · ${esc(doc.monthLabel)} · Seite 1`)} `;
 
-    return `<div class="pd-page">${page1}</div>
-      <div class="pd-page pd-page2">${timesheetHtml(doc)}</div>`;
+    return `<div class="pd-page">${page1}</div><div class="pd-page pd-page2">${timesheetHtml(doc)}</div>`;
   }
 
   function timesheetHtml(doc) {
     const emp = doc.employee || {};
     const name = emp.full_name || doc.employeeName;
-    const rows = doc.entries;
-    const sum = key => (rows || []).reduce((a, e) => a + Number(e[key] || 0), 0);
+    const rows = doc.entries || [];
+    const absences = doc.absences || [];
+    const sum = key => rows.reduce((a, e) => a + Number(e[key] || 0), 0);
+    const workTable = rows.length
+      ? `<table class="pd-grid zebra"><thead><tr><th>Datum</th><th>Tag</th><th class="num">Beginn</th><th class="num">Ende</th><th class="num">Pause</th><th class="num">Arbeitszeit</th><th class="num">Termine</th><th class="num">davon prov.</th></tr></thead>
+          <tbody>${rows.map(e => `<tr><td>${esc(fmtDate(e.work_date))}</td><td>${esc(fmtWeekday(e.work_date))}</td><td class="num">${esc(e.start_time)}</td><td class="num">${esc(e.end_time)}</td><td class="num">${Number(e.break_minutes || 0)} min</td><td class="num">${fmtMinutes(e.work_minutes)}</td><td class="num">${Number(e.appointments || 0)}</td><td class="num">${Number(e.eligible || 0)}</td></tr>`).join("")}</tbody>
+          <tfoot><tr><td colspan="4">Summe · ${new Set(rows.map(e => e.work_date)).size} Arbeitstage</td><td class="num">${sum("break_minutes")} min</td><td class="num">${fmtMinutes(sum("work_minutes"))}</td><td class="num">${sum("appointments")}</td><td class="num">${sum("eligible")}</td></tr></tfoot></table>`
+      : `<div class="pd-note">Keine Arbeitszeiteinträge für diesen Monat.</div>`;
+    const absenceTable = absences.length
+      ? `<table class="pd-grid zebra"><thead><tr><th>Datum</th><th>Art</th><th class="num">Bezahlte Zeit</th><th class="num">Entgelt</th><th>Notiz</th></tr></thead>
+         <tbody>${absences.map(a => `<tr><td>${esc(fmtDate(a.absence_date))}</td><td>${esc(ABSENCE_LABELS[a.absence_type] || a.absence_type)}</td><td class="num">${fmtMinutes(a.paid_minutes)}</td><td class="num">${euro(Number(a.paid_amount_cents || 0)/100)}</td><td>${esc(a.note || "–")}</td></tr>`).join("")}</tbody></table>`
+      : `<div class="pd-note">Keine Abwesenheiten für diesen Monat.</div>`;
 
-    const table = rows?.length
-      ? `<table class="pd-grid zebra">
-          <colgroup><col style="width:14%"><col style="width:9%"><col style="width:11%"><col style="width:11%"><col style="width:12%"><col style="width:15%"><col style="width:13%"><col style="width:15%"></colgroup>
-          <thead><tr><th>Datum</th><th>Tag</th><th class="num">Beginn</th><th class="num">Ende</th><th class="num">Pause</th><th class="num">Arbeitszeit</th><th class="num">Termine</th><th class="num">davon prov.</th></tr></thead>
-          <tbody>${rows.map(e => `<tr>
-            <td>${esc(fmtDate(e.work_date))}</td>
-            <td>${esc(fmtWeekday(e.work_date))}</td>
-            <td class="num">${esc(e.start_time)}</td>
-            <td class="num">${esc(e.end_time)}</td>
-            <td class="num">${Number(e.break_minutes || 0)} min</td>
-            <td class="num">${fmtMinutes(e.work_minutes)}</td>
-            <td class="num">${Number(e.appointments || 0)}</td>
-            <td class="num">${Number(e.eligible || 0)}</td>
-          </tr>`).join("")}</tbody>
-          <tfoot><tr><td colspan="4">Summe · ${new Set(rows.map(e => e.work_date)).size} Arbeitstage</td>
-            <td class="num">${sum("break_minutes")} min</td><td class="num">${fmtMinutes(sum("work_minutes"))}</td>
-            <td class="num">${sum("appointments")}</td><td class="num">${sum("eligible")}</td></tr></tfoot>
-        </table>`
-      : `<div class="pd-note">Für diesen Abschluss wurden keine Tageseinträge gespeichert (Abschluss vor Einführung des Arbeitszeitnachweises).</div>`;
-
-    return `
-      ${docHead(doc, "Arbeitszeitnachweis")}
-      <table class="pd-strip pd-keep"><tbody><tr>
-        <td style="width:50%"><span class="l">Mitarbeiter</span><b>${esc(name)}</b></td>
-        <td><span class="l">Personalnummer</span><b>${esc(orDash(emp.personnel_number))}</b></td>
-        <td><span class="l">Zeitraum</span><b>${esc(doc.monthLabel)}</b></td>
-      </tr></tbody></table>
-      <div class="pd-sec">
-        <div class="pd-sec-title">Beginn, Ende und Dauer der täglichen Arbeitszeit (§ 17 MiLoG)</div>
-        ${table}
-      </div>
-      <table class="pd-sign pd-keep"><tbody><tr>
-        <td style="width:50%"><div>Datum, Unterschrift Arbeitgeber</div></td>
-        <td><div>Datum, Unterschrift Mitarbeiter</div></td>
-      </tr></tbody></table>
-      ${docFoot("Aufbewahrung mindestens zwei Jahre. Erfasst jeweils spätestens 7 Tage nach dem Arbeitstag.",
-                `${esc(name)} · ${esc(doc.monthLabel)} · Seite 2/2`)}`;
+    return `${docHead(doc, "Arbeitszeit- & Abwesenheitsnachweis")}
+      <table class="pd-strip pd-keep"><tbody><tr><td style="width:50%"><span class="l">Mitarbeiter</span><b>${esc(name)}</b></td><td><span class="l">Personalnummer</span><b>${esc(orDash(emp.personnel_number))}</b></td><td><span class="l">Zeitraum</span><b>${esc(doc.monthLabel)}</b></td></tr></tbody></table>
+      <div class="pd-sec"><div class="pd-sec-title">Arbeitszeit</div>${workTable}</div>
+      <div class="pd-sec"><div class="pd-sec-title">Abwesenheiten</div>${absenceTable}</div>
+      <table class="pd-sign pd-keep"><tbody><tr><td style="width:50%"><div>Datum, Unterschrift Arbeitgeber</div></td><td><div>Datum, Unterschrift Mitarbeiter</div></td></tr></tbody></table>
+      ${docFoot("Arbeitszeit und Abwesenheiten aus SmartADM 5 Office.", `${esc(name)} · ${esc(doc.monthLabel)}`)}`;
   }
 
   function employerDocHtml(doc) {
@@ -4250,21 +4585,17 @@ td { border-bottom-color: var(--line); }
     const { payroll: p, profile, employer, note } = doc;
     const emp = doc.employee || {};
     const name = emp.full_name || doc.employeeName;
-    const year = doc.year;
-    const { L, R, W } = VP;
-
+    const vacation = doc.vacation || {};
+    const { L, W } = VP;
     let y = vHead(k, doc, "Entgeltabrechnung");
 
-    // Anschrift links, Stammdaten rechts
     const master = [
       ["Personalnummer", orDash(emp.personnel_number)],
       ["Geburtsdatum", emp.birth_date ? fmtDate(emp.birth_date) : "–"],
       ["Rentenversicherungsnr.", fmtInsurance(emp.insurance_number)],
-      ["Eintritt / Austritt", `${emp.start_date ? fmtDate(emp.start_date) : "–"} / ${emp.end_date ? fmtDate(emp.end_date) : "–"}`],
-      ["Personengruppe", "109 · geringfügig entlohnt"],
-      ["Beitragsgruppe", `${p.contributionGroup || contributionGroup(profile)} (KV·RV·AV·PV)`],
-      ["Einzugsstelle", "Minijob-Zentrale"],
-      ["Besteuerung", profile.flatTax ? "pauschal 2 % (§ 40a Abs. 2 EStG)" : "individuell"]
+      ["Steuer-ID", fmtTaxId(emp.tax_id)],
+      ["Krankenkasse", orDash(emp.health_insurance)],
+      ["Eintritt / Austritt", `${emp.start_date ? fmtDate(emp.start_date) : "–"} / ${emp.end_date ? fmtDate(emp.end_date) : "–"}`]
     ];
     const addrW = W * 0.49;
     if (employer?.name) {
@@ -4286,21 +4617,37 @@ td { border-bottom-color: var(--line); }
     k.frame(kvX, y, kvW, master.length * kvH);
     y += master.length * kvH + 4;
 
+    y = vSectionTitle(k, y, "Beschäftigung & Zeitraum");
+    y = vTable(k, y, {
+      cols: [{ w: 25 }, { w: 25 }, { w: 25 }, { w: 25 }],
+      rows: [
+        ["Beschäftigung", "Minijob · geringfügig entlohnt", "Abrechnungsmonat", doc.monthLabel],
+        ["Personengruppe", "109", "SV-Tage", String(p.svDays ?? 30)],
+        ["Beitragsgruppe", p.contributionGroup || contributionGroup(profile), "Steuertage", p.taxDays == null ? "– (Pauschsteuer)" : String(p.taxDays)],
+        ["Einzugsstelle", "Minijob-Zentrale", "Besteuerung", profile.flatTax ? "pauschal 2 %" : "individuell"]
+      ]
+    }) + 3;
+
     y = vStrip(k, y, [
       { label: "Gesamtbrutto", value: euro(p.gross) },
-      { label: "Steuer-Brutto (pauschal versteuert)", value: euro(p.gross) },
+      { label: "Steuer-Brutto", value: euro(p.gross) },
       { label: "SV-Brutto", value: euro(p.gross) },
       { label: "RV-Bemessungsgrundlage", value: euro(p.rvMinBase || p.gross) }
     ], { big: true }) + 4;
 
-    y = vSectionTitle(k, y, "Bezüge");
+    const earnings = [
+      ["1000", "Grundlohn / Stundenvergütung", `${decimal(p.mins / 60, 2)} Std.`, euro(HOURLY_RATE_CENTS / 100), euro(p.timePay)],
+      ["2000", "Terminprovision", `${p.eligible} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.commission)],
+      ["2100", "Zielbonus", "–", "–", euro(p.targetBonus || 0)],
+      p.vacationPay ? ["3000", "Urlaubsentgelt", `${p.vacationDays} Tag(e)`, "", euro(p.vacationPay)] : null,
+      p.sickPay ? ["3010", "Krankheitsentgelt", `${p.sickDays} Tag(e)`, "", euro(p.sickPay)] : null,
+      p.holidayPay ? ["3020", "Feiertagsentgelt", `${p.holidayDays} Tag(e)`, "", euro(p.holidayPay)] : null,
+      p.paidLeavePay ? ["3030", "Bezahlte Freistellung", `${p.paidLeaveDays} Tag(e)`, "", euro(p.paidLeavePay)] : null
+    ].filter(Boolean);
+    y = vSectionTitle(k, y, "Vergütung");
     y = vTable(k, y, {
       cols: [{ w: 12 }, { w: 38 }, { w: 18, align: "right" }, { w: 15, align: "right" }, { w: 17, align: "right" }],
-      head: ["Lohnart", "Bezeichnung", "Menge", "Faktor", "Betrag"],
-      rows: [
-        ["1000", "Stundenlohn", `${decimal(p.mins / 60, 2)} Std.`, euro(HOURLY_RATE_CENTS / 100), euro(p.timePay)],
-        ["2000", "Terminprovision", `${p.eligible} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.commission)]
-      ],
+      head: ["Lohnart", "Bezeichnung", "Menge", "Faktor", "Betrag"], rows: earnings,
       foot: ["Gesamtbrutto", "", "", "", euro(p.gross)]
     }) + 4;
 
@@ -4310,60 +4657,47 @@ td { border-bottom-color: var(--line); }
         ? "Rentenversicherung AN (3,6 %, Mindestbemessung nicht anzuwenden)"
         : "Rentenversicherung AN (3,6 %)";
     const deductions = [
-      p.employeeRv
-        ? [rvLabel, euro(p.rvMinBase || p.gross), minus(p.employeeRv)]
-        : ["Rentenversicherung AN (befreit)", "–", euro(0)],
+      p.employeeRv ? [rvLabel, euro(p.rvMinBase || p.gross), minus(p.employeeRv)] : ["Rentenversicherung AN (befreit)", "–", euro(0)],
       p.employeeFlatTax ? ["Pauschsteuer vom Arbeitsentgelt (2 %)", euro(p.gross), minus(p.employeeFlatTax)] : null
     ].filter(Boolean);
-
-    y = vSectionTitle(k, y, "Gesetzliche Abzüge");
+    y = vSectionTitle(k, y, "Arbeitnehmer-Abzüge & Steuer");
     y = vTable(k, y, {
       cols: [{ w: 61 }, { w: 22, align: "right" }, { w: 17, align: "right" }],
-      head: ["Bezeichnung", "Bemessungsgrundlage", "Betrag"],
-      rows: deductions,
-      foot: ["Gesetzliche Abzüge", "", minus(p.employeeDeductions)]
+      head: ["Bezeichnung", "Bemessungsgrundlage", "Betrag"], rows: deductions,
+      foot: ["Arbeitnehmer-Abzüge", "", minus(p.employeeDeductions)]
     }) + 4;
 
     y = vNetBox(k, y, [
-      ["Gesamtbrutto", euro(p.gross)],
-      ["Gesetzliche Abzüge", minus(p.employeeDeductions)],
-      ["Nettobezug", euro(p.net), "sub"],
-      ["Auszahlungsbetrag", euro(p.net), "pay"]
-    ]) + 5;
+      ["Gesamtbrutto", euro(p.gross)], ["Arbeitnehmer-Abzüge", minus(p.employeeDeductions)],
+      ["Nettoentgelt", euro(p.net), "sub"], ["Tatsächlicher Auszahlungsbetrag", euro(p.net), "pay"]
+    ]) + 4;
 
-    // Zwei Spalten: AG-Anteile | Arbeitszeit & Kumulation
+    y = vStrip(k, y, [
+      { label: "Zahlungsdatum", value: doc.paymentDate ? fmtDate(doc.paymentDate) : "–" },
+      { label: "Bankverbindung (IBAN)", value: orDash(emp.iban), w: 2 }
+    ]) + 4;
+
     const colW = (W - 4) / 2;
-    const shares = [
-      ["Krankenversicherung (13 %)", p.employerKv],
-      ["Rentenversicherung (15 %)", p.employerRv],
-      ["Pauschsteuer (2 %)", p.employerFlatTax],
-      ["Umlagen U1/U2/Insolvenz", (p.u1 || 0) + (p.u2 || 0) + (p.insolvency || 0)]
-    ].filter(([, v]) => Number(v) > 0).map(([l, v]) => [l, euro(v)]);
-    const kum = [
-      ["Arbeitsstunden", fmtMinutes(p.mins)],
-      ["Arbeitstage / SV-Tage", `${p.days} / ${p.svDays ?? 30}`],
-      ...(year ? [
-        [`Brutto ${fmtMonthShort(year.from)}–${fmtMonthShort(year.to)}`, euro(year.gross)],
-        [`Jahresgrenze (12 × ${euro(MINIJOB_LIMIT)})`, euro(year.limit)]
-      ] : [])
+    const twoCols = [{ w: 64 }, { w: 36, align: "right" }];
+    const workRows = [
+      ["Sollstunden", fmtMinutes(p.goalMinutes || 0)], ["Ist-Stunden", fmtMinutes(p.mins)],
+      ["Bezahlte Freistellung", fmtMinutes(p.paidMinutes || 0)], ["Überstunden", "0:00 h · nicht vorgesehen"]
     ];
-    const twoCols = [{ w: 68 }, { w: 32, align: "right" }];
-    const y1 = vTable(k, vSectionTitle(k, y, "Vom Arbeitgeber zusätzlich getragen", L, colW),
-      { x: L, w: colW, cols: twoCols, rows: shares.length ? shares : [["keine", ""]] });
-    const y2 = vTable(k, vSectionTitle(k, y, "Arbeitszeit & Kumulation", L + colW + 4, colW),
-      { x: L + colW + 4, w: colW, cols: twoCols, rows: kum });
+    const absenceRows = [
+      ["Urlaub im Monat", `${p.vacationDays || 0} Tag(e)`],
+      [vacation.provisional ? "Urlaubsanspruch (Hochrechnung)" : "Urlaubsanspruch", fmtVacation(vacation.entitlement || 0)],
+      ["Resturlaub", fmtVacation(vacation.remaining || 0)],
+      ["Krankheitstage", String(p.sickDays || 0)], ["Feiertage", String(p.holidayDays || 0)]
+    ];
+    const y1 = vTable(k, vSectionTitle(k, y, "Arbeitszeit", L, colW), { x: L, w: colW, cols: twoCols, rows: workRows });
+    const y2 = vTable(k, vSectionTitle(k, y, "Abwesenheit & Urlaub", L + colW + 4, colW), { x: L + colW + 4, w: colW, cols: twoCols, rows: absenceRows });
     y = Math.max(y1, y2) + 4;
-
     if (note) vNote(k, y, "Hinweis:", note);
 
-    // Seite 2: Arbeitszeitnachweis
     k.pdf.addPage();
     drawTimesheetPdf(k, doc);
-
     vFooters(k,
-      p1 => p1 === 1
-        ? "Maschinell erstellte Entgeltabrechnung – ohne Unterschrift gültig. Arbeitszeitnachweis siehe Seite 2."
-        : "Aufbewahrung mindestens zwei Jahre. Erfasst jeweils spätestens 7 Tage nach dem Arbeitstag.",
+      p1 => p1 === 1 ? "Maschinell erstellte Entgeltabrechnung – Arbeitszeit-/Abwesenheitsnachweis auf Folgeseite." : "Arbeitszeit und Abwesenheiten aus SmartADM 5 Office.",
       (pn, n) => `${name} · ${doc.monthLabel} · Seite ${pn}/${n}`);
   }
 
@@ -4371,40 +4705,48 @@ td { border-bottom-color: var(--line); }
     const emp = doc.employee || {};
     const name = emp.full_name || doc.employeeName;
     const rows = doc.entries || [];
+    const absences = doc.absences || [];
     const sum = key => rows.reduce((a, e) => a + Number(e[key] || 0), 0);
-
-    const pageTop = () => {
-      let y = vHead(k, doc, "Arbeitszeitnachweis");
+    const pageTop = title => {
+      let y = vHead(k, doc, title || "Arbeitszeit- & Abwesenheitsnachweis");
       y = vStrip(k, y, [
         { label: "Mitarbeiter", value: name, w: 2 },
         { label: "Personalnummer", value: orDash(emp.personnel_number) },
         { label: "Zeitraum", value: doc.monthLabel }
       ]) + 4;
-      return vSectionTitle(k, y, "Beginn, Ende und Dauer der täglichen Arbeitszeit (§ 17 MiLoG)");
+      return y;
     };
 
     let y = pageTop();
+    y = vSectionTitle(k, y, "Arbeitszeit");
     if (rows.length) {
       y = vTable(k, y, {
-        cols: [{ w: 14 }, { w: 9 }, { w: 11, align: "right" }, { w: 11, align: "right" }, { w: 12, align: "right" },
-               { w: 15, align: "right" }, { w: 13, align: "right" }, { w: 15, align: "right" }],
+        cols: [{ w: 14 }, { w: 9 }, { w: 11, align: "right" }, { w: 11, align: "right" }, { w: 12, align: "right" }, { w: 15, align: "right" }, { w: 13, align: "right" }, { w: 15, align: "right" }],
         head: ["Datum", "Tag", "Beginn", "Ende", "Pause", "Arbeitszeit", "Termine", "davon prov."],
-        rows: rows.map(e => [
-          fmtDate(e.work_date), fmtWeekday(e.work_date), e.start_time, e.end_time,
-          `${Number(e.break_minutes || 0)} min`, fmtMinutes(e.work_minutes),
-          String(Number(e.appointments || 0)), String(Number(e.eligible || 0))
-        ]),
-        foot: [`Summe · ${new Set(rows.map(e => e.work_date)).size} Arbeitstage`, "", "", "",
-               `${sum("break_minutes")} min`, fmtMinutes(sum("work_minutes")), String(sum("appointments")), String(sum("eligible"))],
+        rows: rows.map(e => [fmtDate(e.work_date), fmtWeekday(e.work_date), e.start_time, e.end_time, `${Number(e.break_minutes || 0)} min`, fmtMinutes(e.work_minutes), String(Number(e.appointments || 0)), String(Number(e.eligible || 0))]),
+        foot: [`Summe · ${new Set(rows.map(e => e.work_date)).size} Arbeitstage`, "", "", "", `${sum("break_minutes")} min`, fmtMinutes(sum("work_minutes")), String(sum("appointments")), String(sum("eligible"))],
         rowH: 5.2, zebra: true,
-        onPageBreak: () => { k.pdf.addPage(); return pageTop(); }
+        onPageBreak: () => { k.pdf.addPage(); return vSectionTitle(k, pageTop(), "Arbeitszeit"); }
       });
     } else {
-      y = vNote(k, y + 2, "Hinweis:",
-        "Für diesen Abschluss wurden keine Tageseinträge gespeichert (Abschluss vor Einführung des Arbeitszeitnachweises).");
+      y = vNote(k, y + 2, "Hinweis:", "Keine Arbeitszeiteinträge für diesen Monat.");
     }
 
-    // Unterschriften – bei Platzmangel auf eine neue Seite
+    y += 4;
+    if (y + 35 > VP.B - 10) { k.pdf.addPage(); y = pageTop(); }
+    y = vSectionTitle(k, y, "Abwesenheiten");
+    if (absences.length) {
+      y = vTable(k, y, {
+        cols: [{ w: 16 }, { w: 24 }, { w: 18, align: "right" }, { w: 18, align: "right" }, { w: 24 }],
+        head: ["Datum", "Art", "Bezahlte Zeit", "Entgelt", "Notiz"],
+        rows: absences.map(a => [fmtDate(a.absence_date), ABSENCE_LABELS[a.absence_type] || a.absence_type, fmtMinutes(a.paid_minutes), euro(Number(a.paid_amount_cents || 0) / 100), a.note || "–"]),
+        zebra: true,
+        onPageBreak: () => { k.pdf.addPage(); return vSectionTitle(k, pageTop(), "Abwesenheiten"); }
+      });
+    } else {
+      y = vNote(k, y + 2, "Hinweis:", "Keine Abwesenheiten für diesen Monat.");
+    }
+
     if (y + 22 > VP.B - 8) { k.pdf.addPage(); y = pageTop(); }
     const sy = y + 18, half = (VP.W - 20) / 2;
     k.hline(VP.L, VP.L + half, sy, [51, 51, 51], 0.25);
@@ -4430,8 +4772,13 @@ td { border-bottom-color: var(--line); }
     y = vTable(k, y, {
       cols,
       rows: [
-        ["Zeitlohn", euro(p.timePay)],
-        ["Provision", euro(p.commission)],
+        ["Grundlohn / Stundenvergütung", euro(p.timePay)],
+        ["Terminprovision", euro(p.commission)],
+        ["Zielbonus", euro(p.targetBonus || 0)],
+        ...(p.vacationPay ? [["Urlaubsentgelt", euro(p.vacationPay)]] : []),
+        ...(p.sickPay ? [["Krankheitsentgelt", euro(p.sickPay)]] : []),
+        ...(p.holidayPay ? [["Feiertagsentgelt", euro(p.holidayPay)]] : []),
+        ...(p.paidLeavePay ? [["Bezahlte Freistellung", euro(p.paidLeavePay)]] : []),
         ["Bruttovergütung", euro(p.gross)],
         ["Abzüge beim Mitarbeiter", euro(p.employeeDeductions)]
       ],
@@ -4763,6 +5110,9 @@ td { border-bottom-color: var(--line); }
     $("bossMonth").value = isoMonth();
     $("payrollMonth").value = isoMonth();
     $("closingMonth").value = previousMonth();
+    $("absenceDate").value = isoDate();
+    $("payrollPaymentDate").value = "";
+    $("closingPaymentDate").value = "";
     setProfileInputs();
     renderCallPlaceSelect();
     renderCallTopicOptions();
