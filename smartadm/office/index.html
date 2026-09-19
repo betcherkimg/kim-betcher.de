@@ -679,6 +679,34 @@ td { border-bottom-color: var(--line); }
 .call-row.kk-row { display: block; }
 .call-row.kk-row .row-actions { justify-content: flex-start; margin-top: 10px; }
 #kkReleaseOldestBtn { white-space: nowrap; flex: 0 0 auto; }
+/* ---------- Boss-Kontaktzeile: kompakt ---------- */
+.acall {
+  display: grid; grid-template-columns: 1fr auto; align-items: center;
+  border-bottom: 1px solid var(--line);
+}
+.employee-list > .acall:last-child { border-bottom: 0; }
+.acall-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 4px 13px 0; min-width: 0;
+  border: 0; background: none; text-align: left; font: inherit; color: inherit; cursor: pointer;
+}
+.acall-main { flex: 1; min-width: 0; }
+.acall-name {
+  display: block; font-size: 15px; font-weight: 600; letter-spacing: -.01em;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.acall-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 5px; }
+.acall-meta .chip { margin: 0; }
+.acall-who { font-size: 12.5px; color: var(--ink-faint); }
+.acall-icons { display: flex; gap: 6px; flex: 0 0 auto; padding-left: 8px; }
+.acall-icons .icon-btn { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+.acall-icons .icon-btn svg.i { width: 18px; height: 18px; }
+.acall.is-open .chev { transform: rotate(90deg); }
+.acall-body { grid-column: 1 / -1; display: grid; gap: 10px; padding: 2px 0 14px; }
+.acall-body small { display: block; color: var(--ink-soft); line-height: 1.45; }
+.acall-body small a { color: var(--accent); font-weight: 500; text-decoration: none; }
+.acall-body .call-note { margin: 0; }
+.acall-body .phone-fix { margin-top: 0; }
 
 /* Filialauswahl (Termin buchen) */
 .head-btns { display: flex; flex-wrap: wrap; gap: 8px; flex: 0 0 auto; }
@@ -1572,6 +1600,7 @@ td { border-bottom-color: var(--line); }
     scriptExpanded: new Set(),                         // aufgeklappte Anruf-Skripte
     userName: "",                                      // Vorname des angemeldeten Nutzers (fürs Skript)
     kkReviewed: new Set(),
+    adminExpanded: new Set(),                          // aufgeklappte Boss-Kontaktzeilen
     phoneFixDrafts: {},                                // Boss: neue Nummern für R_TA_fK-Rückläufer                             // Boss: „Im Archiv lassen“ (nur diese Sitzung)
     adminCalls: { open: [], returned: [], archived: [], kk: [] },
     closings: [],
@@ -3197,44 +3226,61 @@ td { border-bottom-color: var(--line); }
     return '<span class="chip warn">Thema fehlt</span>';
   }
 
+  // Boss-Kontaktzeile: kompakt. Kopf zeigt Name, Thema und Mitarbeiterin,
+  // rechts Stift und Papierkorb. Tippen auf den Kopf klappt die Details auf.
   function adminCallHtml(c, scope) {
+    const open = state.adminExpanded.has(String(c.id));
     const status = CALL_STATUS[c.status];
     const attempts = c.attempt_log.length
       ? `Versuche: ${c.attempt_log.map(fmtDateTime).join(", ")}`
       : "Noch kein Versuch";
 
-    const actions = {
-      open: [["edit", "Bearbeiten", "ghost"], ["delete", "Löschen", "danger"]],
-      returned: [["archive", "Erledigt", "primary"], ["reopen", "Erneut zuweisen", "ghost"], ["edit", "Bearbeiten", "ghost"]],
-      archived: [["edit", "Bearbeiten", "ghost"], ["reopen", "Erneut zuweisen", "ghost"], ["delete", "Löschen", "danger"]]
+    const extra = {
+      open: [],
+      returned: [["archive", "Erledigt", "primary"], ["reopen", "Erneut zuweisen", "ghost"]],
+      archived: [["reopen", "Erneut zuweisen", "ghost"]]
     }[scope].map(([act, label, cls]) =>
       `<button class="btn ${cls}" type="button" data-call-admin="${act}" data-id="${c.id}">${label}</button>`).join("");
 
-    return `<div class="call-row">
-      <div class="call-row-main">
-        <strong>${esc(c.customer_name)}</strong>
-        <small>${phoneLinks(c)} · Termin: ${esc(placeLabel(c))} · ${esc(c.display_name || c.email || "Mitarbeiter")}</small>
+    return `<div class="acall${open ? " is-open" : ""}" data-acall="${c.id}">
+      <button class="acall-head" type="button" data-acall-toggle aria-expanded="${open}">
+        <span class="acall-main">
+          <span class="acall-name">${esc(c.customer_name)}</span>
+          <span class="acall-meta">
+            ${scope === "open" ? "" : status ? `<span class="chip ${status.cls}">${status.label}</span>` : ""}
+            ${isHeld(c) ? '<span class="chip warn">Zu klären</span>' : ""}
+            ${topicChips(c)}
+            <span class="acall-who">${esc(c.display_name || c.email || "Mitarbeiter")}</span>
+          </span>
+        </span>
+        ${CHEVRON}
+      </button>
+      <div class="acall-icons">
+        <button class="icon-btn" type="button" data-call-admin="edit" data-id="${c.id}"
+          title="Bearbeiten" aria-label="Bearbeiten">${ICONS.edit}</button>
+        <button class="icon-btn danger" type="button" data-call-admin="delete" data-id="${c.id}"
+          title="Löschen" aria-label="Löschen">${ICONS.trash}</button>
+      </div>
+      ${open ? `<div class="acall-body">
+        <small>${phoneLinks(c)} · Termin: ${esc(placeLabel(c))}</small>
         <div class="task-meta">
-          ${status ? `<span class="chip ${status.cls}">${status.label}</span>` : ""}
           ${scope === "open" ? attemptDots(c.attempts) : ""}
-          ${isHeld(c) ? '<span class="chip warn">Zu klären</span>' : ""}
           <span class="chip">${c.attempts} / ${CALL_MAX_ATTEMPTS} Versuche</span>
           ${c.rounds > 1 ? `<span class="chip">${c.rounds}. Durchlauf</span>` : ""}
           ${c.kk_state === "task" ? '<span class="chip from">In Aufgaben verschoben</span>' : ""}
           ${c.closed_at && scope !== "open" ? `<span class="chip">Zurück ${esc(fmtDateTime(c.closed_at))}</span>` : ""}
         </div>
-        <div class="task-meta">${topicChips(c)}</div>
         <small>${esc(attempts)}</small>
         ${isHeld(c) && scope === "open" ? `<div class="call-note hold"><b>Zu klären:</b> ${esc(c.hold_note)}</div>` : ""}
         ${c.protocol ? `<div class="call-note"><b>Protokoll:</b> ${esc(c.protocol)}</div>` : ""}
+        ${c.briefing ? `<div class="call-note"><b>Hinweis:</b> ${esc(c.briefing)}</div>` : ""}
         ${scope === "returned" && c.status === "R_TA_fK" ? `<div class="phone-fix">
           <label for="fix-${c.id}">Neue Nummer(n) – eine pro Zeile</label>
           <textarea id="fix-${c.id}" data-phone-fix="${c.id}" rows="2" placeholder="z. B. 07361 123456">${esc(state.phoneFixDrafts[c.id] ?? "")}</textarea>
           <button class="btn primary" type="button" data-call-admin="phones" data-id="${c.id}">Nummer speichern &amp; erneut zuweisen</button>
         </div>` : ""}
-        ${c.briefing && scope === "open" ? `<div class="call-note"><b>Hinweis:</b> ${esc(c.briefing)}</div>` : ""}
-      </div>
-      <div class="row-actions">${actions}</div>
+        ${extra ? `<div class="btn-row">${extra}</div>` : ""}
+      </div>` : ""}
     </div>`;
   }
 
@@ -3412,6 +3458,13 @@ td { border-bottom-color: var(--line); }
 
   ["callReturnedList", "callOpenList", "callArchiveList"].forEach(listId =>
     $(listId).addEventListener("click", event => {
+      const toggle = event.target.closest("[data-acall-toggle]");
+      if (toggle) {
+        const id = toggle.closest("[data-acall]").dataset.acall;
+        state.adminExpanded.has(id) ? state.adminExpanded.delete(id) : state.adminExpanded.add(id);
+        return renderAdminCalls();
+      }
+
       const button = event.target.closest("[data-call-admin]");
       if (!button) return;
       const act = button.dataset.callAdmin;
