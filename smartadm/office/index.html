@@ -169,9 +169,6 @@ body[data-office-role="boss"] [data-role="employee"] { display: none !important;
 }
 .hero-badge b { display: block; font-size: 22px; }
 
-.shortcut { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 16px; }
-.shortcut strong { display: block; font-size: 14px; }
-.shortcut span { display: block; color: var(--muted); font-size: 12px; margin-top: 3px; }
 .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
 
 .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
@@ -417,8 +414,6 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   .hero { display: block; }
   .hero-badge { margin-top: 15px; text-align: left; min-width: 0; }
   .grid-4, .form-grid, .quick-grid { grid-template-columns: 1fr; }
-  .shortcut { flex-direction: column; align-items: flex-start; }
-  .shortcut .btn-row, .shortcut .btn { width: 100%; }
   .task-item, .call-row { display: block; }
   .card-head.split { flex-direction: column; }
   .call-row .row-actions { justify-content: flex-start; margin-top: 10px; }
@@ -519,9 +514,6 @@ svg.i { stroke-width: 1.7; }
 .hero p { opacity: 1; color: rgba(255,255,255,.68); font-size: 14px; }
 .hero-badge { background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.14); border-radius: 14px; }
 .hero-badge b { font-weight: 700; letter-spacing: -.03em; }
-
-.shortcut strong { font-weight: 600; }
-.shortcut span { color: var(--ink-soft); }
 
 .kpi { padding: 16px 18px; }
 .kpi-label { color: var(--ink-soft); font-weight: 500; }
@@ -687,10 +679,6 @@ td { border-bottom-color: var(--line); }
 .call-row.kk-row { display: block; }
 .call-row.kk-row .row-actions { justify-content: flex-start; margin-top: 10px; }
 #kkReleaseOldestBtn { white-space: nowrap; flex: 0 0 auto; }
-/* Dashboard-Kurzwege: ruhig statt dreimal gefüllt */
-.shortcut .btn.primary { background: var(--surface); color: var(--ink); border-color: var(--line); }
-.shortcut .btn.primary:hover { background: var(--ground); }
-
 
 /* Filialauswahl (Termin buchen) */
 .head-btns { display: flex; flex-wrap: wrap; gap: 8px; flex: 0 0 auto; }
@@ -744,60 +732,65 @@ td { border-bottom-color: var(--line); }
 .phone-fix .btn { justify-self: start; }
 
 
-/* Mitarbeiter-Dashboard: Kacheln wie Zeiterfassung */
-#dashboard > .shortcut:not(#pushCard) {
-  display: grid;
-  gap: 16px;
-  padding: 18px;
+/* ---------- Dashboard-Kacheln ----------
+ * Kurzweg-Kachel und Zeiterfassung teilen sich ein Raster: Text oben,
+ * Knopf darunter über die volle Breite. Gilt für Mitarbeiter und Boss.
+ */
+.shortcut, .time-head { display: grid; gap: 16px; }
+.shortcut { padding: 18px; }
+.shortcut > div:first-child, .time-head > div:first-child { min-width: 0; }
+.shortcut strong, .time-head h2 {
+  display: block; margin: 0;
+  font-size: 19px; font-weight: 600; letter-spacing: -.02em;
 }
-#dashboard > .shortcut:not(#pushCard) > div:first-child {
-  min-width: 0;
+.shortcut span, .time-head p {
+  display: block; margin: 4px 0 0;
+  color: var(--ink-soft); font-size: 13.5px; line-height: 1.45;
 }
-#dashboard > .shortcut:not(#pushCard) strong {
-  display: block;
-  margin: 0;
-  font-size: 19px;
-  font-weight: 600;
-  letter-spacing: -.02em;
-}
-#dashboard > .shortcut:not(#pushCard) span {
-  display: block;
-  margin-top: 4px;
-  color: var(--ink-soft);
-  font-size: 13.5px;
-  line-height: 1.45;
-}
-#dashboard > .shortcut:not(#pushCard) > .btn {
-  width: 100% !important;
-  min-width: 100%;
-  display: flex;
-  justify-content: center;
-  justify-self: stretch;
-  align-self: stretch;
-}
-#dashboard > .shortcut:not(#pushCard) > .btn.ghost,
-#dashboard > .shortcut:not(#pushCard) > .btn.primary {
-  background: var(--accent);
-  color: #fff;
-  border-color: transparent;
-  box-shadow: none;
-}
-#dashboard > .shortcut:not(#pushCard) > .btn.ghost:hover,
-#dashboard > .shortcut:not(#pushCard) > .btn.primary:hover {
-  background: #0f4a90;
-}
-
-/* Zeiterfassung */
-.time-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
-.time-head h2 { margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -.02em; }
-.time-head p { margin: 3px 0 0; color: var(--ink-soft); font-size: 13.5px; }
+.shortcut > .btn, .shortcut > .btn-row, .time-head > .btn { width: 100%; }
+.shortcut > .btn-row > .btn { flex: 1 1 140px; }
 .time-card.is-open .time-head { margin-bottom: 16px; }
-@media (max-width: 760px) {
-  .time-head { flex-direction: column; align-items: stretch; }
-  #openTimeFormBtn { width: 100%; }
-  #dashboard > .shortcut:not(#pushCard) > .btn { width: 100%; }
-  .name-pair { grid-template-columns: 1fr; }
+
+/* Kurzwege im Mitarbeiter-Dashboard sehen alle gleich aus */
+#dashboard > .shortcut:not(#pushCard) > .btn { background: var(--accent); color: #fff; border-color: transparent; box-shadow: none; }
+#dashboard > .shortcut:not(#pushCard) > .btn:hover { background: var(--accent-hi); }
+
+/* ---------- Anruf-Skript ---------- */
+.script-box { display: grid; gap: 14px; padding: 14px; border-radius: 12px; background: var(--accent-wash); }
+.script-box > .btn { width: 100%; }
+.script-block { display: grid; gap: 4px; }
+.script-block > b { font-size: 12px; font-weight: 600; color: var(--accent); }
+.script-line {
+  margin: 0; padding: 11px 13px; border-radius: 10px; background: var(--surface);
+  font-size: 14.5px; line-height: 1.5; word-break: break-word;
 }
+.script-line + .script-line { margin-top: 6px; }
+.script-line .var { font-weight: 600; }
+.script-faq { display: grid; gap: 6px; }
+.script-faq details { border-radius: 10px; background: var(--surface); overflow: hidden; }
+.script-faq summary {
+  cursor: pointer; list-style: none; padding: 10px 13px;
+  font-size: 13.5px; font-weight: 500; color: var(--ink);
+}
+.script-faq summary::-webkit-details-marker { display: none; }
+.script-faq summary::after { content: "+"; float: right; color: var(--ink-faint); }
+.script-faq details[open] summary::after { content: "–"; }
+.script-faq p { margin: 0; padding: 0 13px 11px; font-size: 13.5px; line-height: 1.5; color: var(--ink-soft); }
+.script-fallback { margin: 0; padding: 11px 13px; border-radius: 10px; background: var(--gelb-wash); color: var(--gelb); font-size: 13px; line-height: 1.5; }
+
+/* ---------- Mehrfachauswahl als Dropdown ---------- */
+.dropdown { border: 1.5px solid var(--line); border-radius: 12px; background: var(--ground); }
+.dropdown > summary {
+  cursor: pointer; list-style: none; padding: 11px 13px;
+  font-size: 15px; color: var(--ink);
+}
+.dropdown > summary::-webkit-details-marker { display: none; }
+.dropdown > summary::after { content: "▾"; float: right; color: var(--ink-faint); }
+.dropdown[open] > summary { border-bottom: 1px solid var(--line); }
+.dropdown[open] > summary::after { content: "▴"; }
+.dropdown-panel { display: grid; gap: 2px; padding: 8px; }
+.dropdown-panel .check-row { padding: 7px 6px; border-radius: 8px; }
+.dropdown-panel .check-row:hover { background: var(--surface); }
 
 @media (max-width: 760px) {
   .topbar { height: 64px; }
@@ -810,6 +803,7 @@ td { border-bottom-color: var(--line); }
   .phone-stack > a.btn { flex: 1 1 100%; }
   .cc-actions > .btn { flex: 1 1 calc(50% - 4px); }
   .cc-facts div { grid-template-columns: 92px 1fr; }
+  .name-pair { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -1331,12 +1325,21 @@ td { border-bottom-color: var(--line); }
             <input type="hidden" id="callEditId">
             <div class="form-grid">
               <div class="field"><label>Mitarbeiter</label><select id="callEmployeeSelect" data-employee-select data-independent required></select></div>
+              <div class="field"><label for="callSalutation">Anrede</label>
+                <select id="callSalutation"><option value="Herr">Herr</option><option value="Frau">Frau</option></select>
+                <small>Steht so in der Begrüßung des Skripts.</small></div>
               <div class="field name-pair">
                 <div><label for="callLastName">Nachname</label><input id="callLastName" type="text" maxlength="60" required autocomplete="off" placeholder="Mustermann"></div>
                 <div><label for="callFirstName">Vorname</label><input id="callFirstName" type="text" maxlength="55" required autocomplete="off" placeholder="Max"></div>
               </div>
               <div class="field"><label for="callPhones">Telefonnummer(n)</label><textarea id="callPhones" rows="2" required placeholder="Eine Nummer pro Zeile"></textarea></div>
               <div class="field"><label for="callPlace">Termin bei</label><select id="callPlace"></select><small>Filiale oder Teams – Filialen pflegst du unter „Terminvereinbarung“.</small></div>
+              <div class="field full"><label for="callTopicsSummary">Thema fürs Skript</label>
+                <details class="dropdown" id="callTopics">
+                  <summary id="callTopicsSummary">Kein Thema gewählt</summary>
+                  <div class="dropdown-panel" id="callTopicsPanel"></div>
+                </details>
+                <small>Mehrfachauswahl möglich – daraus entsteht der Abschnitt „Worum es geht“ im Anruf-Skript.</small></div>
               <div class="field full"><label for="callBriefing">Hinweis für das Gespräch</label><textarea id="callBriefing" rows="3" maxlength="2000" placeholder="z. B. Bausparvertrag läuft aus – Termin zur Anschlussfinanzierung anbieten"></textarea></div>
             </div>
             <div class="actions">
@@ -1546,7 +1549,8 @@ td { border-bottom-color: var(--line); }
     edit: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></svg>',
     phone: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/></svg>',
     calendar: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>',
-    trash: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M7 7l1 13h8l1-13"/><path d="M10 11v5M14 11v5"/></svg>'
+    trash: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M7 7l1 13h8l1-13"/><path d="M10 11v5M14 11v5"/></svg>',
+    script: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>'
   };
 
   /* ================= Zustand ================= */
@@ -1565,6 +1569,8 @@ td { border-bottom-color: var(--line); }
     holdDrafts: {},                                    // ungespeicherte Halten-Notizen je Kontakt
     holdEditing: new Set(),                            // offene Halten-Notizfelder (normale Kontakte)
     callExpanded: new Set(),                           // aufgeklappte Kontaktkarten
+    scriptExpanded: new Set(),                         // aufgeklappte Anruf-Skripte
+    userName: "",                                      // Vorname des angemeldeten Nutzers (fürs Skript)
     kkReviewed: new Set(),
     phoneFixDrafts: {},                                // Boss: neue Nummern für R_TA_fK-Rückläufer                             // Boss: „Im Archiv lassen“ (nur diese Sitzung)
     adminCalls: { open: [], returned: [], archived: [], kk: [] },
@@ -2729,12 +2735,14 @@ td { border-bottom-color: var(--line); }
       : '<div class="notice">Noch keine Filialen hinterlegt – bitte beim Boss melden.</div>';
   }
 
-  $("bookingPickerBtn").addEventListener("click", () => {
+  function openBookingPicker() {
     renderBookingPicker();
     const dialog = $("bookingPicker");
     if (typeof dialog.showModal === "function") dialog.showModal();
     else dialog.setAttribute("open", "");
-  });
+  }
+
+  $("bookingPickerBtn").addEventListener("click", openBookingPicker);
 
   $("bookingPicker").addEventListener("click", event => {
     const dialog = $("bookingPicker");
@@ -2756,6 +2764,139 @@ td { border-bottom-color: var(--line); }
       }
     });
   });
+
+  /* ================= Anruf-Skript =================
+   * Alles, was am Skript geändert wird, steht in diesen drei Konstanten.
+   * {boss} wird überall durch „Herr Betcher“ ersetzt.
+   */
+
+  const SCRIPT = {
+    bossSalutation: "Herr",
+    bossLastName: "Betcher",
+    bossFullName: "Kim Betcher",
+    assistantRole: "die Assistentin",
+    bossRole: "Ihrem Bezirksleiter der Bausparkasse Schwäbisch Hall"
+  };
+
+  const CALL_TOPICS = {
+    zuteilung: {
+      label: "Zuteilung",
+      text: "{boss} möchte mit Ihnen über die Zuteilung Ihres Vertrages sprechen."
+    },
+    mindestguthaben: {
+      label: "Mindestguthaben",
+      text: "{boss} möchte mit Ihnen über Ihren Vertrag sprechen, da dieser demnächst das Mindestguthaben erreicht."
+    },
+    kinder: {
+      label: "Verträge der Kinder",
+      text: "{boss} möchte sich mit Ihnen gerne die Verträge Ihrer Kinder anschauen."
+    },
+    sohn: {
+      label: "Vertrag des Sohnes",
+      text: "{boss} möchte sich mit Ihnen gerne die Verträge Ihres Sohnes anschauen."
+    },
+    tochter: {
+      label: "Vertrag der Tochter",
+      text: "{boss} möchte sich mit Ihnen gerne die Verträge Ihrer Tochter anschauen."
+    },
+    besparung: {
+      label: "Besparungsqualität",
+      text: "{boss} möchte gerne mit Ihnen über Ihre aktuelle Besparungsqualität sprechen."
+    },
+    foerderung: {
+      label: "Staatliche Förderungen",
+      text: "{boss} möchte gerne mit Ihnen über das Thema staatliche Förderungen sprechen, da sich da in Zukunft einiges für Sie ändern könnte."
+    },
+    treuepraemie: {
+      label: "Treueprämie",
+      text: "{boss} möchte mit Ihnen über das Thema Treueprämie sprechen, da das als nächstes in Ihrem Vertrag ansteht."
+    },
+    riester: {
+      label: "Riester",
+      text: "{boss} möchte mit Ihnen über Ihren Riester-Vertrag sprechen."
+    },
+    neuterminierung: {
+      label: "Neuterminierung",
+      text: "{boss} möchte mit Ihnen gerne einen neuen Termin vereinbaren."
+    }
+  };
+
+  const TOPIC_KEYS = Object.keys(CALL_TOPICS);
+
+  const SCRIPT_FAQ = [
+    ["Worum geht es denn genau?",
+     "Das Thema kurz wiederholen – mehr braucht es am Telefon nicht. Die Zahlen zum Vertrag bespricht {boss} im Termin, er hat die Unterlagen vorliegen."],
+    ["Was kostet mich das?",
+     "Der Termin ist kostenlos und unverbindlich. Es geht erst einmal darum, sich den Vertrag gemeinsam anzuschauen."],
+    ["Ich habe schon einen Berater / meine Bank betreut mich.",
+     "{boss} ist der zuständige Bezirksleiter der Bausparkasse Schwäbisch Hall für Ihre Region und arbeitet mit Ihrer Bank zusammen. Es geht nicht darum, etwas zu ersetzen."],
+    ["Können Sie mir das nicht am Telefon sagen?",
+     "Ich mache für {boss} die Terminvereinbarung. Ihren Vertrag hat er vorliegen – deshalb erklärt er Ihnen das im Termin direkt an Ihren Zahlen."],
+    ["Wie lange dauert der Termin?",
+     "Rechnen Sie mit etwa 30 bis 45 Minuten."],
+    ["Ich habe keine Zeit.",
+     "Zwei konkrete Alternativen anbieten (z. B. „Vormittag oder lieber nach Feierabend?“). Auch ein Termin per Microsoft Teams ist möglich."],
+    ["Woher haben Sie meine Nummer?",
+     "Sie haben einen Vertrag bei der Bausparkasse Schwäbisch Hall. {boss} betreut diesen Bestand als zuständiger Bezirksleiter."],
+    ["Muss ich etwas mitbringen?",
+     "Nichts Besonderes – die Unterlagen zu Ihrem Vertrag liegen vor. Wenn Sie Verträge bei anderen Anbietern haben, bringen Sie die gerne mit."],
+    ["Kann ich den Termin auch online machen?",
+     "Ja, das geht per Microsoft Teams. Bitte beim Anlegen des Termins vermerken."],
+    ["Wie viel Geld ist auf meinem Vertrag?",
+     "Das kann ich nicht einsehen. Genau das geht {boss} im Termin mit Ihnen durch."],
+    ["Kein Interesse.",
+     "Einmal freundlich nachfassen, ob das Thema klar war. Wenn weiterhin nein: Gespräch höflich beenden und als „Ohne Termin“ zurückgeben."]
+  ];
+
+  const bossName = () => `${SCRIPT.bossSalutation} ${SCRIPT.bossLastName}`;
+  const fillBoss = text => String(text).replaceAll("{boss}", bossName());
+
+  const customerLastName = c => String(c.customer_name || "").split(",")[0].trim();
+  const customerSalutation = c => (c.salutation === "Frau" ? "Frau" : "Herr");
+
+  function scriptHtml(c) {
+    const topics = (c.topics || [])
+      .filter(key => CALL_TOPICS[key])
+      .map(key => `<p class="script-line">${esc(fillBoss(CALL_TOPICS[key].text))}</p>`)
+      .join("");
+
+    const greeting = `Hallo ${customerSalutation(c)} ${customerLastName(c)}, `
+      + `mein Name ist ${state.userName || "…"} und ich bin ${SCRIPT.assistantRole} `
+      + `von ${SCRIPT.bossFullName}, ${SCRIPT.bossRole}.`;
+
+    return `<div class="script-box">
+      <button class="btn primary" type="button" data-script-booking>${ICONS.calendar}Termin buchen</button>
+
+      <div class="script-block">
+        <b>Begrüßung</b>
+        <p class="script-line">${esc(greeting)}</p>
+      </div>
+
+      <div class="script-block">
+        <b>Worum es geht</b>
+        ${topics || `<p class="script-line">Noch kein Thema hinterlegt – bitte beim Boss nachfragen.</p>`}
+      </div>
+
+      ${c.briefing ? `<div class="script-block">
+        <b>Hinweis vom Boss</b>
+        <p class="script-line">${esc(c.briefing)}</p>
+      </div>` : ""}
+
+      <div class="script-block">
+        <b>Häufige Fragen</b>
+        <div class="script-faq">
+          ${SCRIPT_FAQ.map(([question, answer]) => `<details>
+            <summary>${esc(question)}</summary>
+            <p>${esc(fillBoss(answer))}</p>
+          </details>`).join("")}
+        </div>
+      </div>
+
+      <p class="script-fallback">Frage nicht dabei? Dann:
+        „Das kann ich Ihnen leider nicht beantworten – ich mache für ${esc(bossName())} die Terminvereinbarung.
+        Er hat Ihren Vertrag vorliegen und erklärt Ihnen das im Termin genau.“</p>
+    </div>`;
+  }
 
   /* ================= Telefonliste ================= */
 
@@ -2875,15 +3016,15 @@ td { border-bottom-color: var(--line); }
            <a class="btn primary call-btn" href="${esc(telHref(p))}">${ICONS.phone}${esc(p)}</a>
            <button class="btn ghost phone-flag" type="button" data-phone-flag="${i}" title="Nummer falsch" aria-label="Nummer als falsch markieren">✕</button>
          </span>`).join("");
-    const booking = c.booking_url
-      ? `<a class="btn ghost" href="${esc(c.booking_url)}" target="_blank" rel="noopener noreferrer">${ICONS.calendar}Termin buchen</a>`
-      : "";
+    const scriptOpen = state.scriptExpanded.has(String(c.id));
+    const script = `<button class="btn ghost" type="button" data-script-toggle aria-expanded="${scriptOpen}">${ICONS.script}Skript</button>`;
 
     return `<div class="call-card${open ? " is-open" : ""}" data-call="${c.id}">
       ${callSummaryHtml(c, false, open)}
       ${open ? `<div class="cc-body">
         ${c.briefing ? `<div class="cc-text"><b>Hinweis</b>${esc(c.briefing)}</div>` : ""}
-        <div class="phone-stack">${phones}${booking}</div>
+        <div class="phone-stack">${phones}${script}</div>
+        ${scriptOpen ? scriptHtml(c) : ""}
         <p class="call-help">✕ = Nummer falsch. Sind alle Nummern falsch, geht der Kontakt als R_TA_fK zurück.</p>
         <div class="field">
           <label for="protocol-${c.id}">Protokoll</label>
@@ -2974,6 +3115,15 @@ td { border-bottom-color: var(--line); }
       state.callExpanded.has(id) ? state.callExpanded.delete(id) : state.callExpanded.add(id);
       return renderOwnCalls();
     }
+
+    const script = event.target.closest("[data-script-toggle]");
+    if (script) {
+      const id = script.closest("[data-call]").dataset.call;
+      state.scriptExpanded.has(id) ? state.scriptExpanded.delete(id) : state.scriptExpanded.add(id);
+      return renderOwnCalls();
+    }
+
+    if (event.target.closest("[data-script-booking]")) return openBookingPicker();
 
     const hold = event.target.closest("[data-hold-action]");
     if (hold) return handleHoldAction(hold);
@@ -3146,9 +3296,37 @@ td { border-bottom-color: var(--line); }
     }
   }
 
+  /* --- Themen-Dropdown --- */
+
+  function renderCallTopicOptions() {
+    $("callTopicsPanel").innerHTML = TOPIC_KEYS.map(key =>
+      `<label class="check-row"><input type="checkbox" data-topic="${key}"> ${esc(CALL_TOPICS[key].label)}</label>`).join("");
+  }
+
+  const selectedTopics = () =>
+    $$("#callTopicsPanel [data-topic]").filter(box => box.checked).map(box => box.dataset.topic);
+
+  function updateTopicsSummary() {
+    const chosen = selectedTopics();
+    setText("callTopicsSummary", chosen.length
+      ? chosen.map(key => CALL_TOPICS[key].label).join(", ")
+      : "Kein Thema gewählt");
+  }
+
+  function setCallTopics(keys) {
+    const wanted = new Set(asArray(keys));
+    $$("#callTopicsPanel [data-topic]").forEach(box => (box.checked = wanted.has(box.dataset.topic)));
+    updateTopicsSummary();
+  }
+
+  $("callTopicsPanel").addEventListener("change", updateTopicsSummary);
+
   function resetCallForm() {
     ["callEditId", "callLastName", "callFirstName", "callPhones", "callBriefing"].forEach(id => ($(id).value = ""));
     $("callPlace").value = "";
+    $("callSalutation").value = "Herr";
+    setCallTopics([]);
+    $("callTopics").open = false;
     setText("callFormTitle", "Kontakt einstellen");
     setText("callSaveBtn", "Kontakt speichern");
     $("callCancelBtn").hidden = true;
@@ -3166,6 +3344,8 @@ td { border-bottom-color: var(--line); }
     $("callFirstName").value = rest.join(",").trim();
     $("callPhones").value = c.phones.join("\n");
     $("callPlace").value = c.teams ? "teams" : c.branch_id ? String(c.branch_id) : "";
+    $("callSalutation").value = c.salutation === "Frau" ? "Frau" : "Herr";
+    setCallTopics(c.topics);
     $("callBriefing").value = c.briefing || "";
     setText("callFormTitle", `Kontakt bearbeiten: ${c.customer_name}`);
     setText("callSaveBtn", "Änderungen speichern");
@@ -3187,8 +3367,10 @@ td { border-bottom-color: var(--line); }
     const payload = {
       assigned_to: $("callEmployeeSelect").value,
       customer_name: joinName($("callLastName").value, $("callFirstName").value),
+      salutation: $("callSalutation").value,
       phones: $("callPhones").value,
       place: $("callPlace").value,
+      topics: selectedTopics(),
       briefing: $("callBriefing").value.trim()
     };
 
@@ -4512,6 +4694,8 @@ td { border-bottom-color: var(--line); }
     $("closingMonth").value = previousMonth();
     setProfileInputs();
     renderCallPlaceSelect();
+    renderCallTopicOptions();
+    resetCallForm();
     resetForm();
     renderEmployeeDashboard();
     renderEmployeeData();
@@ -4544,6 +4728,7 @@ td { border-bottom-color: var(--line); }
       document.body.classList.add("signed-in");
 
       const name = displayName(user);
+      state.userName = name;
       setText("currentUserName", name);
       setText("heroUserName", name);
 
