@@ -3188,6 +3188,15 @@ td { border-bottom-color: var(--line); }
 
   /* --- Boss --- */
 
+  // Themen als Chips – so sieht der Boss sofort, wo für das Skript noch etwas fehlt.
+  function topicChips(c) {
+    const topics = asArray(c.topics).filter(key => CALL_TOPICS[key]);
+    if (topics.length) {
+      return topics.map(key => `<span class="chip from">${esc(CALL_TOPICS[key].label)}</span>`).join("");
+    }
+    return '<span class="chip warn">Thema fehlt</span>';
+  }
+
   function adminCallHtml(c, scope) {
     const status = CALL_STATUS[c.status];
     const attempts = c.attempt_log.length
@@ -3197,7 +3206,7 @@ td { border-bottom-color: var(--line); }
     const actions = {
       open: [["edit", "Bearbeiten", "ghost"], ["delete", "Löschen", "danger"]],
       returned: [["archive", "Erledigt", "primary"], ["reopen", "Erneut zuweisen", "ghost"], ["edit", "Bearbeiten", "ghost"]],
-      archived: [["reopen", "Erneut zuweisen", "ghost"], ["delete", "Löschen", "danger"]]
+      archived: [["edit", "Bearbeiten", "ghost"], ["reopen", "Erneut zuweisen", "ghost"], ["delete", "Löschen", "danger"]]
     }[scope].map(([act, label, cls]) =>
       `<button class="btn ${cls}" type="button" data-call-admin="${act}" data-id="${c.id}">${label}</button>`).join("");
 
@@ -3214,6 +3223,7 @@ td { border-bottom-color: var(--line); }
           ${c.kk_state === "task" ? '<span class="chip from">In Aufgaben verschoben</span>' : ""}
           ${c.closed_at && scope !== "open" ? `<span class="chip">Zurück ${esc(fmtDateTime(c.closed_at))}</span>` : ""}
         </div>
+        <div class="task-meta">${topicChips(c)}</div>
         <small>${esc(attempts)}</small>
         ${isHeld(c) && scope === "open" ? `<div class="call-note hold"><b>Zu klären:</b> ${esc(c.hold_note)}</div>` : ""}
         ${c.protocol ? `<div class="call-note"><b>Protokoll:</b> ${esc(c.protocol)}</div>` : ""}
@@ -3230,8 +3240,9 @@ td { border-bottom-color: var(--line); }
 
   function kkRowHtml(c) {
     const reviewed = state.kkReviewed.has(String(c.id));
-    const earlier = c.round_log.slice(0, -1);
-    const rounds = c.round_log.length || c.rounds;
+    const log = asArray(c.round_log);
+    const earlier = log.slice(0, -1);
+    const rounds = log.length || c.rounds || 1;
     const btn = (act, label, cls) =>
       `<button class="btn ${cls}" type="button" data-kk="${act}" data-id="${c.id}">${label}</button>`;
     return `<div class="call-row kk-row${reviewed ? " is-reviewed" : ""}">
@@ -3240,15 +3251,17 @@ td { border-bottom-color: var(--line); }
         <small class="kk-meta">Archiviert <b>${esc(fmtDateTime(c.kk_archived_at))}</b> · ${esc(c.display_name || c.email || "Mitarbeiter")}</small>
         <div class="task-meta">
           <span class="chip ${rounds >= 3 ? "high" : rounds === 2 ? "warn" : ""}">${rounds} ${rounds === 1 ? "Durchlauf" : "Durchläufe"}</span>
-          <span class="chip">${c.attempt_log.length} Versuche gesamt</span>
+          <span class="chip">${asArray(c.attempt_log).length} Versuche gesamt</span>
           ${reviewed ? '<span class="chip">Bleibt im Archiv</span>' : ""}
         </div>
+        <div class="task-meta">${topicChips(c)}</div>
         <small>${phoneLinks(c)}</small>
         ${earlier.length ? `<small>Frühere Archivierungen: ${earlier.map(r => esc(fmtDateTime(r.archived_at))).join(", ")}</small>` : ""}
         <div class="call-note"><b>Letztes Protokoll:</b> ${c.protocol ? esc(c.protocol) : "–"}</div>
       </div>
       <div class="row-actions">
         ${btn("release", `${esc(firstName(c))} wieder freigeben`, "primary")}
+        <button class="btn ghost" type="button" data-call-admin="edit" data-id="${c.id}">Bearbeiten</button>
         ${reviewed ? "" : btn("keep", "Im Archiv lassen", "ghost")}
         ${btn("done", "Endgültig erledigt", "danger")}
       </div>
@@ -3259,7 +3272,9 @@ td { border-bottom-color: var(--line); }
 
   function renderAdminCalls() {
     const { open, returned, archived } = state.adminCalls;
-    const kk = state.adminCalls.kk || [];
+    // Nur echte Archiveinträge – schützt davor, dass ein Worker ohne kk-Scope
+    // hier offene Kontakte zurückgibt und das gesamte Rendering kippt.
+    const kk = asArray(state.adminCalls.kk).filter(c => c.kk_archived_at);
     $("callKkList").innerHTML = kk.length
       ? kk.map(kkRowHtml).join("")
       : '<div class="notice">Kein-Kontakt-Archiv ist leer.</div>';
@@ -3446,6 +3461,9 @@ td { border-bottom-color: var(--line); }
   };
 
   $("callKkList").addEventListener("click", event => {
+    const edit = event.target.closest("[data-call-admin='edit']");
+    if (edit) return editCall(edit.dataset.id);
+
     const button = event.target.closest("[data-kk]");
     if (!button) return;
     const id = button.dataset.id;
