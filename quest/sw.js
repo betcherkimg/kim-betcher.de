@@ -4,7 +4,7 @@
  * Bei neuer contentVersion in chapters.json wird der Content-Cache geleert.
  * Bei App-Updates: STATIC_VERSION erhöhen.
  */
-const STATIC_VERSION = 'v1';
+const STATIC_VERSION = 'v2';
 const STATIC_CACHE = `34i-quest-static-${STATIC_VERSION}`;
 const CONTENT_CACHE = '34i-quest-content-v1';
 

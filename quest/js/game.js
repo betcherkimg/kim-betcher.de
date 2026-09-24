@@ -8,6 +8,42 @@ export const MODES = {
   boss:   { id: 'boss',   label: 'Bossfight', count: 5,  lives: 3, seconds: 10, source: 'boss',      winXp: 150 },
 };
 
+
+/* ---------- Globale HP & Loot ---------- */
+
+export const MAX_HP = 100;
+
+// Verlust bei einem komplett verlorenen Modus-Run (Prozentpunkte vom Maximal-HP-Wert).
+export const MODE_HP_LOSS = { story: 25, versus: 33, boss: 50 };
+
+export const POTIONS = {
+  small:  { id: 'small',  label: 'Kleiner Heiltrank', heal: 25, icon: '🧪' },
+  medium: { id: 'medium', label: 'Mittlerer Heiltrank', heal: 33, icon: '⚗️' },
+  large:  { id: 'large',  label: 'Großer Heiltrank', heal: 50, icon: '🧴' },
+  spark:  { id: 'spark',  label: 'Lebensfunke', heal: 100, icon: '✨' },
+};
+
+/**
+ * Lootchance nach Schwierigkeit. Nur richtige Antworten würfeln Loot.
+ * Schwierigkeit 1: gelegentlich kleiner Trank.
+ * Schwierigkeit 2: kleine/mittlere Tränke.
+ * Schwierigkeit 3: alle Tränke; Lebensfunke sehr selten (1 %).
+ */
+export function rollQuestionReward(question, rng = Math.random) {
+  const d = Math.max(1, Math.min(3, Number(question?.difficulty) || 1));
+  const r = rng();
+
+  // Loot folgt klar der Schwierigkeit: leicht -> klein, mittel -> mittel,
+  // schwer -> groß. Nur bei schweren Fragen kann sehr selten ein Lebensfunke fallen.
+  if (d >= 3) {
+    if (r < 0.01) return POTIONS.spark;  // 1 % Lebensfunke
+    if (r < 0.10) return POTIONS.large; // weitere 9 % großer Heiltrank
+    return null;
+  }
+  if (d === 2) return r < 0.11 ? POTIONS.medium : null;
+  return r < 0.12 ? POTIONS.small : null;
+}
+
 /** Bossfight erst nach gewonnenem Storymode freischalten (auf false setzen, um das abzuschalten). */
 export const BOSS_REQUIRES_STORY = true;
 
@@ -202,7 +238,7 @@ export const ACHIEVEMENTS = [
   { id: 'boss_perfect',  icon: '🛡️', title: 'Unverwundbar',      text: 'Boss ohne Lebensverlust besiegt.' },
   { id: 'quick_draw',    icon: '⏱️', title: 'Schnellzieher',     text: 'Bossfrage in unter 3 Sekunden richtig.' },
   { id: 'streak_3',      icon: '📅', title: 'Dranbleiber',       text: 'An 3 Tagen in Folge gelernt.' },
-  { id: 'master',        icon: '🏆', title: 'Kapitel gemeistert', text: 'Lernskript, Story und Boss eines Kapitels geschafft.' },
+  { id: 'master',        icon: '🏆', title: 'Level gemeistert',   text: 'Lernskript, Story, Versus und Bossfight eines Levels geschafft.' },
 ];
 
 /* ---------- Countdown ---------- */

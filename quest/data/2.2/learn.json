@@ -1,18 +1,11 @@
 {
   "chapter": "2.2",
   "title": "Rechtliche Grundlagen: Immobilienerwerb",
-  "sources": [
-    "BWB Lernskript 2.2.1.1",
-    "BWB Lernskript 2.2.1.2",
-    "BWB Lernskript 2.2.2",
-    "BWB Lernskript 2.2.3"
-  ],
   "sections": [
     {
       "id": "2.2.1.1-a",
       "title": "Grundstücksarten",
       "subtitle": "Unbebaut, baureif, bebaut – und welche Nutzung dahintersteckt",
-      "source": "BWB 2.2.1.1",
       "examRelevance": "S",
       "checkId": "2.2-Q002",
       "content": [
@@ -93,7 +86,7 @@
         {
           "type": "note",
           "title": "Hintergrund",
-          "text": "Das BewG regelt auch die **Einheitswerte** (§ 19 BewG). Die letzte Hauptfeststellung war am 1.1.1964. Für die Grundsteuer spielen Einheitswerte seit der Grundsteuerreform (ab 2025) keine Rolle mehr – das steht noch nicht im BWB-Skript. Für die Prüfung reicht: Einheitswert = steuerlicher Wert, Grundlagenwissen."
+          "text": "Das BewG regelt auch die **Einheitswerte** (§ 19 BewG). Die letzte Hauptfeststellung war am 1.1.1964. Für die Grundsteuer spielen Einheitswerte seit der Grundsteuerreform (ab 2025) keine Rolle mehr. Für die Prüfung reicht: Einheitswert = steuerlicher Wert, Grundlagenwissen."
         }
       ],
       "laws": [
@@ -113,13 +106,12 @@
       "id": "2.2.1.1-b",
       "title": "Entwicklungszustand & Bauleitplanung",
       "subtitle": "Vom Acker zum Bauplatz – und wer festlegt, was gebaut werden darf",
-      "source": "BWB 2.2.1.1 (Lernziel) + Ergänzung",
       "examRelevance": "S",
       "checkId": "2.2-Q007",
       "content": [
         {
           "type": "text",
-          "text": "Der **Entwicklungszustand** beschreibt, wie weit ein Grundstück vom fertigen Bauplatz entfernt ist. Das Lernziel nennt landwirtschaftliche Nutzung, Bauerwartungsland und Bauland."
+          "text": "Der **Entwicklungszustand** beschreibt, wie weit ein Grundstück vom fertigen Bauplatz entfernt ist. Typische Stufen sind landwirtschaftliche Nutzung, Bauerwartungsland und Bauland."
         },
         {
           "type": "steps",
@@ -145,7 +137,7 @@
         {
           "type": "note",
           "title": "Ergänzung",
-          "text": "Die Stufen Bauerwartungsland und Rohbauland stehen im Lernziel, werden im BWB-Skript aber nicht erklärt. Die Definitionen hier sind an § 3 ImmoWertV angelehnt."
+          "text": "Bauerwartungsland und Rohbauland sind Zwischenstufen des Entwicklungszustands. Die Definitionen orientieren sich an § 3 ImmoWertV."
         },
         {
           "type": "compare",
@@ -231,7 +223,6 @@
       "id": "2.2.1.1-c",
       "title": "Grundstücksbegriff & Kataster",
       "subtitle": "Was ein Grundstück rechtlich ist und wo es verzeichnet wird",
-      "source": "BWB 2.2.1.1",
       "examRelevance": "S",
       "checkId": "2.2-Q012",
       "content": [
@@ -300,7 +291,6 @@
       "id": "2.2.1.1-d",
       "title": "Bestandteile, Zubehör, Inventar",
       "subtitle": "Was beim Kauf automatisch mitgeht – und was nicht",
-      "source": "BWB 2.2.1.1",
       "examRelevance": "S",
       "checkId": "2.2-Q014",
       "content": [
@@ -370,13 +360,12 @@
       "id": "2.2.1.1-e",
       "title": "Wohnungs- und Teileigentum",
       "subtitle": "Sondereigentum, Gemeinschaftseigentum, Sondernutzungsrecht",
-      "source": "BWB 2.2.1.1",
       "examRelevance": "S",
       "checkId": "2.2-Q018",
       "content": [
         {
           "type": "text",
-          "text": "Normalerweise lässt sich ein Gebäude nicht getrennt vom Grundstück verkaufen. Das **Wohnungseigentumsgesetz (WEG, im Skript „WoEigG“)** von 1951 macht es möglich, ein Grundstück so aufzuteilen, dass einzelne Einheiten wie eigene Grundstücke verkauft und belastet werden können. Das Lernskript führt das unter **grundstücksgleichen Rechten**."
+          "text": "Normalerweise lässt sich ein Gebäude nicht getrennt vom Grundstück verkaufen. Das **Wohnungseigentumsgesetz (WEG)** ermöglicht die Aufteilung eines Grundstücks in rechtlich selbstständige Einheiten, die einzeln verkauft und belastet werden können. Wohnungseigentum gehört damit zu den **grundstücksgleichen Rechten**."
         },
         {
           "type": "table",
@@ -449,7 +438,7 @@
         {
           "type": "note",
           "title": "Aktueller Stand",
-          "text": "Seit der WEG-Reform 2020 können auch Stellplätze und – als Anhang an eine Wohnung – Freiflächen wie Terrassen Sondereigentum sein. Das Skript beschreibt den alten Stand, nach dem dafür nur ein Sondernutzungsrecht möglich war. Für die Prüfung gilt weiterhin: Gemeinschaftseigentum mit Alleinnutzung = Sondernutzungsrecht."
+          "text": "Seit der WEG-Reform 2020 können auch Stellplätze und – als Anhang an eine Wohnung – Freiflächen wie Terrassen Sondereigentum sein. Für die Prüfung bleibt die Abgrenzung wichtig: **Gemeinschaftseigentum mit Alleinnutzung = Sondernutzungsrecht**."
         }
       ],
       "laws": [
@@ -469,7 +458,6 @@
       "id": "2.2.1.1-f",
       "title": "Teilungserklärung & Gemeinschaftsordnung",
       "subtitle": "Wie aus einem Haus viele Wohnungsgrundbücher werden",
-      "source": "BWB 2.2.1.1",
       "examRelevance": "S",
       "checkId": "2.2-Q022",
       "content": [
@@ -539,7 +527,6 @@
       "id": "2.2.1.1-g",
       "title": "Erbbaurecht",
       "subtitle": "Haus kaufen, Boden pachten – Recht auf Zeit",
-      "source": "BWB 2.2.1.1",
       "examRelevance": "S",
       "checkId": "2.2-Q030",
       "content": [
@@ -604,8 +591,8 @@
         },
         {
           "type": "note",
-          "title": "Achtung, Skript",
-          "text": "Das BWB-Skript nennt den Zeitablauf „Heimfall“. Juristisch sauber sind das zwei verschiedene Dinge – siehe Vergleich oben."
+          "title": "Prüfungshinweis",
+          "text": "Zeitablauf und Heimfall sind juristisch zwei verschiedene Dinge – siehe Vergleich oben."
         },
         {
           "type": "text",
@@ -633,7 +620,6 @@
       "id": "2.2.1.2",
       "title": "Formen des Erwerbs",
       "subtitle": "Kauf, Schenkung, Erbschaft, Zwangsversteigerung",
-      "source": "BWB 2.2.1.2",
       "examRelevance": "S",
       "checkId": "2.2-Q034",
       "content": [
@@ -735,7 +721,6 @@
       "id": "2.2.2-a",
       "title": "Direkterwerb & Makler",
       "subtitle": "Was der Käufer prüfen muss und wann der Makler Geld bekommt",
-      "source": "BWB 2.2.2",
       "examRelevance": "S",
       "checkId": "2.2-Q037",
       "content": [
@@ -855,8 +840,8 @@
         },
         {
           "type": "note",
-          "title": "Achtung, Skript",
-          "text": "Die Bundesländer-Tabelle im Skript (z. B. „3,57 % in allen anderen Ländern“) ist veraltet und nicht prüfungsrelevant. Merken: Höhe frei verhandelbar, Teilung nach §§ 656a–d BGB."
+          "title": "Prüfungshinweis",
+          "text": "Ältere feste Provisionsübersichten nach Bundesländern sind kein verlässlicher Lernanker. Merken: Die Höhe ist grundsätzlich verhandelbar; bei Verbrauchergeschäften gelten insbesondere die Regeln der §§ 656a–d BGB."
         }
       ],
       "laws": [
@@ -876,7 +861,6 @@
       "id": "2.2.2-b",
       "title": "Bauträger & Bauherr",
       "subtitle": "MaBV-Raten, Bauzeitzinsen, Generalunternehmer",
-      "source": "BWB 2.2.2",
       "examRelevance": "S",
       "checkId": "2.2-Q042",
       "content": [
@@ -1003,7 +987,6 @@
       "id": "2.2.2-c",
       "title": "Notar, Auflassung, Vormerkung",
       "subtitle": "Vom Notartermin bis zur Eigentumsumschreibung",
-      "source": "BWB 2.2.2",
       "examRelevance": "S",
       "checkId": "2.2-Q050",
       "content": [
@@ -1092,7 +1075,6 @@
       "id": "2.2.2-d",
       "title": "Besitz, Nutzen, Lasten, Gefahr",
       "subtitle": "Übergabe vor Umschreibung – und wie das Geld sicher fließt",
-      "source": "BWB 2.2.2",
       "examRelevance": "S+P",
       "checkId": "2.2-Q052",
       "content": [
@@ -1163,8 +1145,8 @@
         },
         {
           "type": "note",
-          "title": "Achtung, Skript",
-          "text": "Das BWB-Skript schreibt an dieser Stelle „Grundsteuer“. Richtig ist die Grunderwerbsteuer."
+          "title": "Prüfungshinweis",
+          "text": "An dieser Stelle ist fachlich die **Grunderwerbsteuer** gemeint."
         },
         {
           "type": "note",
@@ -1180,7 +1162,6 @@
       "id": "2.2.3",
       "title": "Verpflichtung vs. Verfügung",
       "subtitle": "Trennungs- und Abstraktionsprinzip",
-      "source": "BWB 2.2.3",
       "examRelevance": "S",
       "checkId": "2.2-Q059",
       "content": [
@@ -1216,8 +1197,8 @@
         },
         {
           "type": "note",
-          "title": "Achtung, Skript",
-          "text": "Das Skript nennt beim Grundstück auch § 929 BGB. Der gilt für bewegliche Sachen. Für Grundstücke zählen §§ 873, 925 BGB."
+          "title": "Prüfungshinweis",
+          "text": "§ 929 BGB betrifft die Übereignung beweglicher Sachen. Für die Eigentumsübertragung an Grundstücken sind insbesondere §§ 873 und 925 BGB entscheidend."
         }
       ],
       "laws": [

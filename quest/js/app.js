@@ -2,7 +2,7 @@
 
 import * as Content from './content-loader.js';
 import { SaveGame, SaveError, isSupported, createChapterProgress, SAVE_NAME } from './savegame.js';
-import { MODES, BOSS_REQUIRES_STORY, selectQuestions, prepareQuestion, Run, rankFor, ACHIEVEMENTS, Countdown } from './game.js';
+import { MODES, BOSS_REQUIRES_STORY, MAX_HP, MODE_HP_LOSS, POTIONS, rollQuestionReward, selectQuestions, prepareQuestion, Run, rankFor, ACHIEVEMENTS, Countdown } from './game.js';
 
 /* =========================================================
    Grundgerüst
@@ -44,6 +44,72 @@ function lastQ(id) {
   const st = S();
   if (!st.lastQuestions[id]) st.lastQuestions[id] = { story: [], versus: [], boss: [] };
   return st.lastQuestions[id];
+}
+
+function levelMeta(id) {
+  return Content.getChapterMeta(id) || { id, level: id, title: '' };
+}
+function levelNo(id) { return levelMeta(id).level ?? id; }
+function levelLabel(id) { return `Level ${levelNo(id)}`; }
+
+function playerVitals() {
+  const pl = S().player;
+  if (!Number.isFinite(pl.maxHp) || pl.maxHp <= 0) pl.maxHp = MAX_HP;
+  if (!Number.isFinite(pl.hp)) pl.hp = pl.maxHp;
+  pl.hp = Math.max(0, Math.min(pl.maxHp, pl.hp));
+  if (!pl.inventory || typeof pl.inventory !== 'object') pl.inventory = { small: 0, medium: 0, large: 0, spark: 0 };
+  for (const k of ['small', 'medium', 'large', 'spark']) if (!Number.isFinite(pl.inventory[k]) || pl.inventory[k] < 0) pl.inventory[k] = 0;
+  return pl;
+}
+
+function healHp(amount, label = 'Heilung') {
+  const pl = playerVitals();
+  const before = pl.hp;
+  pl.hp = Math.min(pl.maxHp, pl.hp + Math.max(0, amount));
+  const gained = pl.hp - before;
+  if (gained > 0) toast(`${label}: +${gained} HP`, { icon: '❤️', tone: 'gold' });
+  return gained;
+}
+
+function damageHp(amount, label = 'Schaden') {
+  const pl = playerVitals();
+  const before = pl.hp;
+  pl.hp = Math.max(0, pl.hp - Math.max(0, amount));
+  const lost = before - pl.hp;
+  let revived = false;
+  if (pl.hp <= 0 && pl.inventory.spark > 0) {
+    pl.inventory.spark -= 1;
+    pl.hp = pl.maxHp;
+    revived = true;
+    toast('Lebensfunke aktiviert – volle HP!', { icon: POTIONS.spark.icon, tone: 'gold', ms: 5000 });
+    sfx('level');
+    confetti(70);
+  } else if (lost > 0) {
+    toast(`${label}: −${lost} HP`, { icon: '💔', tone: 'bad', ms: 3600 });
+  }
+  return { lost, revived, hp: pl.hp };
+}
+
+function usePotion(kind) {
+  const item = POTIONS[kind];
+  const pl = playerVitals();
+  if (!item || kind === 'spark') return;
+  if ((pl.inventory[kind] || 0) <= 0) { toast(`${item.label}: keiner im Inventar.`, { icon: item.icon }); return; }
+  if (pl.hp >= pl.maxHp) { toast('Deine HP sind bereits voll.', { icon: '❤️' }); return; }
+  pl.inventory[kind] -= 1;
+  healHp(Math.round(pl.maxHp * (item.heal / 100)), item.label);
+  persist();
+  renderDashboard();
+}
+
+function maybeDropReward(question) {
+  const item = rollQuestionReward(question);
+  if (!item) return null;
+  const pl = playerVitals();
+  pl.inventory[item.id] = (pl.inventory[item.id] || 0) + 1;
+  toast(`${item.icon} Gefunden: ${item.label}`, { icon: item.icon, tone: 'gold', ms: item.id === 'spark' ? 5200 : 3000 });
+  persist();
+  return item;
 }
 
 /** setTimeout, der automatisch verfällt, sobald ein Run beendet oder verlassen wird. */
@@ -199,8 +265,11 @@ function chapterStatus(id) {
   const total = chapterSectionsTotal(id);
   const done = total ? p.learnCompleted.filter((sid) => Content.getCachedChapter(id).learn.sections.some((s) => s.id === sid)).length : 0;
   const learnDone = total > 0 && done >= total;
-  const pct = Math.round((total ? (done / total) * 25 : 0) + (p.storyWins ? 25 : 0) + (p.versusWins ? 25 : 0) + (p.bossWins ? 25 : 0));
-  return { done, total, learnDone, story: p.storyWins > 0, versus: p.versusWins > 0, boss: p.bossWins > 0, pct, mastered: learnDone && p.storyWins > 0 && p.bossWins > 0 };
+  const story = p.storyWins > 0;
+  const versus = p.versusWins > 0;
+  const boss = p.bossWins > 0;
+  const pct = Math.round((total ? (done / total) * 25 : 0) + (story ? 25 : 0) + (versus ? 25 : 0) + (boss ? 25 : 0));
+  return { done, total, learnDone, story, versus, boss, pct, mastered: learnDone && story && versus && boss };
 }
 
 function todayKey(d = new Date()) {
@@ -245,7 +314,31 @@ function unlock(id) {
 }
 
 function checkMastery(id) {
-  if (chapterStatus(id).mastered) unlock('master');
+  const p = prog(id);
+  if (!chapterStatus(id).mastered || p.levelCompleted) return false;
+  p.levelCompleted = true;
+  const pl = playerVitals();
+  pl.hp = pl.maxHp;
+  unlock('master');
+  toast(`${levelLabel(id)} abgeschlossen – HP vollständig aufgefüllt!`, { icon: '🏆', tone: 'gold', ms: 5200 });
+  confetti(120);
+  return true;
+}
+
+/**
+ * Ein verlorener Run setzt bei einem noch nicht abgeschlossenen Level die
+ * Spielmodus-Fortschritte zurück. Lernskript, Bestwerte, XP und Inventar bleiben erhalten.
+ */
+function resetLevelModesAfterLoss(id) {
+  const p = prog(id);
+  if (p.levelCompleted) return false;
+  const hadProgress = p.storyWins > 0 || p.versusWins > 0 || p.bossWins > 0 ||
+    p.stars.story > 0 || p.stars.versus > 0 || p.stars.boss > 0;
+  p.storyWins = 0;
+  p.versusWins = 0;
+  p.bossWins = 0;
+  p.stars = { story: 0, versus: 0, boss: 0 };
+  return hadProgress;
 }
 
 /* =========================================================
@@ -257,7 +350,7 @@ function renderHeader() {
   const pl = S().player;
   const r = rankFor(pl.xp);
   $('rankChip').innerHTML = `
-    <span class="rankchip__lv">Lv ${r.level}</span>
+    <span class="rankchip__lv">Rang ${r.level}</span>
     <span class="rankchip__body">
       <span class="rankchip__title">${esc(r.title)}</span>
       <span class="bar bar--xp"><span style="width:${r.pct}%"></span></span>
@@ -311,7 +404,7 @@ async function bootTerminal() {
   try {
     const m = await Content.loadManifest();
     const avail = m.chapters.filter((c) => c.available).length;
-    termLine(`Lerninhalte geladen: Version ${m.contentVersion}, ${avail} von ${m.chapters.length} Kapiteln spielbar.`, 'ok');
+    termLine(`Lerninhalte geladen: Version ${m.contentVersion}, ${avail} von ${m.chapters.length} Leveln spielbar.`, 'ok');
   } catch (err) {
     termLine(`Lerninhalte nicht erreichbar: ${err.message}`, 'bad');
     termLine('Tipp: Die App über http://localhost starten, nicht per Doppelklick auf die Datei.', 'muted');
@@ -394,39 +487,55 @@ function nextMission() {
   if (!m) return null;
   for (const c of m.chapters.filter((x) => x.available)) {
     const st = chapterStatus(c.id);
-    if (st.mastered && st.versus) continue;
+    if (st.mastered) continue;
+    const label = `Level ${c.level}`;
     if (!st.learnDone) {
       const learn = Content.getCachedChapter(c.id)?.learn;
       const p = prog(c.id);
       const sec = learn?.sections.find((s) => !p.learnCompleted.includes(s.id));
-      return { chapter: c, label: `Lernskript ${c.id} ${st.done ? 'weiterlesen' : 'starten'}`, detail: sec ? `Nächster Abschnitt: ${sec.title}` : '', action: `data-action="open-learn" data-id="${esc(c.id)}"` };
+      return { chapter: c, label: `${label}: Lernskript ${st.done ? 'weiterlesen' : 'starten'}`, detail: sec ? `Nächster Abschnitt: ${sec.title}` : '', action: `data-action="open-learn" data-id="${esc(c.id)}"` };
     }
-    if (!st.story) return { chapter: c, label: `Storymode ${c.id} starten`, detail: '10 Fragen in Lernreihenfolge – danach wartet der Boss.', action: `data-action="start-mode" data-mode="story" data-id="${esc(c.id)}"` };
-    if (!st.boss) return { chapter: c, label: `Bossfight ${c.id} wagen`, detail: '5 harte Fragen, 10 Sekunden pro Frage.', action: `data-action="start-mode" data-mode="boss" data-id="${esc(c.id)}"` };
-    return { chapter: c, label: `Versus ${c.id} spielen`, detail: '5 Zufallsfragen, ein Fehler und es ist vorbei.', action: `data-action="start-mode" data-mode="versus" data-id="${esc(c.id)}"` };
+    if (!st.story) return { chapter: c, label: `${label}: Storymode starten`, detail: '10 Fragen in Lernreihenfolge – danach wird der Boss freigeschaltet.', action: `data-action="start-mode" data-mode="story" data-id="${esc(c.id)}"` };
+    if (!st.versus) return { chapter: c, label: `${label}: Versus spielen`, detail: '5 Zufallsfragen, ein Fehler und es ist vorbei.', action: `data-action="start-mode" data-mode="versus" data-id="${esc(c.id)}"` };
+    if (!st.boss) return { chapter: c, label: `${label}: Bossfight wagen`, detail: '5 harte Fragen, 10 Sekunden pro Frage.', action: `data-action="start-mode" data-mode="boss" data-id="${esc(c.id)}"` };
   }
   return null;
+}
+
+function potionButton(kind) {
+  const pl = playerVitals();
+  const item = POTIONS[kind];
+  const count = pl.inventory[kind] || 0;
+  if (kind === 'spark') {
+    return `<div class="lootitem lootitem--spark" title="Wird bei 0 HP automatisch verbraucht und belebt dich mit voller HP wieder.">
+      <span class="lootitem__icon">${item.icon}</span><span class="lootitem__body"><b>${esc(item.label)}</b><small>Auto-Wiederbelebung</small></span><strong>×${count}</strong>
+    </div>`;
+  }
+  return `<button class="lootitem" data-action="use-potion" data-kind="${kind}" ${count <= 0 || pl.hp >= pl.maxHp ? 'disabled' : ''} title="${esc(item.label)} benutzen: +${item.heal}% HP">
+    <span class="lootitem__icon">${item.icon}</span><span class="lootitem__body"><b>${esc(item.label)}</b><small>+${item.heal}% HP</small></span><strong>×${count}</strong>
+  </button>`;
 }
 
 function renderDashboard() {
   const st = S();
   const m = Content.getManifest();
-  const pl = st.player;
+  const pl = playerVitals();
   const r = rankFor(pl.xp);
   const acc = pl.answered ? Math.round((pl.correct / pl.answered) * 100) : 0;
   const mission = nextMission();
+  const hpPct = Math.round((pl.hp / pl.maxHp) * 100);
 
   const badges = ACHIEVEMENTS.map((a) => {
     const got = pl.achievements.includes(a.id);
     return `<li class="badge ${got ? 'badge--got' : ''}" title="${esc(a.title)}: ${esc(a.text)}"><span aria-hidden="true">${got ? a.icon : '?'}</span><span class="sr">${esc(a.title)} ${got ? 'freigeschaltet' : 'gesperrt'}</span></li>`;
   }).join('');
 
-  let chaptersHtml = '<p class="empty">Die Kapitelliste konnte nicht geladen werden. Läuft die App über localhost?</p>';
+  let chaptersHtml = '<p class="empty">Die Levelliste konnte nicht geladen werden. Läuft die App über localhost?</p>';
   if (m) {
     const blocks = [...new Set(m.chapters.map((c) => c.block))];
     chaptersHtml = blocks.map((b) => `
       <section class="block">
-        <h2 class="block__title">${esc(m.blocks?.[b] || `Bereich ${b}`)}</h2>
+        <h2 class="block__title">${esc(m.blocks?.[b] || 'Questline')}</h2>
         <div class="chapters">${m.chapters.filter((c) => c.block === b).map(chapterCard).join('')}</div>
       </section>`).join('');
   }
@@ -436,7 +545,7 @@ function renderDashboard() {
       <section class="player" aria-label="Dein Profil">
         <div class="player__emblem" aria-hidden="true"><span>${r.level}</span></div>
         <div class="player__main">
-          <p class="player__kicker">Level ${r.level}</p>
+          <p class="player__kicker">Rangstufe ${r.level}</p>
           <h1 class="player__title">${esc(r.title)}</h1>
           <div class="bar bar--xp bar--lg" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${r.pct}"><span style="width:${r.pct}%"></span></div>
           <p class="player__next">${r.next ? `Noch ${r.toNext} XP bis „${esc(r.next.title)}“` : 'Höchster Rang erreicht.'}</p>
@@ -452,6 +561,18 @@ function renderDashboard() {
           <ul class="badges">${badges}</ul>
         </div>
       </section>
+
+      <section class="health" aria-label="HP und Inventar">
+        <div class="health__main">
+          <div class="health__head"><span>HP</span><strong>${pl.hp}/${pl.maxHp}</strong></div>
+          <div class="bar bar--hp bar--lg" role="progressbar" aria-label="HP" aria-valuemin="0" aria-valuemax="${pl.maxHp}" aria-valuenow="${pl.hp}"><span style="width:${hpPct}%"></span></div>
+          <p>Verlierst du einen Run, kostet das HP: Story −25 %, Versus −33 %, Boss −50 %. Ein abgeschlossenes Level füllt alles wieder auf.</p>
+        </div>
+        <div class="inventory" aria-label="Heilitems">
+          ${potionButton('small')}${potionButton('medium')}${potionButton('large')}${potionButton('spark')}
+        </div>
+      </section>
+
       ${mission ? `
       <button class="mission" ${mission.action}>
         <span class="mission__label">Nächste Mission</span>
@@ -464,18 +585,19 @@ function renderDashboard() {
 }
 
 function chapterCard(c) {
+  const level = c.level ?? '?';
   if (!c.available) {
     return `<div class="ccard ccard--locked" aria-disabled="true">
-      <span class="ccard__num">${esc(c.id)}</span>
+      <span class="ccard__num"><small>LEVEL</small>${esc(level)}</span>
       <h3 class="ccard__title">${esc(c.title)}</h3>
       <span class="lockbadge">${I.lock} LOCKED</span>
     </div>`;
   }
   const st = chapterStatus(c.id);
   const mark = (ok, label) => `<li class="${ok ? 'is-done' : ''}"><span aria-hidden="true">${ok ? '✓' : '○'}</span> ${label}</li>`;
-  const tag = st.mastered ? '<span class="tag tag--gold">🏆 Gemeistert</span>' : st.pct > 0 ? '<span class="tag">In Arbeit</span>' : '<span class="tag tag--new">Neu</span>';
+  const tag = st.mastered ? '<span class="tag tag--gold">🏆 Level abgeschlossen</span>' : st.pct > 0 ? '<span class="tag">In Arbeit</span>' : '<span class="tag tag--new">Neu</span>';
   return `<button class="ccard" data-action="open-chapter" data-id="${esc(c.id)}">
-    <span class="ccard__num">${esc(c.id)}</span>
+    <span class="ccard__num"><small>LEVEL</small>${esc(level)}</span>
     <h3 class="ccard__title">${esc(c.title)}</h3>
     <span class="ccard__pct">Fortschritt ${st.pct} %</span>
     <span class="bar"><span style="width:${st.pct}%"></span></span>
@@ -495,9 +617,9 @@ function chapterCard(c) {
 
 async function openChapter(id) {
   const meta = Content.getChapterMeta(id);
-  if (!meta || !meta.available) { toast('Dieses Kapitel ist noch gesperrt.', { icon: '🔒' }); return; }
+  if (!meta || !meta.available) { toast('Dieses Level ist noch gesperrt.', { icon: '🔒' }); return; }
   ui.chapterId = id;
-  $('chapterView').innerHTML = '<p class="loading">Kapitel wird geladen …</p>';
+  $('chapterView').innerHTML = '<p class="loading">Level wird geladen …</p>';
   showScreen('chapter');
   await Content.loadChapterContent(id);
   renderChapter();
@@ -518,8 +640,10 @@ function renderChapter() {
   const data = Content.getCachedChapter(id);
   const p = prog(id);
   const st = chapterStatus(id);
+  const pl = playerVitals();
+  const noHp = pl.hp <= 0;
   const bossLocked = BOSS_REQUIRES_STORY && !st.story;
-  const bossName = data?.boss?.boss?.name || 'Kapitel-Boss';
+  const bossName = data?.boss?.boss?.name || 'Level-Boss';
 
   const card = ({ key, icon, title, text, rules, stat, disabled, lockText, action }) => `
     <button class="mode mode--${key} ${disabled ? 'mode--locked' : ''}" ${disabled ? 'aria-disabled="true"' : action}>
@@ -536,30 +660,34 @@ function renderChapter() {
     <header class="chero">
       <div class="chero__ring">${ring(st.pct)}<span>${st.pct}%</span></div>
       <div class="chero__text">
-        <p class="chero__kicker">Kapitel ${esc(id)}</p>
+        <p class="chero__level">LEVEL ${esc(meta.level)}</p>
         <h1>${esc(meta.title)}</h1>
-        <ol class="mastery" aria-label="Weg zur Meisterung">
+        <p class="chero__hp">❤️ ${pl.hp}/${pl.maxHp} HP</p>
+        <ol class="mastery" aria-label="Weg zum Levelabschluss">
           <li class="${st.learnDone ? 'is-done' : ''}">Lernskript</li>
           <li class="${st.story ? 'is-done' : ''}">Storymode</li>
+          <li class="${st.versus ? 'is-done' : ''}">Versus</li>
           <li class="${st.boss ? 'is-done' : ''}">Bossfight</li>
-          <li class="${st.mastered ? 'is-done is-gold' : ''}">Gemeistert</li>
+          <li class="${st.mastered ? 'is-done is-gold' : ''}">Level abgeschlossen</li>
         </ol>
       </div>
     </header>
-    ${errs.length ? `<div class="notice notice--bad"><strong>Teile dieses Kapitels fehlen:</strong> ${errs.map(esc).join(' ')}</div>` : ''}
+    ${noHp ? '<div class="notice notice--bad"><strong>0 HP.</strong> Nutze im Dashboard einen Heiltrank. Das Lernskript bleibt verfügbar, damit du weiterlernen kannst.</div>' : ''}
+    ${errs.length ? `<div class="notice notice--bad"><strong>Teile dieses Levels fehlen:</strong> ${errs.map(esc).join(' ')}</div>` : ''}
     <div class="modes">
       ${card({ key: 'learn', icon: I.book, title: 'LERNSKRIPT', text: 'Der Stoff kompakt, in Lernreihenfolge, mit Merksätzen und Prüfungsfallen.',
-        rules: `${st.done}/${st.total} Abschnitte verstanden`, disabled: !data?.learn, lockText: 'UNAVAILABLE – Lernskript fehlt.',
+        rules: `${st.done}/${st.total} Abschnitte verstanden · Checkpoint-Fehler −10 HP`, disabled: !data?.learn, lockText: 'UNAVAILABLE – Lernskript fehlt.',
         action: `data-action="open-learn" data-id="${esc(id)}"` })}
       ${card({ key: 'story', icon: I.path, title: 'STORYMODE', text: 'Zehn Fragen in der Reihenfolge des Lernskripts. Erst Grundlagen, dann Anwendung.',
-        rules: '10 Fragen · 3 Leben · ohne Timer', stat: `${stars(p.stars.story)} <span>Rekord ${p.bestStory} · ${p.storyWins}× gewonnen</span>`,
-        disabled: !data?.questions, lockText: 'UNAVAILABLE – Fragen fehlen.', action: `data-action="start-mode" data-mode="story" data-id="${esc(id)}"` })}
-      ${card({ key: 'versus', icon: I.swords, title: 'VERSUS', text: 'Fünf Zufallsfragen quer durchs Kapitel. Ähnliche Begriffe gegeneinander.',
-        rules: '5 Fragen · 1 Leben · ohne Timer', stat: `${stars(p.stars.versus)} <span>Rekord ${p.bestVersus} · ${p.versusWins}× gewonnen</span>`,
-        disabled: !data?.questions, lockText: 'UNAVAILABLE – Fragen fehlen.', action: `data-action="start-mode" data-mode="versus" data-id="${esc(id)}"` })}
+        rules: '10 Fragen · 3 Leben · Verlust: −25 % HP', stat: `${stars(p.stars.story)} <span>Rekord ${p.bestStory} · ${p.storyWins}× gewonnen</span>`,
+        disabled: !data?.questions || noHp, lockText: !data?.questions ? 'UNAVAILABLE – Fragen fehlen.' : 'KO – Fülle zuerst deine HP auf.', action: `data-action="start-mode" data-mode="story" data-id="${esc(id)}"` })}
+      ${card({ key: 'versus', icon: I.swords, title: 'VERSUS', text: 'Fünf Zufallsfragen quer durchs Level. Ähnliche Begriffe gegeneinander.',
+        rules: '5 Fragen · 1 Leben · Verlust: −33 % HP', stat: `${stars(p.stars.versus)} <span>Rekord ${p.bestVersus} · ${p.versusWins}× gewonnen</span>`,
+        disabled: !data?.questions || noHp, lockText: !data?.questions ? 'UNAVAILABLE – Fragen fehlen.' : 'KO – Fülle zuerst deine HP auf.', action: `data-action="start-mode" data-mode="versus" data-id="${esc(id)}"` })}
       ${card({ key: 'boss', icon: I.seal, title: 'BOSSFIGHT', text: `${esc(bossName)} wartet – mit eigenen, harten Fallfragen.`,
-        rules: '5 Fragen · 3 Leben · 10 Sekunden', stat: `${stars(p.stars.boss)} <span>Rekord ${p.bestBoss} · ${p.bossWins}× besiegt</span>`,
-        disabled: !data?.boss || bossLocked, lockText: !data?.boss ? 'UNAVAILABLE – Bossfragen fehlen.' : 'LOCKED – Gewinne zuerst den Storymode.',
+        rules: '5 Fragen · 3 Leben · 10 Sekunden · Verlust: −50 % HP', stat: `${stars(p.stars.boss)} <span>Rekord ${p.bestBoss} · ${p.bossWins}× besiegt</span>`,
+        disabled: !data?.boss || bossLocked || noHp,
+        lockText: !data?.boss ? 'UNAVAILABLE – Bossfragen fehlen.' : bossLocked ? 'LOCKED – Gewinne zuerst den Storymode.' : 'KO – Fülle zuerst deine HP auf.',
         action: `data-action="start-mode" data-mode="boss" data-id="${esc(id)}"` })}
     </div>`;
 }
@@ -602,6 +730,7 @@ function renderLearn() {
   const id = ui.chapterId;
   const data = Content.getCachedChapter(id);
   const learn = data.learn;
+  const meta = levelMeta(id);
   const p = prog(id);
   const sec = learn.sections[ui.learnIdx];
   const done = p.learnCompleted.includes(sec.id);
@@ -618,10 +747,10 @@ function renderLearn() {
   const trap = sec.examTrap ? `<aside class="box box--trap"><h3>Prüfungsfalle</h3><p>${rich(sec.examTrap)}</p></aside>` : '';
 
   $('learnView').innerHTML = `
-    <button class="back" data-action="back-chapter">${I.back} Kapitel ${esc(id)}</button>
+    <button class="back" data-action="back-chapter">${I.back} Level ${esc(meta.level)}</button>
     <div class="learn">
       <nav class="lnav" aria-label="Abschnitte">
-        <p class="lnav__head">Lernskript ${esc(id)} <span>${doneCount}/${learn.sections.length}</span></p>
+        <p class="lnav__head">LEVEL ${esc(meta.level)} · LERNSKRIPT <span>${doneCount}/${learn.sections.length}</span></p>
         <span class="bar"><span style="width:${(doneCount / learn.sections.length) * 100}%"></span></span>
         <ol>${nav}</ol>
       </nav>
@@ -636,36 +765,58 @@ function renderLearn() {
         <div id="checkpoint">${renderCheckpoint(sec)}</div>
         <footer class="lesson__foot">
           <button class="btn btn--ghost" data-action="learn-prev" ${ui.learnIdx === 0 ? 'disabled' : ''}>${I.back} Zurück</button>
-          <button class="btn ${done ? 'btn--done' : 'btn--primary'}" data-action="learn-toggle" aria-pressed="${done}">${done ? 'VERSTANDEN ✓' : 'VERSTANDEN ✓ markieren'}</button>
+          <button class="btn ${done ? 'btn--done' : 'btn--primary'}" data-action="learn-toggle" aria-pressed="${done}" ${!done && !p.checksDone.includes(sec.checkId) ? 'disabled title="Erst den Checkpoint schaffen"' : ''}>${done ? 'VERSTANDEN ✓' : 'VERSTANDEN ✓ markieren'}</button>
           <button class="btn btn--ghost" data-action="learn-next" ${ui.learnIdx >= learn.sections.length - 1 ? 'disabled' : ''}>Weiter ${I.next}</button>
         </footer>
       </article>
     </div>`;
 }
 
+function pickRecoveryQuestion(sec, tried = []) {
+  const pool = Content.getCachedChapter(ui.chapterId)?.questions?.questions || [];
+  const triedSet = new Set(tried);
+  const fresh = (list) => list.filter((q) => !triedSet.has(q.id));
+  const choices = [
+    fresh(pool.filter((q) => q.section === sec.id && (q.difficulty || 1) === 1)),
+    fresh(pool.filter((q) => (q.difficulty || 1) === 1)),
+    fresh(pool.filter((q) => q.section === sec.id && (q.difficulty || 1) <= 2)),
+    pool.filter((q) => (q.difficulty || 1) === 1),
+  ].find((x) => x.length) || [];
+  return choices.length ? choices[Math.floor(Math.random() * choices.length)] : null;
+}
+
 function renderCheckpoint(sec) {
   const data = Content.getCachedChapter(ui.chapterId);
   const base = data?.questions?.questions.find((q) => q.id === sec.checkId);
   if (!base) return '';
-  if (!ui.check || ui.check.qid !== base.id) {
-    ui.check = { qid: base.id, q: prepareQuestion(base, S().settings.shuffleAnswers), selected: [], done: false, ok: false };
+  const p = prog(ui.chapterId);
+  const alreadySolved = p.checksDone.includes(base.id);
+  if (!ui.check || ui.check.checkpointId !== base.id) {
+    const prepared = prepareQuestion(base, S().settings.shuffleAnswers);
+    ui.check = {
+      checkpointId: base.id, qid: base.id, q: prepared,
+      selected: alreadySolved ? [...prepared.correct] : [], done: alreadySolved, ok: alreadySolved,
+      recovery: false, tried: [base.id], message: '',
+    };
   }
   const c = ui.check;
-  const p = prog(ui.chapterId);
+  const solved = p.checksDone.includes(c.checkpointId);
   const answers = c.q.answers.map((a, i) => {
     let cls = '';
     if (c.done) cls = c.q.correct.includes(i) ? (c.selected.includes(i) || c.ok ? 'is-correct' : 'is-missed') : c.selected.includes(i) ? 'is-wrong' : 'is-dim';
     else if (c.selected.includes(i)) cls = 'is-selected';
     return `<li><button class="answer answer--sm ${cls}" data-action="check-pick" data-i="${i}" ${c.done ? 'disabled' : ''}><span class="answer__key">${String.fromCharCode(65 + i)}</span><span>${esc(a)}</span></button></li>`;
   }).join('');
-  return `<section class="checkpoint" aria-label="Checkpoint">
-    <header><h2>Checkpoint</h2><span>${p.checksDone.includes(base.id) ? 'geschafft ✓' : '+10 XP'}</span></header>
+  const reward = c.recovery ? '+5 HP bei richtig' : solved ? 'geschafft ✓' : '+10 XP';
+  const rescue = c.recovery ? `<p class="checkpoint__rescue">🩹 Rettungsfrage · ${esc(c.message || 'Schaffst du sie, bekommst du 5 HP zurück.')}</p>` : '';
+  return `<section class="checkpoint ${c.recovery ? 'checkpoint--rescue' : ''}" aria-label="Checkpoint">
+    <header><h2>${c.recovery ? 'Rettungsfrage' : 'Checkpoint'}</h2><span>${reward}</span></header>
+    ${rescue}
     <p class="checkpoint__q">${esc(c.q.question)}</p>
     ${c.q.type === 'multi' ? '<p class="qhint">Mehrere Antworten richtig – wähle alle.</p>' : ''}
     <ol class="answers answers--sm">${answers}</ol>
     ${c.done
-      ? `<p class="feedback ${c.ok ? 'feedback--ok' : 'feedback--bad'}"><strong>${c.ok ? 'Richtig.' : 'Nicht ganz.'}</strong> ${esc(c.q.explanation)}</p>
-         ${c.ok ? '' : '<button class="linkbtn" data-action="check-retry">Nochmal versuchen</button>'}`
+      ? `<p class="feedback ${c.ok ? 'feedback--ok' : 'feedback--bad'}"><strong>${c.ok ? 'Richtig.' : 'Nicht ganz.'}</strong> ${esc(c.q.explanation)}</p>`
       : c.q.type === 'multi' ? `<button class="btn btn--primary btn--sm" data-action="check-submit" ${c.selected.length ? '' : 'disabled'}>Prüfen</button>` : ''}
   </section>`;
 }
@@ -681,13 +832,49 @@ function checkPick(i) {
 function checkSubmit() {
   const c = ui.check;
   if (!c || c.done || !c.selected.length) return;
+  const sec = Content.getCachedChapter(ui.chapterId).learn.sections[ui.learnIdx];
   c.done = true;
   c.ok = c.q.correct.length === c.selected.length && c.q.correct.every((x) => c.selected.includes(x));
   const p = prog(ui.chapterId);
   sfx(c.ok ? 'ok' : 'bad');
   touchDay();
-  if (c.ok && !p.checksDone.includes(c.qid)) { p.checksDone.push(c.qid); addXp(10); persist(); }
-  $('checkpoint').innerHTML = renderCheckpoint(Content.getCachedChapter(ui.chapterId).learn.sections[ui.learnIdx]);
+
+  if (c.ok) {
+    if (!p.checksDone.includes(c.checkpointId)) p.checksDone.push(c.checkpointId);
+    if (c.recovery) {
+      healHp(5, 'Rettungsfrage');
+    } else {
+      addXp(10);
+    }
+    maybeDropReward(c.q);
+    persist();
+    $('checkpoint').innerHTML = renderCheckpoint(sec);
+    renderLearn();
+    return;
+  }
+
+  // Die erste falsche Checkpoint-Antwort kostet 10 HP. Danach kommt statt eines direkten Retries
+  // eine neue, leichte Rettungsfrage. Weitere Fehlversuche kosten nicht nochmals HP.
+  if (!c.recovery) damageHp(10, 'Checkpoint verfehlt');
+  const tried = [...new Set([...(c.tried || []), c.qid])];
+  const replacement = pickRecoveryQuestion(sec, tried);
+  if (replacement) {
+    ui.check = {
+      checkpointId: c.checkpointId,
+      qid: replacement.id,
+      q: prepareQuestion(replacement, S().settings.shuffleAnswers),
+      selected: [], done: false, ok: false, recovery: true,
+      tried: [...tried, replacement.id],
+      message: c.recovery ? 'Noch einmal – kein zusätzlicher HP-Abzug.' : '−10 HP. Diese einfache Ersatzfrage kann dir 5 HP zurückgeben.',
+    };
+  } else {
+    c.done = false;
+    c.selected = [];
+    c.recovery = true;
+    c.message = 'Keine weitere Ersatzfrage verfügbar – versuche diese Frage erneut. Kein zusätzlicher HP-Abzug.';
+  }
+  persist();
+  renderLearn();
 }
 
 function learnToggle() {
@@ -700,6 +887,10 @@ function learnToggle() {
     p.learnCompleted.splice(i, 1);
     renderLearn();
     persist();
+    return;
+  }
+  if (sec.checkId && !p.checksDone.includes(sec.checkId)) {
+    toast('Schaffe zuerst den Checkpoint dieses Abschnitts.', { icon: '🧠' });
     return;
   }
   p.learnCompleted.push(sec.id);
@@ -735,6 +926,7 @@ function learnGo(idx) {
 async function startMode(modeId, chapterId) {
   const mode = MODES[modeId];
   if (!mode) return;
+  if (playerVitals().hp <= 0) { toast('Du hast 0 HP. Nutze im Dashboard einen Heiltrank oder arbeite im Lernskript weiter.', { icon: '💔', tone: 'bad', ms: 4500 }); return; }
   clearRunTimers();
   await Content.loadChapterContent(chapterId);
   const data = Content.getCachedChapter(chapterId);
@@ -747,7 +939,7 @@ async function startMode(modeId, chapterId) {
   const prepared = picked.map((q) => prepareQuestion(q, S().settings.shuffleAnswers));
   ui.chapterId = chapterId;
   ui.run = new Run(modeId, chapterId, prepared);
-  ui.run.bossInfo = data?.boss?.boss || { name: 'Kapitel-Boss', title: '' };
+  ui.run.bossInfo = data?.boss?.boss || { name: 'Level-Boss', title: '' };
   ui.newAchievements = [];
   touchDay();
   showScreen('run');
@@ -799,7 +991,7 @@ function renderRun() {
     <div class="run run--${run.mode.id}">
       <div class="hud">
         <button class="back back--hud" data-action="abort-run">${I.back} Aufgeben</button>
-        <span class="hud__mode">${esc(run.mode.label)} <small>Kapitel ${esc(run.chapterId)}</small></span>
+        <span class="hud__mode">${esc(run.mode.label)} <small>${esc(levelLabel(run.chapterId))}</small></span>
         <ol class="pips" aria-label="Frage ${run.idx + 1} von ${run.total}">${pips}</ol>
         <span class="hud__lives" aria-label="${run.lives} Leben">${hearts}</span>
         <span class="hud__score"><small>Punkte</small> <b id="hudScore">${run.score}</b></span>
@@ -885,6 +1077,7 @@ function submitAnswer(timedOut = false) {
     if (run.combo >= 5) unlock('combo_5');
     if (run.combo >= 10) unlock('combo_10');
     if (run.mode.id === 'boss' && run.mode.seconds - secondsLeft < 3) unlock('quick_draw');
+    maybeDropReward(q);
   } else {
     p.mistakes[q.id] = Math.min(9, (p.mistakes[q.id] || 0) + 1);
   }
@@ -950,6 +1143,9 @@ function finishRun() {
   const id = run.chapterId;
   const p = prog(id);
   const m = run.mode.id;
+  let hpEvent = null;
+  let levelCompletedNow = false;
+  let levelReset = false;
 
   if (m === 'story') { p.bestStory = Math.max(p.bestStory, sum.score); if (sum.won) p.storyWins += 1; }
   if (m === 'versus') { p.bestVersus = Math.max(p.bestVersus, sum.score); if (sum.won) p.versusWins += 1; }
@@ -961,12 +1157,17 @@ function finishRun() {
     if (m === 'story') { unlock('story_win'); if (sum.stars === 3) unlock('story_perfect'); }
     if (m === 'versus') unlock('versus_win');
     if (m === 'boss') { unlock('boss_slayer'); if (sum.stars === 3) unlock('boss_perfect'); }
-    checkMastery(id);
+    levelCompletedNow = checkMastery(id);
+  } else {
+    const loss = MODE_HP_LOSS[m] || 0;
+    hpEvent = damageHp(Math.round(playerVitals().maxHp * (loss / 100)), `${run.mode.label} verloren`);
+    levelReset = resetLevelModesAfterLoss(id);
+    if (levelReset) toast('Level fehlgeschlagen – die Spielmodi starten wieder von vorn.', { icon: '↩️', tone: 'bad', ms: 4300 });
   }
   addXp(sum.xp);
   persist();
 
-  ui.result = { sum, run };
+  ui.result = { sum, run, hpEvent, levelCompletedNow, levelReset };
   ui.run = null;
   renderResult();
   showScreen('result');
@@ -993,16 +1194,23 @@ function answerText(q, idxs) {
 }
 
 function renderResult() {
-  const { sum, run } = ui.result;
+  const { sum, run, hpEvent, levelCompletedNow, levelReset } = ui.result;
   const boss = run.bossInfo?.name || 'Der Boss';
   const titles = {
     story: sum.won ? 'Story geschafft!' : 'Story verloren',
     versus: sum.won ? 'Duell gewonnen!' : 'Duell verloren',
     boss: sum.won ? `${boss} besiegt!` : `${boss} war stärker`,
   };
-  const sub = sum.won
-    ? (sum.stars === 3 ? 'Ohne einen einzigen Fehler. Stark.' : 'Geschafft – mit etwas Luft nach oben.')
-    : 'Schau dir unten die Nachbesprechung an und probier es gleich nochmal.';
+  const sub = levelCompletedNow
+    ? `${levelLabel(run.chapterId)} komplett abgeschlossen. Deine HP wurden vollständig aufgefüllt.`
+    : sum.won
+      ? (sum.stars === 3 ? 'Ohne einen einzigen Fehler. Stark.' : 'Geschafft – mit etwas Luft nach oben.')
+      : levelReset
+        ? `Run verloren. Die Spielmodi dieses Levels wurden zurückgesetzt – du startest den Level-Run wieder von vorn.`
+        : `Run verloren. Beim nächsten Versuch startet ${run.mode.label} wieder bei Frage 1.`;
+  const hpNote = hpEvent
+    ? (hpEvent.revived ? `✨ Lebensfunke verbraucht: Wiederbelebung mit voller HP.` : `💔 ${MODE_HP_LOSS[sum.mode]} % Max-HP verloren. Aktuell ${playerVitals().hp}/${playerVitals().maxHp} HP.`)
+    : '';
   const achievements = ui.newAchievements.length
     ? `<ul class="newbadges">${ui.newAchievements.map((a) => `<li><span>${a.icon}</span><b>${esc(a.title)}</b><small>${esc(a.text)}</small></li>`).join('')}</ul>` : '';
 
@@ -1026,18 +1234,19 @@ function renderResult() {
       <header class="result__head">
         ${stars(sum.stars, 'stars--big')}
         <h1>${esc(titles[sum.mode])}</h1>
-        <p>${sub}</p>
+        <p>${sub}</p>${hpNote ? `<p class="result__hpnote">${esc(hpNote)}</p>` : ''}
       </header>
       <dl class="result__stats">
         <div><dt>Richtig</dt><dd>${sum.correct}/${sum.answered}</dd></div>
         <div><dt>Punkte</dt><dd>${sum.score}</dd></div>
         <div><dt>Beste Serie</dt><dd>${sum.bestCombo}</dd></div>
         <div class="is-xp"><dt>Erfahrung</dt><dd>+${sum.xp} XP</dd></div>
+        <div class="is-hp"><dt>HP</dt><dd>${playerVitals().hp}/${playerVitals().maxHp}</dd></div>
       </dl>
       ${achievements}
       <div class="result__actions">
         <button class="btn btn--primary btn--xl" data-action="start-mode" data-mode="${sum.mode}" data-id="${esc(run.chapterId)}">Nochmal spielen</button>
-        <button class="btn btn--ghost btn--xl" data-action="back-chapter">Zum Kapitel</button>
+        <button class="btn btn--ghost btn--xl" data-action="back-chapter">Zum Level</button>
       </div>
       <section class="review">
         <h2>Nachbesprechung</h2>
@@ -1057,6 +1266,7 @@ const ACTIONS = {
   'save-guest': () => withBusy(() => saveActions.guest()),
   'grant-write': async () => { if (await save.grantWrite()) toast('Speichern ist wieder aktiv.', { icon: '💾' }); },
   'toggle-sound': () => { S().settings.sound = !S().settings.sound; renderHeader(); persist(); },
+  'use-potion': (d) => usePotion(d.kind),
   'go-dashboard': () => { if (ui.screen === 'terminal') return; if (!abortRun()) return; renderDashboard(); showScreen('dashboard'); },
   'open-chapter': (d) => openChapter(d.id),
   'back-chapter': () => { if (!abortRun()) return; openChapter(ui.chapterId); },

@@ -5,7 +5,7 @@
  */
 
 export const SAVE_NAME = 'smartadm_34i.json';
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 
 export const SaveError = {
   UNSUPPORTED: 'UNSUPPORTED',
@@ -32,7 +32,7 @@ export function createChapterProgress() {
     learnCompleted: [], storyWins: 0, versusWins: 0, bossWins: 0,
     bestStory: 0, bestVersus: 0, bestBoss: 0,
     stars: { story: 0, versus: 0, boss: 0 },
-    checksDone: [], learnXp: [], mistakes: {},
+    checksDone: [], learnXp: [], mistakes: {}, levelCompleted: false,
   };
 }
 
@@ -40,7 +40,10 @@ export function createDefaultState() {
   const now = new Date().toISOString();
   return {
     app: '34i-Quest', saveVersion: SAVE_VERSION, createdAt: now, updatedAt: now,
-    player: { xp: 0, answered: 0, correct: 0, bestCombo: 0, achievements: [], lastDay: null, dayStreak: 0 },
+    player: {
+      xp: 0, answered: 0, correct: 0, bestCombo: 0, achievements: [], lastDay: null, dayStreak: 0,
+      hp: 100, maxHp: 100, inventory: { small: 0, medium: 0, large: 0, spark: 0 },
+    },
     settings: { sound: true, shuffleAnswers: true },
     progress: {},
     lastQuestions: {},
@@ -61,9 +64,13 @@ export function normalizeState(raw) {
   const s = createDefaultState();
   s.createdAt = typeof raw.createdAt === 'string' ? raw.createdAt : s.createdAt;
   const p = raw.player || {};
+  const inv = p.inventory || {};
+  const maxHp = Math.max(1, num(p.maxHp, 100));
   s.player = {
     xp: num(p.xp), answered: num(p.answered), correct: num(p.correct), bestCombo: num(p.bestCombo),
     achievements: strArr(p.achievements), lastDay: typeof p.lastDay === 'string' ? p.lastDay : null, dayStreak: num(p.dayStreak),
+    hp: Math.min(maxHp, num(p.hp, maxHp)), maxHp,
+    inventory: { small: num(inv.small), medium: num(inv.medium), large: num(inv.large), spark: num(inv.spark) },
   };
   const st = raw.settings || {};
   s.settings = { sound: st.sound !== false, shuffleAnswers: st.shuffleAnswers !== false };
@@ -79,7 +86,7 @@ export function normalizeState(raw) {
       storyWins: num(cp.storyWins), versusWins: num(cp.versusWins), bossWins: num(cp.bossWins),
       bestStory: num(cp.bestStory), bestVersus: num(cp.bestVersus), bestBoss: num(cp.bestBoss),
       stars: { story: num(stars.story), versus: num(stars.versus), boss: num(stars.boss) },
-      mistakes,
+      mistakes, levelCompleted: cp.levelCompleted === true,
     };
   }
   for (const [id, lq] of Object.entries(raw.lastQuestions || {})) {

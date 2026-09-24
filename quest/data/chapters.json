@@ -1,21 +1,92 @@
 {
-  "contentVersion": 1,
+  "contentVersion": 3,
   "blocks": {
-    "2": "Kenntnisse für Immobiliardarlehensvermittlung und -beratung",
-    "3": "Finanzierung und Kreditprodukte"
+    "questline-1": "Questline I · Recht, Markt & Vermittlung"
   },
   "chapters": [
-    { "id": "2.1",  "title": "Allgemeine rechtliche Grundlagen",        "available": false },
-    { "id": "2.2",  "title": "Rechtliche Grundlagen: Immobilienerwerb", "available": true },
-    { "id": "2.3",  "title": "Grundbuch",                               "available": false },
-    { "id": "2.4",  "title": "Darlehensrecht",                          "available": false },
-    { "id": "2.5",  "title": "Vermittlerrecht",                         "available": false },
-    { "id": "2.6",  "title": "Verbraucherschutz",                       "available": false },
-    { "id": "2.7",  "title": "Wettbewerbsrecht",                        "available": false },
-    { "id": "2.8",  "title": "Datenschutz",                             "available": false },
-    { "id": "2.9",  "title": "Aufsicht",                                "available": false },
-    { "id": "2.10", "title": "EU-Binnenmarkt",                          "available": false },
-    { "id": "2.11", "title": "Wirtschaftliche Grundlagen",              "available": false },
-    { "id": "2.12", "title": "Steuern",                                 "available": false }
+    {
+      "id": "2.1",
+      "level": 1,
+      "title": "Rechtliche Grundlagen: Allgemein",
+      "block": "questline-1",
+      "available": true
+    },
+    {
+      "id": "2.2",
+      "level": 2,
+      "title": "Rechtliche Grundlagen: Immobilienerwerb",
+      "block": "questline-1",
+      "available": true
+    },
+    {
+      "id": "2.3",
+      "level": 3,
+      "title": "Grundbuch & Immobiliensicherung",
+      "block": "questline-1",
+      "available": false
+    },
+    {
+      "id": "2.4",
+      "level": 4,
+      "title": "Rechtliche Grundlagen: Immobiliardarlehensvermittlung",
+      "block": "questline-1",
+      "available": false
+    },
+    {
+      "id": "2.5",
+      "level": 5,
+      "title": "Vermittlerrecht & Berufszugang",
+      "block": "questline-1",
+      "available": false
+    },
+    {
+      "id": "2.6",
+      "level": 6,
+      "title": "Verbraucherschutz & Kundenrechte",
+      "block": "questline-1",
+      "available": false
+    },
+    {
+      "id": "2.7",
+      "level": 7,
+      "title": "Wettbewerb, Werbung & Beratung",
+      "block": "questline-1",
+      "available": false
+    },
+    {
+      "id": "2.8",
+      "level": 8,
+      "title": "Datenschutz & Kundendaten",
+      "block": "questline-1",
+      "available": false
+    },
+    {
+      "id": "2.9",
+      "level": 9,
+      "title": "Aufsicht & Zuständigkeiten",
+      "block": "questline-1",
+      "available": false
+    },
+    {
+      "id": "2.10",
+      "level": 10,
+      "title": "Europa & Binnenmarkt",
+      "block": "questline-1",
+      "available": false
+    },
+    {
+      "id": "2.11",
+      "level": 11,
+      "title": "Wirtschaft, Immobilienmarkt & Zinsen",
+      "block": "questline-1",
+      "available": false
+    },
+    {
+      "id": "2.12",
+      "level": 12,
+      "title": "Steuern rund um Immobilien",
+      "block": "questline-1",
+      "available": false
+    }
   ]
 }

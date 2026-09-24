@@ -23,11 +23,11 @@ export function validateManifest(raw) {
   if (!Array.isArray(raw.chapters)) errors.push('chapters ist kein Array');
   const seen = new Set();
   const chapters = (raw.chapters || []).filter((c, i) => {
-    if (!c || !isStr(c.id) || !isStr(c.title)) { errors.push(`Kapitel #${i}: id/title fehlt`); return false; }
-    if (seen.has(c.id)) { errors.push(`Kapitel ${c.id} doppelt`); return false; }
+    if (!c || !isStr(c.id) || !isStr(c.title)) { errors.push(`Level #${i + 1}: id/title fehlt`); return false; }
+    if (seen.has(c.id)) { errors.push(`Level-ID ${c.id} doppelt`); return false; }
     seen.add(c.id);
     return true;
-  }).map((c) => ({ id: c.id, title: c.title, short: c.short || '', block: c.block || c.id.split('.')[0], available: c.available === true }));
+  }).map((c, i) => ({ id: c.id, level: isInt(c.level) ? c.level : i + 1, title: c.title, short: c.short || '', block: c.block || 'questline-1', available: c.available === true }));
   return { ok: errors.length === 0 && chapters.length > 0, errors, data: { contentVersion: raw.contentVersion | 0, blocks: raw.blocks || {}, chapters } };
 }
 
@@ -131,7 +131,7 @@ async function loadPart(chapterId, part) {
     const raw = await fetchJson(`${DATA_ROOT}/${chapterId}/${part}.json`);
     const v = VALIDATORS[part](raw, chapterId);
     v.errors.forEach((e) => console.warn(`[content ${chapterId}]`, e));
-    if (!v.ok) throw new Error(`${part}.json für Kapitel ${chapterId} enthält keine verwendbaren Daten.`);
+    if (!v.ok) throw new Error(`${part}.json enthält für dieses Level keine verwendbaren Daten.`);
     return v.data;
   })();
   pending.set(key, p);
@@ -152,7 +152,7 @@ export async function loadChapterContent(chapterId, parts = PARTS) {
   const entry = chapterCache.get(chapterId) || { learn: null, questions: null, boss: null, errors: {} };
   chapterCache.set(chapterId, entry);
   if (!meta || !meta.available) {
-    parts.forEach((p) => { entry.errors[p] = 'Kapitel ist noch nicht freigeschaltet.'; });
+    parts.forEach((p) => { entry.errors[p] = 'Dieses Level ist noch nicht freigeschaltet.'; });
     return entry;
   }
   await Promise.all(parts.filter((p) => entry[p] === null).map(async (p) => {
