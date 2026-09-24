@@ -1,0 +1,655 @@
+{
+  "chapter": "2.2",
+  "boss": {
+    "name": "Notar Nebelsiegel",
+    "title": "Hüter der Grundbuchkammer"
+  },
+  "questions": [
+    {
+      "id": "2.2-B001",
+      "chapter": "2.2",
+      "section": "2.2.1.1-a",
+      "topic": [
+        "Bebaut",
+        "Mietwohngrundstück"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Bezugsfertiges Haus mit drei Wohnungen, Bauabnahme fehlt. 85 % der Jahresrohmiete aus Wohnen. Was stimmt?",
+      "answers": [
+        "Bebautes Grundstück",
+        "Mietwohngrundstück",
+        "Unbebaut, bis die Abnahme vorliegt",
+        "Gemischt genutztes Grundstück"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Bezugsfertig = benutzbar, Abnahme egal. Mehr als 80 % Wohnen und kein Ein-/Zweifamilienhaus = Mietwohngrundstück."
+    },
+    {
+      "id": "2.2-B002",
+      "chapter": "2.2",
+      "section": "2.2.1.1-c",
+      "topic": [
+        "Kataster"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Welche Aussage ist FALSCH?",
+      "answers": [
+        "Die Flur ist die kleinste Buchungseinheit im Grundbuch",
+        "Das Flurstück ist die kleinste Katastereinheit",
+        "Ein Grundstück kann mehrere Flurstücke umfassen",
+        "Eine Gemarkung besteht aus mehreren Fluren"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Flur ist eine Katastereinheit aus mehreren Flurstücken – mit dem Grundbuch hat sie nichts zu tun."
+    },
+    {
+      "id": "2.2-B003",
+      "chapter": "2.2",
+      "section": "2.2.1.1-d",
+      "topic": [
+        "Bestandteile",
+        "Zubehör"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Vertrag: „Grundstück mit Gebäude, ohne Inventar“. Der Verkäufer will Heizungsanlage und Büromöbel mitnehmen. Was stimmt?",
+      "answers": [
+        "Die Büromöbel darf er mitnehmen",
+        "Die Heizung ist wesentlicher Bestandteil und geht mit",
+        "Die Heizung ist Inventar und darf mit",
+        "Die Büromöbel sind wesentliche Bestandteile"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Fest eingebaute Heizung = wesentlicher Bestandteil. Möbel = bewegliche Sachen, hier ausdrücklich ausgenommen."
+    },
+    {
+      "id": "2.2-B004",
+      "chapter": "2.2",
+      "section": "2.2.1.1-e",
+      "topic": [
+        "Teileigentum",
+        "Sondernutzungsrecht"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Wohnung 3 ist verbunden mit Teileigentum am Dachboden und einem Sondernutzungsrecht am Stellplatz 1. Was stimmt?",
+      "answers": [
+        "Der Dachboden ist sein Sondereigentum",
+        "Der Stellplatz bleibt Gemeinschaftseigentum",
+        "Den Stellplatz kann er als eigenes Grundstück verkaufen",
+        "Der Dachboden ist Gemeinschaftseigentum"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Teileigentum = Sondereigentum ohne Wohnzweck. Sondernutzungsrecht = Nutzung, kein Eigentum."
+    },
+    {
+      "id": "2.2-B005",
+      "chapter": "2.2",
+      "section": "2.2.1.1-f",
+      "topic": [
+        "Teilungserklärung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Welche Aussage zur Teilungserklärung ist FALSCH?",
+      "answers": [
+        "Sie muss zwingend beurkundet werden, eine Beglaubigung reicht nicht",
+        "Sie begründet das Wohnungseigentum sachenrechtlich",
+        "Sie ist Voraussetzung für die Wohnungsgrundbücher",
+        "Die Gemeinschaftsordnung ist regelmäßig Teil davon"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Für die Teilungserklärung genügt die notarielle Beglaubigung."
+    },
+    {
+      "id": "2.2-B006",
+      "chapter": "2.2",
+      "section": "2.2.1.1-f",
+      "topic": [
+        "Gemeinschaftsordnung"
+      ],
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Ein Käufer will eine Wand zwischen Küche und Wohnzimmer durchbrechen. Wo steht, ob die anderen Eigentümer zustimmen müssen?",
+      "answers": [
+        "In der Gemeinschaftsordnung",
+        "Im Bebauungsplan",
+        "In Abteilung III",
+        "In der Abgeschlossenheitsbescheinigung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Zustimmungspflichten für Veränderungen wie Mauerdurchbrüche regelt die Gemeinschaftsordnung."
+    },
+    {
+      "id": "2.2-B007",
+      "chapter": "2.2",
+      "section": "2.2.1.1-f",
+      "topic": [
+        "Gemeinschaftsordnung"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Was braucht eine Änderung der Gemeinschaftsordnung laut Lernstoff grundsätzlich?",
+      "answers": [
+        "Zustimmung aller Eigentümer",
+        "Notarielle Beglaubigung",
+        "Bewilligung der Grundpfandgläubiger",
+        "Einfache Mehrheit der Versammlung"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Alle Eigentümer, beglaubigt, plus Bewilligung der dinglich Berechtigten – daher die „Zementierung“."
+    },
+    {
+      "id": "2.2-B008",
+      "chapter": "2.2",
+      "section": "2.2.1.1-g",
+      "topic": [
+        "Erbbaurecht",
+        "Entschädigung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Vor Ablauf bietet der Eigentümer Verlängerung für die Standdauer des Hauses an. Der Erbbauberechtigte lehnt ab. Folge bei Ablauf?",
+      "answers": [
+        "Erbbaurecht erlischt, keine Entschädigung",
+        "Erbbaurecht erlischt, volle Entschädigung",
+        "Erbbaurecht verlängert sich trotzdem",
+        "Entschädigung von mindestens 2/3"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 27 Abs. 3 ErbbauRG: Wer die Verlängerung ablehnt, verliert den Entschädigungsanspruch."
+    },
+    {
+      "id": "2.2-B009",
+      "chapter": "2.2",
+      "section": "2.2.1.1-g",
+      "topic": [
+        "Erbbaurecht",
+        "Entschädigung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Erbbaurecht für minderbemittelte Kreise, Vertrag: „keine Entschädigung“. Es läuft ab. Was gilt?",
+      "answers": [
+        "Mindestens 2/3 des gemeinen Werts, die Klausel greift nicht",
+        "Keine Entschädigung, Vertrag geht vor",
+        "Volle Entschädigung zum Verkehrswert",
+        "Das Erbbaurecht verlängert sich automatisch"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 27 Abs. 2 ErbbauRG: Darauf kann sich der Eigentümer nicht berufen."
+    },
+    {
+      "id": "2.2-B010",
+      "chapter": "2.2",
+      "section": "2.2.1.1-g",
+      "topic": [
+        "Heimfall"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Der Erbbauberechtigte zahlt seit Jahren keinen Erbbauzins. Der Vertrag erlaubt dem Eigentümer, das Recht zurückzuverlangen. Wie heißt das?",
+      "answers": [
+        "Heimfall",
+        "Zeitablauf",
+        "Zuschlag",
+        "Auflassung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Heimfall = vereinbarte Übertragung des Erbbaurechts auf den Eigentümer schon vor Ablauf."
+    },
+    {
+      "id": "2.2-B011",
+      "chapter": "2.2",
+      "section": "2.2.1.1-g",
+      "topic": [
+        "Erbbaurecht",
+        "Grundschuld"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Die Bank finanziert den Hausbau des Erbbauberechtigten. Wo wird ihre Grundschuld eingetragen?",
+      "answers": [
+        "Erbbaugrundbuch, Abteilung III",
+        "Grundstücksgrundbuch, Abt. III vor dem Erbbaurecht",
+        "Grundstücksgrundbuch, Abteilung II",
+        "Erbbaugrundbuch, Abteilung I"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Belastet wird das Erbbaurecht. Im Grundstücksgrundbuch steht das Erbbaurecht zwingend an erster Stelle."
+    },
+    {
+      "id": "2.2-B012",
+      "chapter": "2.2",
+      "section": "2.2.1.2",
+      "topic": [
+        "Erbengemeinschaft",
+        "Grundbuchberichtigung"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Der Vater stirbt, A und B erben je zur Hälfte, im Grundbuch steht noch der Vater. Was stimmt?",
+      "answers": [
+        "A und B sind schon Eigentümer, das Grundbuch wird berichtigt",
+        "Innerhalb von 2 Jahren ist die Berichtigung kostenlos",
+        "A kann allein „seine“ Haushälfte verkaufen",
+        "Es fällt Grunderwerbsteuer an"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Erwerb mit dem Erbfall, Grundbuch nur unrichtig. Gesamthand: keine Verfügung über eine Haushälfte. Keine GrESt."
+    },
+    {
+      "id": "2.2-B013",
+      "chapter": "2.2",
+      "section": "2.2.1.2",
+      "topic": [
+        "Gesamthand",
+        "Bruchteil"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Geschwister wollen von der Erbengemeinschaft zu je 1/2 Bruchteilseigentum wechseln. Was brauchen sie?",
+      "answers": [
+        "Beurkundeten Auseinandersetzungsvertrag mit Auflassung und Eintragung",
+        "Nur einen Antrag beim Grundbuchamt",
+        "Nur einen neuen Erbschein",
+        "Einen Beschluss mit einfacher Mehrheit"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Übertragung von der Gesamthand auf die Einzelnen: notariell beurkundet, mit Auflassung, dann Eintragung."
+    },
+    {
+      "id": "2.2-B014",
+      "chapter": "2.2",
+      "section": "2.2.1.2",
+      "topic": [
+        "Zwangsversteigerung"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "C erhält am 1.6. den Zuschlag, Verteilungstermin ist am 20.7. Was stimmt?",
+      "answers": [
+        "C ist seit 1.6. Eigentümer",
+        "C verzinst das Gebot bis zum 20.7. mit 4 %",
+        "C wird erst mit der Umschreibung Eigentümer",
+        "Keine Grunderwerbsteuer, da gerichtlich"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Eigentum mit Zuschlag (§ 90 ZVG). Zinsen 4 % bis zum Verteilungstermin. Grunderwerbsteuer fällt an."
+    },
+    {
+      "id": "2.2-B015",
+      "chapter": "2.2",
+      "section": "2.2.2-a",
+      "topic": [
+        "Makleraufträge"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Qualifizierter Alleinauftrag: Die Verkäuferin verkauft direkt an eine Interessentin, die sich bei ihr gemeldet hat. Folge?",
+      "answers": [
+        "Pflichtverstoß – der Makler kann Schadensersatz verlangen",
+        "Kein Problem, Eigenverkauf ist immer erlaubt",
+        "Der Kaufvertrag ist nichtig",
+        "Die Käuferin muss die Provision zahlen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Beim qualifizierten Alleinauftrag muss sie Interessenten an den Makler verweisen. Beim einfachen Alleinauftrag wäre der Eigenverkauf erlaubt."
+    },
+    {
+      "id": "2.2-B016",
+      "chapter": "2.2",
+      "section": "2.2.2-a",
+      "topic": [
+        "Doppeltätigkeit"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Der Makler ist für Käufer und Verkäufer eines Einfamilienhauses tätig und verzichtet beim Käufer auf Provision. Folge?",
+      "answers": [
+        "Er kann auch vom Verkäufer nichts verlangen",
+        "Der Verkäufer zahlt jetzt alles",
+        "Der Verkäufer zahlt die Hälfte",
+        "Der Käufer zahlt trotzdem die Hälfte"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Bei Doppeltätigkeit nur gleiche Teile (§ 656c BGB). Null beim einen heißt null beim anderen."
+    },
+    {
+      "id": "2.2-B017",
+      "chapter": "2.2",
+      "section": "2.2.2-a",
+      "topic": [
+        "Maklerprovision",
+        "Formmangel"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Der Makler weist ein Haus nach, der Kaufvertrag wird nur privatschriftlich geschlossen. Was stimmt?",
+      "answers": [
+        "Solange der Formmangel besteht, keine Provision",
+        "Der Vertrag wird gültig, wenn Auflassung und Eintragung folgen",
+        "Provision steht zu, weil er geleistet hat",
+        "Die Provision halbiert sich"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Ohne wirksamen Hauptvertrag keine Provision. § 311b BGB: Heilung durch Auflassung und Eintragung."
+    },
+    {
+      "id": "2.2-B018",
+      "chapter": "2.2",
+      "section": "2.2.2-b",
+      "topic": [
+        "MaBV"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Der Bauträger verlangt nach dem Rohbau insgesamt 70 % des Preises. Was stimmt?",
+      "answers": [
+        "Nach MaBV sind höchstens 58 % zulässig",
+        "Der Plan verstößt gegen die MaBV, Abschläge müssen nicht gezahlt werden",
+        "Zulässig, die Raten sind frei verhandelbar",
+        "70 % entsprechen genau der MaBV"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "30 % Erdarbeiten + 40 % vom Rest (28 %) = 58 %. Bei Verstoß: Kaufpreis erst nach Fertigstellung und Abnahme."
+    },
+    {
+      "id": "2.2-B019",
+      "chapter": "2.2",
+      "section": "2.2.2-b",
+      "topic": [
+        "Freistellungserklärung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Der Bauträger wird insolvent. Was darf seine Bank laut Freistellungserklärung wählen?",
+      "answers": [
+        "Anzahlungen ohne Zinsen zurück oder unfertiges Objekt übertragen",
+        "Nur Rückzahlung mit Zinsen",
+        "Nur Fertigbau auf eigene Kosten",
+        "Nichts, der Käufer trägt alles"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Wahlrecht liegt bei der Bank – für den Käufer oft unerwünscht."
+    },
+    {
+      "id": "2.2-B020",
+      "chapter": "2.2",
+      "section": "2.2.2-c",
+      "topic": [
+        "Auflassung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "In der Urkunde steht: „Die Auflassung gilt erst, wenn der Kaufpreis vollständig gezahlt ist.“ Folge?",
+      "answers": [
+        "Die Auflassung ist unwirksam",
+        "Wirksam, sobald gezahlt ist",
+        "Wirksam, die Bedingung wird gestrichen",
+        "Der Kaufvertrag ist nichtig"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 925 Abs. 2 BGB: Auflassung unter Bedingung oder Zeitbestimmung ist unwirksam. Abgesichert wird über den Notar."
+    },
+    {
+      "id": "2.2-B021",
+      "chapter": "2.2",
+      "section": "2.2.2-c",
+      "topic": [
+        "Vormerkung",
+        "Doppelverkauf"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "V verkauft an K1, Vormerkung für K1 ist eingetragen. Danach verkauft und übereignet V an K2. Was gilt?",
+      "answers": [
+        "Die Verfügung an K2 ist K1 gegenüber unwirksam",
+        "K2 gewinnt, weil zuerst umgeschrieben",
+        "K1 war seit der Beurkundung Eigentümer",
+        "Die Vormerkung schützt nur gegen Zwangsvollstreckung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 883 Abs. 2 BGB: Spätere Verfügungen sind insoweit unwirksam, als sie den Anspruch vereiteln."
+    },
+    {
+      "id": "2.2-B022",
+      "chapter": "2.2",
+      "section": "2.2.2-c",
+      "topic": [
+        "Formmangel",
+        "Heilung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Grundstückskauf nur privatschriftlich – trotzdem folgen Auflassung und Eintragung. Was gilt?",
+      "answers": [
+        "Der Vertrag wird seinem ganzen Inhalt nach gültig",
+        "Er bleibt nichtig, Käufer muss zurückgeben",
+        "Nur der Kaufpreisteil wird gültig",
+        "Er gilt als Schenkung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 311b Abs. 1 Satz 2 BGB: Heilung durch Auflassung und Eintragung."
+    },
+    {
+      "id": "2.2-B023",
+      "chapter": "2.2",
+      "section": "2.2.2-c",
+      "topic": [
+        "Beurkundung",
+        "Beglaubigung"
+      ],
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Welche Aussage zum Notar ist FALSCH?",
+      "answers": [
+        "Bei der Beglaubigung prüft er auch den Inhalt",
+        "Bei der Beurkundung liest er vor",
+        "Er belehrt über rechtliche Folgen",
+        "Er unterschreibt die Kaufurkunde mit"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Bei der Beglaubigung prüft der Notar nur die Echtheit der Unterschrift."
+    },
+    {
+      "id": "2.2-B024",
+      "chapter": "2.2",
+      "section": "2.2.1.2",
+      "topic": [
+        "Schenkung",
+        "Heilung"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Mündlich versprochene Schenkung einer Wohnung – später Auflassung und Eintragung. Was stimmt?",
+      "answers": [
+        "Der Formmangel ist geheilt",
+        "Keine Grunderwerbsteuer",
+        "Unwirksam, weil nicht beurkundet",
+        "Beschenkter übernimmt keine Lasten"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "§ 518 Abs. 2 BGB: Heilung durch Vollzug. Schenkungsteuer statt GrESt. Lasten gehen mit über."
+    },
+    {
+      "id": "2.2-B025",
+      "chapter": "2.2",
+      "section": "2.2.2-d",
+      "topic": [
+        "Besitz",
+        "Gefahr"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Übergabe am 1.3., Wasserschaden am 20.3., Umschreibung am 10.5. Was stimmt?",
+      "answers": [
+        "Die Gefahr trägt der Käufer",
+        "Am 20.3. ist noch der Verkäufer Eigentümer",
+        "Am 20.3. ist der Käufer schon Eigentümer",
+        "Käufer darf den Preis zurückfordern, da noch nicht Eigentümer"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Gefahr geht mit der Übergabe über, Eigentum erst mit der Eintragung."
+    },
+    {
+      "id": "2.2-B026",
+      "chapter": "2.2",
+      "section": "2.2.2-d",
+      "topic": [
+        "Unbedenklichkeitsbescheinigung"
+      ],
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Alle Unterlagen liegen vor, das Grundbuchamt schreibt trotzdem nicht um. Was fehlt am wahrscheinlichsten?",
+      "answers": [
+        "Nachweis der Grunderwerbsteuer vom Finanzamt",
+        "Der Grundsteuerbescheid",
+        "Die Maklerquittung",
+        "Der Energieausweis"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Ohne Unbedenklichkeitsbescheinigung zur Grunderwerbsteuer keine Umschreibung. Grundsteuer ist die Falle."
+    },
+    {
+      "id": "2.2-B027",
+      "chapter": "2.2",
+      "section": "2.2.3",
+      "topic": [
+        "Abstraktionsprinzip"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Y ist als Eigentümer eingetragen. Danach wird der Kaufvertrag erfolgreich angefochten. Folge?",
+      "answers": [
+        "Y bleibt Eigentümer, muss aber zurückübertragen",
+        "Das Eigentum fällt automatisch an X zurück",
+        "Das Grundbuch korrigiert sich von selbst",
+        "Die Anfechtung ist nach Eintragung ausgeschlossen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Abstraktionsprinzip: Die Übereignung bleibt wirksam. Rückabwicklung über das Bereicherungsrecht."
+    }
+  ]
+}

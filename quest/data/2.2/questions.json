@@ -1,0 +1,1628 @@
+{
+  "chapter": "2.2",
+  "questions": [
+    {
+      "id": "2.2-Q001",
+      "chapter": "2.2",
+      "section": "2.2.1.1-a",
+      "topic": "Unbebautes Grundstück",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 1,
+      "question": "Wann gilt ein Grundstück nach dem Bewertungsgesetz als unbebaut?",
+      "answers": [
+        "Wenn sich kein benutzbares Gebäude darauf befindet",
+        "Nur wenn überhaupt kein Bauwerk darauf steht",
+        "Wenn es nicht vermietet ist",
+        "Wenn es außerhalb eines Bebauungsplans liegt"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Entscheidend ist die Benutzbarkeit (§ 72 BewG). Auch ein Grundstück mit abbruchreifem Gebäude ist unbebaut."
+    },
+    {
+      "id": "2.2-Q002",
+      "chapter": "2.2",
+      "section": "2.2.1.1-a",
+      "topic": "Bezugsfertigkeit",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 2,
+      "question": "Ein Neubau ist bezugsfertig, die Abnahme durch die Bauaufsicht steht aber noch aus. Wie ist das Grundstück einzuordnen?",
+      "answers": [
+        "Bebautes Grundstück",
+        "Unbebautes Grundstück bis zur Abnahme",
+        "Baureifes Grundstück",
+        "Sonstiges Grundstück"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Benutzbar = bezugsfertig. Die Abnahme durch die Bauaufsichtsbehörde ist laut § 72 BewG nicht entscheidend."
+    },
+    {
+      "id": "2.2-Q003",
+      "chapter": "2.2",
+      "section": "2.2.1.1-a",
+      "topic": "Mietwohngrundstück",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 3,
+      "question": "Was kennzeichnet ein Mietwohngrundstück?",
+      "answers": [
+        "Es dient zu mehr als 80 % Wohnzwecken und ist kein Ein- oder Zweifamilienhaus",
+        "Es dient zu mindestens 50 % Wohnzwecken",
+        "Es hat genau drei Wohnungen",
+        "Es dient zu mehr als 80 % gewerblichen Zwecken"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Mehr als 80 % Wohnzwecke, gemessen an der Jahresrohmiete. Ein- und Zweifamilienhäuser sind eigene Kategorien. Mehr als 80 % Gewerbe wäre ein Geschäftsgrundstück."
+    },
+    {
+      "id": "2.2-Q004",
+      "chapter": "2.2",
+      "section": "2.2.1.1-a",
+      "topic": "Einfamilienhaus",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 4,
+      "question": "Ein Haus hat nur eine Wohnung. Die Eigentümerin nutzt ein Zimmer als Steuerbüro, der Charakter als Wohnhaus bleibt erhalten. Welche Grundstücksart liegt vor?",
+      "answers": [
+        "Einfamilienhaus",
+        "Gemischt genutztes Grundstück",
+        "Geschäftsgrundstück",
+        "Zweifamilienhaus"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Gewerbliche Mitbenutzung schadet dem Einfamilienhaus nicht, solange seine Eigenart erhalten bleibt."
+    },
+    {
+      "id": "2.2-Q005",
+      "chapter": "2.2",
+      "section": "2.2.1.1-a",
+      "topic": "Baureifes Grundstück",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 5,
+      "question": "Welche Merkmale muss ein unbebautes Grundstück erfüllen, um baureif zu sein? (Mehrere richtig)",
+      "answers": [
+        "Im Bebauungsplan als Bauland festgesetzt",
+        "Sofortige Bebauung möglich",
+        "Bebauung in benachbarten Bereichen des Plangebiets begonnen oder fertig",
+        "Für den Gemeinbedarf vorgesehen"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "§ 73 BewG verlangt alle drei Merkmale. Flächen für den Gemeinbedarf gehören ausdrücklich nicht zu den baureifen Grundstücken."
+    },
+    {
+      "id": "2.2-Q060",
+      "chapter": "2.2",
+      "section": "2.2.1.1-a",
+      "topic": "Zweifamilienhaus",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 6,
+      "question": "Ein Haus hat eine große Wohnung und eine kleine Einliegerwohnung, die an einen fremden Studenten vermietet ist. Welche Grundstücksart liegt vor?",
+      "answers": [
+        "Zweifamilienhaus",
+        "Einfamilienhaus, weil die zweite Wohnung untergeordnet ist",
+        "Mietwohngrundstück",
+        "Geschäftsgrundstück"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Eine zweite fremdgenutzte Wohnung steht dem Einfamilienhaus entgegen – auch wenn sie klein ist."
+    },
+    {
+      "id": "2.2-Q061",
+      "chapter": "2.2",
+      "section": "2.2.1.1-a",
+      "topic": "Gemischt genutzt",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 7,
+      "question": "Vier Wohnungen und ein Laden: 75 % der Jahresrohmiete stammen aus Wohnen, 25 % aus dem Laden. Welche Grundstücksart liegt vor?",
+      "answers": [
+        "Gemischt genutztes Grundstück",
+        "Mietwohngrundstück",
+        "Geschäftsgrundstück",
+        "Sonstiges bebautes Grundstück"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Weder Wohnen noch Gewerbe liegt über 80 %. Also gemischt genutzt."
+    },
+    {
+      "id": "2.2-Q006",
+      "chapter": "2.2",
+      "section": "2.2.1.1-b",
+      "topic": "Bebauungsplan",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 8,
+      "question": "Welcher Bauleitplan ist für den einzelnen Grundstückseigentümer verbindlich?",
+      "answers": [
+        "Bebauungsplan",
+        "Flächennutzungsplan",
+        "Aufteilungsplan",
+        "Flurkarte"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Flächennutzungsplan ist vorbereitend, der Bebauungsplan verbindlich."
+    },
+    {
+      "id": "2.2-Q007",
+      "chapter": "2.2",
+      "section": "2.2.1.1-b",
+      "topic": "Bauerwartungsland",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 9,
+      "question": "Der Flächennutzungsplan stellt einen Acker als künftige Wohnbaufläche dar. Einen Bebauungsplan gibt es noch nicht. Welcher Entwicklungszustand liegt nahe?",
+      "answers": [
+        "Bauerwartungsland",
+        "Baureifes Land",
+        "Rohbauland",
+        "Fläche ohne jede Bebauungsaussicht"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Eine Bebauung ist konkret zu erwarten, aber noch nicht verbindlich geplant. Rohbauland setzt einen Bebauungsplan voraus, baureifes Land zusätzlich die Erschließung."
+    },
+    {
+      "id": "2.2-Q008",
+      "chapter": "2.2",
+      "section": "2.2.1.1-b",
+      "topic": "Baugebiete BauNVO",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 10,
+      "question": "In welchem Baugebiet ist ausschließlich Wohnen zulässig?",
+      "answers": [
+        "Reines Wohngebiet (WR)",
+        "Allgemeines Wohngebiet (WA)",
+        "Mischgebiet (MI)",
+        "Kleinsiedlungsgebiet (WS)"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "WR = ausschließlich Wohnen. WA = vorwiegend Wohnen."
+    },
+    {
+      "id": "2.2-Q009",
+      "chapter": "2.2",
+      "section": "2.2.1.1-b",
+      "topic": "Festsetzungen",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 11,
+      "question": "Was kann ein Bebauungsplan festsetzen? (Mehrere richtig)",
+      "answers": [
+        "Art der Nutzung, z. B. Wohnhaus oder Lagerhalle",
+        "Welche Grundstücksteile überbaut werden dürfen",
+        "Wie hoch gebaut werden darf",
+        "Den Verkaufspreis der Bauplätze"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Festsetzungen betreffen Art und Maß der Nutzung sowie die überbaubaren Flächen. Preise regelt der Bebauungsplan nicht."
+    },
+    {
+      "id": "2.2-Q062",
+      "chapter": "2.2",
+      "section": "2.2.1.1-b",
+      "topic": "Baugebiete BauNVO",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 12,
+      "question": "Ein Kunde will auf seinem Grundstück im reinen Wohngebiet (WR) eine Kfz-Werkstatt eröffnen. Was sagst du ihm?",
+      "answers": [
+        "Im WR ist nur Wohnen zulässig – das scheitert am Bebauungsplan",
+        "Kein Problem, solange die Werkstatt nicht wesentlich stört",
+        "Das entscheidet allein die Eigentümergemeinschaft",
+        "Das regelt das Liegenschaftsbuch"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Im reinen Wohngebiet ist ausschließlich Wohnen zulässig. „Nicht wesentlich störend“ ist die Formel für Misch- und Dorfgebiete."
+    },
+    {
+      "id": "2.2-Q010",
+      "chapter": "2.2",
+      "section": "2.2.1.1-c",
+      "topic": "Flurstück",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 13,
+      "question": "Was ist die kleinste Einheit des Liegenschaftskatasters?",
+      "answers": [
+        "Flurstück",
+        "Flur",
+        "Gemarkung",
+        "Grundbuchblatt"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Flurstück → Flur → Gemarkung. Das Grundbuchblatt gehört zum Grundbuch, nicht zum Kataster."
+    },
+    {
+      "id": "2.2-Q011",
+      "chapter": "2.2",
+      "section": "2.2.1.1-c",
+      "topic": "Katasterordnung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 14,
+      "question": "Welche Reihenfolge geht von klein nach groß?",
+      "answers": [
+        "Flurstück – Flur – Gemarkung",
+        "Flur – Flurstück – Gemarkung",
+        "Gemarkung – Flur – Flurstück",
+        "Flurstück – Gemarkung – Flur"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Mehrere Flurstücke bilden eine Flur, mehrere Fluren eine Gemarkung."
+    },
+    {
+      "id": "2.2-Q012",
+      "chapter": "2.2",
+      "section": "2.2.1.1-c",
+      "topic": "Grundstück und Flurstück",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 15,
+      "question": "Ein Kunde wundert sich: Laut Grundbuch hat er ein Grundstück, laut Kataster zwei Flurstücke. Was stimmt?",
+      "answers": [
+        "Das ist möglich – ein Grundstück kann aus mehreren Flurstücken bestehen",
+        "Das ist ein Fehler, Grundstück und Flurstück sind immer identisch",
+        "Er besitzt zwei Grundstücke, das Grundbuch ist falsch",
+        "Flurstücke gibt es nur bei landwirtschaftlichen Flächen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Grundstück ist die Buchungseinheit im Grundbuch, das Flurstück die Vermessungseinheit im Kataster. Ein Grundstück kann mehrere Flurstücke umfassen."
+    },
+    {
+      "id": "2.2-Q013",
+      "chapter": "2.2",
+      "section": "2.2.1.1-c",
+      "topic": "Grundstücksbegriff",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 16,
+      "question": "Was ist ein Grundstück im Rechtssinn?",
+      "answers": [
+        "Eine Fläche, die im Grundbuch auf einem eigenen Blatt oder unter eigener Nummer im Bestandsverzeichnis geführt wird",
+        "Jede eingezäunte Fläche",
+        "Jedes einzelne Flurstück",
+        "Jede Fläche, auf der ein Gebäude steht"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Maßgeblich ist die Buchung im Grundbuch (§ 3 GBO)."
+    },
+    {
+      "id": "2.2-Q014",
+      "chapter": "2.2",
+      "section": "2.2.1.1-d",
+      "topic": "Wesentliche Bestandteile",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 17,
+      "question": "Der Verkäufer eines Einfamilienhauses will die gemauerte Garage „behalten und später abreißen und mitnehmen“. Wie ist die Rechtslage?",
+      "answers": [
+        "Die Garage ist wesentlicher Bestandteil und geht mit dem Grundstück auf den Käufer über",
+        "Die Garage ist Zubehör und bleibt im Zweifel beim Verkäufer",
+        "Die Garage ist Inventar und muss separat verkauft werden",
+        "Die Garage gehört dem, der sie gebaut hat"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Fest mit dem Boden verbundene Gebäude sind wesentliche Bestandteile (§ 94 BGB) und können nicht Gegenstand eigener Rechte sein."
+    },
+    {
+      "id": "2.2-Q015",
+      "chapter": "2.2",
+      "section": "2.2.1.1-d",
+      "topic": "Zubehör",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 18,
+      "question": "Was ist Zubehör im Sinne der §§ 97, 98 BGB?",
+      "answers": [
+        "Eine bewegliche Sache, die dem wirtschaftlichen Zweck des Grundstücks dient, aber rechtlich selbstständig bleibt",
+        "Ein fest eingebautes Bauteil",
+        "Jede Sache, die im Grundbuch steht",
+        "Ein Recht eines Dritten am Grundstück"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Zubehör ist beweglich, dient der Hauptsache und steht räumlich in Beziehung zu ihr – bleibt aber eine eigene Sache."
+    },
+    {
+      "id": "2.2-Q016",
+      "chapter": "2.2",
+      "section": "2.2.1.1-d",
+      "topic": "Inventar mitverkauft",
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 19,
+      "question": "Eine Kfz-Werkstatt wird „wie sie steht und liegt“ inklusive Hebebühnen und Werkzeug verkauft. Welche Folgen nennt das Lernskript? (Mehrere richtig)",
+      "answers": [
+        "Für die Grunderwerbsteuer muss der Kaufpreisanteil für das Grundstück ausgewiesen werden",
+        "Für die Finanzierung muss der Beleihungswert gemindert werden",
+        "Die Hebebühnen werden dadurch zu wesentlichen Bestandteilen",
+        "Der Beleihungswert steigt um den Wert der Maschinen"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Inventar bleibt bewegliche Sache. Es erhöht den Kaufpreis, aber nicht den Beleihungswert, und für die Grunderwerbsteuer zählt nur der Grundstücksanteil."
+    },
+    {
+      "id": "2.2-Q063",
+      "chapter": "2.2",
+      "section": "2.2.1.1-d",
+      "topic": "Bestandteile",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 20,
+      "question": "Ein Haus wird verkauft, im Vertrag steht nichts zu Garten und Möbeln. Was gilt? (Mehrere richtig)",
+      "answers": [
+        "Die Obstbäume gehen mit dem Grundstück über",
+        "Die Gartenmöbel gehen nicht automatisch mit",
+        "Die Obstbäume sind Zubehör",
+        "Die Gartenmöbel sind wesentliche Bestandteile"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Pflanzen sind wesentliche Bestandteile. Gartenmöbel sind bewegliche Sachen und werden nur mitverkauft, wenn es vereinbart ist."
+    },
+    {
+      "id": "2.2-Q017",
+      "chapter": "2.2",
+      "section": "2.2.1.1-e",
+      "topic": "Teileigentum",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 21,
+      "question": "Was ist Teileigentum?",
+      "answers": [
+        "Sondereigentum an Räumen, die nicht Wohnzwecken dienen",
+        "Ein Anteil am Gemeinschaftseigentum",
+        "Eine halbe Eigentumswohnung",
+        "Jede vermietete Wohnung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Teileigentum ist Sondereigentum ohne Wohnzweck, z. B. Laden, Büro oder Stellplatz."
+    },
+    {
+      "id": "2.2-Q018",
+      "chapter": "2.2",
+      "section": "2.2.1.1-e",
+      "topic": "Sondernutzungsrecht",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 22,
+      "question": "Eine Gartenterrasse gehört zum Gemeinschaftseigentum, darf aber nur von Wohnung 1 genutzt werden. Was liegt vor?",
+      "answers": [
+        "Sondernutzungsrecht",
+        "Sondereigentum",
+        "Teileigentum",
+        "Bruchteilseigentum"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Gemeinschaftseigentum mit alleinigem Nutzungsrecht eines Eigentümers = Sondernutzungsrecht."
+    },
+    {
+      "id": "2.2-Q019",
+      "chapter": "2.2",
+      "section": "2.2.1.1-e",
+      "topic": "Gemeinschaftseigentum",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 23,
+      "question": "Was gehört typischerweise zum Gemeinschaftseigentum? (Mehrere richtig)",
+      "answers": [
+        "Das Grundstück",
+        "Das Treppenhaus",
+        "Das Dach",
+        "Die Wohnung im 2. OG"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Grundstück, Treppenhaus, Dach und Fassade gehören allen. Die Wohnung selbst ist Sondereigentum."
+    },
+    {
+      "id": "2.2-Q020",
+      "chapter": "2.2",
+      "section": "2.2.1.1-e",
+      "topic": "Miteigentumsanteil",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 24,
+      "question": "Womit ist Sondereigentum immer verbunden?",
+      "answers": [
+        "Mit einem Miteigentumsanteil am Gemeinschaftseigentum",
+        "Mit einem Sondernutzungsrecht",
+        "Mit einem Stellplatz",
+        "Mit einem Stimmrecht nach Köpfen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Ohne Miteigentumsanteil gibt es kein Sondereigentum. Sondernutzungsrechte und Stellplätze sind optional."
+    },
+    {
+      "id": "2.2-Q021",
+      "chapter": "2.2",
+      "section": "2.2.1.1-e",
+      "topic": "Miteigentumsanteil",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 25,
+      "question": "Zur Dachgeschosswohnung gehören 5.000/10.000 Miteigentumsanteile. Was bedeutet das?",
+      "answers": [
+        "Mit der Wohnung ist ein Anteil von 50 % am Gemeinschaftseigentum verbunden",
+        "Der Eigentümer darf die Hälfte des Gartens allein nutzen",
+        "Ihm gehört die Hälfte aller Wohnungen",
+        "Er hat automatisch die Hälfte der Stimmen, egal was die Gemeinschaftsordnung sagt"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der MEA beschreibt den Anteil am Gemeinschaftseigentum. Alleinnutzung braucht ein Sondernutzungsrecht, das Stimmrecht regelt die Gemeinschaftsordnung."
+    },
+    {
+      "id": "2.2-Q064",
+      "chapter": "2.2",
+      "section": "2.2.1.1-e",
+      "topic": "Teileigentum Stellplatz",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 26,
+      "question": "Ein Tiefgaragenstellplatz ist als Teileigentum mit eigenem Grundbuchblatt ausgewiesen. Was folgt daraus?",
+      "answers": [
+        "Er kann separat verkauft werden",
+        "Er gehört zwingend zum Gemeinschaftseigentum",
+        "Er ist nur ein Sondernutzungsrecht",
+        "Er kann nie ohne die Wohnung verkauft werden"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Teileigentum ist Sondereigentum – deshalb empfiehlt das Skript die Ausweisung als Teileigentum, weil Stellplätze dann leichter separat zu verkaufen sind."
+    },
+    {
+      "id": "2.2-Q022",
+      "chapter": "2.2",
+      "section": "2.2.1.1-f",
+      "topic": "Teilungserklärung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 27,
+      "question": "Was begründet das Wohnungseigentum sachenrechtlich?",
+      "answers": [
+        "Die Teilungserklärung",
+        "Die Gemeinschaftsordnung",
+        "Die Abgeschlossenheitsbescheinigung",
+        "Der erste Kaufvertrag"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Teilungserklärung legt fest, was Sonder- und was Gemeinschaftseigentum ist. Die Gemeinschaftsordnung regelt das Zusammenleben."
+    },
+    {
+      "id": "2.2-Q023",
+      "chapter": "2.2",
+      "section": "2.2.1.1-f",
+      "topic": "Gemeinschaftsordnung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 28,
+      "question": "Was regelt die Gemeinschaftsordnung?",
+      "answers": [
+        "Das Verhältnis der Wohnungseigentümer untereinander",
+        "Die Begründung des Wohnungseigentums",
+        "Die Eintragung des Käufers im Grundbuch",
+        "Die Höhe des Erbbauzinses"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Teilungserklärung = was gehört wem. Gemeinschaftsordnung = wie lebt man zusammen."
+    },
+    {
+      "id": "2.2-Q024",
+      "chapter": "2.2",
+      "section": "2.2.1.1-f",
+      "topic": "Entstehung WEG",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 29,
+      "question": "In welcher Reihenfolge entsteht Wohnungseigentum?",
+      "answers": [
+        "Abgeschlossenheitsbescheinigung – beglaubigte Teilungserklärung – Vorlage beim Grundbuchamt – Anlegung der Wohnungsgrundbücher",
+        "Teilungserklärung – Anlegung der Wohnungsgrundbücher – Abgeschlossenheitsbescheinigung – Vorlage beim Grundbuchamt",
+        "Anlegung der Wohnungsgrundbücher – Teilungserklärung – Abgeschlossenheitsbescheinigung",
+        "Kaufvertrag – Teilungserklärung – Abgeschlossenheitsbescheinigung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Erst prüft die Baubehörde die Abgeschlossenheit, dann folgt die Teilungserklärung, dann das Grundbuchamt."
+    },
+    {
+      "id": "2.2-Q025",
+      "chapter": "2.2",
+      "section": "2.2.1.1-f",
+      "topic": "Wirksamkeit der Teilung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 30,
+      "question": "Wann wird die Teilung in Wohnungseigentum wirksam?",
+      "answers": [
+        "Mit der Anlegung der Wohnungsgrundbücher",
+        "Mit der Beglaubigung der Teilungserklärung",
+        "Mit der Abgeschlossenheitsbescheinigung",
+        "Mit dem Verkauf der ersten Wohnung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 8 WEG: Die Teilung wird mit der Anlegung der Wohnungsgrundbücher wirksam."
+    },
+    {
+      "id": "2.2-Q026",
+      "chapter": "2.2",
+      "section": "2.2.1.1-f",
+      "topic": "Inhalt GemO",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 31,
+      "question": "Welche Regelung gehört typischerweise in die Gemeinschaftsordnung?",
+      "answers": [
+        "Der Kostenverteilungsschlüssel",
+        "Die Festlegung, welche Räume Sondereigentum sind",
+        "Der Kaufpreis einer Wohnung",
+        "Die Eintragung einer Grundschuld"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Kostenschlüssel, Stimmrecht, Hausordnung, Verwaltung und Zustimmungspflichten stehen in der GemO. Die Abgrenzung Sonder-/Gemeinschaftseigentum leistet die Teilungserklärung."
+    },
+    {
+      "id": "2.2-Q065",
+      "chapter": "2.2",
+      "section": "2.2.1.1-f",
+      "topic": "Wohnungsgrundbücher",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 32,
+      "question": "Auf dem Gesamtgrundstück lastet eine Grundschuld. Dann werden die Wohnungsgrundbücher angelegt. Was passiert mit der Grundschuld?",
+      "answers": [
+        "Sie wird auf alle Wohnungsgrundbücher als Gesamtbelastung übertragen",
+        "Sie erlischt automatisch",
+        "Sie bleibt nur im geschlossenen Grundstücksblatt",
+        "Sie geht nur auf die größte Wohnung über"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Eingetragene Belastungen werden auf die einzelnen Wohnungsgrundbücher zur Gesamthaft übernommen."
+    },
+    {
+      "id": "2.2-Q027",
+      "chapter": "2.2",
+      "section": "2.2.1.1-g",
+      "topic": "Erbbaurecht",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 33,
+      "question": "Was ist ein Erbbaurecht?",
+      "answers": [
+        "Das vererbliche und veräußerliche Recht, auf oder unter einem fremden Grundstück ein Bauwerk zu haben",
+        "Das Recht, ein Grundstück zu erben",
+        "Ein Vorkaufsrecht der Erben",
+        "Eine Grundschuld zugunsten der Gemeinde"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 1 ErbbauRG. Der Name hat nichts mit einer Erbschaft zu tun."
+    },
+    {
+      "id": "2.2-Q028",
+      "chapter": "2.2",
+      "section": "2.2.1.1-g",
+      "topic": "Bestandteil Erbbaurecht",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 34,
+      "question": "Wessen wesentlicher Bestandteil ist das Gebäude beim Erbbaurecht?",
+      "answers": [
+        "Des Erbbaurechts",
+        "Des Grundstücks",
+        "Des Erbbauzinses",
+        "Des Grundbuchamts"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 12 ErbbauRG. Das ist die Ausnahme zu § 94 BGB."
+    },
+    {
+      "id": "2.2-Q029",
+      "chapter": "2.2",
+      "section": "2.2.1.1-g",
+      "topic": "Erbbaurecht Grundbuch",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 35,
+      "question": "Wo und mit welchem Rang wird das Erbbaurecht im Grundbuch des Grundstücks eingetragen?",
+      "answers": [
+        "Abteilung II, ausschließlich erste Rangstelle",
+        "Abteilung I, beliebiger Rang",
+        "Abteilung III, nach den Grundschulden",
+        "Im Bestandsverzeichnis ohne Rang"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Erbbaurecht ist eine Last (Abt. II) und muss an erster Rangstelle stehen (§ 10 ErbbauRG)."
+    },
+    {
+      "id": "2.2-Q030",
+      "chapter": "2.2",
+      "section": "2.2.1.1-g",
+      "topic": "Ablauf Erbbaurecht",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 36,
+      "question": "Ein Erbbaurecht läuft nach 99 Jahren aus. Was passiert mit dem Gebäude?",
+      "answers": [
+        "Es fällt an den Grundstückseigentümer, der eine Entschädigung zahlen muss",
+        "Der Erbbauberechtigte muss es abreißen",
+        "Das Erbbaurecht verlängert sich automatisch",
+        "Das Grundstück geht auf den Erbbauberechtigten über"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Bei Zeitablauf wird das Bauwerk Bestandteil des Grundstücks. Der Eigentümer schuldet Entschädigung (§ 27 ErbbauRG)."
+    },
+    {
+      "id": "2.2-Q031",
+      "chapter": "2.2",
+      "section": "2.2.1.1-g",
+      "topic": "Vorteile Erbbaurecht",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 37,
+      "question": "Welche Vorteile hat der Erbbauberechtigte? (Mehrere richtig)",
+      "answers": [
+        "Er spart den Kaufpreis für das Grundstück",
+        "Er wird Eigentümer des Gebäudes",
+        "Er kann das Erbbaurecht mit Grundpfandrechten belasten",
+        "Eine Bodenwertsteigerung kommt ihm zugute"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Die Bodenwertsteigerung kommt dem Grundstückseigentümer zugute."
+    },
+    {
+      "id": "2.2-Q066",
+      "chapter": "2.2",
+      "section": "2.2.1.1-g",
+      "topic": "Erbbaurecht Kauf",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 38,
+      "question": "Eine Kundin kauft ein Haus auf Erbbaurecht. Was erwirbt sie?",
+      "answers": [
+        "Das Erbbaurecht samt Gebäude – der Boden bleibt beim Grundstückseigentümer",
+        "Grundstück und Gebäude, aber nur für 99 Jahre",
+        "Nur ein Mietrecht am Gebäude",
+        "Einen Miteigentumsanteil am Grundstück"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Sie wird Eigentümerin des Gebäudes über das Erbbaurecht und zahlt Erbbauzins. Der Boden gehört weiter dem Grundstückseigentümer."
+    },
+    {
+      "id": "2.2-Q032",
+      "chapter": "2.2",
+      "section": "2.2.1.2",
+      "topic": "Grunderwerbsteuer",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 39,
+      "question": "Bei welchen Erwerbsformen fällt keine Grunderwerbsteuer an? (Mehrere richtig)",
+      "answers": [
+        "Schenkung",
+        "Erbschaft",
+        "Kauf",
+        "Zwangsversteigerung"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Schenkung und Erbschaft fallen unter das Erbschaft- und Schenkungsteuerrecht. Kauf und Zwangsversteigerung lösen Grunderwerbsteuer aus."
+    },
+    {
+      "id": "2.2-Q033",
+      "chapter": "2.2",
+      "section": "2.2.1.2",
+      "topic": "Zuschlag",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 40,
+      "question": "Wann wird der Ersteher in der Zwangsversteigerung Eigentümer?",
+      "answers": [
+        "Mit dem Zuschlag",
+        "Im Verteilungstermin",
+        "Mit der Umschreibung im Grundbuch",
+        "Mit Zahlung der Grunderwerbsteuer"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 90 ZVG: Eigentum mit dem Zuschlag. Das Grundbuch wird nur berichtigt."
+    },
+    {
+      "id": "2.2-Q034",
+      "chapter": "2.2",
+      "section": "2.2.1.2",
+      "topic": "Erbengemeinschaft",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 41,
+      "question": "Zwei Geschwister erben ein Haus zu gleichen Teilen. Wie werden sie bei der Grundbuchberichtigung eingetragen?",
+      "answers": [
+        "„A und B in Erbengemeinschaft“ ohne Angabe von Anteilen",
+        "„A und B zu je 1/2“",
+        "Nur das ältere Kind",
+        "Gar nicht, der Erblasser bleibt dauerhaft eingetragen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Erben halten zur gesamten Hand. § 47 GBO: Eintragung mit Gemeinschaftsverhältnis, ohne Bruchteile."
+    },
+    {
+      "id": "2.2-Q035",
+      "chapter": "2.2",
+      "section": "2.2.1.2",
+      "topic": "Schenkung Form",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 42,
+      "question": "Welche Form braucht das Versprechen, eine Immobilie zu verschenken?",
+      "answers": [
+        "Notarielle Beurkundung",
+        "Schriftform",
+        "Textform",
+        "Keine Form"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 518 BGB. Ein Formmangel wird durch den Vollzug der Schenkung geheilt."
+    },
+    {
+      "id": "2.2-Q036",
+      "chapter": "2.2",
+      "section": "2.2.1.2",
+      "topic": "Bruchteilseigentum",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 43,
+      "question": "A und B sind zu je 1/2 Miteigentümer (Bruchteile). A will seinen Anteil an C verkaufen, B ist dagegen. Was gilt?",
+      "answers": [
+        "A darf über seinen Anteil frei verfügen",
+        "A braucht zwingend die Zustimmung von B",
+        "Nur das ganze Grundstück kann verkauft werden",
+        "C muss erst Mitglied einer Erbengemeinschaft werden"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 747 BGB: Jeder Bruchteilseigentümer kann über seinen Anteil frei verfügen. Über das ganze Grundstück nur gemeinsam."
+    },
+    {
+      "id": "2.2-Q067",
+      "chapter": "2.2",
+      "section": "2.2.1.2",
+      "topic": "Schenkung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 44,
+      "question": "Eine Großmutter überträgt ihr Haus zu Lebzeiten ohne Gegenleistung auf ihren Enkel. Welche Erwerbsform liegt vor?",
+      "answers": [
+        "Schenkung – keine Grunderwerbsteuer",
+        "Erbschaft – keine Grunderwerbsteuer",
+        "Kauf – Grunderwerbsteuer fällt an",
+        "Schenkung – Grunderwerbsteuer fällt an"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Vor dem Tod kann es keine Erbschaft geben. Unentgeltlich zu Lebzeiten = Schenkung, die unter das Schenkungsteuerrecht fällt."
+    },
+    {
+      "id": "2.2-Q037",
+      "chapter": "2.2",
+      "section": "2.2.2-a",
+      "topic": "Maklerprovision",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 45,
+      "question": "Welche Voraussetzungen hat der Provisionsanspruch nach § 652 BGB? (Mehrere richtig)",
+      "answers": [
+        "Wirksamer Maklervertrag",
+        "Nachweis- oder Vermittlungsleistung des Maklers",
+        "Dadurch zustande gekommener wirksamer Kaufvertrag",
+        "Ein Exposé mit Wohnflächenberechnung"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Vertrag – Leistung – dadurch Kaufvertrag. Ein Exposé ist keine Voraussetzung."
+    },
+    {
+      "id": "2.2-Q038",
+      "chapter": "2.2",
+      "section": "2.2.2-a",
+      "topic": "Einfacher Alleinauftrag",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 46,
+      "question": "Einfacher Alleinauftrag: Die Eigentümerin verkauft ihr Haus selbst an den Nachbarn. Was gilt für die Provision?",
+      "answers": [
+        "Der Makler hat keinen Provisionsanspruch",
+        "Der Makler erhält die volle Provision",
+        "Der Makler erhält die halbe Provision",
+        "Der Nachbar muss die Provision zahlen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Beim einfachen Alleinauftrag bleibt der Eigenverkauf erlaubt – ohne Provision."
+    },
+    {
+      "id": "2.2-Q039",
+      "chapter": "2.2",
+      "section": "2.2.2-a",
+      "topic": "Form Maklervertrag",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 47,
+      "question": "Welche Form braucht ein Maklervertrag über den Kauf eines Einfamilienhauses durch einen Verbraucher?",
+      "answers": [
+        "Textform – eine E-Mail genügt",
+        "Notarielle Beurkundung",
+        "Keine, mündlich genügt",
+        "Schriftform mit eigenhändiger Unterschrift"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Seit 23.12.2020 gilt § 656a BGB: Textform."
+    },
+    {
+      "id": "2.2-Q040",
+      "chapter": "2.2",
+      "section": "2.2.2-a",
+      "topic": "Außenprovision",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 48,
+      "question": "Wer zahlt bei der Außenprovision?",
+      "answers": [
+        "Der Käufer",
+        "Der Verkäufer",
+        "Der Notar",
+        "Die finanzierende Bank"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Außenprovision = Käufer, meist im Exposé ausgewiesen. Innenprovision = Verkäufer."
+    },
+    {
+      "id": "2.2-Q041",
+      "chapter": "2.2",
+      "section": "2.2.2-a",
+      "topic": "Provisionsteilung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 49,
+      "question": "Kaufpreis 400.000 €, Provision 7,14 %, der Makler ist für Käufer und Verkäufer tätig. Wie viel zahlt jede Seite?",
+      "answers": [
+        "14.280 €",
+        "28.560 €",
+        "7.140 €",
+        "17.850 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "400.000 € × 7,14 % = 28.560 €. Bei Doppeltätigkeit zahlen beide gleich viel: je 14.280 €."
+    },
+    {
+      "id": "2.2-Q068",
+      "chapter": "2.2",
+      "section": "2.2.2-a",
+      "topic": "Grundbucheinsicht",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 50,
+      "question": "Eine Kundin will vor dem Kauf wissen, welche Grundschulden auf ihrem Wunschobjekt lasten. Wo findet sie das?",
+      "answers": [
+        "Im Grundbuch beim Grundbuchamt – mit berechtigtem Interesse",
+        "Im Liegenschaftsbuch beim Katasteramt",
+        "Im Bebauungsplan",
+        "In der Flurkarte"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Rechte und Belastungen stehen im Grundbuch. Das Kataster beschreibt Flächen, nicht Belastungen."
+    },
+    {
+      "id": "2.2-Q069",
+      "chapter": "2.2",
+      "section": "2.2.2-a",
+      "topic": "Einfacher Maklerauftrag",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 51,
+      "question": "Ein Eigentümer beauftragt formlos drei Makler. Makler B weist den späteren Käufer nach. Wer bekommt Provision?",
+      "answers": [
+        "Nur Makler B",
+        "Alle drei zu gleichen Teilen",
+        "Keiner, bei mehreren Maklern entfällt die Provision",
+        "Der Makler, der zuerst beauftragt wurde"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Provision nur, wenn der Kaufvertrag durch die Leistung des jeweiligen Maklers zustande kommt."
+    },
+    {
+      "id": "2.2-Q042",
+      "chapter": "2.2",
+      "section": "2.2.2-b",
+      "topic": "MaBV",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 52,
+      "question": "Welchen Grundsatz schützt § 3 MaBV beim Kauf vom Bauträger?",
+      "answers": [
+        "Der Käufer soll nicht mehr zahlen, als gebaut ist",
+        "Der Bauträger darf den Preis frei erhöhen",
+        "Der Käufer zahlt alles bei Vertragsschluss",
+        "Der Makler wird zuerst bezahlt"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Raten nach Baufortschritt schützen den Käufer, z. B. bei Insolvenz des Bauträgers."
+    },
+    {
+      "id": "2.2-Q043",
+      "chapter": "2.2",
+      "section": "2.2.2-b",
+      "topic": "MaBV erste Rate",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 53,
+      "question": "Wie hoch darf die erste Rate nach § 3 MaBV höchstens sein, wenn Eigentum an einem Grundstück übertragen wird?",
+      "answers": [
+        "30 % nach Beginn der Erdarbeiten",
+        "40 % nach Vertragsschluss",
+        "10 % nach Baugenehmigung",
+        "50 % nach Fertigstellung des Rohbaus"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "30 % nach Beginn der Erdarbeiten. Danach wird der Rest nach Baufortschritt verteilt."
+    },
+    {
+      "id": "2.2-Q044",
+      "chapter": "2.2",
+      "section": "2.2.2-b",
+      "topic": "Generalunternehmer",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 54,
+      "question": "Welcher Vertragstyp liegt zwischen Bauherr und Generalunternehmer vor?",
+      "answers": [
+        "Werkvertrag",
+        "Kaufvertrag",
+        "Dienstvertrag",
+        "Maklervertrag"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der GU schuldet einen Erfolg: das schlüsselfertige Haus. Das ist ein Werkvertrag."
+    },
+    {
+      "id": "2.2-Q045",
+      "chapter": "2.2",
+      "section": "2.2.2-b",
+      "topic": "Bereitstellungszinsen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 55,
+      "question": "Wofür verlangt eine Bank Bereitstellungszinsen?",
+      "answers": [
+        "Für zugesagte, aber noch nicht abgerufene Darlehensbeträge",
+        "Für bereits ausgezahlte Beträge",
+        "Für die Grundschuldeintragung",
+        "Für die vorzeitige Rückzahlung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Geld ist für die Bank gebunden, bringt aber noch keine Zinsen. Vorzeitig ausgezahlte Beträge kosten dagegen ggf. Teilvalutierungszuschläge."
+    },
+    {
+      "id": "2.2-Q070",
+      "chapter": "2.2",
+      "section": "2.2.2-b",
+      "topic": "Generalunternehmer",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 56,
+      "question": "Welchen Aufwand spart sich ein Bauherr, der einen Generalunternehmer beauftragt?",
+      "answers": [
+        "Die eigene Koordination und Überwachung der einzelnen Gewerke",
+        "Die Finanzierung",
+        "Die Grunderwerbsteuer auf das Grundstück",
+        "Die notarielle Beurkundung des Grundstückskaufs"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der GU übernimmt alle Gewerke als ein Ansprechpartner. Dafür zahlt der Bauherr GU-Aufschläge."
+    },
+    {
+      "id": "2.2-Q046",
+      "chapter": "2.2",
+      "section": "2.2.2-c",
+      "topic": "Formerfordernis",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 57,
+      "question": "Welche Form braucht ein Grundstückskaufvertrag?",
+      "answers": [
+        "Notarielle Beurkundung",
+        "Notarielle Beglaubigung",
+        "Schriftform",
+        "Textform"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 311b Abs. 1 BGB."
+    },
+    {
+      "id": "2.2-Q047",
+      "chapter": "2.2",
+      "section": "2.2.2-c",
+      "topic": "Beglaubigung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 58,
+      "question": "Was prüft der Notar bei einer Beglaubigung?",
+      "answers": [
+        "Nur die Echtheit der Unterschrift",
+        "Den gesamten Inhalt der Urkunde",
+        "Die Finanzierung des Käufers",
+        "Die Eintragung im Grundbuch"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Bei der Beurkundung verantwortet der Notar den Inhalt, bei der Beglaubigung nur die Unterschrift."
+    },
+    {
+      "id": "2.2-Q048",
+      "chapter": "2.2",
+      "section": "2.2.2-c",
+      "topic": "Auflassung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 59,
+      "question": "Was ist die Auflassung?",
+      "answers": [
+        "Die Einigung von Verkäufer und Käufer über den Eigentumsübergang am Grundstück",
+        "Die Übergabe der Schlüssel",
+        "Die Löschung der alten Grundschuld",
+        "Die Zahlung des Kaufpreises"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 925 BGB: bei gleichzeitiger Anwesenheit beider vor einer zuständigen Stelle, z. B. dem Notar."
+    },
+    {
+      "id": "2.2-Q049",
+      "chapter": "2.2",
+      "section": "2.2.2-c",
+      "topic": "Auflassungsvormerkung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 60,
+      "question": "In welche Abteilung des Grundbuchs wird die Auflassungsvormerkung eingetragen?",
+      "answers": [
+        "Abteilung II",
+        "Abteilung I",
+        "Abteilung III",
+        "Bestandsverzeichnis"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Abteilung II: Lasten und Beschränkungen. Abteilung III: Grundpfandrechte."
+    },
+    {
+      "id": "2.2-Q050",
+      "chapter": "2.2",
+      "section": "2.2.2-c",
+      "topic": "Wirkung Vormerkung",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 61,
+      "question": "Was bewirkt die Auflassungsvormerkung? (Mehrere richtig)",
+      "answers": [
+        "Sie sichert den Anspruch des Käufers auf Übertragung des Eigentums",
+        "Spätere Verfügungen des Verkäufers sind dem Käufer gegenüber unwirksam",
+        "Sie macht den Käufer sofort zum Eigentümer",
+        "Sie ersetzt die Auflassung"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "§ 883 BGB. Eigentümer wird der Käufer erst mit der Eintragung."
+    },
+    {
+      "id": "2.2-Q051",
+      "chapter": "2.2",
+      "section": "2.2.2-c",
+      "topic": "Formzwecke",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 62,
+      "question": "Welche Funktionen erfüllt die notarielle Form beim Immobilienkauf? (Mehrere richtig)",
+      "answers": [
+        "Warnfunktion",
+        "Beweisfunktion",
+        "Beratungsfunktion",
+        "Steuererhebungsfunktion"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Schutz vor Übereilung, klare Beweislage, Belehrung durch den Notar."
+    },
+    {
+      "id": "2.2-Q071",
+      "chapter": "2.2",
+      "section": "2.2.2-c",
+      "topic": "Auflassung Form",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 63,
+      "question": "Der Verkäufer erklärt die Auflassung heute beim Notar, der Käufer will seine Erklärung nächste Woche bei einem anderen Notar abgeben. Was gilt?",
+      "answers": [
+        "So nicht wirksam – die Auflassung verlangt gleichzeitige Anwesenheit beider",
+        "Wirksam, weil beide Erklärungen beurkundet sind",
+        "Wirksam, sobald das Grundbuchamt beide Erklärungen hat",
+        "Wirksam, wenn der Kaufpreis gezahlt ist"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 925 BGB: Die Auflassung muss bei gleichzeitiger Anwesenheit beider Teile erklärt werden."
+    },
+    {
+      "id": "2.2-Q052",
+      "chapter": "2.2",
+      "section": "2.2.2-d",
+      "topic": "Besitz und Eigentum",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 64,
+      "question": "Der Käufer hat die Schlüssel, im Grundbuch steht noch der Verkäufer. Wer ist Besitzer, wer Eigentümer?",
+      "answers": [
+        "Käufer = Besitzer, Verkäufer = Eigentümer",
+        "Käufer = Eigentümer, Verkäufer = Besitzer",
+        "Käufer ist beides",
+        "Verkäufer ist beides"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Besitz = tatsächliche Herrschaft. Eigentum am Grundstück erst mit Eintragung."
+    },
+    {
+      "id": "2.2-Q053",
+      "chapter": "2.2",
+      "section": "2.2.2-d",
+      "topic": "Mieter",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 65,
+      "question": "Welche Aussage über einen Mieter ist richtig?",
+      "answers": [
+        "Er ist Besitzer mit Hausrecht, kann die Wohnung aber nicht verkaufen",
+        "Er ist Eigentümer auf Zeit",
+        "Er hat kein Hausrecht gegenüber dem Eigentümer",
+        "Er kann die Wohnung mit Zustimmung des Nachbarn verkaufen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Mieter ist Besitzer und hat sogar gegenüber dem Eigentümer das Hausrecht. Verkaufen kann nur der Eigentümer."
+    },
+    {
+      "id": "2.2-Q054",
+      "chapter": "2.2",
+      "section": "2.2.2-d",
+      "topic": "Lasten",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 66,
+      "question": "Was fällt unter den Begriff „Lasten“ beim Übergang?",
+      "answers": [
+        "Grundsteuer, Gebühren und Versicherungsbeiträge",
+        "Mieteinnahmen",
+        "Das Risiko eines Brandes",
+        "Das Recht, das Haus selbst zu bewohnen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Mieteinnahmen und Eigennutzung sind Nutzen, das Brandrisiko ist die Gefahr."
+    },
+    {
+      "id": "2.2-Q055",
+      "chapter": "2.2",
+      "section": "2.2.2-d",
+      "topic": "Unbedenklichkeitsbescheinigung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 67,
+      "question": "Ohne welche Unterlage schreibt das Grundbuchamt das Eigentum nicht um?",
+      "answers": [
+        "Unbedenklichkeitsbescheinigung des Finanzamts zur Grunderwerbsteuer",
+        "Energieausweis",
+        "Quittung über die Maklerprovision",
+        "Grundsteuerbescheid"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Unbedenklichkeitsbescheinigung bestätigt die gezahlte Grunderwerbsteuer – nicht die Grundsteuer."
+    },
+    {
+      "id": "2.2-Q072",
+      "chapter": "2.2",
+      "section": "2.2.2-d",
+      "topic": "Nutzen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 68,
+      "question": "Vermietete Wohnung: Nutzen und Lasten gehen laut Vertrag am 1.4. über, die Umschreibung erfolgt im Juni. Wem stehen die Mieten für April und Mai zu?",
+      "answers": [
+        "Dem Käufer",
+        "Dem Verkäufer, weil er noch Eigentümer ist",
+        "Beiden je zur Hälfte",
+        "Dem Notar zur Verwahrung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Mit dem Übergang von Nutzen und Lasten stehen dem Käufer die Erträge zu – unabhängig vom Grundbuch."
+    },
+    {
+      "id": "2.2-Q056",
+      "chapter": "2.2",
+      "section": "2.2.3",
+      "topic": "Verpflichtungsgeschäft",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 69,
+      "question": "Was ist ein Verpflichtungsgeschäft?",
+      "answers": [
+        "Ein Rechtsgeschäft, das die Pflicht zu einer Leistung begründet, z. B. der Kaufvertrag",
+        "Ein Rechtsgeschäft, durch das ein Recht übertragen wird",
+        "Die Eintragung im Grundbuch",
+        "Die Schlüsselübergabe"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Verpflichtungsgeschäft ändert an der Rechtslage der Sache nichts – der Verkäufer bleibt Eigentümer."
+    },
+    {
+      "id": "2.2-Q057",
+      "chapter": "2.2",
+      "section": "2.2.3",
+      "topic": "Verfügungsgeschäft",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 70,
+      "question": "Welche Vorgänge sind Verfügungsgeschäfte? (Mehrere richtig)",
+      "answers": [
+        "Auflassung mit Eintragung",
+        "Bestellung einer Grundschuld",
+        "Abschluss des Kaufvertrags",
+        "Abschluss des Maklervertrags"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Verfügung = Recht übertragen, belasten, ändern oder aufheben. Die Grundschuld belastet das Grundstück."
+    },
+    {
+      "id": "2.2-Q058",
+      "chapter": "2.2",
+      "section": "2.2.3",
+      "topic": "Trennungsprinzip",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 71,
+      "question": "Was besagt das Trennungsprinzip?",
+      "answers": [
+        "Verpflichtungs- und Verfügungsgeschäft sind zwei getrennte Rechtsgeschäfte",
+        "Besitz und Eigentum gehen immer gleichzeitig über",
+        "Käufer und Verkäufer brauchen getrennte Notare",
+        "Grundbuch und Kataster sind getrennt"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Kaufvertrag und Übereignung sind zwei Geschäfte, auch wenn sie im selben Termin stattfinden."
+    },
+    {
+      "id": "2.2-Q059",
+      "chapter": "2.2",
+      "section": "2.2.3",
+      "topic": "Abstraktionsprinzip",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 72,
+      "question": "Was besagt das Abstraktionsprinzip?",
+      "answers": [
+        "Die Wirksamkeit von Verpflichtung und Verfügung wird jeweils unabhängig geprüft",
+        "Ohne Grundbucheintrag gibt es keinen Kaufvertrag",
+        "Die Auflassung ersetzt den Kaufvertrag",
+        "Ein unwirksamer Kaufvertrag macht die Übereignung automatisch unwirksam"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Ist der Kaufvertrag unwirksam, bleibt die vollzogene Übereignung zunächst wirksam. Zurückgefordert wird über das Bereicherungsrecht."
+    },
+    {
+      "id": "2.2-Q073",
+      "chapter": "2.2",
+      "section": "2.2.3",
+      "topic": "Eigentumsübergang",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 73,
+      "question": "Kaufvertrag beurkundet, Auflassung erklärt, Vormerkung eingetragen – die Umschreibung fehlt noch. Wer ist Eigentümer?",
+      "answers": [
+        "Der Verkäufer",
+        "Der Käufer",
+        "Beide gemeinsam",
+        "Der Notar als Treuhänder"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Eigentum am Grundstück erst mit Eintragung. Die Vormerkung sichert nur den Anspruch."
+    }
+  ]
+}

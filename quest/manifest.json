@@ -1,0 +1,15 @@
+{
+  "name": "34i-Quest",
+  "short_name": "34i-Quest",
+  "description": "Lernspiel zur Sachkundeprüfung Immobiliardarlehensvermittlung (§ 34i GewO)",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F2F7FF",
+  "theme_color": "#0A6CF5",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

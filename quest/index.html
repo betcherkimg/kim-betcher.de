@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0A6CF5">
+  <meta name="description" content="34i-Quest – Lernspiel zur Sachkundeprüfung Immobiliardarlehensvermittlung">
+  <title>34i-Quest</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="preload" href="css/fonts/bricolage-grotesque-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Zum Inhalt springen</a>
+
+  <!-- Kopfzeile: wird erst nach dem Save-Terminal eingeblendet -->
+  <header class="topbar" id="topbar" hidden>
+    <div class="topbar__inner">
+      <button class="topbar__logo" data-action="go-dashboard" aria-label="Zur Missionsauswahl">
+        <img src="assets/logo.png" alt="34i-Quest" width="720" height="235">
+      </button>
+      <div class="topbar__stats">
+        <div class="rankchip" id="rankChip" title="Rang und Erfahrung"></div>
+        <span class="chip chip--streak" id="streakChip" title="Lerntage in Folge"></span>
+        <button class="chip chip--btn" id="soundBtn" data-action="toggle-sound" aria-pressed="true" title="Ton an/aus"></button>
+        <button class="chip chip--save" id="saveChip" data-action="grant-write" title="Speicherstatus"></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <!-- 1 · Save-Terminal -->
+    <section class="screen screen--terminal" data-screen="terminal" aria-labelledby="termTitle">
+      <div class="terminal">
+        <img class="terminal__logo" src="assets/logo.png" alt="34i-Quest" width="720" height="235">
+        <div class="terminal__panel">
+          <div class="terminal__bar">
+            <span id="termTitle">Save Terminal</span>
+            <span class="terminal__file">smartadm_34i.json</span>
+          </div>
+          <ol class="terminal__log" id="termLog" aria-live="polite"></ol>
+          <div class="terminal__actions">
+            <button class="btn btn--primary btn--xl" id="btnResume" data-action="save-resume" hidden>WEITERSPIELEN</button>
+            <button class="btn btn--primary btn--xl" data-action="save-load">SPIELSTAND LADEN</button>
+            <button class="btn btn--ghost btn--xl" data-action="save-new">NEU STARTEN</button>
+          </div>
+          <p class="terminal__hint" id="termHint"></p>
+          <button class="linkbtn" id="btnGuest" data-action="save-guest" hidden>Ohne Speichern ausprobieren</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · Missionsauswahl -->
+    <section class="screen" data-screen="dashboard" hidden>
+      <div id="dashboardView"></div>
+    </section>
+
+    <!-- 3 · Kapitel: vier Modi -->
+    <section class="screen" data-screen="chapter" hidden>
+      <div id="chapterView"></div>
+    </section>
+
+    <!-- 4 · Lernskript -->
+    <section class="screen" data-screen="learn" hidden>
+      <div id="learnView"></div>
+    </section>
+
+    <!-- 5 · Run (Story, Versus, Boss) -->
+    <section class="screen" data-screen="run" hidden>
+      <div id="runView"></div>
+    </section>
+
+    <!-- 6 · Ergebnis -->
+    <section class="screen" data-screen="result" hidden>
+      <div id="resultView"></div>
+    </section>
+  </main>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+  <div class="flash" id="flash" aria-hidden="true"></div>
+  <canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+
+  <noscript><p class="noscript">34i-Quest braucht JavaScript. Bitte aktiviere es und lade die Seite neu.</p></noscript>
+</body>
+</html>

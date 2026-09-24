@@ -1,0 +1,1237 @@
+{
+  "chapter": "2.2",
+  "title": "Rechtliche Grundlagen: Immobilienerwerb",
+  "sources": [
+    "BWB Lernskript 2.2.1.1",
+    "BWB Lernskript 2.2.1.2",
+    "BWB Lernskript 2.2.2",
+    "BWB Lernskript 2.2.3"
+  ],
+  "sections": [
+    {
+      "id": "2.2.1.1-a",
+      "title": "Grundstücksarten",
+      "subtitle": "Unbebaut, baureif, bebaut – und welche Nutzung dahintersteckt",
+      "source": "BWB 2.2.1.1",
+      "examRelevance": "S",
+      "checkId": "2.2-Q002",
+      "content": [
+        {
+          "type": "text",
+          "text": "Grundstücke unterscheidet man nach drei Kriterien: **Bebauungsart**, **Nutzungsart** und **Entwicklungszustand**. Die Begriffe zur Bebauung stammen aus dem **Bewertungsgesetz (BewG)**, das die Bewertung für steuerliche Zwecke regelt."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Grundstück",
+            "Merkmal",
+            "Anker"
+          ],
+          "rows": [
+            [
+              "Unbebaut",
+              "Kein **benutzbares** Gebäude – oder nur eines von untergeordneter Bedeutung, z. B. abbruchreif",
+              "§ 72 BewG"
+            ],
+            [
+              "Baureif",
+              "Unbebaut, im Bebauungsplan als **Bauland** festgesetzt, sofort bebaubar, Bebauung in der Nachbarschaft begonnen oder fertig. Nicht: Flächen für den Gemeinbedarf",
+              "§ 73 BewG"
+            ],
+            [
+              "Bebaut",
+              "Ein benutzbares Gebäude steht darauf. Wird in Abschnitten gebaut, zählt der bezugsfertige Teil",
+              "§ 74 BewG"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Benutzbar** heißt **bezugsfertig**: Den Bewohnern kann zugemutet werden, das Gebäude zu nutzen. Die Abnahme durch die Bauaufsicht ist dafür **nicht** entscheidend."
+        },
+        {
+          "type": "text",
+          "text": "Bebaute Grundstücke werden nach § 75 BewG weiter unterteilt. Maßstab ist die **Jahresrohmiete** (§ 79 BewG) – bei Selbstnutzung oder Leerstand wird die übliche Miete angesetzt."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Grundstücksart",
+            "Merkmal"
+          ],
+          "rows": [
+            [
+              "Mietwohngrundstück",
+              "**Mehr als 80 %** Wohnzwecke – ausgenommen Ein- und Zweifamilienhäuser"
+            ],
+            [
+              "Geschäftsgrundstück",
+              "**Mehr als 80 %** eigene oder fremde gewerbliche bzw. öffentliche Zwecke"
+            ],
+            [
+              "Gemischt genutztes Grundstück",
+              "Teils Wohnen, teils Gewerbe oder öffentliche Zwecke"
+            ],
+            [
+              "Einfamilienhaus",
+              "Nur **eine** Wohnung. Gewerbliche Mitbenutzung schadet nicht, solange der Charakter als Einfamilienhaus erhalten bleibt"
+            ],
+            [
+              "Zweifamilienhaus",
+              "Nur **zwei** Wohnungen"
+            ],
+            [
+              "Sonstige bebaute Grundstücke",
+              "Alles, was nicht darunter fällt, z. B. Land- und Forstwirtschaft im Vordergrund"
+            ]
+          ]
+        },
+        {
+          "type": "example",
+          "text": "Eine Einliegerwohnung für eigenes Personal zählt beim Einfamilienhaus nicht mit. Eine zweite, **fremd** genutzte Wohnung dagegen schon – dann liegt ein Zweifamilienhaus vor, auch wenn die Wohnung klein ist."
+        },
+        {
+          "type": "note",
+          "title": "Hintergrund",
+          "text": "Das BewG regelt auch die **Einheitswerte** (§ 19 BewG). Die letzte Hauptfeststellung war am 1.1.1964. Für die Grundsteuer spielen Einheitswerte seit der Grundsteuerreform (ab 2025) keine Rolle mehr – das steht noch nicht im BWB-Skript. Für die Prüfung reicht: Einheitswert = steuerlicher Wert, Grundlagenwissen."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 72 BewG",
+          "text": "Unbebaut = kein benutzbares Gebäude. Benutzbar ab Bezugsfertigkeit, Bauabnahme nicht entscheidend."
+        },
+        {
+          "ref": "§ 75 BewG",
+          "text": "Arten bebauter Grundstücke: Mietwohn-, Geschäfts-, gemischt genutzte Grundstücke, Ein-/Zweifamilienhäuser, sonstige."
+        }
+      ],
+      "memory": "Benutzbar = bezugsfertig. Kein benutzbares Gebäude → unbebaut, auch wenn eine Ruine daraufsteht.",
+      "examTrap": "„Mehr als 80 %“ heißt: Genau 80 % reichen nicht. Und die fehlende Bauabnahme macht ein bezugsfertiges Haus nicht zum unbebauten Grundstück."
+    },
+    {
+      "id": "2.2.1.1-b",
+      "title": "Entwicklungszustand & Bauleitplanung",
+      "subtitle": "Vom Acker zum Bauplatz – und wer festlegt, was gebaut werden darf",
+      "source": "BWB 2.2.1.1 (Lernziel) + Ergänzung",
+      "examRelevance": "S",
+      "checkId": "2.2-Q007",
+      "content": [
+        {
+          "type": "text",
+          "text": "Der **Entwicklungszustand** beschreibt, wie weit ein Grundstück vom fertigen Bauplatz entfernt ist. Das Lernziel nennt landwirtschaftliche Nutzung, Bauerwartungsland und Bauland."
+        },
+        {
+          "type": "steps",
+          "items": [
+            {
+              "title": "Land- oder forstwirtschaftliche Fläche",
+              "text": "Wird so genutzt, eine Bebauung ist nicht absehbar."
+            },
+            {
+              "title": "Bauerwartungsland",
+              "text": "Eine Bebauung ist aufgrund konkreter Tatsachen zu erwarten – typisch: Der Flächennutzungsplan stellt Baufläche dar, ein Bebauungsplan fehlt noch."
+            },
+            {
+              "title": "Rohbauland",
+              "text": "Im Bebauungsplan für eine Bebauung bestimmt, aber noch nicht erschlossen."
+            },
+            {
+              "title": "Baureifes Land",
+              "text": "Rechtlich und tatsächlich sofort bebaubar."
+            }
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "Die Stufen Bauerwartungsland und Rohbauland stehen im Lernziel, werden im BWB-Skript aber nicht erklärt. Die Definitionen hier sind an § 3 ImmoWertV angelehnt."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Flächennutzungsplan",
+            "text": "**Vorbereitender** Bauleitplan für das ganze Gemeindegebiet. Zeigt grob, wo Wohnen, Gewerbe, Grün oder Verkehr entstehen soll."
+          },
+          "right": {
+            "title": "Bebauungsplan",
+            "text": "**Verbindlicher** Bauleitplan für konkrete Grundstücke. Wird aus dem Flächennutzungsplan entwickelt und legt fest, was und wie gebaut werden darf."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Die Regelungen im Bebauungsplan heißen **Festsetzungen**: Art der Nutzung (Wohnhaus, Lagerhalle, Schule), überbaubare Grundstücksteile, Abstand zur Straße, freizuhaltende Flächen und das **Maß der Nutzung** (Höhe, überbaubare Fläche). Rechtsgrundlage ist das **Baugesetzbuch (BauGB)**, die Gebietsarten definiert die **Baunutzungsverordnung (BauNVO)**."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Gebiet",
+            "Kürzel",
+            "Charakter"
+          ],
+          "rows": [
+            [
+              "Kleinsiedlungsgebiet",
+              "WS",
+              "Kleinsiedlungen, Wohngebäude mit Nutzgärten"
+            ],
+            [
+              "Reines Wohngebiet",
+              "WR",
+              "**Ausschließlich** Wohnen"
+            ],
+            [
+              "Allgemeines Wohngebiet",
+              "WA",
+              "**Vorwiegend** Wohnen"
+            ],
+            [
+              "Besonderes Wohngebiet",
+              "WB",
+              "Vorwiegend Wohnen, dazu mit dem Wohnen vereinbares Gewerbe"
+            ],
+            [
+              "Dorfgebiet",
+              "MD",
+              "Landwirtschaft, Wohnen, nicht wesentlich störendes Gewerbe"
+            ],
+            [
+              "Mischgebiet",
+              "MI",
+              "Wohnen und Gewerbe, das das Wohnen nicht wesentlich stört"
+            ],
+            [
+              "Kerngebiet",
+              "MK",
+              "Handel, zentrale Einrichtungen von Wirtschaft, Verwaltung, Kultur"
+            ],
+            [
+              "Gewerbegebiet",
+              "GE",
+              "Vorwiegend nicht erheblich belästigendes Gewerbe"
+            ],
+            [
+              "Industriegebiet",
+              "GI",
+              "Ausschließlich Gewerbe, v. a. Betriebe, die anderswo unzulässig sind"
+            ]
+          ]
+        }
+      ],
+      "laws": [
+        {
+          "ref": "BauGB / BauNVO",
+          "text": "BauGB: Inhalt und Verfahren der Bauleitpläne. BauNVO: Definition der Baugebiete."
+        }
+      ],
+      "memory": "Flächennutzungsplan = Plan fürs ganze Gemeindegebiet (vorbereitend). Bebauungsplan = Regeln fürs Grundstück (verbindlich).",
+      "examTrap": "WR heißt ausschließlich Wohnen, WA nur vorwiegend Wohnen. Das eine Wort macht den Unterschied."
+    },
+    {
+      "id": "2.2.1.1-c",
+      "title": "Grundstücksbegriff & Kataster",
+      "subtitle": "Was ein Grundstück rechtlich ist und wo es verzeichnet wird",
+      "source": "BWB 2.2.1.1",
+      "examRelevance": "S",
+      "checkId": "2.2-Q012",
+      "content": [
+        {
+          "type": "text",
+          "text": "Ein **Grundstück** im Rechtssinn ist ein räumlich abgegrenzter Teil der Erdoberfläche, der im Grundbuch auf einem **eigenen Grundbuchblatt** oder unter einer **eigenen Nummer im Bestandsverzeichnis** eines gemeinschaftlichen Blattes geführt wird."
+        },
+        {
+          "type": "text",
+          "text": "Grund und Boden bilden mit den fest verbundenen Gebäuden eine **rechtliche und wirtschaftliche Einheit**. Deshalb können sie grundsätzlich keine unterschiedlichen Eigentümer haben. **Ausnahmen: Wohnungseigentum und Erbbaurecht.**"
+        },
+        {
+          "type": "list",
+          "items": [
+            "**Rechtlich** mit dem Grundstück verbunden: Mietverhältnisse, Rechte wie der Nießbrauch, Belastungen im Grundbuch.",
+            "**Wirtschaftlich** verbunden: z. B. ein Grundstück, das eine Baufirma nur zusammen mit einem Bauvertrag verkauft."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Die **Katasterämter** führen alle Flächen im **Liegenschaftskataster** (Liegenschaft = Immobilie). Es besteht aus zwei Teilen:"
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Liegenschaftsbuch (beschreibend)",
+            "text": "Flurstückskennzeichen, Fläche, Lage, Ergebnisse der Bodenschätzung, Nutzungsarten, Hinweise auf öffentlich-rechtliche Festlegungen wie Baulasten oder Naturschutzgebiete."
+          },
+          "right": {
+            "title": "Flurkarte (bildlich)",
+            "text": "Maßstabsgetreue Darstellung der Flurstücke mit Grenzen, der Gebäude und der Nutzungsarten."
+          }
+        },
+        {
+          "type": "steps",
+          "items": [
+            {
+              "title": "Flurstück",
+              "text": "Kleinste Einheit des Liegenschaftskatasters."
+            },
+            {
+              "title": "Flur",
+              "text": "Besteht aus mehreren Flurstücken."
+            },
+            {
+              "title": "Gemarkung",
+              "text": "Besteht aus mehreren Fluren."
+            }
+          ]
+        },
+        {
+          "type": "example",
+          "text": "Ein Grundstück kann aus **mehreren Flurstücken** mit unterschiedlichen Nutzungsarten bestehen – etwa Hausfläche und angrenzende Gartenparzelle unter einer laufenden Nummer im Bestandsverzeichnis."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 3 Abs. 1 GBO",
+          "text": "Jedes Grundstück erhält im Grundbuch eine besondere Stelle (Grundbuchblatt)."
+        }
+      ],
+      "memory": "Stück → Flur → Mark: klein, mittel, groß.",
+      "examTrap": "Das Flurstück ist die kleinste Einheit des Katasters, nicht des Grundbuchs. Ein Grundstück kann mehrere Flurstücke umfassen."
+    },
+    {
+      "id": "2.2.1.1-d",
+      "title": "Bestandteile, Zubehör, Inventar",
+      "subtitle": "Was beim Kauf automatisch mitgeht – und was nicht",
+      "source": "BWB 2.2.1.1",
+      "examRelevance": "S",
+      "checkId": "2.2-Q014",
+      "content": [
+        {
+          "type": "compare",
+          "left": {
+            "title": "§ 93 BGB – wesentlicher Bestandteil",
+            "text": "Teile, die nicht getrennt werden können, ohne dass ein Teil zerstört oder in seinem Wesen verändert wird. Sie können **nicht Gegenstand eigener Rechte** sein."
+          },
+          "right": {
+            "title": "§ 94 BGB – Grundstück",
+            "text": "Mit Grund und Boden **fest verbundene** Sachen sind wesentliche Bestandteile – vor allem **Gebäude** und Pflanzen, solange sie wurzeln."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Folge: Wer das Grundstück kauft, erwirbt Gebäude, fest eingebaute Anlagen wie die Heizung und die Pflanzen automatisch mit – samt den dazugehörigen Pflichten und Lasten. **Ausnahme Erbbaurecht:** Dort ist das Gebäude Bestandteil des Erbbaurechts, nicht des Grundstücks."
+        },
+        {
+          "type": "text",
+          "text": "**Zubehör und Inventar (§§ 97, 98 BGB)** sind **bewegliche** Sachen, die dem wirtschaftlichen Zweck des Grundstücks dienen und räumlich dazugehören, aber **rechtlich selbstständig** bleiben. Sie werden oft mit separater Rechnung verkauft."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Kfz-Werkstatt",
+            "Vertrag 1: „wie es steht und liegt“",
+            "Vertrag 2: „Grundstück mit Gebäude, ohne Inventar“"
+          ],
+          "rows": [
+            [
+              "Was wird verkauft?",
+              "Im Zweifel Grundstück, Gebäude **und** Hebebühnen, Werkzeug, Maschinen",
+              "Nur Grundstück und Gebäude. Hebebühnen, Auswuchtmaschine, Büromöbel über separate Kaufverträge"
+            ],
+            [
+              "Folge Grunderwerbsteuer",
+              "Grundstücksanteil am Kaufpreis muss gesondert ausgewiesen werden",
+              "Kaufpreis betrifft nur das Grundstück"
+            ],
+            [
+              "Folge Finanzierung",
+              "Beleihungswert muss gemindert werden",
+              "Keine Minderung nötig"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Sonstige bewegliche Sachen wie Wohnzimmer- oder Gartenmöbel werden grundsätzlich **nicht** mitverkauft – außer es ist ausdrücklich vereinbart."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§§ 93, 94 BGB",
+          "text": "Wesentliche Bestandteile – insbesondere fest verbundene Gebäude."
+        },
+        {
+          "ref": "§§ 97, 98 BGB",
+          "text": "Zubehör: bewegliche, dienende, rechtlich selbstständige Sachen."
+        }
+      ],
+      "memory": "Fest verbunden = wesentlicher Bestandteil = geht immer mit. Beweglich und dienend = Zubehör = geht im Zweifel mit, bleibt aber eine eigene Sache.",
+      "examTrap": "Mitverkauftes Inventar erhöht den Kaufpreis, aber nicht den Beleihungswert. Und für die Grunderwerbsteuer zählt nur der Grundstücksanteil."
+    },
+    {
+      "id": "2.2.1.1-e",
+      "title": "Wohnungs- und Teileigentum",
+      "subtitle": "Sondereigentum, Gemeinschaftseigentum, Sondernutzungsrecht",
+      "source": "BWB 2.2.1.1",
+      "examRelevance": "S",
+      "checkId": "2.2-Q018",
+      "content": [
+        {
+          "type": "text",
+          "text": "Normalerweise lässt sich ein Gebäude nicht getrennt vom Grundstück verkaufen. Das **Wohnungseigentumsgesetz (WEG, im Skript „WoEigG“)** von 1951 macht es möglich, ein Grundstück so aufzuteilen, dass einzelne Einheiten wie eigene Grundstücke verkauft und belastet werden können. Das Lernskript führt das unter **grundstücksgleichen Rechten**."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Baustein",
+            "Was ist das?",
+            "Beispiele"
+          ],
+          "rows": [
+            [
+              "**Sondereigentum**",
+              "Abgeschlossene Räume, die man allein als Eigentum erwirbt. Immer verbunden mit einem **Miteigentumsanteil (MEA)** am Gemeinschaftseigentum",
+              "Wohnung, Laden"
+            ],
+            [
+              "↳ Wohnungseigentum",
+              "Sondereigentum, das **Wohnzwecken** dient",
+              "Eigentumswohnung"
+            ],
+            [
+              "↳ Teileigentum",
+              "Sondereigentum, das **nicht** Wohnzwecken dient",
+              "Laden, Büro, Kellerraum, Tiefgaragenstellplatz"
+            ],
+            [
+              "**Gemeinschaftseigentum**",
+              "Gehört allen Eigentümern gemeinsam",
+              "Grundstück, Garten, Treppenhaus, Dach, Fassade"
+            ],
+            [
+              "**Sondernutzungsrecht**",
+              "Teil des Gemeinschaftseigentums, den **einer allein nutzen** darf",
+              "Terrasse, Gartenfläche, oberirdischer Stellplatz"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Die **Miteigentumsanteile** richten sich meist nach der Wohnfläche, es können aber auch Lage oder Exklusivität zählen."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Einheit",
+            "Verbunden mit",
+            "MEA"
+          ],
+          "rows": [
+            [
+              "1 – EG rechts",
+              "Sondernutzungsrecht Stellplatz 2 und Terrasse, Teileigentum Keller 1",
+              "2.500/10.000"
+            ],
+            [
+              "2 – EG links",
+              "Sondernutzungsrecht Stellplatz 3 und Terrasse, Teileigentum Kellerabteil 2",
+              "2.500/10.000"
+            ],
+            [
+              "3 – Dachgeschoss",
+              "Sondernutzungsrecht Stellplatz 1, Teileigentum Dachboden",
+              "5.000/10.000"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Vertragspartner für Arbeiten am Gemeinschaftseigentum – etwa der Dachdecker – ist die **Gemeinschaft der Wohnungseigentümer (WEG)** als rechtsfähiger Verband, nicht der einzelne Eigentümer."
+        },
+        {
+          "type": "note",
+          "title": "Aktueller Stand",
+          "text": "Seit der WEG-Reform 2020 können auch Stellplätze und – als Anhang an eine Wohnung – Freiflächen wie Terrassen Sondereigentum sein. Das Skript beschreibt den alten Stand, nach dem dafür nur ein Sondernutzungsrecht möglich war. Für die Prüfung gilt weiterhin: Gemeinschaftseigentum mit Alleinnutzung = Sondernutzungsrecht."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 3 WEG",
+          "text": "Vertragliche Einräumung von Sondereigentum durch Miteigentümer; Voraussetzung ist die Abgeschlossenheit."
+        },
+        {
+          "ref": "§ 8 WEG",
+          "text": "Teilung durch den Eigentümer per Erklärung gegenüber dem Grundbuchamt (Teilungserklärung)."
+        }
+      ],
+      "memory": "Sondereigentum = gehört mir. Sondernutzungsrecht = gehört uns, nutzen darf nur ich.",
+      "examTrap": "Teileigentum ist kein Anteil am Gemeinschaftseigentum, sondern Sondereigentum ohne Wohnzweck. Und ein Sondernutzungsrecht macht niemanden zum Eigentümer der Fläche."
+    },
+    {
+      "id": "2.2.1.1-f",
+      "title": "Teilungserklärung & Gemeinschaftsordnung",
+      "subtitle": "Wie aus einem Haus viele Wohnungsgrundbücher werden",
+      "source": "BWB 2.2.1.1",
+      "examRelevance": "S",
+      "checkId": "2.2-Q022",
+      "content": [
+        {
+          "type": "steps",
+          "items": [
+            {
+              "title": "Aufteilungsliste & Aufteilungsplan",
+              "text": "Welche Einheiten werden Sonder- oder Teileigentum, welche MEA gelten? Der Plan zeigt alle Räume als Grundriss, Keller tragen die Wohnungsnummer, Gemeinschaftseigentum wird gekennzeichnet. Dazu Ansichten, Schnitte und ein amtlicher Lageplan."
+            },
+            {
+              "title": "Abgeschlossenheitsbescheinigung",
+              "text": "Die Baubehörde prüft: Trennung durch Wände und Decken, eigener abschließbarer Zugang, dazu Schallschutz, eigene Heizkreise und Zähler sowie Bad, WC und Küche."
+            },
+            {
+              "title": "Teilungserklärung",
+              "text": "Wird gefertigt und vom **Notar beglaubigt**."
+            },
+            {
+              "title": "Vorlage beim Grundbuchamt",
+              "text": "Teilungserklärung, Aufteilungsplan und Abgeschlossenheitsbescheinigung."
+            },
+            {
+              "title": "Anlegung der Wohnungsgrundbücher",
+              "text": "Jede Einheit bekommt ein **eigenes Grundbuchblatt**. Bestehende Belastungen werden als Gesamtbelastung übertragen, das alte Grundstücksblatt wird geschlossen. **Erst jetzt ist die Teilung wirksam.**"
+            }
+          ]
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Teilungserklärung",
+            "text": "**Begründet** das Wohnungseigentum sachenrechtlich: Was ist Sondereigentum, was Gemeinschaftseigentum, welche Sondernutzungsrechte gibt es? Enthält Grundbuchsituation, Aufteilungsplan und die Gemeinschaftsordnung."
+          },
+          "right": {
+            "title": "Gemeinschaftsordnung (GemO)",
+            "text": "**Gestaltet das Verhältnis** der Eigentümer untereinander. Wird vom teilenden Eigentümer zusammen mit der Teilungserklärung festgelegt – oft ohne besondere Sorgfalt."
+          }
+        },
+        {
+          "type": "list",
+          "items": [
+            "Bestellung einer Verwaltung",
+            "Zustimmungspflicht bei Veräußerung, baulichen Veränderungen (Mauerdurchbruch) und Vermietung",
+            "Stimmrecht nach Köpfen oder nach Objekten",
+            "Hausordnung",
+            "Kostenverteilungsschlüssel",
+            "Nutzung und Veränderung des Gemeinschaftseigentums"
+          ],
+          "title": "Typische Regelungen der GemO"
+        },
+        {
+          "type": "text",
+          "text": "Eine spätere Änderung der GemO ist schwer: Grundsätzlich müssen **alle** Eigentümer notariell beglaubigt zustimmen, und auch die **dinglich Berechtigten** – meist die finanzierenden Banken – müssen bewilligen. Man spricht deshalb von einer „Zementierung“ der GemO."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 8 WEG",
+          "text": "Die Teilung wird mit der Anlegung der Wohnungsgrundbücher wirksam."
+        }
+      ],
+      "memory": "Teilungserklärung = WAS gehört WEM. Gemeinschaftsordnung = WIE lebt man zusammen.",
+      "examTrap": "Viele sagen „Teilungserklärung“ und meinen die Gemeinschaftsordnung. Und: Für die Teilungserklärung genügt die notarielle Beglaubigung."
+    },
+    {
+      "id": "2.2.1.1-g",
+      "title": "Erbbaurecht",
+      "subtitle": "Haus kaufen, Boden pachten – Recht auf Zeit",
+      "source": "BWB 2.2.1.1",
+      "examRelevance": "S",
+      "checkId": "2.2-Q030",
+      "content": [
+        {
+          "type": "text",
+          "text": "Das **Erbbaurecht** (früher Erbpacht) ist das **vererbliche und veräußerliche Recht, auf oder unter der Oberfläche eines fremden Grundstücks ein Bauwerk zu haben** (§ 1 ErbbauRG). Das Gebäude ist wesentlicher Bestandteil des **Erbbaurechts**, nicht des Grundstücks (§ 12 ErbbauRG). Häufige Ausgeber: Kirchen und Gemeinden."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Erbbauberechtigter",
+            "text": "Spart die Anschaffungskosten für das Grundstück, zahlt dafür **Erbbauzins**. Wird **Eigentümer des Gebäudes**. Bekommt ein eigenes **Erbbaugrundbuch** und kann das Recht mit Grundpfandrechten belasten."
+          },
+          "right": {
+            "title": "Grundstückseigentümer",
+            "text": "Bleibt **Eigentümer von Grund und Boden**. Eine Bodenwertsteigerung kommt ihm zugute. Bei Ablauf fällt ihm das Bauwerk zu – gegen **Entschädigung**."
+          }
+        },
+        {
+          "type": "table",
+          "head": [
+            "Grundbuch",
+            "Eintragungen"
+          ],
+          "rows": [
+            [
+              "Grundstücksgrundbuch, **Abt. II**",
+              "Erbbaurecht – zwingend an **ausschließlich erster Rangstelle** (§ 10 ErbbauRG), ggf. Vorkaufsrecht"
+            ],
+            [
+              "Erbbaugrundbuch, Abt. I",
+              "Erbbauberechtigter"
+            ],
+            [
+              "Erbbaugrundbuch, Abt. II",
+              "Erbbauzins, ggf. Vorkaufsrecht, Vormerkung zur Erhöhung des Erbbauzinses"
+            ],
+            [
+              "Erbbaugrundbuch, Abt. III",
+              "Grundpfandrechte für die Baufinanzierung"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Der **Erbbaurechtsvertrag** wird notariell beurkundet. § 2 ErbbauRG nennt mögliche Inhalte: Errichtung und Instandhaltung, Versicherung und Wiederaufbau, Lasten und Abgaben, Heimfall, Vertragsstrafen, Vorrecht auf Erneuerung, Verkaufsverpflichtung des Eigentümers. Eine feste **Laufzeit** schreibt das Gesetz nicht vor – üblich sind **99 Jahre**."
+        },
+        {
+          "type": "text",
+          "text": "Der **Erbbauzins** wird meist jährlich gezahlt und kann an die Teuerung angepasst werden, nach oben begrenzt."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Zeitablauf (§ 27 ErbbauRG)",
+            "text": "Das Erbbaurecht erlischt, das Bauwerk wird Bestandteil des Grundstücks. Der Eigentümer zahlt **Entschädigung** – bei Erbbaurechten für minderbemittelte Bevölkerungskreise **mindestens zwei Drittel** des gemeinen Werts. Bietet er rechtzeitig eine **Verlängerung** für die Standdauer des Bauwerks an und lehnt der Erbbauberechtigte ab, **erlischt der Entschädigungsanspruch**."
+          },
+          "right": {
+            "title": "Heimfall (§ 2 Nr. 4 ErbbauRG)",
+            "text": "Vertraglich vereinbarte Pflicht, das Erbbaurecht **schon vor Ablauf** auf den Eigentümer zu übertragen, wenn bestimmte Voraussetzungen eintreten – etwa bei Zahlungsverzug mit dem Erbbauzins oder groben Vertragsverstößen."
+          }
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das BWB-Skript nennt den Zeitablauf „Heimfall“. Juristisch sauber sind das zwei verschiedene Dinge – siehe Vergleich oben."
+        },
+        {
+          "type": "text",
+          "text": "**Beleihung:** Weil das Erbbaurecht und der Erbbauzins vorrangig stehen, sind manche Kreditinstitute zurückhaltend – vor allem bei privaten Erbbaurechtsgebern."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 1 ErbbauRG",
+          "text": "Vererbliches und veräußerliches Recht, auf oder unter der Oberfläche ein Bauwerk zu haben."
+        },
+        {
+          "ref": "§ 10 ErbbauRG",
+          "text": "Nur zur ausschließlich ersten Rangstelle; der Rang kann nicht geändert werden."
+        },
+        {
+          "ref": "§ 27 ErbbauRG",
+          "text": "Entschädigung bei Zeitablauf; mindestens 2/3 bei minderbemittelten Kreisen; Anspruch erlischt bei abgelehnter Verlängerung."
+        }
+      ],
+      "memory": "Boden bleibt beim Eigentümer, das Haus gehört dem Erbbauberechtigten – auf Zeit, meist 99 Jahre.",
+      "examTrap": "Das Erbbaurecht steht im Grundstücksgrundbuch in Abteilung II, nicht in Abteilung I. Und wer die angebotene Verlängerung ablehnt, verliert seine Entschädigung."
+    },
+    {
+      "id": "2.2.1.2",
+      "title": "Formen des Erwerbs",
+      "subtitle": "Kauf, Schenkung, Erbschaft, Zwangsversteigerung",
+      "source": "BWB 2.2.1.2",
+      "examRelevance": "S",
+      "checkId": "2.2-Q034",
+      "content": [
+        {
+          "type": "table",
+          "head": [
+            "Erwerb",
+            "Eigentum geht über …",
+            "Grunderwerbsteuer",
+            "Besonderheit"
+          ],
+          "rows": [
+            [
+              "Kauf",
+              "mit Auflassung und Eintragung",
+              "**Ja**",
+              "Gegenleistung: Kaufpreis"
+            ],
+            [
+              "Schenkung",
+              "mit Auflassung und Eintragung",
+              "**Nein** – Schenkungsteuerrecht",
+              "Keine Gegenleistung; Schenkungsversprechen braucht notarielle Beurkundung"
+            ],
+            [
+              "Erbschaft",
+              "mit dem **Tod des Erblassers** – das Grundbuch wird nur berichtigt",
+              "**Nein** – Erbschaftsteuerrecht",
+              "Nachweis per Erbschein; mehrere Erben = Erbengemeinschaft"
+            ],
+            [
+              "Zwangsversteigerung",
+              "mit dem **Zuschlag**",
+              "**Ja**",
+              "Grundbuch wird auf Ersuchen des Gerichts geändert"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Schenkung:** Wie beim Kauf braucht es zwei übereinstimmende Willenserklärungen – nur ohne Gegenleistung. Der Beschenkte übernimmt die Immobilie mit allen Rechten und Pflichten, also auch den Lasten. Ein nicht beurkundetes Schenkungsversprechen wird **geheilt**, sobald die Schenkung vollzogen ist (§ 518 Abs. 2 BGB)."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Gesamthandseigentum (Erbengemeinschaft)",
+            "text": "Grundbuch: „A und B in Erbengemeinschaft“ – **ohne Anteile** (§ 47 GBO). Das Haus gehört allen **gemeinsam als Ganzes**. Über das Grundstück kann nur gemeinsam verfügt werden."
+          },
+          "right": {
+            "title": "Bruchteilseigentum",
+            "text": "Grundbuch: „A und B zu je 1/2“. Jeder kann über **seinen Anteil frei verfügen** (§ 747 BGB), über das Ganze nur gemeinsam. Jeder kann die Aufhebung der Gemeinschaft verlangen (§ 749 BGB) – durch Teilung oder Verkauf."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Die Erben können die Grundbuchberichtigung innerhalb von **zwei Jahren** nach dem Erbfall **kostenlos** beantragen. Wollen Geschwister statt der Erbengemeinschaft Bruchteilseigentum, brauchen sie einen **notariell beurkundeten Auseinandersetzungs- und Übertragungsvertrag** mit Auflassung – und die Eintragung."
+        },
+        {
+          "type": "steps",
+          "title": "Zwangsversteigerung",
+          "items": [
+            {
+              "title": "Zuschlag",
+              "text": "Der Ersteher wird Eigentümer – auch an den mitversteigerten Gegenständen wie Heizung, Bad und WC (§ 90 ZVG)."
+            },
+            {
+              "title": "Zahlung bis zum Verteilungstermin",
+              "text": "Etwa 4–12 Wochen nach dem Zuschlag. Bis dahin verzinst der Ersteher das Gebot mit **4 % p. a.**; die geleistete Sicherheit wird angerechnet."
+            },
+            {
+              "title": "Verteilungstermin",
+              "text": "Der Rechtspfleger verteilt den Erlös nach der Rangfolge im Grundbuch. Ein Überschuss geht an den Schuldner."
+            },
+            {
+              "title": "Grundbuch",
+              "text": "Wird auf Ersuchen des Versteigerungsgerichts geändert – wenn der Zuschlag rechtskräftig ist und die **Unbedenklichkeitsbescheinigung** des Finanzamts zur Grunderwerbsteuer vorliegt."
+            }
+          ]
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 518 BGB",
+          "text": "Schenkungsversprechen braucht notarielle Beurkundung; Formmangel wird durch Vollzug geheilt."
+        },
+        {
+          "ref": "§ 47 GBO",
+          "text": "Eintragung mehrerer Berechtigter mit Angabe des Gemeinschaftsverhältnisses."
+        },
+        {
+          "ref": "§ 90 ZVG",
+          "text": "Eigentumserwerb durch den Zuschlag."
+        }
+      ],
+      "memory": "Kaufen und Ersteigern kosten Grunderwerbsteuer. Schenken und Erben nicht – da greift das Erbschaft- und Schenkungsteuerrecht.",
+      "examTrap": "Erbquote 50 % ist nicht Bruchteilseigentum 1/2. In der Erbengemeinschaft kann keiner allein „seine Hälfte“ des Hauses verkaufen."
+    },
+    {
+      "id": "2.2.2-a",
+      "title": "Direkterwerb & Makler",
+      "subtitle": "Was der Käufer prüfen muss und wann der Makler Geld bekommt",
+      "source": "BWB 2.2.2",
+      "examRelevance": "S",
+      "checkId": "2.2-Q037",
+      "content": [
+        {
+          "type": "text",
+          "text": "Beim **Direkterwerb (Privatkauf)** spart der Käufer die Maklerprovision – muss aber selbst prüfen, was ein Laie kaum überblickt."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Bezugsquelle",
+            "Unterlage",
+            "Wozu?"
+          ],
+          "rows": [
+            [
+              "Katasteramt",
+              "Lageplan, Flurkarte",
+              "Auch Nachbarflächen prüfen (Biergarten, Tankstelle, Gewerbe)"
+            ],
+            [
+              "Grundbuchamt (berechtigtes Interesse nötig)",
+              "Grundbuch",
+              "Eigentum, Rechte, Belastungen"
+            ],
+            [
+              "Verkäufer",
+              "Versicherungspolicen",
+              "Hinweis auf den Wert"
+            ],
+            [
+              "Verkäufer / Verwalter",
+              "Teilungserklärung, Gemeinschaftsordnung",
+              "Rechte, Pflichten, Stimmrecht, Kostenschlüssel, MEA"
+            ],
+            [
+              "Verkäufer / Verwalter",
+              "Beschlüsse der Eigentümer",
+              "Geplante Maßnahmen, offene Mängel, Tiefgaragenschäden"
+            ],
+            [
+              "Verkäufer",
+              "Mietverträge, energetische Maßnahmen",
+              "Sanierungsbedarf, Mietminderung, Mieterhöhung, Zahlungsmoral"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Der **Makler** vermittelt zwischen Verkäufer und Käufer. Er haftet z. B. für ein fehlerhaftes Exposé, wenn er den Fehler mit seiner Sachkunde hätte erkennen können. Die Wohnfläche muss er nicht nachmessen, aber prüfen, wie sie berechnet wurde, und das weitergeben. Makler schließen die Haftung für Verkäuferangaben deshalb gern aus."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Auftrag",
+            "Makler muss tätig werden?",
+            "Eigentümer darf selbst verkaufen?"
+          ],
+          "rows": [
+            [
+              "Einfacher Maklerauftrag",
+              "Nein. Eigentümer kann mehrere Makler beauftragen",
+              "Ja – dann keine Provision"
+            ],
+            [
+              "Einfacher Alleinauftrag",
+              "Ja, meist befristet, nur dieser Makler",
+              "Ja – dann keine Provision"
+            ],
+            [
+              "Qualifizierter Alleinauftrag",
+              "Ja, übernimmt alle Verhandlungen",
+              "Nein – Interessenten muss er an den Makler verweisen, sonst Schadensersatz"
+            ]
+          ]
+        },
+        {
+          "type": "steps",
+          "title": "Provisionsanspruch nach § 652 BGB",
+          "items": [
+            {
+              "title": "Wirksamer Maklervertrag",
+              "text": "Mit Verkäufer oder Käufer."
+            },
+            {
+              "title": "Maklerleistung",
+              "text": "Nachweis oder Vermittlung."
+            },
+            {
+              "title": "Dadurch wirksamer Kaufvertrag",
+              "text": "Ohne wirksamen Hauptvertrag keine Provision."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Die **Höhe** ist gesetzlich nicht festgelegt und frei verhandelbar. Üblich sind bis zu **7,14 %** des Kaufpreises inklusive 19 % Mehrwertsteuer."
+        },
+        {
+          "type": "text",
+          "text": "Seit **23.12.2020** gelten beim Kauf einer Wohnung oder eines Einfamilienhauses durch Verbraucher die §§ 656a–d BGB: Der Maklervertrag braucht **Textform** – eine E-Mail genügt. Ist der Makler für **beide Seiten** tätig, kann er nur von beiden **gleich viel** verlangen. Verzichtet er bei einer Seite, darf er auch von der anderen nichts verlangen."
+        },
+        {
+          "type": "example",
+          "text": "Kaufpreis 500.000 €, Provision 7,14 % = 35.700 €. Käufer und Verkäufer zahlen je **17.850 €** – egal, wer den Makler beauftragt hat."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Außenprovision",
+            "text": "Der **Käufer** zahlt. Meist im Exposé ausgewiesen."
+          },
+          "right": {
+            "title": "Innenprovision",
+            "text": "Der **Verkäufer** zahlt. Steht im Maklervertrag."
+          }
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Die Bundesländer-Tabelle im Skript (z. B. „3,57 % in allen anderen Ländern“) ist veraltet und nicht prüfungsrelevant. Merken: Höhe frei verhandelbar, Teilung nach §§ 656a–d BGB."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 652 BGB",
+          "text": "Maklerlohn nur, wenn der Vertrag infolge des Nachweises oder der Vermittlung zustande kommt."
+        },
+        {
+          "ref": "§§ 656a–d BGB",
+          "text": "Textform, gleiche Teilung bei Doppeltätigkeit, Grenzen der Kostenabwälzung."
+        }
+      ],
+      "memory": "Provision gibt es nur im Dreiklang: Vertrag – Leistung – Kaufvertrag.",
+      "examTrap": "„Maklervertrag schriftlich“ klingt richtig, gemeint ist Textform: Eine E-Mail reicht. Ohne wirksamen Kaufvertrag keine Provision, egal wie viel der Makler gearbeitet hat."
+    },
+    {
+      "id": "2.2.2-b",
+      "title": "Bauträger & Bauherr",
+      "subtitle": "MaBV-Raten, Bauzeitzinsen, Generalunternehmer",
+      "source": "BWB 2.2.2",
+      "examRelevance": "S",
+      "checkId": "2.2-Q042",
+      "content": [
+        {
+          "type": "compare",
+          "left": {
+            "title": "Kauf vom Bauträger",
+            "text": "Der Bauträger baut auf **eigenem** Grundstück und verkauft Grundstück und Haus in einem Vertrag. Der Käufer zahlt in Raten nach **§ 3 MaBV**."
+          },
+          "right": {
+            "title": "Bauherr",
+            "text": "Baut **selbst** und wählt alle Beteiligten aus: Planung (Architekt, Bauingenieur), Überwachung (Bauaufsicht, Baubetreuer), Ausführung (Handwerker)."
+          }
+        },
+        {
+          "type": "text",
+          "text": "§ 3 MaBV regelt zum Schutz der Käufer, welche Raten **frühestens** wann fällig werden. Die 13 Leistungen dürfen zu **höchstens sieben Teilbeträgen** gebündelt werden. Die Prozentsätze sind **Höchstwerte**, keine Pflichtraten."
+        },
+        {
+          "type": "table",
+          "head": [
+            "MaBV",
+            "Baufortschritt",
+            "Anteil gesamt"
+          ],
+          "rows": [
+            [
+              "30 %",
+              "nach Beginn der Erdarbeiten (bei Eigentumsübertragung am Grundstück)",
+              "30 %"
+            ],
+            [
+              "",
+              "**von der restlichen Vertragssumme:**",
+              ""
+            ],
+            [
+              "40 %",
+              "Rohbau fertig",
+              "28 %"
+            ],
+            [
+              "8 %",
+              "Dachflächen und Dachrinnen",
+              "5,6 %"
+            ],
+            [
+              "3 % / 3 % / 3 %",
+              "Rohinstallation Heizung / Sanitär / Elektro",
+              "je 2,1 %"
+            ],
+            [
+              "10 %",
+              "Fenster inkl. Verglasung",
+              "7 %"
+            ],
+            [
+              "6 %",
+              "Innenputz",
+              "4,2 %"
+            ],
+            [
+              "3 %",
+              "Estrich",
+              "2,1 %"
+            ],
+            [
+              "4 %",
+              "Fliesen im Sanitärbereich",
+              "2,8 %"
+            ],
+            [
+              "12 %",
+              "Bezugsfertigkeit, Zug um Zug gegen Besitzübergabe",
+              "8,4 %"
+            ],
+            [
+              "3 %",
+              "Fassade",
+              "2,1 %"
+            ],
+            [
+              "5 %",
+              "vollständige Fertigstellung",
+              "3,5 %"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Käuferschutz",
+          "items": [
+            "**Freistellungserklärung** der Bauträgerbank: Bei Insolvenz zahlt die Bank die Anzahlungen ohne Zinsen zurück **oder** überträgt das unfertige Objekt – sie hat das Wahlrecht.",
+            "Verstößt der Zahlungsplan gegen die MaBV, muss der Käufer **keine Abschläge** zahlen; der Kaufpreis wird erst nach Fertigstellung und Abnahme fällig.",
+            "Zu viel Gezahltes ist nur insoweit zurückzufordern, wie es über einen ordnungsgemäßen Zahlungsplan hinausgeht."
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Folgen für die Finanzierung",
+          "items": [
+            "**Teilvalutierungen** nach Baufortschritt müssen möglich sein.",
+            "Höheres Risiko für die Bank: „Ein halbfertiges Haus hat noch lange nicht den halben Wert eines fertigen.“",
+            "**Teilvalutierungszuschläge:** Zinsaufschlag auf vorzeitig ausgezahlte Beträge.",
+            "**Bereitstellungszinsen:** für zugesagte, aber noch nicht abgerufene Beträge.",
+            "Zusammen erhöhen diese **Bauzeitzinsen** den Finanzierungsbedarf."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Viele Bauherren beauftragen einen **Generalunternehmer (GU)**, der alle Gewerke übernimmt und schlüsselfertig übergibt – per **Werkvertrag**. Vorteile: ein Ansprechpartner, keine Koordination, Einkaufsvorteile. Nachteile: Koordination und GU-Aufschläge kosten mit. **Fertighäuser** sparen Planungs- und Koordinationsaufwand und Bauzeit – und damit Bauzeitzinsen."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 3 MaBV",
+          "text": "Raten nach Baufortschritt, höchstens sieben Teilbeträge."
+        }
+      ],
+      "memory": "Beim Bauträger gilt: Nie mehr zahlen, als gebaut ist.",
+      "examTrap": "Die MaBV-Sätze sind Obergrenzen. Und der Vertrag mit dem Generalunternehmer ist ein Werkvertrag – kein Kauf- und kein Dienstvertrag."
+    },
+    {
+      "id": "2.2.2-c",
+      "title": "Notar, Auflassung, Vormerkung",
+      "subtitle": "Vom Notartermin bis zur Eigentumsumschreibung",
+      "source": "BWB 2.2.2",
+      "examRelevance": "S",
+      "checkId": "2.2-Q050",
+      "content": [
+        {
+          "type": "text",
+          "text": "Ein Vertrag über den Erwerb oder die Veräußerung eines Grundstücks braucht die **notarielle Beurkundung** (§ 311b BGB). Ein formlos geschlossener Vertrag wird **seinem ganzen Inhalt nach gültig**, wenn Auflassung und Eintragung erfolgen."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Beurkundung",
+            "text": "Der Notar liest vor, prüft den Willen der Parteien, belehrt und formuliert rechtlich korrekt. Er verantwortet den **Inhalt** und unterschreibt mit. Pflicht beim Grundstückskaufvertrag."
+          },
+          "right": {
+            "title": "Beglaubigung",
+            "text": "Der Notar bestätigt nur, dass die **Unterschrift echt** ist. Mit dem Inhalt befasst er sich nicht. Beispiel: Teilungserklärung."
+          }
+        },
+        {
+          "type": "list",
+          "title": "Warum der Notar?",
+          "items": [
+            "**Warnfunktion:** Schutz vor übereilten Erklärungen.",
+            "**Beweisfunktion:** Was vereinbart ist, steht in der Urkunde.",
+            "**Beratungsfunktion:** Der Notar erforscht den Willen, belehrt und hält Bedenken schriftlich fest (§ 17 BeurkG).",
+            "**Vollständigkeit:** Alle Abreden gehören in die Urkunde. Nicht beurkundete Nebenabreden können den ganzen Vertrag unwirksam machen."
+          ]
+        },
+        {
+          "type": "steps",
+          "title": "Ablauf",
+          "items": [
+            {
+              "title": "Identifikation",
+              "text": "Alle Beteiligten weisen sich aus."
+            },
+            {
+              "title": "Kaufvertrag – Verpflichtungsgeschäft",
+              "text": "§ 433 BGB: Der Verkäufer muss übergeben und übereignen, der Käufer zahlen und abnehmen. Dazu Fälligkeiten, Verzugszinsen, Übernahme bestehender Darlehen."
+            },
+            {
+              "title": "Auflassung",
+              "text": "Die Einigung über den Eigentumsübergang (§§ 873, 925 BGB) – bei **gleichzeitiger Anwesenheit** beider vor dem Notar, meist direkt nach dem Kaufvertrag. Unter einer **Bedingung oder Befristung ist sie unwirksam**."
+            },
+            {
+              "title": "Auflassungsvormerkung",
+              "text": "Wird in **Abteilung II** eingetragen und geht schneller als die Umschreibung. Spätere Verfügungen des Verkäufers – zweiter Verkauf, neue Belastung, Zwangsvollstreckung, Insolvenzverwalter – sind dem Käufer gegenüber **unwirksam** (§ 883 BGB)."
+            },
+            {
+              "title": "Grundschuld",
+              "text": "Zur Finanzierung wird eine Grundschuld in **Abteilung III** bestellt. Der Rang richtet sich nach dem Eingang des Antrags."
+            },
+            {
+              "title": "Eigentumsumschreibung",
+              "text": "Das Grundbuchamt prüft die Unterlagen und trägt den Käufer ein. **Erst jetzt ist er Eigentümer.** Die Vormerkung wird gelöscht."
+            }
+          ]
+        },
+        {
+          "type": "example",
+          "text": "Weil die Auflassung keine Bedingung wie „erst nach Zahlung“ verträgt, sichert man den Verkäufer anders ab: Der Notar beantragt die Umschreibung erst, wenn die Zahlung nachgewiesen ist."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 311b BGB",
+          "text": "Notarielle Beurkundung; Heilung durch Auflassung und Eintragung."
+        },
+        {
+          "ref": "§ 873 BGB",
+          "text": "Erwerb durch Einigung und Eintragung."
+        },
+        {
+          "ref": "§ 925 BGB",
+          "text": "Auflassung bei gleichzeitiger Anwesenheit vor einer zuständigen Stelle; bedingungs- und befristungsfeindlich."
+        },
+        {
+          "ref": "§ 883 BGB",
+          "text": "Vormerkung sichert den Anspruch; spätere Verfügungen sind insoweit unwirksam."
+        }
+      ],
+      "memory": "Kaufvertrag verspricht, Auflassung einigt, Eintragung vollzieht.",
+      "examTrap": "Die Auflassung allein macht niemanden zum Eigentümer – erst die Eintragung. Und die Vormerkung macht den Käufer nicht zum Eigentümer, sie sichert nur seinen Anspruch."
+    },
+    {
+      "id": "2.2.2-d",
+      "title": "Besitz, Nutzen, Lasten, Gefahr",
+      "subtitle": "Übergabe vor Umschreibung – und wie das Geld sicher fließt",
+      "source": "BWB 2.2.2",
+      "examRelevance": "S+P",
+      "checkId": "2.2-Q052",
+      "content": [
+        {
+          "type": "compare",
+          "left": {
+            "title": "Besitz",
+            "text": "**Tatsächliche** Herrschaft über die Sache. Der Besitzer darf nur, was der Eigentümer erlaubt. Der Mieter ist Besitzer und hat sogar gegenüber dem Eigentümer das Hausrecht."
+          },
+          "right": {
+            "title": "Eigentum",
+            "text": "**Rechtliche** Herrschaft. Nur der Eigentümer kann verkaufen. Beim Grundstück erst mit der **Eintragung** im Grundbuch."
+          }
+        },
+        {
+          "type": "example",
+          "text": "Die Eltern leihen dem Kind übers Wochenende das Auto. Das Kind ist Besitzerin, die Eltern bleiben Eigentümer. Verbieten sie mehr als 300 km, gilt das."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Begriff",
+            "Bedeutung"
+          ],
+          "rows": [
+            [
+              "**Besitz**",
+              "Schlüssel, Zugang, Hausrecht"
+            ],
+            [
+              "**Nutzen**",
+              "Vermieten, verpachten, selbst nutzen, Obst ernten. Davon zu unterscheiden: Nutzungsrechte Dritter wie Nießbrauch, Leitungsrecht, Wohnrecht, Weiderecht"
+            ],
+            [
+              "**Lasten**",
+              "Steuern, Gebühren, Versicherungsbeiträge, Bewirtschaftungskosten"
+            ],
+            [
+              "**Gefahr**",
+              "Risiko des zufälligen Untergangs oder der Verschlechterung – Brand, Wasserschaden"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Mit der **Übergabe** gehen Besitz, Nutzen, Lasten und Gefahr auf den Käufer über – oft **vor** der Eigentumsumschreibung. Bei der Zwangsversteigerung passiert das mit dem Zuschlag. Wichtig ist der Zeitpunkt z. B. für Beginn von Abschreibung und Werbungskosten bei Vermietung."
+        },
+        {
+          "type": "list",
+          "title": "Zahlungsabwicklung",
+          "items": [
+            "Der Verkäufer will sein Eigentum erst verlieren, wenn der Kaufpreis gezahlt oder sicher ist.",
+            "**Notaranderkonto:** Nur bei berechtigtem Sicherungsinteresse, kein Bargeld. Heute die Ausnahme, z. B. wenn der Käufer vorzeitig zum Renovieren ins Haus darf.",
+            "**Selbstschuldnerische Bankbürgschaft** der Käuferbank: Sie bürgt für die Zahlung.",
+            "**Treuhandvereinbarung** zwischen den Banken: Das Geld wird zu treuen Händen überwiesen und erst nach vollzogener Auflassung freigegeben."
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Das prüft und veranlasst der Notar vor der Umschreibung",
+          "items": [
+            "Verzicht von **Vorkaufsberechtigten**, Löschung der Vorkaufsrechte",
+            "Löschung alter und Eintragung neuer Lasten",
+            "Antrag auf Eintragung mit Bewilligung des Verkäufers",
+            "In den neuen Bundesländern ggf. Grundstücksverkehrsgenehmigung",
+            "**Unbedenklichkeitsbescheinigung** des Finanzamts – bestätigt die gezahlte **Grunderwerbsteuer**. Ohne sie schreibt das Grundbuchamt nicht um."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das BWB-Skript schreibt an dieser Stelle „Grundsteuer“. Richtig ist die Grunderwerbsteuer."
+        },
+        {
+          "type": "note",
+          "title": "Randnotiz Darlehensvertrag",
+          "text": "Nimmt der Darlehensnehmer ein Angebot erst nach Ablauf der Annahmefrist an, gilt das als neuer Antrag."
+        }
+      ],
+      "laws": [],
+      "memory": "Besitz = in der Hand. Eigentum = im Grundbuch.",
+      "examTrap": "Wer die Schlüssel hat, ist Besitzer, nicht Eigentümer. Brennt das Haus nach der Übergabe, trägt der Käufer die Gefahr – obwohl er noch nicht im Grundbuch steht."
+    },
+    {
+      "id": "2.2.3",
+      "title": "Verpflichtung vs. Verfügung",
+      "subtitle": "Trennungs- und Abstraktionsprinzip",
+      "source": "BWB 2.2.3",
+      "examRelevance": "S",
+      "checkId": "2.2-Q059",
+      "content": [
+        {
+          "type": "compare",
+          "left": {
+            "title": "Verpflichtungsgeschäft",
+            "text": "Begründet die **Pflicht** zu einer Leistung – beim Grundstück der Kaufvertrag (§ 433 BGB, Form nach § 311b BGB). An der Rechtslage der Sache ändert sich **nichts**: Der Verkäufer bleibt Eigentümer."
+          },
+          "right": {
+            "title": "Verfügungsgeschäft",
+            "text": "Ein Recht wird **übertragen, belastet, geändert oder aufgehoben**. Beim Grundstück: Auflassung und Eintragung (§§ 873, 925 BGB). Auch die Bestellung einer Grundschuld ist eine Verfügung."
+          }
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Trennungsprinzip",
+            "text": "Verpflichtung und Verfügung sind **zwei getrennte Rechtsgeschäfte** – auch wenn sie im selben Notartermin passieren."
+          },
+          "right": {
+            "title": "Abstraktionsprinzip",
+            "text": "Die **Wirksamkeit** wird für jedes Geschäft **unabhängig** geprüft. Ist der Kaufvertrag unwirksam, bleibt eine vollzogene Übereignung zunächst wirksam – rückabgewickelt wird über das Bereicherungsrecht."
+          }
+        },
+        {
+          "type": "example",
+          "text": "X verkauft sein Grundstück an Y (Kaufvertrag). Auflassung und Eintragung folgen, Y ist Eigentümer. Später wird der Kaufvertrag erfolgreich angefochten. Y bleibt zunächst Eigentümer, muss das Grundstück aber an X zurückübertragen."
+        },
+        {
+          "type": "text",
+          "text": "Wirtschaftlich bilden beide Geschäfte eine Einheit, weil die Verfügung der Erfüllung der Verpflichtung dient. Dass ein Geschäft wirksam ist und das andere nicht, ist beim Immobilienkauf dank Notar selten – aber prüfungsbeliebt."
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das Skript nennt beim Grundstück auch § 929 BGB. Der gilt für bewegliche Sachen. Für Grundstücke zählen §§ 873, 925 BGB."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 433 BGB",
+          "text": "Kaufvertrag: Pflichten von Verkäufer und Käufer."
+        },
+        {
+          "ref": "§§ 873, 925 BGB",
+          "text": "Eigentumsübertragung am Grundstück: Auflassung und Eintragung."
+        }
+      ],
+      "memory": "Zwei Schubladen: „Ich muss“ (Kaufvertrag) und „Es gehört dir“ (Auflassung + Eintragung). Jede wird für sich geprüft.",
+      "examTrap": "Mit dem Kaufvertrag ändert sich am Eigentum noch nichts. „Eigentum geht mit der Beurkundung über“ ist die klassische Falle."
+    }
+  ]
+}
