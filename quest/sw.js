@@ -4,7 +4,7 @@
  * Bei neuer contentVersion in chapters.json wird der Content-Cache geleert.
  * Bei App-Updates: STATIC_VERSION erhöhen.
  */
-const STATIC_VERSION = 'v10';
+const STATIC_VERSION = 'v11';
 const STATIC_CACHE = `34i-quest-static-${STATIC_VERSION}`;
 const CONTENT_CACHE = '34i-quest-content-v1';
 
@@ -21,7 +21,8 @@ const SHELL = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(STATIC_CACHE).then((c) => c.addAll(SHELL)));
+  // cache: 'reload' umgeht den HTTP-Cache – sonst landen beim Update alte Dateien im neuen Cache
+  event.waitUntil(caches.open(STATIC_CACHE).then((c) => c.addAll(SHELL.map((url) => new Request(url, { cache: 'reload' })))));
   // Kein skipWaiting hier: Die App fragt den Nutzer, bevor die neue Version übernimmt.
 });
 
@@ -63,7 +64,7 @@ async function navigationNetworkFirst(req) {
 async function staleWhileRevalidate(req) {
   const cache = await caches.open(STATIC_CACHE);
   const cached = await cache.match(req, { ignoreSearch: true });
-  const network = fetch(req).then((res) => {
+  const network = fetch(req, { cache: 'no-cache' }).then((res) => {
     if (res.ok) cache.put(req, res.clone());
     return res;
   }).catch(() => null);
