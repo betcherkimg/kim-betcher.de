@@ -1,5 +1,5 @@
 {
-  "contentVersion": 8,
+  "contentVersion": 9,
   "blocks": {
     "questline-1": "Questline I · Recht, Markt & Vermittlung"
   },
@@ -30,63 +30,63 @@
       "level": 4,
       "title": "Recht der Darlehensvermittlung",
       "block": "questline-1",
-      "available": true
+      "available": false
     },
     {
       "id": "2.5",
       "level": 5,
       "title": "Vermittlerrecht & Berufszugang",
       "block": "questline-1",
-      "available": true
+      "available": false
     },
     {
       "id": "2.6",
       "level": 6,
       "title": "Verbraucherschutz & Kundenrechte",
       "block": "questline-1",
-      "available": true
+      "available": false
     },
     {
       "id": "2.7",
       "level": 7,
       "title": "Wettbewerb, Werbung & Beratung",
       "block": "questline-1",
-      "available": true
+      "available": false
     },
     {
       "id": "2.8",
       "level": 8,
       "title": "Datenschutz & Kundendaten",
       "block": "questline-1",
-      "available": true
+      "available": false
     },
     {
       "id": "2.9",
       "level": 9,
       "title": "Aufsicht & Zuständigkeiten",
       "block": "questline-1",
-      "available": true
+      "available": false
     },
     {
       "id": "2.10",
       "level": 10,
       "title": "Europa & Binnenmarkt",
       "block": "questline-1",
-      "available": true
+      "available": false
     },
     {
       "id": "2.11",
       "level": 11,
       "title": "Wirtschaft, Immobilienmarkt & Zinsen",
       "block": "questline-1",
-      "available": true
+      "available": false
     },
     {
       "id": "2.12",
       "level": 12,
       "title": "Steuern rund um Immobilien",
       "block": "questline-1",
-      "available": true
+      "available": false
     }
   ]
 }

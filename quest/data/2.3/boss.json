@@ -391,6 +391,222 @@
         3
       ],
       "explanation": "Das Skript nennt alle vier als typische Veränderungen."
+    },
+    {
+      "id": "2.3-B016",
+      "chapter": "2.3",
+      "section": "2.3.2-d",
+      "topic": [
+        "Widerspruch",
+        "Beleihung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Im Grundbuch ist ein Widerspruch eingetragen. Welche Folge ist für die Darlehenssicherung laut Skript typischerweise zu beachten?",
+      "answers": [
+        "In der Regel ist sie bis zur Löschung des Widerspruchs nicht möglich",
+        "Der Widerspruch verbessert automatisch den Rang des Kreditgebers",
+        "Der Widerspruch betrifft nur das Kataster",
+        "Der Widerspruch hat niemals Einfluss auf die Beleihung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Widerspruch zerstört den öffentlichen Glauben; die Beleihungsfähigkeit ist zu prüfen und eine Darlehenssicherung ist in der Regel bis zur Löschung nicht möglich."
+    },
+    {
+      "id": "2.3-B017",
+      "chapter": "2.3",
+      "section": "2.3.2-e",
+      "topic": [
+        "Reallast",
+        "Altenteil"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Ein Altenteil kann nicht im Rang hinter die Grundschuld treten. Welche Behandlung nennt das Skript als mögliche Ausnahme?",
+      "answers": [
+        "Kapitalisierung nach Alter des Berechtigten und Jahreswert; der Betrag wird als Vorlast bewertet",
+        "Vollständige Nichtberücksichtigung",
+        "Automatische Umwandlung in eine Hypothek",
+        "Eintragung in Abteilung I"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Ist ein Rangrücktritt ausnahmsweise nicht möglich, kann das Altenteil kapitalisiert und als Vorlast bewertet werden."
+    },
+    {
+      "id": "2.3-B018",
+      "chapter": "2.3",
+      "section": "2.3.2-f",
+      "topic": [
+        "Nießbrauch",
+        "Rang"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Ein Nießbrauch soll im Vorrang vor einer neuen Grundschuld bestehen bleiben. Welche Aussage passt zum Skript?",
+      "answers": [
+        "Das ist problematisch, weil der Nießbrauch die Nutzung durch den Eigentümer einschränkt und den Grundschulden nicht im Rang vorgehen soll",
+        "Nießbrauch darf immer zwingend vorgehen",
+        "Nießbrauch steht nur im Bestandsverzeichnis",
+        "Nießbrauch ist stets vererblich und daher unschädlich"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Nießbrauch schränkt die Nutzung durch den Eigentümer ein und soll den Grundschulden nicht im Rang vorgehen."
+    },
+    {
+      "id": "2.3-B019",
+      "chapter": "2.3",
+      "section": "2.3.2-f",
+      "topic": [
+        "Dienstbarkeit",
+        "Beleihung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Auf dem Grundstück lastet ein normales Leitungsrecht zugunsten eines Versorgers. Welche Einordnung nennt das Skript grundsätzlich?",
+      "answers": [
+        "Es schränkt die Beleihung grundsätzlich nicht ein und kann Vorrang haben",
+        "Es macht das Objekt grundsätzlich beleihungsunfähig",
+        "Es muss immer gelöscht werden",
+        "Es ist eine Grundschuld"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Ein gewöhnliches Leitungsrecht schränkt die Beleihung grundsätzlich nicht ein und darf im Rang vorgehen."
+    },
+    {
+      "id": "2.3-B020",
+      "chapter": "2.3",
+      "section": "2.3.2-h",
+      "topic": [
+        "Hypothek",
+        "Tilgung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Eine voll ausgezahlte Hypothek wurde teilweise zurückgezahlt. Welche Vorlast ist laut Skript bei der Hypothek grundsätzlich zu berücksichtigen?",
+      "answers": [
+        "Die derzeitige Restschuld",
+        "Immer der ursprüngliche Nennbetrag unabhängig von Tilgung",
+        "Null Euro, sobald einmal getilgt wurde",
+        "Nur die Zinsen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Wegen des gesetzlichen Löschungsanspruchs ist bei einer voll ausgezahlten Hypothek grundsätzlich die aktuelle Restschuld als Vorlast zu berücksichtigen."
+    },
+    {
+      "id": "2.3-B021",
+      "chapter": "2.3",
+      "section": "2.3.2-h",
+      "topic": [
+        "Grundschuld",
+        "Neuvalutierung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Ein Darlehen ist getilgt, die eingetragene Grundschuld besteht aber fort. Wofür kann sie laut Skript mit Zustimmung des Eigentümers genutzt werden?",
+      "answers": [
+        "Für die Sicherung eines neuen Darlehens durch Neuvalutierung",
+        "Nur noch zur Sicherung der bereits getilgten Forderung",
+        "Für eine automatische Eigentumsübertragung",
+        "Für die Eintragung einer Baulast"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die abstrakte Grundschuld kann mit Zustimmung des Eigentümers neuvalutiert werden."
+    },
+    {
+      "id": "2.3-B022",
+      "chapter": "2.3",
+      "section": "2.3.3-a",
+      "topic": [
+        "Rangfolge",
+        "Zeitprinzip"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Abt. II/1 wurde am 10.06. eingetragen, Abt. III/1 ebenfalls am 10.06.; Abt. III/2 am 12.06. Welches Rangbild ist grundsätzlich richtig?",
+      "answers": [
+        "II/1 und III/1 gleichrangig, danach III/2",
+        "III/2 zuerst, dann II/1, dann III/1",
+        "Abteilung III steht immer vollständig vor Abteilung II",
+        "Nur die laufenden Nummern entscheiden über alle Abteilungen hinweg"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Abteilungsübergreifend gilt das Zeitprinzip; gleicher Eintragungstag führt grundsätzlich zu Gleichrang."
+    },
+    {
+      "id": "2.3-B023",
+      "chapter": "2.3",
+      "section": "2.3.3-b",
+      "topic": [
+        "Rangvorbehalt",
+        "Vorlast"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Ein Grundbuch enthält einen noch nicht ausgenutzten Rangvorbehalt. Wie ist er laut Skript bei der Beleihung zu behandeln?",
+      "answers": [
+        "Als Vorlast",
+        "Gar nicht, solange er nicht genutzt ist",
+        "Wie eine Eigentumsangabe in Abteilung I",
+        "Als Baulast außerhalb des Grundbuchs"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Ein Rangvorbehalt ist als Vorlast zu bewerten; bei geplanter Ausnutzung ist zu prüfen, ob diese noch möglich ist."
+    },
+    {
+      "id": "2.3-B024",
+      "chapter": "2.3",
+      "section": "2.3.5-a",
+      "topic": [
+        "Baulast",
+        "Prüfung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Der Grundbuchauszug zeigt keinerlei Belastung. Der Käufer plant einen Anbau direkt an die Grenze. Welche zusätzliche Prüfung ist nach dem Skript besonders wichtig?",
+      "answers": [
+        "Einsicht in das Baulastenverzeichnis bei der Baubehörde",
+        "Nur Prüfung von Abteilung III",
+        "Nur Prüfung der Grundakte auf Hypothekenbriefe",
+        "Keine weitere Prüfung, weil das Grundbuch lastenfrei ist"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Abstandsflächen- und andere Baulasten stehen nicht im Grundbuch und sind im Baulastenverzeichnis zu prüfen."
     }
   ]
 }

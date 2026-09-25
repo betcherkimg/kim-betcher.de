@@ -20,16 +20,17 @@
   <header class="topbar" id="topbar" hidden>
     <div class="topbar__inner">
       <button class="topbar__logo" data-action="go-dashboard" aria-label="Zur Missionsauswahl">
-        <img src="assets/logo.png" alt="34i-Quest" width="720" height="235">
+        <img src="assets/logo.webp" alt="34i-Quest" width="720" height="235">
       </button>
       <div class="topbar__stats">
-        <div class="hpwrap">
-          <button class="hpchip" id="hpChip" data-action="toggle-inv" aria-haspopup="true" aria-expanded="false" aria-controls="invPop" title="Lebenspunkte und Inventar"></button>
-          <button class="coinchip" id="coinChip" data-action="toggle-inv" aria-haspopup="true" aria-controls="invPop" title="Quest-Coins und Shop"></button>
-          <div class="invpop" id="invPop" role="dialog" aria-label="Heiltränke" hidden></div>
-        </div>
+        <button class="hpchip" id="hpChip" data-action="toggle-inv" aria-haspopup="true" aria-expanded="false" aria-controls="invPop" title="Lebenspunkte und Heiltränke"></button>
+        <button class="shopchip" id="shopChip" data-action="toggle-inv" aria-haspopup="true" aria-expanded="false" aria-controls="invPop" title="Shop und Inventar"></button>
+        <div class="coinchip" id="coinChip" title="Quest-Coins"></div>
         <div class="rankchip" id="rankChip" title="Rang und Erfahrung"></div>
         <span class="chip chip--streak" id="streakChip" title="Lerntage in Folge"></span>
+        <div class="invpop" id="invPop" role="dialog" aria-label="Heiltränke" hidden></div>
+      </div>
+      <div class="corner-tools" aria-label="Spielwerkzeuge">
         <button class="chip chip--btn chip--help" id="helpBtn" data-action="open-help" title="So funktioniert 34i-Quest" aria-label="Spielanleitung öffnen">?</button>
         <button class="chip chip--btn chip--music" id="musicBtn" data-action="toggle-music" aria-pressed="true" title="Musik an/aus"></button>
         <button class="chip chip--btn" id="soundBtn" data-action="toggle-sound" aria-pressed="true" title="Ton an/aus"></button>
@@ -42,7 +43,7 @@
     <!-- 1 · Save-Terminal -->
     <section class="screen screen--terminal" data-screen="terminal" aria-labelledby="termTitle">
       <div class="terminal">
-        <img class="terminal__logo" src="assets/logo.png" alt="34i-Quest" width="720" height="235">
+        <img class="terminal__logo" src="assets/logo.webp" alt="34i-Quest" width="720" height="235">
         <div class="terminal__panel">
           <div class="terminal__bar">
             <span id="termTitle">Save Terminal</span>
