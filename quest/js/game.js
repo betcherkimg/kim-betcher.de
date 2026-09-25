@@ -32,18 +32,56 @@ export const POTIONS = {
  * Schwierigkeit 2: kleine/mittlere Tränke.
  * Schwierigkeit 3: alle Tränke; Lebensfunke sehr selten (1 %).
  */
-export function rollQuestionReward(question, rng = Math.random) {
+export function rollQuestionReward(question, rng = Math.random, luck = 1) {
   // Tränke sind bewusst selten – die normale Quelle ist der Shop (Quest-Coins).
+  // luck: Multiplikator der Fundchance (Glückspilz = 2)
   const d = Math.max(1, Math.min(3, Number(question?.difficulty) || 1));
   const r = rng();
   if (d >= 3) {
-    if (r < 0.003) return POTIONS.spark;  // 0,3 % Lebensfunke
-    if (r < 0.018) return POTIONS.large;  // weitere 1,5 % großer Heiltrank
+    if (r < 0.003 * luck) return POTIONS.spark;   // 0,3 % Lebensfunke
+    if (r < 0.018 * luck) return POTIONS.large;   // weitere 1,5 % großer Heiltrank
     return null;
   }
-  if (d === 2) return r < 0.02 ? POTIONS.medium : null;  // 2 %
-  return r < 0.02 ? POTIONS.small : null;                // 2 %
+  if (d === 2) return r < 0.02 * luck ? POTIONS.medium : null;  // 2 %
+  return r < 0.02 * luck ? POTIONS.small : null;                // 2 %
 }
+
+/* ---------- Charakterklassen (Wahl beim Anlegen des Spielstands) ---------- */
+
+export const HERO_CLASSES = {
+  collector: {
+    id: 'collector', name: 'Sammler', icon: '💰', color: '#E9A400',
+    bonus: 'Doppelte Quest-Coins', short: 'Coins ×2',
+    text: 'Jede Belohnung in Coins zählt doppelt – Siege, Truhen und Level-Abschlüsse.',
+    fit: 'Für alle, die viel spielen und sich im Shop groß eindecken wollen.',
+    coinMult: 2, priceMult: 1, luck: 1, dailyFocus: 1,
+  },
+  saver: {
+    id: 'saver', name: 'Sparfuchs', icon: '🦊', color: '#E0682B',
+    bonus: 'Alle Items zum halben Preis', short: 'Items ×0,5',
+    text: 'Heiltränke, Lebensfunke und Kampf-Items kosten im Shop und in der Hotbar nur die Hälfte.',
+    fit: 'Für alle, die gern Items einsetzen – Herz und Überspringer inklusive.',
+    coinMult: 1, priceMult: 0.5, luck: 1, dailyFocus: 1,
+  },
+  normal: {
+    id: 'normal', name: 'Normalo', icon: '🧭', color: '#0A6CF5',
+    bonus: 'Täglich 2× Fokus gratis', short: '2 Fokus/Tag',
+    text: 'Jeden Tag stehen dir zwei kostenlose Fokus-Einsätze (+10 s im Boss) bereit. Nicht Genutztes verfällt um Mitternacht.',
+    fit: 'Für alle, die jeden Tag ein bisschen lernen und im Boss mehr Zeit brauchen.',
+    coinMult: 1, priceMult: 1, luck: 1, dailyFocus: 2,
+  },
+  lucky: {
+    id: 'lucky', name: 'Glückspilz', icon: '🍀', color: '#0E9F6E',
+    bonus: 'Doppelte Fundchance für Items', short: 'Funde ×2',
+    text: 'Tränke und Lebensfunken fallen doppelt so oft – bei Fragen und als Zugabe in Truhen.',
+    fit: 'Für alle, die sich gern überraschen lassen.',
+    coinMult: 1, priceMult: 1, luck: 2, dailyFocus: 1,
+  },
+};
+export const HERO_CLASS_ORDER = ['collector', 'saver', 'normal', 'lucky'];
+/** Ohne gewählte Klasse gelten neutrale Werte */
+export const NO_CLASS = { id: null, coinMult: 1, priceMult: 1, luck: 1, dailyFocus: 1 };
+export function heroClass(id) { return HERO_CLASSES[id] || NO_CLASS; }
 
 /* ---------- Kampf-Items (Hotbar F1–F4) ---------- */
 
@@ -119,6 +157,7 @@ export const RESCUE_HEAL = 30;
 export const BOSS_CRIT_SECONDS = 11;   // bei 15 s: Antwort innerhalb von 4 s
 /** Fokus-Item: Zeit der aktuellen Frage verlängern; jeden Tag gibt es einen Fokus geschenkt */
 export const BOSS_FOCUS_SECONDS = 10;
+/** Kostenlose Fokus-Einsätze pro Tag (Grundwert, Normalo: 2). Nicht stapelbar – Ungenutztes verfällt. */
 export const DAILY_FOCUS_GIFT = 1;
 /** Siegtruhe nach gewonnenem Bossfight: Sterne → garantierter Trank */
 /** Siegtruhe: Coins kommen über COIN_REWARDS; mit etwas Glück liegt zusätzlich ein Trank darin */

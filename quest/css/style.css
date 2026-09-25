@@ -1162,3 +1162,66 @@ kbd { font-family: var(--font-mono); font-size: .7rem; padding: 1px 5px; border-
 .hot__icon { font-size: 1.45rem; margin-top: 8px; }
 .run { padding-bottom: 104px; }
 .invpop { max-height: calc(100vh - 90px); overflow: auto; }
+
+/* =========================================================
+   Einstieg: Anleitung + Charakterwahl
+   ========================================================= */
+.screen--onboard { min-height: calc(100vh - 48px); }
+.onboard { max-width: 1080px; margin: 0 auto; display: grid; gap: 22px; padding-top: 8px; }
+.onboard__head { text-align: center; display: grid; justify-items: center; gap: 6px; }
+.onboard__logo { width: min(260px, 60vw); height: auto; margin-bottom: 6px; }
+.onboard__kicker { font-weight: 700; font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); }
+.onboard__head h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; }
+.onboard__lead { max-width: 60ch; color: var(--ink-2); font-size: 1.05rem; }
+.onboard__note { text-align: center; font-size: .85rem; color: var(--ink-3); }
+.onboard__actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; }
+
+.onboard__guide { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.gcard {
+  background: var(--white); border-radius: var(--r-lg); padding: 18px 18px 16px; box-shadow: var(--shadow-card);
+  display: grid; gap: 6px; align-content: start; animation: fadeUp .45s var(--d, 0ms) both;
+}
+.gcard__icon { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 14px; background: var(--ice); font-size: 1.5rem; }
+.gcard h3 { font-size: 1.15rem; font-weight: 800; }
+.gcard p { font-size: .93rem; color: var(--ink-2); line-height: 1.5; }
+.gcard b { color: var(--ink); }
+
+.heroes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.hero {
+  --hc: var(--blue);
+  position: relative; display: grid; gap: 8px; align-content: start; justify-items: center; text-align: center;
+  padding: 26px 16px 20px; border: 0; cursor: pointer; border-radius: var(--r-lg); background: var(--white); color: var(--ink);
+  box-shadow: var(--shadow-card); transition: transform .15s, box-shadow .15s;
+}
+.hero:hover { transform: translateY(-4px); box-shadow: 0 0 0 2px color-mix(in srgb, var(--hc) 55%, transparent), 0 20px 30px -20px rgba(11,37,83,.5); }
+.hero__emblem {
+  width: 84px; height: 94px; display: grid; place-items: center; font-size: 2.4rem;
+  clip-path: polygon(50% 0, 100% 20%, 100% 72%, 50% 100%, 0 72%, 0 20%);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--hc) 30%, #fff), color-mix(in srgb, var(--hc) 75%, #0B2553));
+}
+.hero__name { font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; }
+.hero__bonus { font-weight: 800; font-size: .9rem; padding: 4px 10px; border-radius: 99px; color: color-mix(in srgb, var(--hc) 70%, #0B2553); background: color-mix(in srgb, var(--hc) 14%, #fff); }
+.hero__text { font-size: .9rem; color: var(--ink-2); line-height: 1.45; }
+.hero__fit { font-size: .8rem; color: var(--ink-3); font-style: italic; }
+.hero__check { position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--hc); color: #fff; opacity: 0; transform: scale(.5); transition: opacity .15s, transform .15s; }
+.hero__check svg { width: 16px; height: 16px; stroke-width: 3; }
+.hero.is-picked { box-shadow: 0 0 0 3px var(--hc), 0 22px 34px -20px color-mix(in srgb, var(--hc) 80%, transparent); transform: translateY(-4px); }
+.hero.is-picked .hero__check { opacity: 1; transform: scale(1); }
+.hero.is-picked .hero__emblem { animation: pop .4s; }
+
+.profile__class { display: inline-flex; align-items: center; gap: 6px; justify-self: start; padding: 4px 10px; border-radius: 99px; font-weight: 800; font-size: .85rem; color: color-mix(in srgb, var(--hc) 70%, #0B2553); background: color-mix(in srgb, var(--hc) 14%, #fff); }
+.profile__class small { font-weight: 700; opacity: .8; }
+.invpop__class { margin: 0 0 10px; padding: 6px 10px; border-radius: 10px; background: var(--ice); font-size: .82rem; font-weight: 700; color: var(--ink-2); }
+.chip--help { font-family: var(--font-display); font-weight: 800; min-width: 32px; justify-content: center; }
+.hot__count.is-gift { color: #FFD76A; }
+
+@media (max-width: 980px) {
+  .onboard__guide { grid-template-columns: 1fr 1fr; }
+  .heroes { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .onboard__guide, .heroes { grid-template-columns: 1fr; }
+  .hero { grid-template-columns: auto 1fr; justify-items: start; text-align: left; column-gap: 14px; padding: 16px; }
+  .hero__emblem { grid-row: span 4; width: 60px; height: 68px; font-size: 1.7rem; }
+  .hero__name, .hero__bonus, .hero__text, .hero__fit { grid-column: 2; }
+}

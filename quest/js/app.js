@@ -4,7 +4,8 @@ import * as Content from './content-loader.js';
 import { SaveGame, SaveError, isSupported, createChapterProgress, SAVE_NAME } from './savegame.js';
 import { MODES, BOSS_REQUIRES_STORY, MAX_HP, MODE_HP_LOSS, POTIONS, rollQuestionReward, selectQuestions, prepareQuestion, Run, rankFor, ACHIEVEMENTS, Countdown,
   RESCUE_HEAL, BOSS_CRIT_SECONDS, BOSS_FOCUS_SECONDS, DAILY_FOCUS_GIFT, BOSS_CHEST_POTION_CHANCE, BOSS_TAUNTS,
-  COIN_REWARDS, COIN_LEVEL_COMPLETE, SHOP, coinsForWin, BATTLE_ITEMS, BATTLE_ITEM_ORDER, carouselOrder, carouselChest } from './game.js';
+  COIN_REWARDS, COIN_LEVEL_COMPLETE, SHOP, coinsForWin, BATTLE_ITEMS, BATTLE_ITEM_ORDER, carouselOrder, carouselChest,
+  HERO_CLASSES, HERO_CLASS_ORDER, heroClass } from './game.js';
 import * as Audio from './audio.js';
 
 /* =========================================================
@@ -68,6 +69,13 @@ function playerVitals() {
 
 const COIN_IMG = '<img class="coin" src="assets/coin.webp" alt="" width="20" height="20">';
 
+/* ---------- Charakterklasse ---------- */
+const cls = () => heroClass(playerVitals().heroClass);
+/** Preis eines Shop-Artikels inkl. Klassenrabatt (Sparfuchs) */
+const priceOf = (kind) => Math.max(1, Math.round((SHOP[kind]?.price || 0) * cls().priceMult));
+/** Coins für den Level-Abschluss inkl. Klassenbonus (Sammler) */
+const levelCoins = () => COIN_LEVEL_COMPLETE * cls().coinMult;
+
 function addCoins(n, label = '') {
   if (!n) return 0;
   const pl = playerVitals();
@@ -87,12 +95,13 @@ function buyItem(kind) {
   const pl = playerVitals();
   if (!item || !offer) return;
   if (offer.max && (pl.inventory[kind] || 0) >= offer.max) { toast(`Mehr als ${offer.max} ${item.label} kannst du nicht tragen.`, { icon: item.icon }); return; }
-  if (pl.coins < offer.price) { toast(`Dir fehlen ${offer.price - pl.coins} Quest-Coins.`, { icon: '🪙', tone: 'bad' }); return; }
-  pl.coins -= offer.price;
+  const price = priceOf(kind);
+  if (pl.coins < price) { toast(`Dir fehlen ${price - pl.coins} Quest-Coins.`, { icon: '🪙', tone: 'bad' }); return; }
+  pl.coins -= price;
   pl.inventory[kind] = (pl.inventory[kind] || 0) + 1;
   unlock('shopper');
   sfx('spend');
-  toast(`${item.label} gekauft (−${offer.price} Coins)`, { icon: item.icon, tone: 'gold' });
+  toast(`${item.label} gekauft (−${price} Coins)`, { icon: item.icon, tone: 'gold' });
   persist();
   rerenderCurrent();
 }
@@ -146,7 +155,7 @@ function usePotion(kind) {
 }
 
 function maybeDropReward(question) {
-  const item = rollQuestionReward(question);
+  const item = rollQuestionReward(question, Math.random, cls().luck);
   if (!item) return null;
   const pl = playerVitals();
   pl.inventory[item.id] = (pl.inventory[item.id] || 0) + 1;
@@ -212,7 +221,7 @@ function clearRunTimers() {
 
 function showScreen(name) {
   document.querySelectorAll('section[data-screen]').forEach((el) => { el.hidden = el.dataset.screen !== name; });
-  $('topbar').hidden = name === 'terminal';
+  $('topbar').hidden = name === 'terminal' || name === 'onboard';
   document.body.dataset.view = name;
   ui.screen = name;
   syncMusic();
@@ -352,15 +361,20 @@ function chapterStatus(id) {
 }
 
 /** Einmal pro Kalendertag: Fokus geschenkt, sobald der Spielstand geöffnet wird */
+/** Tages-Fokus: 1 (Normalo 2) kostenlose Einsätze pro Kalendertag. Nicht stapelbar – Ungenutztes verfällt. */
 function grantDailyGift() {
   const pl = playerVitals();
+  if (!pl.heroClass) return false;
   const today = todayKey();
-  if (pl.lastGiftDay === today) return false;
-  pl.lastGiftDay = today;
-  pl.inventory.focus = (pl.inventory.focus || 0) + DAILY_FOCUS_GIFT;
-  toast(`Tagesgeschenk: ${DAILY_FOCUS_GIFT}× Fokus (+${BOSS_FOCUS_SECONDS} s im Boss)`, { icon: '🎁', tone: 'gold', ms: 5000 });
+  if (pl.dailyFocus?.day === today) return false;
+  pl.dailyFocus = { day: today, left: cls().dailyFocus };
+  toast(`Tagesgeschenk: ${pl.dailyFocus.left}× Fokus gratis (+${BOSS_FOCUS_SECONDS} s im Boss) – gilt nur heute`, { icon: '🎁', tone: 'gold', ms: 5000 });
   persist();
   return true;
+}
+function dailyFocusLeft() {
+  const pl = playerVitals();
+  return pl.dailyFocus?.day === todayKey() ? (pl.dailyFocus.left || 0) : 0;
 }
 
 function todayKey(d = new Date()) {
@@ -410,9 +424,9 @@ function checkMastery(id) {
   p.levelCompleted = true;
   const pl = playerVitals();
   pl.hp = pl.maxHp;
-  addCoins(COIN_LEVEL_COMPLETE);
+  addCoins(levelCoins());
   unlock('master');
-  toast(`${levelLabel(id)} abgeschlossen – HP voll und +${COIN_LEVEL_COMPLETE} Quest-Coins!`, { icon: '🏆', tone: 'gold', ms: 5200 });
+  toast(`${levelLabel(id)} abgeschlossen – HP voll und +${levelCoins()} Quest-Coins!`, { icon: '🏆', tone: 'gold', ms: 5200 });
   confetti(120);
   return true;
 }
@@ -489,7 +503,7 @@ function renderInvPop() {
     const offer = SHOP[k];
     const have = pl.inventory[k] || 0;
     const full = offer.max && have >= offer.max;
-    const canBuy = pl.coins >= offer.price && !full;
+    const canBuy = pl.coins >= priceOf(k) && !full;
     const canUse = k !== 'spark' && have > 0 && pl.hp < pl.maxHp;
     return `<li class="shoprow ${have ? '' : 'is-empty'}">
       <span class="shoprow__icon">${it.icon}</span>
@@ -498,7 +512,7 @@ function renderInvPop() {
       ${k === 'spark'
         ? '<span class="shoprow__auto">automatisch</span>'
         : `<button class="btn btn--sm ${canUse ? 'btn--primary' : 'btn--ghost'}" data-action="use-potion" data-kind="${k}" ${canUse ? '' : 'disabled'}>Trinken</button>`}
-      <button class="btn btn--sm btn--buy" data-action="buy-item" data-kind="${k}" ${canBuy ? '' : 'disabled'} title="${full ? 'Maximum erreicht' : `Kaufen für ${offer.price} Coins`}">${COIN_IMG}${offer.price}</button>
+      <button class="btn btn--sm btn--buy" data-action="buy-item" data-kind="${k}" ${canBuy ? '' : 'disabled'} title="${full ? 'Maximum erreicht' : `Kaufen für ${priceOf(k)} Coins`}">${COIN_IMG}${priceOf(k)}</button>
     </li>`;
   }).join('');
   $('invPop').innerHTML = `
@@ -511,14 +525,15 @@ function renderInvPop() {
     <ul class="shop">${BATTLE_ITEM_ORDER.map((k) => {
       const it = BATTLE_ITEMS[k];
       const have = pl.inventory[k] || 0;
-      const canBuy = pl.coins >= SHOP[k].price;
+      const canBuy = pl.coins >= priceOf(k);
       return `<li class="shoprow shoprow--item ${have ? '' : 'is-empty'}">
         <span class="shoprow__icon">${it.icon}</span>
         <span class="shoprow__body"><b>${esc(it.label)} <kbd>${it.key}</kbd></b><small>${esc(it.text)}${it.modes.length === 1 ? ' · nur Boss' : ''}</small></span>
         <span class="shoprow__have" title="Im Inventar">×${have}</span>
-        <button class="btn btn--sm btn--buy" data-action="buy-item" data-kind="${k}" ${canBuy ? '' : 'disabled'} title="Kaufen für ${SHOP[k].price} Coins">${COIN_IMG}${SHOP[k].price}</button>
+        <button class="btn btn--sm btn--buy" data-action="buy-item" data-kind="${k}" ${canBuy ? '' : 'disabled'} title="Kaufen für ${priceOf(k)} Coins">${COIN_IMG}${priceOf(k)}</button>
       </li>`;
     }).join('')}</ul>
+    ${pl.heroClass ? `<p class="invpop__class">${HERO_CLASSES[pl.heroClass].icon} ${esc(HERO_CLASSES[pl.heroClass].name)}: ${esc(HERO_CLASSES[pl.heroClass].bonus)}${dailyFocusLeft() ? ` · heute noch ${dailyFocusLeft()}× Fokus gratis` : ''}</p>` : ''}
     <p class="invpop__rules">Coins gibt es für jeden gewonnenen Modus (Story ${COIN_REWARDS.story.base}, Versus ${COIN_REWARDS.versus.base}, Boss ${COIN_REWARDS.boss.base}). Erster Sieg doppelt, 3 Sterne mit Bonus, Level-Abschluss +${COIN_LEVEL_COMPLETE}.<br>Niederlage kostet HP: Story −25 %, Versus −33 %, Boss −50 %.</p>`;
 }
 
@@ -643,12 +658,109 @@ async function enterGame() {
   if (migrated) { persist(); toast('Lernskript aktualisiert – dein Fortschritt wurde übernommen.', { icon: '📘' }); }
   renderHeader();
   setSaveChip(save.guest ? 'guest' : save.canWrite ? 'ready' : 'permission');
-  grantDailyGift();
-  renderDashboard();
-  showScreen('dashboard');
+  if (!playerVitals().heroClass) {
+    // Neuer Spielstand (oder alter ohne Klasse): erst Anleitung und Charakterwahl
+    openOnboard('new');
+  } else {
+    grantDailyGift();
+    renderDashboard();
+    showScreen('dashboard');
+  }
   // Der Klick auf „Laden/Neu starten“ ist die nötige Nutzeraktion – Musik darf direkt starten
   Audio.unlockAudio();
   syncMusic();
+}
+
+/* =========================================================
+   1b · Einstieg: Anleitung + Charakterwahl
+   ========================================================= */
+
+const GUIDE = [
+  { icon: '📘', title: 'Lernen', text: 'Jedes Level ist ein Prüfungsthema. Das <b>Lernskript</b> erklärt den Stoff kompakt – mit Merksätzen, Prüfungsfallen und einer Checkpoint-Frage pro Abschnitt. Markiere Abschnitte als <b>Verstanden</b>.' },
+  { icon: '⚔️', title: 'Spielen', text: '<b>Story</b>: 10 Fragen in Lernreihenfolge, 3 Leben. <b>Versus</b>: 5 Zufallsfragen, 1 Leben. <b>Boss</b>: 6 harte Fragen, 15 Sekunden pro Frage – 4 richtig besiegen ihn, 3 Fehler verlieren.' },
+  { icon: '🏆', title: 'Level abschließen', text: 'Lernskript, Story, Versus und Boss geschafft? Dann ist das Level abgeschlossen: <b>HP voll</b> und <b>Bonus-Coins</b>. Das <b>Karussell</b> fragt alle Fragen am Stück ab – Training ohne Risiko mit Truhe am Ende.' },
+  { icon: '❤️', title: 'Lebenspunkte', text: 'Eine Niederlage kostet HP – Story 25 %, Versus 33 %, Boss 50 % – und setzt die Modi des Levels zurück. Bei <b>0 HP</b> bist du K.o.: Heiltrank trinken oder die kostenlose <b>Rettungsmission</b> spielen.' },
+  { icon: '🪙', title: 'Coins & Items', text: 'Siege bringen <b>Quest-Coins</b>. Im Shop (oben rechts) gibt es Heiltränke und Kampf-Items für die Hotbar: <b>F1</b> Fokus, <b>F2</b> Pauser, <b>F3</b> Herz, <b>F4</b> Überspringer. Grau = nicht im Inventar, roter Preis = zu wenig Coins.' },
+  { icon: '💾', title: 'Fortschritt', text: 'Alles wird automatisch in <b>smartadm_34i.json</b> gespeichert. Rang, Erfolge und Lerntage wachsen mit – jeden Tag gibt es Fokus geschenkt.' },
+];
+
+function openOnboard(mode = 'new') {
+  ui.onboard = { mode, step: 'guide', pick: playerVitals().heroClass || null, returnTo: ui.screen };
+  drawOnboard();
+  showScreen('onboard');
+}
+
+function drawOnboard() {
+  const ob = ui.onboard;
+  const help = ob.mode === 'help';
+  const guide = `
+    <div class="onboard__guide">
+      ${GUIDE.map((g, i) => `<article class="gcard" style="--d:${i * 70}ms"><span class="gcard__icon" aria-hidden="true">${g.icon}</span><h3>${g.title}</h3><p>${g.text}</p></article>`).join('')}
+    </div>
+    <p class="onboard__note">Die Fragen sind eigene, prüfungsnahe Fragen auf Basis der Lernskripte und des DIHK-Rahmenplans – keine Original-IHK-Prüfungsfragen.</p>`;
+
+  if (ob.step === 'guide') {
+    $('onboardView').innerHTML = `
+      <div class="onboard">
+        <header class="onboard__head">
+          <img class="onboard__logo" src="assets/logo.png" alt="34i-Quest" width="720" height="235">
+          <p class="onboard__kicker">${help ? 'Spielanleitung' : 'Neues Abenteuer · Schritt 1 von 2'}</p>
+          <h1>So funktioniert 34i-Quest</h1>
+          <p class="onboard__lead">Du bereitest dich auf die Sachkundeprüfung nach § 34i GewO vor – als Spiel. Lernen, kämpfen, Level abschließen.</p>
+        </header>
+        ${guide}
+        <div class="onboard__actions">
+          ${help
+            ? `<button class="btn btn--primary btn--xl" data-action="onboard-close">Zurück zum Spiel</button>`
+            : `<button class="btn btn--primary btn--xl" data-action="onboard-step" data-step="class">Weiter zur Charakterwahl ${I.next}</button>`}
+        </div>
+      </div>`;
+    return;
+  }
+
+  const pick = ob.pick;
+  const cards = HERO_CLASS_ORDER.map((id) => {
+    const c = HERO_CLASSES[id];
+    const on = pick === id;
+    return `<button class="hero ${on ? 'is-picked' : ''}" data-action="pick-class" data-id="${id}" aria-pressed="${on}" style="--hc:${c.color}">
+      <span class="hero__emblem" aria-hidden="true">${c.icon}</span>
+      <span class="hero__name">${esc(c.name)}</span>
+      <span class="hero__bonus">${esc(c.bonus)}</span>
+      <span class="hero__text">${esc(c.text)}</span>
+      <span class="hero__fit">${esc(c.fit)}</span>
+      <span class="hero__check" aria-hidden="true">${I.check}</span>
+    </button>`;
+  }).join('');
+  const chosen = pick ? HERO_CLASSES[pick] : null;
+  $('onboardView').innerHTML = `
+    <div class="onboard">
+      <header class="onboard__head">
+        <p class="onboard__kicker">Neues Abenteuer · Schritt 2 von 2</p>
+        <h1>Wähle deine Klasse</h1>
+        <p class="onboard__lead">Deine Klasse gibt dir einen dauerhaften Vorteil für diesen Spielstand. Alle vier sind gleich stark – nur anders.</p>
+      </header>
+      <div class="heroes" role="radiogroup" aria-label="Klasse wählen">${cards}</div>
+      <div class="onboard__actions">
+        <button class="btn btn--ghost" data-action="onboard-step" data-step="guide">${I.back} Anleitung</button>
+        <button class="btn btn--primary btn--xl" data-action="confirm-class" ${chosen ? '' : 'disabled'}>${chosen ? `Als ${esc(chosen.name)} beginnen` : 'Klasse wählen'}</button>
+      </div>
+      <p class="onboard__note">Die Wahl gilt dauerhaft für diesen Spielstand.</p>
+    </div>`;
+}
+
+function confirmClass() {
+  const pick = ui.onboard?.pick;
+  if (!pick || !HERO_CLASSES[pick]) return;
+  const pl = playerVitals();
+  pl.heroClass = pick;
+  sfx('level');
+  confetti(90);
+  toast(`Willkommen, ${HERO_CLASSES[pick].name}! ${HERO_CLASSES[pick].bonus}.`, { icon: HERO_CLASSES[pick].icon, tone: 'gold', ms: 4500 });
+  grantDailyGift();
+  persist();
+  renderHeader();
+  renderDashboard();
+  showScreen('dashboard');
 }
 
 /* =========================================================
@@ -735,6 +847,7 @@ function renderDashboard() {
               <p class="profile__title">${esc(r.title)}</p>
             </div>
           </div>
+          ${pl.heroClass ? `<p class="profile__class" style="--hc:${HERO_CLASSES[pl.heroClass].color}"><span aria-hidden="true">${HERO_CLASSES[pl.heroClass].icon}</span> ${esc(HERO_CLASSES[pl.heroClass].name)} <small>${esc(HERO_CLASSES[pl.heroClass].short)}</small></p>` : ''}
           <div class="bar bar--xp" role="progressbar" aria-label="Erfahrung bis zum nächsten Rang" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${r.pct}"><span style="width:${r.pct}%"></span></div>
           <p class="profile__next">${pl.xp} XP${r.next ? ` · noch ${r.toNext} bis „${esc(r.next.title)}“` : ' · höchster Rang'}</p>
           <dl class="profile__stats">
@@ -1116,6 +1229,7 @@ async function startMode(modeId, chapterId) {
   clearRunTimers();
   toggleInv(false);
   clearToasts();
+  grantDailyGift();   // falls die Sitzung über Mitternacht läuft
   await Content.loadChapterContent(chapterId);
   const data = Content.getCachedChapter(chapterId);
   const poolData = mode.source === 'boss' ? data?.boss : data?.questions;  // Karussell: questions + boss
@@ -1231,7 +1345,7 @@ function renderBossIntro() {
               <li>Items <b>F1–F4</b></li>
             </ul>
             <p class="bosscine__stakes">
-              <span class="win">Sieg: Siegtruhe mit ${COIN_REWARDS.boss.base}–${(COIN_REWARDS.boss.base * 2) + COIN_REWARDS.boss.perfect} Quest-Coins</span>
+              <span class="win">Sieg: Siegtruhe mit ${COIN_REWARDS.boss.base * cls().coinMult}–${((COIN_REWARDS.boss.base * 2) + COIN_REWARDS.boss.perfect) * cls().coinMult} Quest-Coins</span>
               <span class="lose">Niederlage: −${MODE_HP_LOSS.boss} % HP · Level-Modi zurückgesetzt</span>
             </p>
             <div class="bosscine__actions">
@@ -1419,17 +1533,18 @@ function renderHotbar() {
   const pl = playerVitals();
   bar.innerHTML = BATTLE_ITEM_ORDER.map((id) => {
     const it = BATTLE_ITEMS[id];
-    const have = pl.inventory[id] || 0;
+    const gratis = id === 'focus' ? dailyFocusLeft() : 0;
+    const have = (pl.inventory[id] || 0) + gratis;
     const st = itemState(id);
-    const price = SHOP[id].price;
+    const price = priceOf(id);
     const poor = !have && pl.coins < price;
     const cls = [have ? 'is-owned' : 'is-buy', st.ok ? '' : 'is-off', poor ? 'is-poor' : ''].join(' ');
-    const tip = `${it.label}: ${it.text}${have ? ` · ${have} im Inventar` : ` · kaufen und einsetzen für ${price} Coins`}${st.ok ? '' : ` · ${st.reason}`}`;
+    const tip = `${it.label}: ${it.text}${have ? ` · ${have} verfügbar${gratis ? ` (davon ${gratis} gratis heute)` : ''}` : ` · kaufen und einsetzen für ${price} Coins`}${st.ok ? '' : ` · ${st.reason}`}`;
     return `<button class="hot ${cls}" data-action="use-item" data-item="${id}" title="${esc(tip)}" aria-label="${esc(tip)}" ${st.ok ? '' : 'aria-disabled="true"'}>
       <span class="hot__key">${it.key}</span>
       <span class="hot__icon" aria-hidden="true">${it.icon}</span>
       <span class="hot__name">${esc(it.label)}</span>
-      ${have ? `<span class="hot__count">×${have}</span>` : `<span class="hot__price">${COIN_IMG}${price}</span>`}
+      ${have ? `<span class="hot__count ${gratis ? 'is-gift' : ''}">×${have}</span>` : `<span class="hot__price">${COIN_IMG}${price}</span>`}
     </button>`;
   }).join('');
 }
@@ -1448,14 +1563,16 @@ function useItem(id) {
   };
   if (!st.ok) { deny(st.reason); return; }
   const pl = playerVitals();
-  if ((pl.inventory[id] || 0) > 0) {
+  if (id === 'focus' && dailyFocusLeft() > 0) {
+    pl.dailyFocus.left -= 1;          // Tages-Fokus zuerst verbrauchen
+  } else if ((pl.inventory[id] || 0) > 0) {
     pl.inventory[id] -= 1;
-  } else if (pl.coins >= SHOP[id].price) {
-    pl.coins -= SHOP[id].price;
+  } else if (pl.coins >= priceOf(id)) {
+    pl.coins -= priceOf(id);
     sfx('spend');
     unlock('shopper');
   } else {
-    deny(`Dir fehlen ${SHOP[id].price - pl.coins} Coins`);
+    deny(`Dir fehlen ${priceOf(id) - pl.coins} Coins`);
     return;
   }
   run.itemUse[run.idx] = { ...(run.itemUse[run.idx] || {}), [id]: true };
@@ -1660,8 +1777,8 @@ function finishRun() {
     carousel = { ratio, pct, chestTier, newRecord, potion: null, spark: false };
     if (chestTier) {
       const pl = playerVitals();
-      if (chestTier.potion && Math.random() < chestTier.potionChance) { carousel.potion = chestTier.potion; pl.inventory[chestTier.potion] += 1; }
-      if (chestTier.sparkChance && Math.random() < chestTier.sparkChance && pl.inventory.spark < (SHOP.spark.max || 1)) { carousel.spark = true; pl.inventory.spark += 1; }
+      if (chestTier.potion && Math.random() < Math.min(1, chestTier.potionChance * cls().luck)) { carousel.potion = chestTier.potion; pl.inventory[chestTier.potion] += 1; }
+      if (chestTier.sparkChance && Math.random() < chestTier.sparkChance * cls().luck && pl.inventory.spark < (SHOP.spark.max || 1)) { carousel.spark = true; pl.inventory.spark += 1; }
       coins = { total: chestTier.coins, base: chestTier.coins, perfect: 0, first: 0 };
     }
     if (ratio >= 0.5) unlock('carousel_50');
@@ -1687,7 +1804,7 @@ function finishRun() {
         if (sum.stars === 3) unlock('boss_perfect');
         if ((run.crits || 0) >= 3) unlock('crit_king');
         // Siegtruhe: seltene Trankbeigabe, die Coins kommen unten für alle Modi
-        if (Math.random() < (BOSS_CHEST_POTION_CHANCE[sum.stars] || 0)) {
+        if (Math.random() < Math.min(1, (BOSS_CHEST_POTION_CHANCE[sum.stars] || 0) * cls().luck)) {
           chest = sum.stars === 3 ? 'large' : sum.stars === 2 ? 'medium' : 'small';
           const pl = playerVitals();
           pl.inventory[chest] = (pl.inventory[chest] || 0) + 1;
@@ -1697,6 +1814,10 @@ function finishRun() {
     } else {
       ({ hpEvent, levelReset } = applyDefeat(run));
     }
+  }
+  if (coins?.total && cls().coinMult > 1) {
+    coins.classBonus = coins.total * (cls().coinMult - 1);
+    coins.total += coins.classBonus;
   }
   if (coins?.total) addCoins(coins.total);
   addXp(sum.xp);
@@ -1801,9 +1922,10 @@ function renderResult() {
     `${coins.base} Sieg`,
     coins.first ? `+${coins.first} erster Sieg` : '',
     coins.perfect ? `+${coins.perfect} makellos` : '',
-    levelCompletedNow ? `+${COIN_LEVEL_COMPLETE} Level-Abschluss` : '',
+    coins?.classBonus ? `+${coins.classBonus} ${cls().name}` : '',
+    levelCompletedNow ? `+${levelCoins()} Level-Abschluss` : '',
   ].filter(Boolean).join(' · ') : '';
-  const coinTotal = (coins?.total || 0) + (levelCompletedNow ? COIN_LEVEL_COMPLETE : 0);
+  const coinTotal = (coins?.total || 0) + (levelCompletedNow ? levelCoins() : 0);
   const isBossWin = (sum.mode === 'boss' && sum.won) || (sum.mode === 'carousel' && !!carousel?.chestTier);
   const lootHtml = (lootList.length || chestItem || coinTotal || sum.mode === 'carousel') ? `
     <section class="loot" aria-label="Belohnung">
@@ -1890,6 +2012,11 @@ const ACTIONS = {
   'boss-fight': () => startBossFight(),
   'boss-skip': () => finishBossIntro(),
   'use-item': (d) => useItem(d.item),
+  'onboard-step': (d) => { ui.onboard.step = d.step; drawOnboard(); window.scrollTo({ top: 0 }); },
+  'pick-class': (d) => { ui.onboard.pick = d.id; sfx('click'); drawOnboard(); },
+  'confirm-class': () => confirmClass(),
+  'open-help': () => { if (ui.run) { toast('Die Anleitung gibt es außerhalb eines Runs.', { icon: 'ℹ️' }); return; } toggleInv(false); openOnboard('help'); },
+  'onboard-close': () => { const back = ui.onboard?.returnTo; if (back === 'chapter') renderChapter(); else if (back !== 'learn' && back !== 'result') renderDashboard(); showScreen(['chapter', 'learn', 'result'].includes(back) ? back : 'dashboard'); },
   'toggle-music': () => { S().settings.music = S().settings.music === false; syncMusic(); renderHeader(); persist(); },
   'go-dashboard': () => { if (ui.screen === 'terminal') return; if (!abortRun()) return; renderDashboard(); showScreen('dashboard'); },
   'open-chapter': (d) => openChapter(d.id),

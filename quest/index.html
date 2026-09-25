@@ -30,6 +30,7 @@
         </div>
         <div class="rankchip" id="rankChip" title="Rang und Erfahrung"></div>
         <span class="chip chip--streak" id="streakChip" title="Lerntage in Folge"></span>
+        <button class="chip chip--btn chip--help" id="helpBtn" data-action="open-help" title="So funktioniert 34i-Quest" aria-label="Spielanleitung öffnen">?</button>
         <button class="chip chip--btn chip--music" id="musicBtn" data-action="toggle-music" aria-pressed="true" title="Musik an/aus"></button>
         <button class="chip chip--btn" id="soundBtn" data-action="toggle-sound" aria-pressed="true" title="Ton an/aus"></button>
         <button class="chip chip--save" id="saveChip" data-action="grant-write" title="Speicherstatus"></button>
@@ -57,6 +58,11 @@
           <button class="linkbtn" id="btnGuest" data-action="save-guest" hidden>Ohne Speichern ausprobieren</button>
         </div>
       </div>
+    </section>
+
+    <!-- 1b · Einstieg: Anleitung + Charakterwahl -->
+    <section class="screen screen--onboard" data-screen="onboard" hidden>
+      <div id="onboardView"></div>
     </section>
 
     <!-- 2 · Missionsauswahl -->

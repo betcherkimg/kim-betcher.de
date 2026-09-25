@@ -68,7 +68,7 @@ tools/check-content.mjs  Datenprüfung vor dem Hochladen
 - **Testphase:** `BOSS_REQUIRES_STORY = false` in `js/game.js` – Bossfights sind ohne Storysieg spielbar. Für den Echtbetrieb auf `true` setzen.
 - **Kritischer Treffer** bei Antwort innerhalb von 4 Sekunden (mind. 11 s Restzeit).
 - **4 von 6:** Der Kampf endet, sobald du 4 richtig hast (Sieg) oder 3 Fehler (Niederlage). Übersprungene Fragen zählen nicht als richtig – reichen die restlichen Fragen nicht mehr für 4 Treffer, ist der Kampf verloren.
-- **Fokus** (F1): +10 Sekunden. Jeden Tag gibt es beim Öffnen des Spielstands einen Fokus geschenkt.
+- **Fokus** (F1): +10 Sekunden. Jeden Tag gibt es beim Öffnen des Spielstands Tages-Fokus geschenkt (1×, Normalo 2×) – nicht stapelbar, Ungenutztes verfällt um Mitternacht. Tages-Fokus wird vor gekauftem Fokus verbraucht.
 - **Wut-Phase** bei der finalen Frage oder wenn der Boss nur noch 1 Leben hat.
 - **Siegtruhe** nach dem Sieg: Quest-Coins, dazu mit 4–15 % Chance (je nach Sternen) ein Trank.
 - Sprüche des Bosses stehen optional in `boss.json` unter `boss.taunts` (intro, hit, miss, timeout, final, low, defeat, victory).
@@ -105,3 +105,17 @@ Alle Geräusche und die Musik entstehen live per Web-Audio-Synthese (`js/audio.j
 Musik: ruhig im Menü, Abenteuer in Story/Versus/Karussell, Kampf im Boss; jedes Stück wechselt nach 8 Takten die Akkordfolge.
 Effekte: Münzklimpern (Coins erhalten/ausgeben), „Ouuw“ (Schaden), Schlucken (Trank), Truhe, Items.
 Schalter oben rechts: ♪ = Musik, Lautsprecher = Effekte.
+
+
+## Einstieg & Klassen
+
+Beim Anlegen eines Spielstands (und bei alten Spielständen ohne Klasse) erscheint zuerst die Anleitung, dann die Charakterwahl. Die Anleitung ist jederzeit über **?** oben rechts erreichbar. Die Klasse gilt dauerhaft für den Spielstand.
+
+| Klasse | Vorteil | Wirkung im Code |
+|---|---|---|
+| 💰 Sammler | Doppelte Quest-Coins | Siege, Truhen, Level-Abschluss ×2 |
+| 🦊 Sparfuchs | Items zum halben Preis | Shop und Hotbar-Kauf ×0,5 |
+| 🧭 Normalo | 2× Fokus pro Tag gratis | Tages-Fokus 2 statt 1, nicht stapelbar |
+| 🍀 Glückspilz | Doppelte Fundchance | Trank-/Funkenfunde bei Fragen und Truhen-Zugaben ×2 |
+
+Werte anpassen: `HERO_CLASSES` in `js/game.js`.

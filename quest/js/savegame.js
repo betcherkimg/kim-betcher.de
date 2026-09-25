@@ -41,7 +41,7 @@ export function createDefaultState() {
   return {
     app: '34i-Quest', saveVersion: SAVE_VERSION, createdAt: now, updatedAt: now,
     player: {
-      xp: 0, answered: 0, correct: 0, bestCombo: 0, achievements: [], lastDay: null, dayStreak: 0, lastGiftDay: null,
+      xp: 0, answered: 0, correct: 0, bestCombo: 0, achievements: [], lastDay: null, dayStreak: 0, lastGiftDay: null, heroClass: null, dailyFocus: { day: null, left: 0 },
       hp: 100, maxHp: 100, coins: 0, inventory: { small: 0, medium: 0, large: 0, spark: 0, focus: 0, pause: 0, heart: 0, skip: 0 },
     },
     settings: { sound: true, music: true, shuffleAnswers: true },
@@ -70,6 +70,8 @@ export function normalizeState(raw) {
     xp: num(p.xp), answered: num(p.answered), correct: num(p.correct), bestCombo: num(p.bestCombo),
     achievements: strArr(p.achievements), lastDay: typeof p.lastDay === 'string' ? p.lastDay : null, dayStreak: num(p.dayStreak),
     lastGiftDay: typeof p.lastGiftDay === 'string' ? p.lastGiftDay : null,
+    heroClass: ['collector', 'saver', 'normal', 'lucky'].includes(p.heroClass) ? p.heroClass : null,
+    dailyFocus: { day: typeof p.dailyFocus?.day === 'string' ? p.dailyFocus.day : null, left: Math.min(2, num(p.dailyFocus?.left)) },
     hp: Math.min(maxHp, num(p.hp, maxHp)), maxHp, coins: Math.floor(num(p.coins)),
     inventory: { small: num(inv.small), medium: num(inv.medium), large: num(inv.large), spark: num(inv.spark),
       focus: num(inv.focus), pause: num(inv.pause), heart: num(inv.heart), skip: num(inv.skip) },
