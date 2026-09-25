@@ -30,7 +30,7 @@ export function isSupported() {
 export function createChapterProgress() {
   return {
     learnCompleted: [], storyWins: 0, versusWins: 0, bossWins: 0,
-    bestStory: 0, bestVersus: 0, bestBoss: 0,
+    bestStory: 0, bestVersus: 0, bestBoss: 0, bestCarousel: 0, bestCarouselPct: 0,
     stars: { story: 0, versus: 0, boss: 0 },
     checksDone: [], learnXp: [], mistakes: {}, levelCompleted: false, coinFirst: [],
   };
@@ -41,10 +41,10 @@ export function createDefaultState() {
   return {
     app: '34i-Quest', saveVersion: SAVE_VERSION, createdAt: now, updatedAt: now,
     player: {
-      xp: 0, answered: 0, correct: 0, bestCombo: 0, achievements: [], lastDay: null, dayStreak: 0,
-      hp: 100, maxHp: 100, coins: 0, inventory: { small: 0, medium: 0, large: 0, spark: 0 },
+      xp: 0, answered: 0, correct: 0, bestCombo: 0, achievements: [], lastDay: null, dayStreak: 0, lastGiftDay: null,
+      hp: 100, maxHp: 100, coins: 0, inventory: { small: 0, medium: 0, large: 0, spark: 0, focus: 0, pause: 0, heart: 0, skip: 0 },
     },
-    settings: { sound: true, shuffleAnswers: true },
+    settings: { sound: true, music: true, shuffleAnswers: true },
     progress: {},
     lastQuestions: {},
   };
@@ -69,11 +69,13 @@ export function normalizeState(raw) {
   s.player = {
     xp: num(p.xp), answered: num(p.answered), correct: num(p.correct), bestCombo: num(p.bestCombo),
     achievements: strArr(p.achievements), lastDay: typeof p.lastDay === 'string' ? p.lastDay : null, dayStreak: num(p.dayStreak),
+    lastGiftDay: typeof p.lastGiftDay === 'string' ? p.lastGiftDay : null,
     hp: Math.min(maxHp, num(p.hp, maxHp)), maxHp, coins: Math.floor(num(p.coins)),
-    inventory: { small: num(inv.small), medium: num(inv.medium), large: num(inv.large), spark: num(inv.spark) },
+    inventory: { small: num(inv.small), medium: num(inv.medium), large: num(inv.large), spark: num(inv.spark),
+      focus: num(inv.focus), pause: num(inv.pause), heart: num(inv.heart), skip: num(inv.skip) },
   };
   const st = raw.settings || {};
-  s.settings = { sound: st.sound !== false, shuffleAnswers: st.shuffleAnswers !== false };
+  s.settings = { sound: st.sound !== false, music: st.music !== false, shuffleAnswers: st.shuffleAnswers !== false };
   for (const [id, cp] of Object.entries(raw.progress || {})) {
     if (!cp || typeof cp !== 'object') continue;
     const base = createChapterProgress();
@@ -85,6 +87,7 @@ export function normalizeState(raw) {
       learnCompleted: strArr(cp.learnCompleted), checksDone: strArr(cp.checksDone), learnXp: strArr(cp.learnXp),
       storyWins: num(cp.storyWins), versusWins: num(cp.versusWins), bossWins: num(cp.bossWins),
       bestStory: num(cp.bestStory), bestVersus: num(cp.bestVersus), bestBoss: num(cp.bestBoss),
+      bestCarousel: num(cp.bestCarousel), bestCarouselPct: Math.min(100, num(cp.bestCarouselPct)),
       stars: { story: num(stars.story), versus: num(stars.versus), boss: num(stars.boss) },
       mistakes, levelCompleted: cp.levelCompleted === true, coinFirst: strArr(cp.coinFirst),
     };

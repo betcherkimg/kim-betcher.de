@@ -4,7 +4,7 @@
  * Bei neuer contentVersion in chapters.json wird der Content-Cache geleert.
  * Bei App-Updates: STATIC_VERSION erhöhen.
  */
-const STATIC_VERSION = 'v6';
+const STATIC_VERSION = 'v8';
 const STATIC_CACHE = `34i-quest-static-${STATIC_VERSION}`;
 const CONTENT_CACHE = '34i-quest-content-v1';
 
@@ -16,7 +16,7 @@ const SHELL = [
   'css/fonts/atkinson-hyperlegible-latin-700-normal.woff2',
   'css/fonts/atkinson-hyperlegible-latin-400-italic.woff2',
   'css/fonts/jetbrains-mono-latin-500-normal.woff2',
-  'js/app.js', 'js/game.js', 'js/savegame.js', 'js/content-loader.js',
+  'js/app.js', 'js/game.js', 'js/savegame.js', 'js/content-loader.js', 'js/audio.js',
   'assets/logo.png', 'assets/icon-192.png', 'assets/icon-512.png', 'assets/coin.webp', 'assets/coin-lg.webp',
 ];
 

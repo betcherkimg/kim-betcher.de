@@ -3,8 +3,9 @@
 import * as Content from './content-loader.js';
 import { SaveGame, SaveError, isSupported, createChapterProgress, SAVE_NAME } from './savegame.js';
 import { MODES, BOSS_REQUIRES_STORY, MAX_HP, MODE_HP_LOSS, POTIONS, rollQuestionReward, selectQuestions, prepareQuestion, Run, rankFor, ACHIEVEMENTS, Countdown,
-  RESCUE_HEAL, BOSS_CRIT_SECONDS, BOSS_FOCUS_SECONDS, BOSS_CHEST_POTION_CHANCE, BOSS_TAUNTS,
-  COIN_REWARDS, COIN_LEVEL_COMPLETE, SHOP, coinsForWin } from './game.js';
+  RESCUE_HEAL, BOSS_CRIT_SECONDS, BOSS_FOCUS_SECONDS, DAILY_FOCUS_GIFT, BOSS_CHEST_POTION_CHANCE, BOSS_TAUNTS,
+  COIN_REWARDS, COIN_LEVEL_COMPLETE, SHOP, coinsForWin, BATTLE_ITEMS, BATTLE_ITEM_ORDER, carouselOrder, carouselChest } from './game.js';
+import * as Audio from './audio.js';
 
 /* =========================================================
    Grundgerüst
@@ -72,6 +73,7 @@ function addCoins(n, label = '') {
   const pl = playerVitals();
   pl.coins += n;
   if (pl.coins >= 500) unlock('rich');
+  sfx('coin');
   if (label) toast(`+${n} Quest-Coins · ${label}`, { icon: '🪙', tone: 'gold' });
   const chip = $('coinChip');
   if (chip) { chip.classList.remove('is-gain'); void chip.offsetWidth; chip.classList.add('is-gain'); }
@@ -80,7 +82,7 @@ function addCoins(n, label = '') {
 }
 
 function buyItem(kind) {
-  const item = POTIONS[kind];
+  const item = POTIONS[kind] || BATTLE_ITEMS[kind];
   const offer = SHOP[kind];
   const pl = playerVitals();
   if (!item || !offer) return;
@@ -89,7 +91,7 @@ function buyItem(kind) {
   pl.coins -= offer.price;
   pl.inventory[kind] = (pl.inventory[kind] || 0) + 1;
   unlock('shopper');
-  sfx('coin');
+  sfx('spend');
   toast(`${item.label} gekauft (−${offer.price} Coins)`, { icon: item.icon, tone: 'gold' });
   persist();
   rerenderCurrent();
@@ -125,6 +127,7 @@ function damageHp(amount, label = 'Schaden', { quiet = false } = {}) {
     toast(`${label}: −${lost} HP`, { icon: '💔', tone: 'bad', ms: 3600 });
   }
   if (lost > 0) pulseHp(revived ? 'heal' : 'hurt');
+  if (lost > 0 && !revived) sfx('hurt');
   renderHeader();
   return { lost, revived, hp: pl.hp, knockout: pl.hp <= 0 };
 }
@@ -137,7 +140,7 @@ function usePotion(kind) {
   if (pl.hp >= pl.maxHp) { toast('Deine HP sind bereits voll.', { icon: '❤️' }); return; }
   pl.inventory[kind] -= 1;
   healHp(Math.round(pl.maxHp * (item.heal / 100)), item.label);
-  sfx('level');
+  sfx('gulp');
   persist();
   rerenderCurrent();
 }
@@ -212,6 +215,7 @@ function showScreen(name) {
   $('topbar').hidden = name === 'terminal';
   document.body.dataset.view = name;
   ui.screen = name;
+  syncMusic();
   window.scrollTo({ top: 0 });
   const main = $('main');
   if (main && name !== 'run') main.focus({ preventScroll: true });
@@ -245,35 +249,20 @@ const I = {
 let audio = null;
 function sfx(kind) {
   if (!S() || !S().settings.sound) return;
-  try {
-    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
-    if (audio.state === 'suspended') audio.resume();
-    const seq = {
-      ok: [[660, 0, 0.08], [990, 0.08, 0.12]],
-      bad: [[190, 0, 0.18], [140, 0.12, 0.22]],
-      tick: [[1200, 0, 0.03]],
-      win: [[523, 0, 0.12], [659, 0.12, 0.12], [784, 0.24, 0.12], [1047, 0.36, 0.3]],
-      lose: [[330, 0, 0.18], [262, 0.18, 0.3]],
-      level: [[784, 0, 0.1], [988, 0.1, 0.1], [1319, 0.2, 0.25]],
-      click: [[880, 0, 0.03]],
-      rumble: [[55, 0, 0.9], [62, 0.25, 0.8]],
-      coin: [[1319, 0, 0.07], [1760, 0.07, 0.16]],
-      boss: [[98, 0, 0.35], [73, 0.12, 0.6], [1400, 0, 0.08]],
-    }[kind] || [];
-    const t = audio.currentTime;
-    seq.forEach(([f, start, dur]) => {
-      const o = audio.createOscillator();
-      const g = audio.createGain();
-      o.type = ['bad', 'lose', 'rumble', 'boss'].includes(kind) ? 'sawtooth' : 'triangle';
-      o.frequency.value = f;
-      g.gain.setValueAtTime(0.0001, t + start);
-      g.gain.exponentialRampToValueAtTime(kind === 'tick' ? 0.05 : 0.12, t + start + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + start + dur);
-      o.connect(g).connect(audio.destination);
-      o.start(t + start);
-      o.stop(t + start + dur + 0.02);
-    });
-  } catch { /* Audio nicht verfügbar – egal */ }
+  Audio.sfx(kind);
+}
+
+/** Musik passend zum Bildschirm: ruhig im Menü, Abenteuer in den Runs, Kampf im Boss */
+function musicFor(screen) {
+  if (screen === 'terminal') return null;
+  if (screen === 'run' && ui.run) return ui.run.mode.id === 'boss' ? 'boss' : 'quest';
+  return 'calm';
+}
+function syncMusic() {
+  if (!S()) return;
+  Audio.setSfxEnabled(S().settings.sound);
+  Audio.setMusicEnabled(S().settings.music !== false);
+  Audio.setTrack(musicFor(ui.screen));
 }
 
 /* =========================================================
@@ -360,6 +349,18 @@ function chapterStatus(id) {
   const boss = p.bossWins > 0;
   const pct = Math.round((total ? (done / total) * 25 : 0) + (story ? 25 : 0) + (versus ? 25 : 0) + (boss ? 25 : 0));
   return { done, total, learnDone, story, versus, boss, pct, mastered: learnDone && story && versus && boss };
+}
+
+/** Einmal pro Kalendertag: Fokus geschenkt, sobald der Spielstand geöffnet wird */
+function grantDailyGift() {
+  const pl = playerVitals();
+  const today = todayKey();
+  if (pl.lastGiftDay === today) return false;
+  pl.lastGiftDay = today;
+  pl.inventory.focus = (pl.inventory.focus || 0) + DAILY_FOCUS_GIFT;
+  toast(`Tagesgeschenk: ${DAILY_FOCUS_GIFT}× Fokus (+${BOSS_FOCUS_SECONDS} s im Boss)`, { icon: '🎁', tone: 'gold', ms: 5000 });
+  persist();
+  return true;
 }
 
 function todayKey(d = new Date()) {
@@ -466,6 +467,15 @@ function renderHeader() {
     <span class="rankchip__xp">${pl.xp} XP</span>`;
   $('streakChip').innerHTML = `${I.flame}<span>${pl.dayStreak || 0}</span>`;
   $('streakChip').title = `${pl.dayStreak || 0} Lerntag(e) in Folge`;
+  const musicOn = S().settings.music !== false;
+  const mb = $('musicBtn');
+  if (mb) {
+    mb.innerHTML = `<span aria-hidden="true">♪</span>`;
+    mb.classList.toggle('is-off', !musicOn);
+    mb.setAttribute('aria-pressed', String(musicOn));
+    mb.setAttribute('aria-label', musicOn ? 'Musik ausschalten' : 'Musik einschalten');
+    mb.title = musicOn ? 'Musik aus' : 'Musik an';
+  }
   const on = S().settings.sound;
   $('soundBtn').innerHTML = on ? I.soundOn : I.soundOff;
   $('soundBtn').setAttribute('aria-pressed', String(on));
@@ -497,6 +507,18 @@ function renderInvPop() {
       <span class="invpop__stats"><b class="invpop__hp">${pl.hp}/${pl.maxHp} HP</b><b class="invpop__coins">${COIN_IMG}${pl.coins}</b></span>
     </div>
     <ul class="shop">${rows}</ul>
+    <p class="shop__sub">Kampf-Items · im Run mit F1–F4</p>
+    <ul class="shop">${BATTLE_ITEM_ORDER.map((k) => {
+      const it = BATTLE_ITEMS[k];
+      const have = pl.inventory[k] || 0;
+      const canBuy = pl.coins >= SHOP[k].price;
+      return `<li class="shoprow shoprow--item ${have ? '' : 'is-empty'}">
+        <span class="shoprow__icon">${it.icon}</span>
+        <span class="shoprow__body"><b>${esc(it.label)} <kbd>${it.key}</kbd></b><small>${esc(it.text)}${it.modes.length === 1 ? ' · nur Boss' : ''}</small></span>
+        <span class="shoprow__have" title="Im Inventar">×${have}</span>
+        <button class="btn btn--sm btn--buy" data-action="buy-item" data-kind="${k}" ${canBuy ? '' : 'disabled'} title="Kaufen für ${SHOP[k].price} Coins">${COIN_IMG}${SHOP[k].price}</button>
+      </li>`;
+    }).join('')}</ul>
     <p class="invpop__rules">Coins gibt es für jeden gewonnenen Modus (Story ${COIN_REWARDS.story.base}, Versus ${COIN_REWARDS.versus.base}, Boss ${COIN_REWARDS.boss.base}). Erster Sieg doppelt, 3 Sterne mit Bonus, Level-Abschluss +${COIN_LEVEL_COMPLETE}.<br>Niederlage kostet HP: Story −25 %, Versus −33 %, Boss −50 %.</p>`;
 }
 
@@ -621,8 +643,12 @@ async function enterGame() {
   if (migrated) { persist(); toast('Lernskript aktualisiert – dein Fortschritt wurde übernommen.', { icon: '📘' }); }
   renderHeader();
   setSaveChip(save.guest ? 'guest' : save.canWrite ? 'ready' : 'permission');
+  grantDailyGift();
   renderDashboard();
   showScreen('dashboard');
+  // Der Klick auf „Laden/Neu starten“ ist die nötige Nutzeraktion – Musik darf direkt starten
+  Audio.unlockAudio();
+  syncMusic();
 }
 
 /* =========================================================
@@ -642,9 +668,9 @@ function nextMission() {
       const sec = learn?.sections.find((s) => !p.learnCompleted.includes(s.id));
       return { chapter: c, label: `${label}: Lernskript ${st.done ? 'weiterlesen' : 'starten'}`, detail: sec ? `Nächster Abschnitt: ${sec.title}` : '', action: `data-action="open-learn" data-id="${esc(c.id)}"` };
     }
-    if (!st.story) return { chapter: c, label: `${label}: Storymode starten`, detail: '10 Fragen in Lernreihenfolge – danach wird der Boss freigeschaltet.', action: `data-action="start-mode" data-mode="story" data-id="${esc(c.id)}"` };
+    if (!st.story) return { chapter: c, label: `${label}: Story starten`, detail: '10 Fragen in Lernreihenfolge – danach wird der Boss freigeschaltet.', action: `data-action="start-mode" data-mode="story" data-id="${esc(c.id)}"` };
     if (!st.versus) return { chapter: c, label: `${label}: Versus spielen`, detail: '5 Zufallsfragen, ein Fehler und es ist vorbei.', action: `data-action="start-mode" data-mode="versus" data-id="${esc(c.id)}"` };
-    if (!st.boss) return { chapter: c, label: `${label}: Bossfight wagen`, detail: '5 harte Fragen, 10 Sekunden pro Frage.', action: `data-action="start-mode" data-mode="boss" data-id="${esc(c.id)}"` };
+    if (!st.boss) return { chapter: c, label: `${label}: Boss wagen`, detail: '6 Fragen, 15 Sekunden pro Frage. 4 richtige besiegen den Boss, 3 Fehler beenden den Kampf.', action: `data-action="start-mode" data-mode="boss" data-id="${esc(c.id)}"` };
   }
   return null;
 }
@@ -699,7 +725,7 @@ function renderDashboard() {
         <div class="mission mission--done">
           <span class="mission__label">Alle verfügbaren Level abgeschlossen</span>
           <span class="mission__title">Stark! Neue Level folgen.</span>
-          <span class="mission__detail">Spiel Bossfights erneut für Coins und Bestwerte.</span>
+          <span class="mission__detail">Spiel Bosse und Karussell erneut für Coins und Bestwerte.</span>
         </div>`}
         <section class="profile" aria-label="Dein Profil">
           <div class="profile__head">
@@ -750,7 +776,7 @@ function chapterCard(c) {
       ${mark(st.learnDone, `Lernskript <small>${st.done}/${st.total}</small>`)}
       ${mark(st.story, 'Story')}
       ${mark(st.versus, 'Versus')}
-      ${mark(st.boss, 'Bossfight')}
+      ${mark(st.boss, 'Boss')}
     </ul>
     ${tag}
   </button>`;
@@ -789,6 +815,7 @@ function renderChapter() {
   const noHp = pl.hp <= 0;
   const bossLocked = BOSS_REQUIRES_STORY && !st.story;
   const bossName = data?.boss?.boss?.name || 'Level-Boss';
+  const carouselTotal = (data?.questions?.questions?.length || 0) + (data?.boss?.questions?.length || 0);
   const bossBust = data?.boss?.boss?.bust;
   const bossIcon = typeof bossBust === 'string' && /^[\w./-]+\.(webp|png|jpe?g|avif)$/i.test(bossBust) && !bossBust.includes('..')
     ? `<img class="mode__portrait" src="${esc(bossBust)}" alt="" width="56" height="56">` : I.seal;
@@ -813,9 +840,9 @@ function renderChapter() {
         
         <ol class="mastery" aria-label="Weg zum Levelabschluss">
           <li class="${st.learnDone ? 'is-done' : ''}">Lernskript</li>
-          <li class="${st.story ? 'is-done' : ''}">Storymode</li>
+          <li class="${st.story ? 'is-done' : ''}">Story</li>
           <li class="${st.versus ? 'is-done' : ''}">Versus</li>
-          <li class="${st.boss ? 'is-done' : ''}">Bossfight</li>
+          <li class="${st.boss ? 'is-done' : ''}">Boss</li>
           <li class="${st.mastered ? 'is-done is-gold' : ''}">Level abgeschlossen</li>
         </ol>
       </div>
@@ -830,17 +857,22 @@ function renderChapter() {
       ${card({ key: 'learn', icon: I.book, title: 'LERNSKRIPT', text: 'Der Stoff kompakt, in Lernreihenfolge, mit Merksätzen und Prüfungsfallen.',
         rules: `${st.done}/${st.total} Abschnitte verstanden · Checkpoint-Fehler −10 HP`, disabled: !data?.learn, lockText: 'UNAVAILABLE – Lernskript fehlt.',
         action: `data-action="open-learn" data-id="${esc(id)}"` })}
-      ${card({ key: 'story', icon: I.path, title: 'STORYMODE', text: 'Zehn Fragen in der Reihenfolge des Lernskripts. Erst Grundlagen, dann Anwendung.',
+      ${card({ key: 'story', icon: I.path, title: 'STORY', text: 'Zehn Fragen in der Reihenfolge des Lernskripts. Erst Grundlagen, dann Anwendung.',
         rules: '10 Fragen · 3 Leben · Verlust: −25 % HP', stat: `${stars(p.stars.story)} <span>Rekord ${p.bestStory} · ${p.storyWins}× gewonnen</span>`,
         disabled: !data?.questions || noHp, lockText: !data?.questions ? 'UNAVAILABLE – Fragen fehlen.' : 'KO – Fülle zuerst deine HP auf.', action: `data-action="start-mode" data-mode="story" data-id="${esc(id)}"` })}
       ${card({ key: 'versus', icon: I.swords, title: 'VERSUS', text: 'Fünf Zufallsfragen quer durchs Level. Ähnliche Begriffe gegeneinander.',
         rules: '5 Fragen · 1 Leben · Verlust: −33 % HP', stat: `${stars(p.stars.versus)} <span>Rekord ${p.bestVersus} · ${p.versusWins}× gewonnen</span>`,
         disabled: !data?.questions || noHp, lockText: !data?.questions ? 'UNAVAILABLE – Fragen fehlen.' : 'KO – Fülle zuerst deine HP auf.', action: `data-action="start-mode" data-mode="versus" data-id="${esc(id)}"` })}
-      ${card({ key: 'boss', icon: bossIcon, title: 'BOSSFIGHT', text: `${esc(bossName)} wartet – mit eigenen, harten Fallfragen.`,
-        rules: '5 Fragen · 3 Leben · 10 Sekunden · Verlust: −50 % HP', stat: `${stars(p.stars.boss)} <span>Rekord ${p.bestBoss} · ${p.bossWins}× besiegt</span>`,
+      ${card({ key: 'boss', icon: bossIcon, title: 'BOSS', text: `${esc(bossName)} wartet – mit eigenen, harten Fallfragen.`,
+        rules: '6 Fragen · 4 richtig = Sieg · 3 Fehler = Niederlage · 15 s · Verlust: −50 % HP', stat: `${stars(p.stars.boss)} <span>Rekord ${p.bestBoss} · ${p.bossWins}× besiegt</span>`,
         disabled: !data?.boss || bossLocked || noHp,
-        lockText: !data?.boss ? 'UNAVAILABLE – Bossfragen fehlen.' : bossLocked ? 'LOCKED – Gewinne zuerst den Storymode.' : 'KO – Fülle zuerst deine HP auf.',
+        lockText: !data?.boss ? 'UNAVAILABLE – Bossfragen fehlen.' : bossLocked ? 'LOCKED – Gewinne zuerst die Story.' : 'KO – Fülle zuerst deine HP auf.',
         action: `data-action="start-mode" data-mode="boss" data-id="${esc(id)}"` })}
+      ${card({ key: 'carousel', icon: '<span class="mode__emoji" aria-hidden="true">🎠</span>', title: 'KARUSSELL', text: 'Alle Fragen des Levels am Stück – erst die leichten, am Ende die Bossfragen.',
+        rules: `${carouselTotal} Fragen · 3 Leben · ohne Timer · kein HP-Verlust`,
+        stat: `<span>Rekord ${p.bestCarousel || 0}/${carouselTotal} (${p.bestCarouselPct || 0} %)</span>`,
+        disabled: !data?.questions, lockText: 'UNAVAILABLE – Fragen fehlen.',
+        action: `data-action="start-mode" data-mode="carousel" data-id="${esc(id)}"` })}
     </div>`;
 }
 
@@ -1053,7 +1085,7 @@ function learnToggle() {
   if (st.learnDone) {
     unlock('scholar');
     checkMastery(id);
-    toast('Lernskript komplett verstanden – jetzt ab in den Storymode!', { icon: '📘', tone: 'gold' });
+    toast('Lernskript komplett verstanden – jetzt ab in die Story!', { icon: '📘', tone: 'gold' });
     confetti(80);
   }
   persist();
@@ -1079,16 +1111,16 @@ async function startMode(modeId, chapterId) {
   const mode = MODES[modeId];
   if (!mode) return;
   const rescue = modeId === 'rescue';
-  if (!rescue && playerVitals().hp <= 0) { toast('Du hast 0 HP. Trink einen Heiltrank oder starte die Rettungsmission.', { icon: '💔', tone: 'bad', ms: 4500 }); openChapter(chapterId); return; }
+  if (!rescue && modeId !== 'carousel' && playerVitals().hp <= 0) { toast('Du hast 0 HP. Trink einen Heiltrank oder starte die Rettungsmission.', { icon: '💔', tone: 'bad', ms: 4500 }); openChapter(chapterId); return; }
   if (rescue && playerVitals().hp > 0) { toast('Die Rettungsmission gibt es nur bei 0 HP.', { icon: '❤️' }); return; }
   clearRunTimers();
   toggleInv(false);
   clearToasts();
   await Content.loadChapterContent(chapterId);
   const data = Content.getCachedChapter(chapterId);
-  const poolData = mode.source === 'boss' ? data?.boss : data?.questions;
+  const poolData = mode.source === 'boss' ? data?.boss : data?.questions;  // Karussell: questions + boss
   if (!poolData?.questions?.length) { toast('Für diesen Modus fehlen die Fragen.', { icon: '⚠️', tone: 'bad' }); return; }
-  if (modeId === 'boss' && BOSS_REQUIRES_STORY && !prog(chapterId).storyWins) { toast('Der Bossfight ist noch gesperrt. Gewinne zuerst den Storymode.', { icon: '🔒' }); return; }
+  if (modeId === 'boss' && BOSS_REQUIRES_STORY && !prog(chapterId).storyWins) { toast('Der Bossfight ist noch gesperrt. Gewinne zuerst die Story.', { icon: '🔒' }); return; }
 
   const p = prog(chapterId);
   let pool = poolData.questions;
@@ -1096,8 +1128,10 @@ async function startMode(modeId, chapterId) {
     const easy = pool.filter((q) => (q.difficulty || 1) === 1);
     pool = easy.length >= mode.count ? easy : pool.filter((q) => (q.difficulty || 1) <= 2);
   }
-  const picked = selectQuestions(rescue ? 'versus' : modeId, pool, { recent: rescue ? [] : lastQ(chapterId)[modeId], mistakes: rescue ? {} : p.mistakes })
-    .slice(0, mode.count);
+  const picked = modeId === 'carousel'
+    ? carouselOrder(data.questions.questions, data?.boss?.questions || [])
+    : selectQuestions(rescue ? 'versus' : modeId, pool, { recent: rescue ? [] : lastQ(chapterId)[modeId], mistakes: rescue ? {} : p.mistakes })
+      .slice(0, mode.count);
   const prepared = picked.map((q) => prepareQuestion(q, S().settings.shuffleAnswers));
   ui.chapterId = chapterId;
   const run = new Run(modeId, chapterId, prepared);
@@ -1111,7 +1145,7 @@ async function startMode(modeId, chapterId) {
   };
   run.loot = [];
   run.crits = 0;
-  run.focus = modeId === 'boss' ? 1 : 0;
+  run.itemUse = {};                // pro Frage: welche Items schon eingesetzt wurden
   run.started = modeId !== 'boss';   // Boss startet erst nach dem Intro
   run.say = run.bossInfo.taunts.intro;
   ui.run = run;
@@ -1184,16 +1218,17 @@ function renderBossIntro() {
       <div class="bosscine__stage">
         <div class="bosscine__figure">${art}</div>
         <div class="bosscine__text">
-          <p class="bosscine__kicker">${esc(levelLabel(run.chapterId))} · Bossfight</p>
+          <p class="bosscine__kicker">${esc(levelLabel(run.chapterId))} · Boss</p>
           <h1 class="bosscine__name" id="bossName" aria-label="${esc(b.name)}">${letters}</h1>
           <p class="bosscine__title">${esc(b.title)}</p>
           <blockquote class="bosscine__say" id="bossCineSay" aria-live="polite"></blockquote>
           <div class="bosscine__panel">
             <ul class="bosscine__rules">
               <li><b>${run.total}</b> Fragen</li>
+              <li><b>${run.mode.killHits}</b> richtig = Sieg</li>
+              <li><b>${run.mode.lives}</b> Fehler = Niederlage</li>
               <li><b>${run.mode.seconds} s</b> pro Frage</li>
-              <li><b>${run.mode.lives}</b> Leben</li>
-              <li><b>1×</b> Fokus +${BOSS_FOCUS_SECONDS} s</li>
+              <li>Items <b>F1–F4</b></li>
             </ul>
             <p class="bosscine__stakes">
               <span class="win">Sieg: Siegtruhe mit ${COIN_REWARDS.boss.base}–${(COIN_REWARDS.boss.base * 2) + COIN_REWARDS.boss.perfect} Quest-Coins</span>
@@ -1203,7 +1238,7 @@ function renderBossIntro() {
               <button class="btn btn--boss btn--xl" id="btnFight" data-action="boss-fight">Kampf beginnen</button>
               <button class="btn btn--ghost" data-action="abort-run">Noch nicht – zurück</button>
             </div>
-            <p class="bosscine__hint">Enter startet · Antworten mit A–D · Fokus mit F</p>
+            <p class="bosscine__hint">Enter startet · Antworten mit A–D · F1 Fokus · F2 Pauser · F3 Herz · F4 Überspringer</p>
           </div>
         </div>
       </div>
@@ -1266,16 +1301,23 @@ function renderRun() {
   ui.selected = [];
   ui.answered = false;
 
-  const pips = run.questions.map((_, i) => {
+  const isCarousel = run.mode.id === 'carousel';
+  const pips = isCarousel ? '' : run.questions.map((_, i) => {
     const r = run.results[i];
-    const cls = r ? (r.correct ? 'is-ok' : 'is-bad') : i === run.idx ? 'is-now' : '';
+    const cls = r ? (r.skipped ? 'is-skip' : r.correct ? 'is-ok' : 'is-bad') : i === run.idx ? 'is-now' : '';
     return `<li class="${cls}"></li>`;
   }).join('');
+  const progressHtml = isCarousel
+    ? `<div class="cprog" aria-label="Frage ${run.idx + 1} von ${run.total}"><span class="cprog__bar"><span style="width:${(run.idx / run.total) * 100}%"></span></span><span class="cprog__txt">${run.correctCount} richtig · Frage ${run.idx + 1}/${run.total}</span></div>`
+    : `<ol class="pips" aria-label="Frage ${run.idx + 1} von ${run.total}">${pips}</ol>`;
   const hearts = Array.from({ length: run.mode.lives }, (_, i) => `<span class="heart ${i < run.lives ? '' : 'is-lost'}">${I.heart}</span>`).join('');
   const hits = run.correctCount;
-  const bossLeft = run.total - hits;
-  const hp = Array.from({ length: run.total }, (_, i) => `<span class="${i < bossLeft ? '' : 'is-gone'}"></span>`).join('');
-  const isFinal = run.idx === run.total - 1;
+  const bossHp = run.mode.killHits || run.total;
+  const bossLeft = Math.max(0, bossHp - hits);
+  const hp = Array.from({ length: bossHp }, (_, i) => `<span class="${i < bossLeft ? '' : 'is-gone'}"></span>`).join('');
+  const isLastQuestion = run.idx === run.total - 1;
+  const decider = !!run.mode.killHits && run.correctCount === run.mode.killHits - 1 && run.lives === 1;
+  const isFinal = isLastQuestion || decider;
   const enraged = isBoss && (isFinal || bossLeft <= 1);
   if (isBoss) {
     if (isFinal) run.say = run.bossInfo.taunts.final;
@@ -1286,9 +1328,9 @@ function renderRun() {
   $('runView').innerHTML = `
     <div class="run run--${run.mode.id} ${enraged ? 'is-enraged' : ''}">
       <div class="hud">
-        <button class="back back--hud" data-action="abort-run">${I.back} Aufgeben</button>
+        <button class="back back--hud" data-action="abort-run">${I.back} ${isCarousel ? 'Beenden' : 'Aufgeben'}</button>
         <span class="hud__mode">${esc(run.mode.label)} <small>${esc(levelLabel(run.chapterId))}</small></span>
-        <ol class="pips" aria-label="Frage ${run.idx + 1} von ${run.total}">${pips}</ol>
+        ${progressHtml}
         <span class="hud__lives" aria-label="${run.lives} Leben">${hearts}</span>
         <span class="hud__score"><small>Punkte</small> <b id="hudScore">${run.score}</b></span>
         <span class="hud__combo ${run.combo >= 2 ? 'is-hot' : ''}" id="hudCombo">${run.combo >= 2 ? `${I.flame} ${run.combo}er-Serie` : ''}</span>
@@ -1296,21 +1338,20 @@ function renderRun() {
       </div>
       ${isBoss ? `
       <div class="arena ${enraged ? 'is-enraged' : ''}" id="arena">
-        <div class="arena__boss ${run.bossInfo.bust ? 'arena__boss--art' : ''}" id="bossSeal">${bossVisual(run.bossInfo, Math.round((hits / run.total) * 5))}</div>
+        <div class="arena__boss ${run.bossInfo.bust ? 'arena__boss--art' : ''}" id="bossSeal">${bossVisual(run.bossInfo, Math.round((Math.min(hits, bossHp) / bossHp) * 5))}</div>
         <div class="arena__info">
           <p class="arena__name">${esc(run.bossInfo.name)} ${enraged ? '<span class="rage">WUT</span>' : ''}</p>
           <p class="arena__title">${esc(run.bossInfo.title || '')}</p>
-          <div class="hp" aria-label="Boss-Lebensleiste: ${bossLeft} von ${run.total}">${hp}</div>
+          <div class="hp" aria-label="Boss-Lebensleiste: ${bossLeft} von ${bossHp}">${hp}</div>
           <p class="say" id="bossSay">„${esc(run.say || '')}“</p>
         </div>
         <div class="timer" aria-hidden="true">
           <span class="timer__num" id="timerNum">${run.mode.seconds}</span>
           <span class="timer__bar"><span id="timerBar"></span></span>
-          <button class="focusbtn" id="btnFocus" data-action="boss-focus" ${run.focus ? '' : 'disabled'} title="Einmal pro Kampf: +${BOSS_FOCUS_SECONDS} Sekunden (Taste F)">⏳ +${BOSS_FOCUS_SECONDS} s</button>
         </div>
         <div class="fxlayer" id="fxLayer" aria-hidden="true"></div>
       </div>
-      ${isFinal ? '<p class="finalbanner" role="status">Finale Frage</p>' : ''}` : ''}
+      ${isFinal ? `<p class="finalbanner" role="status">${decider ? 'Entscheidung' : 'Letzte Frage'}</p>` : ''}` : ''}
       <section class="qcard" aria-live="polite">
         <p class="qcard__meta">
           <span>Frage ${run.idx + 1}/${run.total}</span>
@@ -1326,7 +1367,9 @@ function renderRun() {
           ${!isBoss || q.type === 'multi' ? `<button class="btn btn--primary" id="btnSubmit" data-action="submit" disabled>Prüfen</button>` : '<p class="qhint">Klick auf die Antwort zählt sofort.</p>'}
         </div>
       </section>
+      ${run.mode.id === 'rescue' ? '' : '<nav class="hotbar" id="hotbar" aria-label="Kampf-Items"></nav>'}
     </div>`;
+  renderHotbar();
 
   if (isBoss) {
     let lastSec = run.mode.seconds;
@@ -1341,15 +1384,125 @@ function renderRun() {
   }
 }
 
-function useFocus() {
+/** Ist ein Kampf-Item gerade einsetzbar? { ok, reason } */
+function itemState(id) {
   const run = ui.run;
-  if (!run || run.mode.id !== 'boss' || !run.focus || ui.answered) return;
-  if (!countdown.extend(BOSS_FOCUS_SECONDS)) return;
-  run.focus -= 1;
-  const btn = $('btnFocus');
-  if (btn) btn.disabled = true;
-  floatText(`+${BOSS_FOCUS_SECONDS} s`, 'focus', 'timer');
-  sfx('level');
+  const it = BATTLE_ITEMS[id];
+  if (!run || !it || run.mode.id === 'rescue') return { ok: false, reason: 'Nur in einem Run' };
+  if (!it.modes.includes(run.mode.id)) return { ok: false, reason: it.modes.length === 1 ? 'Nur im Boss' : 'In diesem Modus nicht verfügbar' };
+  if (run.mode.id === 'boss' && !run.started) return { ok: false, reason: 'Erst nach Kampfbeginn' };
+  const used = run.itemUse[run.idx] || {};
+  switch (id) {
+    case 'focus':
+      if (ui.answered || !countdown.running) return { ok: false, reason: 'Nur während die Zeit läuft' };
+      if (used.focus) return { ok: false, reason: 'Pro Frage einmal' };
+      return { ok: true };
+    case 'pause':
+      if (ui.answered || !countdown.running) return { ok: false, reason: countdown.frozen ? 'Schon pausiert' : 'Nur während die Zeit läuft' };
+      return { ok: true };
+    case 'heart': {
+      const dead = run.lives <= 0;
+      if (run.lives >= run.mode.lives) return { ok: false, reason: 'Alle Leben voll' };
+      if (run.finished && !dead) return { ok: false, reason: 'Run ist beendet' };
+      return { ok: true };
+    }
+    case 'skip':
+      if (ui.answered || run.finished) return { ok: false, reason: 'Nur vor dem Antworten' };
+      return { ok: true };
+    default: return { ok: false, reason: '' };
+  }
+}
+
+function renderHotbar() {
+  const bar = $('hotbar');
+  if (!bar || !ui.run) return;
+  const pl = playerVitals();
+  bar.innerHTML = BATTLE_ITEM_ORDER.map((id) => {
+    const it = BATTLE_ITEMS[id];
+    const have = pl.inventory[id] || 0;
+    const st = itemState(id);
+    const price = SHOP[id].price;
+    const poor = !have && pl.coins < price;
+    const cls = [have ? 'is-owned' : 'is-buy', st.ok ? '' : 'is-off', poor ? 'is-poor' : ''].join(' ');
+    const tip = `${it.label}: ${it.text}${have ? ` · ${have} im Inventar` : ` · kaufen und einsetzen für ${price} Coins`}${st.ok ? '' : ` · ${st.reason}`}`;
+    return `<button class="hot ${cls}" data-action="use-item" data-item="${id}" title="${esc(tip)}" aria-label="${esc(tip)}" ${st.ok ? '' : 'aria-disabled="true"'}>
+      <span class="hot__key">${it.key}</span>
+      <span class="hot__icon" aria-hidden="true">${it.icon}</span>
+      <span class="hot__name">${esc(it.label)}</span>
+      ${have ? `<span class="hot__count">×${have}</span>` : `<span class="hot__price">${COIN_IMG}${price}</span>`}
+    </button>`;
+  }).join('');
+}
+
+/** Item einsetzen – ist keins im Inventar, wird es direkt gekauft (falls Coins reichen) */
+function useItem(id) {
+  const run = ui.run;
+  const it = BATTLE_ITEMS[id];
+  if (!run || !it) return;
+  const st = itemState(id);
+  const slot = document.querySelector(`.hot[data-item="${id}"]`);
+  const deny = (msg) => {
+    sfx('denied');
+    if (slot) { slot.classList.remove('is-denied'); void slot.offsetWidth; slot.classList.add('is-denied'); }
+    hotbarHint(msg);
+  };
+  if (!st.ok) { deny(st.reason); return; }
+  const pl = playerVitals();
+  if ((pl.inventory[id] || 0) > 0) {
+    pl.inventory[id] -= 1;
+  } else if (pl.coins >= SHOP[id].price) {
+    pl.coins -= SHOP[id].price;
+    sfx('spend');
+    unlock('shopper');
+  } else {
+    deny(`Dir fehlen ${SHOP[id].price - pl.coins} Coins`);
+    return;
+  }
+  run.itemUse[run.idx] = { ...(run.itemUse[run.idx] || {}), [id]: true };
+  run.itemsUsed = (run.itemsUsed || 0) + 1;
+
+  if (id === 'focus') {
+    countdown.extend(BOSS_FOCUS_SECONDS);
+    floatText(`+${BOSS_FOCUS_SECONDS} s`, 'focus', 'timer');
+    sfx('focus');
+  } else if (id === 'pause') {
+    countdown.freeze();
+    const timer = document.querySelector('.timer');
+    timer?.classList.add('is-paused');
+    const num = $('timerNum');
+    if (num) num.textContent = '⏸';
+    floatText('Pausiert', 'focus', 'timer');
+    sfx('freeze');
+  } else if (id === 'heart') {
+    run.restoreLife();
+    document.querySelectorAll('.hud__lives .heart').forEach((h, k) => h.classList.toggle('is-lost', k >= run.lives));
+    floatText('+1 ♥', 'ok', 'player');
+    sfx('heart');
+    const next = $('btnNext');
+    if (next && !run.finished) next.innerHTML = `Nächste Frage ${I.next}`;
+  } else if (id === 'skip') {
+    countdown.stop();
+    ui.answered = true;
+    run.skip();
+    const pips = document.querySelectorAll('.pips li');
+    if (pips[run.idx]) pips[run.idx].className = 'is-skip';
+    document.querySelectorAll('#answers .answer').forEach((b) => { b.disabled = true; b.classList.add('is-dim'); });
+    floatText('Übersprungen', 'focus', 'combo');
+    sfx('skip');
+    later(() => advance(), 350);
+  }
+  persist();
+  renderHeader();
+  renderHotbar();
+}
+
+function hotbarHint(msg) {
+  const bar = $('hotbar');
+  if (!bar || !msg) return;
+  let hint = bar.querySelector('.hotbar__hint');
+  if (!hint) { hint = document.createElement('p'); hint.className = 'hotbar__hint'; bar.appendChild(hint); }
+  hint.textContent = msg;
+  hint.classList.remove('is-on'); void hint.offsetWidth; hint.classList.add('is-on');
 }
 
 function pickAnswer(i) {
@@ -1393,7 +1546,8 @@ function submitAnswer(timedOut = false) {
     if (run.combo >= 5) unlock('combo_5');
     if (run.combo >= 10) unlock('combo_10');
     if (run.mode.id === 'boss' && run.mode.seconds - secondsLeft < 3) unlock('quick_draw');
-    droppedNow = maybeDropReward(q);
+    // Karussell und Rettung: keine Zufallsbeute – dort gibt es die Truhe bzw. HP
+    if (!['carousel', 'rescue'].includes(run.mode.id)) droppedNow = maybeDropReward(q);
   } else {
     p.mistakes[q.id] = Math.min(9, (p.mistakes[q.id] || 0) + 1);
   }
@@ -1419,7 +1573,7 @@ function submitAnswer(timedOut = false) {
     sfx('ok');
     shell?.classList.add('fx-hit');
   } else {
-    sfx('bad');
+    sfx('hurt');
     shell?.classList.add('fx-shake');
   }
 
@@ -1432,11 +1586,12 @@ function submitAnswer(timedOut = false) {
     const hits = run.correctCount;
     const seal = $('bossSeal');
     const t = run.bossInfo.taunts;
-    const crit = res.correct && secondsLeft >= BOSS_CRIT_SECONDS;
+    const crit = res.correct && secondsLeft >= BOSS_CRIT_SECONDS && !(run.itemUse[run.idx] || {}).pause;
     if (crit) run.crits += 1;
-    if (seal && res.correct) { seal.innerHTML = bossVisual(run.bossInfo, Math.round((hits / run.total) * 5)); seal.classList.add(crit ? 'is-crit' : 'is-hit'); }
+    const bossHp = run.mode.killHits || run.total;
+    if (seal && res.correct) { seal.innerHTML = bossVisual(run.bossInfo, Math.round((Math.min(hits, bossHp) / bossHp) * 5)); seal.classList.add(crit ? 'is-crit' : 'is-hit'); }
     if (seal && !res.correct) seal.classList.add('is-gloat');
-    document.querySelectorAll('.hp span').forEach((s, k) => s.classList.toggle('is-gone', k >= run.total - hits));
+    document.querySelectorAll('.hp span').forEach((s, k) => s.classList.toggle('is-gone', k >= bossHp - hits));
     run.say = pickLine(res.correct ? t.hit : timedOut ? t.timeout : t.miss);
     const say = $('bossSay');
     if (say) { say.textContent = `„${run.say}“`; say.classList.remove('is-new'); void say.offsetWidth; say.classList.add('is-new'); }
@@ -1449,8 +1604,12 @@ function submitAnswer(timedOut = false) {
     }
     if (newLoot) floatText(`${newLoot.icon} ${newLoot.label}!`, 'loot', 'loot');
     flash(res.correct ? (crit ? 'Kritisch!' : 'Treffer!') : timedOut ? 'Zeit um!' : 'Autsch!', res.correct ? 'ok' : 'bad');
-    // Kein Weiter-Button: kurz Lösung zeigen, dann sofort weiter
-    later(() => advance(), res.correct ? 620 : 750);
+    renderHotbar();
+    // Kein Weiter-Button: kurz Lösung zeigen, dann sofort weiter.
+    // Letztes Leben verloren: etwas länger warten, damit ein Herz (F3) noch retten kann.
+    const lastBreath = run.lives <= 0 && !res.correct;
+    if (lastBreath) hotbarHint('Letztes Leben verloren – F3 Herz rettet dich!');
+    later(() => advance(), res.correct ? 620 : lastBreath ? 1800 : 750);
     return;
   }
 
@@ -1461,6 +1620,8 @@ function submitAnswer(timedOut = false) {
     </div>
     <button class="btn btn--primary" id="btnNext" data-action="next-question">${res.finished ? 'Zur Auswertung' : 'Nächste Frage'} ${I.next}</button>`;
   $('btnNext')?.focus({ preventScroll: true });
+  renderHotbar();
+  if (run.lives <= 0) hotbarHint('Letztes Leben verloren – mit F3 Herz geht es weiter');
 }
 
 function advance() {
@@ -1487,7 +1648,25 @@ function finishRun() {
   let healed = 0;
   let coins = null;
 
-  if (m === 'rescue') {
+  let carousel = null;
+  if (m === 'carousel') {
+    // Karussell: keine Strafe, Truhe nach Anteil richtiger Antworten
+    const ratio = run.total ? run.correctCount / run.total : 0;
+    const pct = Math.round(ratio * 100);
+    const chestTier = carouselChest(ratio);
+    const newRecord = run.correctCount > (p.bestCarousel || 0);
+    p.bestCarousel = Math.max(p.bestCarousel || 0, run.correctCount);
+    p.bestCarouselPct = Math.max(p.bestCarouselPct || 0, pct);
+    carousel = { ratio, pct, chestTier, newRecord, potion: null, spark: false };
+    if (chestTier) {
+      const pl = playerVitals();
+      if (chestTier.potion && Math.random() < chestTier.potionChance) { carousel.potion = chestTier.potion; pl.inventory[chestTier.potion] += 1; }
+      if (chestTier.sparkChance && Math.random() < chestTier.sparkChance && pl.inventory.spark < (SHOP.spark.max || 1)) { carousel.spark = true; pl.inventory.spark += 1; }
+      coins = { total: chestTier.coins, base: chestTier.coins, perfect: 0, first: 0 };
+    }
+    if (ratio >= 0.5) unlock('carousel_50');
+    if (ratio >= 1) unlock('carousel_100');
+  } else if (m === 'rescue') {
     // Rettungsmission: kein Fortschritt, keine Strafe – nur HP zurück bei Erfolg
     if (sum.won) healed = healHp(RESCUE_HEAL, 'Rettungsmission', { quiet: true });
   } else {
@@ -1523,12 +1702,14 @@ function finishRun() {
   addXp(sum.xp);
   persist();
 
-  ui.result = { sum, run, hpEvent, levelCompletedNow, levelReset, chest, healed, coins };
+  ui.result = { sum, run, hpEvent, levelCompletedNow, levelReset, chest, healed, coins, carousel };
   ui.run = null;
   renderHeader();
   renderResult();
   showScreen('result');
-  if (sum.won) { sfx('win'); confetti(m === 'boss' ? 220 : 130); } else sfx('lose');
+  if (m === 'carousel') {
+    if (carousel?.chestTier) { sfx('chest'); confetti(carousel.ratio >= 0.75 ? 180 : 80); } else sfx('lose');
+  } else if (sum.won) { sfx('win'); confetti(m === 'boss' ? 220 : 130); } else sfx('lose');
 }
 
 /** Niederlage verrechnen – gilt auch für „Aufgeben“, sonst ließe sich die Strafe umgehen. */
@@ -1542,8 +1723,14 @@ function applyDefeat(run) {
 function abortRun(silent = false) {
   const run = ui.run;
   if (!run) return true;
+  if (run.mode.id === 'carousel' && run.results.length > 0) {
+    if (!silent && !confirm('Karussell beenden? Deine bisherigen Antworten werden ausgewertet und du bekommst die passende Truhe.')) return false;
+    run.finished = true;
+    finishRun();
+    return false;   // Auswertung wird angezeigt – nicht zusätzlich wegnavigieren
+  }
   // Strafe nur, wenn der Run wirklich lief: Boss nach „Kampf beginnen“, sonst ab der ersten Antwort
-  const penalty = run.mode.id !== 'rescue' && run.started && (run.results.length > 0 || run.mode.id === 'boss');
+  const penalty = !['rescue', 'carousel'].includes(run.mode.id) && run.started && (run.results.length > 0 || run.mode.id === 'boss');
   const loss = MODE_HP_LOSS[run.mode.id] || 0;
   if (!silent) {
     const msg = penalty
@@ -1575,7 +1762,7 @@ function answerText(q, idxs) {
 }
 
 function renderResult() {
-  const { sum, run, hpEvent, levelCompletedNow, levelReset, chest, healed, coins } = ui.result;
+  const { sum, run, hpEvent, levelCompletedNow, levelReset, chest, healed, coins, carousel } = ui.result;
   const pl = playerVitals();
   const boss = run.bossInfo?.name || 'Der Boss';
   const titles = {
@@ -1583,9 +1770,13 @@ function renderResult() {
     versus: sum.won ? 'Duell gewonnen!' : 'Duell verloren',
     boss: sum.won ? `${boss} besiegt!` : `${boss} war stärker`,
     rescue: sum.won ? 'Gerettet!' : 'Noch nicht geschafft',
+    carousel: carousel?.chestTier ? `${carousel.chestTier.label}!` : 'Karussell beendet',
   };
   let sub;
-  if (sum.mode === 'rescue') {
+  if (sum.mode === 'carousel') {
+    sub = `${sum.correct} von ${run.total} Fragen richtig (${carousel.pct} %)${carousel.newRecord ? ' – neuer Rekord!' : '.'}`
+      + (carousel.chestTier ? '' : ' Ab 25 % gibt es eine Truhe.');
+  } else if (sum.mode === 'rescue') {
     sub = sum.won ? `Du bist wieder auf den Beinen: +${healed} HP.` : 'Kein Problem – die Rettungsmission kostet nichts. Versuch es gleich noch einmal.';
   } else if (levelCompletedNow) {
     sub = `${levelLabel(run.chapterId)} komplett abgeschlossen. Deine HP wurden vollständig aufgefüllt.`;
@@ -1613,19 +1804,21 @@ function renderResult() {
     levelCompletedNow ? `+${COIN_LEVEL_COMPLETE} Level-Abschluss` : '',
   ].filter(Boolean).join(' · ') : '';
   const coinTotal = (coins?.total || 0) + (levelCompletedNow ? COIN_LEVEL_COMPLETE : 0);
-  const isBossWin = sum.mode === 'boss' && sum.won;
-  const lootHtml = (lootList.length || chestItem || coinTotal) ? `
+  const isBossWin = (sum.mode === 'boss' && sum.won) || (sum.mode === 'carousel' && !!carousel?.chestTier);
+  const lootHtml = (lootList.length || chestItem || coinTotal || sum.mode === 'carousel') ? `
     <section class="loot" aria-label="Belohnung">
       ${coinTotal ? `<div class="reward ${isBossWin ? 'reward--chest' : ''}">
         ${isBossWin
           ? `<div class="chest__box" aria-hidden="true"><span class="chest__lid"></span><span class="chest__body"></span><img class="chest__item" src="assets/coin-lg.webp" alt=""></div>`
           : `<img class="reward__coin" src="assets/coin-lg.webp" alt="" width="64" height="64">`}
         <div>
-          <p class="chest__kicker">${isBossWin ? 'Siegtruhe geöffnet' : 'Belohnung'}</p>
+          <p class="chest__kicker">${sum.mode === 'carousel' ? `${esc(carousel.chestTier.label)} geöffnet` : isBossWin ? 'Siegtruhe geöffnet' : 'Belohnung'}</p>
           <p class="reward__amount">+${coinTotal} Quest-Coins</p>
           <small>${esc(coinParts)}</small>
         </div>
       </div>` : ''}
+      ${carousel?.potion || carousel?.spark ? `<p class="loot__line"><b>In der Truhe lag außerdem:</b> ${carousel.potion ? `<span class="loot__item">${POTIONS[carousel.potion].icon} ${esc(POTIONS[carousel.potion].label)}</span>` : ''} ${carousel.spark ? `<span class="loot__item">${POTIONS.spark.icon} ${esc(POTIONS.spark.label)}</span>` : ''}</p>` : ''}
+      ${sum.mode === 'carousel' ? `<div class="ctiers">${[['wood', 'Holz', 25], ['silver', 'Silber', 50], ['gold', 'Gold', 75], ['legend', 'Legendär', 100]].map(([idT, name, min]) => `<span class="ctier ctier--${idT} ${carousel.pct >= min ? 'is-got' : ''}">${name}<small>ab ${min} %</small></span>`).join('')}</div>` : ''}
       ${chestItem ? `<p class="loot__line"><b>In der Truhe lag außerdem:</b> <span class="loot__item">${chestItem.icon} ${esc(chestItem.label)}</span></p>` : ''}
       ${lootList.length ? `<p class="loot__line"><b>Seltener Fund:</b> ${lootList.map((k) => `<span class="loot__item">${POTIONS[k].icon} ${esc(POTIONS[k].label)}</span>`).join(' ')}</p>` : ''}
     </section>` : '';
@@ -1657,13 +1850,13 @@ function renderResult() {
         ${sum.mode === 'boss' && run.bossInfo.image
           ? `<div class="bossfinal ${sum.won ? 'is-defeated' : 'is-victor'}" aria-hidden="true"><img src="${esc(run.bossInfo.image)}" alt="" decoding="async">${sum.won ? '<span></span><span></span><span></span><span></span><span></span><span></span>' : ''}</div>`
           : sum.mode === 'boss' && sum.won ? `<div class="shatter" aria-hidden="true">${sealSvg(5)}<span></span><span></span><span></span><span></span><span></span><span></span></div>` : ''}
-        ${sum.mode === 'rescue' ? '' : stars(sum.stars, 'stars--big')}
+        ${['rescue', 'carousel'].includes(sum.mode) ? '' : stars(sum.stars, 'stars--big')}
         <h1>${esc(titles[sum.mode])}</h1>
         ${quote ? `<blockquote class="result__quote">„${esc(quote)}“</blockquote>` : ''}
         <p>${sub}</p>${hpNote ? `<p class="result__hpnote">${esc(hpNote)}</p>` : ''}
       </header>
       <dl class="result__stats">
-        <div><dt>Richtig</dt><dd>${sum.correct}/${sum.answered}</dd></div>
+        <div><dt>Richtig</dt><dd>${sum.correct}/${sum.mode === 'carousel' ? run.total : sum.answered}</dd></div>
         <div><dt>Punkte</dt><dd>${sum.score}</dd></div>
         <div><dt>${sum.mode === 'boss' ? 'Kritische Treffer' : 'Beste Serie'}</dt><dd>${sum.mode === 'boss' ? run.crits || 0 : sum.bestCombo}</dd></div>
         <div class="is-xp"><dt>Erfahrung</dt><dd>+${sum.xp} XP</dd></div>
@@ -1690,13 +1883,14 @@ const ACTIONS = {
   'save-resume': () => withBusy(() => saveActions.resume().catch(saveErrorToTerminal)),
   'save-guest': () => withBusy(() => saveActions.guest()),
   'grant-write': async () => { if (await save.grantWrite()) toast('Speichern ist wieder aktiv.', { icon: '💾' }); },
-  'toggle-sound': () => { S().settings.sound = !S().settings.sound; renderHeader(); persist(); },
+  'toggle-sound': () => { S().settings.sound = !S().settings.sound; syncMusic(); renderHeader(); persist(); },
   'use-potion': (d) => usePotion(d.kind),
   'buy-item': (d) => buyItem(d.kind),
   'toggle-inv': () => toggleInv(),
   'boss-fight': () => startBossFight(),
   'boss-skip': () => finishBossIntro(),
-  'boss-focus': () => useFocus(),
+  'use-item': (d) => useItem(d.item),
+  'toggle-music': () => { S().settings.music = S().settings.music === false; syncMusic(); renderHeader(); persist(); },
   'go-dashboard': () => { if (ui.screen === 'terminal') return; if (!abortRun()) return; renderDashboard(); showScreen('dashboard'); },
   'open-chapter': (d) => openChapter(d.id),
   'back-chapter': () => { if (!abortRun()) return; openChapter(ui.chapterId); },
@@ -1730,7 +1924,17 @@ document.addEventListener('click', (e) => {
   if (!e.target.closest('.hpwrap')) toggleInv(false);
 });
 
+// Browser erlauben Ton erst nach einer Nutzeraktion
+document.addEventListener('pointerdown', () => { if (S()) { Audio.unlockAudio(); syncMusic(); } }, { passive: true });
+
+const HOTKEYS = { F1: 'focus', F2: 'pause', F3: 'heart', F4: 'skip' };
 document.addEventListener('keydown', (e) => {
+  if (HOTKEYS[e.key] && ui.screen === 'run' && ui.run) {
+    e.preventDefault();   // F1 = Hilfe, F3 = Suchen im Browser – im Run übernehmen die Items
+    useItem(HOTKEYS[e.key]);
+    return;
+  }
+  if (S()) Audio.unlockAudio();
   if (e.key === 'Escape' && !$('invPop').hidden) { toggleInv(false); $('hpChip').focus(); return; }
   if (ui.screen !== 'run' || !ui.run || e.altKey || e.ctrlKey || e.metaKey) return;
   const k = e.key.toLowerCase();
@@ -1742,7 +1946,7 @@ document.addEventListener('keydown', (e) => {
     }
     return;
   }
-  if (k === 'f' && ui.run.mode.id === 'boss') { e.preventDefault(); useFocus(); return; }
+
   const map = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, a: 0, b: 1, c: 2, d: 3, e: 4 };
   if (k in map && !ui.answered) { e.preventDefault(); pickAnswer(map[k]); return; }
   if (k === 'enter') {
@@ -1794,7 +1998,7 @@ function registerSW() {
 }
 
 // Testhaken nur im Demo-Link (#demo)
-if (location.hash === '#demo') window.__quest = { ui, save };
+if (location.hash === '#demo') window.__quest = { ui, save, audio: Audio };
 
 registerSW();
 bootTerminal();

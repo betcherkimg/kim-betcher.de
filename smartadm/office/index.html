@@ -1272,6 +1272,52 @@ td { border-bottom-color: var(--line); }
             <div id="payrollDataStatus" class="notice warn" style="margin-top:12px" hidden></div>
           </div>
 
+          <div class="panel" style="margin-top:16px" id="contributionPanel">
+            <div class="card-head" style="margin-bottom:12px">
+              <h2 style="font-size:16px">Beitragsnachweis Minijob-Zentrale</h2>
+              <p>Bereitet die Monatswerte für das SV-Meldeportal vor. Unfallversicherung/BG wird hier bewusst nicht eingerechnet.</p>
+            </div>
+            <div class="quick-grid">
+              <div class="quick"><span>Voraussichtliches Brutto</span><b id="contribEstimatedGross">0,00 €</b></div>
+              <div class="quick"><span>Voraussichtliche Abgaben</span><b id="contribEstimatedTotal">0,00 €</b></div>
+              <div class="quick"><span>Korrektur Vormonat</span><b id="contribPriorCorrection">0,00 €</b></div>
+              <div class="quick emphasis"><span>Beitragssoll</span><b id="contribPayableTotal">0,00 €</b></div>
+            </div>
+            <div class="form-grid" style="margin-top:14px">
+              <div class="field">
+                <label for="contribReportedGross">Für Beitragsnachweis angesetztes Brutto</label>
+                <input id="contribReportedGross" type="number" min="0" step="0.01" placeholder="z. B. 550,00">
+                <small>Vor der Frist als realistische Schätzung festlegen.</small>
+              </div>
+              <div class="field">
+                <label for="contribStatus">Status</label>
+                <select id="contribStatus">
+                  <option value="draft">Entwurf</option>
+                  <option value="submitted">Übermittelt</option>
+                  <option value="paid">Bezahlt</option>
+                </select>
+              </div>
+              <div class="field"><label for="contribSubmittedDate">Übermittelt am</label><input id="contribSubmittedDate" type="date"></div>
+              <div class="field"><label for="contribPaidDate">Bezahlt am</label><input id="contribPaidDate" type="date"></div>
+              <div class="field full"><label for="contribNote">Notiz</label><input id="contribNote" type="text" maxlength="220" placeholder="Optional, z. B. Schätzgrundlage"></div>
+            </div>
+            <div class="actions start">
+              <button class="btn ghost" id="useCurrentGrossBtn" type="button">Aktuelles Brutto übernehmen</button>
+              <button class="btn primary" id="saveContributionBtn" type="button">Beitragsnachweis speichern</button>
+              <button class="btn ghost" id="showSvValuesBtn" type="button">Werte fürs SV-Meldeportal</button>
+              <span id="contribSaveStatus" class="status-text" style="margin:0"></span>
+            </div>
+            <div class="breakdown" style="margin-top:14px">
+              <div><span>Übermittlungsfrist</span><strong id="contribSubmitDeadline">–</strong></div>
+              <div><span>Zahlungsfälligkeit</span><strong id="contribPaymentDeadline">–</strong></div>
+              <div><span>Tatsächliches Brutto aktuell</span><strong id="contribActualGross">0,00 €</strong></div>
+              <div><span>Voraussichtliche Differenz</span><strong id="contribCurrentDifference">0,00 €</strong></div>
+            </div>
+            <div id="contribWarning" class="limit-status" style="margin-top:10px"></div>
+            <div id="contribValues" class="notice" style="margin-top:12px" hidden></div>
+            <div class="status-text" style="margin-top:8px">Status, Datumsfelder und Schätzgrundlage werden lokal in diesem Browser gespeichert; die eigentliche Meldung erfolgt im SV-Meldeportal.</div>
+          </div>
+
           <div class="actions">
             <button class="btn ghost" id="createEmployerPayrollPdf" type="button">Arbeitgeber-Abrechnung als PDF</button>
             <button class="btn primary" id="createPayrollPdf" type="button">Gehaltsnachweis als PDF</button>
@@ -1610,6 +1656,14 @@ td { border-bottom-color: var(--line); }
     employerFlatTax: p => (p.flatTax && !p.flatTaxEmployee ? 0.02 : 0),
     accident: p => (p.accident ? Number(p.accidentRate || 0) / 100 : 0)
   };
+
+  const CONTRIBUTION_DEADLINES_2026 = {
+    "2026-01": [25, 28], "2026-02": [22, 25], "2026-03": [24, 27],
+    "2026-04": [23, 28], "2026-05": [21, 27], "2026-06": [23, 26],
+    "2026-07": [26, 29], "2026-08": [24, 27], "2026-09": [23, 28],
+    "2026-10": [25, 28], "2026-11": [23, 26], "2026-12": [21, 28]
+  };
+  const CONTRIBUTION_STORE_PREFIX = "smartadm-office-contrib-v1";
 
   const PAGE_TITLES = {
     dashboard: ["Dashboard", "Überblick über den laufenden Monat"],
@@ -2623,6 +2677,158 @@ td { border-bottom-color: var(--line); }
     );
   }
 
+
+  /* ================= Beitragsnachweis Minijob-Zentrale ================= */
+
+  const contributionStoreKey = (userId = state.selectedUserId, month = payrollMonth()) =>
+    `${CONTRIBUTION_STORE_PREFIX}:${userId || "none"}:${month || "none"}`;
+
+  function readContributionRecord(userId = state.selectedUserId, month = payrollMonth()) {
+    if (!userId || !month) return {};
+    try { return JSON.parse(localStorage.getItem(contributionStoreKey(userId, month)) || "{}"); }
+    catch { return {}; }
+  }
+
+  function writeContributionRecord(record, userId = state.selectedUserId, month = payrollMonth()) {
+    if (!userId || !month) return;
+    localStorage.setItem(contributionStoreKey(userId, month), JSON.stringify(record));
+  }
+
+  function previousContributionMonth(month) {
+    const [y, m] = String(month).split("-").map(Number);
+    return isoMonth(new Date(y, m - 2, 1));
+  }
+
+  function shiftIsoDate(dateIso, days) {
+    const d = new Date(`${dateIso}T12:00:00`);
+    d.setDate(d.getDate() + days);
+    return isoDate(d);
+  }
+
+  function contributionDeadline(month) {
+    const days = CONTRIBUTION_DEADLINES_2026[month];
+    if (!days) return null;
+    return { submit: `${month}-${pad(days[0])}`, payment: `${month}-${pad(days[1])}` };
+  }
+
+  function contributionBreakdownFromGross(grossEuros, profile, month = payrollMonth(), employment = selectedEmployment()) {
+    const gross = Math.max(0, Math.round((Number(grossEuros) || 0) * 100));
+    const svDays = insuredDays(month, employment?.start_date, employment?.end_date);
+    let employeeRv = 0;
+    if (profile.employeeRv && gross > 0) {
+      employeeRv = Math.round(gross * RV_EMPLOYEE_RATE);
+      const base = Math.round((RV_MIN_BASE_CENTS * svDays) / 30);
+      if (profile.rvMinBaseApplies && gross < base) {
+        employeeRv = Math.max(0, Math.round(base * RV_FULL_RATE) - Math.round(gross * RV_EMPLOYER_RATE));
+      }
+    }
+    const kv = profile.employerKv ? Math.round(gross * 0.13) : 0;
+    const rv = profile.employerRv ? Math.round(gross * RV_EMPLOYER_RATE) : 0;
+    const u1 = profile.u1 ? Math.round(gross * 0.008) : 0;
+    const u2 = profile.u2 ? Math.round(gross * 0.0022) : 0;
+    const insolvency = profile.insolvency ? Math.round(gross * 0.0015) : 0;
+    const flatTax = profile.flatTax ? Math.round(gross * 0.02) : 0;
+    const totalCents = kv + rv + u1 + u2 + insolvency + flatTax + employeeRv;
+    return {
+      gross: gross / 100, kv: kv / 100, rv: rv / 100, u1: u1 / 100, u2: u2 / 100,
+      insolvency: insolvency / 100, flatTax: flatTax / 100, employeeRv: employeeRv / 100, total: totalCents / 100
+    };
+  }
+
+  function actualContributionForMonth(month) {
+    const closing = state.closings.find(row => row.payroll_month === month);
+    const p = closing?.snapshot?.payroll;
+    if (p) {
+      return {
+        gross: Number(p.gross || 0),
+        total: (Number(p.employerContributions || 0) - Number(p.accident || 0)) + Number(p.employeeDeductions || 0)
+      };
+    }
+    const payroll = calculatePayroll(
+      inMonth(state.employeeEntries, month), readProfileInputs(), month, selectedEmployment(),
+      inMonthAbsences(state.employeeAbsences, month)
+    );
+    return {
+      gross: Number(payroll.gross || 0),
+      total: (Number(payroll.employerContributions || 0) - Number(payroll.accident || 0)) + Number(payroll.employeeDeductions || 0)
+    };
+  }
+
+  function priorMonthCorrection(month) {
+    const prior = previousContributionMonth(month);
+    const record = readContributionRecord(state.selectedUserId, prior);
+    if (record.reportedGross == null || record.reportedGross === "") return 0;
+    const reportedTotal = record.reportedTotal != null
+      ? Number(record.reportedTotal)
+      : contributionBreakdownFromGross(record.reportedGross, readProfileInputs(), prior, selectedEmployment()).total;
+    const actual = actualContributionForMonth(prior);
+    return Math.round((actual.total - reportedTotal) * 100) / 100;
+  }
+
+  function contributionStatusLabel(status) {
+    return status === "paid" ? "Bezahlt" : status === "submitted" ? "Übermittelt" : "Entwurf";
+  }
+
+  function renderContributionValues(forceShow = true) {
+    const host = $("contribValues");
+    if (!host) return;
+    const c = contributionBreakdownFromGross($("contribReportedGross").value, readProfileInputs(), payrollMonth(), selectedEmployment());
+    const correction = priorMonthCorrection(payrollMonth());
+    const total = Math.round((c.total + correction) * 100) / 100;
+    host.innerHTML = `<b>Werte für das SV-Meldeportal</b><br>
+      KV 13 %: <b>${euro(c.kv)}</b> · RV 15 %: <b>${euro(c.rv)}</b> · U1 0,80 %: <b>${euro(c.u1)}</b> · U2 0,22 %: <b>${euro(c.u2)}</b><br>
+      Insolvenzgeldumlage 0,15 %: <b>${euro(c.insolvency)}</b> · Pauschsteuer 2 %: <b>${euro(c.flatTax)}</b>${c.employeeRv ? ` · AN-RV: <b>${euro(c.employeeRv)}</b>` : ""}<br>
+      ${correction ? `Korrektur Vormonat: <b>${correction > 0 ? "+" : ""}${euro(correction)}</b><br>` : ""}
+      <span style="font-size:15px">Gesamtes Beitragssoll: <b>${euro(total)}</b></span>`;
+    if (forceShow) host.hidden = false;
+  }
+
+  function renderContributionModule() {
+    if (!$("contributionPanel")) return;
+    const month = payrollMonth();
+    const userId = state.selectedUserId;
+    const profile = readProfileInputs();
+    const payroll = currentPayroll();
+    const record = readContributionRecord(userId, month);
+    const reportedGross = record.reportedGross != null && record.reportedGross !== "" ? Number(record.reportedGross) : Number(payroll.gross || 0);
+    const estimated = contributionBreakdownFromGross(reportedGross, profile, month, selectedEmployment());
+    const actualTotal = (Number(payroll.employerContributions || 0) - Number(payroll.accident || 0)) + Number(payroll.employeeDeductions || 0);
+    const correction = priorMonthCorrection(month);
+    const payable = Math.round((estimated.total + correction) * 100) / 100;
+    const difference = Math.round((actualTotal - estimated.total) * 100) / 100;
+
+    $("contribReportedGross").value = record.reportedGross != null ? record.reportedGross : Number(payroll.gross || 0).toFixed(2);
+    $("contribStatus").value = record.status || "draft";
+    $("contribSubmittedDate").value = record.submittedDate || "";
+    $("contribPaidDate").value = record.paidDate || "";
+    $("contribNote").value = record.note || "";
+
+    setText("contribEstimatedGross", euro(estimated.gross));
+    setText("contribEstimatedTotal", euro(estimated.total));
+    setText("contribPriorCorrection", `${correction > 0 ? "+" : ""}${euro(correction)}`);
+    setText("contribPayableTotal", euro(payable));
+    setText("contribActualGross", euro(payroll.gross));
+    setText("contribCurrentDifference", `${difference > 0 ? "+" : ""}${euro(difference)}`);
+
+    const deadline = contributionDeadline(month);
+    setText("contribSubmitDeadline", deadline ? fmtDate(deadline.submit) : "nicht hinterlegt");
+    setText("contribPaymentDeadline", deadline ? fmtDate(deadline.payment) : "nicht hinterlegt");
+
+    const warning = $("contribWarning");
+    const messages = [];
+    if (!userId) messages.push("Bitte zuerst einen Mitarbeiter auswählen.");
+    if (correction) messages.push(`Aus dem Vormonat sind ${correction > 0 ? euro(correction) + " nachzuzahlen" : euro(Math.abs(correction)) + " zu verrechnen"}.`);
+    if (difference) messages.push(`Aktuell weicht die tatsächliche Beitragsschuld um ${euro(Math.abs(difference))} von der angesetzten Schätzung ab.`);
+    if (deadline && month === isoMonth()) {
+      const today = isoDate();
+      if ((record.status || "draft") === "draft" && today >= shiftIsoDate(deadline.submit, -3)) messages.push("Übermittlungsfrist steht kurz bevor oder ist erreicht.");
+      if ((record.status || "draft") !== "paid" && today >= shiftIsoDate(deadline.payment, -2)) messages.push("Zahlungsfälligkeit steht kurz bevor oder ist erreicht.");
+    }
+    warning.classList.toggle("warn", messages.length > 0);
+    warning.textContent = messages.length ? messages.join(" ") : `Status: ${contributionStatusLabel(record.status || "draft")} · keine offenen Hinweise.`;
+    renderContributionValues(false);
+  }
+
   function missingMasterData(employer, employee) {
     return [
       !employer?.name && "Arbeitgeber: Name",
@@ -2690,6 +2896,7 @@ td { border-bottom-color: var(--line); }
       ? `<b>Für einen vollständigen Gehaltsnachweis fehlen noch:</b> ${missing.map(esc).join(", ")}.
          Arbeitgeber unter „Einstellungen“, Mitarbeiter unter „Mitarbeiter“ ergänzen.`
       : "";
+    renderContributionModule();
   }
 
   let profileSaveTimer = null;
@@ -2758,6 +2965,44 @@ td { border-bottom-color: var(--line); }
   });
 
   $("payrollMonth").addEventListener("change", renderPayrollPreview);
+
+  $("useCurrentGrossBtn").addEventListener("click", () => {
+    $("contribReportedGross").value = Number(currentPayroll().gross || 0).toFixed(2);
+    $("contribReportedGross").dispatchEvent(new Event("input"));
+  });
+
+  $("showSvValuesBtn").addEventListener("click", () => renderContributionValues(true));
+
+  $("contribReportedGross").addEventListener("input", () => {
+    const c = contributionBreakdownFromGross($("contribReportedGross").value, readProfileInputs(), payrollMonth(), selectedEmployment());
+    const correction = priorMonthCorrection(payrollMonth());
+    setText("contribEstimatedGross", euro(c.gross));
+    setText("contribEstimatedTotal", euro(c.total));
+    setText("contribPayableTotal", euro(Math.round((c.total + correction) * 100) / 100));
+    renderContributionValues(false);
+  });
+
+  $("contribStatus").addEventListener("change", () => {
+    const status = $("contribStatus").value;
+    const today = isoDate();
+    if ((status === "submitted" || status === "paid") && !$("contribSubmittedDate").value) $("contribSubmittedDate").value = today;
+    if (status === "paid" && !$("contribPaidDate").value) $("contribPaidDate").value = today;
+  });
+
+  $("saveContributionBtn").addEventListener("click", () => {
+    if (!state.selectedUserId) return alert("Bitte zuerst einen Mitarbeiter auswählen.");
+    const gross = Math.max(0, Number($("contribReportedGross").value) || 0);
+    const breakdown = contributionBreakdownFromGross(gross, readProfileInputs(), payrollMonth(), selectedEmployment());
+    const actual = actualContributionForMonth(payrollMonth());
+    writeContributionRecord({
+      month: payrollMonth(), reportedGross: gross.toFixed(2), reportedTotal: breakdown.total,
+      actualGross: actual.gross, actualTotal: actual.total, status: $("contribStatus").value,
+      submittedDate: $("contribSubmittedDate").value || null, paidDate: $("contribPaidDate").value || null,
+      note: $("contribNote").value.trim(), savedAt: new Date().toISOString()
+    });
+    setStatus("contribSaveStatus", "Gespeichert ✓");
+    renderContributionModule();
+  });
 
   function payrollDocument() {
     const employee = findEmployee(state.selectedUserId);

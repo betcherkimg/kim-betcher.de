@@ -1079,3 +1079,86 @@ img.chest__item { width: 40px; height: 40px; font-size: 0; }
   .invpop { position: fixed; top: 58px; left: 8px; right: 8px; width: auto; max-height: calc(100vh - 70px); overflow: auto; }
   .invpop::before { display: none; }
 }
+
+/* =========================================================
+   Hotbar (Kampf-Items F1–F4)
+   ========================================================= */
+.run { padding-bottom: 118px; }
+.hotbar {
+  position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 35;
+  display: flex; gap: 8px; padding: 8px; border-radius: 18px;
+  background: linear-gradient(180deg, #1A2B55, #0B1B3D); box-shadow: 0 0 0 2px rgba(201,162,75,.55), 0 16px 34px -12px rgba(11,27,61,.8);
+}
+.hot {
+  position: relative; width: 86px; height: 86px; border: 0; cursor: pointer; border-radius: 12px; color: var(--white);
+  display: grid; grid-template-rows: auto 1fr auto; justify-items: center; align-items: center; padding: 6px 4px 5px;
+  background: radial-gradient(circle at 50% 35%, #2E4C8F, #15264D); box-shadow: inset 0 0 0 2px rgba(255,255,255,.14), inset 0 -3px 0 rgba(0,0,0,.35);
+  transition: transform .1s, box-shadow .15s;
+}
+.hot:hover:not(.is-off) { transform: translateY(-2px); box-shadow: inset 0 0 0 2px #C9A24B, 0 6px 14px -4px rgba(201,162,75,.6); }
+.hot:active:not(.is-off) { transform: translateY(1px); }
+.hot__key { position: absolute; left: 5px; top: 4px; padding: 1px 5px; border-radius: 5px; background: rgba(0,0,0,.45); font-family: var(--font-mono); font-size: .68rem; color: #FFE08A; }
+.hot__icon { font-size: 1.7rem; line-height: 1; margin-top: 10px; }
+.hot__name { font-size: .7rem; font-weight: 700; opacity: .9; }
+.hot__count { position: absolute; right: 5px; top: 4px; font-family: var(--font-mono); font-size: .72rem; color: #9EF0CB; }
+.hot__price { display: inline-flex; align-items: center; gap: 3px; font-family: var(--font-mono); font-size: .72rem; color: #FFE08A; }
+.hot__price .coin { width: 13px; height: 13px; }
+/* nicht im Inventar: ausgegraut, Preis sichtbar */
+.hot.is-buy .hot__icon { filter: grayscale(1) brightness(.75); opacity: .55; }
+.hot.is-buy .hot__name { opacity: .6; }
+/* zu wenig Coins: Preis rot */
+.hot.is-poor .hot__price { color: #FF7A8E; }
+.hot.is-poor .hot__price .coin { filter: grayscale(1); opacity: .6; }
+/* gerade nicht einsetzbar */
+.hot.is-off { cursor: not-allowed; opacity: .42; }
+.hot.is-denied { animation: shake .35s; box-shadow: inset 0 0 0 2px var(--bad); }
+.hotbar__hint {
+  position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%); white-space: nowrap;
+  padding: 5px 12px; border-radius: 99px; background: #0B1B3D; color: #FFE08A; font-size: .82rem; font-weight: 700; opacity: 0; pointer-events: none;
+}
+.hotbar__hint.is-on { animation: hintIn 2.4s both; }
+@keyframes hintIn { 0% { opacity: 0; transform: translate(-50%, 6px); } 10%, 80% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; } }
+.timer.is-paused .timer__bar span { background: #9ECBFF; }
+.timer.is-paused .timer__num { color: #9ECBFF; animation: none; }
+.pips .is-skip { background: #9ECBFF; }
+
+/* Karussell */
+.cprog { display: grid; gap: 4px; flex: 1 1 220px; margin-right: auto; }
+.cprog__bar { display: block; height: 8px; border-radius: 99px; background: var(--frost); overflow: hidden; }
+.cprog__bar > span { display: block; height: 100%; background: linear-gradient(90deg, #7A5CF0, var(--blue)); border-radius: inherit; transition: width .4s; }
+.cprog__txt { font-size: .78rem; font-weight: 700; color: var(--ink-3); }
+.mode__emoji { font-size: 1.8rem; line-height: 1; }
+.mode--carousel .mode__icon { background: linear-gradient(160deg, #EFE8FF, #DCE8FB); }
+.ctiers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.ctier { display: grid; text-align: center; padding: 8px 4px; border-radius: 10px; background: var(--ice); color: var(--ink-3); font-weight: 800; font-family: var(--font-display); font-size: .9rem; }
+.ctier small { font-family: var(--font-body); font-weight: 400; font-size: .72rem; }
+.ctier.is-got.ctier--wood { background: #F3E3CC; color: #7A4A12; }
+.ctier.is-got.ctier--silver { background: #E8EDF3; color: #4A5A70; box-shadow: inset 0 0 0 1.5px #B8C4D3; }
+.ctier.is-got.ctier--gold { background: var(--gold-bg); color: #7A5200; box-shadow: inset 0 0 0 1.5px #F1D17B; }
+.ctier.is-got.ctier--legend { background: linear-gradient(135deg, #F4E6FF, #FFF3D1); color: #5B2D91; box-shadow: inset 0 0 0 1.5px #C9A2F0; }
+
+/* Modus-Raster mit fünf Karten */
+.modes { grid-template-columns: repeat(5, 1fr); }
+@media (max-width: 1180px) { .modes { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 760px) { .modes { grid-template-columns: 1fr 1fr; } }
+
+/* Shop-Ergänzungen, Musik */
+.shop__sub { margin: 10px 0 6px; font-size: .78rem; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em; }
+kbd { font-family: var(--font-mono); font-size: .7rem; padding: 1px 5px; border-radius: 5px; background: var(--ink); color: #FFE08A; vertical-align: 1px; }
+.chip--music span { font-size: 1rem; line-height: 1; }
+.chip--music.is-off { opacity: .45; text-decoration: line-through; }
+
+@media (max-width: 640px) {
+  .hotbar { bottom: 8px; gap: 5px; padding: 6px; }
+  .hot { width: 70px; height: 72px; }
+  .hot__icon { font-size: 1.35rem; }
+  .hot__name { font-size: .62rem; }
+  .run { padding-bottom: 100px; }
+  .modes { grid-template-columns: 1fr; }
+  .ctiers { grid-template-columns: 1fr 1fr; }
+}
+/* Hotbar kompakter, damit sie im Boss weniger Fläche verdeckt */
+.hot { width: 74px; height: 70px; padding: 4px 4px 4px; }
+.hot__icon { font-size: 1.45rem; margin-top: 8px; }
+.run { padding-bottom: 104px; }
+.invpop { max-height: calc(100vh - 90px); overflow: auto; }

@@ -66,10 +66,42 @@ tools/check-content.mjs  Datenprüfung vor dem Hochladen
 - **Intro-Sequenz** (~3 s, überspringbar mit Klick/Enter/Leertaste): Silhouette steigt auf, Blitz, Name, getippter Spruch, dann Regeln. Der Timer startet erst mit „Kampf beginnen“ (Enter). Zurück aus dem Intro kostet nichts.
 - **Boss-Bilder** in `boss.json`: `image` (Ganzkörper), `bust` (Arena), `accent` (Farbstimmung, z. B. `#E9A400`). Ohne Bild erscheint das Siegel.
 - **Testphase:** `BOSS_REQUIRES_STORY = false` in `js/game.js` – Bossfights sind ohne Storysieg spielbar. Für den Echtbetrieb auf `true` setzen.
-- **Kritischer Treffer** bei Antwort mit mindestens 6 Sekunden Restzeit.
-- **Fokus** (Taste F): einmal pro Kampf +5 Sekunden.
+- **Kritischer Treffer** bei Antwort innerhalb von 4 Sekunden (mind. 11 s Restzeit).
+- **4 von 6:** Der Kampf endet, sobald du 4 richtig hast (Sieg) oder 3 Fehler (Niederlage). Übersprungene Fragen zählen nicht als richtig – reichen die restlichen Fragen nicht mehr für 4 Treffer, ist der Kampf verloren.
+- **Fokus** (F1): +10 Sekunden. Jeden Tag gibt es beim Öffnen des Spielstands einen Fokus geschenkt.
 - **Wut-Phase** bei der finalen Frage oder wenn der Boss nur noch 1 Leben hat.
 - **Siegtruhe** nach dem Sieg: Quest-Coins, dazu mit 4–15 % Chance (je nach Sternen) ein Trank.
 - Sprüche des Bosses stehen optional in `boss.json` unter `boss.taunts` (intro, hit, miss, timeout, final, low, defeat, victory).
 
 Stellschrauben in `js/game.js`: `MODE_HP_LOSS`, `RESCUE_HEAL`, `BOSS_CRIT_SECONDS`, `BOSS_FOCUS_SECONDS`, `BOSS_CHEST_POTION_CHANCE`, `COIN_REWARDS`, `COIN_FIRST_WIN_MULTIPLIER`, `COIN_LEVEL_COMPLETE`, `SHOP`, Beute-Chancen in `rollQuestionReward`.
+
+
+## Modi
+
+| Modus | Fragen | Leben | Timer | Bei Niederlage |
+|---|---|---|---|---|
+| Story | 10 in Lernreihenfolge | 3 | – | −25 % HP, Level-Reset |
+| Versus | 5 zufällig | 1 | – | −33 % HP, Level-Reset |
+| Boss | 6 Bossfragen – 4 richtig = Sieg, 3 Fehler = Niederlage | 3 | 15 s | −50 % HP, Level-Reset |
+| Karussell | alle Fragen des Levels, leicht → Boss | 3 | – | keine Strafe |
+
+**Karussell:** Belohnung nach Anteil richtiger Antworten – Holztruhe ab 25 % (15 Coins), Silber ab 50 % (35, 10 % kleiner Trank), Gold ab 75 % (75, 25 % mittlerer Trank), Legendär bei 100 % (150 + großer Trank, 5 % Lebensfunke). „Beenden“ wertet den bisherigen Stand aus. Zufallsbeute gibt es im Karussell nicht. Für den Level-Abschluss zählt das Karussell nicht.
+
+## Kampf-Items (Hotbar unten, F1–F4)
+
+| Taste | Item | Preis | Wirkung | Modi |
+|---|---|---|---|---|
+| F1 | Fokus | 30 | +10 s für die aktuelle Frage (1× pro Frage) · 1× täglich gratis | Boss |
+| F2 | Pauser | 60 | Timer hält an – ohne kritischen Treffer | Boss |
+| F3 | Herz | 120 | +1 Leben, auch direkt nach dem letzten verlorenen Leben | Story, Versus, Boss, Karussell |
+| F4 | Überspringer | 250 | Frage überspringen, kein Lebensverlust | Story, Versus, Boss, Karussell |
+
+Nicht im Inventar → ausgegraut mit Preis; Taste/Klick kauft und setzt sofort ein. Zu wenig Coins → Preis rot.
+Sterne zählen Fehler, nicht verlorene Leben – ein Herz kauft also keine Sterne zurück.
+
+## Audio
+
+Alle Geräusche und die Musik entstehen live per Web-Audio-Synthese (`js/audio.js`) – keine fremden Aufnahmen, keine Lizenzfragen.
+Musik: ruhig im Menü, Abenteuer in Story/Versus/Karussell, Kampf im Boss; jedes Stück wechselt nach 8 Takten die Akkordfolge.
+Effekte: Münzklimpern (Coins erhalten/ausgeben), „Ouuw“ (Schaden), Schlucken (Trank), Truhe, Items.
+Schalter oben rechts: ♪ = Musik, Lautsprecher = Effekte.

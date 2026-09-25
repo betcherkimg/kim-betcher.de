@@ -3,9 +3,11 @@
  */
 
 export const MODES = {
-  story:  { id: 'story',  label: 'Storymode', count: 10, lives: 3, seconds: 0,  source: 'questions', winXp: 60 },
-  versus: { id: 'versus', label: 'Versus',    count: 5,  lives: 1, seconds: 0,  source: 'questions', winXp: 80 },
-  boss:   { id: 'boss',   label: 'Bossfight', count: 5,  lives: 3, seconds: 10, source: 'boss',      winXp: 150 },
+  story:    { id: 'story',    label: 'Story',     count: 10, lives: 3, seconds: 0,  source: 'questions', winXp: 60 },
+  versus:   { id: 'versus',   label: 'Versus',    count: 5,  lives: 1, seconds: 0,  source: 'questions', winXp: 80 },
+  // Boss: 6 Fragen, 15 s. 4 richtige besiegen den Boss, 3 Fehler verlieren den Kampf (4 + 2 = 6 geht immer auf).
+  boss:     { id: 'boss',     label: 'Boss',      count: 6,  lives: 3, seconds: 15, source: 'boss',      winXp: 150, killHits: 4 },
+  carousel: { id: 'carousel', label: 'Karussell', count: 999, lives: 3, seconds: 0, source: 'all',       winXp: 200 },
   rescue: { id: 'rescue', label: 'Rettungsmission', count: 3, lives: 1, seconds: 0, source: 'questions', winXp: 10 },
 };
 
@@ -43,6 +45,40 @@ export function rollQuestionReward(question, rng = Math.random) {
   return r < 0.02 ? POTIONS.small : null;                // 2 %
 }
 
+/* ---------- Kampf-Items (Hotbar F1–F4) ---------- */
+
+export const BATTLE_ITEMS = {
+  focus: { id: 'focus', key: 'F1', label: 'Fokus',        icon: '⏳', price: 30,  modes: ['boss'],
+           text: '+10 Sekunden für die aktuelle Frage' },
+  pause: { id: 'pause', key: 'F2', label: 'Pauser',       icon: '⏸️', price: 60,  modes: ['boss'],
+           text: 'Hält den Timer an – in Ruhe antworten' },
+  heart: { id: 'heart', key: 'F3', label: 'Herz',         icon: '❤️', price: 120, modes: ['story', 'versus', 'boss', 'carousel'],
+           text: 'Ein verlorenes Leben zurück' },
+  skip:  { id: 'skip',  key: 'F4', label: 'Überspringer', icon: '⏭️', price: 250, modes: ['story', 'versus', 'boss', 'carousel'],
+           text: 'Frage überspringen – ohne Leben zu verlieren' },
+};
+export const BATTLE_ITEM_ORDER = ['focus', 'pause', 'heart', 'skip'];
+
+/* ---------- Karussell ---------- */
+
+/** Reihenfolge: normale Fragen von leicht nach schwer, danach die Bossfragen */
+export function carouselOrder(questions, bossQuestions) {
+  const sortKey = (q) => [(q.difficulty || 1), (q.taxonomyLevel || 1), q.storyOrder || 0];
+  const cmp = (a, b) => { const x = sortKey(a); const y = sortKey(b); for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return x[i] - y[i]; return 0; };
+  return [...[...questions].sort(cmp), ...[...(bossQuestions || [])].sort(cmp)];
+}
+
+/** Truhen nach Anteil richtig beantworteter Fragen */
+export const CAROUSEL_CHESTS = [
+  { min: 1.0,  id: 'legend', label: 'Legendäre Truhe', coins: 150, potion: 'large',  potionChance: 1,    sparkChance: 0.05 },
+  { min: 0.75, id: 'gold',   label: 'Goldtruhe',       coins: 75,  potion: 'medium', potionChance: 0.25, sparkChance: 0 },
+  { min: 0.5,  id: 'silver', label: 'Silbertruhe',     coins: 35,  potion: 'small',  potionChance: 0.1,  sparkChance: 0 },
+  { min: 0.25, id: 'wood',   label: 'Holztruhe',       coins: 15,  potion: null,     potionChance: 0,    sparkChance: 0 },
+];
+export function carouselChest(ratio) {
+  return CAROUSEL_CHESTS.find((c) => ratio >= c.min) || null;
+}
+
 /* ---------- Quest-Coins & Shop ---------- */
 
 /** Coins pro gewonnenem Modus: Grundwert, Bonus für 3 Sterne, erster Sieg im Level zählt doppelt */
@@ -59,6 +95,10 @@ export const SHOP = {
   medium: { price: 100 },
   large:  { price: 200 },
   spark:  { price: 500, max: 1 },   // Lebensfunke: höchstens einer im Inventar
+  focus:  { price: 30 },
+  pause:  { price: 60 },
+  heart:  { price: 120 },
+  skip:   { price: 250 },
 };
 
 /** Coins für einen gewonnenen Run berechnen */
@@ -76,9 +116,10 @@ export function coinsForWin(modeId, stars, firstWin) {
 /** Rettungsmission bei 0 HP: 3 leichte Fragen in Folge richtig → so viele HP zurück */
 export const RESCUE_HEAL = 30;
 /** Mit so vielen Restsekunden gilt ein Boss-Treffer als kritisch */
-export const BOSS_CRIT_SECONDS = 6;
-/** Fokus: einmal pro Bossfight die Zeit der aktuellen Frage verlängern */
-export const BOSS_FOCUS_SECONDS = 5;
+export const BOSS_CRIT_SECONDS = 11;   // bei 15 s: Antwort innerhalb von 4 s
+/** Fokus-Item: Zeit der aktuellen Frage verlängern; jeden Tag gibt es einen Fokus geschenkt */
+export const BOSS_FOCUS_SECONDS = 10;
+export const DAILY_FOCUS_GIFT = 1;
 /** Siegtruhe nach gewonnenem Bossfight: Sterne → garantierter Trank */
 /** Siegtruhe: Coins kommen über COIN_REWARDS; mit etwas Glück liegt zusätzlich ein Trank darin */
 export const BOSS_CHEST_POTION_CHANCE = { 3: 0.15, 2: 0.08, 1: 0.04 };
@@ -225,7 +266,7 @@ export class Run {
     this.xp += gainedXp;
     this.results.push({ question: q, selected: [...(selected || [])], correct: ok, timedOut, secondsLeft });
     const last = this.idx >= this.total - 1;
-    this.finished = this.lives <= 0 || last;
+    this.finished = this.lives <= 0 || last || this.decided;
     return { correct: ok, gainedScore, gainedXp, lives: this.lives, combo: this.combo, finished: this.finished };
   }
 
@@ -236,12 +277,45 @@ export class Run {
   }
 
   get won() {
+    // Boss: gewonnen, sobald genug Treffer gelandet sind. Andere Modi: alle Fragen mit Leben übrig.
+    if (this.mode.killHits) return this.finished && this.lives > 0 && this.correctCount >= this.mode.killHits;
     return this.finished && this.lives > 0 && this.results.length === this.total;
   }
 
+  /** Frage überspringen: zählt weder als richtig noch als Fehler, kostet kein Leben. */
+  skip() {
+    if (this.finished || !this.current) return null;
+    this.results.push({ question: this.current, selected: [], correct: false, skipped: true, timedOut: false, secondsLeft: 0 });
+    const last = this.idx >= this.total - 1;
+    this.finished = last || this.decided;
+    return { finished: this.finished };
+  }
+
+  /** Ein Leben zurück (Herz). Nicht über das Maximum des Modus. */
+  restoreLife() {
+    if (this.lives >= this.mode.lives) return false;
+    const dead = this.lives <= 0;
+    if (this.finished && !dead) return false;          // regulär zu Ende gespielt
+    this.lives += 1;
+    if (dead) this.finished = this.results.length >= this.total || this.decided;  // Wiederbelebt: weiter, falls noch offen
+    return true;
+  }
+
+  /** Boss: Kampf entschieden – genug Treffer oder rechnerisch nicht mehr erreichbar */
+  get decided() {
+    const need = this.mode.killHits;
+    if (!need) return false;
+    const remaining = this.total - this.results.length;
+    return this.correctCount >= need || this.correctCount + remaining < need;
+  }
+
+  get mistakes() { return this.results.filter((r) => !r.correct && !r.skipped).length; }
+  get skipped() { return this.results.filter((r) => r.skipped).length; }
+
   get stars() {
     if (!this.won) return 0;
-    const lost = this.mode.lives - this.lives;
+    // Sterne nach Fehlern, nicht nach Leben – sonst ließen sich Sterne mit Herzen zurückkaufen
+    const lost = Math.min(this.mistakes, this.mode.lives);
     return Math.max(1, 3 - lost);
   }
 
@@ -282,20 +356,22 @@ export const ACHIEVEMENTS = [
   { id: 'combo_5',       icon: '🔥', title: 'Heiße Serie',       text: '5 richtige Antworten am Stück.' },
   { id: 'combo_10',      icon: '⚡', title: 'Unaufhaltsam',      text: '10 richtige Antworten am Stück.' },
   { id: 'scholar',       icon: '📘', title: 'Durchgelesen',      text: 'Ein Lernskript komplett verstanden.' },
-  { id: 'story_win',     icon: '📖', title: 'Story erzählt',     text: 'Storymode gewonnen.' },
-  { id: 'story_perfect', icon: '🌟', title: 'Makellos',          text: 'Storymode ohne Fehler.' },
+  { id: 'story_win',     icon: '📖', title: 'Story erzählt',     text: 'Story gewonnen.' },
+  { id: 'story_perfect', icon: '🌟', title: 'Makellos',          text: 'Story ohne Fehler.' },
   { id: 'versus_win',    icon: '⚔️', title: 'Duellant',          text: 'Versus gewonnen.' },
   { id: 'boss_slayer',   icon: '👑', title: 'Bossbezwinger',     text: 'Einen Boss besiegt.' },
   { id: 'boss_perfect',  icon: '🛡️', title: 'Unverwundbar',      text: 'Boss ohne Lebensverlust besiegt.' },
   { id: 'quick_draw',    icon: '⏱️', title: 'Schnellzieher',     text: 'Bossfrage in unter 3 Sekunden richtig.' },
   { id: 'streak_3',      icon: '📅', title: 'Dranbleiber',       text: 'An 3 Tagen in Folge gelernt.' },
-  { id: 'master',        icon: '🏆', title: 'Level gemeistert',   text: 'Lernskript, Story, Versus und Bossfight eines Levels geschafft.' },
+  { id: 'master',        icon: '🏆', title: 'Level gemeistert',   text: 'Lernskript, Story, Versus und Boss eines Levels geschafft.' },
   { id: 'loot',          icon: '🧪', title: 'Sammler',            text: 'Den ersten Heiltrank gefunden.' },
   { id: 'spark',         icon: '✨', title: 'Funkenfund',         text: 'Einen Lebensfunken gefunden.' },
   { id: 'revived',       icon: '💫', title: 'Zweites Leben',      text: 'Vom Lebensfunken gerettet.' },
   { id: 'shopper',       icon: '🪙', title: 'Kundschaft',         text: 'Den ersten Gegenstand im Shop gekauft.' },
   { id: 'rich',          icon: '💰', title: 'Schatzmeister',      text: '500 Quest-Coins auf einmal besessen.' },
-  { id: 'crit_king',     icon: '💥', title: 'Kritischer Schlag',  text: 'Drei kritische Treffer in einem Bossfight.' },
+  { id: 'carousel_50',   icon: '🎠', title: 'Karussellfahrer',    text: 'Im Karussell die Hälfte der Fragen geschafft.' },
+  { id: 'carousel_100',  icon: '🏵️', title: 'Endlosrunde',        text: 'Im Karussell alle Fragen eines Levels geschafft.' },
+  { id: 'crit_king',     icon: '💥', title: 'Kritischer Schlag',  text: 'Drei kritische Treffer in einem Bosskampf.' },
 ];
 
 /* ---------- Countdown ---------- */
@@ -306,6 +382,8 @@ export class Countdown {
 
   start(seconds, onTick, onEnd) {
     this.stop();
+    this.frozen = false;
+    this.frozenLeft = 0;
     this.running = true;
     const t0 = performance.now();
     this.startedAt = t0;
@@ -320,6 +398,15 @@ export class Countdown {
     this.raf = requestAnimationFrame(loop);
   }
 
+  /** Countdown anhalten (Pauser): Restzeit bleibt stehen, der Timer läuft für diese Frage nicht weiter. */
+  freeze() {
+    if (!this.running) return false;
+    this.frozenLeft = this.secondsLeft();
+    this.stop();
+    this.frozen = true;
+    return true;
+  }
+
   /** Zeit verlängern (Fokus). Wirkt nur, solange der Countdown läuft. */
   extend(seconds) {
     if (!this.running) return false;
@@ -328,6 +415,7 @@ export class Countdown {
   }
 
   secondsLeft() {
+    if (this.frozen) return this.frozenLeft || 0;
     if (!this.running) return 0;
     return Math.max(0, (this.total - (performance.now() - this.startedAt)) / 1000);
   }
