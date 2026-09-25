@@ -1953,3 +1953,25 @@ body[data-view='dashboard'] .hpchip__bar {
     min-height: 0 !important;
   }
 }
+
+
+/* ==== HP-Hotfix v5: geerbte Mindestbreite entfernen ==== */
+body[data-view='dashboard'] .hpchip__body {
+  min-width: 0 !important;
+  width: 100% !important;
+  position: static !important;
+  left: auto !important;
+  transform: none !important;
+  justify-items: center !important;
+}
+
+body[data-view='dashboard'] .hpchip__num {
+  width: 100%;
+  text-align: center !important;
+  white-space: nowrap;
+}
+
+body[data-view='dashboard'] .hpchip__bar {
+  width: 44% !important;
+  margin-inline: auto;
+}
