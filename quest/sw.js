@@ -4,7 +4,7 @@
  * Bei neuer contentVersion in chapters.json wird der Content-Cache geleert.
  * Bei App-Updates: STATIC_VERSION erhöhen.
  */
-const STATIC_VERSION = 'v17';
+const STATIC_VERSION = 'v18';
 const STATIC_CACHE = `34i-quest-static-${STATIC_VERSION}`;
 const CONTENT_CACHE = '34i-quest-content-v1';
 
@@ -19,8 +19,6 @@ const SHELL = [
   'js/app.js', 'js/game.js', 'js/savegame.js', 'js/content-loader.js', 'js/audio.js',
   'assets/logo.webp', 'assets/icon-192.png', 'assets/icon-512.png', 'assets/coin.webp', 'assets/coin-lg.webp',
   'assets/world/quest-map.webp',
-  'assets/ui/hud-ornate.webp', 'assets/ui/frame-ornate.webp',
-  'assets/ui/icon-help.webp', 'assets/ui/icon-music.webp', 'assets/ui/icon-sound.webp', 'assets/ui/icon-save.webp'
 ];
 
 self.addEventListener('install', (event) => {

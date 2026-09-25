@@ -33,9 +33,9 @@ tools/check-content.mjs  Datenprüfung vor dem Hochladen
 
 - Ein Level ist erst abgeschlossen, wenn Lernskript, Storymode, Versus und Bossfight geschafft sind.
 - Bossfight bleibt gesperrt, bis der Storymode gewonnen wurde.
-- Verlorener Run: Story −25 HP, Versus −33 HP, Boss −50 HP. Level-Reset nur bei K.o. (0 HP), solange das Level noch nicht abgeschlossen ist.
+- Verlorener Run: Story −25 HP, Versus −33 HP, Boss −50 HP. Bei 0 HP erscheint GAME OVER: Story, Versus und Boss des aktuellen Levels werden zurückgesetzt, das Lernskript bleibt erhalten und die HP werden sofort wieder auf 100 gesetzt.
 - Richtige Fragen können abhängig von der Schwierigkeit Heilitems droppen: leicht → kleiner Heiltrank (+25 %), mittel → mittlerer Heiltrank (+33 %), schwer → großer Heiltrank (+50 %). Bei schweren Fragen kann sehr selten ein Lebensfunke fallen, der bei 0 HP automatisch auf volle HP wiederbelebt.
-- Ein falscher Lernskript-Checkpoint kostet einmalig 10 HP. Danach folgt eine leichte Rettungsfrage; bei richtiger Antwort gibt sie 5 HP zurück.
+- Ein falscher Lernskript-Checkpoint kostet einmalig 10 HP. Danach folgt eine Ersatzfrage ohne weiteren HP-Abzug.
 - Nach dem erstmaligen vollständigen Abschluss eines Levels werden die HP auf Maximum aufgefüllt.
 
 ## Neues Level hinzufügen
@@ -54,11 +54,11 @@ tools/check-content.mjs  Datenprüfung vor dem Hochladen
 ## Spielregeln (Stand: HP-Update)
 
 - **HP** stehen oben rechts in der Kopfzeile. Klick aufs Herz öffnet das Inventar mit den Heiltränken.
-- **Niederlage** kostet HP: Story −25 HP, Versus −33 HP, Boss −50 HP. Die Spielmodi des Levels werden nur bei K.o. (0 HP) zurückgesetzt, solange das Level noch nicht abgeschlossen ist.
+- **Niederlage** kostet HP: Story −25 HP, Versus −33 HP, Boss −50 HP. Bei 0 HP erscheint GAME OVER: Story, Versus und Boss des aktuellen Levels werden zurückgesetzt, das Lernskript bleibt erhalten und die HP springen auf 100.
 - **Aufgeben** zählt als Niederlage, sobald eine Frage beantwortet wurde (beim Boss: sobald der Kampf begonnen hat).
-- **0 HP:** Die Spielmodi sind gesperrt. Heiltrank trinken oder die **Rettungsmission** spielen (3 leichte Fragen in Folge richtig → +30 HP, ohne Risiko).
+- **0 HP:** GAME OVER. Story, Versus und Boss des aktuellen Levels starten neu; das Lernskript bleibt erhalten; anschließend wieder 100 HP.
 - **Quest-Coins** gibt es für jeden gewonnenen Modus: Story 10, Versus 20, Boss 50. Der erste Sieg je Modus und Level zählt doppelt (resetfest), 3 Sterne geben +5 / +10 / +25, ein abgeschlossenes Level +100.
-- **Shop** (Coin-Anzeige oder Herz oben rechts): Kleiner Trank 50, mittlerer 100, großer 200, Lebensfunke 500 (max. 1 im Inventar).
+- **Shop** (Shop-Feld im HUD bzw. Shop-Schaltfläche): Kleiner Trank 50, mittlerer 100, großer 200, Lebensfunke 500 (max. 1 im Inventar).
 - **Tränke als Beute** sind sehr selten (2 % bei leichten und mittleren Fragen, 1,5 % großer Trank und 0,3 % Lebensfunke bei den schwersten). Die Siegtruhe enthält Coins und mit etwas Glück einen Trank.
 - **Level abgeschlossen** (Lernskript + Story + Versus + Boss) füllt die HP komplett auf.
 
@@ -73,7 +73,7 @@ tools/check-content.mjs  Datenprüfung vor dem Hochladen
 - **Siegtruhe** nach dem Sieg: Quest-Coins, dazu mit 4–15 % Chance (je nach Sternen) ein Trank.
 - Sprüche des Bosses stehen optional in `boss.json` unter `boss.taunts` (intro, hit, miss, timeout, final, low, defeat, victory).
 
-Stellschrauben in `js/game.js`: `MODE_HP_LOSS`, `RESCUE_HEAL`, `BOSS_CRIT_SECONDS`, `BOSS_FOCUS_SECONDS`, `BOSS_CHEST_POTION_CHANCE`, `COIN_REWARDS`, `COIN_FIRST_WIN_MULTIPLIER`, `COIN_LEVEL_COMPLETE`, `SHOP`, Beute-Chancen in `rollQuestionReward`.
+Stellschrauben in `js/game.js`: `MODE_HP_LOSS`, `BOSS_CRIT_SECONDS`, `BOSS_FOCUS_SECONDS`, `BOSS_CHEST_POTION_CHANCE`, `COIN_REWARDS`, `COIN_FIRST_WIN_MULTIPLIER`, `COIN_LEVEL_COMPLETE`, `SHOP`, Beute-Chancen in `rollQuestionReward`.
 
 
 ## Modi
@@ -124,7 +124,7 @@ Werte anpassen: `HERO_CLASSES` in `js/game.js`.
 ## HP-Regeln (aktuell)
 
 - Niederlage (auch Aufgeben nach der ersten Antwort) kostet feste HP: **Story −25, Versus −33, Boss −50**.
-- **Level-Reset nur bei K.o.:** Erst wenn die HP auf 0 fallen (und kein Lebensfunke rettet), werden Story-, Versus- und Boss-Siege des Levels zurückgesetzt. Lernskript, Bestwerte, XP und Inventar bleiben. Abgeschlossene Level werden nie zurückgesetzt.
+- **GAME OVER bei 0 HP:** Wenn kein Lebensfunke rettet, werden Story-, Versus- und Boss-Siege des aktuellen Levels zurückgesetzt. Lernskript, Checkpoints, Bestwerte, XP, Coins und Inventar bleiben erhalten; anschließend wieder 100 HP.
 - Heiltränke heilen feste Werte: klein +25, mittel +33, groß +50 HP.
 
 ## Update 25.09.2026

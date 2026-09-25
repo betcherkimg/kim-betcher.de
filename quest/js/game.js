@@ -8,7 +8,6 @@ export const MODES = {
   // Boss: 6 Fragen, 15 s. 4 richtige besiegen den Boss, 3 Fehler verlieren den Kampf (4 + 2 = 6 geht immer auf).
   boss:     { id: 'boss',     label: 'Boss',      count: 6,  lives: 3, seconds: 15, source: 'boss',      winXp: 150, killHits: 4 },
   carousel: { id: 'carousel', label: 'Karussell', count: 999, lives: 3, seconds: 0, source: 'all',       winXp: 200 },
-  rescue: { id: 'rescue', label: 'Rettungsmission', count: 3, lives: 1, seconds: 0, source: 'questions', winXp: 10 },
 };
 
 
@@ -152,8 +151,6 @@ export function coinsForWin(modeId, stars, firstWin) {
 
 /* ---------- Bossfight-Extras ---------- */
 
-/** Rettungsmission bei 0 HP: 3 leichte Fragen in Folge richtig → so viele HP zurück */
-export const RESCUE_HEAL = 30;
 /** Mit so vielen Restsekunden gilt ein Boss-Treffer als kritisch */
 export const BOSS_CRIT_SECONDS = 11;   // bei 15 s: Antwort innerhalb von 4 s
 /** Fokus-Item: Zeit der aktuellen Frage verlängern; jeden Tag gibt es einen Fokus geschenkt */
