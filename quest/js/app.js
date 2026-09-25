@@ -3,7 +3,8 @@
 import * as Content from './content-loader.js';
 import { SaveGame, SaveError, isSupported, createChapterProgress, SAVE_NAME } from './savegame.js';
 import { MODES, BOSS_REQUIRES_STORY, MAX_HP, MODE_HP_LOSS, POTIONS, rollQuestionReward, selectQuestions, prepareQuestion, Run, rankFor, ACHIEVEMENTS, Countdown,
-  RESCUE_HEAL, BOSS_CRIT_SECONDS, BOSS_FOCUS_SECONDS, BOSS_CHEST, BOSS_TAUNTS } from './game.js';
+  RESCUE_HEAL, BOSS_CRIT_SECONDS, BOSS_FOCUS_SECONDS, BOSS_CHEST_POTION_CHANCE, BOSS_TAUNTS,
+  COIN_REWARDS, COIN_LEVEL_COMPLETE, SHOP, coinsForWin } from './game.js';
 
 /* =========================================================
    Grundgerüst
@@ -60,7 +61,38 @@ function playerVitals() {
   pl.hp = Math.max(0, Math.min(pl.maxHp, pl.hp));
   if (!pl.inventory || typeof pl.inventory !== 'object') pl.inventory = { small: 0, medium: 0, large: 0, spark: 0 };
   for (const k of ['small', 'medium', 'large', 'spark']) if (!Number.isFinite(pl.inventory[k]) || pl.inventory[k] < 0) pl.inventory[k] = 0;
+  if (!Number.isFinite(pl.coins) || pl.coins < 0) pl.coins = 0;
   return pl;
+}
+
+const COIN_IMG = '<img class="coin" src="assets/coin.webp" alt="" width="20" height="20">';
+
+function addCoins(n, label = '') {
+  if (!n) return 0;
+  const pl = playerVitals();
+  pl.coins += n;
+  if (pl.coins >= 500) unlock('rich');
+  if (label) toast(`+${n} Quest-Coins · ${label}`, { icon: '🪙', tone: 'gold' });
+  const chip = $('coinChip');
+  if (chip) { chip.classList.remove('is-gain'); void chip.offsetWidth; chip.classList.add('is-gain'); }
+  renderHeader();
+  return n;
+}
+
+function buyItem(kind) {
+  const item = POTIONS[kind];
+  const offer = SHOP[kind];
+  const pl = playerVitals();
+  if (!item || !offer) return;
+  if (offer.max && (pl.inventory[kind] || 0) >= offer.max) { toast(`Mehr als ${offer.max} ${item.label} kannst du nicht tragen.`, { icon: item.icon }); return; }
+  if (pl.coins < offer.price) { toast(`Dir fehlen ${offer.price - pl.coins} Quest-Coins.`, { icon: '🪙', tone: 'bad' }); return; }
+  pl.coins -= offer.price;
+  pl.inventory[kind] = (pl.inventory[kind] || 0) + 1;
+  unlock('shopper');
+  sfx('coin');
+  toast(`${item.label} gekauft (−${offer.price} Coins)`, { icon: item.icon, tone: 'gold' });
+  persist();
+  rerenderCurrent();
 }
 
 function healHp(amount, label = 'Heilung', { quiet = false } = {}) {
@@ -225,6 +257,7 @@ function sfx(kind) {
       level: [[784, 0, 0.1], [988, 0.1, 0.1], [1319, 0.2, 0.25]],
       click: [[880, 0, 0.03]],
       rumble: [[55, 0, 0.9], [62, 0.25, 0.8]],
+      coin: [[1319, 0, 0.07], [1760, 0.07, 0.16]],
       boss: [[98, 0, 0.35], [73, 0.12, 0.6], [1400, 0, 0.08]],
     }[kind] || [];
     const t = audio.currentTime;
@@ -376,8 +409,9 @@ function checkMastery(id) {
   p.levelCompleted = true;
   const pl = playerVitals();
   pl.hp = pl.maxHp;
+  addCoins(COIN_LEVEL_COMPLETE);
   unlock('master');
-  toast(`${levelLabel(id)} abgeschlossen – HP vollständig aufgefüllt!`, { icon: '🏆', tone: 'gold', ms: 5200 });
+  toast(`${levelLabel(id)} abgeschlossen – HP voll und +${COIN_LEVEL_COMPLETE} Quest-Coins!`, { icon: '🏆', tone: 'gold', ms: 5200 });
   confetti(120);
   return true;
 }
@@ -419,6 +453,8 @@ function renderHeader() {
     </span>
     <span class="hpchip__bag" title="Heiltränke im Inventar">🧪${potions}${pl.inventory.spark ? ` ✨${pl.inventory.spark}` : ''}</span>`;
   chip.setAttribute('aria-label', `${pl.hp} von ${pl.maxHp} Lebenspunkten, ${potions} Heiltränke`);
+  $('coinChip').innerHTML = `${COIN_IMG}<b>${pl.coins}</b>`;
+  $('coinChip').setAttribute('aria-label', `${pl.coins} Quest-Coins – Shop öffnen`);
   if (!$('invPop').hidden) renderInvPop();
   const r = rankFor(pl.xp);
   $('rankChip').innerHTML = `
@@ -438,10 +474,30 @@ function renderHeader() {
 
 function renderInvPop() {
   const pl = playerVitals();
+  const rows = ['small', 'medium', 'large', 'spark'].map((k) => {
+    const it = POTIONS[k];
+    const offer = SHOP[k];
+    const have = pl.inventory[k] || 0;
+    const full = offer.max && have >= offer.max;
+    const canBuy = pl.coins >= offer.price && !full;
+    const canUse = k !== 'spark' && have > 0 && pl.hp < pl.maxHp;
+    return `<li class="shoprow ${have ? '' : 'is-empty'}">
+      <span class="shoprow__icon">${it.icon}</span>
+      <span class="shoprow__body"><b>${esc(it.label)}</b><small>${k === 'spark' ? 'Belebt bei 0 HP automatisch · max. 1' : `+${it.heal} % HP`}</small></span>
+      <span class="shoprow__have" title="Im Inventar">×${have}</span>
+      ${k === 'spark'
+        ? '<span class="shoprow__auto">automatisch</span>'
+        : `<button class="btn btn--sm ${canUse ? 'btn--primary' : 'btn--ghost'}" data-action="use-potion" data-kind="${k}" ${canUse ? '' : 'disabled'}>Trinken</button>`}
+      <button class="btn btn--sm btn--buy" data-action="buy-item" data-kind="${k}" ${canBuy ? '' : 'disabled'} title="${full ? 'Maximum erreicht' : `Kaufen für ${offer.price} Coins`}">${COIN_IMG}${offer.price}</button>
+    </li>`;
+  }).join('');
   $('invPop').innerHTML = `
-    <p class="invpop__head"><span>Inventar</span><b>${pl.hp}/${pl.maxHp} HP</b></p>
-    <div class="inventory inventory--pop">${potionButton('small')}${potionButton('medium')}${potionButton('large')}${potionButton('spark')}</div>
-    <p class="invpop__rules">Niederlage kostet HP: Story −25 %, Versus −33 %, Boss −50 %. Ein abgeschlossenes Level füllt alles auf.</p>`;
+    <div class="invpop__head">
+      <span>Inventar &amp; Shop</span>
+      <span class="invpop__stats"><b class="invpop__hp">${pl.hp}/${pl.maxHp} HP</b><b class="invpop__coins">${COIN_IMG}${pl.coins}</b></span>
+    </div>
+    <ul class="shop">${rows}</ul>
+    <p class="invpop__rules">Coins gibt es für jeden gewonnenen Modus (Story ${COIN_REWARDS.story.base}, Versus ${COIN_REWARDS.versus.base}, Boss ${COIN_REWARDS.boss.base}). Erster Sieg doppelt, 3 Sterne mit Bonus, Level-Abschluss +${COIN_LEVEL_COMPLETE}.<br>Niederlage kostet HP: Story −25 %, Versus −33 %, Boss −50 %.</p>`;
 }
 
 function toggleInv(force) {
@@ -608,13 +664,12 @@ function potionButton(kind) {
 }
 
 function renderDashboard() {
-  const st = S();
   const m = Content.getManifest();
   const pl = playerVitals();
   const r = rankFor(pl.xp);
   const acc = pl.answered ? Math.round((pl.correct / pl.answered) * 100) : 0;
   const mission = nextMission();
-  const hpPct = Math.round((pl.hp / pl.maxHp) * 100);
+  const earned = ACHIEVEMENTS.filter((a) => pl.achievements.includes(a.id));
 
   const badges = ACHIEVEMENTS.map((a) => {
     const got = pl.achievements.includes(a.id);
@@ -633,44 +688,43 @@ function renderDashboard() {
 
   $('dashboardView').innerHTML = `
     <div class="dash">
-      <section class="player" aria-label="Dein Profil">
-        <div class="player__emblem" aria-hidden="true"><span>${r.level}</span></div>
-        <div class="player__main">
-          <p class="player__kicker">Rangstufe ${r.level}</p>
-          <h1 class="player__title">${esc(r.title)}</h1>
-          <div class="bar bar--xp bar--lg" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${r.pct}"><span style="width:${r.pct}%"></span></div>
-          <p class="player__next">${r.next ? `Noch ${r.toNext} XP bis „${esc(r.next.title)}“` : 'Höchster Rang erreicht.'}</p>
-          <dl class="stats">
-            <div><dt>Erfahrung</dt><dd>${pl.xp} XP</dd></div>
-            <div><dt>Trefferquote</dt><dd>${pl.answered ? acc + ' %' : '–'}</dd></div>
+      <div class="dash__top">
+        ${mission ? `
+        <button class="mission" ${mission.action}>
+          <span class="mission__label">Nächste Mission</span>
+          <span class="mission__title">${esc(mission.label)}</span>
+          <span class="mission__detail">${esc(mission.detail)}</span>
+          <span class="mission__go">${I.next}</span>
+        </button>` : `
+        <div class="mission mission--done">
+          <span class="mission__label">Alle verfügbaren Level abgeschlossen</span>
+          <span class="mission__title">Stark! Neue Level folgen.</span>
+          <span class="mission__detail">Spiel Bossfights erneut für Coins und Bestwerte.</span>
+        </div>`}
+        <section class="profile" aria-label="Dein Profil">
+          <div class="profile__head">
+            <span class="profile__emblem" aria-hidden="true">${r.level}</span>
+            <div>
+              <p class="profile__kicker">Rang ${r.level}</p>
+              <p class="profile__title">${esc(r.title)}</p>
+            </div>
+          </div>
+          <div class="bar bar--xp" role="progressbar" aria-label="Erfahrung bis zum nächsten Rang" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${r.pct}"><span style="width:${r.pct}%"></span></div>
+          <p class="profile__next">${pl.xp} XP${r.next ? ` · noch ${r.toNext} bis „${esc(r.next.title)}“` : ' · höchster Rang'}</p>
+          <dl class="profile__stats">
+            <div><dt>Treffer</dt><dd>${pl.answered ? acc + ' %' : '–'}</dd></div>
             <div><dt>Beste Serie</dt><dd>${pl.bestCombo}</dd></div>
-            <div><dt>Lerntage in Folge</dt><dd>${pl.dayStreak}</dd></div>
+            <div><dt>Lerntage</dt><dd>${pl.dayStreak}</dd></div>
           </dl>
-        </div>
-        <div class="player__badges">
-          <p class="player__kicker">Erfolge ${pl.achievements.length}/${ACHIEVEMENTS.length}</p>
-          <ul class="badges">${badges}</ul>
-        </div>
-      </section>
-
-      <section class="health" aria-label="HP und Inventar">
-        <div class="health__main">
-          <div class="health__head"><span>HP</span><strong>${pl.hp}/${pl.maxHp}</strong></div>
-          <div class="bar bar--hp bar--lg" role="progressbar" aria-label="HP" aria-valuemin="0" aria-valuemax="${pl.maxHp}" aria-valuenow="${pl.hp}"><span style="width:${hpPct}%"></span></div>
-          <p>Verlierst du einen Run, kostet das HP: Story −25 %, Versus −33 %, Boss −50 %. Ein abgeschlossenes Level füllt alles wieder auf.</p>
-        </div>
-        <div class="inventory" aria-label="Heilitems">
-          ${potionButton('small')}${potionButton('medium')}${potionButton('large')}${potionButton('spark')}
-        </div>
-      </section>
-
-      ${mission ? `
-      <button class="mission" ${mission.action}>
-        <span class="mission__label">Nächste Mission</span>
-        <span class="mission__title">${esc(mission.label)}</span>
-        <span class="mission__detail">${esc(mission.detail)}</span>
-        <span class="mission__go">${I.next}</span>
-      </button>` : ''}
+          <details class="ach">
+            <summary>
+              <span>Erfolge <b>${earned.length}/${ACHIEVEMENTS.length}</b></span>
+              <span class="ach__preview" aria-hidden="true">${earned.slice(-5).map((a) => a.icon).join('') || '–'}</span>
+            </summary>
+            <ul class="badges">${badges}</ul>
+          </details>
+        </section>
+      </div>
       ${chaptersHtml}
     </div>`;
 }
@@ -1142,7 +1196,7 @@ function renderBossIntro() {
               <li><b>1×</b> Fokus +${BOSS_FOCUS_SECONDS} s</li>
             </ul>
             <p class="bosscine__stakes">
-              <span class="win">Sieg: Siegtruhe mit garantiertem Heiltrank</span>
+              <span class="win">Sieg: Siegtruhe mit ${COIN_REWARDS.boss.base}–${(COIN_REWARDS.boss.base * 2) + COIN_REWARDS.boss.perfect} Quest-Coins</span>
               <span class="lose">Niederlage: −${MODE_HP_LOSS.boss} % HP · Level-Modi zurückgesetzt</span>
             </p>
             <div class="bosscine__actions">
@@ -1431,11 +1485,15 @@ function finishRun() {
   let levelReset = false;
   let chest = null;
   let healed = 0;
+  let coins = null;
 
   if (m === 'rescue') {
     // Rettungsmission: kein Fortschritt, keine Strafe – nur HP zurück bei Erfolg
     if (sum.won) healed = healHp(RESCUE_HEAL, 'Rettungsmission', { quiet: true });
   } else {
+    if (!Array.isArray(p.coinFirst)) p.coinFirst = [];
+    const firstWin = sum.won && !p.coinFirst.includes(m);
+    if (sum.won) { coins = coinsForWin(m, sum.stars, firstWin); if (firstWin) p.coinFirst.push(m); }
     if (m === 'story') { p.bestStory = Math.max(p.bestStory, sum.score); if (sum.won) p.storyWins += 1; }
     if (m === 'versus') { p.bestVersus = Math.max(p.bestVersus, sum.score); if (sum.won) p.versusWins += 1; }
     if (m === 'boss') { p.bestBoss = Math.max(p.bestBoss, sum.score); if (sum.won) p.bossWins += 1; }
@@ -1448,21 +1506,24 @@ function finishRun() {
       if (m === 'boss') {
         unlock('boss_slayer');
         if (sum.stars === 3) unlock('boss_perfect');
-        // Siegtruhe: garantierter Trank, Größe nach Sternen
         if ((run.crits || 0) >= 3) unlock('crit_king');
-        chest = BOSS_CHEST[sum.stars] || 'small';
-        const pl = playerVitals();
-        pl.inventory[chest] = (pl.inventory[chest] || 0) + 1;
+        // Siegtruhe: seltene Trankbeigabe, die Coins kommen unten für alle Modi
+        if (Math.random() < (BOSS_CHEST_POTION_CHANCE[sum.stars] || 0)) {
+          chest = sum.stars === 3 ? 'large' : sum.stars === 2 ? 'medium' : 'small';
+          const pl = playerVitals();
+          pl.inventory[chest] = (pl.inventory[chest] || 0) + 1;
+        }
       }
       levelCompletedNow = checkMastery(id);
     } else {
       ({ hpEvent, levelReset } = applyDefeat(run));
     }
   }
+  if (coins?.total) addCoins(coins.total);
   addXp(sum.xp);
   persist();
 
-  ui.result = { sum, run, hpEvent, levelCompletedNow, levelReset, chest, healed };
+  ui.result = { sum, run, hpEvent, levelCompletedNow, levelReset, chest, healed, coins };
   ui.run = null;
   renderHeader();
   renderResult();
@@ -1514,7 +1575,7 @@ function answerText(q, idxs) {
 }
 
 function renderResult() {
-  const { sum, run, hpEvent, levelCompletedNow, levelReset, chest, healed } = ui.result;
+  const { sum, run, hpEvent, levelCompletedNow, levelReset, chest, healed, coins } = ui.result;
   const pl = playerVitals();
   const boss = run.bossInfo?.name || 'Der Boss';
   const titles = {
@@ -1545,13 +1606,28 @@ function renderResult() {
     ? `<ul class="newbadges">${ui.newAchievements.map((a) => `<li><span>${a.icon}</span><b>${esc(a.title)}</b><small>${esc(a.text)}</small></li>`).join('')}</ul>` : '';
   const lootList = [...(run.loot || [])];
   const chestItem = chest ? POTIONS[chest] : null;
-  const lootHtml = (lootList.length || chestItem) ? `
-    <section class="loot" aria-label="Beute">
-      ${chestItem ? `<div class="chest">
-        <div class="chest__box" aria-hidden="true"><span class="chest__lid"></span><span class="chest__body"></span><span class="chest__item">${chestItem.icon}</span></div>
-        <div><p class="chest__kicker">Siegtruhe geöffnet</p><p class="chest__name">${esc(chestItem.label)}</p><small>${sum.stars === 3 ? 'Makelloser Sieg – beste Truhe.' : 'Mehr Sterne = größerer Trank.'}</small></div>
+  const coinParts = coins?.total ? [
+    `${coins.base} Sieg`,
+    coins.first ? `+${coins.first} erster Sieg` : '',
+    coins.perfect ? `+${coins.perfect} makellos` : '',
+    levelCompletedNow ? `+${COIN_LEVEL_COMPLETE} Level-Abschluss` : '',
+  ].filter(Boolean).join(' · ') : '';
+  const coinTotal = (coins?.total || 0) + (levelCompletedNow ? COIN_LEVEL_COMPLETE : 0);
+  const isBossWin = sum.mode === 'boss' && sum.won;
+  const lootHtml = (lootList.length || chestItem || coinTotal) ? `
+    <section class="loot" aria-label="Belohnung">
+      ${coinTotal ? `<div class="reward ${isBossWin ? 'reward--chest' : ''}">
+        ${isBossWin
+          ? `<div class="chest__box" aria-hidden="true"><span class="chest__lid"></span><span class="chest__body"></span><img class="chest__item" src="assets/coin-lg.webp" alt=""></div>`
+          : `<img class="reward__coin" src="assets/coin-lg.webp" alt="" width="64" height="64">`}
+        <div>
+          <p class="chest__kicker">${isBossWin ? 'Siegtruhe geöffnet' : 'Belohnung'}</p>
+          <p class="reward__amount">+${coinTotal} Quest-Coins</p>
+          <small>${esc(coinParts)}</small>
+        </div>
       </div>` : ''}
-      ${lootList.length ? `<p class="loot__line"><b>Unterwegs gefunden:</b> ${lootList.map((k) => `<span class="loot__item">${POTIONS[k].icon} ${esc(POTIONS[k].label)}</span>`).join(' ')}</p>` : ''}
+      ${chestItem ? `<p class="loot__line"><b>In der Truhe lag außerdem:</b> <span class="loot__item">${chestItem.icon} ${esc(chestItem.label)}</span></p>` : ''}
+      ${lootList.length ? `<p class="loot__line"><b>Seltener Fund:</b> ${lootList.map((k) => `<span class="loot__item">${POTIONS[k].icon} ${esc(POTIONS[k].label)}</span>`).join(' ')}</p>` : ''}
     </section>` : '';
 
   const review = run.results.map((r, k) => {
@@ -1592,6 +1668,7 @@ function renderResult() {
         <div><dt>${sum.mode === 'boss' ? 'Kritische Treffer' : 'Beste Serie'}</dt><dd>${sum.mode === 'boss' ? run.crits || 0 : sum.bestCombo}</dd></div>
         <div class="is-xp"><dt>Erfahrung</dt><dd>+${sum.xp} XP</dd></div>
         <div class="is-hp"><dt>HP</dt><dd>${pl.hp}/${pl.maxHp}</dd></div>
+        <div class="is-coins"><dt>Quest-Coins</dt><dd>${pl.coins}</dd></div>
       </dl>
       ${lootHtml}
       ${achievements}
@@ -1615,6 +1692,7 @@ const ACTIONS = {
   'grant-write': async () => { if (await save.grantWrite()) toast('Speichern ist wieder aktiv.', { icon: '💾' }); },
   'toggle-sound': () => { S().settings.sound = !S().settings.sound; renderHeader(); persist(); },
   'use-potion': (d) => usePotion(d.kind),
+  'buy-item': (d) => buyItem(d.kind),
   'toggle-inv': () => toggleInv(),
   'boss-fight': () => startBossFight(),
   'boss-skip': () => finishBossIntro(),

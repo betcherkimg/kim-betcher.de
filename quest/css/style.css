@@ -981,3 +981,101 @@ tr:hover td { background: #FAFCFF; }
 .bossart__cracks path { stroke-width: 1.8; }
 .bossart__cracks path.is-on { opacity: .7; }
 .bosscine__word { display: inline-block; white-space: nowrap; }
+
+/* =========================================================
+   Quest-Coins, Shop, entschlacktes Dashboard, weiße Porträts
+   ========================================================= */
+.coin { width: 20px; height: 20px; flex: none; filter: drop-shadow(0 1px 1px rgba(122,82,0,.35)); }
+.coinchip {
+  display: flex; align-items: center; gap: 6px; border: 0; cursor: pointer; padding: 5px 12px 5px 6px; border-radius: 99px;
+  background: var(--gold-bg); box-shadow: inset 0 0 0 1.5px #F1D17B; color: #7A5200; font-family: var(--font-mono); font-size: .92rem;
+}
+.coinchip .coin { width: 26px; height: 26px; }
+.coinchip:hover { box-shadow: inset 0 0 0 2px var(--gold); }
+.coinchip.is-gain { animation: coinGain .7s; }
+@keyframes coinGain { 30% { transform: scale(1.12); box-shadow: inset 0 0 0 2px var(--gold), 0 0 0 8px rgba(233,164,0,.25); } }
+.hpwrap { display: flex; gap: 8px; align-items: center; }
+
+.invpop__head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.invpop__stats { display: flex; gap: 10px; align-items: center; }
+.invpop__hp { font-family: var(--font-mono); font-weight: 500; color: var(--bad); }
+.invpop__coins { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-mono); font-weight: 500; color: #7A5200; }
+.shop { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.shoprow {
+  display: grid; grid-template-columns: 34px 1fr auto auto auto; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 12px; background: var(--ice);
+}
+.shoprow.is-empty .shoprow__icon { opacity: .45; filter: grayscale(.6); }
+.shoprow__icon { font-size: 1.5rem; text-align: center; }
+.shoprow__body { display: grid; min-width: 0; }
+.shoprow__body b { font-size: .88rem; line-height: 1.15; }
+.shoprow__body small { font-size: .72rem; color: var(--ink-3); }
+.shoprow__have { font-family: var(--font-mono); font-size: .85rem; color: var(--blue-deep); min-width: 26px; text-align: right; }
+.shoprow__auto { font-size: .72rem; color: var(--ink-3); padding: 0 6px; }
+.shoprow .btn--sm { padding: 6px 10px; font-size: .8rem; }
+.btn--buy { background: var(--gold-bg); color: #7A5200; box-shadow: inset 0 0 0 1.5px #F1D17B; gap: 4px; font-family: var(--font-mono); }
+.btn--buy:hover:not(:disabled) { box-shadow: inset 0 0 0 2px var(--gold); }
+.btn--buy .coin { width: 16px; height: 16px; }
+.invpop { width: min(460px, calc(100vw - 16px)); }
+
+/* Dashboard */
+.dash__top { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr); gap: 18px; align-items: stretch; }
+.dash__top .mission { min-height: 100%; align-content: center; padding: 28px 30px; }
+.dash__top .mission__title { font-size: clamp(1.5rem, 3vw, 2.1rem); }
+.mission--done { cursor: default; background: linear-gradient(110deg, #0E7A57, var(--good)); box-shadow: none; }
+.profile { background: var(--white); border-radius: var(--r-lg); padding: 18px 20px; box-shadow: var(--shadow-card); display: grid; gap: 8px; align-content: start; }
+.profile__head { display: flex; align-items: center; gap: 12px; }
+.profile__emblem {
+  width: 46px; height: 52px; flex: none; display: grid; place-items: center; color: var(--white);
+  clip-path: polygon(50% 0, 100% 22%, 100% 70%, 50% 100%, 0 70%, 0 22%);
+  background: linear-gradient(160deg, var(--blue), var(--ink)); font-family: var(--font-display); font-weight: 800; font-size: 1.3rem;
+}
+.profile__kicker { font-size: .78rem; font-weight: 700; color: var(--ink-3); }
+.profile__title { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; line-height: 1.1; }
+.profile__next { font-size: .8rem; color: var(--ink-3); }
+.profile__stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 2px 0 0; }
+.profile__stats div { background: var(--ice); border-radius: 10px; padding: 6px 8px; }
+.profile__stats dt { font-size: .7rem; color: var(--ink-3); }
+.profile__stats dd { margin: 0; font-family: var(--font-display); font-weight: 800; }
+.ach summary { display: flex; justify-content: space-between; align-items: center; cursor: pointer; list-style: none; padding: 6px 2px; font-size: .88rem; color: var(--ink-2); }
+.ach summary::-webkit-details-marker { display: none; }
+.ach summary::after { content: '▾'; margin-left: 8px; color: var(--ink-3); }
+.ach[open] summary::after { content: '▴'; }
+.ach__preview { margin-left: auto; letter-spacing: 2px; }
+.ach .badges { grid-template-columns: repeat(6, 1fr); margin-top: 6px; }
+.dash > .block { margin-top: 6px; }
+
+/* Belohnung */
+.reward { display: flex; align-items: center; gap: 16px; }
+.reward__coin { width: 64px; height: 64px; animation: coinSpin 1s .3s both; }
+.reward__amount { font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; color: #7A5200; }
+.reward small { color: var(--ink-3); }
+img.chest__item { width: 40px; height: 40px; font-size: 0; }
+@keyframes coinSpin { from { transform: rotateY(540deg) scale(.4); opacity: 0; } }
+.result__stats { grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); }
+.result__stats .is-coins dd { color: #7A5200; }
+
+/* Boss-Porträts auf Weiß */
+.bossart { background: #FFFFFF; box-shadow: 0 0 0 2px rgba(255,255,255,.55), 0 10px 20px -8px rgba(0,0,0,.6); }
+.bossart::after { background: radial-gradient(circle at 50% 55%, transparent 40%, rgba(217,56,84,.65)); }
+.mode__portrait { background: #FFFFFF; box-shadow: inset 0 0 0 1.5px var(--line); }
+.mode--boss .mode__icon:has(.mode__portrait) { background: #FFFFFF; }
+
+@media (max-width: 900px) {
+  .dash__top { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .coinchip { padding: 4px 9px 4px 4px; font-size: .82rem; }
+  .coinchip .coin { width: 22px; height: 22px; }
+  .shoprow { grid-template-columns: 28px 1fr auto auto; }
+  .shoprow__have { display: none; }
+  .shoprow__icon { font-size: 1.25rem; }
+  .ach .badges { grid-template-columns: repeat(6, 1fr); }
+}
+.ccard__title { overflow-wrap: anywhere; hyphens: auto; }
+.chapters { align-items: start; }
+.hpchip__num { white-space: nowrap; }
+@media (max-width: 640px) {
+  .invpop { position: fixed; top: 58px; left: 8px; right: 8px; width: auto; max-height: calc(100vh - 70px); overflow: auto; }
+  .invpop::before { display: none; }
+}

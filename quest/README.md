@@ -57,7 +57,9 @@ tools/check-content.mjs  Datenprüfung vor dem Hochladen
 - **Niederlage** kostet HP: Storymode −25 %, Versus −33 %, Bossfight −50 %. Die Spielmodi des Levels werden zurückgesetzt, solange das Level noch nicht abgeschlossen ist.
 - **Aufgeben** zählt als Niederlage, sobald eine Frage beantwortet wurde (beim Boss: sobald der Kampf begonnen hat).
 - **0 HP:** Die Spielmodi sind gesperrt. Heiltrank trinken oder die **Rettungsmission** spielen (3 leichte Fragen in Folge richtig → +30 HP, ohne Risiko).
-- **Tränke** fallen zufällig bei richtigen Antworten, je nach Schwierigkeit. Der **Lebensfunke** fällt selten bei den schwersten Fragen und belebt bei 0 HP automatisch wieder.
+- **Quest-Coins** gibt es für jeden gewonnenen Modus: Story 10, Versus 20, Boss 50. Der erste Sieg je Modus und Level zählt doppelt (resetfest), 3 Sterne geben +5 / +10 / +25, ein abgeschlossenes Level +100.
+- **Shop** (Coin-Anzeige oder Herz oben rechts): Kleiner Trank 50, mittlerer 100, großer 200, Lebensfunke 500 (max. 1 im Inventar).
+- **Tränke als Beute** sind sehr selten (2 % bei leichten und mittleren Fragen, 1,5 % großer Trank und 0,3 % Lebensfunke bei den schwersten). Die Siegtruhe enthält Coins und mit etwas Glück einen Trank.
 - **Level abgeschlossen** (Lernskript + Story + Versus + Boss) füllt die HP komplett auf.
 
 ### Bossfight
@@ -67,7 +69,7 @@ tools/check-content.mjs  Datenprüfung vor dem Hochladen
 - **Kritischer Treffer** bei Antwort mit mindestens 6 Sekunden Restzeit.
 - **Fokus** (Taste F): einmal pro Kampf +5 Sekunden.
 - **Wut-Phase** bei der finalen Frage oder wenn der Boss nur noch 1 Leben hat.
-- **Siegtruhe** nach dem Sieg: garantierter Heiltrank – 3 Sterne groß, 2 mittel, 1 klein.
+- **Siegtruhe** nach dem Sieg: Quest-Coins, dazu mit 4–15 % Chance (je nach Sternen) ein Trank.
 - Sprüche des Bosses stehen optional in `boss.json` unter `boss.taunts` (intro, hit, miss, timeout, final, low, defeat, victory).
 
-Stellschrauben in `js/game.js`: `MODE_HP_LOSS`, `RESCUE_HEAL`, `BOSS_CRIT_SECONDS`, `BOSS_FOCUS_SECONDS`, `BOSS_CHEST`.
+Stellschrauben in `js/game.js`: `MODE_HP_LOSS`, `RESCUE_HEAL`, `BOSS_CRIT_SECONDS`, `BOSS_FOCUS_SECONDS`, `BOSS_CHEST_POTION_CHANCE`, `COIN_REWARDS`, `COIN_FIRST_WIN_MULTIPLIER`, `COIN_LEVEL_COMPLETE`, `SHOP`, Beute-Chancen in `rollQuestionReward`.

@@ -32,7 +32,7 @@ export function createChapterProgress() {
     learnCompleted: [], storyWins: 0, versusWins: 0, bossWins: 0,
     bestStory: 0, bestVersus: 0, bestBoss: 0,
     stars: { story: 0, versus: 0, boss: 0 },
-    checksDone: [], learnXp: [], mistakes: {}, levelCompleted: false,
+    checksDone: [], learnXp: [], mistakes: {}, levelCompleted: false, coinFirst: [],
   };
 }
 
@@ -42,7 +42,7 @@ export function createDefaultState() {
     app: '34i-Quest', saveVersion: SAVE_VERSION, createdAt: now, updatedAt: now,
     player: {
       xp: 0, answered: 0, correct: 0, bestCombo: 0, achievements: [], lastDay: null, dayStreak: 0,
-      hp: 100, maxHp: 100, inventory: { small: 0, medium: 0, large: 0, spark: 0 },
+      hp: 100, maxHp: 100, coins: 0, inventory: { small: 0, medium: 0, large: 0, spark: 0 },
     },
     settings: { sound: true, shuffleAnswers: true },
     progress: {},
@@ -69,7 +69,7 @@ export function normalizeState(raw) {
   s.player = {
     xp: num(p.xp), answered: num(p.answered), correct: num(p.correct), bestCombo: num(p.bestCombo),
     achievements: strArr(p.achievements), lastDay: typeof p.lastDay === 'string' ? p.lastDay : null, dayStreak: num(p.dayStreak),
-    hp: Math.min(maxHp, num(p.hp, maxHp)), maxHp,
+    hp: Math.min(maxHp, num(p.hp, maxHp)), maxHp, coins: Math.floor(num(p.coins)),
     inventory: { small: num(inv.small), medium: num(inv.medium), large: num(inv.large), spark: num(inv.spark) },
   };
   const st = raw.settings || {};
@@ -86,7 +86,7 @@ export function normalizeState(raw) {
       storyWins: num(cp.storyWins), versusWins: num(cp.versusWins), bossWins: num(cp.bossWins),
       bestStory: num(cp.bestStory), bestVersus: num(cp.bestVersus), bestBoss: num(cp.bestBoss),
       stars: { story: num(stars.story), versus: num(stars.versus), boss: num(stars.boss) },
-      mistakes, levelCompleted: cp.levelCompleted === true,
+      mistakes, levelCompleted: cp.levelCompleted === true, coinFirst: strArr(cp.coinFirst),
     };
   }
   for (const [id, lq] of Object.entries(raw.lastQuestions || {})) {

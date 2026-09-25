@@ -31,18 +31,44 @@ export const POTIONS = {
  * Schwierigkeit 3: alle Tränke; Lebensfunke sehr selten (1 %).
  */
 export function rollQuestionReward(question, rng = Math.random) {
+  // Tränke sind bewusst selten – die normale Quelle ist der Shop (Quest-Coins).
   const d = Math.max(1, Math.min(3, Number(question?.difficulty) || 1));
   const r = rng();
-
-  // Loot folgt klar der Schwierigkeit: leicht -> klein, mittel -> mittel,
-  // schwer -> groß. Nur bei schweren Fragen kann sehr selten ein Lebensfunke fallen.
   if (d >= 3) {
-    if (r < 0.01) return POTIONS.spark;  // 1 % Lebensfunke
-    if (r < 0.10) return POTIONS.large; // weitere 9 % großer Heiltrank
+    if (r < 0.003) return POTIONS.spark;  // 0,3 % Lebensfunke
+    if (r < 0.018) return POTIONS.large;  // weitere 1,5 % großer Heiltrank
     return null;
   }
-  if (d === 2) return r < 0.11 ? POTIONS.medium : null;
-  return r < 0.12 ? POTIONS.small : null;
+  if (d === 2) return r < 0.02 ? POTIONS.medium : null;  // 2 %
+  return r < 0.02 ? POTIONS.small : null;                // 2 %
+}
+
+/* ---------- Quest-Coins & Shop ---------- */
+
+/** Coins pro gewonnenem Modus: Grundwert, Bonus für 3 Sterne, erster Sieg im Level zählt doppelt */
+export const COIN_REWARDS = {
+  story:  { base: 10, perfect: 5 },
+  versus: { base: 20, perfect: 10 },
+  boss:   { base: 50, perfect: 25 },
+};
+export const COIN_FIRST_WIN_MULTIPLIER = 2;
+export const COIN_LEVEL_COMPLETE = 100;
+
+export const SHOP = {
+  small:  { price: 50 },
+  medium: { price: 100 },
+  large:  { price: 200 },
+  spark:  { price: 500, max: 1 },   // Lebensfunke: höchstens einer im Inventar
+};
+
+/** Coins für einen gewonnenen Run berechnen */
+export function coinsForWin(modeId, stars, firstWin) {
+  const r = COIN_REWARDS[modeId];
+  if (!r) return { total: 0, base: 0, perfect: 0, first: 0 };
+  const base = r.base;
+  const perfect = stars === 3 ? r.perfect : 0;
+  const first = firstWin ? base * (COIN_FIRST_WIN_MULTIPLIER - 1) : 0;
+  return { total: base + perfect + first, base, perfect, first };
 }
 
 /* ---------- Bossfight-Extras ---------- */
@@ -54,7 +80,8 @@ export const BOSS_CRIT_SECONDS = 6;
 /** Fokus: einmal pro Bossfight die Zeit der aktuellen Frage verlängern */
 export const BOSS_FOCUS_SECONDS = 5;
 /** Siegtruhe nach gewonnenem Bossfight: Sterne → garantierter Trank */
-export const BOSS_CHEST = { 3: 'large', 2: 'medium', 1: 'small' };
+/** Siegtruhe: Coins kommen über COIN_REWARDS; mit etwas Glück liegt zusätzlich ein Trank darin */
+export const BOSS_CHEST_POTION_CHANCE = { 3: 0.15, 2: 0.08, 1: 0.04 };
 
 export const BOSS_TAUNTS = {
   intro: 'Du willst an mir vorbei? Dann zeig, was du gelernt hast.',
@@ -266,6 +293,8 @@ export const ACHIEVEMENTS = [
   { id: 'loot',          icon: '🧪', title: 'Sammler',            text: 'Den ersten Heiltrank gefunden.' },
   { id: 'spark',         icon: '✨', title: 'Funkenfund',         text: 'Einen Lebensfunken gefunden.' },
   { id: 'revived',       icon: '💫', title: 'Zweites Leben',      text: 'Vom Lebensfunken gerettet.' },
+  { id: 'shopper',       icon: '🪙', title: 'Kundschaft',         text: 'Den ersten Gegenstand im Shop gekauft.' },
+  { id: 'rich',          icon: '💰', title: 'Schatzmeister',      text: '500 Quest-Coins auf einmal besessen.' },
   { id: 'crit_king',     icon: '💥', title: 'Kritischer Schlag',  text: 'Drei kritische Treffer in einem Bossfight.' },
 ];
 
