@@ -1522,3 +1522,207 @@ body[data-view="dashboard"] .invpop::before {
   .route-main, .map-node.is-current .map-marker::after { animation: none; }
 }
 
+
+/* =========================================================
+   Fantasy UI – optimiert, hell und robust
+   ========================================================= */
+:root {
+  --hud-size: clamp(210px, 27dvh, 300px);
+  --corner-size: clamp(38px, 4.7dvh, 50px);
+  --fantasy-gold: #e8b44b;
+  --fantasy-gold-light: #ffe39a;
+  --fantasy-navy: #071f46;
+  --fantasy-blue: #0a6cf5;
+  --fantasy-ice: #f3f7ff;
+}
+
+/* ---------- gemeinsamer Kopf außerhalb der Weltkarte ---------- */
+.topbar__logo { display: block; }
+.topbar__logo img { width: 126px; height: auto; }
+.shopchip {
+  display: inline-flex; align-items: center; gap: 8px; border: 0; cursor: pointer;
+  padding: 7px 11px; border-radius: 99px; background: var(--ice); color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--line); font-weight: 700;
+}
+.shopchip__title { font-family: var(--font-display); font-weight: 800; }
+.shopchip__meta { font-size: .72rem; color: var(--ink-3); }
+.coinchip small { display: none; }
+.corner-tools { display: flex; align-items: center; gap: 8px; margin-left: 6px; }
+.corner-tools .chip {
+  position: relative; width: var(--corner-size); height: var(--corner-size); min-width: var(--corner-size);
+  padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: transparent; font-size: 0;
+  transition: transform .15s ease, filter .15s ease, opacity .15s ease;
+}
+.corner-tools .chip::before {
+  content: ''; position: absolute; inset: 3px; background-position: center; background-repeat: no-repeat; background-size: contain;
+  filter: drop-shadow(0 3px 3px rgba(4, 19, 42, .22));
+}
+#helpBtn::before { background-image: url('../assets/ui/icon-help.webp'); }
+#musicBtn::before { background-image: url('../assets/ui/icon-music.webp'); }
+#soundBtn::before { background-image: url('../assets/ui/icon-sound.webp'); }
+#saveChip::before { background-image: url('../assets/ui/icon-save.webp'); }
+.corner-tools .chip:hover { transform: translateY(-2px) scale(1.04); filter: brightness(1.07); }
+.corner-tools .chip.is-off, #soundBtn[aria-pressed='false'] { opacity: .52; filter: saturate(.45); }
+.corner-tools .chip svg, #saveChip span { display: none; }
+#saveChip::after {
+  content: ''; position: absolute; width: 9px; height: 9px; right: 4px; bottom: 4px; border-radius: 50%;
+  background: #8da2c2; box-shadow: 0 0 0 2px #fff;
+}
+#saveChip.chip--ok::after { background: #19ad70; }
+#saveChip.chip--warn::after { background: #e6a90b; }
+#saveChip.chip--bad::after { background: #db3d5b; }
+
+body:not([data-view='dashboard']) .topbar {
+  position: sticky; top: 0; z-index: 30; background: rgba(255,255,255,.94); border-bottom: 1px solid #d7e3f6;
+  backdrop-filter: blur(12px);
+}
+body:not([data-view='dashboard']) .topbar__inner {
+  max-width: 1320px; margin: 0 auto; min-height: 66px; padding: 8px 14px;
+  display: flex; align-items: center; gap: 12px; justify-content: flex-start;
+}
+body:not([data-view='dashboard']) .topbar__stats {
+  margin-left: auto; display: flex; align-items: center; justify-content: flex-end; gap: 7px; flex-wrap: nowrap;
+}
+body:not([data-view='dashboard']) .corner-tools { flex: none; }
+body:not([data-view='dashboard']) .hpchip,
+body:not([data-view='dashboard']) .coinchip,
+body:not([data-view='dashboard']) .shopchip,
+body:not([data-view='dashboard']) .rankchip,
+body:not([data-view='dashboard']) .chip--streak {
+  background: #fff; box-shadow: inset 0 0 0 1.5px #d8e4f8; color: var(--ink);
+}
+
+/* ---------- Weltkarte: komplette Fläche, bei abweichendem Seitenverhältnis scrollbar ---------- */
+body[data-view='dashboard'] { overflow: hidden; background: #061a39; }
+body[data-view='dashboard'] main { padding: 0; max-width: none; min-height: 100dvh; }
+body[data-view='dashboard'] .screen[data-screen='dashboard'] { margin: 0; }
+.worldmap-shell { width: 100vw; height: 100dvh; overflow: hidden; background: #061a39; }
+.worldmap-viewport {
+  width: 100vw; height: 100dvh; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin;
+  background: #061a39; display: block;
+}
+.worldmap {
+  position: relative; width: max(100vw, calc(100dvh * 1.7768331562)); min-width: 960px;
+  aspect-ratio: 1672 / 941; overflow: visible; isolation: isolate; flex: none;
+}
+.worldmap__bg { object-fit: fill; }
+
+/* ---------- rundes HUD auf der Weltkarte ---------- */
+body[data-view='dashboard'] .topbar {
+  position: fixed; z-index: 34; left: 12px; bottom: 10px; top: auto;
+  width: var(--hud-size); height: var(--hud-size); border: 0; background: url('../assets/ui/hud-ornate.webp') center / contain no-repeat;
+  box-shadow: none; backdrop-filter: none; overflow: visible;
+}
+body[data-view='dashboard'] .topbar__inner { position: relative; width: 100%; height: 100%; padding: 0; display: block; }
+body[data-view='dashboard'] .topbar__logo { display: none; }
+body[data-view='dashboard'] .topbar__stats { position: absolute; inset: 0; display: block; margin: 0; }
+body[data-view='dashboard'] .hpchip,
+body[data-view='dashboard'] .coinchip,
+body[data-view='dashboard'] .shopchip,
+body[data-view='dashboard'] .rankchip,
+body[data-view='dashboard'] .chip--streak {
+  position: absolute; transform: translate(-50%, -50%); margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none;
+  color: #f4f8ff; z-index: 2; text-align: center;
+}
+body[data-view='dashboard'] .hpchip { left: 22.5%; top: 22.6%; width: 34%; height: 29%; cursor: pointer; display: grid; place-items: center; }
+body[data-view='dashboard'] .coinchip { left: 77.5%; top: 22.6%; width: 31%; height: 29%; display: grid; place-items: center; align-content: center; gap: 2px; }
+body[data-view='dashboard'] .shopchip { left: 22.5%; top: 77.4%; width: 31%; height: 29%; cursor: pointer; display: grid; place-items: center; align-content: center; gap: 2px; }
+body[data-view='dashboard'] .chip--streak { left: 77.5%; top: 77.4%; width: 31%; height: 29%; display: grid; place-items: center; align-content: center; gap: 1px; }
+body[data-view='dashboard'] .rankchip { left: 50%; top: 52.3%; width: 39%; height: 34%; display: grid; place-items: center; align-content: center; gap: 5px; }
+body[data-view='dashboard'] .hpchip__heart { display: block; width: 24px; height: 24px; color: #ff5475; }
+body[data-view='dashboard'] .hpchip__heart svg { width: 100%; height: 100%; }
+body[data-view='dashboard'] .hpchip__body { display: grid; place-items: center; gap: 3px; width: 88%; }
+body[data-view='dashboard'] .hpchip__num { font-size: clamp(.72rem, 1.45dvh, .92rem); font-weight: 800; line-height: 1; color: #fff; white-space: nowrap; }
+body[data-view='dashboard'] .hpchip__num b { color: #fff; }
+body[data-view='dashboard'] .hpchip__bar { width: 82%; height: 6px; border-radius: 99px; background: rgba(255,255,255,.16); overflow: hidden; }
+body[data-view='dashboard'] .hpchip__bar span { display: block; height: 100%; background: linear-gradient(90deg,#ffbf4f,#ff5578); border-radius: inherit; }
+body[data-view='dashboard'] .hpchip__bag { font-size: clamp(.56rem, 1.05dvh, .7rem); line-height: 1; color: #d9e8ff; }
+body[data-view='dashboard'] .coinchip .coin { width: 27px; height: 27px; margin: 0 auto; }
+body[data-view='dashboard'] .coinchip b { font-family: var(--font-display); font-size: clamp(.88rem, 1.9dvh, 1.15rem); color: #fff1bd; }
+body[data-view='dashboard'] .coinchip small { display: block; font-size: clamp(.52rem, .95dvh, .65rem); color: #cfe0ff; text-transform: uppercase; letter-spacing: .08em; }
+body[data-view='dashboard'] .shopchip__title { font-family: var(--font-display); font-size: clamp(.88rem, 1.9dvh, 1.15rem); font-weight: 900; color: #fff1bd; }
+body[data-view='dashboard'] .shopchip__meta { font-size: clamp(.52rem, .95dvh, .65rem); color: #cfe0ff; }
+body[data-view='dashboard'] #streakChip svg { width: 25px; height: 25px; color: #ffc84c; }
+body[data-view='dashboard'] #streakChip span { font-family: var(--font-display); font-size: clamp(.88rem, 1.9dvh, 1.15rem); color: #fff1bd; }
+body[data-view='dashboard'] #streakChip::after { content: 'Tage'; font-size: clamp(.5rem, .9dvh, .62rem); color: #cfe0ff; }
+body[data-view='dashboard'] .rankchip__lv { padding: 3px 8px; border-radius: 99px; background: linear-gradient(#ffd865,#d7970f); color: #071f46; font-size: clamp(.56rem, 1.05dvh, .7rem); box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+body[data-view='dashboard'] .rankchip__body { width: 100%; min-width: 0; display: grid; place-items: center; gap: 3px; }
+body[data-view='dashboard'] .rankchip__title { color: #fff; font-size: clamp(.62rem, 1.2dvh, .78rem); text-align: center; line-height: 1.05; }
+body[data-view='dashboard'] .rankchip .bar { width: 86%; height: 5px; background: rgba(255,255,255,.15); }
+body[data-view='dashboard'] .rankchip__xp { font-size: clamp(.52rem, .95dvh, .65rem); color: #cfe0ff; }
+body[data-view='dashboard'] .corner-tools {
+  position: fixed; z-index: 36; top: 10px; right: 12px; display: flex; gap: 7px; margin: 0;
+}
+body[data-view='dashboard'] .invpop {
+  position: fixed; z-index: 45; left: 14px; right: auto; top: auto; bottom: calc(var(--hud-size) + 12px);
+  width: min(430px, calc(100vw - 28px)); max-height: min(560px, calc(100dvh - var(--hud-size) - 28px)); overflow: auto;
+}
+body[data-view='dashboard'] .invpop::before { left: 58px; right: auto; top: auto; bottom: -7px; }
+
+/* ---------- Weltkartenmarker / gesperrte Level ---------- */
+.map-node.is-locked .map-marker {
+  cursor: default; filter: saturate(.25) brightness(.72); background: linear-gradient(145deg,#42546f,#22344f); opacity: .88;
+}
+.map-node.is-locked:hover .map-marker, .map-node.is-locked:focus-within .map-marker { transform: rotate(-45deg); filter: saturate(.25) brightness(.78); }
+.map-marker__lock { position: absolute; transform: rotate(45deg); right: -5px; bottom: -6px; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; background: #071f46; color: #ffe095; box-shadow: 0 0 0 2px #ffe095; }
+.map-marker__lock svg { width: 11px; height: 11px; }
+.map-pop__lock svg { width: 17px; height: 17px; }
+.map-pop--locked { width: 310px; }
+.map-pop--locked .map-pop__boss { min-height: 0; margin-top: 6px; }
+.map-node.is-locked .map-pop { pointer-events: none; }
+
+/* ---------- helle Fantasy-Oberfläche innerhalb der Level ---------- */
+body[data-view='chapter'], body[data-view='learn'], body[data-view='run'], body[data-view='result'] {
+  background: radial-gradient(circle at 50% -10%, #ffffff 0%, #f4f8ff 46%, #e9f1ff 100%);
+}
+body[data-view='chapter'] main, body[data-view='learn'] main, body[data-view='run'] main, body[data-view='result'] main { padding-top: 28px; }
+.fantasy-frame, body[data-view='chapter'] .chero, body[data-view='learn'] .lesson, body[data-view='run'] .qcard, body[data-view='result'] .result__head {
+  position: relative; isolation: isolate; background: rgba(255,255,255,.97); border: 1px solid #d7e4f8; box-shadow: 0 18px 36px -24px rgba(5,49,110,.34);
+}
+body[data-view='chapter'] .chero::after, body[data-view='learn'] .lesson::after, body[data-view='run'] .qcard::after, body[data-view='result'] .result__head::after {
+  content: ''; position: absolute; inset: -13px; z-index: 2; pointer-events: none; background: url('../assets/ui/frame-ornate.webp') center / 100% 100% no-repeat; opacity: .88;
+}
+body[data-view='chapter'] .chero > *, body[data-view='learn'] .lesson > *, body[data-view='run'] .qcard > *, body[data-view='result'] .result__head > * { position: relative; z-index: 3; }
+body[data-view='chapter'] .chero { padding: 30px 32px; margin: 10px 12px 30px; }
+body[data-view='chapter'] .mode {
+  border: 1px solid #d8e5f8; background: linear-gradient(180deg,#fff,#f8fbff); box-shadow: 0 16px 30px -22px rgba(5,49,110,.35);
+}
+body[data-view='chapter'] .mode:hover:not(.mode--locked) { box-shadow: 0 0 0 2px #e8b44b, 0 20px 32px -22px rgba(5,49,110,.38); }
+body[data-view='chapter'] .mode__icon { background: #eef5ff; color: #0a6cf5; box-shadow: inset 0 0 0 1px #dbe8fb; }
+body[data-view='chapter'] .mode__rules { background: #f0f5ff; color: #0b4ca3; border-radius: 10px; padding: 8px 10px; }
+body[data-view='chapter'] .mode--locked { background: #f3f5f9; opacity: .72; }
+body[data-view='chapter'] .back { color: #0a5fd5; }
+body[data-view='learn'] .lesson { margin: 10px 10px 28px; padding: clamp(22px,3vw,34px); }
+body[data-view='run'] .qcard { margin: 10px 10px 26px; }
+body[data-view='result'] .result__head { margin: 10px 10px 26px; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1120px) {
+  body:not([data-view='dashboard']) .topbar__inner { padding-right: 10px; }
+  body:not([data-view='dashboard']) .rankchip__body { display: none; }
+  body:not([data-view='dashboard']) .rankchip__xp { display: none; }
+  body:not([data-view='dashboard']) .shopchip__meta { display: none; }
+}
+@media (max-width: 860px) {
+  body:not([data-view='dashboard']) .topbar__logo img { width: 105px; }
+  body:not([data-view='dashboard']) .topbar__stats { gap: 5px; }
+  body:not([data-view='dashboard']) .chip--streak { display: none; }
+  body:not([data-view='dashboard']) .hpchip__bag { display: none; }
+  body:not([data-view='dashboard']) .corner-tools { gap: 4px; }
+  .map-pop { width: 300px; }
+}
+@media (max-width: 650px) {
+  :root { --hud-size: clamp(190px, 25dvh, 230px); --corner-size: 36px; }
+  body:not([data-view='dashboard']) .topbar__logo img { width: 92px; }
+  body:not([data-view='dashboard']) .shopchip { display: none; }
+  body:not([data-view='dashboard']) .coinchip { padding-inline: 7px; }
+  body:not([data-view='dashboard']) .topbar__inner { gap: 5px; }
+  body[data-view='dashboard'] .corner-tools { top: 6px; right: 6px; gap: 3px; }
+  body[data-view='dashboard'] .topbar { left: 6px; bottom: 6px; }
+  body[data-view='dashboard'] .invpop { left: 8px; width: calc(100vw - 16px); bottom: calc(var(--hud-size) + 8px); }
+  body[data-view='chapter'] .chero { margin-inline: 6px; padding: 24px 20px; }
+  body[data-view='chapter'] .chero::after, body[data-view='learn'] .lesson::after, body[data-view='run'] .qcard::after, body[data-view='result'] .result__head::after { inset: -8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .route-main, .map-node.is-current .map-marker::after { animation: none; }
+}

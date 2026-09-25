@@ -460,6 +460,8 @@ function renderHeader() {
   const hpPct = Math.round((pl.hp / pl.maxHp) * 100);
   const tone = pl.hp <= 0 ? 'is-ko' : hpPct <= 25 ? 'is-crit' : hpPct <= 50 ? 'is-low' : '';
   const potions = (pl.inventory.small || 0) + (pl.inventory.medium || 0) + (pl.inventory.large || 0);
+  const battleItems = BATTLE_ITEM_ORDER.reduce((sum, k) => sum + (pl.inventory[k] || 0), 0);
+  const totalInv = potions + (pl.inventory.spark || 0) + battleItems;
   const chip = $('hpChip');
   chip.classList.remove('is-ko', 'is-crit', 'is-low');
   if (tone) chip.classList.add(tone);
@@ -471,8 +473,13 @@ function renderHeader() {
     </span>
     <span class="hpchip__bag" title="Heiltränke im Inventar">🧪${potions}${pl.inventory.spark ? ` ✨${pl.inventory.spark}` : ''}</span>`;
   chip.setAttribute('aria-label', `${pl.hp} von ${pl.maxHp} Lebenspunkten, ${potions} Heiltränke`);
-  $('coinChip').innerHTML = `${COIN_IMG}<b>${pl.coins}</b>`;
-  $('coinChip').setAttribute('aria-label', `${pl.coins} Quest-Coins – Shop öffnen`);
+  $('coinChip').innerHTML = `${COIN_IMG}<b>${pl.coins}</b><small>Münzen</small>`;
+  $('coinChip').setAttribute('aria-label', `${pl.coins} Quest-Coins`);
+  const shopChip = $('shopChip');
+  if (shopChip) {
+    shopChip.innerHTML = `<span class="shopchip__title">Shop</span><span class="shopchip__meta">${totalInv} Items</span>`;
+    shopChip.setAttribute('aria-label', `Shop und Inventar, ${totalInv} Item${totalInv === 1 ? '' : 's'}`);
+  }
   if (!$('invPop').hidden) renderInvPop();
   const r = rankFor(pl.xp);
   $('rankChip').innerHTML = `
@@ -544,7 +551,8 @@ function toggleInv(force) {
   const pop = $('invPop');
   const open = typeof force === 'boolean' ? force : pop.hidden;
   pop.hidden = !open;
-  $('hpChip').setAttribute('aria-expanded', String(open));
+  $('hpChip')?.setAttribute('aria-expanded', String(open));
+  $('shopChip')?.setAttribute('aria-expanded', String(open));
   if (open) renderInvPop();
 }
 
@@ -706,7 +714,7 @@ function drawOnboard() {
     $('onboardView').innerHTML = `
       <div class="onboard">
         <header class="onboard__head">
-          <img class="onboard__logo" src="assets/logo.png" alt="34i-Quest" width="720" height="235">
+          <img class="onboard__logo" src="assets/logo.webp" alt="34i-Quest" width="720" height="235">
           <p class="onboard__kicker">${help ? 'Spielanleitung' : 'Neues Abenteuer · Schritt 1 von 2'}</p>
           <h1>So funktioniert 34i-Quest</h1>
           <p class="onboard__lead">Du bereitest dich auf die Sachkundeprüfung nach § 34i GewO vor – als Spiel. Lernen, kämpfen, Level abschließen.</p>
@@ -824,9 +832,15 @@ function renderDashboard() {
 
   const panel = (c) => {
     const st = chapterStatus(c.id);
-    const ready = c.level <= 3;
     const boss = c.level === 1 ? 'Richter Rabenfeder' : c.level === 2 ? 'Notar Nebelsiegel' : c.level === 3 ? 'Grundherr Eisenklaue' : '';
     const bossImg = c.level === 1 ? 'assets/bosses/richter-rabenfeder-bust.webp' : c.level === 2 ? 'assets/bosses/notar-nebelsiegel-bust.webp' : c.level === 3 ? 'assets/bosses/grundherr-eisenklaue-bust.webp' : '';
+    if (!c.available) {
+      return `<div class="map-pop map-pop--locked" role="group" aria-label="Level ${esc(c.level)} noch nicht verfügbar">
+        <div class="map-pop__head"><span class="map-pop__lvl">LEVEL ${esc(c.level)}</span><span class="map-pop__lock">${I.lock}</span></div>
+        <h2>${esc(c.title)}</h2>
+        <p class="map-pop__boss">Dieses Level ist sichtbar, aber noch nicht mit Lerninhalten befüllt.</p>
+      </div>`;
+    }
     return `<div class="map-pop" role="group" aria-label="Level ${esc(c.level)} Optionen">
       <div class="map-pop__head">
         <span class="map-pop__lvl">LEVEL ${esc(c.level)}</span>
@@ -834,24 +848,27 @@ function renderDashboard() {
       </div>
       ${bossImg ? `<img class="map-pop__bossimg" src="${bossImg}" alt="" width="96" height="96">` : ''}
       <h2>${esc(c.title)}</h2>
-      ${boss ? `<p class="map-pop__boss">${esc(boss)}${c.level === 3 ? ' · Wächter der Rangordnung' : ''}</p>` : '<p class="map-pop__boss">Inhalt folgt</p>'}
+      ${boss ? `<p class="map-pop__boss">${esc(boss)}${c.level === 3 ? ' · Wächter der Rangordnung' : ''}</p>` : ''}
       <span class="map-pop__bar"><span style="width:${st.pct}%"></span></span>
-      ${ready ? `<div class="map-pop__modes">
+      <div class="map-pop__modes">
         <button data-action="open-learn" data-id="${esc(c.id)}">${I.book}<span>Lernskript</span></button>
         <button data-action="start-mode" data-mode="story" data-id="${esc(c.id)}">${I.path}<span>Story</span></button>
         <button data-action="start-mode" data-mode="versus" data-id="${esc(c.id)}">${I.swords}<span>Versus</span></button>
         <button data-action="start-mode" data-mode="boss" data-id="${esc(c.id)}">${I.crown}<span>Boss</span></button>
-      </div>` : `<button class="map-pop__open" data-action="open-chapter" data-id="${esc(c.id)}">Level ansehen ${I.next}</button>`}
+      </div>
     </div>`;
   };
 
   const nodes = m.chapters.map((c) => {
     const xy = coords[c.level];
     const st = chapterStatus(c.id);
-    const cls = st.mastered ? 'is-mastered' : st.pct > 0 ? 'is-progress' : 'is-new';
+    const cls = !c.available ? 'is-locked' : st.mastered ? 'is-mastered' : st.pct > 0 ? 'is-progress' : 'is-new';
+    const markerAttrs = c.available
+      ? `data-action="open-chapter" data-id="${esc(c.id)}"`
+      : 'disabled aria-disabled="true"';
     return `<div class="map-node map-node--${c.level} ${cls} ${current?.id === c.id ? 'is-current' : ''}" style="--x:${xy[0]}%;--y:${xy[1]}%">
-      <button class="map-marker" data-action="open-chapter" data-id="${esc(c.id)}" aria-label="Level ${esc(c.level)}: ${esc(c.title)}">
-        <span>${esc(c.level)}</span>
+      <button class="map-marker" ${markerAttrs} aria-label="Level ${esc(c.level)}: ${esc(c.title)}${c.available ? '' : ' – noch nicht verfügbar'}">
+        <span>${esc(c.level)}</span>${c.available ? '' : `<i class="map-marker__lock">${I.lock}</i>`}
       </button>
       ${panel(c)}
     </div>`;
@@ -861,7 +878,7 @@ function renderDashboard() {
     <div class="worldmap-shell">
       <div class="worldmap-viewport" id="worldmapViewport" tabindex="0" aria-label="Levelkarte – die Karte passt sich dem Bildschirm an und kann bei Bedarf horizontal und vertikal gescrollt werden">
         <div class="worldmap">
-          <img class="worldmap__bg" src="assets/world/quest-map.png" alt="Fantastische Inselwelt mit zwölf Levelinseln" width="1672" height="941">
+          <img class="worldmap__bg" src="assets/world/quest-map.webp" alt="Fantastische Inselwelt mit zwölf Levelinseln" width="1672" height="941">
           <svg class="worldmap__route" viewBox="0 0 1672 941" aria-hidden="true" preserveAspectRatio="none">
             <path class="route-shadow" d="${path}"/>
             <path class="route-main" d="${path}"/>
@@ -872,9 +889,14 @@ function renderDashboard() {
     </div>`;
 
   requestAnimationFrame(() => {
-    if (window.matchMedia('(max-width: 760px)').matches) {
-      const active = document.querySelector('.map-node.is-current .map-marker');
-      active?.scrollIntoView({ block: 'nearest', inline: 'center' });
+    const vp = $('worldmapViewport');
+    const active = document.querySelector('.map-node.is-current');
+    if (!vp || !active) return;
+    if (vp.scrollWidth > vp.clientWidth) {
+      vp.scrollLeft = Math.max(0, active.offsetLeft - vp.clientWidth * 0.34);
+    }
+    if (vp.scrollHeight > vp.clientHeight) {
+      vp.scrollTop = Math.max(0, active.offsetTop - vp.clientHeight * 0.58);
     }
   });
 }
@@ -2056,7 +2078,7 @@ document.addEventListener('click', (e) => {
 // Inventar-Popover schließen: Klick daneben oder Escape
 document.addEventListener('click', (e) => {
   if ($('invPop').hidden) return;
-  if (!e.target.closest('.hpwrap')) toggleInv(false);
+  if (!e.target.closest('#hpChip') && !e.target.closest('#shopChip') && !e.target.closest('#invPop')) toggleInv(false);
 });
 
 // Browser erlauben Ton erst nach einer Nutzeraktion

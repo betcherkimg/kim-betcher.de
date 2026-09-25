@@ -129,6 +129,8 @@ Werte anpassen: `HERO_CLASSES` in `js/game.js`.
 
 ## Update 25.09.2026
 - Missionsauswahl als interaktive Weltkarte mit Seeroute und 12 Level-Markern.
-- Testphase: alle Level auf der Karte sichtbar; die vorhandenen Modi in Level 1–3 sind frei zugänglich.
-- Level 3 „Grundbuch & Immobiliensicherung“ ergänzt: Lernskript, Story-/Versus-Fragen und Bossfight.
+- Alle 12 Level bleiben auf der Karte sichtbar; **spielbar sind aktuell nur Level 1–3**. Level 4–12 sind sichtbar, aber deaktiviert, bis Inhalte vorhanden sind.
+- Level 3 „Grundbuch & Immobiliensicherung“ ergänzt: 16 Lernabschnitte, **70 normale Fragen** und **24 Bossfragen**.
 - Boss Level 3: „Grundherr Eisenklaue – Wächter der Rangordnung“.
+
+- UI-Assets auf passende WebP-Größen optimiert; der vorab gecachte App-Shell liegt bei rund 1,2 MB.
