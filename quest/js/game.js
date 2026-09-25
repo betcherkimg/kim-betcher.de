@@ -6,6 +6,7 @@ export const MODES = {
   story:  { id: 'story',  label: 'Storymode', count: 10, lives: 3, seconds: 0,  source: 'questions', winXp: 60 },
   versus: { id: 'versus', label: 'Versus',    count: 5,  lives: 1, seconds: 0,  source: 'questions', winXp: 80 },
   boss:   { id: 'boss',   label: 'Bossfight', count: 5,  lives: 3, seconds: 10, source: 'boss',      winXp: 150 },
+  rescue: { id: 'rescue', label: 'Rettungsmission', count: 3, lives: 1, seconds: 0, source: 'questions', winXp: 10 },
 };
 
 
@@ -44,8 +45,31 @@ export function rollQuestionReward(question, rng = Math.random) {
   return r < 0.12 ? POTIONS.small : null;
 }
 
+/* ---------- Bossfight-Extras ---------- */
+
+/** Rettungsmission bei 0 HP: 3 leichte Fragen in Folge richtig → so viele HP zurück */
+export const RESCUE_HEAL = 30;
+/** Mit so vielen Restsekunden gilt ein Boss-Treffer als kritisch */
+export const BOSS_CRIT_SECONDS = 6;
+/** Fokus: einmal pro Bossfight die Zeit der aktuellen Frage verlängern */
+export const BOSS_FOCUS_SECONDS = 5;
+/** Siegtruhe nach gewonnenem Bossfight: Sterne → garantierter Trank */
+export const BOSS_CHEST = { 3: 'large', 2: 'medium', 1: 'small' };
+
+export const BOSS_TAUNTS = {
+  intro: 'Du willst an mir vorbei? Dann zeig, was du gelernt hast.',
+  hit: ['Treffer … das wird Folgen haben.', 'Glück gehabt.', 'Nicht schlecht, Anfänger.'],
+  miss: ['Falsch! Das kostet dich.', 'Daneben!', 'So wird das nichts.'],
+  timeout: ['Zu langsam!', 'Die Zeit arbeitet für mich.'],
+  final: 'Letzte Frage. Jetzt oder nie!',
+  low: 'Ich … bin noch nicht erledigt!',
+  defeat: 'Du hast gewonnen. Diesmal.',
+  victory: 'Zurück ins Lernskript mit dir!',
+};
+
 /** Bossfight erst nach gewonnenem Storymode freischalten (auf false setzen, um das abzuschalten). */
-export const BOSS_REQUIRES_STORY = true;
+// TESTPHASE: Bossfights sind frei spielbar. Für den Echtbetrieb wieder auf true setzen.
+export const BOSS_REQUIRES_STORY = false;
 
 /* ---------- Zufall ---------- */
 
@@ -239,6 +263,10 @@ export const ACHIEVEMENTS = [
   { id: 'quick_draw',    icon: '⏱️', title: 'Schnellzieher',     text: 'Bossfrage in unter 3 Sekunden richtig.' },
   { id: 'streak_3',      icon: '📅', title: 'Dranbleiber',       text: 'An 3 Tagen in Folge gelernt.' },
   { id: 'master',        icon: '🏆', title: 'Level gemeistert',   text: 'Lernskript, Story, Versus und Bossfight eines Levels geschafft.' },
+  { id: 'loot',          icon: '🧪', title: 'Sammler',            text: 'Den ersten Heiltrank gefunden.' },
+  { id: 'spark',         icon: '✨', title: 'Funkenfund',         text: 'Einen Lebensfunken gefunden.' },
+  { id: 'revived',       icon: '💫', title: 'Zweites Leben',      text: 'Vom Lebensfunken gerettet.' },
+  { id: 'crit_king',     icon: '💥', title: 'Kritischer Schlag',  text: 'Drei kritische Treffer in einem Bossfight.' },
 ];
 
 /* ---------- Countdown ---------- */
@@ -251,17 +279,23 @@ export class Countdown {
     this.stop();
     this.running = true;
     const t0 = performance.now();
-    const total = seconds * 1000;
+    this.startedAt = t0;
+    this.total = seconds * 1000;
     const loop = (now) => {
       if (!this.running) return;
-      const left = Math.max(0, total - (now - t0));
-      onTick(left / 1000, left / total);
+      const left = Math.max(0, this.total - (now - t0));
+      onTick(left / 1000, Math.min(1, left / (seconds * 1000)));
       if (left <= 0) { this.stop(); onEnd(); return; }
       this.raf = requestAnimationFrame(loop);
     };
     this.raf = requestAnimationFrame(loop);
-    this.startedAt = t0;
-    this.total = total;
+  }
+
+  /** Zeit verlängern (Fokus). Wirkt nur, solange der Countdown läuft. */
+  extend(seconds) {
+    if (!this.running) return false;
+    this.total += seconds * 1000;
+    return true;
   }
 
   secondsLeft() {

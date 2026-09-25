@@ -50,3 +50,24 @@ tools/check-content.mjs  Datenprüfung vor dem Hochladen
 ## Einstellungen im Code
 - `BOSS_REQUIRES_STORY` in `js/game.js`: Bossfight erst nach gewonnenem Storymode (Standard: an).
 - `MODES` in `js/game.js`: Fragenanzahl, Leben, Sekunden je Modus.
+
+## Spielregeln (Stand: HP-Update)
+
+- **HP** stehen oben rechts in der Kopfzeile. Klick aufs Herz öffnet das Inventar mit den Heiltränken.
+- **Niederlage** kostet HP: Storymode −25 %, Versus −33 %, Bossfight −50 %. Die Spielmodi des Levels werden zurückgesetzt, solange das Level noch nicht abgeschlossen ist.
+- **Aufgeben** zählt als Niederlage, sobald eine Frage beantwortet wurde (beim Boss: sobald der Kampf begonnen hat).
+- **0 HP:** Die Spielmodi sind gesperrt. Heiltrank trinken oder die **Rettungsmission** spielen (3 leichte Fragen in Folge richtig → +30 HP, ohne Risiko).
+- **Tränke** fallen zufällig bei richtigen Antworten, je nach Schwierigkeit. Der **Lebensfunke** fällt selten bei den schwersten Fragen und belebt bei 0 HP automatisch wieder.
+- **Level abgeschlossen** (Lernskript + Story + Versus + Boss) füllt die HP komplett auf.
+
+### Bossfight
+- **Intro-Sequenz** (~3 s, überspringbar mit Klick/Enter/Leertaste): Silhouette steigt auf, Blitz, Name, getippter Spruch, dann Regeln. Der Timer startet erst mit „Kampf beginnen“ (Enter). Zurück aus dem Intro kostet nichts.
+- **Boss-Bilder** in `boss.json`: `image` (Ganzkörper), `bust` (Arena), `accent` (Farbstimmung, z. B. `#E9A400`). Ohne Bild erscheint das Siegel.
+- **Testphase:** `BOSS_REQUIRES_STORY = false` in `js/game.js` – Bossfights sind ohne Storysieg spielbar. Für den Echtbetrieb auf `true` setzen.
+- **Kritischer Treffer** bei Antwort mit mindestens 6 Sekunden Restzeit.
+- **Fokus** (Taste F): einmal pro Kampf +5 Sekunden.
+- **Wut-Phase** bei der finalen Frage oder wenn der Boss nur noch 1 Leben hat.
+- **Siegtruhe** nach dem Sieg: garantierter Heiltrank – 3 Sterne groß, 2 mittel, 1 klein.
+- Sprüche des Bosses stehen optional in `boss.json` unter `boss.taunts` (intro, hit, miss, timeout, final, low, defeat, victory).
+
+Stellschrauben in `js/game.js`: `MODE_HP_LOSS`, `RESCUE_HEAL`, `BOSS_CRIT_SECONDS`, `BOSS_FOCUS_SECONDS`, `BOSS_CHEST`.

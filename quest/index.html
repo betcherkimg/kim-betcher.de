@@ -23,6 +23,10 @@
         <img src="assets/logo.png" alt="34i-Quest" width="720" height="235">
       </button>
       <div class="topbar__stats">
+        <div class="hpwrap">
+          <button class="hpchip" id="hpChip" data-action="toggle-inv" aria-haspopup="true" aria-expanded="false" aria-controls="invPop" title="Lebenspunkte und Heiltränke"></button>
+          <div class="invpop" id="invPop" role="dialog" aria-label="Heiltränke" hidden></div>
+        </div>
         <div class="rankchip" id="rankChip" title="Rang und Erfahrung"></div>
         <span class="chip chip--streak" id="streakChip" title="Lerntage in Folge"></span>
         <button class="chip chip--btn" id="soundBtn" data-action="toggle-sound" aria-pressed="true" title="Ton an/aus"></button>

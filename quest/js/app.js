@@ -2,7 +2,8 @@
 
 import * as Content from './content-loader.js';
 import { SaveGame, SaveError, isSupported, createChapterProgress, SAVE_NAME } from './savegame.js';
-import { MODES, BOSS_REQUIRES_STORY, MAX_HP, MODE_HP_LOSS, POTIONS, rollQuestionReward, selectQuestions, prepareQuestion, Run, rankFor, ACHIEVEMENTS, Countdown } from './game.js';
+import { MODES, BOSS_REQUIRES_STORY, MAX_HP, MODE_HP_LOSS, POTIONS, rollQuestionReward, selectQuestions, prepareQuestion, Run, rankFor, ACHIEVEMENTS, Countdown,
+  RESCUE_HEAL, BOSS_CRIT_SECONDS, BOSS_FOCUS_SECONDS, BOSS_CHEST, BOSS_TAUNTS } from './game.js';
 
 /* =========================================================
    Grundgerüst
@@ -62,32 +63,38 @@ function playerVitals() {
   return pl;
 }
 
-function healHp(amount, label = 'Heilung') {
+function healHp(amount, label = 'Heilung', { quiet = false } = {}) {
   const pl = playerVitals();
   const before = pl.hp;
   pl.hp = Math.min(pl.maxHp, pl.hp + Math.max(0, amount));
   const gained = pl.hp - before;
-  if (gained > 0) toast(`${label}: +${gained} HP`, { icon: '❤️', tone: 'gold' });
+  if (gained > 0 && !quiet) toast(`${label}: +${gained} HP`, { icon: '❤️', tone: 'gold' });
+  if (gained > 0) pulseHp('heal');
+  renderHeader();
   return gained;
 }
 
-function damageHp(amount, label = 'Schaden') {
+function damageHp(amount, label = 'Schaden', { quiet = false } = {}) {
   const pl = playerVitals();
   const before = pl.hp;
   pl.hp = Math.max(0, pl.hp - Math.max(0, amount));
   const lost = before - pl.hp;
   let revived = false;
-  if (pl.hp <= 0 && pl.inventory.spark > 0) {
+  // Der Lebensfunke greift nur, wenn die HP gerade eben auf 0 gefallen sind
+  if (pl.hp <= 0 && before > 0 && pl.inventory.spark > 0) {
     pl.inventory.spark -= 1;
     pl.hp = pl.maxHp;
     revived = true;
+    unlock('revived');
     toast('Lebensfunke aktiviert – volle HP!', { icon: POTIONS.spark.icon, tone: 'gold', ms: 5000 });
     sfx('level');
     confetti(70);
-  } else if (lost > 0) {
+  } else if (lost > 0 && !quiet) {
     toast(`${label}: −${lost} HP`, { icon: '💔', tone: 'bad', ms: 3600 });
   }
-  return { lost, revived, hp: pl.hp };
+  if (lost > 0) pulseHp(revived ? 'heal' : 'hurt');
+  renderHeader();
+  return { lost, revived, hp: pl.hp, knockout: pl.hp <= 0 };
 }
 
 function usePotion(kind) {
@@ -98,8 +105,9 @@ function usePotion(kind) {
   if (pl.hp >= pl.maxHp) { toast('Deine HP sind bereits voll.', { icon: '❤️' }); return; }
   pl.inventory[kind] -= 1;
   healHp(Math.round(pl.maxHp * (item.heal / 100)), item.label);
+  sfx('level');
   persist();
-  renderDashboard();
+  rerenderCurrent();
 }
 
 function maybeDropReward(question) {
@@ -107,9 +115,51 @@ function maybeDropReward(question) {
   if (!item) return null;
   const pl = playerVitals();
   pl.inventory[item.id] = (pl.inventory[item.id] || 0) + 1;
-  toast(`${item.icon} Gefunden: ${item.label}`, { icon: item.icon, tone: 'gold', ms: item.id === 'spark' ? 5200 : 3000 });
-  persist();
+  unlock(item.id === 'spark' ? 'spark' : 'loot');
+  if (ui.run) {
+    // Im Run keine Toasts – sie würden Antworten verdecken. Die Beute erscheint im HUD und in der Auswertung.
+    ui.run.loot = [...(ui.run.loot || []), item.id];
+  } else {
+    toast(`${item.icon} Gefunden: ${item.label}`, { icon: item.icon, tone: 'gold', ms: item.id === 'spark' ? 5200 : 3000 });
+  }
+  renderHeader();
   return item;
+}
+
+/** HP-Anzeige kurz aufleuchten lassen */
+function pulseHp(kind) {
+  const chip = $('hpChip');
+  if (!chip) return;
+  chip.classList.remove('is-hurt', 'is-heal');
+  void chip.offsetWidth;
+  chip.classList.add(kind === 'heal' ? 'is-heal' : 'is-hurt');
+}
+
+/** Den aktuell sichtbaren Screen neu zeichnen (z. B. nach dem Trinken eines Tranks) */
+function rerenderCurrent() {
+  renderHeader();
+  if (ui.screen === 'dashboard') renderDashboard();
+  else if (ui.screen === 'chapter') renderChapter();
+  else if (ui.screen === 'result' && ui.result) renderResult();
+}
+
+/** Alte Abschnitts-IDs auf neue umschreiben, sobald ein überarbeitetes Lernskript geladen ist */
+function migrateLegacySections(id) {
+  const learn = Content.getCachedChapter(id)?.learn;
+  const p = S()?.progress?.[id];
+  if (!learn || !p) return false;
+  let changed = false;
+  for (const key of ['learnCompleted', 'learnXp']) {
+    const have = new Set(p[key]);
+    learn.sections.forEach((sec) => {
+      if (!have.has(sec.id) && (sec.legacyIds || []).some((old) => have.has(old))) { have.add(sec.id); changed = true; }
+    });
+    const valid = new Set(learn.sections.map((s) => s.id));
+    const next = [...have].filter((x) => valid.has(x));
+    if (next.length !== p[key].length) changed = true;
+    p[key] = next;
+  }
+  return changed;
 }
 
 /** setTimeout, der automatisch verfällt, sobald ein Run beendet oder verlassen wird. */
@@ -174,12 +224,14 @@ function sfx(kind) {
       lose: [[330, 0, 0.18], [262, 0.18, 0.3]],
       level: [[784, 0, 0.1], [988, 0.1, 0.1], [1319, 0.2, 0.25]],
       click: [[880, 0, 0.03]],
+      rumble: [[55, 0, 0.9], [62, 0.25, 0.8]],
+      boss: [[98, 0, 0.35], [73, 0.12, 0.6], [1400, 0, 0.08]],
     }[kind] || [];
     const t = audio.currentTime;
     seq.forEach(([f, start, dur]) => {
       const o = audio.createOscillator();
       const g = audio.createGain();
-      o.type = kind === 'bad' || kind === 'lose' ? 'sawtooth' : 'triangle';
+      o.type = ['bad', 'lose', 'rumble', 'boss'].includes(kind) ? 'sawtooth' : 'triangle';
       o.frequency.value = f;
       g.gain.setValueAtTime(0.0001, t + start);
       g.gain.exponentialRampToValueAtTime(kind === 'tick' ? 0.05 : 0.12, t + start + 0.01);
@@ -210,6 +262,11 @@ function toast(text, { icon = '', tone = '', action = null, ms = 3600 } = {}) {
   box.appendChild(el);
   while (box.children.length > 3) box.firstElementChild.remove();
   if (ms) setTimeout(() => { el.classList.add('toast--out'); setTimeout(() => el.remove(), 300); }, ms);
+}
+
+function clearToasts() {
+  const box = $('toasts');
+  if (box) box.innerHTML = '';
 }
 
 function flash(text, tone) {
@@ -347,7 +404,22 @@ function resetLevelModesAfterLoss(id) {
 
 function renderHeader() {
   if (!S()) return;
-  const pl = S().player;
+  const pl = playerVitals();
+  const hpPct = Math.round((pl.hp / pl.maxHp) * 100);
+  const tone = pl.hp <= 0 ? 'is-ko' : hpPct <= 25 ? 'is-crit' : hpPct <= 50 ? 'is-low' : '';
+  const potions = (pl.inventory.small || 0) + (pl.inventory.medium || 0) + (pl.inventory.large || 0);
+  const chip = $('hpChip');
+  chip.classList.remove('is-ko', 'is-crit', 'is-low');
+  if (tone) chip.classList.add(tone);
+  chip.innerHTML = `
+    <span class="hpchip__heart">${I.heart}</span>
+    <span class="hpchip__body">
+      <span class="hpchip__num"><b>${pl.hp}</b>/${pl.maxHp} HP</span>
+      <span class="hpchip__bar"><span style="width:${hpPct}%"></span></span>
+    </span>
+    <span class="hpchip__bag" title="Heiltränke im Inventar">🧪${potions}${pl.inventory.spark ? ` ✨${pl.inventory.spark}` : ''}</span>`;
+  chip.setAttribute('aria-label', `${pl.hp} von ${pl.maxHp} Lebenspunkten, ${potions} Heiltränke`);
+  if (!$('invPop').hidden) renderInvPop();
   const r = rankFor(pl.xp);
   $('rankChip').innerHTML = `
     <span class="rankchip__lv">Rang ${r.level}</span>
@@ -362,6 +434,22 @@ function renderHeader() {
   $('soundBtn').innerHTML = on ? I.soundOn : I.soundOff;
   $('soundBtn').setAttribute('aria-pressed', String(on));
   $('soundBtn').setAttribute('aria-label', on ? 'Ton ausschalten' : 'Ton einschalten');
+}
+
+function renderInvPop() {
+  const pl = playerVitals();
+  $('invPop').innerHTML = `
+    <p class="invpop__head"><span>Inventar</span><b>${pl.hp}/${pl.maxHp} HP</b></p>
+    <div class="inventory inventory--pop">${potionButton('small')}${potionButton('medium')}${potionButton('large')}${potionButton('spark')}</div>
+    <p class="invpop__rules">Niederlage kostet HP: Story −25 %, Versus −33 %, Boss −50 %. Ein abgeschlossenes Level füllt alles auf.</p>`;
+}
+
+function toggleInv(force) {
+  const pop = $('invPop');
+  const open = typeof force === 'boolean' ? force : pop.hidden;
+  pop.hidden = !open;
+  $('hpChip').setAttribute('aria-expanded', String(open));
+  if (open) renderInvPop();
 }
 
 function setSaveChip(status, detail) {
@@ -472,6 +560,9 @@ const saveActions = {
 async function enterGame() {
   const m = Content.getManifest();
   if (m) await Promise.all(m.chapters.filter((c) => c.available).map((c) => Content.loadChapterContent(c.id, ['learn'])));
+  // Überarbeitete Lernskripte: bereits verstandene Abschnitte übernehmen
+  const migrated = m ? m.chapters.filter((c) => c.available).map((c) => migrateLegacySections(c.id)).some(Boolean) : false;
+  if (migrated) { persist(); toast('Lernskript aktualisiert – dein Fortschritt wurde übernommen.', { icon: '📘' }); }
   renderHeader();
   setSaveChip(save.guest ? 'guest' : save.canWrite ? 'ready' : 'permission');
   renderDashboard();
@@ -644,6 +735,9 @@ function renderChapter() {
   const noHp = pl.hp <= 0;
   const bossLocked = BOSS_REQUIRES_STORY && !st.story;
   const bossName = data?.boss?.boss?.name || 'Level-Boss';
+  const bossBust = data?.boss?.boss?.bust;
+  const bossIcon = typeof bossBust === 'string' && /^[\w./-]+\.(webp|png|jpe?g|avif)$/i.test(bossBust) && !bossBust.includes('..')
+    ? `<img class="mode__portrait" src="${esc(bossBust)}" alt="" width="56" height="56">` : I.seal;
 
   const card = ({ key, icon, title, text, rules, stat, disabled, lockText, action }) => `
     <button class="mode mode--${key} ${disabled ? 'mode--locked' : ''}" ${disabled ? 'aria-disabled="true"' : action}>
@@ -662,7 +756,7 @@ function renderChapter() {
       <div class="chero__text">
         <p class="chero__level">LEVEL ${esc(meta.level)}</p>
         <h1>${esc(meta.title)}</h1>
-        <p class="chero__hp">❤️ ${pl.hp}/${pl.maxHp} HP</p>
+        
         <ol class="mastery" aria-label="Weg zum Levelabschluss">
           <li class="${st.learnDone ? 'is-done' : ''}">Lernskript</li>
           <li class="${st.story ? 'is-done' : ''}">Storymode</li>
@@ -672,7 +766,11 @@ function renderChapter() {
         </ol>
       </div>
     </header>
-    ${noHp ? '<div class="notice notice--bad"><strong>0 HP.</strong> Nutze im Dashboard einen Heiltrank. Das Lernskript bleibt verfügbar, damit du weiterlernen kannst.</div>' : ''}
+    ${noHp ? `<div class="rescue">
+      <div class="rescue__text"><strong>K.o. – 0 HP.</strong> Trink einen Heiltrank (Herz oben rechts) oder kämpf dich zurück:
+      Beantworte in der <b>Rettungsmission</b> 3 leichte Fragen in Folge richtig und du bekommst <b>${RESCUE_HEAL} HP</b>. Kein Risiko, beliebig oft versuchbar.</div>
+      <button class="btn btn--primary" data-action="start-mode" data-mode="rescue" data-id="${esc(id)}">Rettungsmission starten</button>
+    </div>` : ''}
     ${errs.length ? `<div class="notice notice--bad"><strong>Teile dieses Levels fehlen:</strong> ${errs.map(esc).join(' ')}</div>` : ''}
     <div class="modes">
       ${card({ key: 'learn', icon: I.book, title: 'LERNSKRIPT', text: 'Der Stoff kompakt, in Lernreihenfolge, mit Merksätzen und Prüfungsfallen.',
@@ -684,7 +782,7 @@ function renderChapter() {
       ${card({ key: 'versus', icon: I.swords, title: 'VERSUS', text: 'Fünf Zufallsfragen quer durchs Level. Ähnliche Begriffe gegeneinander.',
         rules: '5 Fragen · 1 Leben · Verlust: −33 % HP', stat: `${stars(p.stars.versus)} <span>Rekord ${p.bestVersus} · ${p.versusWins}× gewonnen</span>`,
         disabled: !data?.questions || noHp, lockText: !data?.questions ? 'UNAVAILABLE – Fragen fehlen.' : 'KO – Fülle zuerst deine HP auf.', action: `data-action="start-mode" data-mode="versus" data-id="${esc(id)}"` })}
-      ${card({ key: 'boss', icon: I.seal, title: 'BOSSFIGHT', text: `${esc(bossName)} wartet – mit eigenen, harten Fallfragen.`,
+      ${card({ key: 'boss', icon: bossIcon, title: 'BOSSFIGHT', text: `${esc(bossName)} wartet – mit eigenen, harten Fallfragen.`,
         rules: '5 Fragen · 3 Leben · 10 Sekunden · Verlust: −50 % HP', stat: `${stars(p.stars.boss)} <span>Rekord ${p.bestBoss} · ${p.bossWins}× besiegt</span>`,
         disabled: !data?.boss || bossLocked || noHp,
         lockText: !data?.boss ? 'UNAVAILABLE – Bossfragen fehlen.' : bossLocked ? 'LOCKED – Gewinne zuerst den Storymode.' : 'KO – Fülle zuerst deine HP auf.',
@@ -926,8 +1024,12 @@ function learnGo(idx) {
 async function startMode(modeId, chapterId) {
   const mode = MODES[modeId];
   if (!mode) return;
-  if (playerVitals().hp <= 0) { toast('Du hast 0 HP. Nutze im Dashboard einen Heiltrank oder arbeite im Lernskript weiter.', { icon: '💔', tone: 'bad', ms: 4500 }); return; }
+  const rescue = modeId === 'rescue';
+  if (!rescue && playerVitals().hp <= 0) { toast('Du hast 0 HP. Trink einen Heiltrank oder starte die Rettungsmission.', { icon: '💔', tone: 'bad', ms: 4500 }); openChapter(chapterId); return; }
+  if (rescue && playerVitals().hp > 0) { toast('Die Rettungsmission gibt es nur bei 0 HP.', { icon: '❤️' }); return; }
   clearRunTimers();
+  toggleInv(false);
+  clearToasts();
   await Content.loadChapterContent(chapterId);
   const data = Content.getCachedChapter(chapterId);
   const poolData = mode.source === 'boss' ? data?.boss : data?.questions;
@@ -935,15 +1037,34 @@ async function startMode(modeId, chapterId) {
   if (modeId === 'boss' && BOSS_REQUIRES_STORY && !prog(chapterId).storyWins) { toast('Der Bossfight ist noch gesperrt. Gewinne zuerst den Storymode.', { icon: '🔒' }); return; }
 
   const p = prog(chapterId);
-  const picked = selectQuestions(modeId, poolData.questions, { recent: lastQ(chapterId)[modeId], mistakes: p.mistakes });
+  let pool = poolData.questions;
+  if (rescue) {
+    const easy = pool.filter((q) => (q.difficulty || 1) === 1);
+    pool = easy.length >= mode.count ? easy : pool.filter((q) => (q.difficulty || 1) <= 2);
+  }
+  const picked = selectQuestions(rescue ? 'versus' : modeId, pool, { recent: rescue ? [] : lastQ(chapterId)[modeId], mistakes: rescue ? {} : p.mistakes })
+    .slice(0, mode.count);
   const prepared = picked.map((q) => prepareQuestion(q, S().settings.shuffleAnswers));
   ui.chapterId = chapterId;
-  ui.run = new Run(modeId, chapterId, prepared);
-  ui.run.bossInfo = data?.boss?.boss || { name: 'Level-Boss', title: '' };
+  const run = new Run(modeId, chapterId, prepared);
+  const bossInfo = data?.boss?.boss || {};
+  const safeImg = (v) => (typeof v === 'string' && /^[\w./-]+\.(webp|png|jpe?g|avif)$/i.test(v) && !v.includes('..') ? v : '');
+  run.bossInfo = {
+    name: bossInfo.name || 'Level-Boss', title: bossInfo.title || '',
+    taunts: { ...BOSS_TAUNTS, ...(bossInfo.taunts || {}) },
+    image: safeImg(bossInfo.image), bust: safeImg(bossInfo.bust) || safeImg(bossInfo.image),
+    accent: /^#[0-9a-f]{6}$/i.test(bossInfo.accent || '') ? bossInfo.accent : '#FF738B',
+  };
+  run.loot = [];
+  run.crits = 0;
+  run.focus = modeId === 'boss' ? 1 : 0;
+  run.started = modeId !== 'boss';   // Boss startet erst nach dem Intro
+  run.say = run.bossInfo.taunts.intro;
+  ui.run = run;
   ui.newAchievements = [];
   touchDay();
   showScreen('run');
-  renderRun();
+  if (modeId === 'boss') renderBossIntro(); else renderRun();
 }
 
 function sealSvg(damage) {
@@ -970,6 +1091,119 @@ function sealSvg(damage) {
   </svg>`;
 }
 
+const pickLine = (v) => (Array.isArray(v) ? v[Math.floor(Math.random() * v.length)] : v) || '';
+
+/** Boss-Darstellung in der Arena: Porträt mit Schadensstufe oder – ohne Bild – das Siegel */
+function bossVisual(info, dmg) {
+  if (info.bust) {
+    return `<div class="bossart" style="--dmg:${(dmg / 5).toFixed(2)}"><img src="${esc(info.bust)}" alt="" width="300" height="300" decoding="async"><span class="bossart__cracks">${sealCracks(dmg)}</span></div>`;
+  }
+  return sealSvg(dmg);
+}
+function sealCracks(dmg) {
+  const paths = ['M20 8 L34 30 L28 44 L40 60', 'M82 14 L66 34 L72 48', 'M10 70 L28 62 L34 74 L48 70', 'M90 66 L74 60 L70 78', 'M52 4 L50 22 L60 30'];
+  return `<svg viewBox="0 0 100 100" aria-hidden="true">${paths.map((d, i) => `<path d="${d}" class="${i < dmg ? 'is-on' : ''}"/>`).join('')}</svg>`;
+}
+
+/**
+ * Boss-Intro als kurze Kinosequenz (~3 s): Warnbalken → Silhouette steigt auf → Blitz, Farbe →
+ * Name knallt rein → Spruch wird getippt → Regeln und „Kampf beginnen“.
+ * Jederzeit überspringbar (Klick, Enter, Leertaste). Der Timer startet erst mit „Kampf beginnen“.
+ */
+function renderBossIntro() {
+  const run = ui.run;
+  const b = run.bossInfo;
+  run.introReady = false;
+  // Buchstaben einzeln animieren, Wörter aber nie umbrechen
+  let li = 0;
+  const letters = b.name.split(' ').map((word) => `<span class="bosscine__word">${[...word].map((ch) => `<span style="--i:${li++}">${esc(ch)}</span>`).join('')}</span>`).join(' ');
+  const ticker = Array(20).fill('BOSS NÄHERT SICH').join(' ✦ ');
+  const art = b.image
+    ? `<img class="bosscine__art" src="${esc(b.image)}" alt="${esc(b.name)}" decoding="async">`
+    : `<div class="bosscine__seal">${sealSvg(0)}</div>`;
+  $('runView').innerHTML = `
+    <div class="bosscine" id="bossCine" data-action="boss-skip" style="--accent:${esc(b.accent)}" role="dialog" aria-modal="true" aria-labelledby="bossName">
+      <div class="bosscine__rays" aria-hidden="true"></div>
+      <div class="bosscine__bar bosscine__bar--top" aria-hidden="true"><span>${ticker}</span></div>
+      <div class="bosscine__bar bosscine__bar--bottom" aria-hidden="true"><span>${ticker}</span></div>
+      <div class="bosscine__flash" aria-hidden="true"></div>
+      <div class="bosscine__stage">
+        <div class="bosscine__figure">${art}</div>
+        <div class="bosscine__text">
+          <p class="bosscine__kicker">${esc(levelLabel(run.chapterId))} · Bossfight</p>
+          <h1 class="bosscine__name" id="bossName" aria-label="${esc(b.name)}">${letters}</h1>
+          <p class="bosscine__title">${esc(b.title)}</p>
+          <blockquote class="bosscine__say" id="bossCineSay" aria-live="polite"></blockquote>
+          <div class="bosscine__panel">
+            <ul class="bosscine__rules">
+              <li><b>${run.total}</b> Fragen</li>
+              <li><b>${run.mode.seconds} s</b> pro Frage</li>
+              <li><b>${run.mode.lives}</b> Leben</li>
+              <li><b>1×</b> Fokus +${BOSS_FOCUS_SECONDS} s</li>
+            </ul>
+            <p class="bosscine__stakes">
+              <span class="win">Sieg: Siegtruhe mit garantiertem Heiltrank</span>
+              <span class="lose">Niederlage: −${MODE_HP_LOSS.boss} % HP · Level-Modi zurückgesetzt</span>
+            </p>
+            <div class="bosscine__actions">
+              <button class="btn btn--boss btn--xl" id="btnFight" data-action="boss-fight">Kampf beginnen</button>
+              <button class="btn btn--ghost" data-action="abort-run">Noch nicht – zurück</button>
+            </div>
+            <p class="bosscine__hint">Enter startet · Antworten mit A–D · Fokus mit F</p>
+          </div>
+        </div>
+      </div>
+      <button class="bosscine__skip" data-action="boss-skip">Überspringen ⏭</button>
+    </div>`;
+
+  if (reducedMotion()) { finishBossIntro(); return; }
+  sfx('rumble');
+  later(() => sfx('boss'), 1150);
+  // Spruch tippen
+  const text = b.taunts.intro || '';
+  const say = $('bossCineSay');
+  let n = 0;
+  const type = () => {
+    if (!ui.run || ui.run.introReady || !say) return;
+    n += 2;
+    say.textContent = `„${text.slice(0, n)}${n < text.length ? '' : '“'}`;
+    if (n < text.length) later(type, 28);
+  };
+  later(type, 2050);
+  later(finishBossIntro, 2900);
+}
+
+function finishBossIntro() {
+  const run = ui.run;
+  if (!run || run.mode.id !== 'boss' || run.started || run.introReady) return;
+  run.introReady = true;
+  const cine = $('bossCine');
+  if (cine) cine.classList.add('is-ready');
+  const say = $('bossCineSay');
+  if (say) say.textContent = `„${run.bossInfo.taunts.intro || ''}“`;
+  $('btnFight')?.focus({ preventScroll: true });
+}
+
+function startBossFight() {
+  const run = ui.run;
+  if (!run || run.mode.id !== 'boss' || run.started) return;
+  if (!run.introReady) { finishBossIntro(); return; }
+  run.started = true;
+  clearToasts();
+  sfx('level');
+  renderRun();
+}
+
+function floatText(text, tone = 'ok', where = 'boss') {
+  const layer = $('fxLayer');
+  if (!layer || reducedMotion()) return;
+  const el = document.createElement('span');
+  el.className = `float float--${tone} float--${where}`;
+  el.textContent = text;
+  layer.appendChild(el);
+  el.addEventListener('animationend', () => el.remove());
+}
+
 function renderRun() {
   const run = ui.run;
   if (!run) return;
@@ -985,10 +1219,18 @@ function renderRun() {
   }).join('');
   const hearts = Array.from({ length: run.mode.lives }, (_, i) => `<span class="heart ${i < run.lives ? '' : 'is-lost'}">${I.heart}</span>`).join('');
   const hits = run.correctCount;
-  const hp = Array.from({ length: run.total }, (_, i) => `<span class="${i < run.total - hits ? '' : 'is-gone'}"></span>`).join('');
+  const bossLeft = run.total - hits;
+  const hp = Array.from({ length: run.total }, (_, i) => `<span class="${i < bossLeft ? '' : 'is-gone'}"></span>`).join('');
+  const isFinal = run.idx === run.total - 1;
+  const enraged = isBoss && (isFinal || bossLeft <= 1);
+  if (isBoss) {
+    if (isFinal) run.say = run.bossInfo.taunts.final;
+    else if (bossLeft === 1) run.say = run.bossInfo.taunts.low;
+  }
+  const loot = (run.loot || []).map((k) => POTIONS[k]?.icon || '').join('');
 
   $('runView').innerHTML = `
-    <div class="run run--${run.mode.id}">
+    <div class="run run--${run.mode.id} ${enraged ? 'is-enraged' : ''}">
       <div class="hud">
         <button class="back back--hud" data-action="abort-run">${I.back} Aufgeben</button>
         <span class="hud__mode">${esc(run.mode.label)} <small>${esc(levelLabel(run.chapterId))}</small></span>
@@ -996,17 +1238,25 @@ function renderRun() {
         <span class="hud__lives" aria-label="${run.lives} Leben">${hearts}</span>
         <span class="hud__score"><small>Punkte</small> <b id="hudScore">${run.score}</b></span>
         <span class="hud__combo ${run.combo >= 2 ? 'is-hot' : ''}" id="hudCombo">${run.combo >= 2 ? `${I.flame} ${run.combo}er-Serie` : ''}</span>
+        <span class="hud__loot" id="hudLoot" title="Beute in diesem Run">${loot}</span>
       </div>
       ${isBoss ? `
-      <div class="arena">
-        <div class="arena__boss" id="bossSeal">${sealSvg(Math.round((hits / run.total) * 5))}</div>
+      <div class="arena ${enraged ? 'is-enraged' : ''}" id="arena">
+        <div class="arena__boss ${run.bossInfo.bust ? 'arena__boss--art' : ''}" id="bossSeal">${bossVisual(run.bossInfo, Math.round((hits / run.total) * 5))}</div>
         <div class="arena__info">
-          <p class="arena__name">${esc(run.bossInfo.name)}</p>
+          <p class="arena__name">${esc(run.bossInfo.name)} ${enraged ? '<span class="rage">WUT</span>' : ''}</p>
           <p class="arena__title">${esc(run.bossInfo.title || '')}</p>
-          <div class="hp" aria-label="Boss-Lebensleiste: ${run.total - hits} von ${run.total}">${hp}</div>
+          <div class="hp" aria-label="Boss-Lebensleiste: ${bossLeft} von ${run.total}">${hp}</div>
+          <p class="say" id="bossSay">„${esc(run.say || '')}“</p>
         </div>
-        <div class="timer" aria-hidden="true"><span class="timer__num" id="timerNum">${run.mode.seconds}</span><span class="timer__bar"><span id="timerBar"></span></span></div>
-      </div>` : ''}
+        <div class="timer" aria-hidden="true">
+          <span class="timer__num" id="timerNum">${run.mode.seconds}</span>
+          <span class="timer__bar"><span id="timerBar"></span></span>
+          <button class="focusbtn" id="btnFocus" data-action="boss-focus" ${run.focus ? '' : 'disabled'} title="Einmal pro Kampf: +${BOSS_FOCUS_SECONDS} Sekunden (Taste F)">⏳ +${BOSS_FOCUS_SECONDS} s</button>
+        </div>
+        <div class="fxlayer" id="fxLayer" aria-hidden="true"></div>
+      </div>
+      ${isFinal ? '<p class="finalbanner" role="status">Finale Frage</p>' : ''}` : ''}
       <section class="qcard" aria-live="polite">
         <p class="qcard__meta">
           <span>Frage ${run.idx + 1}/${run.total}</span>
@@ -1035,6 +1285,17 @@ function renderRun() {
       if (whole < lastSec) { lastSec = whole; if (whole <= 3 && whole > 0) sfx('tick'); }
     }, () => submitAnswer(true));
   }
+}
+
+function useFocus() {
+  const run = ui.run;
+  if (!run || run.mode.id !== 'boss' || !run.focus || ui.answered) return;
+  if (!countdown.extend(BOSS_FOCUS_SECONDS)) return;
+  run.focus -= 1;
+  const btn = $('btnFocus');
+  if (btn) btn.disabled = true;
+  floatText(`+${BOSS_FOCUS_SECONDS} s`, 'focus', 'timer');
+  sfx('level');
 }
 
 function pickAnswer(i) {
@@ -1067,6 +1328,7 @@ function submitAnswer(timedOut = false) {
   if (submitBtn) submitBtn.hidden = true;
   const st = S();
   const p = prog(run.chapterId);
+  let droppedNow = null;
 
   // Statistik & Fehlerspeicher (fließt in die Versus-Gewichtung ein)
   st.player.answered += 1;
@@ -1077,7 +1339,7 @@ function submitAnswer(timedOut = false) {
     if (run.combo >= 5) unlock('combo_5');
     if (run.combo >= 10) unlock('combo_10');
     if (run.mode.id === 'boss' && run.mode.seconds - secondsLeft < 3) unlock('quick_draw');
-    maybeDropReward(q);
+    droppedNow = maybeDropReward(q);
   } else {
     p.mistakes[q.id] = Math.min(9, (p.mistakes[q.id] || 0) + 1);
   }
@@ -1107,20 +1369,41 @@ function submitAnswer(timedOut = false) {
     shell?.classList.add('fx-shake');
   }
 
+  const lootIcons = (run.loot || []).map((k) => POTIONS[k]?.icon || '').join('');
+  const hudLoot = $('hudLoot');
+  if (hudLoot && hudLoot.textContent !== lootIcons) { hudLoot.textContent = lootIcons; hudLoot.classList.add('is-new'); }
+  const newLoot = droppedNow ? POTIONS[droppedNow.id] : null;
+
   if (run.mode.id === 'boss') {
     const hits = run.correctCount;
     const seal = $('bossSeal');
-    if (seal && res.correct) { seal.innerHTML = sealSvg(Math.round((hits / run.total) * 5)); seal.classList.add('is-hit'); }
+    const t = run.bossInfo.taunts;
+    const crit = res.correct && secondsLeft >= BOSS_CRIT_SECONDS;
+    if (crit) run.crits += 1;
+    if (seal && res.correct) { seal.innerHTML = bossVisual(run.bossInfo, Math.round((hits / run.total) * 5)); seal.classList.add(crit ? 'is-crit' : 'is-hit'); }
+    if (seal && !res.correct) seal.classList.add('is-gloat');
     document.querySelectorAll('.hp span').forEach((s, k) => s.classList.toggle('is-gone', k >= run.total - hits));
-    flash(res.correct ? 'Treffer!' : timedOut ? 'Zeit um!' : 'Autsch!', res.correct ? 'ok' : 'bad');
+    run.say = pickLine(res.correct ? t.hit : timedOut ? t.timeout : t.miss);
+    const say = $('bossSay');
+    if (say) { say.textContent = `„${run.say}“`; say.classList.remove('is-new'); void say.offsetWidth; say.classList.add('is-new'); }
+    if (res.correct) {
+      floatText(crit ? 'KRITISCH! −1' : '−1', crit ? 'crit' : 'ok', 'boss');
+      if (run.combo >= 2) floatText(`Kombo ×${run.combo}`, 'combo', 'combo');
+    } else {
+      floatText('−1 ♥', 'bad', 'player');
+      shell?.classList.add('fx-hurt');
+    }
+    if (newLoot) floatText(`${newLoot.icon} ${newLoot.label}!`, 'loot', 'loot');
+    flash(res.correct ? (crit ? 'Kritisch!' : 'Treffer!') : timedOut ? 'Zeit um!' : 'Autsch!', res.correct ? 'ok' : 'bad');
     // Kein Weiter-Button: kurz Lösung zeigen, dann sofort weiter
-    later(() => advance(), res.correct ? 520 : 680);
+    later(() => advance(), res.correct ? 620 : 750);
     return;
   }
 
   $('qfoot').innerHTML = `
     <div class="feedback ${res.correct ? 'feedback--ok' : 'feedback--bad'}" role="status">
       <strong>${res.correct ? `Richtig! +${res.gainedScore}` : 'Falsch.'}</strong> ${esc(q.explanation)}
+      ${newLoot ? `<span class="feedback__loot">${newLoot.icon} Gefunden: ${esc(newLoot.label)}</span>` : ''}
     </div>
     <button class="btn btn--primary" id="btnNext" data-action="next-question">${res.finished ? 'Zur Auswertung' : 'Nächste Frage'} ${I.next}</button>`;
   $('btnNext')?.focus({ preventScroll: true });
@@ -1146,40 +1429,77 @@ function finishRun() {
   let hpEvent = null;
   let levelCompletedNow = false;
   let levelReset = false;
+  let chest = null;
+  let healed = 0;
 
-  if (m === 'story') { p.bestStory = Math.max(p.bestStory, sum.score); if (sum.won) p.storyWins += 1; }
-  if (m === 'versus') { p.bestVersus = Math.max(p.bestVersus, sum.score); if (sum.won) p.versusWins += 1; }
-  if (m === 'boss') { p.bestBoss = Math.max(p.bestBoss, sum.score); if (sum.won) p.bossWins += 1; }
-  p.stars[m] = Math.max(p.stars[m], sum.stars);
-  lastQ(id)[m] = run.questions.map((q) => q.id);
-
-  if (sum.won) {
-    if (m === 'story') { unlock('story_win'); if (sum.stars === 3) unlock('story_perfect'); }
-    if (m === 'versus') unlock('versus_win');
-    if (m === 'boss') { unlock('boss_slayer'); if (sum.stars === 3) unlock('boss_perfect'); }
-    levelCompletedNow = checkMastery(id);
+  if (m === 'rescue') {
+    // Rettungsmission: kein Fortschritt, keine Strafe – nur HP zurück bei Erfolg
+    if (sum.won) healed = healHp(RESCUE_HEAL, 'Rettungsmission', { quiet: true });
   } else {
-    const loss = MODE_HP_LOSS[m] || 0;
-    hpEvent = damageHp(Math.round(playerVitals().maxHp * (loss / 100)), `${run.mode.label} verloren`);
-    levelReset = resetLevelModesAfterLoss(id);
-    if (levelReset) toast('Level fehlgeschlagen – die Spielmodi starten wieder von vorn.', { icon: '↩️', tone: 'bad', ms: 4300 });
+    if (m === 'story') { p.bestStory = Math.max(p.bestStory, sum.score); if (sum.won) p.storyWins += 1; }
+    if (m === 'versus') { p.bestVersus = Math.max(p.bestVersus, sum.score); if (sum.won) p.versusWins += 1; }
+    if (m === 'boss') { p.bestBoss = Math.max(p.bestBoss, sum.score); if (sum.won) p.bossWins += 1; }
+    p.stars[m] = Math.max(p.stars[m], sum.stars);
+    lastQ(id)[m] = run.questions.map((q) => q.id);
+
+    if (sum.won) {
+      if (m === 'story') { unlock('story_win'); if (sum.stars === 3) unlock('story_perfect'); }
+      if (m === 'versus') unlock('versus_win');
+      if (m === 'boss') {
+        unlock('boss_slayer');
+        if (sum.stars === 3) unlock('boss_perfect');
+        // Siegtruhe: garantierter Trank, Größe nach Sternen
+        if ((run.crits || 0) >= 3) unlock('crit_king');
+        chest = BOSS_CHEST[sum.stars] || 'small';
+        const pl = playerVitals();
+        pl.inventory[chest] = (pl.inventory[chest] || 0) + 1;
+      }
+      levelCompletedNow = checkMastery(id);
+    } else {
+      ({ hpEvent, levelReset } = applyDefeat(run));
+    }
   }
   addXp(sum.xp);
   persist();
 
-  ui.result = { sum, run, hpEvent, levelCompletedNow, levelReset };
+  ui.result = { sum, run, hpEvent, levelCompletedNow, levelReset, chest, healed };
   ui.run = null;
+  renderHeader();
   renderResult();
   showScreen('result');
-  if (sum.won) { sfx('win'); confetti(m === 'boss' ? 200 : 130); } else sfx('lose');
+  if (sum.won) { sfx('win'); confetti(m === 'boss' ? 220 : 130); } else sfx('lose');
+}
+
+/** Niederlage verrechnen – gilt auch für „Aufgeben“, sonst ließe sich die Strafe umgehen. */
+function applyDefeat(run) {
+  const loss = MODE_HP_LOSS[run.mode.id] || 0;
+  const hpEvent = damageHp(Math.round(playerVitals().maxHp * (loss / 100)), `${run.mode.label} verloren`, { quiet: true });
+  const levelReset = resetLevelModesAfterLoss(run.chapterId);
+  return { hpEvent, levelReset };
 }
 
 function abortRun(silent = false) {
-  if (!ui.run) return true;
-  if (!silent && !confirm('Run wirklich aufgeben? Fortschritt dieses Runs geht verloren.')) return false;
+  const run = ui.run;
+  if (!run) return true;
+  // Strafe nur, wenn der Run wirklich lief: Boss nach „Kampf beginnen“, sonst ab der ersten Antwort
+  const penalty = run.mode.id !== 'rescue' && run.started && (run.results.length > 0 || run.mode.id === 'boss');
+  const loss = MODE_HP_LOSS[run.mode.id] || 0;
+  if (!silent) {
+    const msg = penalty
+      ? `Run aufgeben?\n\nAufgeben zählt als Niederlage: −${loss} % HP, und die Spielmodi dieses Levels werden zurückgesetzt (außer das Level ist schon abgeschlossen).`
+      : 'Run verlassen? Es gab noch keine Antwort – das kostet nichts.';
+    if (!confirm(msg)) return false;
+  }
   clearRunTimers();
-  lastQ(ui.run.chapterId)[ui.run.mode.id] = ui.run.questions.map((q) => q.id);
+  if (run.mode.id !== 'rescue') lastQ(run.chapterId)[run.mode.id] = run.questions.map((q) => q.id);
   ui.run = null;
+  if (penalty) {
+    const { hpEvent, levelReset } = applyDefeat(run);
+    const parts = [`${run.mode.label} aufgegeben: −${hpEvent.lost} HP`];
+    if (hpEvent.revived) parts.push('Lebensfunke hat dich gerettet');
+    if (levelReset) parts.push('Level-Modi zurückgesetzt');
+    toast(parts.join(' · '), { icon: '🏳️', tone: 'bad', ms: 5000 });
+  }
   persist();
   return true;
 }
@@ -1194,25 +1514,45 @@ function answerText(q, idxs) {
 }
 
 function renderResult() {
-  const { sum, run, hpEvent, levelCompletedNow, levelReset } = ui.result;
+  const { sum, run, hpEvent, levelCompletedNow, levelReset, chest, healed } = ui.result;
+  const pl = playerVitals();
   const boss = run.bossInfo?.name || 'Der Boss';
   const titles = {
     story: sum.won ? 'Story geschafft!' : 'Story verloren',
     versus: sum.won ? 'Duell gewonnen!' : 'Duell verloren',
     boss: sum.won ? `${boss} besiegt!` : `${boss} war stärker`,
+    rescue: sum.won ? 'Gerettet!' : 'Noch nicht geschafft',
   };
-  const sub = levelCompletedNow
-    ? `${levelLabel(run.chapterId)} komplett abgeschlossen. Deine HP wurden vollständig aufgefüllt.`
-    : sum.won
-      ? (sum.stars === 3 ? 'Ohne einen einzigen Fehler. Stark.' : 'Geschafft – mit etwas Luft nach oben.')
-      : levelReset
-        ? `Run verloren. Die Spielmodi dieses Levels wurden zurückgesetzt – du startest den Level-Run wieder von vorn.`
-        : `Run verloren. Beim nächsten Versuch startet ${run.mode.label} wieder bei Frage 1.`;
+  let sub;
+  if (sum.mode === 'rescue') {
+    sub = sum.won ? `Du bist wieder auf den Beinen: +${healed} HP.` : 'Kein Problem – die Rettungsmission kostet nichts. Versuch es gleich noch einmal.';
+  } else if (levelCompletedNow) {
+    sub = `${levelLabel(run.chapterId)} komplett abgeschlossen. Deine HP wurden vollständig aufgefüllt.`;
+  } else if (sum.won) {
+    sub = sum.stars === 3 ? 'Ohne einen einzigen Fehler. Stark.' : 'Geschafft – mit etwas Luft nach oben.';
+  } else if (levelReset) {
+    sub = 'Run verloren. Die Spielmodi dieses Levels wurden zurückgesetzt – du startest den Level-Run wieder von vorn.';
+  } else {
+    sub = `Run verloren. Beim nächsten Versuch startet ${run.mode.label} wieder bei Frage 1.`;
+  }
   const hpNote = hpEvent
-    ? (hpEvent.revived ? `✨ Lebensfunke verbraucht: Wiederbelebung mit voller HP.` : `💔 ${MODE_HP_LOSS[sum.mode]} % Max-HP verloren. Aktuell ${playerVitals().hp}/${playerVitals().maxHp} HP.`)
+    ? (hpEvent.revived ? '✨ Lebensfunke verbraucht: Wiederbelebung mit voller HP.'
+      : hpEvent.knockout ? `💔 K.o.! Du hast 0 HP. Trink einen Heiltrank oder starte im Level die Rettungsmission.`
+        : `💔 −${hpEvent.lost} HP. Aktuell ${pl.hp}/${pl.maxHp} HP.`)
     : '';
+  const quote = sum.mode === 'boss' ? (sum.won ? run.bossInfo.taunts.defeat : run.bossInfo.taunts.victory) : '';
   const achievements = ui.newAchievements.length
     ? `<ul class="newbadges">${ui.newAchievements.map((a) => `<li><span>${a.icon}</span><b>${esc(a.title)}</b><small>${esc(a.text)}</small></li>`).join('')}</ul>` : '';
+  const lootList = [...(run.loot || [])];
+  const chestItem = chest ? POTIONS[chest] : null;
+  const lootHtml = (lootList.length || chestItem) ? `
+    <section class="loot" aria-label="Beute">
+      ${chestItem ? `<div class="chest">
+        <div class="chest__box" aria-hidden="true"><span class="chest__lid"></span><span class="chest__body"></span><span class="chest__item">${chestItem.icon}</span></div>
+        <div><p class="chest__kicker">Siegtruhe geöffnet</p><p class="chest__name">${esc(chestItem.label)}</p><small>${sum.stars === 3 ? 'Makelloser Sieg – beste Truhe.' : 'Mehr Sterne = größerer Trank.'}</small></div>
+      </div>` : ''}
+      ${lootList.length ? `<p class="loot__line"><b>Unterwegs gefunden:</b> ${lootList.map((k) => `<span class="loot__item">${POTIONS[k].icon} ${esc(POTIONS[k].label)}</span>`).join(' ')}</p>` : ''}
+    </section>` : '';
 
   const review = run.results.map((r, k) => {
     const q = r.question;
@@ -1229,29 +1569,37 @@ function renderResult() {
     </li>`;
   }).join('');
 
+  const again = sum.mode === 'rescue'
+    ? (sum.won ? '' : `<button class="btn btn--primary btn--xl" data-action="start-mode" data-mode="rescue" data-id="${esc(run.chapterId)}">Nochmal versuchen</button>`)
+    : pl.hp > 0
+      ? `<button class="btn btn--primary btn--xl" data-action="start-mode" data-mode="${sum.mode}" data-id="${esc(run.chapterId)}">Nochmal spielen</button>`
+      : `<button class="btn btn--primary btn--xl" data-action="start-mode" data-mode="rescue" data-id="${esc(run.chapterId)}">Rettungsmission</button>`;
+
   $('resultView').innerHTML = `
     <div class="result ${sum.won ? 'result--win' : 'result--lose'} result--${sum.mode}">
       <header class="result__head">
-        ${stars(sum.stars, 'stars--big')}
+        ${sum.mode === 'boss' && run.bossInfo.image
+          ? `<div class="bossfinal ${sum.won ? 'is-defeated' : 'is-victor'}" aria-hidden="true"><img src="${esc(run.bossInfo.image)}" alt="" decoding="async">${sum.won ? '<span></span><span></span><span></span><span></span><span></span><span></span>' : ''}</div>`
+          : sum.mode === 'boss' && sum.won ? `<div class="shatter" aria-hidden="true">${sealSvg(5)}<span></span><span></span><span></span><span></span><span></span><span></span></div>` : ''}
+        ${sum.mode === 'rescue' ? '' : stars(sum.stars, 'stars--big')}
         <h1>${esc(titles[sum.mode])}</h1>
+        ${quote ? `<blockquote class="result__quote">„${esc(quote)}“</blockquote>` : ''}
         <p>${sub}</p>${hpNote ? `<p class="result__hpnote">${esc(hpNote)}</p>` : ''}
       </header>
       <dl class="result__stats">
         <div><dt>Richtig</dt><dd>${sum.correct}/${sum.answered}</dd></div>
         <div><dt>Punkte</dt><dd>${sum.score}</dd></div>
-        <div><dt>Beste Serie</dt><dd>${sum.bestCombo}</dd></div>
+        <div><dt>${sum.mode === 'boss' ? 'Kritische Treffer' : 'Beste Serie'}</dt><dd>${sum.mode === 'boss' ? run.crits || 0 : sum.bestCombo}</dd></div>
         <div class="is-xp"><dt>Erfahrung</dt><dd>+${sum.xp} XP</dd></div>
-        <div class="is-hp"><dt>HP</dt><dd>${playerVitals().hp}/${playerVitals().maxHp}</dd></div>
+        <div class="is-hp"><dt>HP</dt><dd>${pl.hp}/${pl.maxHp}</dd></div>
       </dl>
+      ${lootHtml}
       ${achievements}
       <div class="result__actions">
-        <button class="btn btn--primary btn--xl" data-action="start-mode" data-mode="${sum.mode}" data-id="${esc(run.chapterId)}">Nochmal spielen</button>
+        ${again}
         <button class="btn btn--ghost btn--xl" data-action="back-chapter">Zum Level</button>
       </div>
-      <section class="review">
-        <h2>Nachbesprechung</h2>
-        <ol>${review}</ol>
-      </section>
+      ${review ? `<section class="review"><h2>Nachbesprechung</h2><ol>${review}</ol></section>` : ''}
     </div>`;
 }
 
@@ -1267,6 +1615,10 @@ const ACTIONS = {
   'grant-write': async () => { if (await save.grantWrite()) toast('Speichern ist wieder aktiv.', { icon: '💾' }); },
   'toggle-sound': () => { S().settings.sound = !S().settings.sound; renderHeader(); persist(); },
   'use-potion': (d) => usePotion(d.kind),
+  'toggle-inv': () => toggleInv(),
+  'boss-fight': () => startBossFight(),
+  'boss-skip': () => finishBossIntro(),
+  'boss-focus': () => useFocus(),
   'go-dashboard': () => { if (ui.screen === 'terminal') return; if (!abortRun()) return; renderDashboard(); showScreen('dashboard'); },
   'open-chapter': (d) => openChapter(d.id),
   'back-chapter': () => { if (!abortRun()) return; openChapter(ui.chapterId); },
@@ -1294,9 +1646,25 @@ document.addEventListener('click', (e) => {
   fn({ ...el.dataset }, el); // nur die Daten-Attribute, nie das Event-Objekt
 });
 
+// Inventar-Popover schließen: Klick daneben oder Escape
+document.addEventListener('click', (e) => {
+  if ($('invPop').hidden) return;
+  if (!e.target.closest('.hpwrap')) toggleInv(false);
+});
+
 document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !$('invPop').hidden) { toggleInv(false); $('hpChip').focus(); return; }
   if (ui.screen !== 'run' || !ui.run || e.altKey || e.ctrlKey || e.metaKey) return;
   const k = e.key.toLowerCase();
+  if (ui.run.mode.id === 'boss' && !ui.run.started) {
+    if (k === 'enter' || k === ' ') {
+      e.preventDefault();
+      if (!ui.run.introReady) finishBossIntro();
+      else if (k === 'enter' || document.activeElement?.id === 'btnFight') startBossFight();
+    }
+    return;
+  }
+  if (k === 'f' && ui.run.mode.id === 'boss') { e.preventDefault(); useFocus(); return; }
   const map = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, a: 0, b: 1, c: 2, d: 3, e: 4 };
   if (k in map && !ui.answered) { e.preventDefault(); pickAnswer(map[k]); return; }
   if (k === 'enter') {
@@ -1315,7 +1683,9 @@ window.addEventListener('beforeunload', (e) => {
 document.addEventListener('animationend', (e) => {
   const t = e.target;
   if (t.classList?.contains('fx-hit') || t.classList?.contains('fx-shake')) t.classList.remove('fx-hit', 'fx-shake');
-  if (t.classList?.contains('is-hit')) t.classList.remove('is-hit');
+  if (t.classList?.contains('is-hit') || t.classList?.contains('is-crit') || t.classList?.contains('is-gloat')) t.classList.remove('is-hit', 'is-crit', 'is-gloat');
+  if (t.classList?.contains('fx-hurt')) t.classList.remove('fx-hurt');
+  if (t.id === 'hudLoot') t.classList.remove('is-new');
 });
 
 /* =========================================================

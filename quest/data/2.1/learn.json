@@ -1,48 +1,91 @@
 {
   "chapter": "2.1",
   "title": "Rechtliche Grundlagen: Allgemein",
+  "sources": [
+    "BWB Lernskript 2.1.1",
+    "BWB Lernskript 2.1.2"
+  ],
   "sections": [
     {
-      "id": "2.1.1-a",
-      "title": "Rechtsordnung & Rechtsfähigkeit",
-      "subtitle": "Wer Träger von Rechten und Pflichten sein kann – und wann das beginnt",
-      "examRelevance": "S",
-      "checkId": "2.1-Q001",
+      "id": "2.1-S01",
+      "title": "Die Rechtsordnung",
+      "subtitle": "Welche Regeln gelten – und wer sie aufstellt",
+      "ref": "BWB 2.1.1",
+      "examRelevance": "G",
+      "checkId": "2.1-Q103",
       "content": [
         {
           "type": "text",
-          "text": "Die Rechtsordnung schafft verbindliche Regeln für das Zusammenleben. An oberster Stelle steht das **Grundgesetz**. Daneben gibt es Gesetze und ergänzende Regelungen für einzelne Lebens- und Wirtschaftsbereiche."
+          "text": "Deutschland hat überwiegend **geschriebenes Recht**. An der Spitze steht das **Grundgesetz**. Darunter regeln Gesetze einzelne Lebensbereiche – sie sollen das Zusammenleben ermöglichen, berechtigte Interessen schützen und Vertrauen schaffen."
         },
         {
           "type": "compare",
           "left": {
             "title": "Öffentliches Recht",
-            "text": "Regelt Rechtsbeziehungen, bei denen der Staat in seiner hoheitlichen Rolle beteiligt ist."
+            "text": "Regelt das Verhältnis zwischen **Staat und Bürger** bzw. Unternehmen. Beispiele: Grundgesetz, Einkommensteuergesetz, Gewerbeordnung, **Kreditwesengesetz (KWG)**, Versicherungsaufsichtsgesetz, Bausparkassengesetz."
           },
           "right": {
-            "title": "Zivilrecht",
-            "text": "Regelt vor allem Rechtsbeziehungen zwischen privaten Rechtssubjekten. Für Verträge ist insbesondere das **BGB** wichtig."
+            "title": "Zivilrecht (Privatrecht)",
+            "text": "Regelt die Beziehungen **gleichrangiger Personen** untereinander. Beispiele: **Bürgerliches Gesetzbuch (BGB)**, Handelsgesetzbuch (HGB)."
           }
         },
         {
-          "type": "text",
-          "text": "**Rechtsfähigkeit** bedeutet, Träger von **Rechten und Pflichten** sein zu können. Jeder lebende Mensch ist als natürliche Person rechtsfähig."
+          "type": "compare",
+          "left": {
+            "title": "Gesetz",
+            "text": "Beschließt das **Parlament**. Beispiele: BGB, Gewerbeordnung (GewO), Grundbuchordnung (GBO) – beide tragen „Ordnung“ im Namen, sind aber Gesetze."
+          },
+          "right": {
+            "title": "Rechtsverordnung",
+            "text": "Erlässt die **Regierung oder ein Ministerium** auf Grundlage eines Gesetzes. Sie konkretisiert das Gesetz. Beispiele: **Preisangabenverordnung (PAngV)**, Immobiliardarlehensvermittlungsverordnung (ImmVermV)."
+          }
         },
         {
-          "type": "steps",
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das BWB-Skript zählt KWG, VAG und Bausparkassengesetz zum Zivilrecht und GBO sowie GewO zu den Verordnungen. Beides stimmt nicht: Die Aufsichtsgesetze sind öffentliches Recht, GBO und GewO sind Gesetze."
+        }
+      ],
+      "laws": [],
+      "memory": "Staat gegen Bürger = öffentliches Recht. Bürger mit Bürger = Zivilrecht.",
+      "examTrap": "„Ordnung“ im Namen heißt nicht Verordnung: Gewerbeordnung und Grundbuchordnung sind Gesetze.",
+      "legacyIds": [
+        "2.1.1-a"
+      ]
+    },
+    {
+      "id": "2.1-S02",
+      "title": "Rechtsfähigkeit",
+      "subtitle": "Wer Rechte und Pflichten haben kann",
+      "ref": "BWB 2.1.1",
+      "examRelevance": "S",
+      "checkId": "2.1-Q106",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Rechtsfähigkeit** ist die Fähigkeit, **Träger von Rechten und Pflichten** zu sein. Jeder Mensch ist als **natürliche Person** rechtsfähig – unverzichtbar und unentziehbar. Sie **beginnt mit der Vollendung der Geburt** und **endet mit dem Tod** (§ 1 BGB)."
+        },
+        {
+          "type": "example",
+          "text": "Ein Baby kann ein Haus erben und im Grundbuch als Eigentümer stehen. Rechtsfähig ist es ab Geburt – nur handeln (Verträge schließen) kann es noch nicht selbst."
+        },
+        {
+          "type": "text",
+          "text": "**Juristische Personen** sind Personenvereinigungen oder Vermögensmassen, die kraft Gesetzes rechtsfähig sind – z. B. GmbH, AG, eingetragener Verein (privates Recht) oder Gemeinde, Sparkasse (öffentliches Recht). Sie handeln durch ihre **Vertreter (Organe)**, etwa Geschäftsführer oder Vorstand."
+        },
+        {
+          "type": "text",
+          "text": "Die **Volljährigkeit** tritt mit Vollendung des **18. Lebensjahres** ein, also am 18. Geburtstag (§ 2 BGB). Folgen:"
+        },
+        {
+          "type": "list",
           "items": [
-            {
-              "title": "Beginn",
-              "text": "Mit **Vollendung der Geburt**, wenn das Kind lebt."
-            },
-            {
-              "title": "Volljährigkeit",
-              "text": "Mit Vollendung des **18. Lebensjahres**. Für Verträge ist dann insbesondere die unbeschränkte Geschäftsfähigkeit bedeutsam."
-            },
-            {
-              "title": "Ende",
-              "text": "Die Rechtsfähigkeit einer natürlichen Person endet mit dem **Tod**."
-            }
+            "**unbeschränkte Geschäftsfähigkeit** – für Vermittler die wichtigste Folge",
+            "Ende der elterlichen Sorge",
+            "Ehemündigkeit",
+            "unbeschränkte Testierfähigkeit",
+            "Prozessfähigkeit",
+            "aktives Wahlrecht"
           ]
         }
       ],
@@ -53,641 +96,810 @@
         },
         {
           "ref": "§ 2 BGB",
-          "text": "Die Volljährigkeit tritt mit Vollendung des 18. Lebensjahres ein."
+          "text": "Volljährigkeit mit Vollendung des 18. Lebensjahres."
         }
       ],
-      "memory": "Rechtsfähig = Rechte und Pflichten haben können. Geschäftsfähig = selbst wirksam Rechtsgeschäfte vornehmen können.",
-      "examTrap": "Rechtsfähigkeit beginnt nicht erst mit 18. Volljährigkeit betrifft vor allem die unbeschränkte Geschäftsfähigkeit."
+      "memory": "Rechtsfähig = Rechte HABEN (ab Geburt). Geschäftsfähig = selbst HANDELN (gestaffelt nach Alter).",
+      "examTrap": "Rechtsfähigkeit beginnt nicht mit 18 und nicht mit 7 – sondern mit der Geburt. Die Volljährigkeit bringt die volle Geschäftsfähigkeit, nicht die Rechtsfähigkeit.",
+      "legacyIds": [
+        "2.1.1-a",
+        "2.1.1-d"
+      ]
     },
     {
-      "id": "2.1.1-b",
+      "id": "2.1-S03",
       "title": "Geschäftsfähigkeit",
-      "subtitle": "Wer selbst wirksame Willenserklärungen abgeben und empfangen kann",
+      "subtitle": "Drei Stufen – und was eine Erklärung dann wert ist",
+      "ref": "BWB 2.1.1",
       "examRelevance": "S",
-      "checkId": "2.1-Q004",
+      "checkId": "2.1-Q112",
       "content": [
         {
           "type": "text",
-          "text": "**Geschäftsfähigkeit** ist die Fähigkeit, durch eigenes rechtsgeschäftliches Handeln wirksam Rechtsfolgen herbeizuführen – etwa einen Vertrag abzuschließen oder zu kündigen."
+          "text": "**Geschäftsfähigkeit** ist die Fähigkeit, durch eigenes rechtsgeschäftliches Handeln – also durch Abgabe oder Empfang von **Willenserklärungen** – wirksam Rechtsfolgen herbeizuführen, z. B. einen Vertrag zu schließen oder zu kündigen."
         },
         {
           "type": "table",
           "head": [
-            "Status",
-            "Grundregel"
+            "Stufe",
+            "Wer?",
+            "Folge für Willenserklärungen"
           ],
           "rows": [
             [
-              "Geschäftsunfähig",
-              "Wer das **7. Lebensjahr noch nicht vollendet** hat oder sich dauerhaft in einem Zustand befindet, der freie Willensbestimmung ausschließt."
+              "**Geschäftsunfähig** (§ 104 BGB)",
+              "Kinder **unter 7 Jahren**; Personen mit dauerhafter krankhafter Störung der Geistestätigkeit, die die freie Willensbestimmung ausschließt",
+              "**Nichtig** – der Vertrag gilt als nie geschlossen"
             ],
             [
-              "Beschränkt geschäftsfähig",
-              "Minderjährige ab Vollendung des **7. Lebensjahres** bis zur Volljährigkeit."
+              "**Beschränkt geschäftsfähig** (§ 106 BGB)",
+              "Minderjährige **von 7 bis 17 Jahren**",
+              "Grundsätzlich **schwebend unwirksam** ohne Zustimmung der Eltern"
             ],
             [
-              "Unbeschränkt geschäftsfähig",
-              "Grundsätzlich mit Volljährigkeit, also ab **18 Jahren**."
+              "**Voll geschäftsfähig**",
+              "Volljährige ab 18",
+              "Wirksam"
             ]
           ]
         },
         {
           "type": "text",
-          "text": "Die Willenserklärung eines Geschäftsunfähigen ist **nichtig**. Das gilt auch für eine Erklärung, die im Zustand der Bewusstlosigkeit oder einer vorübergehenden schweren Störung der Geistestätigkeit abgegeben wird."
-        },
-        {
-          "type": "example",
-          "text": "Ein Vertrag, den ein sechsjähriges Kind allein abschließt, entfaltet keine Wirksamkeit. Ebenso kann eine Erklärung unwirksam sein, wenn sie im Zustand der Bewusstlosigkeit abgegeben wird."
+          "text": "Auch die Erklärung eines Volljährigen ist **nichtig**, wenn er sie **bewusstlos** oder in **vorübergehender Störung der Geistestätigkeit** abgibt – etwa im Vollrausch oder im Fieberwahn (§ 105 Abs. 2 BGB)."
         }
       ],
-      "laws": [],
-      "memory": "Unter 7 = geschäftsunfähig. 7 bis unter 18 = beschränkt geschäftsfähig. Ab 18 = grundsätzlich unbeschränkt geschäftsfähig.",
-      "examTrap": "Vorübergehende Bewusstlosigkeit oder schwere Störung kann eine Willenserklärung ebenfalls nichtig machen."
+      "laws": [
+        {
+          "ref": "§ 104 BGB",
+          "text": "Geschäftsunfähig: unter 7 Jahre oder dauerhaft krankhafte Störung der Geistestätigkeit."
+        },
+        {
+          "ref": "§ 105 BGB",
+          "text": "Willenserklärung des Geschäftsunfähigen und im Zustand der Bewusstlosigkeit ist nichtig."
+        }
+      ],
+      "memory": "0–6 nichtig, 7–17 schwebend, ab 18 wirksam.",
+      "examTrap": "Der Vollrausch macht einen Erwachsenen nicht geschäftsunfähig – aber die im Rausch abgegebene Erklärung ist trotzdem nichtig.",
+      "legacyIds": [
+        "2.1.1-b"
+      ]
     },
     {
-      "id": "2.1.1-c",
-      "title": "Minderjährige & Genehmigung",
-      "subtitle": "Schwebende Unwirksamkeit, rechtlicher Vorteil und Taschengeldparagraph",
+      "id": "2.1-S04",
+      "title": "Minderjährige und Verträge",
+      "subtitle": "Schwebend unwirksam, Taschengeld und Ausnahmen",
+      "ref": "BWB 2.1.1",
       "examRelevance": "S",
-      "checkId": "2.1-Q007",
+      "checkId": "2.1-Q114",
       "content": [
         {
           "type": "text",
-          "text": "Verträge beschränkt Geschäftsfähiger sind ohne die erforderliche Zustimmung grundsätzlich zunächst **schwebend unwirksam**. Genehmigt der gesetzliche Vertreter nachträglich, wird der Vertrag wirksam; verweigert er die Genehmigung, bleibt er endgültig unwirksam."
+          "text": "Schließt ein Minderjähriger ohne Einwilligung der Eltern einen Vertrag, ist er **schwebend unwirksam** (§ 108 BGB). Das schützt den Minderjährigen. Was dann passiert, hängt vom gesetzlichen Vertreter ab (Eltern, Vormund, Betreuer):"
         },
         {
-          "type": "text",
-          "text": "Ausnahmen bestehen insbesondere bei Geschäften, die dem Minderjährigen **lediglich einen rechtlichen Vorteil** bringen, sowie bei bestimmten neutralen Geschäften oder Rechtsgeschäften im Rahmen eines genehmigten Arbeitsverhältnisses."
+          "type": "steps",
+          "items": [
+            {
+              "title": "Genehmigung",
+              "text": "Der Vertrag wird **von Anfang an wirksam** (rückwirkend)."
+            },
+            {
+              "title": "Verweigerung",
+              "text": "Der Vertrag ist **von Anfang an endgültig unwirksam**. Die Verweigerung kann gegenüber dem Minderjährigen oder dem Vertragspartner erklärt werden."
+            },
+            {
+              "title": "Aufforderung durch den Vertragspartner",
+              "text": "Fordert der Vertragspartner die Eltern zur Erklärung auf, können sie nur noch ihm gegenüber genehmigen – binnen **zwei Wochen**. Schweigen sie, gilt die Genehmigung als **verweigert**."
+            },
+            {
+              "title": "Volljährigkeit",
+              "text": "Wird der Minderjährige volljährig, wird der Vertrag **nicht automatisch** wirksam. Er muss selbst genehmigen – das kann auch **stillschweigend** geschehen, etwa indem er den Vertrag bewusst weiter erfüllt."
+            }
+          ]
         },
         {
           "type": "note",
-          "title": "§ 110 BGB – Taschengeld",
-          "text": "Ein vollständig mit dafür überlassenen Mitteln bewirktes Geschäft kann wirksam sein. **Ratengeschäfte, Versicherungen und vergleichbare langfristige Verpflichtungen** fallen nach dem Lernstoff nicht unter diese Vereinfachung."
+          "title": "Ergänzung",
+          "text": "Die Zwei-Wochen-Regel (§ 108 Abs. 2 BGB) steht nicht im BWB-Skript, gehört aber zum Kern der Regelung."
         },
         {
           "type": "text",
-          "text": "Wird der Minderjährige volljährig, wird ein zuvor schwebend unwirksamer Vertrag nicht allein dadurch automatisch wirksam. Die erforderliche Genehmigung muss weiterhin erfolgen; sie kann später auch durch entsprechendes Verhalten zum Ausdruck kommen."
+          "text": "**Taschengeldparagraph (§ 110 BGB):** Ein Vertrag ist **von Anfang an wirksam**, wenn der Minderjährige die Leistung **vollständig bewirkt** – mit Mitteln, die ihm dafür oder zur freien Verfügung überlassen wurden. **Ratenkäufe** fallen nicht darunter, weil die Leistung noch nicht vollständig erbracht ist. Auch Versicherungen und ähnliche Dauerverpflichtungen nicht."
+        },
+        {
+          "type": "list",
+          "title": "Ohne Zustimmung der Eltern wirksam",
+          "items": [
+            "Geschäfte mit **lediglich rechtlichem Vorteil** (§ 107 BGB), z. B. die Annahme bestimmter Schenkungen",
+            "**Neutrale Geschäfte**, die das Vermögen des Minderjährigen nicht berühren",
+            "Geschäfte im Rahmen eines von den Eltern **genehmigten Arbeitsverhältnisses** (§ 113 BGB), z. B. ein Gehaltskonto"
+          ]
         },
         {
           "type": "text",
-          "text": "Bei bestimmten langfristigen Verträgen Minderjähriger kann zusätzlich eine **gerichtliche Genehmigung** erforderlich sein. Der Lernstoff nennt insbesondere wiederkehrende Leistungen und Vertragslaufzeiten über das 19. Lebensjahr hinaus."
-        },
-        {
-          "type": "note",
-          "title": "Widerrufsrecht des anderen Vertragsteils",
-          "text": "Der Vertragspartner kann wegen der Minderjährigkeit widerrufen. Kannte er die Minderjährigkeit bereits, ist dieses Widerrufsrecht grundsätzlich ausgeschlossen; es endet außerdem mit der Zustimmung des gesetzlichen Vertreters."
+          "text": "**Widerrufsrecht des Vertragspartners (§ 109 BGB):** Bis zur Genehmigung kann der Vertragspartner seine Erklärung widerrufen. **Ausgeschlossen**, wenn er von der Minderjährigkeit **wusste**."
         }
       ],
       "laws": [
         {
           "ref": "§ 107 BGB",
-          "text": "Ein lediglich rechtlich vorteilhaftes Geschäft kann ohne Einwilligung wirksam sein."
+          "text": "Lediglich rechtlicher Vorteil braucht keine Einwilligung."
+        },
+        {
+          "ref": "§ 108 BGB",
+          "text": "Ohne Einwilligung: schwebend unwirksam bis zur Genehmigung."
         },
         {
           "ref": "§ 110 BGB",
-          "text": "Taschengeldregelung bei vollständiger Bewirkung mit überlassenen Mitteln."
+          "text": "Taschengeld: wirksam, wenn mit überlassenen Mitteln vollständig bewirkt."
         },
         {
           "ref": "§ 113 BGB",
-          "text": "Rechtsgeschäfte im Rahmen eines genehmigten Arbeitsverhältnisses."
+          "text": "Genehmigtes Arbeitsverhältnis."
         }
       ],
-      "memory": "Ohne nötige Zustimmung: erst schwebend unwirksam. Genehmigung macht wirksam, Verweigerung endgültig unwirksam.",
-      "examTrap": "Volljährig werden allein heilt den Vertrag nicht automatisch. Und der Taschengeldparagraph ist kein Freifahrtschein für Raten- oder Versicherungsverträge."
+      "memory": "Schwebend unwirksam heißt: Es hängt noch – Genehmigung macht es rückwirkend gut, Verweigerung endgültig kaputt.",
+      "examTrap": "§ 110 greift nur bei vollständig bezahlter Leistung. Ein Kauf auf Raten ist auch bei kleinen Raten nicht vom Taschengeldparagraphen gedeckt.",
+      "legacyIds": [
+        "2.1.1-c"
+      ]
     },
     {
-      "id": "2.1.1-d",
-      "title": "Natürliche & juristische Personen",
-      "subtitle": "Menschen und rechtlich verselbständigte Organisationen als Rechtsträger",
+      "id": "2.1-S05",
+      "title": "Das Familiengericht",
+      "subtitle": "Wann die Eltern allein nicht reichen",
+      "ref": "BWB 2.1.1",
       "examRelevance": "S",
-      "checkId": "2.1-Q010",
-      "content": [
-        {
-          "type": "compare",
-          "left": {
-            "title": "Natürliche Person",
-            "text": "Der **Mensch** als Träger von Rechten und Pflichten. Rechtsfähig von der vollendeten Geburt bis zum Tod."
-          },
-          "right": {
-            "title": "Juristische Person",
-            "text": "Eine gesetzlich anerkannte Personenvereinigung oder Vermögensmasse, die **selbst rechtsfähig** ist, obwohl sie kein Mensch ist."
-          }
-        },
-        {
-          "type": "text",
-          "text": "Juristische Personen können dem **privaten Recht** oder dem **öffentlichen Recht** zugeordnet sein. Ihre Rechte und Pflichten werden durch vertretungsberechtigte Personen wahrgenommen."
-        },
-        {
-          "type": "example",
-          "text": "Eine juristische Person kann selbst Vertragspartner sein. Handeln muss für sie jedoch ein zuständiger Vertreter."
-        }
-      ],
-      "laws": [],
-      "memory": "Natürliche Person = Mensch. Juristische Person = rechtlich verselbständigter Rechtsträger, der durch Vertreter handelt.",
-      "examTrap": "Eine juristische Person ist keine natürliche Person, kann aber selbst Träger von Rechten und Pflichten sein."
-    },
-    {
-      "id": "2.1.2-a",
-      "title": "Rechtsgeschäfte & Willenserklärungen",
-      "subtitle": "Einseitig, mehrseitig, empfangsbedürftig – und auch ohne Unterschrift möglich",
-      "examRelevance": "S",
-      "checkId": "2.1-Q013",
+      "checkId": "2.1-Q124",
       "content": [
         {
           "type": "text",
-          "text": "Ein Rechtsgeschäft entsteht durch eine oder mehrere **Willenserklärungen**. Eine Willenserklärung bringt den Willen zum Ausdruck, eine bestimmte Rechtsfolge herbeizuführen."
-        },
-        {
-          "type": "compare",
-          "left": {
-            "title": "Einseitiges Rechtsgeschäft",
-            "text": "Eine Willenserklärung genügt. Beispiele: **Kündigung, Mahnung, Testament**."
-          },
-          "right": {
-            "title": "Mehrseitiges Rechtsgeschäft",
-            "text": "Mindestens zwei aufeinander bezogene Willenserklärungen. Beispiele: **Mietvertrag, Darlehensvertrag, Bürgschaft**."
-          }
-        },
-        {
-          "type": "text",
-          "text": "Nicht jedes einseitige Rechtsgeschäft muss einem anderen zugehen: Ein **Testament** ist nicht empfangsbedürftig. Eine **Kündigung** wird dagegen erst mit Zugang beim Empfänger wirksam."
+          "text": "Manche Verträge mit Minderjährigen brauchen zusätzlich die Genehmigung des **Familiengerichts** (früher Vormundschaftsgericht). Die Zustimmung der Eltern allein reicht dann nicht."
         },
         {
           "type": "list",
-          "title": "Willenserklärungen sind grundsätzlich formfrei möglich",
+          "title": "Voraussetzungen laut Lernstoff – beide zusammen",
           "items": [
-            "mündlich",
-            "telefonisch",
-            "schriftlich",
-            "durch **konkludentes** – also schlüssiges – Verhalten"
+            "Der Minderjährige verpflichtet sich zu **wiederkehrenden Leistungen**",
+            "Der Vertrag läuft **über das 19. Lebensjahr hinaus**, also länger als ein Jahr nach Eintritt der Volljährigkeit"
           ]
         },
         {
           "type": "example",
-          "text": "Wer in ein öffentliches Verkehrsmittel einsteigt und mitfährt, kann damit durch schlüssiges Verhalten eine Willenserklärung abgeben."
-        }
-      ],
-      "laws": [],
-      "memory": "Testament: einseitig, nicht empfangsbedürftig. Kündigung: einseitig, aber empfangsbedürftig.",
-      "examTrap": "„Einseitig“ bedeutet nicht automatisch „nicht empfangsbedürftig“."
-    },
-    {
-      "id": "2.1.2-b",
-      "title": "Antrag, Annahme & Vertrag",
-      "subtitle": "Wie aus zwei deckungsgleichen Willenserklärungen ein bindender Vertrag wird",
-      "examRelevance": "S",
-      "checkId": "2.1-Q016",
-      "content": [
-        {
-          "type": "text",
-          "text": "Bei mehrseitigen Rechtsgeschäften kommt ein Vertrag durch **Antrag und Annahme** zustande. Beide Erklärungen müssen inhaltlich **deckungsgleich** sein."
+          "text": "Ein 14-Jähriger schließt mit Zustimmung der Eltern einen Bausparvertrag mit monatlichen Sparraten über acht Jahre. Nach der Rechtsprechung, die das Skript nennt, braucht es zusätzlich das Familiengericht – begründet mit der Vermögenseinbuße bei Kündigung (Abschlussgebühr). Gleiches gilt für Versicherungsverträge."
         },
         {
           "type": "text",
-          "text": "Der **Antrag** ist eine empfangsbedürftige Willenserklärung. Er muss so bestimmt sein, dass die andere Seite durch bloße Zustimmung annehmen kann. Wirksam wird er mit **Zugang** beim Empfänger."
+          "text": "Fehlt die Genehmigung des Familiengerichts, kann der **volljährig Gewordene** den Vertrag selbst genehmigen – dann ist er wirksam."
         },
         {
           "type": "note",
-          "title": "Aufforderung zum Antrag",
-          "text": "Kataloge, Zeitungsanzeigen, Schaufensterauslagen oder Speisekarten sind typischerweise noch **kein Antrag**. Sie fordern den Kunden zunächst dazu auf, selbst einen Antrag abzugeben."
-        },
-        {
-          "type": "text",
-          "text": "Die **Annahme** ist ebenfalls grundsätzlich empfangsbedürftig. Gibt es eine Annahmefrist, muss innerhalb dieser Frist angenommen werden. Unter Anwesenden ist ohne besondere Frist grundsätzlich sofort anzunehmen."
-        },
-        {
-          "type": "text",
-          "text": "**Schweigen** gilt nur ausnahmsweise als Annahme. Stimmen Antrag und Annahme nicht überein, kommt kein Vertrag zustande."
-        },
-        {
-          "type": "text",
-          "text": "Eine **Kündigung** beendet ein Rechtsverhältnis grundsätzlich für die Zukunft und wird als empfangsbedürftige Willenserklärung erst mit Zugang wirksam."
+          "title": "Achtung, Skript",
+          "text": "Das Skript spricht noch vom Vormundschaftsgericht. Diese Aufgabe liegt seit 2009 beim Familiengericht."
         }
       ],
       "laws": [],
-      "memory": "Vertrag = Antrag + rechtzeitige, deckungsgleiche Annahme.",
-      "examTrap": "Schaufensterpreis oder Katalogangebot ist nicht automatisch schon der bindende Antrag des Verkäufers."
+      "memory": "Laufende Zahlungen plus Laufzeit über das 19. Lebensjahr = Familiengericht.",
+      "examTrap": "Eine einzelne Anschaffung reicht nicht – es müssen wiederkehrende Leistungen sein, und die Laufzeit muss über das 19. Lebensjahr hinausgehen.",
+      "legacyIds": [
+        "2.1.1-c"
+      ]
     },
     {
-      "id": "2.1.2-c",
-      "title": "Nichtigkeit & Anfechtbarkeit",
-      "subtitle": "Ob ein Rechtsgeschäft von Anfang an ohne Wirkung ist oder erst beseitigt werden kann",
+      "id": "2.1-S06",
+      "title": "Rechtsgeschäfte und Willenserklärungen",
+      "subtitle": "Einseitig, mehrseitig, empfangsbedürftig",
+      "ref": "BWB 2.1.2",
       "examRelevance": "S",
-      "checkId": "2.1-Q019",
+      "checkId": "2.1-Q128",
+      "content": [
+        {
+          "type": "text",
+          "text": "Eine **Willenserklärung** bringt den Willen zum Ausdruck, eine Rechtsfolge herbeizuführen. Sie ist grundsätzlich **formfrei**: mündlich, telefonisch, schriftlich oder durch **konkludentes** (schlüssiges) Verhalten – etwa das Einsteigen in einen Bus."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Rechtsgeschäft",
+            "Merkmal",
+            "Beispiele"
+          ],
+          "rows": [
+            [
+              "Einseitig, **empfangsbedürftig**",
+              "Eine Willenserklärung, wirksam erst mit **Zugang** beim Empfänger",
+              "Kündigung, Mahnung, Widerruf"
+            ],
+            [
+              "Einseitig, **nicht empfangsbedürftig**",
+              "Wirksam ohne Zugang",
+              "Testament"
+            ],
+            [
+              "Mehrseitig, **einseitig verpflichtend**",
+              "Mindestens zwei Erklärungen, aber nur **eine Seite** übernimmt Pflichten",
+              "Bürgschaft, Schenkung"
+            ],
+            [
+              "Mehrseitig, **zweiseitig verpflichtend**",
+              "Beide Seiten haben Pflichten",
+              "Kaufvertrag, Darlehensvertrag, Mietvertrag"
+            ]
+          ]
+        },
+        {
+          "type": "example",
+          "text": "Kündigt jemand seinen Job, wird die Kündigung erst wirksam, wenn sie beim Arbeitgeber **zugeht** – nicht schon beim Schreiben."
+        }
+      ],
+      "laws": [],
+      "memory": "Zählen, wer erklärt (einseitig/mehrseitig) – dann zählen, wer sich verpflichtet (einseitig/zweiseitig verpflichtend).",
+      "examTrap": "Die Bürgschaft ist ein Vertrag, also ein mehrseitiges Rechtsgeschäft – aber nur einseitig verpflichtend, denn nur der Bürge verpflichtet sich.",
+      "legacyIds": [
+        "2.1.2-a"
+      ]
+    },
+    {
+      "id": "2.1-S07",
+      "title": "Wie ein Vertrag entsteht",
+      "subtitle": "Antrag, Annahme, Fristen",
+      "ref": "BWB 2.1.2",
+      "examRelevance": "S",
+      "checkId": "2.1-Q131",
+      "content": [
+        {
+          "type": "text",
+          "text": "Ein Vertrag kommt durch **zwei übereinstimmende Willenserklärungen** zustande: **Antrag** (Angebot) und **Annahme**. Beide müssen **deckungsgleich** sein."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Antrag",
+            "text": "Empfangsbedürftige Willenserklärung, so konkret, dass ein einfaches „Ja“ genügt. Wirksam mit **Zugang**. Der Antragende ist **gebunden** – zurücknehmen kann er nur, wenn der Widerruf **vorher oder gleichzeitig** zugeht."
+          },
+          "right": {
+            "title": "Aufforderung zum Antrag",
+            "text": "Kataloge, Zeitungsanzeigen, **Schaufensterauslagen**, Speisekarten, Onlineshops. Noch kein Antrag – erst der Kunde macht den Antrag, der Händler entscheidet über die Annahme."
+          }
+        },
+        {
+          "type": "table",
+          "head": [
+            "Situation",
+            "Bis wann ist die Annahme möglich?"
+          ],
+          "rows": [
+            [
+              "Frist gesetzt",
+              "Nur innerhalb der Frist, danach erlischt der Antrag"
+            ],
+            [
+              "Unter Anwesenden, ohne Frist",
+              "Nur **sofort**"
+            ],
+            [
+              "Unter Abwesenden, ohne Frist",
+              "So lange, wie der Antragende unter regelmäßigen Umständen mit einer Antwort rechnen darf"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "items": [
+            "**Schweigen** ist grundsätzlich **keine Annahme** – nur in Ausnahmefällen, wenn eine Antwort zu erwarten wäre.",
+            "Eine **verspätete** oder **abgeänderte** Annahme gilt als Ablehnung verbunden mit einem **neuen Antrag**. Nicht deckungsgleiche Erklärungen führen zu keinem Vertrag."
+          ]
+        },
+        {
+          "type": "example",
+          "text": "**Bausparvertrag:** Der Kunde stellt den Antrag mit dem Bausparantrag. Die Bausparkasse nimmt an, indem sie die **Bausparurkunde** übersendet."
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "Die Regel für Abwesende (§ 147 Abs. 2 BGB) und die abgeänderte Annahme (§ 150 Abs. 2 BGB) sind im BWB-Skript nur angedeutet."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§§ 145–150 BGB",
+          "text": "Bindung an den Antrag, Annahmefristen, verspätete und abgeänderte Annahme."
+        }
+      ],
+      "memory": "Antrag + deckungsgleiche Annahme + rechtzeitig = Vertrag.",
+      "examTrap": "Das Preisschild im Schaufenster ist kein Angebot. Der Händler muss nicht zum falsch ausgezeichneten Preis verkaufen.",
+      "legacyIds": [
+        "2.1.2-b"
+      ]
+    },
+    {
+      "id": "2.1-S08",
+      "title": "Nichtig oder anfechtbar",
+      "subtitle": "Wenn ein Vertrag einen Fehler hat",
+      "ref": "BWB 2.1.2",
+      "examRelevance": "S",
+      "checkId": "2.1-Q138",
       "content": [
         {
           "type": "compare",
           "left": {
             "title": "Nichtig",
-            "text": "Das Rechtsgeschäft ist rechtlich ohne Wirkung, z. B. bei bestimmten Formverstößen, Scheingeschäften, nicht ernst gemeinten Erklärungen oder Erklärungen in Bewusstlosigkeit."
+            "text": "Von Anfang an **unwirksam** – ohne dass jemand etwas erklären muss."
           },
           "right": {
             "title": "Anfechtbar",
-            "text": "Das Rechtsgeschäft kann wegen eines Anfechtungsgrundes beseitigt werden, z. B. Irrtum, falsche Übermittlung, arglistige Täuschung oder widerrechtliche Drohung."
+            "text": "Zunächst **wirksam**. Erst wenn jemand die **Anfechtung erklärt**, wird der Vertrag **rückwirkend nichtig**."
           }
         },
         {
           "type": "table",
           "head": [
-            "Typischer Fall",
-            "Einordnung"
+            "Nichtig",
+            "Anfechtbar"
           ],
           "rows": [
             [
-              "Versprechen / Verschreiben",
-              "Anfechtbar wegen Irrtums"
+              "Geschäfte von **Geschäftsunfähigen**",
+              "**Erklärungsirrtum:** versprochen, verschrieben"
             ],
             [
-              "Bote übermittelt falsch",
-              "Anfechtbar wegen Übermittlungsirrtums"
+              "Erklärung im Zustand der **Bewusstlosigkeit** oder vorübergehender Geistesstörung",
+              "**Übermittlungsirrtum:** Bote oder Post gibt falsch weiter"
             ],
             [
-              "Wesentlicher Irrtum über eine Person",
-              "Anfechtbar"
+              "**Scheingeschäft** (nur zum Schein) und nicht ernst gemeinte Erklärung (Scherz)",
+              "**Eigenschaftsirrtum:** Irrtum über wesentliche Eigenschaften einer Person oder Sache"
             ],
             [
-              "Mangel wird bewusst verschwiegen",
-              "Anfechtbar wegen arglistiger Täuschung"
+              "Verstoß gegen ein **gesetzliches Verbot**",
+              "**Arglistige Täuschung:** Mangel bewusst verschwiegen"
             ],
             [
-              "Unterschrift wird widerrechtlich erzwungen",
-              "Anfechtbar wegen Drohung"
+              "Verstoß gegen eine gesetzliche **Formvorschrift** (§ 125 BGB)",
+              "**Widerrechtliche Drohung:** Unterschrift erzwungen"
             ],
             [
-              "Gesetzliche Form wird nicht eingehalten",
-              "Kann zur Nichtigkeit führen"
+              "Verstoß gegen die **guten Sitten**, z. B. Wucher",
+              ""
             ]
           ]
         },
         {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "In der Tabelle des Skripts stehen auch Geschäfte beschränkt Geschäftsfähiger ohne Zustimmung unter „nichtig“. Das widerspricht dem eigenen Kapitel 2.1.1: Sie sind schwebend unwirksam."
+        },
+        {
           "type": "text",
-          "text": "Für Verträge mit gesetzlich vorgeschriebener Form ist die Form besonders wichtig: Wird sie nicht eingehalten, kann das Geschäft nach **§ 125 BGB** nichtig sein."
+          "text": "**Fristen:** Bei Irrtum muss **unverzüglich** angefochten werden, sobald man ihn bemerkt. Bei Täuschung oder Drohung innerhalb **eines Jahres** ab Entdeckung bzw. Ende der Zwangslage."
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "Die Anfechtungsfristen (§§ 121, 124 BGB) stehen nicht im BWB-Skript, werden aber gern gefragt."
         }
       ],
       "laws": [
         {
           "ref": "§ 125 BGB",
-          "text": "Ein Rechtsgeschäft ohne gesetzlich vorgeschriebene Form ist grundsätzlich nichtig."
+          "text": "Nichtigkeit wegen Formmangels."
+        },
+        {
+          "ref": "§ 119, § 123 BGB",
+          "text": "Anfechtung wegen Irrtums bzw. Täuschung und Drohung."
         }
       ],
-      "memory": "Nichtig = ohne Rechtswirkung. Anfechtbar = zunächst bestehendes Geschäft kann wegen Anfechtungsgrund beseitigt werden.",
-      "examTrap": "Irrtum, Täuschung und widerrechtliche Drohung sind typische Anfechtungsgründe – nicht einfach pauschal „nichtig“."
+      "memory": "Nichtig passiert von selbst. Anfechtbar braucht eine Erklärung – dann wirkt es zurück.",
+      "examTrap": "Arglistige Täuschung macht den Vertrag nicht automatisch nichtig. Er ist anfechtbar – bis zur Anfechtung gilt er.",
+      "legacyIds": [
+        "2.1.2-c"
+      ]
     },
     {
-      "id": "2.1.2-d",
-      "title": "Schuldrecht & Sachenrecht",
-      "subtitle": "Anspruch gegen eine Person oder Recht an einer Sache – plus Besitz und Eigentum",
+      "id": "2.1-S09",
+      "title": "Schuldrecht und Sachenrecht",
+      "subtitle": "Relative Ansprüche, absolute Rechte",
+      "ref": "BWB 2.1.2",
       "examRelevance": "S",
-      "checkId": "2.1-Q022",
+      "checkId": "2.1-Q144",
       "content": [
         {
           "type": "compare",
           "left": {
             "title": "Schuldrecht",
-            "text": "Regelt **Schuldverhältnisse zwischen Personen**. Der Gläubiger hat einen Anspruch auf eine Leistung gegen einen bestimmten Schuldner – ein relatives Recht."
+            "text": "Regelt **Schuldverhältnisse**: Der Gläubiger kann von einer bestimmten Person eine Leistung verlangen. Ein **relatives Recht** – es wirkt nur zwischen den Beteiligten. Neue Vertragstypen sind frei vereinbar."
           },
           "right": {
             "title": "Sachenrecht",
-            "text": "Regelt **Rechtsbeziehungen zu Sachen**. Dingliche Rechte wirken grundsätzlich gegenüber jedermann – ein absolutes Recht."
+            "text": "Regelt die Beziehung von **Personen zu Sachen**. Ein **absolutes Recht** – es wirkt **gegen jedermann**. Nur die im Gesetz vorgesehenen Rechte sind möglich (Typenzwang)."
           }
         },
         {
-          "type": "text",
-          "text": "Aus der Wirkung gegenüber jedermann folgt das **Publizitätsprinzip**: Die dingliche Rechtslage muss erkennbar sein. Bei beweglichen Sachen zeigt sich das typischerweise am Besitz, bei Grundstücken durch das **Grundbuch**."
+          "type": "table",
+          "head": [
+            "Vertragliche Schuldverhältnisse",
+            "Beispiele"
+          ],
+          "rows": [
+            [
+              "Veräußerungsverträge",
+              "Kauf, Tausch, Schenkung"
+            ],
+            [
+              "Gebrauchsüberlassungsverträge",
+              "Miete, Pacht, Leihe"
+            ],
+            [
+              "Dienste und Werke",
+              "Dienstvertrag, Werkvertrag, Geschäftsbesorgungsvertrag"
+            ],
+            [
+              "Sichernde Verträge",
+              "Bürgschaft"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Grundsätze des Sachenrechts",
+          "items": [
+            "**Publizität:** Jeder muss erkennen können, wem was gehört – bei beweglichen Sachen über den **Besitz**, bei Grundstücken über das **Grundbuch** beim Amtsgericht.",
+            "**Bestimmtheit:** Es muss immer klar sein, wer Eigentümer welcher Sache ist und wie weit das Recht reicht.",
+            "**Typenzwang:** Dingliche Rechte sind abschließend im Gesetz geregelt: Eigentum, Erbbaurecht, Vormerkung, Dienstbarkeiten (Nießbrauch, Grunddienstbarkeit, beschränkte persönliche Dienstbarkeit), Vorkaufsrecht, Reallast, Grundpfandrechte (Hypothek, Grundschuld), Pfandrecht."
+          ]
         },
         {
           "type": "compare",
           "left": {
             "title": "Besitz",
-            "text": "Die **tatsächliche Herrschaft** über eine Sache."
+            "text": "**Tatsächliche** Herrschaft über eine Sache. Auch ein Dieb ist Besitzer."
           },
           "right": {
             "title": "Eigentum",
-            "text": "Die **rechtliche Herrschaft**. Der Eigentümer darf grundsätzlich über die Sache verfügen."
+            "text": "**Rechtliche** Herrschaft. Der Eigentümer kann frei verfügen. Übertragung bei beweglichen Sachen durch **Einigung und Übergabe**."
           }
-        },
-        {
-          "type": "text",
-          "text": "Das Sachenrecht kennt nur gesetzlich vorgesehene dingliche Rechte. Dazu zählen u. a. **Eigentum, Erbbaurecht, Vormerkung, Dienstbarkeiten, Vorkaufsrecht, Reallast, Hypothek, Grundschuld und Pfandrecht**."
-        },
-        {
-          "type": "table",
-          "head": [
-            "Vertragliches Schuldverhältnis",
-            "Beispiele"
-          ],
-          "rows": [
-            [
-              "Veräußerung",
-              "Kauf, Tausch, Schenkung"
-            ],
-            [
-              "Gebrauchsüberlassung",
-              "Miete, Pacht, Leihe"
-            ],
-            [
-              "Dienste / Werke",
-              "Dienstvertrag, Werkvertrag, Geschäftsbesorgung"
-            ],
-            [
-              "Sicherung",
-              "Bürgschaft"
-            ]
-          ]
-        }
-      ],
-      "laws": [],
-      "memory": "Schuldrecht = Person gegen Person. Sachenrecht = Recht an der Sache, grundsätzlich gegen jedermann.",
-      "examTrap": "Besitzer und Eigentümer müssen nicht dieselbe Person sein."
-    },
-    {
-      "id": "2.1.2-e",
-      "title": "Darlehen & Verbraucherdarlehen",
-      "subtitle": "Pflichten aus dem Darlehensvertrag und Besonderheiten bei Verbrauchern",
-      "examRelevance": "S",
-      "checkId": "2.1-Q025",
-      "content": [
-        {
-          "type": "text",
-          "text": "Beim **Darlehensvertrag** stellt der Darlehensgeber den vereinbarten Geldbetrag zur Verfügung. Der Darlehensnehmer zahlt die geschuldeten Zinsen und muss das Darlehen bei Fälligkeit zurückzahlen."
-        },
-        {
-          "type": "compare",
-          "left": {
-            "title": "Allgemein-Verbraucherdarlehen",
-            "text": "Entgeltlicher Darlehensvertrag zwischen **Unternehmer als Darlehensgeber** und **Verbraucher als Darlehensnehmer**, soweit keine gesetzliche Ausnahme greift."
-          },
-          "right": {
-            "title": "Immobiliar-Verbraucherdarlehen",
-            "text": "Verbraucherdarlehen, das durch **Grundpfandrecht oder Reallast** besichert ist oder dem Erwerb bzw. Erhalt von Grundstücken, Gebäuden oder grundstücksgleichen Rechten dient."
-          }
-        },
-        {
-          "type": "text",
-          "text": "Verbraucherdarlehensverträge sind grundsätzlich **schriftlich** abzuschließen, soweit keine strengere Form vorgeschrieben ist. Der Vertrag muss die gesetzlich vorgesehenen Pflichtangaben enthalten; nach Vertragsschluss erhält der Darlehensnehmer eine Abschrift."
-        },
-        {
-          "type": "note",
-          "title": "Besonderheit im Lernstoff",
-          "text": "Auch ein Bauspardarlehen, bei dem die Bausparkasse aufgrund einer Negativerklärung auf die Eintragung einer Grundschuld verzichtet, wird dort den Immobiliardarlehensverträgen zugeordnet."
-        }
-      ],
-      "laws": [
-        {
-          "ref": "§ 488 BGB",
-          "text": "Grundpflichten des Darlehensgebers und Darlehensnehmers."
-        },
-        {
-          "ref": "§ 491 BGB",
-          "text": "Verbraucherdarlehensverträge und Immobiliar-Verbraucherdarlehen."
-        },
-        {
-          "ref": "§ 492 BGB",
-          "text": "Schriftform und Vertragsinhalt bei Verbraucherdarlehen."
-        }
-      ],
-      "memory": "Darlehensgeber: Geld bereitstellen. Darlehensnehmer: Zins zahlen + Darlehen zurückzahlen.",
-      "examTrap": "Ein Immobiliar-Verbraucherdarlehen kann nicht nur über die Sicherheit definiert sein, sondern auch über den Zweck des Erwerbs oder Erhalts von Immobilienrechten."
-    },
-    {
-      "id": "2.1.2-f",
-      "title": "Widerruf & Anfechtung beim Darlehen",
-      "subtitle": "Fristen, Pflichtangaben und Täuschung im Zusammenhang mit Kreditverträgen",
-      "examRelevance": "S",
-      "checkId": "2.1-Q028",
-      "content": [
-        {
-          "type": "text",
-          "text": "Die Widerrufsbelehrung muss deutlich über die wesentlichen Rechte und Pflichten informieren. Für den Verbraucherdarlehensvertrag nennt der Lernstoff grundsätzlich eine **Widerrufsfrist von 14 Tagen**."
-        },
-        {
-          "type": "list",
-          "title": "Wichtige Punkte zum Widerruf",
-          "items": [
-            "Der Widerruf braucht **keine Begründung**.",
-            "Er muss durch eine **eindeutige Erklärung** erfolgen.",
-            "Er kann nach dem Lernstoff auch mündlich oder online erklärt werden; schriftliche Einreichung ist aus Beweisgründen sinnvoll.",
-            "Zur Fristwahrung genügt die **rechtzeitige Absendung**."
-          ]
-        },
-        {
-          "type": "text",
-          "text": "Fehlen Pflichtangaben und werden sie später nachgeholt, beginnt die Frist nach dem Lernstoff grundsätzlich erst mit der Nachholung und beträgt dann **einen Monat**."
-        },
-        {
-          "type": "note",
-          "title": "Immobiliar-Verbraucherdarlehen",
-          "text": "Der Lernstoff nennt eine absolute Erlöschensregelung: Das Widerrufsrecht endet spätestens **ein Jahr und 14 Tage** nach Vertragsschluss bzw. Aushändigung der Vertragsurkunde."
-        },
-        {
-          "type": "text",
-          "text": "Auch eine **Anfechtung** kann eine Rolle spielen: Die Bank etwa bei Täuschung über Kreditwürdigkeit oder Sicherheiten; der Kreditnehmer nach dem Lernstoff insbesondere bei kausaler Täuschung durch einen Vermittler."
-        }
-      ],
-      "laws": [
-        {
-          "ref": "§ 355 BGB",
-          "text": "Grundlagen des Widerrufsrechts und der Belehrung."
-        },
-        {
-          "ref": "§ 123 BGB",
-          "text": "Anfechtung wegen arglistiger Täuschung oder widerrechtlicher Drohung."
-        }
-      ],
-      "memory": "Widerruf: eindeutig, ohne Begründung, Frist im Blick. Fehlende Pflichtangaben können den Fristbeginn verschieben.",
-      "examTrap": "Widerruf und Anfechtung sind unterschiedliche Instrumente. Täuschung ist typischerweise ein Anfechtungsthema."
-    },
-    {
-      "id": "2.1.2-g",
-      "title": "Werk, Dienst & Geschäftsbesorgung",
-      "subtitle": "Erfolg geschuldet, Tätigkeit geschuldet oder fremdes Geschäft entgeltlich besorgt",
-      "examRelevance": "S",
-      "checkId": "2.1-Q031",
-      "content": [
-        {
-          "type": "compare",
-          "left": {
-            "title": "Werkvertrag",
-            "text": "Geschuldet ist ein **bestimmter Erfolg**. Der Unternehmer stellt das versprochene Werk her, der Besteller zahlt die Vergütung."
-          },
-          "right": {
-            "title": "Dienstvertrag",
-            "text": "Geschuldet ist die **Tätigkeit bzw. der Dienst**, nicht ein bestimmter Arbeitserfolg. Die andere Seite schuldet die Vergütung."
-          }
-        },
-        {
-          "type": "example",
-          "text": "Ein fertiges Gutachten kann ein Werk sein, weil ein konkretes Ergebnis geschuldet wird. Eine laufende Arbeitsleistung ist typischerweise Dienstleistung."
-        },
-        {
-          "type": "text",
-          "text": "Der **Geschäftsbesorgungsvertrag** ist ein Dienst- oder Werkvertrag, dessen Gegenstand die entgeltliche Besorgung eines fremden Geschäfts ist. Die Tätigkeit erfolgt selbständig im wirtschaftlichen Interesse eines anderen."
-        },
-        {
-          "type": "note",
-          "title": "Abgrenzung zum Auftrag",
-          "text": "Der Lernstoff hebt als wesentlichen Unterschied die **Entgeltlichkeit** der Geschäftsbesorgung hervor."
-        }
-      ],
-      "laws": [
-        {
-          "ref": "§ 631 BGB",
-          "text": "Werkvertrag – Herstellung des versprochenen Werkes gegen Vergütung."
-        },
-        {
-          "ref": "§ 611 BGB",
-          "text": "Dienstvertrag – Leistung der versprochenen Dienste gegen Vergütung."
-        },
-        {
-          "ref": "§ 675 BGB",
-          "text": "Geschäftsbesorgungsvertrag als Dienst- oder Werkvertrag mit Geschäftsbesorgung."
-        }
-      ],
-      "memory": "Werk = Erfolg. Dienst = Tätigkeit. Geschäftsbesorgung = entgeltlich ein fremdes Geschäft besorgen.",
-      "examTrap": "Wer nur eine Tätigkeit schuldet, schuldet nicht automatisch einen bestimmten Erfolg."
-    },
-    {
-      "id": "2.1.2-h",
-      "title": "Kauf, Tausch & Schenkung",
-      "subtitle": "Drei Veräußerungsverträge mit unterschiedlichen Gegenleistungen",
-      "examRelevance": "S",
-      "checkId": "2.1-Q034",
-      "content": [
-        {
-          "type": "text",
-          "text": "Beim **Kaufvertrag** muss der Verkäufer die Sache übergeben und Eigentum verschaffen; der Käufer muss den Kaufpreis zahlen und die Sache abnehmen. Grundstücks- und Wohnungskäufe benötigen eine besondere notarielle Form."
-        },
-        {
-          "type": "text",
-          "text": "Für den **Tauschvertrag** gelten grundsätzlich die Vorschriften des Kaufrechts. Statt Kaufpreis gegen Sache werden Leistungen miteinander getauscht."
-        },
-        {
-          "type": "text",
-          "text": "Die **Schenkung** bereichert den Empfänger unentgeltlich aus dem Vermögen des Schenkers. Das Schenkungsversprechen bedarf nach dem Lernstoff grundsätzlich notarieller Beurkundung; ein Formmangel kann durch Bewirkung der versprochenen Leistung geheilt werden."
-        }
-      ],
-      "laws": [
-        {
-          "ref": "§ 433 BGB",
-          "text": "Pflichten aus dem Kaufvertrag."
-        },
-        {
-          "ref": "§ 480 BGB",
-          "text": "Tauschvertrag."
-        },
-        {
-          "ref": "§§ 516, 518 BGB",
-          "text": "Schenkung und Form des Schenkungsversprechens."
-        }
-      ],
-      "memory": "Kauf = Sache gegen Kaufpreis. Tausch = Leistung gegen Leistung. Schenkung = unentgeltliche Zuwendung.",
-      "examTrap": "Der normale Kauf ist oft formfrei – beim Immobilienkauf ist dagegen notarielle Beurkundung erforderlich."
-    },
-    {
-      "id": "2.1.2-i",
-      "title": "Miete, Pacht, Leihe & Sachdarlehen",
-      "subtitle": "Gebrauch gegen Geld, Gebrauch plus Erträge, kostenloser Gebrauch oder Rückgabe gleicher Art",
-      "examRelevance": "S",
-      "checkId": "2.1-Q037",
-      "content": [
-        {
-          "type": "table",
-          "head": [
-            "Vertrag",
-            "Kern"
-          ],
-          "rows": [
-            [
-              "Miete",
-              "Gebrauch einer Sache für die Mietzeit **gegen Miete**."
-            ],
-            [
-              "Pacht",
-              "Gebrauch **plus Fruchtgenuss/Erträge** gegen Pacht."
-            ],
-            [
-              "Leihe",
-              "Gebrauch einer Sache für bestimmte Zeit **unentgeltlich**; dieselbe Sache wird zurückgegeben."
-            ],
-            [
-              "Sachdarlehen",
-              "Vertretbare Sachen werden überlassen; zurück kommen Sachen **gleicher Art, Güte und Menge**, nicht zwingend dieselben."
-            ]
-          ]
-        },
-        {
-          "type": "example",
-          "text": "Wer Land pachtet und darauf Getreide erzeugt, darf die Erträge im Rahmen der Pacht nutzen. Genau dieser Fruchtgenuss unterscheidet die Pacht von der bloßen Miete."
-        },
-        {
-          "type": "example",
-          "text": "Zwei Eier zum Backen ausleihen und später zwei andere gleichartige Eier zurückgeben: Das passt zum Sachdarlehen, nicht zur Leihe derselben konkreten Sache."
-        }
-      ],
-      "laws": [
-        {
-          "ref": "§ 535 BGB",
-          "text": "Mietvertrag."
-        },
-        {
-          "ref": "§ 581 BGB",
-          "text": "Pachtvertrag."
-        },
-        {
-          "ref": "§ 598 BGB",
-          "text": "Leihvertrag."
-        },
-        {
-          "ref": "§ 607 BGB",
-          "text": "Sachdarlehensvertrag."
-        }
-      ],
-      "memory": "Miete = Gebrauch. Pacht = Gebrauch + Erträge. Leihe = kostenlos und dieselbe Sache zurück. Sachdarlehen = gleiche Art/Güte/Menge zurück.",
-      "examTrap": "Leihe und Sachdarlehen unterscheiden sich vor allem darin, ob dieselbe konkrete Sache oder nur gleichartige Sachen zurückgegeben werden."
-    },
-    {
-      "id": "2.1.2-j",
-      "title": "Gesellschaft, Bürgschaft & Erfüllung",
-      "subtitle": "Gemeinsamer Zweck, Sicherung fremder Schuld und die zwei Ebenen eines Vertrags",
-      "examRelevance": "S",
-      "checkId": "2.1-Q040",
-      "content": [
-        {
-          "type": "text",
-          "text": "Beim **Gesellschaftsvertrag** verpflichten sich die Beteiligten zur Förderung eines gemeinsamen Zwecks und zu den vereinbarten Beiträgen. Die Form hängt von der jeweiligen Rechtsform ab."
-        },
-        {
-          "type": "text",
-          "text": "Mit einer **Bürgschaft** verpflichtet sich der Bürge, für die Verbindlichkeit eines Dritten einzustehen. Der Lernstoff nennt grundsätzlich die **Schriftform**."
         },
         {
           "type": "compare",
           "left": {
             "title": "Verpflichtungsgeschäft",
-            "text": "Antrag und Annahme begründen die gegenseitigen **Pflichten**."
+            "text": "Die Einigung über den Vertrag: Beide verpflichten sich – z. B. zur Lieferung und Zahlung."
           },
           "right": {
             "title": "Erfüllungsgeschäft",
-            "text": "Die geschuldeten Leistungen werden tatsächlich **erbracht**, z. B. Lieferung und Bezahlung."
+            "text": "Die tatsächliche Erfüllung: Ware übergeben und übereignen, Geld zahlen."
           }
         },
         {
           "type": "example",
-          "text": "Beim alltäglichen Barkauf können Verpflichtung und Erfüllung fast gleichzeitig stattfinden: Einigung über die Ware – anschließend Übergabe der Ware und Zahlung."
+          "text": "Beim Metzger: Die Kundin verlangt fünf Würste (**Antrag**), der Metzger sagt zu (**Annahme**) – das ist das Verpflichtungsgeschäft. Er reicht die Würste über den Tresen, sie legt das Geld hin – das ist das Erfüllungsgeschäft. Im Alltag passiert beides fast gleichzeitig."
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Im Metzger-Beispiel des Skripts heißt der Kaufwunsch „Antrag“ und die Handlung des Metzgers „Angebot“. Antrag und Angebot sind aber dasselbe – die Reaktion des Metzgers ist die Annahme."
+        }
+      ],
+      "laws": [],
+      "memory": "Schuldrecht: „Du schuldest mir.“ Sachenrecht: „Das gehört mir – gegenüber allen.“",
+      "examTrap": "Ein Mietvertrag ist kein dingliches Recht, sondern ein Schuldverhältnis. Dingliche Rechte gibt es nur im gesetzlichen Katalog.",
+      "legacyIds": [
+        "2.1.2-d",
+        "2.1.2-j"
+      ]
+    },
+    {
+      "id": "2.1-S10",
+      "title": "Darlehensvertrag",
+      "subtitle": "Vom § 488 zum Immobiliar-Verbraucherdarlehen",
+      "ref": "BWB 2.1.2",
+      "examRelevance": "S",
+      "checkId": "2.1-Q152",
+      "content": [
+        {
+          "type": "compare",
+          "left": {
+            "title": "Darlehensgeber",
+            "text": "Muss den Geldbetrag in vereinbarter Höhe **zur Verfügung stellen**."
+          },
+          "right": {
+            "title": "Darlehensnehmer",
+            "text": "Muss den **Zins zahlen** und das Darlehen bei **Fälligkeit zurückzahlen**."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Ist keine Rückzahlungszeit bestimmt, wird das Darlehen durch **Kündigung** fällig – die Frist beträgt **drei Monate** (§ 488 Abs. 3 BGB)."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Verbraucherdarlehen (§ 491 BGB)",
+            "Merkmal"
+          ],
+          "rows": [
+            [
+              "Allgemein-Verbraucherdarlehen",
+              "Entgeltliches Darlehen eines Unternehmers an einen Verbraucher – nicht bei z. B. unter 200 € Nettodarlehensbetrag, Rückzahlung binnen 3 Monaten mit geringen Kosten, günstigen Arbeitgeberdarlehen"
+            ],
+            [
+              "**Immobiliar-Verbraucherdarlehen**",
+              "Entgeltliches Darlehen an einen Verbraucher, das **entweder** durch ein **Grundpfandrecht oder eine Reallast besichert** ist **oder** dem **Erwerb oder Erhalt** eines Grundstücks, Gebäudes oder grundstücksgleichen Rechts dient"
+            ]
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das Skript definiert das Immobiliardarlehen am Ende noch nach altem Recht („durch Grundpfandrechte abgesichert und zu üblichen Bedingungen“). Heute reicht nach § 491 Abs. 3 BGB auch der Zweck allein – ein unbesichertes Darlehen für den Wohnungskauf ist ebenfalls ein Immobiliar-Verbraucherdarlehen."
+        },
+        {
+          "type": "list",
+          "title": "Besonderheiten",
+          "items": [
+            "**Schriftform** (§ 492 BGB). Sie ist auch erfüllt, wenn Antrag und Annahme **getrennt** schriftlich erklärt werden. Die Erklärung der Bank braucht keine Unterschrift, wenn sie automatisch erstellt wird.",
+            "Der Vertrag muss die **Pflichtangaben** enthalten; der Kunde erhält eine Abschrift und kann einen Tilgungsplan verlangen.",
+            "**Bauspardarlehen mit Negativerklärung** statt Grundschuld zählen ebenfalls dazu.",
+            "**Verzugszins** bei Immobiliar-Verbraucherdarlehen: **2,5 Prozentpunkte** über dem Basiszinssatz (§ 497 Abs. 4 BGB).",
+            "Der Vertrag muss darauf hinweisen, ob die Forderung an Dritte **abgetreten** werden darf (seit dem Risikobegrenzungsgesetz)."
+          ]
         }
       ],
       "laws": [
         {
-          "ref": "§ 705 BGB",
-          "text": "Gesellschaftsvertrag."
+          "ref": "§ 488 BGB",
+          "text": "Vertragstypische Pflichten beim Darlehensvertrag; Kündigungsfrist drei Monate."
         },
         {
-          "ref": "§§ 765, 766 BGB",
-          "text": "Bürgschaft und Schriftform."
+          "ref": "§ 491 BGB",
+          "text": "Allgemein- und Immobiliar-Verbraucherdarlehen."
+        },
+        {
+          "ref": "§ 492 BGB",
+          "text": "Schriftform und Pflichtangaben."
         }
       ],
-      "memory": "Verpflichtung = Was schulden wir? Erfüllung = Wir tun es tatsächlich.",
-      "examTrap": "Der Vertragsschluss und seine Erfüllung sind gedanklich zwei verschiedene Schritte, auch wenn sie im Alltag gleichzeitig ablaufen."
+      "memory": "Immobiliar-Verbraucherdarlehen: Grundschuld ODER Immobilienzweck – eins von beiden genügt.",
+      "examTrap": "Ohne Grundschuld kein Immobiliardarlehen? Falsch. Dient das Geld dem Kauf oder Erhalt einer Immobilie, reicht das.",
+      "legacyIds": [
+        "2.1.2-e"
+      ]
+    },
+    {
+      "id": "2.1-S11",
+      "title": "Widerruf, Rücktritt, Anfechtung",
+      "subtitle": "Wie man aus einem Darlehensvertrag wieder herauskommt",
+      "ref": "BWB 2.1.2 + Ergänzung",
+      "examRelevance": "S",
+      "checkId": "2.1-Q157",
+      "content": [
+        {
+          "type": "table",
+          "head": [
+            "Recht",
+            "Wer, warum?",
+            "Wirkung"
+          ],
+          "rows": [
+            [
+              "**Widerruf**",
+              "Verbraucher, **ohne Grund**, innerhalb der Frist",
+              "Vertrag wird rückabgewickelt"
+            ],
+            [
+              "**Rücktritt**",
+              "Bei vertraglich vereinbartem oder gesetzlichem Rücktrittsrecht, z. B. bei Pflichtverletzung",
+              "Vertrag wird rückabgewickelt"
+            ],
+            [
+              "**Anfechtung**",
+              "Bei Irrtum, Täuschung oder Drohung",
+              "Vertrag wird **rückwirkend nichtig**"
+            ],
+            [
+              "**Kündigung**",
+              "Bei Dauerschuldverhältnissen",
+              "Beendet den Vertrag **nur für die Zukunft**"
+            ]
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "Der Rücktritt steht im Lernziel, wird im BWB-Skript aber nicht erklärt."
+        },
+        {
+          "type": "steps",
+          "title": "Widerruf beim Verbraucherdarlehen",
+          "items": [
+            {
+              "title": "Frist: 14 Tage",
+              "text": "Beginnt mit Vertragsschluss, sobald der Kunde die Pflichtangaben und eine ordnungsgemäße Belehrung in Textform hat."
+            },
+            {
+              "title": "Fehlende Pflichtangaben",
+              "text": "Die Frist beginnt erst, wenn sie **nachgeholt** werden – und beträgt dann **einen Monat**."
+            },
+            {
+              "title": "Absolutes Ende",
+              "text": "Bei Immobiliar-Verbraucherdarlehen erlischt das Widerrufsrecht spätestens **ein Jahr und 14 Tage** nach Vertragsschluss – auch wenn Angaben fehlen. Das verhindert ein „ewiges“ Widerrufsrecht."
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "items": [
+            "Der Widerruf braucht **keine Begründung** und ist an **keine Form** gebunden – eine eindeutige Erklärung genügt, auch mündlich. Empfohlen ist die schriftliche Erklärung.",
+            "Die **rechtzeitige Absendung** wahrt die Frist.",
+            "Die Belehrung muss sich deutlich vom Vertragstext abheben und den **Fristbeginn** eindeutig benennen."
+          ]
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Anfechtung durch die Bank",
+            "text": "Der Kunde hat über seine **Kreditwürdigkeit** oder den **Wert der Sicherheiten** getäuscht."
+          },
+          "right": {
+            "title": "Anfechtung durch den Kunden",
+            "text": "Der **Vermittler** hat getäuscht, und das war für den Darlehensvertrag ursächlich (§ 123 BGB). Beim **verbundenen Geschäft** liegt das regelmäßig vor."
+          }
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 355 BGB",
+          "text": "Widerrufsrecht bei Verbraucherverträgen, 14 Tage, Absendung genügt."
+        },
+        {
+          "ref": "§ 123 BGB",
+          "text": "Anfechtung wegen arglistiger Täuschung oder Drohung."
+        }
+      ],
+      "memory": "Widerruf: ohne Grund, 14 Tage. Anfechtung: mit Grund, rückwirkend. Kündigung: nur für die Zukunft.",
+      "examTrap": "Fehlen Pflichtangaben, gibt es trotzdem kein ewiges Widerrufsrecht: Nach einem Jahr und 14 Tagen ist Schluss.",
+      "legacyIds": [
+        "2.1.2-f"
+      ]
+    },
+    {
+      "id": "2.1-S12",
+      "title": "Dienst, Werk, Geschäftsbesorgung",
+      "subtitle": "Tätigkeit oder Erfolg – was wird geschuldet?",
+      "ref": "BWB 2.1.2",
+      "examRelevance": "S",
+      "checkId": "2.1-Q164",
+      "content": [
+        {
+          "type": "compare",
+          "left": {
+            "title": "Dienstvertrag (§ 611 BGB)",
+            "text": "Geschuldet ist die **Tätigkeit**, nicht ein Erfolg. Beispiel: Anstellung eines Mitarbeiters. Die Kündigung eines **Arbeitsverhältnisses** oder ein Auflösungsvertrag braucht **Schriftform** (§ 623 BGB) – eine E-Mail reicht nicht."
+          },
+          "right": {
+            "title": "Werkvertrag (§ 631 BGB)",
+            "text": "Geschuldet ist ein **Erfolg**: Herstellung oder Veränderung einer Sache oder ein anderer Erfolg, z. B. ein Gutachten. Der Besteller zahlt und **nimmt das Werk ab**."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Der **Geschäftsbesorgungsvertrag (§ 675 BGB)** ist ein Dienst- oder Werkvertrag, bei dem jemand **entgeltlich** ein Geschäft im Interesse eines anderen besorgt – etwa Rechts- oder Steuerberatung, Bankgeschäfte, Tätigkeiten von Handelsvertretern oder Handelsmaklern. Ist die Tätigkeit **unentgeltlich**, liegt ein **Auftrag** vor; dessen Regeln gelten sonst entsprechend."
+        },
+        {
+          "type": "example",
+          "text": "Eine Steuerberaterin erstellt die Steuererklärung: Solange die Erklärung nicht fertig ist, hat sie ihre Pflicht nicht erfüllt – es zählt das Ergebnis."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 611 BGB",
+          "text": "Dienstvertrag."
+        },
+        {
+          "ref": "§ 631 BGB",
+          "text": "Werkvertrag."
+        },
+        {
+          "ref": "§ 675 BGB",
+          "text": "Entgeltliche Geschäftsbesorgung."
+        }
+      ],
+      "memory": "Dienst = ich arbeite. Werk = ich liefere ein Ergebnis. Geschäftsbesorgung = ich kümmere mich gegen Geld um deine Angelegenheit.",
+      "examTrap": "Geschäftsbesorgung und Auftrag unterscheiden sich im Geld: Der Auftrag ist unentgeltlich.",
+      "legacyIds": [
+        "2.1.2-g"
+      ]
+    },
+    {
+      "id": "2.1-S13",
+      "title": "Weitere Vertragstypen",
+      "subtitle": "Welcher Vertrag braucht welche Form?",
+      "ref": "BWB 2.1.2",
+      "examRelevance": "S",
+      "checkId": "2.1-Q168",
+      "content": [
+        {
+          "type": "table",
+          "head": [
+            "Vertrag",
+            "Kern",
+            "Form"
+          ],
+          "rows": [
+            [
+              "Kaufvertrag (§ 433)",
+              "Sache übergeben und übereignen gegen Kaufpreis",
+              "Formfrei – **Grundstück: notarielle Beurkundung**"
+            ],
+            [
+              "Tausch (§ 480)",
+              "Sache gegen Sache, Kaufrecht gilt entsprechend",
+              "Formfrei"
+            ],
+            [
+              "Schenkung (§ 516)",
+              "Unentgeltliche Zuwendung",
+              "**Schenkungsversprechen notariell**; Mangel durch Vollzug geheilt"
+            ],
+            [
+              "Miete (§ 535)",
+              "Gebrauch gegen Miete",
+              "Formfrei; Wohnraum länger als ein Jahr: schriftlich, sonst unbefristet (§ 550); Kündigung von Wohnraum schriftlich (§ 568)"
+            ],
+            [
+              "Pacht (§ 581)",
+              "Gebrauch **plus Fruchtgenuss** gegen Pacht",
+              "Formfrei"
+            ],
+            [
+              "Leihe (§ 598)",
+              "Gebrauch **unentgeltlich**, dieselbe Sache zurück",
+              "Formfrei"
+            ],
+            [
+              "Sachdarlehen (§ 607)",
+              "Vertretbare Sache, Rückgabe gleicher Art, Güte, Menge",
+              "Formfrei"
+            ],
+            [
+              "Gesellschaft (§ 705)",
+              "Gemeinsamer Zweck",
+              "GbR formfrei, **GmbH notariell** (§ 2 GmbHG)"
+            ],
+            [
+              "Bürgschaft (§ 765)",
+              "Für fremde Schuld einstehen",
+              "**Schriftlich** (§ 766); Mangel durch Erfüllung geheilt"
+            ]
+          ]
+        },
+        {
+          "type": "example",
+          "text": "Bauer B pachtet 100 ha Land und darf das geerntete Getreide behalten – das ist der Fruchtgenuss, der Pacht von Miete unterscheidet. Leiht die Nachbarin zwei Eier und gibt später zwei andere zurück, ist das ein Sachdarlehen, keine Leihe."
+        },
+        {
+          "type": "note",
+          "title": "Präzisiert",
+          "text": "§ 550 BGB: Ein Wohnraummietvertrag über mehr als ein Jahr ohne Schriftform gilt als auf unbestimmte Zeit geschlossen und ist frühestens zum Ablauf eines Jahres nach Überlassung kündbar."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 766 BGB",
+          "text": "Bürgschaft braucht schriftliche Erteilung; Erfüllung heilt."
+        },
+        {
+          "ref": "§ 518 BGB",
+          "text": "Notarielle Form des Schenkungsversprechens."
+        }
+      ],
+      "memory": "Notar: Grundstück, Schenkungsversprechen, GmbH. Schriftlich: Bürgschaft, Verbraucherdarlehen, Kündigung von Arbeits- und Wohnraummietverhältnis.",
+      "examTrap": "Miete oder Pacht? Entscheidend ist, ob man die Erträge behalten darf. Leihe oder Sachdarlehen? Entscheidend ist, ob dieselbe Sache zurückkommt.",
+      "legacyIds": [
+        "2.1.2-h",
+        "2.1.2-i",
+        "2.1.2-j"
+      ]
     }
   ]
 }

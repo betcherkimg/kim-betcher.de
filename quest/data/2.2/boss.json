@@ -2,7 +2,31 @@
   "chapter": "2.2",
   "boss": {
     "name": "Notar Nebelsiegel",
-    "title": "Hüter der Grundbuchkammer"
+    "title": "Hüter der Grundbuchkammer",
+    "taunts": {
+      "intro": "Niemand kommt an mir vorbei, ohne dass sein Eigentum im Grundbuch steht.",
+      "hit": [
+        "Eingetragen … leider korrekt.",
+        "Ein Treffer. Notiert.",
+        "Mein Siegel bekommt Risse!"
+      ],
+      "miss": [
+        "Auflassung verweigert!",
+        "Besitz ist nicht Eigentum, Anfänger.",
+        "Diese Urkunde ist unwirksam."
+      ],
+      "timeout": [
+        "Die Frist verstreicht. Die Vormerkung schützt dich nicht!",
+        "Tick, tack – verfristet."
+      ],
+      "final": "Letzte Urkunde. Danach wird umgeschrieben – oder du.",
+      "low": "Ein Siegel mehr … und ich zerbreche.",
+      "defeat": "Das Grundbuch ist dein. Ich trete zurück.",
+      "victory": "Der Eintrag bleibt verwehrt. Zurück zum Notar!"
+    },
+    "image": "assets/bosses/notar-nebelsiegel.webp",
+    "bust": "assets/bosses/notar-nebelsiegel-bust.webp",
+    "accent": "#6FE3E8"
   },
   "questions": [
     {

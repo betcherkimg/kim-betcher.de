@@ -2,89 +2,112 @@
   "chapter": "2.1",
   "boss": {
     "name": "Richter Rabenfeder",
-    "title": "Hüter des Vertragsturms"
+    "title": "Hüter des Vertragsturms",
+    "taunts": {
+      "intro": "Ein Vertrag ohne Form ist wie ein Turm ohne Fundament. Mal sehen, ob du stehst.",
+      "hit": [
+        "Ein sauberer Treffer … für einen Laien.",
+        "Hm. Das war formgerecht.",
+        "Mein Siegel bröckelt? Unmöglich!"
+      ],
+      "miss": [
+        "Nichtig! Wie deine Hoffnung.",
+        "Anfechtbar, junger Vermittler.",
+        "Das hätte kein Notar durchgehen lassen."
+      ],
+      "timeout": [
+        "Die Frist ist abgelaufen. Schweigen ist keine Annahme!",
+        "Zu spät. Verfristet."
+      ],
+      "final": "Letzte Klausel. Unterschreib – wenn du dich traust!",
+      "low": "Mein Turm wankt … aber er fällt nicht!",
+      "defeat": "Genehmigt. Du darfst passieren.",
+      "victory": "Abgelehnt. Komm wieder, wenn du die Paragraphen kennst."
+    },
+    "image": "assets/bosses/richter-rabenfeder.webp",
+    "bust": "assets/bosses/richter-rabenfeder-bust.webp",
+    "accent": "#E9A400"
   },
   "questions": [
     {
-      "id": "2.1-B001",
+      "id": "2.1-B101",
       "chapter": "2.1",
-      "section": "2.1.1-a",
+      "section": "2.1-S04",
       "topic": [
-        "Rechtsfähigkeit",
-        "Volljährigkeit"
+        "Aufforderung",
+        "Minderjährige"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "17-Jährige kauft Laptop auf Raten. Händler fordert die Eltern zur Erklärung auf, drei Wochen Stille. Folge?",
+      "answers": [
+        "Genehmigung gilt als verweigert – Vertrag unwirksam",
+        "Genehmigung gilt als erteilt",
+        "Vertrag schwebt bis zum 18. Geburtstag",
+        "Vertrag über § 110 wirksam"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 108 Abs. 2 BGB: Zwei Wochen Schweigen = Verweigerung."
+    },
+    {
+      "id": "2.1-B102",
+      "chapter": "2.1",
+      "section": "2.1-S04",
+      "topic": [
+        "§ 107",
+        "§ 110",
+        "§ 108"
       ],
       "type": "multi",
       "difficulty": 3,
       "taxonomyLevel": 3,
       "examRelevance": "S",
-      "question": "Ein lebendes Kind wird heute geboren. Welche Aussagen stimmen sofort nach der vollendeten Geburt?",
+      "question": "Ein 16-Jähriger ohne Zustimmung der Eltern. Was stimmt?",
       "answers": [
-        "Es ist rechtsfähig",
-        "Es ist natürliche Person",
-        "Es ist unbeschränkt geschäftsfähig",
-        "Es kann Träger von Rechten und Pflichten sein"
+        "Geschenktes Fahrrad annehmen: wirksam",
+        "Handyvertrag über 24 Monate: schwebend unwirksam",
+        "Kinokarte bar vom Taschengeld: nichtig",
+        "Kinokarte bar vom Taschengeld: schwebend unwirksam"
       ],
       "correct": [
         0,
-        1,
-        3
+        1
       ],
-      "explanation": "Rechtsfähigkeit und natürliche Person beginnen mit der vollendeten Geburt. Unbeschränkte Geschäftsfähigkeit folgt nicht daraus."
+      "explanation": "Lediglich rechtlicher Vorteil = wirksam. Dauerverpflichtung = schwebend. Bar vom Taschengeld = wirksam nach § 110."
     },
     {
-      "id": "2.1-B002",
+      "id": "2.1-B103",
       "chapter": "2.1",
-      "section": "2.1.1-b",
+      "section": "2.1-S02",
       "topic": [
-        "Geschäftsunfähigkeit",
-        "Willenserklärung"
+        "Rechtsfähigkeit",
+        "Geschäftsfähigkeit"
       ],
       "type": "single",
-      "difficulty": 3,
+      "difficulty": 2,
       "taxonomyLevel": 2,
       "examRelevance": "S",
-      "question": "Ein sechsjähriges Kind unterschreibt allein einen Kaufvertrag. Welche Aussage passt am besten?",
+      "question": "Welche Aussage ist FALSCH?",
       "answers": [
-        "Seine Willenserklärung ist nichtig",
-        "Der Vertrag ist nur bis zum 18. Geburtstag widerruflich",
-        "Der Vertrag ist automatisch wirksam, wenn der Preis niedrig ist",
-        "Es kommt nur auf den Besitz der Kaufsache an"
+        "Ein 17-Jähriger ist nicht rechtsfähig",
+        "Rechtsfähigkeit beginnt mit Vollendung der Geburt",
+        "Ab 7 ist man beschränkt geschäftsfähig",
+        "Juristische Personen sind rechtsfähig"
       ],
       "correct": [
         0
       ],
-      "explanation": "Wer das 7. Lebensjahr noch nicht vollendet hat, ist geschäftsunfähig; seine Willenserklärung ist nichtig."
+      "explanation": "Rechtsfähig ist jeder Mensch ab Geburt – auch der 17-Jährige."
     },
     {
-      "id": "2.1-B003",
+      "id": "2.1-B104",
       "chapter": "2.1",
-      "section": "2.1.1-c",
+      "section": "2.1-S04",
       "topic": [
-        "Minderjährige",
-        "Taschengeldparagraph"
-      ],
-      "type": "single",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
-      "examRelevance": "S",
-      "question": "Ein 16-Jähriger schließt ohne Zustimmung der Eltern einen zwölfmonatigen Ratenvertrag und will jede Rate aus seinem Taschengeld zahlen. Was ist die entscheidende Falle?",
-      "answers": [
-        "Ein Ratengeschäft wird nicht allein dadurch vom Taschengeldparagraphen gedeckt",
-        "Jeder 16-Jährige ist unbeschränkt geschäftsfähig",
-        "Ratenverträge sind immer lediglich rechtlich vorteilhaft",
-        "Mit der ersten Rate ist der Vertrag zwingend vollständig wirksam"
-      ],
-      "correct": [
-        0
-      ],
-      "explanation": "Der Lernstoff nennt Ratengeschäfte ausdrücklich als Fälle, die nicht einfach unter § 110 BGB fallen."
-    },
-    {
-      "id": "2.1-B004",
-      "chapter": "2.1",
-      "section": "2.1.1-c",
-      "topic": [
-        "Minderjährige",
         "Volljährigkeit",
         "Genehmigung"
       ],
@@ -92,367 +115,474 @@
       "difficulty": 3,
       "taxonomyLevel": 3,
       "examRelevance": "S",
-      "question": "Ein mit 17 ohne nötige Zustimmung geschlossener Vertrag ist noch schwebend unwirksam. Am 18. Geburtstag passiert zunächst nichts weiter. Was folgt?",
+      "question": "Mit 17 ohne Zustimmung Vertrag geschlossen. Mit 18 zahlt er bewusst weiter Raten, ohne etwas zu erklären. Folge?",
       "answers": [
-        "Der Vertrag wird nicht allein wegen der Volljährigkeit automatisch wirksam",
-        "Der Vertrag wird automatisch rückwirkend wirksam",
-        "Der Vertrag wird automatisch nichtig",
-        "Der Vertrag wandelt sich in eine Schenkung um"
+        "Stillschweigende Genehmigung – Vertrag wirksam",
+        "Vertrag bleibt schwebend unwirksam",
+        "Eltern müssen noch genehmigen",
+        "Vertrag ist nichtig"
       ],
       "correct": [
         0
       ],
-      "explanation": "Der Lernstoff verlangt auch nach Eintritt der Volljährigkeit noch eine Genehmigung; sie kann später ausdrücklich oder durch Verhalten erfolgen."
+      "explanation": "Der Volljährige kann auch durch schlüssiges Verhalten genehmigen."
     },
     {
-      "id": "2.1-B005",
+      "id": "2.1-B105",
       "chapter": "2.1",
-      "section": "2.1.2-a",
+      "section": "2.1-S04",
       "topic": [
-        "Einseitiges Rechtsgeschäft",
-        "Empfangsbedürftigkeit"
+        "§ 109"
       ],
-      "type": "multi",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Der Händler wusste, dass der Käufer 15 ist. Die Eltern schweigen noch. Kann der Händler widerrufen?",
+      "answers": [
+        "Nein, das Widerrufsrecht ist ausgeschlossen",
+        "Ja, bis zur Genehmigung",
+        "Ja, innerhalb von 14 Tagen",
+        "Ja, aber nur schriftlich"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 109 BGB: Wer die Minderjährigkeit kannte, kann nicht widerrufen."
+    },
+    {
+      "id": "2.1-B106",
+      "chapter": "2.1",
+      "section": "2.1-S05",
+      "topic": [
+        "Familiengericht",
+        "Heilung"
+      ],
+      "type": "single",
       "difficulty": 3,
       "taxonomyLevel": 3,
       "examRelevance": "S",
-      "question": "Welche Zuordnungen sind richtig?",
+      "question": "Bausparvertrag eines 14-Jährigen, acht Jahre Laufzeit, Eltern stimmten zu, Familiengericht nicht. Mit 18 genehmigt er selbst. Folge?",
       "answers": [
-        "Testament – einseitig und nicht empfangsbedürftig",
-        "Kündigung – einseitig und empfangsbedürftig",
-        "Darlehensvertrag – mehrseitiges Rechtsgeschäft",
-        "Kündigung – erst mit bloßem Absenden wirksam"
+        "Der Vertrag ist wirksam",
+        "Nichtig, weil das Gericht fehlte",
+        "Die Eltern haften für alle Raten",
+        "Er muss neu abgeschlossen werden"
       ],
       "correct": [
-        0,
-        1,
-        2
+        0
       ],
-      "explanation": "Die Kündigung braucht Zugang; Testament, Kündigung und Darlehensvertrag unterscheiden sich hinsichtlich Zahl und Zugang der Willenserklärungen."
+      "explanation": "Die Genehmigung des volljährig Gewordenen ersetzt die fehlende gerichtliche Genehmigung."
     },
     {
-      "id": "2.1-B006",
+      "id": "2.1-B107",
       "chapter": "2.1",
-      "section": "2.1.2-b",
+      "section": "2.1-S07",
       "topic": [
-        "Antrag",
         "Aufforderung zum Antrag"
       ],
       "type": "single",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
+      "difficulty": 2,
+      "taxonomyLevel": 2,
       "examRelevance": "S",
-      "question": "Ein Händler stellt ein Gerät mit Preis ins Schaufenster. Ein Kunde sagt: „Ich nehme es zu genau diesem Preis.“ Welche Erklärung ist typischerweise der erste eigentliche Antrag?",
+      "question": "Online-Shop zeigt Fernseher für 99 € statt 999 €. Kunde klickt „Bestellen“. Was ist der Klick?",
       "answers": [
-        "Die Erklärung des Kunden",
-        "Die Preisauszeichnung im Schaufenster",
-        "Das bloße Betreten des Ladens",
-        "Die spätere Rechnung"
+        "Der Antrag des Kunden",
+        "Die Annahme eines Angebots",
+        "Eine Aufforderung zum Antrag",
+        "Ein Scheingeschäft"
       ],
       "correct": [
         0
       ],
-      "explanation": "Schaufensterauslagen sind typischerweise Aufforderungen zur Abgabe eines Antrags; der Kunde gibt den Antrag ab."
+      "explanation": "Die Shop-Seite ist Aufforderung zum Antrag. Der Klick ist der Antrag, der Shop kann ablehnen."
     },
     {
-      "id": "2.1-B007",
+      "id": "2.1-B108",
       "chapter": "2.1",
-      "section": "2.1.2-b",
+      "section": "2.1-S07",
       "topic": [
-        "Antrag",
-        "Annahme",
-        "Vertragsschluss"
-      ],
-      "type": "single",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
-      "examRelevance": "S",
-      "question": "A bietet B ein Darlehen über 100.000 € zu 4 % an. B antwortet: „Einverstanden, aber zu 3,5 %.“ Was liegt vor?",
-      "answers": [
-        "Keine deckungsgleiche Annahme des ursprünglichen Antrags",
-        "Ein Vertrag zu 3,75 %",
-        "Ein wirksamer Vertrag zu 4 %",
-        "Schweigen von B"
-      ],
-      "correct": [
-        0
-      ],
-      "explanation": "Die Erklärungen sind nicht deckungsgleich; damit ist der ursprüngliche Vertrag so nicht zustande gekommen."
-    },
-    {
-      "id": "2.1-B008",
-      "chapter": "2.1",
-      "section": "2.1.2-c",
-      "topic": [
-        "Nichtigkeit",
-        "Anfechtung"
+        "Abgeänderte Annahme",
+        "Schweigen"
       ],
       "type": "multi",
       "difficulty": 3,
       "taxonomyLevel": 3,
       "examRelevance": "S",
-      "question": "Welche Fälle gehören nach dem Lernstoff typischerweise zur Anfechtbarkeit und nicht einfach zur Nichtigkeit?",
+      "question": "Bank bietet 3,4 % an. Kunde schreibt 3,1 % hinein und unterschreibt. Bank reagiert nicht. Was stimmt?",
       "answers": [
-        "Versprechen beim Betrag",
-        "Falsche Übermittlung durch einen Boten",
-        "Arglistiges Verschweigen eines Fehlers",
-        "Willenserklärung in Bewusstlosigkeit"
+        "Es besteht kein Vertrag",
+        "Die Unterschrift des Kunden gilt als neuer Antrag",
+        "Vertrag zu 3,1 %, weil die Bank schwieg",
+        "Vertrag zu 3,4 %"
       ],
       "correct": [
         0,
-        1,
-        2
+        1
       ],
-      "explanation": "Irrtum, Übermittlungsirrtum und arglistige Täuschung sind Anfechtungsgründe; die Erklärung in Bewusstlosigkeit ist nichtig."
+      "explanation": "Abgeänderte Annahme = Ablehnung + neuer Antrag. Schweigen der Bank ist keine Annahme."
     },
     {
-      "id": "2.1-B009",
+      "id": "2.1-B109",
       "chapter": "2.1",
-      "section": "2.1.2-c",
+      "section": "2.1-S08",
       "topic": [
-        "Formmangel",
-        "Nichtigkeit"
+        "Nichtig",
+        "Anfechtbar"
       ],
-      "type": "single",
+      "type": "multi",
       "difficulty": 3,
-      "taxonomyLevel": 2,
+      "taxonomyLevel": 3,
       "examRelevance": "S",
-      "question": "Das Gesetz verlangt für ein bestimmtes Rechtsgeschäft ausdrücklich eine Form. Die Parteien ignorieren sie vollständig. Welcher Grundsatz ist zu prüfen?",
+      "question": "Nichtig oder anfechtbar – welche Zuordnungen stimmen?",
       "answers": [
-        "Nichtigkeit wegen Formmangels nach § 125 BGB",
-        "Automatische Heilung durch bloßes Schweigen",
-        "Immer nur Anfechtbarkeit wegen Irrtums",
-        "Eigentumsübergang durch Besitz"
+        "Verschrieben: anfechtbar",
+        "Scheinkaufvertrag zur Steuerersparnis: nichtig",
+        "17-Jähriger ohne Zustimmung: nichtig",
+        "Arglistige Täuschung: nichtig ohne Erklärung"
       ],
       "correct": [
-        0
+        0,
+        1
       ],
-      "explanation": "Fehlt eine gesetzlich vorgeschriebene Form, ist § 125 BGB der zentrale Anker."
+      "explanation": "Minderjährige: schwebend unwirksam. Täuschung: nur anfechtbar."
     },
     {
-      "id": "2.1-B010",
+      "id": "2.1-B110",
       "chapter": "2.1",
-      "section": "2.1.2-d",
+      "section": "2.1-S09",
       "topic": [
-        "Schuldrecht",
         "Sachenrecht",
-        "Besitz",
-        "Eigentum"
-      ],
-      "type": "multi",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
-      "examRelevance": "S",
-      "question": "Mieter M wohnt in einer Wohnung des Eigentümers E. Welche Aussagen passen zur Grundlogik?",
-      "answers": [
-        "M kann Besitzer sein, ohne Eigentümer zu sein",
-        "E kann Eigentümer sein, obwohl M die tatsächliche Herrschaft ausübt",
-        "Eigentum ist ein absolutes Recht",
-        "Besitz und Eigentum müssen immer in einer Person zusammenfallen"
-      ],
-      "correct": [
-        0,
-        1,
-        2
-      ],
-      "explanation": "Besitz ist tatsächliche, Eigentum rechtliche Herrschaft. Dingliches Eigentum wirkt grundsätzlich gegenüber jedermann."
-    },
-    {
-      "id": "2.1-B011",
-      "chapter": "2.1",
-      "section": "2.1.2-d",
-      "topic": [
-        "Publizitätsprinzip",
-        "Grundbuch"
+        "Typenzwang"
       ],
       "type": "single",
-      "difficulty": 3,
+      "difficulty": 2,
       "taxonomyLevel": 2,
       "examRelevance": "S",
-      "question": "Warum spielt das Grundbuch im Sachenrecht bei Grundstücken eine zentrale Rolle?",
+      "question": "Welche Aussage zum Sachenrecht ist FALSCH?",
       "answers": [
-        "Es macht die dingliche Rechtslage nach außen erkennbar",
-        "Es ersetzt jeden Darlehensvertrag",
-        "Es beweist immer den tatsächlichen Besitz",
-        "Es enthält ausschließlich schuldrechtliche Ansprüche"
+        "Beliebige neue dingliche Rechte sind vereinbar",
+        "Dingliche Rechte wirken gegen jedermann",
+        "Bei Grundstücken schafft das Grundbuch Publizität",
+        "Die Grundschuld ist ein dingliches Recht"
       ],
       "correct": [
         0
       ],
-      "explanation": "Das Publizitätsprinzip verlangt erkennbare dingliche Rechtsverhältnisse; bei Grundstücken erfüllt diese Funktion das Grundbuch."
+      "explanation": "Typenzwang: Nur die gesetzlich vorgesehenen dinglichen Rechte gibt es."
     },
     {
-      "id": "2.1-B012",
+      "id": "2.1-B111",
       "chapter": "2.1",
-      "section": "2.1.2-e",
+      "section": "2.1-S10",
       "topic": [
         "Immobiliar-Verbraucherdarlehen",
-        "Verwendungszweck"
+        "Bauspardarlehen"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Bauspardarlehen mit Negativerklärung statt Grundschuld, Zweck: Modernisierung des eigenen Hauses. Welche Art?",
+      "answers": [
+        "Immobiliar-Verbraucherdarlehen",
+        "Allgemein-Verbraucherdarlehen",
+        "Kein Verbraucherdarlehen",
+        "Sachdarlehen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Bauspardarlehen mit Negativerklärung zählen dazu – und der Zweck (Erhalt einer Immobilie) genügt ohnehin."
+    },
+    {
+      "id": "2.1-B112",
+      "chapter": "2.1",
+      "section": "2.1-S11",
+      "topic": [
+        "Widerruf",
+        "Nachholung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Vertrag am 1.3., Pflichtangabe fehlte, nachgeholt am 10.4. Widerruf am 5.5. Rechtzeitig?",
+      "answers": [
+        "Ja, die Monatsfrist läuft bis 10.5.",
+        "Nein, 14 Tage ab 1.3. sind vorbei",
+        "Nein, 14 Tage ab 10.4. sind vorbei",
+        "Nur mit Begründung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Nach Nachholung beginnt eine Frist von einem Monat."
+    },
+    {
+      "id": "2.1-B113",
+      "chapter": "2.1",
+      "section": "2.1-S11",
+      "topic": [
+        "Erlöschen"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Pflichtangaben wurden nie nachgeholt. Der Kunde will nach zwei Jahren das Immobiliardarlehen widerrufen. Geht das?",
+      "answers": [
+        "Nein, das Recht ist nach einem Jahr und 14 Tagen erloschen",
+        "Ja, die Frist hat nie begonnen",
+        "Ja, innerhalb von 14 Tagen ab heute",
+        "Nur per Anfechtung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Absolute Erlöschensregel bei Immobiliar-Verbraucherdarlehen."
+    },
+    {
+      "id": "2.1-B114",
+      "chapter": "2.1",
+      "section": "2.1-S11",
+      "topic": [
+        "Widerruf",
+        "Form"
+      ],
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Kunde widerruft am 10. Tag telefonisch und eindeutig, ohne Grund. Wirksam?",
+      "answers": [
+        "Ja, eine eindeutige Erklärung genügt",
+        "Nein, Schriftform ist nötig",
+        "Nein, ohne Grund geht es nicht",
+        "Nur, wenn die Bank zustimmt"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Formfrei und ohne Begründung. Schriftlich wird nur empfohlen."
+    },
+    {
+      "id": "2.1-B115",
+      "chapter": "2.1",
+      "section": "2.1-S11",
+      "topic": [
+        "Anfechtung",
+        "Vermittler"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Vermittler täuscht über Mieteinnahmen einer Anlagewohnung; Kauf und Darlehen sind verbunden. Was kann der Kunde tun?",
+      "answers": [
+        "Den Darlehensvertrag nach § 123 BGB anfechten",
+        "Nichts, getäuscht hat nur der Vermittler",
+        "Nur den Kaufvertrag widerrufen",
+        "Den Darlehensvertrag ohne Grund kündigen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "War die Täuschung für den Darlehensvertrag ursächlich – beim verbundenen Geschäft regelmäßig – kann er anfechten."
+    },
+    {
+      "id": "2.1-B116",
+      "chapter": "2.1",
+      "section": "2.1-S12",
+      "topic": [
+        "Dienstvertrag",
+        "Werkvertrag"
       ],
       "type": "multi",
       "difficulty": 3,
       "taxonomyLevel": 3,
       "examRelevance": "S",
-      "question": "Ein Unternehmer vergibt einem Verbraucher ein entgeltliches Darlehen. Welche zusätzlichen Merkmale können es nach dem Lernstoff zum Immobiliar-Verbraucherdarlehen machen?",
+      "question": "Dienst- oder Werkvertrag – welche Zuordnungen stimmen?",
       "answers": [
-        "Besicherung durch ein Grundpfandrecht oder eine Reallast",
-        "Verwendung für Erwerb oder Erhalt von Grundstücken bzw. Gebäuden",
-        "Verwendung für Erwerb oder Erhalt grundstücksgleicher Rechte",
-        "Der Darlehensbetrag muss zwingend unter 200 € liegen"
+        "Stundenweise bezahlte Finanzberatung ohne Erfolgsschuld: Dienstvertrag",
+        "Dachsanierung durch Dachdecker: Werkvertrag",
+        "Wertgutachten: Dienstvertrag",
+        "Arbeitsvertrag: Werkvertrag"
       ],
       "correct": [
         0,
-        1,
-        2
+        1
       ],
-      "explanation": "Die Einordnung kann über die dingliche Sicherheit oder den immobilienbezogenen Verwendungszweck erfolgen."
+      "explanation": "Tätigkeit = Dienst, Ergebnis = Werk."
     },
     {
-      "id": "2.1-B013",
+      "id": "2.1-B117",
       "chapter": "2.1",
-      "section": "2.1.2-f",
+      "section": "2.1-S12",
       "topic": [
-        "Widerruf",
-        "Pflichtangaben"
+        "Auftrag",
+        "Geschäftsbesorgung"
       ],
       "type": "single",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
+      "difficulty": 2,
+      "taxonomyLevel": 2,
       "examRelevance": "S",
-      "question": "Bei einem Verbraucherdarlehen fehlen vorgeschriebene Angaben und werden später ordnungsgemäß nachgeholt. Welche Frist nennt der Lernstoff ab diesem Zeitpunkt grundsätzlich?",
+      "question": "Ein Freund erledigt kostenlos einen Behördengang für dich. Welcher Vertrag?",
       "answers": [
-        "Einen Monat",
-        "Immer nur 14 Tage ab ursprünglichem Vertragsschluss",
-        "Drei Monate",
-        "Keine Frist mehr"
-      ],
-      "correct": [
-        0
-      ],
-      "explanation": "Nach Nachholung fehlender Pflichtangaben nennt der Lernstoff grundsätzlich eine Widerrufsfrist von einem Monat."
-    },
-    {
-      "id": "2.1-B014",
-      "chapter": "2.1",
-      "section": "2.1.2-f",
-      "topic": [
-        "Anfechtung",
-        "Täuschung"
-      ],
-      "type": "single",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
-      "examRelevance": "S",
-      "question": "Ein Vermittler täuscht einen Kreditnehmer, und gerade diese Täuschung ist ursächlich für den Darlehensabschluss. Welches Instrument nennt der Lernstoff?",
-      "answers": [
-        "Anfechtung des Darlehensvertrags wegen Täuschung",
-        "Automatische Kündigung ohne Erklärung",
-        "Pachtminderung",
-        "Leihe"
-      ],
-      "correct": [
-        0
-      ],
-      "explanation": "Der Lernstoff nennt bei kausaler Vermittlertäuschung die Anfechtung nach § 123 BGB."
-    },
-    {
-      "id": "2.1-B015",
-      "chapter": "2.1",
-      "section": "2.1.2-g",
-      "topic": [
+        "Auftrag",
+        "Geschäftsbesorgungsvertrag",
         "Werkvertrag",
         "Dienstvertrag"
       ],
-      "type": "single",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
-      "examRelevance": "S",
-      "question": "A verpflichtet sich, ein vollständiges Gutachten zu erstellen. B verpflichtet sich nur, zehn Beratungsstunden fachgerecht zu leisten. Welche Zuordnung passt?",
-      "answers": [
-        "A eher Werkvertrag, B eher Dienstvertrag",
-        "Beide zwingend Werkvertrag",
-        "A Dienstvertrag, B Werkvertrag",
-        "Beide sind Schenkungen"
-      ],
       "correct": [
         0
       ],
-      "explanation": "Beim Werk zählt der geschuldete Erfolg; beim Dienst die geschuldete Tätigkeit."
+      "explanation": "Unentgeltlich = Auftrag. Gegen Geld wäre es Geschäftsbesorgung."
     },
     {
-      "id": "2.1-B016",
+      "id": "2.1-B118",
       "chapter": "2.1",
-      "section": "2.1.2-g",
+      "section": "2.1-S13",
       "topic": [
-        "Geschäftsbesorgung",
-        "Entgeltlichkeit"
+        "Pacht",
+        "Miete"
       ],
       "type": "single",
-      "difficulty": 3,
+      "difficulty": 2,
       "taxonomyLevel": 2,
       "examRelevance": "S",
-      "question": "Eine selbständige Person übernimmt gegen Vergütung ein fremdes wirtschaftliches Geschäft im Interesse des Auftraggebers. Welcher Vertragstyp passt am ehesten?",
+      "question": "Obstwiese gegen Jahreszahlung überlassen – der Nutzer darf die Äpfel ernten und verkaufen. Welcher Vertrag?",
       "answers": [
-        "Geschäftsbesorgungsvertrag",
-        "Leihvertrag",
-        "Sachdarlehensvertrag",
-        "Pachtvertrag"
-      ],
-      "correct": [
-        0
-      ],
-      "explanation": "Die entgeltliche selbständige Besorgung eines fremden Geschäfts entspricht dem Geschäftsbesorgungsvertrag."
-    },
-    {
-      "id": "2.1-B017",
-      "chapter": "2.1",
-      "section": "2.1.2-i",
-      "topic": [
-        "Miete",
         "Pacht",
-        "Fruchtgenuss"
-      ],
-      "type": "single",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
-      "examRelevance": "S",
-      "question": "Landwirt L darf eine Fläche nutzen und die darauf erwirtschaftete Ernte behalten. Welcher Vertrag passt wegen dieses zusätzlichen Nutzungsrechts am ehesten?",
-      "answers": [
-        "Pachtvertrag",
-        "Mietvertrag ohne weitere Rechte",
-        "Leihvertrag zwingend",
-        "Bürgschaft"
+        "Miete",
+        "Leihe",
+        "Sachdarlehen"
       ],
       "correct": [
         0
       ],
-      "explanation": "Der Fruchtgenuss – also die Nutzung der Erträge – ist das zentrale Abgrenzungsmerkmal der Pacht zur Miete."
+      "explanation": "Gebrauch plus Fruchtgenuss = Pacht."
     },
     {
-      "id": "2.1-B018",
+      "id": "2.1-B119",
       "chapter": "2.1",
-      "section": "2.1.2-j",
+      "section": "2.1-S13",
       "topic": [
-        "Verpflichtungsgeschäft",
-        "Erfüllungsgeschäft"
+        "Bürgschaft",
+        "Form"
       ],
       "type": "multi",
       "difficulty": 3,
       "taxonomyLevel": 3,
       "examRelevance": "S",
-      "question": "Beim Barkauf einigen sich Käufer und Verkäufer auf Ware und Preis; anschließend werden Ware und Geld übergeben. Welche Aussagen stimmen?",
+      "question": "Bürgschaft nur telefonisch zugesagt. Was stimmt?",
       "answers": [
-        "Die Einigung begründet die vertraglichen Pflichten",
-        "Übergabe der Ware gehört zur Erfüllung",
-        "Zahlung des Geldes gehört zur Erfüllung",
-        "Verpflichtung und Erfüllung sind begrifflich dasselbe"
+        "Formunwirksam – Schriftform fehlt",
+        "Zahlt der Bürge die Schuld, ist der Mangel geheilt",
+        "Wirksam, weil mündlich klar",
+        "Nur notariell wäre sie wirksam"
       ],
       "correct": [
         0,
-        1,
-        2
+        1
       ],
-      "explanation": "Antrag und Annahme bilden das Verpflichtungsgeschäft; Lieferung und Zahlung erfüllen die geschuldeten Leistungen."
+      "explanation": "§ 766 BGB: schriftlich, Heilung durch Erfüllung."
+    },
+    {
+      "id": "2.1-B120",
+      "chapter": "2.1",
+      "section": "2.1-S13",
+      "topic": [
+        "Wohnraummiete",
+        "§ 550"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Wohnungsmiete „fest für fünf Jahre“, nur mündlich. Was gilt?",
+      "answers": [
+        "Unbefristet, frühestens zum Ablauf eines Jahres kündbar",
+        "Genau fünf Jahre bindend",
+        "Nichtig",
+        "Jederzeit fristlos kündbar"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 550 BGB."
+    },
+    {
+      "id": "2.1-B121",
+      "chapter": "2.1",
+      "section": "2.1-S10",
+      "topic": [
+        "Kündigung Darlehen"
+      ],
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Darlehen ohne vereinbarte Laufzeit. Die Bank kündigt am 1. März. Wann ist es fällig?",
+      "answers": [
+        "Am 1. Juni",
+        "Sofort",
+        "Am 1. April",
+        "Am 1. September"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 488 Abs. 3 BGB: drei Monate."
+    },
+    {
+      "id": "2.1-B122",
+      "chapter": "2.1",
+      "section": "2.1-S09",
+      "topic": [
+        "Verpflichtung",
+        "Erfüllung"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Kauf beim Bäcker. Was stimmt?",
+      "answers": [
+        "Einigung über Kauf = Verpflichtungsgeschäft",
+        "Übergabe der Ware und Zahlung = Erfüllungsgeschäft",
+        "Erst die Zahlung schließt den Kaufvertrag",
+        "Einigung und Erfüllung sind immer ein einziges Geschäft"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Zwei Ebenen, auch wenn sie im Alltag zeitgleich ablaufen."
+    },
+    {
+      "id": "2.1-B123",
+      "chapter": "2.1",
+      "section": "2.1-S02",
+      "topic": [
+        "Juristische Person"
+      ],
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Eine Bausparkasse AG schließt einen Vertrag. Was stimmt?",
+      "answers": [
+        "Die AG selbst ist rechtsfähig",
+        "Sie handelt durch ihre Vertreter, etwa den Vorstand",
+        "Sie ist eine natürliche Person",
+        "Vertragspartner sind die Aktionäre"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Juristische Person: selbst Trägerin von Rechten, handelt durch Organe."
     }
   ]
 }
