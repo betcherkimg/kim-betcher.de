@@ -51,28 +51,28 @@ export function rollQuestionReward(question, rng = Math.random, luck = 1) {
 
 export const HERO_CLASSES = {
   collector: {
-    id: 'collector', name: 'Sammler', icon: '💰', color: '#E9A400',
+    id: 'collector', img: 'assets/classes/sammler.webp', bust: 'assets/classes/sammler-bust.webp', name: 'Sammler', icon: '💰', color: '#E9A400',
     bonus: 'Doppelte Quest-Coins', short: 'Coins ×2',
     text: 'Jede Belohnung in Coins zählt doppelt – Siege, Truhen und Level-Abschlüsse.',
     fit: 'Für alle, die viel spielen und sich im Shop groß eindecken wollen.',
     coinMult: 2, priceMult: 1, luck: 1, dailyFocus: 1,
   },
   saver: {
-    id: 'saver', name: 'Sparfuchs', icon: '🦊', color: '#E0682B',
+    id: 'saver', img: 'assets/classes/sparfuchs.webp', bust: 'assets/classes/sparfuchs-bust.webp', name: 'Sparfuchs', icon: '🦊', color: '#E0682B',
     bonus: 'Alle Items zum halben Preis', short: 'Items ×0,5',
     text: 'Heiltränke, Lebensfunke und Kampf-Items kosten im Shop und in der Hotbar nur die Hälfte.',
     fit: 'Für alle, die gern Items einsetzen – Herz und Überspringer inklusive.',
     coinMult: 1, priceMult: 0.5, luck: 1, dailyFocus: 1,
   },
   normal: {
-    id: 'normal', name: 'Normalo', icon: '🧭', color: '#0A6CF5',
+    id: 'normal', img: 'assets/classes/normalo.webp', bust: 'assets/classes/normalo-bust.webp', name: 'Normalo', icon: '🧭', color: '#0A6CF5',
     bonus: 'Täglich 2× Fokus gratis', short: '2 Fokus/Tag',
     text: 'Jeden Tag stehen dir zwei kostenlose Fokus-Einsätze (+10 s im Boss) bereit. Nicht Genutztes verfällt um Mitternacht.',
     fit: 'Für alle, die jeden Tag ein bisschen lernen und im Boss mehr Zeit brauchen.',
     coinMult: 1, priceMult: 1, luck: 1, dailyFocus: 2,
   },
   lucky: {
-    id: 'lucky', name: 'Glückspilz', icon: '🍀', color: '#0E9F6E',
+    id: 'lucky', img: 'assets/classes/glueckspilz.webp', bust: 'assets/classes/glueckspilz-bust.webp', name: 'Glückspilz', icon: '🍀', color: '#0E9F6E',
     bonus: 'Doppelte Fundchance für Items', short: 'Funde ×2',
     text: 'Tränke und Lebensfunken fallen doppelt so oft – bei Fragen und als Zugabe in Truhen.',
     fit: 'Für alle, die sich gern überraschen lassen.',

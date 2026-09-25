@@ -126,3 +126,9 @@ Werte anpassen: `HERO_CLASSES` in `js/game.js`.
 - Niederlage (auch Aufgeben nach der ersten Antwort) kostet feste HP: **Story −25, Versus −33, Boss −50**.
 - **Level-Reset nur bei K.o.:** Erst wenn die HP auf 0 fallen (und kein Lebensfunke rettet), werden Story-, Versus- und Boss-Siege des Levels zurückgesetzt. Lernskript, Bestwerte, XP und Inventar bleiben. Abgeschlossene Level werden nie zurückgesetzt.
 - Heiltränke heilen feste Werte: klein +25, mittel +33, groß +50 HP.
+
+## Update 25.09.2026
+- Missionsauswahl als interaktive Weltkarte mit Seeroute und 12 Level-Markern.
+- Testphase: alle Level auf der Karte sichtbar; die vorhandenen Modi in Level 1–3 sind frei zugänglich.
+- Level 3 „Grundbuch & Immobiliensicherung“ ergänzt: Lernskript, Story-/Versus-Fragen und Bossfight.
+- Boss Level 3: „Grundherr Eisenklaue – Wächter der Rangordnung“.

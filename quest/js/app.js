@@ -536,7 +536,7 @@ function renderInvPop() {
         <button class="btn btn--sm btn--buy" data-action="buy-item" data-kind="${k}" ${canBuy ? '' : 'disabled'} title="Kaufen für ${priceOf(k)} Coins">${COIN_IMG}${priceOf(k)}</button>
       </li>`;
     }).join('')}</ul>
-    ${pl.heroClass ? `<p class="invpop__class">${HERO_CLASSES[pl.heroClass].icon} ${esc(HERO_CLASSES[pl.heroClass].name)}: ${esc(HERO_CLASSES[pl.heroClass].bonus)}${dailyFocusLeft() ? ` · heute noch ${dailyFocusLeft()}× Fokus gratis` : ''}</p>` : ''}
+    ${pl.heroClass ? `<p class="invpop__class" style="--hc:${HERO_CLASSES[pl.heroClass].color}"><img class="class-bust" src="${HERO_CLASSES[pl.heroClass].bust}" alt="" width="256" height="256"> ${esc(HERO_CLASSES[pl.heroClass].name)}: ${esc(HERO_CLASSES[pl.heroClass].bonus)}${dailyFocusLeft() ? ` · heute noch ${dailyFocusLeft()}× Fokus gratis` : ''}</p>` : ''}
     <p class="invpop__rules">Coins gibt es für jeden gewonnenen Modus (Story ${COIN_REWARDS.story.base}, Versus ${COIN_REWARDS.versus.base}, Boss ${COIN_REWARDS.boss.base}). Erster Sieg doppelt, 3 Sterne mit Bonus, Level-Abschluss +${COIN_LEVEL_COMPLETE}.<br>Niederlage kostet HP: Story −25, Versus −33, Boss −50. Level-Reset nur bei K.o. (0 HP).</p>`;
 }
 
@@ -655,9 +655,9 @@ const saveActions = {
 
 async function enterGame() {
   const m = Content.getManifest();
-  if (m) await Promise.all(m.chapters.filter((c) => c.available).map((c) => Content.loadChapterContent(c.id, ['learn'])));
+  if (m) await Promise.all(m.chapters.filter((c) => c.available && c.level <= 3).map((c) => Content.loadChapterContent(c.id, ['learn'])));
   // Überarbeitete Lernskripte: bereits verstandene Abschnitte übernehmen
-  const migrated = m ? m.chapters.filter((c) => c.available).map((c) => migrateLegacySections(c.id)).some(Boolean) : false;
+  const migrated = m ? m.chapters.filter((c) => c.available && c.level <= 3).map((c) => migrateLegacySections(c.id)).some(Boolean) : false;
   if (migrated) { persist(); toast('Lernskript aktualisiert – dein Fortschritt wurde übernommen.', { icon: '📘' }); }
   renderHeader();
   setSaveChip(save.guest ? 'guest' : save.canWrite ? 'ready' : 'permission');
@@ -726,7 +726,7 @@ function drawOnboard() {
     const c = HERO_CLASSES[id];
     const on = pick === id;
     return `<button class="hero ${on ? 'is-picked' : ''}" data-action="pick-class" data-id="${id}" aria-pressed="${on}" style="--hc:${c.color}">
-      <span class="hero__emblem" aria-hidden="true">${c.icon}</span>
+      <span class="hero__stage" aria-hidden="true"><img class="hero__img" src="${c.img}" alt="" width="720" height="960" decoding="async"></span>
       <span class="hero__name">${esc(c.name)}</span>
       <span class="hero__bonus">${esc(c.bonus)}</span>
       <span class="hero__text">${esc(c.text)}</span>
@@ -806,71 +806,84 @@ function potionButton(kind) {
 
 function renderDashboard() {
   const m = Content.getManifest();
-  const pl = playerVitals();
-  const r = rankFor(pl.xp);
-  const acc = pl.answered ? Math.round((pl.correct / pl.answered) * 100) : 0;
-  const mission = nextMission();
-  const earned = ACHIEVEMENTS.filter((a) => pl.achievements.includes(a.id));
-
-  const badges = ACHIEVEMENTS.map((a) => {
-    const got = pl.achievements.includes(a.id);
-    return `<li class="badge ${got ? 'badge--got' : ''}" title="${esc(a.title)}: ${esc(a.text)}"><span aria-hidden="true">${got ? a.icon : '?'}</span><span class="sr">${esc(a.title)} ${got ? 'freigeschaltet' : 'gesperrt'}</span></li>`;
-  }).join('');
-
-  let chaptersHtml = '<p class="empty">Die Levelliste konnte nicht geladen werden. Läuft die App über localhost?</p>';
-  if (m) {
-    const blocks = [...new Set(m.chapters.map((c) => c.block))];
-    chaptersHtml = blocks.map((b) => `
-      <section class="block">
-        <h2 class="block__title">${esc(m.blocks?.[b] || 'Questline')}</h2>
-        <div class="chapters">${m.chapters.filter((c) => c.block === b).map(chapterCard).join('')}</div>
-      </section>`).join('');
+  if (!m) {
+    $('dashboardView').innerHTML = '<p class="empty">Die Weltkarte konnte nicht geladen werden.</p>';
+    return;
   }
 
-  $('dashboardView').innerHTML = `
-    <div class="dash">
-      <div class="dash__top">
-        ${mission ? `
-        <button class="mission" ${mission.action}>
-          <span class="mission__label">Nächste Mission</span>
-          <span class="mission__title">${esc(mission.label)}</span>
-          <span class="mission__detail">${esc(mission.detail)}</span>
-          <span class="mission__go">${I.next}</span>
-        </button>` : `
-        <div class="mission mission--done">
-          <span class="mission__label">Alle verfügbaren Level abgeschlossen</span>
-          <span class="mission__title">Stark! Neue Level folgen.</span>
-          <span class="mission__detail">Spiel Bosse und Karussell erneut für Coins und Bestwerte.</span>
-        </div>`}
-        <section class="profile" aria-label="Dein Profil">
-          <div class="profile__head">
-            <span class="profile__emblem" aria-hidden="true">${r.level}</span>
-            <div>
-              <p class="profile__kicker">Rang ${r.level}</p>
-              <p class="profile__title">${esc(r.title)}</p>
-            </div>
-          </div>
-          ${pl.heroClass ? `<p class="profile__class" style="--hc:${HERO_CLASSES[pl.heroClass].color}"><span aria-hidden="true">${HERO_CLASSES[pl.heroClass].icon}</span> ${esc(HERO_CLASSES[pl.heroClass].name)} <small>${esc(HERO_CLASSES[pl.heroClass].short)}</small></p>` : ''}
-          <div class="bar bar--xp" role="progressbar" aria-label="Erfahrung bis zum nächsten Rang" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${r.pct}"><span style="width:${r.pct}%"></span></div>
-          <p class="profile__next">${pl.xp} XP${r.next ? ` · noch ${r.toNext} bis „${esc(r.next.title)}“` : ' · höchster Rang'}</p>
-          <dl class="profile__stats">
-            <div><dt>Treffer</dt><dd>${pl.answered ? acc + ' %' : '–'}</dd></div>
-            <div><dt>Beste Serie</dt><dd>${pl.bestCombo}</dd></div>
-            <div><dt>Lerntage</dt><dd>${pl.dayStreak}</dd></div>
-          </dl>
-          <details class="ach">
-            <summary>
-              <span>Erfolge <b>${earned.length}/${ACHIEVEMENTS.length}</b></span>
-              <span class="ach__preview" aria-hidden="true">${earned.slice(-5).map((a) => a.icon).join('') || '–'}</span>
-            </summary>
-            <ul class="badges">${badges}</ul>
-          </details>
-        </section>
-      </div>
-      ${chaptersHtml}
-    </div>`;
-}
+  const coords = {
+    0: [17.9, 80.3], 1: [18.6, 57.2], 2: [12.2, 37.3], 3: [11.5, 9.5],
+    4: [35.9, 16.5], 5: [63.9, 13.3], 6: [88.2, 17.3], 7: [86.9, 39.9],
+    8: [91.2, 61.3], 9: [92.2, 81.5], 10: [70.6, 82.6], 11: [45.1, 83.0], 12: [53.4, 44.1]
+  };
+  const path = 'M275 822 C280 730 285 650 285 586 C250 520 220 450 188 382 C165 280 165 180 176 97 C300 95 430 120 552 169 C700 115 845 105 982 136 C1110 120 1240 135 1354 177 C1380 260 1370 340 1335 409 C1390 470 1405 550 1401 628 C1420 700 1420 770 1416 835 C1300 870 1190 870 1085 846 C950 885 820 885 692 850 C700 720 760 570 820 452';
+  const current = m.chapters.find((c) => c.available && !chapterStatus(c.id).mastered) || m.chapters[0];
 
+  const panel = (c) => {
+    const st = chapterStatus(c.id);
+    const ready = c.level <= 3;
+    const boss = c.level === 1 ? 'Richter Rabenfeder' : c.level === 2 ? 'Notar Nebelsiegel' : c.level === 3 ? 'Grundherr Eisenklaue' : '';
+    const bossImg = c.level === 1 ? 'assets/bosses/richter-rabenfeder-bust.webp' : c.level === 2 ? 'assets/bosses/notar-nebelsiegel-bust.webp' : c.level === 3 ? 'assets/bosses/grundherr-eisenklaue-bust.webp' : '';
+    return `<div class="map-pop" role="group" aria-label="Level ${esc(c.level)} Optionen">
+      <div class="map-pop__head">
+        <span class="map-pop__lvl">LEVEL ${esc(c.level)}</span>
+        <span class="map-pop__pct">${st.pct}%</span>
+      </div>
+      ${bossImg ? `<img class="map-pop__bossimg" src="${bossImg}" alt="" width="96" height="96">` : ''}
+      <h2>${esc(c.title)}</h2>
+      ${boss ? `<p class="map-pop__boss">${esc(boss)}${c.level === 3 ? ' · Wächter der Rangordnung' : ''}</p>` : '<p class="map-pop__boss">Inhalt folgt</p>'}
+      <span class="map-pop__bar"><span style="width:${st.pct}%"></span></span>
+      ${ready ? `<div class="map-pop__modes">
+        <button data-action="open-learn" data-id="${esc(c.id)}">${I.book}<span>Lernskript</span></button>
+        <button data-action="start-mode" data-mode="story" data-id="${esc(c.id)}">${I.path}<span>Story</span></button>
+        <button data-action="start-mode" data-mode="versus" data-id="${esc(c.id)}">${I.swords}<span>Versus</span></button>
+        <button data-action="start-mode" data-mode="boss" data-id="${esc(c.id)}">${I.crown}<span>Boss</span></button>
+      </div>` : `<button class="map-pop__open" data-action="open-chapter" data-id="${esc(c.id)}">Level ansehen ${I.next}</button>`}
+    </div>`;
+  };
+
+  const nodes = m.chapters.map((c) => {
+    const xy = coords[c.level];
+    const st = chapterStatus(c.id);
+    const cls = st.mastered ? 'is-mastered' : st.pct > 0 ? 'is-progress' : 'is-new';
+    return `<div class="map-node map-node--${c.level} ${cls} ${current?.id === c.id ? 'is-current' : ''}" style="--x:${xy[0]}%;--y:${xy[1]}%">
+      <button class="map-marker" data-action="open-chapter" data-id="${esc(c.id)}" aria-label="Level ${esc(c.level)}: ${esc(c.title)}">
+        <span>${esc(c.level)}</span>
+      </button>
+      ${panel(c)}
+    </div>`;
+  }).join('');
+
+  $('dashboardView').innerHTML = `
+    <div class="worldmap-shell">
+      <div class="worldmap-head">
+        <div><span class="worldmap-kicker">QUESTLINE I</span><h1>Die Welt der Immobiliardarlehensvermittlung</h1></div>
+        <p>Fahre mit der Maus über eine Insel oder klicke einen Marker. In der Testphase sind alle Level sichtbar; Level 1–3 enthalten spielbare Inhalte.</p>
+      </div>
+      <div class="worldmap-viewport" id="worldmapViewport" tabindex="0" aria-label="Levelkarte – horizontal und vertikal scrollbar">
+        <div class="worldmap">
+          <img class="worldmap__bg" src="assets/world/quest-map.png" alt="Fantastische Inselwelt mit zwölf Levelinseln" width="1536" height="1024">
+          <svg class="worldmap__route" viewBox="0 0 1536 1024" aria-hidden="true" preserveAspectRatio="none">
+            <path class="route-shadow" d="${path}"/>
+            <path class="route-main" d="${path}"/>
+          </svg>
+          <div class="map-node map-node--harbor" style="--x:${coords[0][0]}%;--y:${coords[0][1]}%">
+            <div class="harbor-badge"><span>⚓</span><b>HAFEN</b></div>
+          </div>
+          ${nodes}
+          <div class="player-ship" style="--x:23%;--y:31%" aria-hidden="true"><span>⛵</span></div>
+        </div>
+      </div>
+      <p class="worldmap-hint">Tipp: Auf kleinen Bildschirmen kannst du die Karte verschieben.</p>
+    </div>`;
+
+  requestAnimationFrame(() => {
+    if (window.matchMedia('(max-width: 760px)').matches) {
+      const active = document.querySelector('.map-node.is-current .map-marker');
+      active?.scrollIntoView({ block: 'nearest', inline: 'center' });
+    }
+  });
+}
 function chapterCard(c) {
   const level = c.level ?? '?';
   if (!c.available) {

@@ -1,0 +1,396 @@
+{
+  "chapter": "2.3",
+  "boss": {
+    "name": "Grundherr Eisenklaue",
+    "title": "Wächter der Rangordnung",
+    "taunts": {
+      "intro": "In meinem Grundbuch hat jedes Recht seinen Platz. Zeig mir, dass du deinen Rang kennst.",
+      "hit": [
+        "Du kennst die Reihenfolge … interessant.",
+        "Ein sauberer Eintrag. Noch.",
+        "Du rückst gefährlich weit nach vorn."
+      ],
+      "miss": [
+        "Zurück in den Nachrang!",
+        "Falscher Rang. Das wird teuer.",
+        "Eisenklaue duldet keine Unordnung."
+      ],
+      "timeout": [
+        "Zu langsam. Der Rang ist vergeben.",
+        "Wer zögert, landet hinten."
+      ],
+      "final": "Letzte Eintragung. Jetzt entscheidet der Rang.",
+      "low": "Meine Rangstelle wankt …",
+      "defeat": "Du hast die Ordnung verstanden. Geh weiter.",
+      "victory": "Dein Recht ist nachrangig. Zurück ins Lernskript."
+    },
+    "image": "assets/bosses/grundherr-eisenklaue.webp",
+    "bust": "assets/bosses/grundherr-eisenklaue-bust.webp"
+  },
+  "questions": [
+    {
+      "id": "2.3-B001",
+      "chapter": "2.3",
+      "section": "2.3.3-a",
+      "topic": [
+        "Rangfolge",
+        "Ortsprinzip"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "In Abteilung III stehen 80.000 € als Nr. 1, 40.000 € als Nr. 2 und 25.000 € als Nr. 3. Wie hoch sind die Vorlasten der Nr. 3?",
+      "answers": [
+        "120.000 €",
+        "80.000 €",
+        "145.000 €",
+        "65.000 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Vor Nr. 3 liegen Nr. 1 und Nr. 2: 80.000 € + 40.000 € = 120.000 € Vorlast."
+    },
+    {
+      "id": "2.3-B002",
+      "chapter": "2.3",
+      "section": "2.3.3-a",
+      "topic": [
+        "Rangfolge",
+        "Zeitprinzip"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Abt. II/1: Wegerecht vom 12.04.; Abt. III/1: Grundschuld vom 08.04. Welche Aussage stimmt grundsätzlich?",
+      "answers": [
+        "Die Grundschuld steht vor dem Wegerecht",
+        "Das Wegerecht steht immer vor jeder Grundschuld",
+        "Beide sind allein wegen unterschiedlicher Abteilungen gleichrangig",
+        "Die laufende Nummer entscheidet abteilungsübergreifend"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Zwischen Abteilung II und III entscheidet grundsätzlich das Eintragungsdatum: 08.04. vor 12.04."
+    },
+    {
+      "id": "2.3-B003",
+      "chapter": "2.3",
+      "section": "2.3.3-a",
+      "topic": [
+        "Gleichrang"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Ein Wohnrecht in Abt. II und eine Grundschuld in Abt. III werden am selben Tag eingetragen; im Eintragungstext steht nichts Abweichendes. Welcher Rang gilt?",
+      "answers": [
+        "Gleichrang",
+        "Immer Grundschuld zuerst",
+        "Immer Wohnrecht zuerst",
+        "Rang ist nicht bestimmbar"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Rechte in verschiedenen Abteilungen mit gleichem Eintragungstag sind grundsätzlich gleichrangig."
+    },
+    {
+      "id": "2.3-B004",
+      "chapter": "2.3",
+      "section": "2.3.3-b",
+      "topic": [
+        "Rangrücktritt"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "A-Bank Nr. 1: 10.000 €, Bausparkasse Nr. 2: 15.000 €, B-Bank Nr. 3: 13.000 €. Die Bausparkasse tritt hinter Nr. 3 zurück. Wie hoch ist ihr neuer Vorrang?",
+      "answers": [
+        "23.000 €",
+        "10.000 €",
+        "13.000 €",
+        "38.000 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Vor der Bausparkasse liegen danach 10.000 € + 13.000 € = 23.000 € Vorlast."
+    },
+    {
+      "id": "2.3-B005",
+      "chapter": "2.3",
+      "section": "2.3.2-d",
+      "topic": [
+        "Auflassungsvormerkung",
+        "Rang"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Eine Auflassungsvormerkung steht vor der später einzutragenden Grundschuld des Kreditgebers. Warum ist das problematisch?",
+      "answers": [
+        "Der Vormerkungsberechtigte muss spätere beeinträchtigende Eintragungen nicht gegen sich gelten lassen",
+        "Die Grundschuld wird dadurch automatisch zur Hypothek",
+        "Der Käufer wird sofort Eigentümer",
+        "Die Grundschuld darf nie in Abteilung III stehen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Vormerkung schützt den gesicherten Anspruch gerade gegenüber späteren Verfügungen/Eintragungen."
+    },
+    {
+      "id": "2.3-B006",
+      "chapter": "2.3",
+      "section": "2.3.2-f",
+      "topic": [
+        "Wohnrecht",
+        "Beleihung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Ein lebenslanges Wohnrecht steht im Vorrang vor der geplanten Grundschuld. Was ist aus Beleihungssicht laut Skript typisch?",
+      "answers": [
+        "Rangrücktritt oder Kapitalisierung prüfen",
+        "Immer ohne Prüfung akzeptieren",
+        "Automatisch löschen lassen ohne Zustimmung",
+        "Als Grundpfandrecht in Abteilung III behandeln"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Ein Wohnrecht kann die Verwertbarkeit einschränken; daher sind Rangrücktritt oder Kapitalisierung typische Maßnahmen."
+    },
+    {
+      "id": "2.3-B007",
+      "chapter": "2.3",
+      "section": "2.3.2-f",
+      "topic": [
+        "Bergschadenverzicht"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Im Grundbuch steht ein Bergschadenverzicht. Welche Aussage entspricht dem Skript?",
+      "answers": [
+        "Das Objekt ist grundsätzlich beleihungsunfähig",
+        "Das Recht ist immer wertneutral",
+        "Es ist ein Grundpfandrecht",
+        "Es steht nur im Baulastenverzeichnis"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Skript stuft den Bergschadenverzicht als grundsätzlich beleihungsschädlich ein."
+    },
+    {
+      "id": "2.3-B008",
+      "chapter": "2.3",
+      "section": "2.3.2-h",
+      "topic": [
+        "Hypothek",
+        "Grundschuld"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Welche Aussagen trennen Hypothek und Grundschuld korrekt?",
+      "answers": [
+        "Hypothek ist akzessorisch",
+        "Grundschuld ist abstrakt",
+        "Grundschuld kann über Sicherungsvereinbarung an Forderungen gekoppelt werden",
+        "Hypothek ist unabhängig von jeder Forderung"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Hypothek hängt von der Forderung ab; Grundschuld ist abstrakt und wird schuldrechtlich über die Sicherungsvereinbarung gebunden."
+    },
+    {
+      "id": "2.3-B009",
+      "chapter": "2.3",
+      "section": "2.3.1-d",
+      "topic": [
+        "Erbbaurecht",
+        "Rang"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Welchen Rang muss das Erbbaurecht im Grundstücksgrundbuch nach dem Skript grundsätzlich haben?",
+      "answers": [
+        "Erste Rangstelle",
+        "Beliebige Rangstelle",
+        "Nur hinter allen Grundschulden",
+        "Es wird nicht im Grundstücksgrundbuch eingetragen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Erbbaurecht wird in Abteilung II bestellt und muss nach dem Skript an erster Rangstelle stehen."
+    },
+    {
+      "id": "2.3-B010",
+      "chapter": "2.3",
+      "section": "2.3.1-d",
+      "topic": [
+        "Erbbaurecht",
+        "Beleihung"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Welche Punkte sprechen bei einer Erbbaurechtsbeleihung für genaue Prüfung?",
+      "answers": [
+        "Restlaufzeit des Erbbaurechts",
+        "Wertmindernde Vertragsklauseln",
+        "Zustimmungserfordernisse des Grundstückseigentümers",
+        "Bodenwert vollständig als Teil der Sicherheit ansetzen"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Laufzeit, Vertrag und Zustimmungen sind relevant; der Boden gehört nicht zum Erbbaurecht."
+    },
+    {
+      "id": "2.3-B011",
+      "chapter": "2.3",
+      "section": "2.3.2-b",
+      "topic": [
+        "Miteigentum",
+        "Grundschuld"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Eheleute sind je zu 1/2 Miteigentümer. Die Bank will das gesamte Objekt als Sicherheit. Wer muss die Grundschuldbestellung unterschreiben?",
+      "answers": [
+        "Beide Eigentümer",
+        "Nur einer, weil jeder über seinen Anteil verfügen kann",
+        "Nur der mit höherem Einkommen",
+        "Nur der Notar"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Soll die Sicherheit alle Miteigentumsanteile erfassen, müssen alle Eigentümer mitwirken."
+    },
+    {
+      "id": "2.3-B012",
+      "chapter": "2.3",
+      "section": "2.3.4-a",
+      "topic": [
+        "Form",
+        "Grundbuchänderung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Für eine Löschung liegt die formgerechte Löschungsbewilligung vor. Wie muss der Antrag beim Grundbuchamt laut Skript gestellt werden?",
+      "answers": [
+        "Er kann formlos gestellt werden",
+        "Er muss zwingend notariell beurkundet sein",
+        "Er ist nur mündlich zulässig",
+        "Ein Antrag ist nie nötig"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Eintragungsgrundlage braucht die geforderte Form; der Antrag selbst ist formlos."
+    },
+    {
+      "id": "2.3-B013",
+      "chapter": "2.3",
+      "section": "2.3.5-a",
+      "topic": [
+        "Baulast",
+        "Grundbuch"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Der Grundbuchauszug ist frei von Lasten. Darf daraus geschlossen werden, dass keine Abstandsflächenbaulast besteht?",
+      "answers": [
+        "Nein, Baulasten sind im Baulastenverzeichnis zu prüfen",
+        "Ja, alles Relevante steht zwingend im Grundbuch",
+        "Ja, wenn Abteilung II leer ist",
+        "Nur bei Wohnungseigentum"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Baulasten sind öffentlich-rechtliche Verpflichtungen und stehen nicht im Grundbuch."
+    },
+    {
+      "id": "2.3-B014",
+      "chapter": "2.3",
+      "section": "2.3.2-e",
+      "topic": [
+        "Vorkaufsrecht"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Ein dinglich Vorkaufsberechtigter übt sein Recht aus. Welche Rechtsfolge beschreibt das Skript?",
+      "answers": [
+        "Er tritt zu den gleichen Bedingungen an die Stelle des Käufers",
+        "Er erhält nur Schadensersatz",
+        "Er wird ohne Kaufvertrag Eigentümer",
+        "Der ursprüngliche Verkäufer verliert jedes Verfügungsrecht dauerhaft"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Vorkaufsrecht ermöglicht den Eintritt in den geschlossenen Kaufvertrag zu gleichen Bedingungen."
+    },
+    {
+      "id": "2.3-B015",
+      "chapter": "2.3",
+      "section": "2.3.2-g",
+      "topic": [
+        "Grundpfandrechte",
+        "Abteilung III"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Welche Veränderungen können bei Grundpfandrechten in den Veränderungsspalten dokumentiert werden?",
+      "answers": [
+        "Rangveränderung",
+        "Abtretung",
+        "Nachträglicher Briefausschluss",
+        "Nachträgliche Brieferteilung",
+        "Änderung der Grundstücksgröße ohne Vermessung"
+      ],
+      "correct": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explanation": "Das Skript nennt alle vier als typische Veränderungen."
+    }
+  ]
+}

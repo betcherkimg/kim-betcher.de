@@ -1,0 +1,750 @@
+{
+  "chapter": "2.3",
+  "questions": [
+    {
+      "id": "2.3-Q001",
+      "chapter": "2.3",
+      "section": "2.3.1-a",
+      "topic": "Öffentlicher Glaube",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 1,
+      "question": "Welche Aussage zum Grundbuch trifft zu?",
+      "answers": [
+        "Es informiert über Eigentum, Lasten und Rangverhältnisse",
+        "Es garantiert die tatsächliche Grundstücksgröße",
+        "Es ersetzt das Baulastenverzeichnis",
+        "Es enthält nur Eigentümerdaten"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Grundbuch zeigt die rechtlichen Verhältnisse am Grundstück einschließlich Lasten und Rang."
+    },
+    {
+      "id": "2.3-Q002",
+      "chapter": "2.3",
+      "section": "2.3.1-a",
+      "topic": "Bestandsverzeichnis",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 2,
+      "question": "Welche Angabe ist NICHT vom öffentlichen Glauben des Grundbuchs gedeckt?",
+      "answers": [
+        "Die im Bestandsverzeichnis genannte Grundstücksgröße",
+        "Eine eingetragene Grundschuld",
+        "Ein eingetragenes Eigentumsrecht",
+        "Ein eingetragenes Wohnrecht"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Tatsächliche Angaben wie Lage, Größe und Nutzungsart im Bestandsverzeichnis sind nicht vom öffentlichen Glauben umfasst."
+    },
+    {
+      "id": "2.3-Q003",
+      "chapter": "2.3",
+      "section": "2.3.1-b",
+      "topic": "Grundakte",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 3,
+      "question": "Wo findet man typischerweise die Urkunde, auf deren Grundlage eine Grundschuld eingetragen wurde?",
+      "answers": [
+        "In der Grundakte",
+        "Nur im Bestandsverzeichnis",
+        "In Abteilung I",
+        "Im Baulastenverzeichnis"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Eintragungsgrundlagen wie Grundschuldbestellungsurkunden werden in der Grundakte gesammelt."
+    },
+    {
+      "id": "2.3-Q004",
+      "chapter": "2.3",
+      "section": "2.3.1-b",
+      "topic": "Besondere Grundbücher",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 4,
+      "question": "Welche besonderen Grundbuchblätter nennt das Lernskript?",
+      "answers": [
+        "Wohnungsgrundbuch",
+        "Teileigentumsgrundbuch",
+        "Erbbaugrundbuch",
+        "Baulastengrundbuch"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Wohnungs-, Teileigentums- und Erbbaugrundbuch sind besondere Grundbuchblätter."
+    },
+    {
+      "id": "2.3-Q005",
+      "chapter": "2.3",
+      "section": "2.3.1-c",
+      "topic": "Wohnungseigentum",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 5,
+      "question": "Welche Zuordnung ist richtig?",
+      "answers": [
+        "Eigentumswohnung → Wohnungseigentum",
+        "Laden → Wohnungseigentum",
+        "Treppenhaus → Sondereigentum",
+        "Außenmauer → Sondereigentum"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Wohnräume können Wohnungseigentum sein; gemeinschaftliche Gebäudeteile bleiben Gemeinschaftseigentum."
+    },
+    {
+      "id": "2.3-Q006",
+      "chapter": "2.3",
+      "section": "2.3.1-c",
+      "topic": "Teilungserklärung",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 6,
+      "question": "Was regelt bzw. ermöglicht die Teilungserklärung?",
+      "answers": [
+        "Aufteilung in Miteigentumsanteile",
+        "Zuordnung des Sondereigentums",
+        "Regeln der Eigentümergemeinschaft",
+        "Festlegung der Grundsteuer durch das Finanzamt"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Teilungserklärung und Aufteilungsplan strukturieren Miteigentumsanteile, Sondereigentum und Gemeinschaftsregeln."
+    },
+    {
+      "id": "2.3-Q007",
+      "chapter": "2.3",
+      "section": "2.3.1-d",
+      "topic": "Erbbaurecht",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 7,
+      "question": "Wo wird das Erbbaurecht am Grundstück eingetragen?",
+      "answers": [
+        "In Abteilung II des Grundstücksgrundbuchs",
+        "Nur im Baulastenverzeichnis",
+        "In Abteilung III",
+        "Im Bestandsverzeichnis ohne eigene Eintragung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Erbbaurecht belastet das Grundstück in Abteilung II."
+    },
+    {
+      "id": "2.3-Q008",
+      "chapter": "2.3",
+      "section": "2.3.1-d",
+      "topic": "Erbbaurecht Beleihung",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 8,
+      "question": "Was ist bei der Beleihung eines Erbbaurechts zu beachten?",
+      "answers": [
+        "Grundstücksanteil nicht als Wertbestandteil des Erbbaurechts ansetzen",
+        "Darlehenslaufzeit möglichst vor Ablauf des Erbbaurechts",
+        "Erbbaurechtsvertrag auf wertmindernde Regelungen prüfen",
+        "Der Grundstückseigentümer ist immer ohne Bedeutung"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Boden gehört nicht zum Erbbaurecht; Laufzeit und Vertragsbedingungen sind zu prüfen, außerdem sind Zustimmungen relevant."
+    },
+    {
+      "id": "2.3-Q009",
+      "chapter": "2.3",
+      "section": "2.3.2-a",
+      "topic": "Deckblatt",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 9,
+      "question": "Welcher Bestandteil dient vor allem der rechtlichen Identifizierung des Grundbuchs?",
+      "answers": [
+        "Deckblatt/Aufschrift",
+        "Abteilung III",
+        "Grundakte",
+        "Baulastenverzeichnis"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Deckblatt nennt u. a. Amtsgericht, Bezirk/Gemarkung und Blatt."
+    },
+    {
+      "id": "2.3-Q010",
+      "chapter": "2.3",
+      "section": "2.3.2-a",
+      "topic": "Bestandsverzeichnis",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 10,
+      "question": "Welche Angaben gehören typischerweise ins Bestandsverzeichnis?",
+      "answers": [
+        "Flurstück",
+        "Lage",
+        "Größe",
+        "Hypothekengläubiger"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Der Hypothekengläubiger gehört zu Abteilung III, nicht zum Bestandsverzeichnis."
+    },
+    {
+      "id": "2.3-Q011",
+      "chapter": "2.3",
+      "section": "2.3.2-b",
+      "topic": "Abteilung I",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 11,
+      "question": "Was steht in Abteilung I?",
+      "answers": [
+        "Eigentümer bzw. Erbbauberechtigte und Eigentumsverhältnisse",
+        "Nur Grundpfandrechte",
+        "Baulasten",
+        "Nur Wegerechte"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Abteilung I behandelt Eigentum bzw. beim Erbbaugrundbuch den Erbbauberechtigten."
+    },
+    {
+      "id": "2.3-Q012",
+      "chapter": "2.3",
+      "section": "2.3.2-b",
+      "topic": "Gesamthand",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 12,
+      "question": "Eine Erbengemeinschaft ist als Eigentümer eingetragen. Wer kann das Grundstück wirksam belasten?",
+      "answers": [
+        "Die Gemeinschaft muss gemeinschaftlich handeln",
+        "Jeder Erbe allein",
+        "Nur der älteste Erbe",
+        "Nur das Grundbuchamt"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Bei Gesamthandseigentum ist die Verfügung gemeinschaftlich möglich."
+    },
+    {
+      "id": "2.3-Q013",
+      "chapter": "2.3",
+      "section": "2.3.2-c",
+      "topic": "Abteilung II",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 13,
+      "question": "Was gehört grundsätzlich in Abteilung II?",
+      "answers": [
+        "Lasten und Beschränkungen",
+        "Grundpfandrechte",
+        "Nur Eigentümerdaten",
+        "Erschließungsbeiträge"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Abteilung II enthält Lasten und Beschränkungen."
+    },
+    {
+      "id": "2.3-Q014",
+      "chapter": "2.3",
+      "section": "2.3.2-c",
+      "topic": "Last/Beschränkung",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 14,
+      "question": "Welche Einträge können die Verfügungsfreiheit des Eigentümers beschränken?",
+      "answers": [
+        "Auflassungsvormerkung",
+        "Zwangsversteigerungsvermerk",
+        "Insolvenzvermerk",
+        "Flurstücksnummer"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Flurstücksnummer ist eine Grundstücksangabe, keine Verfügungsbeschränkung."
+    },
+    {
+      "id": "2.3-Q015",
+      "chapter": "2.3",
+      "section": "2.3.2-d",
+      "topic": "Auflassungsvormerkung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 15,
+      "question": "Welchen Zweck hat die Auflassungsvormerkung?",
+      "answers": [
+        "Sie sichert den Anspruch auf Eigentumsübertragung gegen spätere beeinträchtigende Verfügungen",
+        "Sie macht den Käufer sofort zum Eigentümer",
+        "Sie ersetzt die Kaufpreiszahlung",
+        "Sie ist ein Grundpfandrecht"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Sie schützt den Übereignungsanspruch bis zur Eigentumsumschreibung."
+    },
+    {
+      "id": "2.3-Q016",
+      "chapter": "2.3",
+      "section": "2.3.2-d",
+      "topic": "Widerspruch",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 16,
+      "question": "Welche Wirkung hat ein eingetragener Widerspruch?",
+      "answers": [
+        "Er zerstört den öffentlichen Glauben hinsichtlich der betroffenen Eintragung",
+        "Er macht jede Grundschuld automatisch unwirksam",
+        "Er überträgt Eigentum",
+        "Er löscht die Grundakte"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Widerspruch beseitigt den öffentlichen Glauben im betroffenen Umfang."
+    },
+    {
+      "id": "2.3-Q017",
+      "chapter": "2.3",
+      "section": "2.3.2-e",
+      "topic": "Reallast",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 17,
+      "question": "Was kennzeichnet eine Reallast?",
+      "answers": [
+        "Wiederkehrende Leistungen aus dem Grundstück",
+        "Einmalige Kaufpreiszahlung",
+        "Eigentumsumschreibung",
+        "Nur ein Wegerecht"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Reallasten sichern wiederkehrende Leistungen wie Geld, Naturalien oder Dienstleistungen."
+    },
+    {
+      "id": "2.3-Q018",
+      "chapter": "2.3",
+      "section": "2.3.2-e",
+      "topic": "Vorkaufsrecht",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 18,
+      "question": "Was ermöglicht ein dingliches Vorkaufsrecht?",
+      "answers": [
+        "Eintritt in einen mit einem Dritten geschlossenen Kaufvertrag zu gleichen Bedingungen",
+        "Automatischen Eigentumserwerb ohne Kaufvertrag",
+        "Nutzung aller Mieterträge",
+        "Belastung des Grundstücks ohne Eigentümer"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Vorkaufsberechtigte kann an die Stelle des Käufers treten."
+    },
+    {
+      "id": "2.3-Q019",
+      "chapter": "2.3",
+      "section": "2.3.2-f",
+      "topic": "Grunddienstbarkeit",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 19,
+      "question": "Welches Beispiel passt typischerweise zur Grunddienstbarkeit?",
+      "answers": [
+        "Wegerecht zugunsten des Eigentümers eines Nachbargrundstücks",
+        "Hypothek einer Bank",
+        "Eigentümerwechsel",
+        "Erschließungsbeitrag"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Grunddienstbarkeiten bestehen zugunsten des jeweiligen Eigentümers eines anderen Grundstücks."
+    },
+    {
+      "id": "2.3-Q020",
+      "chapter": "2.3",
+      "section": "2.3.2-f",
+      "topic": "Nießbrauch",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 20,
+      "question": "Was darf ein Nießbraucher typischerweise?",
+      "answers": [
+        "Das Grundstück nutzen",
+        "Erträge daraus ziehen, z. B. vermieten",
+        "Das Grundstück aufgrund des Nießbrauchs selbst veräußern",
+        "Das Grundstück aufgrund des Nießbrauchs selbst belasten"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Nießbrauch gewährt Nutzung und Fruchtziehung, nicht Eigentümerbefugnisse zur Veräußerung oder Belastung."
+    },
+    {
+      "id": "2.3-Q021",
+      "chapter": "2.3",
+      "section": "2.3.2-g",
+      "topic": "Abteilung III",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 21,
+      "question": "Welche Rechte stehen in Abteilung III?",
+      "answers": [
+        "Hypothek, Grundschuld, Rentenschuld",
+        "Wohnrecht, Wegerecht, Nießbrauch",
+        "Eigentümer und Erben",
+        "Baulasten und Erschließungskosten"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Abteilung III ist die Abteilung der Grundpfandrechte."
+    },
+    {
+      "id": "2.3-Q022",
+      "chapter": "2.3",
+      "section": "2.3.2-g",
+      "topic": "Grundpfandrecht",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 22,
+      "question": "Was kann ein Grundpfandrechtsgläubiger bei Zahlungsunfähigkeit grundsätzlich verlangen?",
+      "answers": [
+        "Befriedigung aus der Verwertung des belasteten Grundstücks",
+        "Automatische Eigentumsübertragung ohne Verfahren",
+        "Löschung aller Rechte in Abteilung II",
+        "Übertragung des übrigen Privatvermögens aufgrund des dinglichen Rechts"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Grundpfandrecht eröffnet den Zugriff auf den belasteten Grundbesitz zur Befriedigung."
+    },
+    {
+      "id": "2.3-Q023",
+      "chapter": "2.3",
+      "section": "2.3.2-h",
+      "topic": "Hypothek",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 23,
+      "question": "Welcher Begriff beschreibt die Bindung der Hypothek an die Forderung?",
+      "answers": [
+        "Akzessorisch",
+        "Abstrakt",
+        "Gesamthänderisch",
+        "Vormerkungsfähig"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Hypothek ist akzessorisch, also von der Forderung abhängig."
+    },
+    {
+      "id": "2.3-Q024",
+      "chapter": "2.3",
+      "section": "2.3.2-h",
+      "topic": "Grundschuld",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 24,
+      "question": "Welche Aussagen zur Grundschuld stimmen?",
+      "answers": [
+        "Sie ist abstrakt, also nicht automatisch vom Bestand einer Forderung abhängig",
+        "Sie wird über eine Sicherungs-/Zweckvereinbarung mit der Forderung verknüpft",
+        "Sie kann grundsätzlich für spätere Sicherungszwecke neu verwendet werden",
+        "Sie ist zwingend akzessorisch"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Die Grundschuld ist abstrakt und deshalb flexibel einsetzbar."
+    },
+    {
+      "id": "2.3-Q025",
+      "chapter": "2.3",
+      "section": "2.3.3-a",
+      "topic": "Ortsprinzip",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 25,
+      "question": "Drei Grundschulden stehen in Abteilung III unter laufender Nr. 1, 2 und 3. Welche Regel bestimmt grundsätzlich ihre Rangfolge?",
+      "answers": [
+        "Orts-/Locusprinzip",
+        "Zeitprinzip zwischen Abteilungen",
+        "Baulastenprinzip",
+        "Nur die Höhe der Beträge"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Innerhalb derselben Abteilung richtet sich der Rang grundsätzlich nach der laufenden Nummer."
+    },
+    {
+      "id": "2.3-Q026",
+      "chapter": "2.3",
+      "section": "2.3.3-a",
+      "topic": "Zeitprinzip",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 26,
+      "question": "Ein Recht in Abteilung II wurde am 5. Mai, ein Recht in Abteilung III am 10. Mai eingetragen. Welches steht grundsätzlich vorn?",
+      "answers": [
+        "Das Recht vom 5. Mai",
+        "Immer Abteilung III",
+        "Immer Abteilung II",
+        "Beide immer gleichrangig"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Zwischen verschiedenen Abteilungen entscheidet grundsätzlich das Eintragungsdatum."
+    },
+    {
+      "id": "2.3-Q027",
+      "chapter": "2.3",
+      "section": "2.3.3-b",
+      "topic": "Rangänderung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 27,
+      "question": "Wer muss einer Rangänderung insbesondere zustimmen/bewilligen?",
+      "answers": [
+        "Der im Rang zurücktretende Gläubiger",
+        "Nur der nachrückende Gläubiger",
+        "Nur das Katasteramt",
+        "Niemand, Rang ist unveränderbar"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der negativ Betroffene, der Rang verliert, muss die Veränderung bewilligen."
+    },
+    {
+      "id": "2.3-Q028",
+      "chapter": "2.3",
+      "section": "2.3.3-b",
+      "topic": "Rangvorbehalt",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 28,
+      "question": "Wozu dient ein Rangvorbehalt?",
+      "answers": [
+        "Eine Rangstelle für ein später einzutragendes Recht freizuhalten",
+        "Ein bestehendes Recht automatisch zu löschen",
+        "Die Grundstücksgröße zu reservieren",
+        "Die Auflassung zu ersetzen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Rangvorbehalt reserviert eine bestimmte Rangposition für später."
+    },
+    {
+      "id": "2.3-Q029",
+      "chapter": "2.3",
+      "section": "2.3.4-a",
+      "topic": "Änderungen",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 29,
+      "question": "Welche Vorgänge können Änderungen im Grundbuch sein?",
+      "answers": [
+        "Eigentümerwechsel",
+        "Löschung",
+        "Rangänderung",
+        "Abtretung",
+        "Änderung der persönlichen Telefonnummer des Eigentümers"
+      ],
+      "correct": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explanation": "Alle genannten Vorgänge sind typische Grundbuchänderungen."
+    },
+    {
+      "id": "2.3-Q030",
+      "chapter": "2.3",
+      "section": "2.3.4-a",
+      "topic": "Form",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 30,
+      "question": "Welche Aussage zur Form ist richtig?",
+      "answers": [
+        "Die Eintragungsgrundlage muss formgerecht vorliegen; der Eintragungsantrag selbst kann formlos sein",
+        "Jede Änderung kann mündlich ohne Urkunde eingetragen werden",
+        "Nur der Antrag muss notariell beurkundet sein",
+        "Grundbuchänderungen brauchen nie eine Bewilligung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Skript trennt die Form der Eintragungsgrundlage vom formlosen Antrag beim Grundbuchamt."
+    },
+    {
+      "id": "2.3-Q031",
+      "chapter": "2.3",
+      "section": "2.3.5-a",
+      "topic": "Baulast",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 31,
+      "question": "Wo prüfst du eine Baulast?",
+      "answers": [
+        "Im Baulastenverzeichnis bei der Baubehörde",
+        "Nur in Abteilung II",
+        "Nur in Abteilung III",
+        "In der Grundakte des Notars"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Baulasten stehen nicht im Grundbuch, sondern im Baulastenverzeichnis."
+    },
+    {
+      "id": "2.3-Q032",
+      "chapter": "2.3",
+      "section": "2.3.5-a",
+      "topic": "Öffentliche Last",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 32,
+      "question": "Wo sollte geprüft werden, ob noch Erschließungskosten offen sind?",
+      "answers": [
+        "Beim zuständigen Bauamt bzw. der Gemeinde",
+        "Nur in Abteilung I",
+        "Beim Grundbuchrichter über Abteilung III",
+        "Im Wohnungsgrundbuch des Nachbarn"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Öffentliche Erschließungslasten stehen nicht im Grundbuch; offene Kosten sind bei der Behörde zu klären."
+    },
+    {
+      "id": "2.3-Q033",
+      "chapter": "2.3",
+      "section": "2.3.5-a",
+      "topic": "Gesetzliches Vorkaufsrecht",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 33,
+      "question": "Welche Vorkaufsrechte können bestehen, ohne im Grundbuch eingetragen zu sein?",
+      "answers": [
+        "Gemeindliches Vorkaufsrecht",
+        "Vorkaufsrecht von Miterben",
+        "Unter Voraussetzungen Vorkaufsrecht von Mietern",
+        "Jede beliebige private Kaufoption"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Das Skript nennt Gemeinde, Miterben und Mieter als gesetzliche Vorkaufsrechte außerhalb des Grundbuchs."
+    }
+  ]
+}
