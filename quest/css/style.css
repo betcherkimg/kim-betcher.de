@@ -1776,3 +1776,80 @@ body[data-view='result'] .result__stats div { border:1px solid var(--game-line);
 @media (prefers-reduced-motion:reduce) {
   .route-main,.map-node.is-current .map-marker::after,.gameover--show,.gameover--show .gameover__title { animation:none; }
 }
+
+
+/* ==== Feinjustierung 2026-09-25 ==== */
+/* HUD: HP sauber in die obere Kugel */
+body[data-view='dashboard'] .hpchip {
+  top: 14.6%;
+  padding: 5px 6px 4px;
+}
+body[data-view='dashboard'] .hpchip__heart {
+  display: none;
+}
+body[data-view='dashboard'] .hpchip__body {
+  gap: 2px;
+}
+body[data-view='dashboard'] .hpchip__num {
+  font-size: clamp(.66rem, 1.14dvh, .78rem);
+}
+body[data-view='dashboard'] .hpchip__bar {
+  width: 58%;
+  height: 4px;
+}
+
+/* Kapitel: Karussell nicht mehr als Riesenblock */
+.mode--carousel {
+  grid-column: auto;
+  min-height: 290px;
+  grid-template-columns: none;
+  grid-template-areas: none;
+  align-items: start;
+  column-gap: 0;
+  row-gap: 8px;
+  padding: 22px 20px;
+  background: var(--white);
+}
+.mode--carousel .mode__icon,
+.mode--carousel .mode__title,
+.mode--carousel .mode__text,
+.mode--carousel .mode__rules,
+.mode--carousel .mode__stat {
+  grid-area: auto;
+}
+.mode--carousel .mode__icon {
+  width: 56px;
+  height: 56px;
+}
+.mode--carousel .mode__title {
+  margin-top: 6px;
+}
+.mode--carousel .mode__rules,
+.mode--carousel .mode__stat {
+  justify-self: start;
+}
+
+/* Scrollbars ausblenden, Scrollen aber behalten */
+body[data-view='dashboard'] .worldmap-viewport,
+body[data-view='chapter'],
+body[data-view='learn'],
+body[data-view='run'],
+body[data-view='result'],
+.lnav,
+.tablewrap,
+.invpop {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+body[data-view='dashboard'] .worldmap-viewport::-webkit-scrollbar,
+body[data-view='chapter']::-webkit-scrollbar,
+body[data-view='learn']::-webkit-scrollbar,
+body[data-view='run']::-webkit-scrollbar,
+body[data-view='result']::-webkit-scrollbar,
+.lnav::-webkit-scrollbar,
+.tablewrap::-webkit-scrollbar,
+.invpop::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}

@@ -172,9 +172,12 @@ export const BOSS_TAUNTS = {
   victory: 'Zurück ins Lernskript mit dir!',
 };
 
-/** Bossfight erst nach gewonnenem Storymode freischalten (auf false setzen, um das abzuschalten). */
-// TESTPHASE: Bossfights sind frei spielbar. Für den Echtbetrieb wieder auf true setzen.
-export const BOSS_REQUIRES_STORY = false;
+/**
+ * TESTPHASE: Alle Spielmodi bleiben direkt anwählbar.
+ * Für den Echtbetrieb auf false setzen. Dann gilt:
+ * Story -> Versus -> Boss.
+ */
+export const TEST_UNLOCK_ALL_MODES = true;
 
 /* ---------- Zufall ---------- */
 

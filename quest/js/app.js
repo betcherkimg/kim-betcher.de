@@ -2,7 +2,7 @@
 
 import * as Content from './content-loader.js';
 import { SaveGame, SaveError, isSupported, createChapterProgress, SAVE_NAME } from './savegame.js';
-import { MODES, BOSS_REQUIRES_STORY, MAX_HP, MODE_HP_LOSS, POTIONS, rollQuestionReward, selectQuestions, prepareQuestion, Run, rankFor, ACHIEVEMENTS, Countdown,
+import { MODES, TEST_UNLOCK_ALL_MODES, MAX_HP, MODE_HP_LOSS, POTIONS, rollQuestionReward, selectQuestions, prepareQuestion, Run, rankFor, ACHIEVEMENTS, Countdown,
   BOSS_CRIT_SECONDS, BOSS_FOCUS_SECONDS, DAILY_FOCUS_GIFT, BOSS_CHEST_POTION_CHANCE, BOSS_TAUNTS,
   COIN_REWARDS, COIN_LEVEL_COMPLETE, SHOP, coinsForWin, BATTLE_ITEMS, BATTLE_ITEM_ORDER, carouselOrder, carouselChest,
   HERO_CLASSES, HERO_CLASS_ORDER, heroClass } from './game.js';
@@ -816,7 +816,7 @@ function nextMission() {
       const sec = learn?.sections.find((s) => !p.learnCompleted.includes(s.id));
       return { chapter: c, label: `${label}: Lernskript ${st.done ? 'weiterlesen' : 'starten'}`, detail: sec ? `Nächster Abschnitt: ${sec.title}` : '', action: `data-action="open-learn" data-id="${esc(c.id)}"` };
     }
-    if (!st.story) return { chapter: c, label: `${label}: Story starten`, detail: '10 Fragen in Lernreihenfolge – danach wird der Boss freigeschaltet.', action: `data-action="start-mode" data-mode="story" data-id="${esc(c.id)}"` };
+    if (!st.story) return { chapter: c, label: `${label}: Story starten`, detail: '10 Fragen in Lernreihenfolge – danach wird Versus freigeschaltet.', action: `data-action="start-mode" data-mode="story" data-id="${esc(c.id)}"` };
     if (!st.versus) return { chapter: c, label: `${label}: Versus spielen`, detail: '5 Zufallsfragen, ein Fehler und es ist vorbei.', action: `data-action="start-mode" data-mode="versus" data-id="${esc(c.id)}"` };
     if (!st.boss) return { chapter: c, label: `${label}: Boss wagen`, detail: '6 Fragen, 15 Sekunden pro Frage. 4 richtige besiegen den Boss, 3 Fehler beenden den Kampf.', action: `data-action="start-mode" data-mode="boss" data-id="${esc(c.id)}"` };
   }
@@ -982,7 +982,8 @@ function renderChapter() {
   const p = prog(id);
   const st = chapterStatus(id);
   const pl = playerVitals();
-  const bossLocked = BOSS_REQUIRES_STORY && !st.story;
+  const versusLocked = !TEST_UNLOCK_ALL_MODES && !st.story;
+  const bossLocked = !TEST_UNLOCK_ALL_MODES && !st.versus;
   const bossName = data?.boss?.boss?.name || 'Level-Boss';
   const carouselTotal = (data?.questions?.questions?.length || 0) + (data?.boss?.questions?.length || 0);
 
@@ -1023,11 +1024,13 @@ function renderChapter() {
         disabled: !data?.questions, lockText: 'UNAVAILABLE – Fragen fehlen.', action: `data-action="start-mode" data-mode="story" data-id="${esc(id)}"` })}
       ${card({ key: 'versus', icon: I.swords, title: 'VERSUS', text: 'Fünf Zufallsfragen quer durchs Level. Ähnliche Begriffe gegeneinander.',
         rules: '5 Fragen · 1 Leben · Verlust: −33 HP', stat: `${stars(p.stars.versus)} <span>Rekord ${p.bestVersus} · ${p.versusWins}× gewonnen</span>`,
-        disabled: !data?.questions, lockText: 'UNAVAILABLE – Fragen fehlen.', action: `data-action="start-mode" data-mode="versus" data-id="${esc(id)}"` })}
+        disabled: !data?.questions || versusLocked,
+        lockText: !data?.questions ? 'UNAVAILABLE – Fragen fehlen.' : 'LOCKED – Gewinne zuerst die Story.',
+        action: `data-action="start-mode" data-mode="versus" data-id="${esc(id)}"` })}
       ${card({ key: 'boss', icon: I.crown, title: 'BOSS', text: `${esc(bossName)} wartet – mit eigenen, harten Fallfragen.`,
         rules: '6 Fragen · 4 richtig = Sieg · 3 Fehler = Niederlage · 15 s · Verlust: −50 HP', stat: `${stars(p.stars.boss)} <span>Rekord ${p.bestBoss} · ${p.bossWins}× besiegt</span>`,
         disabled: !data?.boss || bossLocked,
-        lockText: !data?.boss ? 'UNAVAILABLE – Bossfragen fehlen.' : 'LOCKED – Gewinne zuerst die Story.',
+        lockText: !data?.boss ? 'UNAVAILABLE – Bossfragen fehlen.' : 'LOCKED – Gewinne zuerst Versus.',
         action: `data-action="start-mode" data-mode="boss" data-id="${esc(id)}"` })}
       ${card({ key: 'carousel', icon: I.carousel, title: 'KARUSSELL', text: 'Alle Fragen des Levels am Stück – erst die leichten, am Ende die Bossfragen.',
         rules: `${carouselTotal} Fragen · 3 Leben · ohne Timer · kein HP-Verlust`,
@@ -1290,9 +1293,17 @@ async function startMode(modeId, chapterId) {
   const data = Content.getCachedChapter(chapterId);
   const poolData = mode.source === 'boss' ? data?.boss : data?.questions;  // Karussell: questions + boss
   if (!poolData?.questions?.length) { toast('Für diesen Modus fehlen die Fragen.', { icon: '⚠️', tone: 'bad' }); return; }
-  if (modeId === 'boss' && BOSS_REQUIRES_STORY && !prog(chapterId).storyWins) { toast('Der Bossfight ist noch gesperrt. Gewinne zuerst die Story.', { icon: '🔒' }); return; }
+  const progress = prog(chapterId);
+  if (!TEST_UNLOCK_ALL_MODES && modeId === 'versus' && !progress.storyWins) {
+    toast('Versus ist noch gesperrt. Gewinne zuerst die Story.', { icon: '🔒' });
+    return;
+  }
+  if (!TEST_UNLOCK_ALL_MODES && modeId === 'boss' && !progress.versusWins) {
+    toast('Der Bossfight ist noch gesperrt. Gewinne zuerst Versus.', { icon: '🔒' });
+    return;
+  }
 
-  const p = prog(chapterId);
+  const p = progress;
   const pool = poolData.questions;
   const picked = modeId === 'carousel'
     ? carouselOrder(data.questions.questions, data?.boss?.questions || [])
