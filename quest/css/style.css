@@ -1910,3 +1910,46 @@ body[data-view='dashboard'] .hpchip__bar {
   .mode--carousel .mode__rules,
   .mode--carousel .mode__stat { justify-self: start; }
 }
+
+
+/* ==== Hotfix 2026-09-25 18:55 ==== */
+/* HP oben links/rechts wirklich zentrieren */
+body[data-view='dashboard'] .hpchip {
+  top: 14.2% !important;
+}
+body[data-view='dashboard'] .hpchip__body {
+  position: relative;
+  left: -6px;
+  gap: 1px;
+}
+body[data-view='dashboard'] .hpchip__num {
+  text-align: center;
+}
+body[data-view='dashboard'] .hpchip__bar {
+  width: 46% !important;
+}
+
+/* Karussell volle Breite, aber deutlich flacher */
+.mode--carousel {
+  grid-column: 1 / -1 !important;
+  min-height: 132px !important;
+  height: auto !important;
+  align-self: start;
+  padding: 14px 22px !important;
+  grid-template-columns: auto 1fr auto !important;
+  grid-template-areas:
+    'icon title rules'
+    'icon text stat' !important;
+  row-gap: 4px !important;
+}
+.mode--carousel .mode__text {
+  align-self: start;
+}
+.mode--carousel .mode__stat {
+  align-self: start;
+}
+@media (max-width: 760px) {
+  .mode--carousel {
+    min-height: 0 !important;
+  }
+}
