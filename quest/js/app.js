@@ -811,12 +811,15 @@ function renderDashboard() {
     return;
   }
 
+  // Marker sitzen direkt auf den roten Punkten der 1672 × 941 Weltkarte.
+  // Die Route läuft ohne separaten Hafen von Level 1 bis zum Finale in Level 12.
   const coords = {
-    0: [17.9, 80.3], 1: [18.6, 57.2], 2: [12.2, 37.3], 3: [11.5, 9.5],
-    4: [35.9, 16.5], 5: [63.9, 13.3], 6: [88.2, 17.3], 7: [86.9, 39.9],
-    8: [91.2, 61.3], 9: [92.2, 81.5], 10: [70.6, 82.6], 11: [45.1, 83.0], 12: [53.4, 44.1]
+    1: [23.13, 62.27], 2: [11.31, 43.96], 3: [12.53, 14.67],
+    4: [35.05, 17.39], 5: [66.31, 16.83], 6: [86.81, 18.26],
+    7: [88.93, 45.06], 8: [82.61, 63.70], 9: [90.32, 82.41],
+    10: [67.63, 80.61], 11: [43.53, 79.94], 12: [52.02, 46.63]
   };
-  const path = 'M275 822 C280 730 285 650 285 586 C250 520 220 450 188 382 C165 280 165 180 176 97 C300 95 430 120 552 169 C700 115 845 105 982 136 C1110 120 1240 135 1354 177 C1380 260 1370 340 1335 409 C1390 470 1405 550 1401 628 C1420 700 1420 770 1416 835 C1300 870 1190 870 1085 846 C950 885 820 885 692 850 C700 720 760 570 820 452';
+  const path = 'M387 586 C320 540 245 480 189 414 C176 330 184 220 209 138 C320 118 455 128 586 164 C760 120 935 118 1109 158 C1240 112 1370 124 1451 172 C1515 250 1520 340 1487 424 C1470 490 1435 548 1381 599 C1465 646 1520 710 1510 775 C1400 830 1250 820 1131 759 C1000 835 850 830 728 752 C700 650 780 520 870 439';
   const current = m.chapters.find((c) => c.available && !chapterStatus(c.id).mastered) || m.chapters[0];
 
   const panel = (c) => {
@@ -856,25 +859,16 @@ function renderDashboard() {
 
   $('dashboardView').innerHTML = `
     <div class="worldmap-shell">
-      <div class="worldmap-head">
-        <div><span class="worldmap-kicker">QUESTLINE I</span><h1>Die Welt der Immobiliardarlehensvermittlung</h1></div>
-        <p>Fahre mit der Maus über eine Insel oder klicke einen Marker. In der Testphase sind alle Level sichtbar; Level 1–3 enthalten spielbare Inhalte.</p>
-      </div>
-      <div class="worldmap-viewport" id="worldmapViewport" tabindex="0" aria-label="Levelkarte – horizontal und vertikal scrollbar">
+      <div class="worldmap-viewport" id="worldmapViewport" tabindex="0" aria-label="Levelkarte – die Karte passt sich dem Bildschirm an und kann bei Bedarf horizontal und vertikal gescrollt werden">
         <div class="worldmap">
-          <img class="worldmap__bg" src="assets/world/quest-map.png" alt="Fantastische Inselwelt mit zwölf Levelinseln" width="1536" height="1024">
-          <svg class="worldmap__route" viewBox="0 0 1536 1024" aria-hidden="true" preserveAspectRatio="none">
+          <img class="worldmap__bg" src="assets/world/quest-map.png" alt="Fantastische Inselwelt mit zwölf Levelinseln" width="1672" height="941">
+          <svg class="worldmap__route" viewBox="0 0 1672 941" aria-hidden="true" preserveAspectRatio="none">
             <path class="route-shadow" d="${path}"/>
             <path class="route-main" d="${path}"/>
           </svg>
-          <div class="map-node map-node--harbor" style="--x:${coords[0][0]}%;--y:${coords[0][1]}%">
-            <div class="harbor-badge"><span>⚓</span><b>HAFEN</b></div>
-          </div>
           ${nodes}
-          <div class="player-ship" style="--x:23%;--y:31%" aria-hidden="true"><span>⛵</span></div>
         </div>
       </div>
-      <p class="worldmap-hint">Tipp: Auf kleinen Bildschirmen kannst du die Karte verschieben.</p>
     </div>`;
 
   requestAnimationFrame(() => {
