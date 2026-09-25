@@ -1853,3 +1853,60 @@ body[data-view='result']::-webkit-scrollbar,
   height: 0;
   display: none;
 }
+
+
+/* ==== Nachbesserung 2026-09-25 18:45 ==== */
+/* HUD: HP definitiv vollständig in der oberen Kugel */
+body[data-view='dashboard'] .hpchip {
+  top: 14.4%;
+  width: 30%;
+  height: 30%;
+  padding: 4px 4px 3px;
+}
+body[data-view='dashboard'] .hpchip__body {
+  gap: 1px;
+}
+body[data-view='dashboard'] .hpchip__num {
+  font-size: clamp(.62rem, 1.05dvh, .74rem);
+  letter-spacing: -0.01em;
+}
+body[data-view='dashboard'] .hpchip__num b {
+  font-size: 1.15em;
+}
+body[data-view='dashboard'] .hpchip__bar {
+  width: 50%;
+  height: 4px;
+}
+
+/* Kapitel: Karussell wieder über gesamte Breite, aber flacher */
+.mode--carousel {
+  grid-column: 1 / -1;
+  min-height: 0;
+  padding: 16px 22px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    'icon title rules'
+    'icon text stat';
+  align-items: center;
+  column-gap: 18px;
+  row-gap: 6px;
+  background: linear-gradient(100deg, var(--white) 60%, var(--ice));
+}
+.mode--carousel .mode__icon { grid-area: icon; width: 58px; height: 58px; }
+.mode--carousel .mode__title { grid-area: title; margin-top: 0; }
+.mode--carousel .mode__text { grid-area: text; margin: 0; }
+.mode--carousel .mode__rules { grid-area: rules; margin-top: 0; justify-self: end; }
+.mode--carousel .mode__stat { grid-area: stat; justify-self: end; align-self: start; }
+@media (max-width: 760px) {
+  .mode--carousel {
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      'icon title'
+      'icon text'
+      'rules rules'
+      'stat stat';
+  }
+  .mode--carousel .mode__rules,
+  .mode--carousel .mode__stat { justify-self: start; }
+}
