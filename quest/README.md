@@ -33,7 +33,7 @@ tools/check-content.mjs  Datenprüfung vor dem Hochladen
 
 - Ein Level ist erst abgeschlossen, wenn Lernskript, Storymode, Versus und Bossfight geschafft sind.
 - Bossfight bleibt gesperrt, bis der Storymode gewonnen wurde.
-- Verlorener Storymode: −25 % HP, Versus: −33 % HP, Bossfight: −50 % HP. Solange das Level noch nicht abgeschlossen ist, setzt eine Niederlage die bereits gewonnenen Spielmodi dieses Levels zurück.
+- Verlorener Run: Story −25 HP, Versus −33 HP, Boss −50 HP. Level-Reset nur bei K.o. (0 HP), solange das Level noch nicht abgeschlossen ist.
 - Richtige Fragen können abhängig von der Schwierigkeit Heilitems droppen: leicht → kleiner Heiltrank (+25 %), mittel → mittlerer Heiltrank (+33 %), schwer → großer Heiltrank (+50 %). Bei schweren Fragen kann sehr selten ein Lebensfunke fallen, der bei 0 HP automatisch auf volle HP wiederbelebt.
 - Ein falscher Lernskript-Checkpoint kostet einmalig 10 HP. Danach folgt eine leichte Rettungsfrage; bei richtiger Antwort gibt sie 5 HP zurück.
 - Nach dem erstmaligen vollständigen Abschluss eines Levels werden die HP auf Maximum aufgefüllt.
@@ -54,7 +54,7 @@ tools/check-content.mjs  Datenprüfung vor dem Hochladen
 ## Spielregeln (Stand: HP-Update)
 
 - **HP** stehen oben rechts in der Kopfzeile. Klick aufs Herz öffnet das Inventar mit den Heiltränken.
-- **Niederlage** kostet HP: Storymode −25 %, Versus −33 %, Bossfight −50 %. Die Spielmodi des Levels werden zurückgesetzt, solange das Level noch nicht abgeschlossen ist.
+- **Niederlage** kostet HP: Story −25 HP, Versus −33 HP, Boss −50 HP. Die Spielmodi des Levels werden nur bei K.o. (0 HP) zurückgesetzt, solange das Level noch nicht abgeschlossen ist.
 - **Aufgeben** zählt als Niederlage, sobald eine Frage beantwortet wurde (beim Boss: sobald der Kampf begonnen hat).
 - **0 HP:** Die Spielmodi sind gesperrt. Heiltrank trinken oder die **Rettungsmission** spielen (3 leichte Fragen in Folge richtig → +30 HP, ohne Risiko).
 - **Quest-Coins** gibt es für jeden gewonnenen Modus: Story 10, Versus 20, Boss 50. Der erste Sieg je Modus und Level zählt doppelt (resetfest), 3 Sterne geben +5 / +10 / +25, ein abgeschlossenes Level +100.
@@ -80,9 +80,9 @@ Stellschrauben in `js/game.js`: `MODE_HP_LOSS`, `RESCUE_HEAL`, `BOSS_CRIT_SECOND
 
 | Modus | Fragen | Leben | Timer | Bei Niederlage |
 |---|---|---|---|---|
-| Story | 10 in Lernreihenfolge | 3 | – | −25 % HP, Level-Reset |
-| Versus | 5 zufällig | 1 | – | −33 % HP, Level-Reset |
-| Boss | 6 Bossfragen – 4 richtig = Sieg, 3 Fehler = Niederlage | 3 | 15 s | −50 % HP, Level-Reset |
+| Story | 10 in Lernreihenfolge | 3 | – | −25 HP |
+| Versus | 5 zufällig | 1 | – | −33 HP |
+| Boss | 6 Bossfragen – 4 richtig = Sieg, 3 Fehler = Niederlage | 3 | 15 s | −50 HP |
 | Karussell | alle Fragen des Levels, leicht → Boss | 3 | – | keine Strafe |
 
 **Karussell:** Belohnung nach Anteil richtiger Antworten – Holztruhe ab 25 % (15 Coins), Silber ab 50 % (35, 10 % kleiner Trank), Gold ab 75 % (75, 25 % mittlerer Trank), Legendär bei 100 % (150 + großer Trank, 5 % Lebensfunke). „Beenden“ wertet den bisherigen Stand aus. Zufallsbeute gibt es im Karussell nicht. Für den Level-Abschluss zählt das Karussell nicht.
@@ -119,3 +119,10 @@ Beim Anlegen eines Spielstands (und bei alten Spielständen ohne Klasse) erschei
 | 🍀 Glückspilz | Doppelte Fundchance | Trank-/Funkenfunde bei Fragen und Truhen-Zugaben ×2 |
 
 Werte anpassen: `HERO_CLASSES` in `js/game.js`.
+
+
+## HP-Regeln (aktuell)
+
+- Niederlage (auch Aufgeben nach der ersten Antwort) kostet feste HP: **Story −25, Versus −33, Boss −50**.
+- **Level-Reset nur bei K.o.:** Erst wenn die HP auf 0 fallen (und kein Lebensfunke rettet), werden Story-, Versus- und Boss-Siege des Levels zurückgesetzt. Lernskript, Bestwerte, XP und Inventar bleiben. Abgeschlossene Level werden nie zurückgesetzt.
+- Heiltränke heilen feste Werte: klein +25, mittel +33, groß +50 HP.

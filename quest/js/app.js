@@ -148,7 +148,7 @@ function usePotion(kind) {
   if ((pl.inventory[kind] || 0) <= 0) { toast(`${item.label}: keiner im Inventar.`, { icon: item.icon }); return; }
   if (pl.hp >= pl.maxHp) { toast('Deine HP sind bereits voll.', { icon: '❤️' }); return; }
   pl.inventory[kind] -= 1;
-  healHp(Math.round(pl.maxHp * (item.heal / 100)), item.label);
+  healHp(item.heal, item.label);
   sfx('gulp');
   persist();
   rerenderCurrent();
@@ -249,6 +249,8 @@ const I = {
   soundOn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>',
   soundOff: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="m17 9 5 6M22 9l-5 6"/></svg>',
   save: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h7V3M8 21v-6h8v6"/></svg>',
+  crown: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l4.5 4.5L12 5l4.5 7.5L21 8l-2 11H5z"/><path d="M5 19h14"/></svg>',
+  carousel: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v3"/><path d="M3.5 9L12 5l8.5 4z"/><path d="M6 9v8M12 9v8M18 9v8"/><path d="M4 17h16"/><path d="M12 17v4M8 21h8"/></svg>',
 };
 
 /* =========================================================
@@ -435,6 +437,7 @@ function checkMastery(id) {
  * Ein verlorener Run setzt bei einem noch nicht abgeschlossenen Level die
  * Spielmodus-Fortschritte zurück. Lernskript, Bestwerte, XP und Inventar bleiben erhalten.
  */
+/** Wird nur noch bei K.o. aufgerufen (siehe applyDefeat). */
 function resetLevelModesAfterLoss(id) {
   const p = prog(id);
   if (p.levelCompleted) return false;
@@ -507,7 +510,7 @@ function renderInvPop() {
     const canUse = k !== 'spark' && have > 0 && pl.hp < pl.maxHp;
     return `<li class="shoprow ${have ? '' : 'is-empty'}">
       <span class="shoprow__icon">${it.icon}</span>
-      <span class="shoprow__body"><b>${esc(it.label)}</b><small>${k === 'spark' ? 'Belebt bei 0 HP automatisch · max. 1' : `+${it.heal} % HP`}</small></span>
+      <span class="shoprow__body"><b>${esc(it.label)}</b><small>${k === 'spark' ? 'Belebt bei 0 HP automatisch · max. 1' : `+${it.heal} HP`}</small></span>
       <span class="shoprow__have" title="Im Inventar">×${have}</span>
       ${k === 'spark'
         ? '<span class="shoprow__auto">automatisch</span>'
@@ -534,7 +537,7 @@ function renderInvPop() {
       </li>`;
     }).join('')}</ul>
     ${pl.heroClass ? `<p class="invpop__class">${HERO_CLASSES[pl.heroClass].icon} ${esc(HERO_CLASSES[pl.heroClass].name)}: ${esc(HERO_CLASSES[pl.heroClass].bonus)}${dailyFocusLeft() ? ` · heute noch ${dailyFocusLeft()}× Fokus gratis` : ''}</p>` : ''}
-    <p class="invpop__rules">Coins gibt es für jeden gewonnenen Modus (Story ${COIN_REWARDS.story.base}, Versus ${COIN_REWARDS.versus.base}, Boss ${COIN_REWARDS.boss.base}). Erster Sieg doppelt, 3 Sterne mit Bonus, Level-Abschluss +${COIN_LEVEL_COMPLETE}.<br>Niederlage kostet HP: Story −25 %, Versus −33 %, Boss −50 %.</p>`;
+    <p class="invpop__rules">Coins gibt es für jeden gewonnenen Modus (Story ${COIN_REWARDS.story.base}, Versus ${COIN_REWARDS.versus.base}, Boss ${COIN_REWARDS.boss.base}). Erster Sieg doppelt, 3 Sterne mit Bonus, Level-Abschluss +${COIN_LEVEL_COMPLETE}.<br>Niederlage kostet HP: Story −25, Versus −33, Boss −50. Level-Reset nur bei K.o. (0 HP).</p>`;
 }
 
 function toggleInv(force) {
@@ -679,7 +682,7 @@ const GUIDE = [
   { icon: '📘', title: 'Lernen', text: 'Jedes Level ist ein Prüfungsthema. Das <b>Lernskript</b> erklärt den Stoff kompakt – mit Merksätzen, Prüfungsfallen und einer Checkpoint-Frage pro Abschnitt. Markiere Abschnitte als <b>Verstanden</b>.' },
   { icon: '⚔️', title: 'Spielen', text: '<b>Story</b>: 10 Fragen in Lernreihenfolge, 3 Leben. <b>Versus</b>: 5 Zufallsfragen, 1 Leben. <b>Boss</b>: 6 harte Fragen, 15 Sekunden pro Frage – 4 richtig besiegen ihn, 3 Fehler verlieren.' },
   { icon: '🏆', title: 'Level abschließen', text: 'Lernskript, Story, Versus und Boss geschafft? Dann ist das Level abgeschlossen: <b>HP voll</b> und <b>Bonus-Coins</b>. Das <b>Karussell</b> fragt alle Fragen am Stück ab – Training ohne Risiko mit Truhe am Ende.' },
-  { icon: '❤️', title: 'Lebenspunkte', text: 'Eine Niederlage kostet HP – Story 25 %, Versus 33 %, Boss 50 % – und setzt die Modi des Levels zurück. Bei <b>0 HP</b> bist du K.o.: Heiltrank trinken oder die kostenlose <b>Rettungsmission</b> spielen.' },
+  { icon: '❤️', title: 'Lebenspunkte', text: 'Eine Niederlage kostet HP – Story 25, Versus 33, Boss 50. Bei <b>0 HP</b> bist du K.o.: Die Modi des Levels werden zurückgesetzt. Heiltrank trinken oder die kostenlose <b>Rettungsmission</b> spielen.' },
   { icon: '🪙', title: 'Coins & Items', text: 'Siege bringen <b>Quest-Coins</b>. Im Shop (oben rechts) gibt es Heiltränke und Kampf-Items für die Hotbar: <b>F1</b> Fokus, <b>F2</b> Pauser, <b>F3</b> Herz, <b>F4</b> Überspringer. Grau = nicht im Inventar, roter Preis = zu wenig Coins.' },
   { icon: '💾', title: 'Fortschritt', text: 'Alles wird automatisch in <b>smartadm_34i.json</b> gespeichert. Rang, Erfolge und Lerntage wachsen mit – jeden Tag gibt es Fokus geschenkt.' },
 ];
@@ -797,7 +800,7 @@ function potionButton(kind) {
     </div>`;
   }
   return `<button class="lootitem" data-action="use-potion" data-kind="${kind}" ${count <= 0 || pl.hp >= pl.maxHp ? 'disabled' : ''} title="${esc(item.label)} benutzen: +${item.heal}% HP">
-    <span class="lootitem__icon">${item.icon}</span><span class="lootitem__body"><b>${esc(item.label)}</b><small>+${item.heal}% HP</small></span><strong>×${count}</strong>
+    <span class="lootitem__icon">${item.icon}</span><span class="lootitem__body"><b>${esc(item.label)}</b><small>+${item.heal} HP</small></span><strong>×${count}</strong>
   </button>`;
 }
 
@@ -929,9 +932,6 @@ function renderChapter() {
   const bossLocked = BOSS_REQUIRES_STORY && !st.story;
   const bossName = data?.boss?.boss?.name || 'Level-Boss';
   const carouselTotal = (data?.questions?.questions?.length || 0) + (data?.boss?.questions?.length || 0);
-  const bossBust = data?.boss?.boss?.bust;
-  const bossIcon = typeof bossBust === 'string' && /^[\w./-]+\.(webp|png|jpe?g|avif)$/i.test(bossBust) && !bossBust.includes('..')
-    ? `<img class="mode__portrait" src="${esc(bossBust)}" alt="" width="56" height="56">` : I.seal;
 
   const card = ({ key, icon, title, text, rules, stat, disabled, lockText, action }) => `
     <button class="mode mode--${key} ${disabled ? 'mode--locked' : ''}" ${disabled ? 'aria-disabled="true"' : action}>
@@ -971,17 +971,17 @@ function renderChapter() {
         rules: `${st.done}/${st.total} Abschnitte verstanden · Checkpoint-Fehler −10 HP`, disabled: !data?.learn, lockText: 'UNAVAILABLE – Lernskript fehlt.',
         action: `data-action="open-learn" data-id="${esc(id)}"` })}
       ${card({ key: 'story', icon: I.path, title: 'STORY', text: 'Zehn Fragen in der Reihenfolge des Lernskripts. Erst Grundlagen, dann Anwendung.',
-        rules: '10 Fragen · 3 Leben · Verlust: −25 % HP', stat: `${stars(p.stars.story)} <span>Rekord ${p.bestStory} · ${p.storyWins}× gewonnen</span>`,
+        rules: '10 Fragen · 3 Leben · Verlust: −25 HP', stat: `${stars(p.stars.story)} <span>Rekord ${p.bestStory} · ${p.storyWins}× gewonnen</span>`,
         disabled: !data?.questions || noHp, lockText: !data?.questions ? 'UNAVAILABLE – Fragen fehlen.' : 'KO – Fülle zuerst deine HP auf.', action: `data-action="start-mode" data-mode="story" data-id="${esc(id)}"` })}
       ${card({ key: 'versus', icon: I.swords, title: 'VERSUS', text: 'Fünf Zufallsfragen quer durchs Level. Ähnliche Begriffe gegeneinander.',
-        rules: '5 Fragen · 1 Leben · Verlust: −33 % HP', stat: `${stars(p.stars.versus)} <span>Rekord ${p.bestVersus} · ${p.versusWins}× gewonnen</span>`,
+        rules: '5 Fragen · 1 Leben · Verlust: −33 HP', stat: `${stars(p.stars.versus)} <span>Rekord ${p.bestVersus} · ${p.versusWins}× gewonnen</span>`,
         disabled: !data?.questions || noHp, lockText: !data?.questions ? 'UNAVAILABLE – Fragen fehlen.' : 'KO – Fülle zuerst deine HP auf.', action: `data-action="start-mode" data-mode="versus" data-id="${esc(id)}"` })}
-      ${card({ key: 'boss', icon: bossIcon, title: 'BOSS', text: `${esc(bossName)} wartet – mit eigenen, harten Fallfragen.`,
-        rules: '6 Fragen · 4 richtig = Sieg · 3 Fehler = Niederlage · 15 s · Verlust: −50 % HP', stat: `${stars(p.stars.boss)} <span>Rekord ${p.bestBoss} · ${p.bossWins}× besiegt</span>`,
+      ${card({ key: 'boss', icon: I.crown, title: 'BOSS', text: `${esc(bossName)} wartet – mit eigenen, harten Fallfragen.`,
+        rules: '6 Fragen · 4 richtig = Sieg · 3 Fehler = Niederlage · 15 s · Verlust: −50 HP', stat: `${stars(p.stars.boss)} <span>Rekord ${p.bestBoss} · ${p.bossWins}× besiegt</span>`,
         disabled: !data?.boss || bossLocked || noHp,
         lockText: !data?.boss ? 'UNAVAILABLE – Bossfragen fehlen.' : bossLocked ? 'LOCKED – Gewinne zuerst die Story.' : 'KO – Fülle zuerst deine HP auf.',
         action: `data-action="start-mode" data-mode="boss" data-id="${esc(id)}"` })}
-      ${card({ key: 'carousel', icon: '<span class="mode__emoji" aria-hidden="true">🎠</span>', title: 'KARUSSELL', text: 'Alle Fragen des Levels am Stück – erst die leichten, am Ende die Bossfragen.',
+      ${card({ key: 'carousel', icon: I.carousel, title: 'KARUSSELL', text: 'Alle Fragen des Levels am Stück – erst die leichten, am Ende die Bossfragen.',
         rules: `${carouselTotal} Fragen · 3 Leben · ohne Timer · kein HP-Verlust`,
         stat: `<span>Rekord ${p.bestCarousel || 0}/${carouselTotal} (${p.bestCarouselPct || 0} %)</span>`,
         disabled: !data?.questions, lockText: 'UNAVAILABLE – Fragen fehlen.',
@@ -1346,7 +1346,7 @@ function renderBossIntro() {
             </ul>
             <p class="bosscine__stakes">
               <span class="win">Sieg: Siegtruhe mit ${COIN_REWARDS.boss.base * cls().coinMult}–${((COIN_REWARDS.boss.base * 2) + COIN_REWARDS.boss.perfect) * cls().coinMult} Quest-Coins</span>
-              <span class="lose">Niederlage: −${MODE_HP_LOSS.boss} % HP · Level-Modi zurückgesetzt</span>
+              <span class="lose">Niederlage: −${MODE_HP_LOSS.boss} HP · bei 0 HP (K.o.) Level-Reset</span>
             </p>
             <div class="bosscine__actions">
               <button class="btn btn--boss btn--xl" id="btnFight" data-action="boss-fight">Kampf beginnen</button>
@@ -1836,8 +1836,9 @@ function finishRun() {
 /** Niederlage verrechnen – gilt auch für „Aufgeben“, sonst ließe sich die Strafe umgehen. */
 function applyDefeat(run) {
   const loss = MODE_HP_LOSS[run.mode.id] || 0;
-  const hpEvent = damageHp(Math.round(playerVitals().maxHp * (loss / 100)), `${run.mode.label} verloren`, { quiet: true });
-  const levelReset = resetLevelModesAfterLoss(run.chapterId);
+  const hpEvent = damageHp(loss, `${run.mode.label} verloren`, { quiet: true });
+  // Level-Reset nur bei K.o. (0 HP, kein Lebensfunke)
+  const levelReset = hpEvent.knockout ? resetLevelModesAfterLoss(run.chapterId) : false;
   return { hpEvent, levelReset };
 }
 
@@ -1855,7 +1856,7 @@ function abortRun(silent = false) {
   const loss = MODE_HP_LOSS[run.mode.id] || 0;
   if (!silent) {
     const msg = penalty
-      ? `Run aufgeben?\n\nAufgeben zählt als Niederlage: −${loss} % HP, und die Spielmodi dieses Levels werden zurückgesetzt (außer das Level ist schon abgeschlossen).`
+      ? `Run aufgeben?\n\nAufgeben zählt als Niederlage: −${loss} HP. Fallen deine HP dabei auf 0 (K.o.), werden die Spielmodi dieses Levels zurückgesetzt.`
       : 'Run verlassen? Es gab noch keine Antwort – das kostet nichts.';
     if (!confirm(msg)) return false;
   }
@@ -1866,7 +1867,7 @@ function abortRun(silent = false) {
     const { hpEvent, levelReset } = applyDefeat(run);
     const parts = [`${run.mode.label} aufgegeben: −${hpEvent.lost} HP`];
     if (hpEvent.revived) parts.push('Lebensfunke hat dich gerettet');
-    if (levelReset) parts.push('Level-Modi zurückgesetzt');
+    if (levelReset) parts.push('K.o. – Level-Modi zurückgesetzt');
     toast(parts.join(' · '), { icon: '🏳️', tone: 'bad', ms: 5000 });
   }
   persist();
@@ -1904,7 +1905,7 @@ function renderResult() {
   } else if (sum.won) {
     sub = sum.stars === 3 ? 'Ohne einen einzigen Fehler. Stark.' : 'Geschafft – mit etwas Luft nach oben.';
   } else if (levelReset) {
-    sub = 'Run verloren. Die Spielmodi dieses Levels wurden zurückgesetzt – du startest den Level-Run wieder von vorn.';
+    sub = 'K.o.! Deine HP sind aufgebraucht – die Spielmodi dieses Levels wurden zurückgesetzt, du startest das Level wieder von vorn.';
   } else {
     sub = `Run verloren. Beim nächsten Versuch startet ${run.mode.label} wieder bei Frage 1.`;
   }

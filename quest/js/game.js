@@ -17,6 +17,7 @@ export const MODES = {
 export const MAX_HP = 100;
 
 // Verlust bei einem komplett verlorenen Modus-Run (Prozentpunkte vom Maximal-HP-Wert).
+// Feste HP-Verluste bei einer Niederlage (nicht mehr prozentual)
 export const MODE_HP_LOSS = { story: 25, versus: 33, boss: 50 };
 
 export const POTIONS = {

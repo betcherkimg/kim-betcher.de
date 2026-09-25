@@ -1225,3 +1225,31 @@ kbd { font-family: var(--font-mono); font-size: .7rem; padding: 1px 5px; border-
   .hero__emblem { grid-row: span 4; width: 60px; height: 68px; font-size: 1.7rem; }
   .hero__name, .hero__bonus, .hero__text, .hero__fit { grid-column: 2; }
 }
+
+/* =========================================================
+   Modus-Karten: einheitliche Symbole, Karussell breit darunter
+   ========================================================= */
+.modes { grid-template-columns: repeat(4, 1fr); }
+.mode__icon { background: var(--ice); color: var(--blue); }
+.mode--boss .mode__icon { background: var(--ice); color: var(--blue); }
+.mode--carousel .mode__icon { background: var(--ice); color: var(--blue); }
+.mode--locked .mode__icon { background: var(--frost); color: var(--ink-3); }
+
+.mode--carousel {
+  grid-column: 1 / -1; min-height: 0;
+  grid-template-columns: auto 1fr auto; grid-template-areas: 'icon title rules' 'icon text stat';
+  align-items: center; column-gap: 20px; row-gap: 4px; padding: 18px 22px;
+  background: linear-gradient(100deg, var(--white) 60%, var(--ice));
+}
+.mode--carousel .mode__icon { grid-area: icon; width: 64px; height: 64px; }
+.mode--carousel .mode__title { grid-area: title; margin-top: 0; }
+.mode--carousel .mode__text { grid-area: text; }
+.mode--carousel .mode__rules { grid-area: rules; margin-top: 0; justify-self: end; }
+.mode--carousel .mode__stat { grid-area: stat; justify-self: end; }
+
+@media (max-width: 1180px) { .modes { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 760px) {
+  .modes { grid-template-columns: 1fr; }
+  .mode--carousel { grid-template-columns: auto 1fr; grid-template-areas: 'icon title' 'icon text' 'rules rules' 'stat stat'; }
+  .mode--carousel .mode__rules, .mode--carousel .mode__stat { justify-self: start; }
+}

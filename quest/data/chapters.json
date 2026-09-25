@@ -1,5 +1,5 @@
 {
-  "contentVersion": 6,
+  "contentVersion": 7,
   "blocks": {
     "questline-1": "Questline I · Recht, Markt & Vermittlung"
   },
@@ -28,7 +28,7 @@
     {
       "id": "2.4",
       "level": 4,
-      "title": "Rechtliche Grundlagen: Immobiliardarlehensvermittlung",
+      "title": "Recht der Darlehensvermittlung",
       "block": "questline-1",
       "available": false
     },
