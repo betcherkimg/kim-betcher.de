@@ -1,0 +1,204 @@
+{
+  "chapter": "3.10",
+  "title": "Kopplungsgeschäfte / Nebenleistungen",
+  "sources": [
+    "BWB-Lernskript 3.10 Kopplungsgeschäfte / Nebenleistungen (lernskript_03_10.pdf, 3 Seiten)"
+  ],
+  "sections": [
+    {
+      "id": "3.10-a",
+      "title": "Das Kopplungsverbot",
+      "subtitle": "Kredit nur mit Zusatzprodukt? Nicht erlaubt",
+      "ref": "BWB 3.10, S. 2",
+      "examRelevance": "S+P",
+      "checkId": "3.10-Q001",
+      "content": [
+        {
+          "type": "text",
+          "text": "Die Verbindung eines Kredits mit anderen Finanzprodukten oder Finanzdienstleistungen kann für den Verbraucher **Nachteile** haben. Deshalb unterscheidet das Gesetz in den **§§ 492a und 492b BGB** zwischen unzulässigen und zulässigen Kopplungsgeschäften."
+        },
+        {
+          "type": "text",
+          "text": "**Kopplungsgeschäft** („Tying“) heißt: Der Darlehensgeber macht den Abschluss eines **Immobiliar-Verbraucherdarlehensvertrags davon abhängig**, dass der Darlehensnehmer weitere Finanzprodukte oder Finanzdienstleistungen erwirbt. Der Kredit wird also **nicht allein** angeboten. Das ist **verboten**."
+        },
+        {
+          "type": "list",
+          "title": "Was erfasst ist",
+          "items": [
+            "**Finanzprodukte:** alle Arten der Geldanlage – Bausparverträge, Aktien, Investmentprodukte, Versicherungen.",
+            "**Finanzdienstleistungen:** alle Nebenleistungen, die Darlehensnehmern üblicherweise angeboten werden, etwa Leistungen aus Versicherungen.",
+            "Der Gesetzgeber will **möglichst alle** Nebenprodukte und Nebenleistungen erfassen."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Das Verbot gilt auch, wenn nicht der Darlehensnehmer, sondern ein **Dritter** das Zusatzprodukt abschließen soll – etwa der Ehepartner oder ein Elternteil – damit der Kredit zustande kommt."
+        },
+        {
+          "type": "example",
+          "title": "Beispiel",
+          "text": "„Das Darlehen gibt es nur, wenn Ihre Frau bei uns einen Fondssparplan abschließt.“ – Das ist ein unzulässiges Kopplungsgeschäft, obwohl die Ehefrau nicht Darlehensnehmerin ist."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 492a Abs. 1 Satz 1 BGB",
+          "text": "Der Darlehensgeber darf den Abschluss eines Immobiliar-Verbraucherdarlehensvertrags unbeschadet des § 492b nicht davon abhängig machen, dass der Darlehensnehmer oder ein Dritter weitere Finanzprodukte oder -dienstleistungen erwirbt (Kopplungsgeschäft)."
+        }
+      ],
+      "memory": "Kopplung (Tying): Kredit nur zusammen mit dem Zusatzprodukt – grundsätzlich verboten.",
+      "examTrap": "Das Verbot greift auch, wenn ein Dritter das Zusatzprodukt abschließen soll."
+    },
+    {
+      "id": "3.10-b",
+      "title": "Bündelung ist erlaubt",
+      "subtitle": "Der Kredit muss auch allein zu haben sein",
+      "ref": "BWB 3.10, S. 3",
+      "examRelevance": "S+P",
+      "checkId": "3.10-Q007",
+      "content": [
+        {
+          "type": "compare",
+          "left": {
+            "title": "Kopplung („Tying“)",
+            "text": "Der Kredit ist **nur im Paket** erhältlich. Ohne das Zusatzprodukt gibt es kein Darlehen. **Unzulässig**, soweit keine gesetzliche Ausnahme greift."
+          },
+          "right": {
+            "title": "Bündelung („Bundling“)",
+            "text": "Der Kredit wird im Paket angeboten, ist aber **auch separat verfügbar**. Der Kunde kann wählen. **Zulässig.**"
+          }
+        },
+        {
+          "type": "text",
+          "text": "**Wichtig:** Bei der Bündelung muss der Kredit allein **nicht zu denselben Konditionen** angeboten werden wie im Paket. Der Darlehensgeber darf das Paket günstiger machen."
+        },
+        {
+          "type": "example",
+          "title": "Beispiel",
+          "text": "Die Bank bietet das Darlehen mit Gehaltskonto und Hausratversicherung zu 3,4 % an, ohne diese Produkte zu 3,6 %. Der Kunde kann frei wählen. Das ist eine **zulässige Bündelung** – trotz des Zinsunterschieds."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Entscheidend ist die Frage: **Bekommt der Kunde den Kredit auch ohne das Zusatzprodukt?** Wenn ja, liegt kein Kopplungsgeschäft im Sinne des Gesetzes vor."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 492a Abs. 1 Satz 2 BGB",
+          "text": "Ist der Darlehensgeber zum Abschluss des Darlehensvertrags bereit, ohne dass der Verbraucher weitere Finanzprodukte oder -dienstleistungen erwirbt, liegt ein Kopplungsgeschäft auch dann nicht vor, wenn die Bedingungen von denen des Pakets abweichen."
+        }
+      ],
+      "memory": "Bündelung: Kredit auch einzeln erhältlich – erlaubt, auch mit Preisvorteil im Paket.",
+      "examTrap": "Ein Zinsvorteil für das Paket macht aus einer Bündelung noch keine verbotene Kopplung."
+    },
+    {
+      "id": "3.10-c",
+      "title": "Zulässige Kopplungsgeschäfte",
+      "subtitle": "Die Ausnahmen des § 492b BGB",
+      "ref": "BWB 3.10, S. 3",
+      "examRelevance": "S+P",
+      "checkId": "3.10-Q012",
+      "content": [
+        {
+          "type": "text",
+          "text": "In bestimmten Fällen darf der Darlehensgeber den Kredit tatsächlich **an ein weiteres Produkt binden**. Diese Ausnahmen stehen in § 492b BGB. Sie haben gemeinsam, dass das Zusatzprodukt **dem Darlehen dient** – seiner Gewährung, seiner Rückzahlung oder seiner Sicherung."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Zulässige Kopplung",
+            "Bedingung",
+            "Beispiel"
+          ],
+          "rows": [
+            [
+              "**Spar- oder Zahlungskonto**",
+              "Einziger Zweck: Kapital ansammeln, um das Darlehen zu erhalten, zurückzuzahlen oder zusätzlich zu sichern",
+              "Bausparvertrag"
+            ],
+            [
+              "**Anlage- oder privates Rentenprodukt**",
+              "Dient der Altersvorsorge und als zusätzliche Sicherheit oder der Rückzahlung des Darlehens",
+              "Riester-Produkte wie Wohn-Riester"
+            ],
+            [
+              "**Einschlägige Versicherung**",
+              "Der Darlehensnehmer darf eine **gleichwertige Versicherung bei einem anderen Anbieter** abschließen",
+              "Restschuld-, Lebens-, Gebäudeversicherung"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Bei der **Versicherung** darf der Darlehensgeber also verlangen, **dass** der Kunde versichert ist – aber nicht, **bei wem**. Legt der Kunde eine gleichwertige Police eines anderen Anbieters vor, muss der Darlehensgeber sie akzeptieren."
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das Skript nennt für die Versicherung § 492b Abs. 3 BGB. Die Regel steht in **§ 492b Abs. 2 BGB**. Absatz 3 betrifft Kopplungen, die die Aufsichtsbehörde genehmigt hat."
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "§ 492b Abs. 1 BGB nennt als weitere Ausnahme einen zweiten Darlehensvertrag mit **Wertbeteiligung**, bei dem sich die Rückzahlung nach dem Wert der Immobilie richtet. In der Praxis ist das selten."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 492b Abs. 1 BGB",
+          "text": "Zulässig ist die Kopplung mit einem Zahlungs- oder Sparkonto, dessen einziger Zweck die Ansammlung von Kapital für das Darlehen ist, mit einem Anlage- oder privaten Rentenprodukt sowie mit einem weiteren Darlehensvertrag mit Wertbeteiligung."
+        },
+        {
+          "ref": "§ 492b Abs. 2 BGB",
+          "text": "Der Darlehensgeber darf den Abschluss vom Abschluss einer einschlägigen Versicherung abhängig machen, wenn der Darlehensnehmer diese auch bei einem anderen als dem bevorzugten Anbieter abschließen darf."
+        }
+      ],
+      "memory": "Erlaubt: Sparkonto oder Bausparvertrag, Altersvorsorgeprodukt, Versicherung mit freier Anbieterwahl.",
+      "examTrap": "Die Versicherung darf verlangt werden, ein bestimmter Versicherer nicht."
+    },
+    {
+      "id": "3.10-d",
+      "title": "Rechtsfolgen",
+      "subtitle": "Was bei unzulässiger Kopplung gilt",
+      "ref": "BWB 3.10, S. 3",
+      "examRelevance": "S+P",
+      "checkId": "3.10-Q018",
+      "content": [
+        {
+          "type": "text",
+          "text": "Ist ein Kopplungsgeschäft unzulässig, trifft die Folge **nur das gekoppelte Geschäft** – nicht das Darlehen."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Darlehensvertrag",
+            "text": "Bleibt **wirksam**. Der Kunde behält seinen Kredit zu den vereinbarten Bedingungen."
+          },
+          "right": {
+            "title": "Gekoppeltes Geschäft",
+            "text": "Ist **nichtig** – etwa der aufgezwungene Fondssparplan oder die aufgezwungene Versicherung."
+          }
+        },
+        {
+          "type": "example",
+          "title": "Beispiel",
+          "text": "Die Bank hat das Darlehen von einem Fondssparplan abhängig gemacht; ohne ihn hätte es keinen Kredit gegeben. **Folge:** Der Sparplan ist nichtig, das Darlehen läuft weiter."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Der Schutz ist bewusst so gebaut: Der Verbraucher soll das Darlehen behalten, auf das er angewiesen ist, und das ungewollte Zusatzprodukt loswerden."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 492a Abs. 2 BGB",
+          "text": "Soweit ein Kopplungsgeschäft unzulässig ist, sind die mit dem Darlehensvertrag gekoppelten Geschäfte nichtig; die Wirksamkeit des Darlehensvertrags bleibt davon unberührt."
+        }
+      ],
+      "memory": "Unzulässige Kopplung: Zusatzgeschäft nichtig, Darlehen wirksam.",
+      "examTrap": "Nicht der Darlehensvertrag fällt weg, sondern nur das gekoppelte Geschäft."
+    }
+  ]
+}

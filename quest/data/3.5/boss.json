@@ -1,0 +1,362 @@
+{
+  "chapter": "3.5",
+  "boss": {
+    "name": "Takturion",
+    "title": "Der Takt der Zinsen",
+    "image": "assets/bosses/takturion.webp",
+    "bust": "assets/bosses/takturion-bust.webp",
+    "accent": "#d6a34c",
+    "taunts": {
+      "intro": "Tick. Zins. Tack. Tilgung. Mein Uhrwerk rechnet ohne Pause. Halte den Takt – oder er überrollt dich.",
+      "hit": [
+        "Ein Zahnrad springt aus dem Takt.",
+        "Richtig gerechnet. Mein Pendel stockt.",
+        "Du rechnest schneller als mein Werk."
+      ],
+      "miss": [
+        "Aus dem Takt geraten.",
+        "Falsch geteilt. Tick, tack.",
+        "Mein Uhrwerk kennt keine Gnade."
+      ],
+      "timeout": [
+        "Die Zeit ist abgelaufen. Tack.",
+        "Zu langsam für meinen Takt."
+      ],
+      "final": "Der letzte Schlag. Eine Rate, ein Satz, ein Betrag – rechne!",
+      "low": "Meine Feder … sie erlahmt …",
+      "defeat": "Mein Uhrwerk steht still. Du gibst jetzt den Takt an.",
+      "victory": "Verzählt, verrechnet, überholt. Zurück ins Lernskript."
+    }
+  },
+  "questions": [
+    {
+      "id": "3.5-B001",
+      "chapter": "3.5",
+      "section": "3.5-a",
+      "topic": [
+        "Rate",
+        "Annuität"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Darlehen 250.000 €, Zins 3 %, Tilgung 3 %. Monatsrate?",
+      "answers": [
+        "1.250 €",
+        "1.500 €",
+        "625 €",
+        "15.000 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "(3 + 3) × 250.000 ÷ 1.200 = 1.250 €."
+    },
+    {
+      "id": "3.5-B002",
+      "chapter": "3.5",
+      "section": "3.5-a",
+      "topic": [
+        "Rate",
+        "Annuität"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Darlehen 120.000 €, Zins 2,5 %, Tilgung 2,5 %. Monatsrate?",
+      "answers": [
+        "500 €",
+        "250 €",
+        "6.000 €",
+        "600 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "(2,5 + 2,5) × 120.000 ÷ 1.200 = 500 €."
+    },
+    {
+      "id": "3.5-B003",
+      "chapter": "3.5",
+      "section": "3.5-a",
+      "topic": [
+        "Jahresleistung",
+        "Monatsrate"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Darlehen 180.000 €, Zins 4 %, Tilgung 2 %. Jahresleistung und Monatsrate?",
+      "answers": [
+        "3.600 € – 300 €",
+        "7.200 € – 600 €",
+        "10.800 € – 900 €",
+        "10.800 € – 1.080 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "6 % von 180.000 € sind 10.800 € im Jahr. Geteilt durch 12 ergibt das 900 € im Monat."
+    },
+    {
+      "id": "3.5-B004",
+      "chapter": "3.5",
+      "section": "3.5-b",
+      "topic": [
+        "Zinsanteil"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Darlehen 300.000 €, Zins 4 %. Zinsanteil der ersten Monatsrate?",
+      "answers": [
+        "750 €",
+        "1.000 €",
+        "1.200 €",
+        "12.000 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "4 × 300.000 ÷ 1.200 = 1.000 €."
+    },
+    {
+      "id": "3.5-B005",
+      "chapter": "3.5",
+      "section": "3.5-b",
+      "topic": [
+        "Tilgungsanteil"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Darlehen 240.000 €, Zins 4 %, Monatsrate 1.200 €. Tilgungsanteil der ersten Rate?",
+      "answers": [
+        "800 €",
+        "480 €",
+        "1.200 €",
+        "400 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Zinsanteil: 4 × 240.000 ÷ 1.200 = 800 €. Tilgung: 1.200 € − 800 € = 400 €."
+    },
+    {
+      "id": "3.5-B006",
+      "chapter": "3.5",
+      "section": "3.5-b",
+      "topic": [
+        "Getilgter Anteil"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Anfangstilgung 2 %, Zinsbindung zehn Jahre. Wie viel des Darlehens ist danach getilgt?",
+      "answers": [
+        "Mehr als 20 %",
+        "Genau 20 %",
+        "Genau 2 %",
+        "Weniger als 20 %"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Durch die ersparten Zinsen steigt die Tilgung jeden Monat. Nach zehn Jahren ist mehr als 10 × 2 % getilgt."
+    },
+    {
+      "id": "3.5-B007",
+      "chapter": "3.5",
+      "section": "3.5-c",
+      "topic": [
+        "Prolongation",
+        "Neue Rate"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Ursprungsdarlehen 200.000 €, Tilgung 1,5 %. Neuer Zins 4,5 %. Neue Rate, gerechnet auf das Ursprungsdarlehen?",
+      "answers": [
+        "800 €",
+        "1.000 €",
+        "750 €",
+        "1.200 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "(4,5 + 1,5) × 200.000 ÷ 1.200 = 1.000 €."
+    },
+    {
+      "id": "3.5-B008",
+      "chapter": "3.5",
+      "section": "3.5-c",
+      "topic": [
+        "Prolongation",
+        "Tilgungsanteil"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Neue Rate 1.000 €, Restschuld 160.000 €, neuer Zins 4,5 %. Tilgungsanteil der ersten neuen Rate?",
+      "answers": [
+        "250 €",
+        "400 €",
+        "600 €",
+        "720 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Zinsanteil: 4,5 × 160.000 ÷ 1.200 = 600 €. Tilgung: 1.000 € − 600 € = 400 €."
+    },
+    {
+      "id": "3.5-B009",
+      "chapter": "3.5",
+      "section": "3.5-d",
+      "topic": [
+        "Koppelprodukt",
+        "Gesamtrate"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Zinszahlungsdarlehen 200.000 € zu 3 %, Bausparvertrag über 200.000 € mit 4 ‰ Sparbeitrag. Gesamtrate bis zur Zuteilung?",
+      "answers": [
+        "800 €",
+        "500 €",
+        "1.300 €",
+        "1.167 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Zinsen: 3 × 200.000 ÷ 1.200 = 500 €. Sparbeitrag: 4 × 200.000 ÷ 1.000 = 800 €. Zusammen 1.300 €."
+    },
+    {
+      "id": "3.5-B010",
+      "chapter": "3.5",
+      "section": "3.5-d",
+      "topic": [
+        "Zuteilung",
+        "Ratenänderung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Bis zur Zuteilung zahlt der Kunde 1.300 €. Danach gilt ein Tilgungsbeitrag von 5 ‰ der Bausparsumme 200.000 €. Wie ändert sich die Rate?",
+      "answers": [
+        "Sie sinkt um 500 €",
+        "Sie steigt um 300 €",
+        "Sie sinkt um 300 €",
+        "Sie bleibt gleich"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "5 × 200.000 ÷ 1.000 = 1.000 €. Gegenüber 1.300 € sinkt die Rate um 300 €."
+    },
+    {
+      "id": "3.5-B011",
+      "chapter": "3.5",
+      "section": "3.5-e",
+      "topic": [
+        "Tilgungssatz"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Darlehen 150.000 €, Zins 3 %, Rate 625 €. Anfänglicher Tilgungssatz?",
+      "answers": [
+        "5 %",
+        "3 %",
+        "2 %",
+        "1 %"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "625 × 1.200 ÷ 150.000 = 5 %. Abzüglich 3 % Zins bleiben 2 %."
+    },
+    {
+      "id": "3.5-B012",
+      "chapter": "3.5",
+      "section": "3.5-e",
+      "topic": [
+        "Tilgungssatz"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Darlehen 240.000 €, Zins 3,5 %, Rate 1.300 €. Anfänglicher Tilgungssatz?",
+      "answers": [
+        "2 %",
+        "3 %",
+        "3,5 %",
+        "6,5 %"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "1.300 × 1.200 ÷ 240.000 = 6,5 %. Abzüglich 3,5 % Zins bleiben 3 %."
+    },
+    {
+      "id": "3.5-B013",
+      "chapter": "3.5",
+      "section": "3.5-e",
+      "topic": [
+        "Kreditbetrag"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Tragbare Rate 1.500 €, Zins 3,5 %, Tilgung 2,5 %. Höchstmöglicher Kreditbetrag?",
+      "answers": [
+        "300.000 €",
+        "360.000 €",
+        "180.000 €",
+        "514.000 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Jahresleistung 18.000 €. Bei 6 % Annuität: 18.000 ÷ 0,06 = 300.000 €."
+    },
+    {
+      "id": "3.5-B014",
+      "chapter": "3.5",
+      "section": "3.5-e",
+      "topic": [
+        "Kreditbetrag"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Tragbare Rate 800 €, Zins 4 %, Tilgung 1 %. Höchstmöglicher Kreditbetrag?",
+      "answers": [
+        "192.000 €",
+        "96.000 €",
+        "160.000 €",
+        "240.000 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Jahresleistung 9.600 €. Bei 5 % Annuität: 9.600 ÷ 0,05 = 192.000 €."
+    }
+  ]
+}

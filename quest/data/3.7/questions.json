@@ -1,0 +1,1457 @@
+{
+  "chapter": "3.7",
+  "questions": [
+    {
+      "id": "3.7-Q001",
+      "chapter": "3.7",
+      "section": "3.7.1-a",
+      "topic": "Bonität",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 1,
+      "question": "Was bedeutet Bonität?",
+      "answers": [
+        "Der Kunde ist volljährig und darf Verträge wirksam abschließen",
+        "Der Kunde kann und will Zins und Tilgung voraussichtlich erbringen",
+        "Der Kreditgeber verfügt über ausreichend Eigenkapital für das Darlehen",
+        "Der Wert der Immobilie liegt über dem beantragten Darlehensbetrag"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Bonität ist die Einschätzung, ob der Kunde die vereinbarte Gegenleistung – Zinsen, Tilgung und Kosten – künftig erbringen wird."
+    },
+    {
+      "id": "3.7-Q002",
+      "chapter": "3.7",
+      "section": "3.7.1-a",
+      "topic": "Rechtsgrundlagen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 2,
+      "question": "Welche Vorschrift verpflichtet alle Darlehensgeber zivilrechtlich zur Kreditwürdigkeitsprüfung bei Verbraucherdarlehen?",
+      "answers": [
+        "§ 18a KWG",
+        "§ 15a VAG",
+        "§ 34i GewO",
+        "§ 505a BGB"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "§ 505a BGB gilt für jeden Darlehensgeber. § 18a KWG und § 15a VAG sind Aufsichtsrecht für Banken und Versicherungen."
+    },
+    {
+      "id": "3.7-Q003",
+      "chapter": "3.7",
+      "section": "3.7.1-a",
+      "topic": "Rechtsgrundlagen",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 3,
+      "question": "Wo ist die Prüfpflicht für Versicherungen aufsichtsrechtlich geregelt?",
+      "answers": [
+        "In § 15a VAG",
+        "In § 34i GewO",
+        "In § 505a BGB",
+        "In § 18a KWG"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Für Versicherungen gilt § 15a VAG, für Kreditinstitute § 18a KWG."
+    },
+    {
+      "id": "3.7-Q004",
+      "chapter": "3.7",
+      "section": "3.7.1-a",
+      "topic": "Grundsatz",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 4,
+      "question": "Was besagt der Grundsatz „Bonität geht vor Sicherheit“?",
+      "answers": [
+        "Die Schufa-Auskunft geht dem Grundbuch vor",
+        "Eine Grundschuld ersetzt jeden Einkommensnachweis",
+        "Das Einkommen zählt mehr als der Immobilienwert",
+        "Sicherheiten werden gar nicht mehr geprüft"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Nach § 505b Abs. 2 BGB darf sich die Prüfung nicht hauptsächlich auf den Wert der Immobilie stützen. Entscheidend ist, ob der Kunde zahlen kann."
+    },
+    {
+      "id": "3.7-Q005",
+      "chapter": "3.7",
+      "section": "3.7.1-a",
+      "topic": "Angaben",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 5,
+      "question": "Welche Anforderungen gelten für die Angaben zur Bonitätsprüfung?",
+      "answers": [
+        "Belege sind nur bei Selbstständigen nötig",
+        "Eine mündliche Angabe genügt",
+        "Sie sind vollständig anzugeben",
+        "Sie sind eindeutig zu belegen"
+      ],
+      "correct": [
+        2,
+        3
+      ],
+      "explanation": "Alle Angaben und Daten für die Bonitätsprüfung müssen vollständig sein und belegt werden – bei jeder Kundengruppe."
+    },
+    {
+      "id": "3.7-Q006",
+      "chapter": "3.7",
+      "section": "3.7.1-b",
+      "topic": "Score",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 6,
+      "question": "Was ist ein Kreditscore?",
+      "answers": [
+        "Ein Zahlenwert aus einer statistischen Analyse",
+        "Die Summe aller Schulden des Kunden bei allen Banken",
+        "Der Effektivzins eines Darlehens",
+        "Ein Eintrag im Grundbuch"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Score fasst gewichtete Merkmale des Kunden zu einem Zahlenwert zusammen, der die Kreditwürdigkeit abbildet."
+    },
+    {
+      "id": "3.7-Q007",
+      "chapter": "3.7",
+      "section": "3.7.1-b",
+      "topic": "Scorekarte",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 7,
+      "question": "Was bezeichnet der Begriff „Scorekarte“?",
+      "answers": [
+        "Die Regeln für Punktevergabe und Gewichtung",
+        "Die Kundenkarte der Auskunftei",
+        "Die Liste aller abgelehnten Anträge eines Instituts",
+        "Den Ausdruck der Schufa-Auskunft"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Scorekarte enthält die konkreten Regeln und Algorithmen, nach denen Punkte vergeben und gewichtet werden."
+    },
+    {
+      "id": "3.7-Q008",
+      "chapter": "3.7",
+      "section": "3.7.1-b",
+      "topic": "Verwendung",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 8,
+      "question": "Wofür können Kreditscores verwendet werden?",
+      "answers": [
+        "Für die Ermittlung des Verkehrswerts",
+        "Für die Festlegung des Zinssatzes",
+        "Für die Festlegung der Kreditlinie",
+        "Für die Kreditentscheidung"
+      ],
+      "correct": [
+        1,
+        2,
+        3
+      ],
+      "explanation": "Scores dienen der Entscheidung, können aber auch Zinssätze und Kreditlinien bestimmen. Der Verkehrswert betrifft die Immobilie, nicht die Person."
+    },
+    {
+      "id": "3.7-Q009",
+      "chapter": "3.7",
+      "section": "3.7.1-b",
+      "topic": "Abgrenzung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 9,
+      "question": "Ein 17-Jähriger mit gutem Ausbildungsgehalt beantragt allein ein Darlehen. Woran scheitert es zunächst?",
+      "answers": [
+        "Am Beleihungsauslauf",
+        "An der materiellen Kreditwürdigkeit",
+        "An der Kreditfähigkeit",
+        "An der persönlichen Kreditwürdigkeit"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Kreditfähigkeit ist die rechtliche Fähigkeit, wirksam Kreditverträge zu schließen. Sie setzt volle Geschäftsfähigkeit voraus."
+    },
+    {
+      "id": "3.7-Q010",
+      "chapter": "3.7",
+      "section": "3.7.2-a",
+      "topic": "Rechtsfähigkeit",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 10,
+      "question": "Wann beginnt die Rechtsfähigkeit des Menschen?",
+      "answers": [
+        "Mit dem 18. Geburtstag",
+        "Mit der ersten Kontoeröffnung",
+        "Mit dem 7. Geburtstag",
+        "Mit Vollendung der Geburt"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Nach § 1 BGB beginnt die Rechtsfähigkeit mit der Vollendung der Geburt."
+    },
+    {
+      "id": "3.7-Q011",
+      "chapter": "3.7",
+      "section": "3.7.2-a",
+      "topic": "Geschäftsfähigkeit",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 11,
+      "question": "Was bedeutet Geschäftsfähigkeit?",
+      "answers": [
+        "Rechtsgeschäfte wirksam selbst vornehmen zu können",
+        "Über ein eigenes Einkommen zu verfügen",
+        "Selbstständig Träger von Rechten und Pflichten zu sein",
+        "Ein Gewerbe anmelden zu dürfen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Geschäftsfähigkeit ist die Fähigkeit, Rechtsgeschäfte selbst wirksam vorzunehmen. Träger von Rechten und Pflichten zu sein ist Rechtsfähigkeit."
+    },
+    {
+      "id": "3.7-Q012",
+      "chapter": "3.7",
+      "section": "3.7.2-a",
+      "topic": "Minderjährige",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 12,
+      "question": "Was braucht ein Minderjähriger für eine Kreditaufnahme?",
+      "answers": [
+        "Genehmigung der BaFin",
+        "Zustimmung des gesetzlichen Vertreters",
+        "Bürgschaft der Eltern",
+        "Genehmigung des Familiengerichts"
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "explanation": "Nötig sind beide: die Zustimmung der gesetzlichen Vertreter und die Genehmigung des Familiengerichts."
+    },
+    {
+      "id": "3.7-Q013",
+      "chapter": "3.7",
+      "section": "3.7.2-a",
+      "topic": "Haftung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 13,
+      "question": "Die Eltern stimmen dem Kredit ihres 17-jährigen Sohnes zu, das Familiengericht genehmigt. Wer ist Schuldner?",
+      "answers": [
+        "Die Eltern",
+        "Das Familiengericht",
+        "Sohn und Eltern gemeinsam",
+        "Der Sohn"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Schuldner ist der Minderjährige selbst. Die Zustimmung macht die Eltern nicht zu Kreditnehmern."
+    },
+    {
+      "id": "3.7-Q014",
+      "chapter": "3.7",
+      "section": "3.7.2-a",
+      "topic": "Legitimation",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 14,
+      "question": "Wodurch wird die Rechtsfähigkeit des Kunden geprüft?",
+      "answers": [
+        "Durch die Legitimationsprüfung",
+        "Durch die Haushaltsrechnung des Kunden",
+        "Durch das Wertgutachten",
+        "Durch die Schufa-Auskunft"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Legitimationsprüfung stellt fest, wer der Kunde ist. Haushaltsrechnung und Schufa gehören zur Kreditwürdigkeit."
+    },
+    {
+      "id": "3.7-Q015",
+      "chapter": "3.7",
+      "section": "3.7.2-b",
+      "topic": "Güterstand",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 15,
+      "question": "Wie entsteht die Zugewinngemeinschaft?",
+      "answers": [
+        "Durch gemeinsamen Kreditantrag",
+        "Automatisch mit der Eheschließung",
+        "Durch einen notariellen Ehevertrag",
+        "Durch Eintragung im Grundbuch"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Zugewinngemeinschaft ist der gesetzliche Güterstand. Gütertrennung muss dagegen im Ehevertrag vereinbart werden."
+    },
+    {
+      "id": "3.7-Q016",
+      "chapter": "3.7",
+      "section": "3.7.2-b",
+      "topic": "Gütertrennung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 16,
+      "question": "Eheleute mit Gütertrennung wollen ein Darlehen aufnehmen. Was verlangt der Kreditgeber?",
+      "answers": [
+        "Einen Auszug aus dem Handelsregister",
+        "Die Vorlage des Gütertrennungsvertrags",
+        "Eine Genehmigung des Familiengerichts",
+        "Eine Bürgschaft des Ehepartners"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Der Ehevertrag belegt die Gütertrennung. Dann kann jeder einzeln einen Kredit aufnehmen, sofern das Institut einverstanden ist."
+    },
+    {
+      "id": "3.7-Q017",
+      "chapter": "3.7",
+      "section": "3.7.2-b",
+      "topic": "Kreditnehmer",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 17,
+      "question": "Ein Ehepaar in Zugewinngemeinschaft unterschreibt gemeinsam den Kreditvertrag. Wer ist Kreditnehmer?",
+      "answers": [
+        "Der Antragsteller, der andere bürgt",
+        "Beide Ehepartner",
+        "Der im Grundbuch zuerst Eingetragene",
+        "Der Ehepartner mit dem höheren Einkommen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Durch die Unterschrift beider werden beide Kreditnehmer."
+    },
+    {
+      "id": "3.7-Q018",
+      "chapter": "3.7",
+      "section": "3.7.2-b",
+      "topic": "Gesellschaften",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 18,
+      "question": "Welche Unterlagen sind bei einer GmbH als Kreditnehmerin zusätzlich nötig?",
+      "answers": [
+        "Rentenbescheid der Gesellschafter",
+        "Auszug aus dem Handelsregister",
+        "Genehmigung des Familiengerichts",
+        "Satzung"
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "explanation": "Zu prüfen ist, ob die Handelnden vertretungsberechtigt sind. Das zeigen Registerauszug und Satzung, gegebenenfalls Unterschriftsproben."
+    },
+    {
+      "id": "3.7-Q019",
+      "chapter": "3.7",
+      "section": "3.7.3-a",
+      "topic": "Kriterien",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 19,
+      "question": "Welche Kriterien gehören zur persönlichen Kreditwürdigkeit?",
+      "answers": [
+        "Beruf",
+        "Beleihungswert",
+        "Familiäre Verhältnisse",
+        "Integrität"
+      ],
+      "correct": [
+        0,
+        2,
+        3
+      ],
+      "explanation": "Geprüft werden Integrität, Beruf, Familie, Wohnsituation, Vermögen und Alter. Der Beleihungswert betrifft das Objekt."
+    },
+    {
+      "id": "3.7-Q020",
+      "chapter": "3.7",
+      "section": "3.7.3-a",
+      "topic": "Negativmerkmale",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 20,
+      "question": "Welches Merkmal führt in der Regel zur Ablehnung des Kredits?",
+      "answers": [
+        "Wechsel der Hausbank",
+        "Lohnpfändung",
+        "Befristeter Handyvertrag",
+        "Mietwohnung statt Eigentum"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Lohnpfändung, Lohnabtretung, fruchtlose Pfändung, Vermögensauskunft und Zwangsvollstreckung sind Negativmerkmale."
+    },
+    {
+      "id": "3.7-Q021",
+      "chapter": "3.7",
+      "section": "3.7.3-a",
+      "topic": "Verfahren",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 21,
+      "question": "In welchen drei Schritten läuft die Prüfung der wirtschaftlichen Verhältnisse ab?",
+      "answers": [
+        "Anfordern, auswerten, dokumentieren",
+        "Anfragen, zusagen, widerrufen",
+        "Schätzen, besichern, kündigen",
+        "Unterschreiben, beurkunden, auszahlen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Erst werden die Unterlagen angefordert, dann ausgewertet, und das Ergebnis wird dokumentiert."
+    },
+    {
+      "id": "3.7-Q022",
+      "chapter": "3.7",
+      "section": "3.7.3-a",
+      "topic": "Alter",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 22,
+      "question": "Warum spielt das Alter des Kunden bei der Prüfung eine Rolle?",
+      "answers": [
+        "Ältere Kunden erhalten gesetzlich höhere Zinsen",
+        "Ab 60 Jahren sind Immobiliendarlehen gesetzlich verboten",
+        "Die Laufzeit kann über das Erwerbsleben hinausreichen",
+        "Das Alter bestimmt die Höhe des Beleihungswerts"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Mit dem Rentenbeginn sinkt das Einkommen. Die Bank muss prüfen, ob das Darlehen dann noch bedient werden kann."
+    },
+    {
+      "id": "3.7-Q023",
+      "chapter": "3.7",
+      "section": "3.7.3-a",
+      "topic": "Informationsquelle",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 23,
+      "question": "Woher stammen die Informationen zur persönlichen Kreditwürdigkeit vor allem?",
+      "answers": [
+        "Aus dem Kaufvertrag",
+        "Aus dem Grundbuch",
+        "Aus dem Darlehensantrag",
+        "Aus dem Wertgutachten des Objekts"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Angaben stehen im Darlehensantrag. Aufgenommen werden sie meist vom Außendienst."
+    },
+    {
+      "id": "3.7-Q024",
+      "chapter": "3.7",
+      "section": "3.7.3-b",
+      "topic": "Maßstab",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 24,
+      "question": "Wann darf ein Immobiliar-Verbraucherdarlehensvertrag geschlossen werden?",
+      "answers": [
+        "Wenn es wahrscheinlich ist, dass der Kunde seine Pflichten erfüllt",
+        "Wenn der Kunde eine Schufa-Auskunft ohne Einträge vorlegt",
+        "Wenn an der Rückzahlung lediglich keine erheblichen Zweifel bestehen",
+        "Wenn der Objektwert das Darlehen um mindestens 20 % übersteigt"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Bei Immobiliar-Verbraucherdarlehen verlangt § 505a BGB Wahrscheinlichkeit. „Keine erheblichen Zweifel“ gilt für Allgemein-Verbraucherdarlehen."
+    },
+    {
+      "id": "3.7-Q025",
+      "chapter": "3.7",
+      "section": "3.7.3-b",
+      "topic": "Zeitraum",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 25,
+      "question": "Auf welchen Zeitraum bezieht sich die Kreditwürdigkeitsprüfung?",
+      "answers": [
+        "Auf die gesamte Laufzeit",
+        "Auf die Dauer der Zinsbindung",
+        "Auf die ersten zwölf Monate",
+        "Auf den Tag der Auszahlung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Kreditgeber muss prüfen und dokumentieren, dass der Kunde den Kredit über die gesamte Laufzeit bedienen kann."
+    },
+    {
+      "id": "3.7-Q026",
+      "chapter": "3.7",
+      "section": "3.7.3-b",
+      "topic": "Immobilienwert",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 26,
+      "question": "In welchem Fall darf sich die Prüfung hauptsächlich auf den Wert der Wohnimmobilie stützen?",
+      "answers": [
+        "Wenn der Beleihungsauslauf unter 60 % des Beleihungswerts liegt",
+        "Wenn das Darlehen dem Bau oder der Renovierung dient",
+        "Wenn der Kunde selbstständig tätig ist",
+        "Wenn der Kunde über 60 Jahre alt ist"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "§ 505b Abs. 2 BGB macht eine Ausnahme nur für Darlehen zum Bau oder zur Renovierung der Wohnimmobilie."
+    },
+    {
+      "id": "3.7-Q027",
+      "chapter": "3.7",
+      "section": "3.7.3-b",
+      "topic": "Ruhestand",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 27,
+      "question": "Ein 58-Jähriger beantragt ein Darlehen mit 20 Jahren Laufzeit. Was muss die Prüfung berücksichtigen?",
+      "answers": [
+        "Nur das aktuelle Gehalt",
+        "Das geringere Einkommen im Ruhestand",
+        "Nur den Wert der Immobilie",
+        "Den Durchschnittslohn seiner Branche"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Reicht die Laufzeit in den Ruhestand, ist das voraussichtlich niedrigere Einkommen einzubeziehen."
+    },
+    {
+      "id": "3.7-Q028",
+      "chapter": "3.7",
+      "section": "3.7.3-b",
+      "topic": "Informationen",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 28,
+      "question": "Auf welche Informationen stützt sich die Prüfung nach § 505b Abs. 2 BGB?",
+      "answers": [
+        "Einkommen",
+        "Ausgaben",
+        "Andere finanzielle und wirtschaftliche Umstände",
+        "Erwartete Wertsteigerung der Immobilie"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Grundlage sind notwendige, ausreichende und angemessene Informationen zu Einkommen, Ausgaben und wirtschaftlichen Umständen. Auf Wertsteigerung darf nicht gebaut werden."
+    },
+    {
+      "id": "3.7-Q029",
+      "chapter": "3.7",
+      "section": "3.7.3-c",
+      "topic": "Zinsfolge",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 29,
+      "question": "Die Bank hat die Kreditwürdigkeit nicht ordnungsgemäß geprüft. Was geschieht mit einem gebundenen Sollzins?",
+      "answers": [
+        "Er bleibt bis zur Kündigung gleich",
+        "Er steigt um 2,5 Prozentpunkte",
+        "Er entfällt rückwirkend für die gesamte Laufzeit",
+        "Er sinkt auf den marktüblichen Pfandbriefzins"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Nach § 505d BGB ermäßigt sich der gebundene Sollzins auf den Kapitalmarktzins für Pfandbriefe mit entsprechender Laufzeit."
+    },
+    {
+      "id": "3.7-Q030",
+      "chapter": "3.7",
+      "section": "3.7.3-c",
+      "topic": "Kündigung Kunde",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 30,
+      "question": "Welches Recht hat der Kunde bei einem Verstoß der Bank gegen die Prüfpflicht?",
+      "answers": [
+        "Umwandlung des Darlehens in ein Bauspardarlehen",
+        "Kündigung mit sechs Monaten Frist und Entschädigung",
+        "Rücktritt mit Rückzahlung aller gezahlten Zinsen",
+        "Fristlose Kündigung ohne Vorfälligkeitsentschädigung"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Der Kunde kann jederzeit fristlos kündigen. Eine Vorfälligkeitsentschädigung schuldet er nicht."
+    },
+    {
+      "id": "3.7-Q031",
+      "chapter": "3.7",
+      "section": "3.7.3-c",
+      "topic": "Kündigung Bank",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 31,
+      "question": "Darf die Bank kündigen, weil sie selbst die Kreditwürdigkeit nicht ordentlich geprüft hat?",
+      "answers": [
+        "Ja, mit drei Monaten Frist",
+        "Nein, das allein ist kein Kündigungsgrund",
+        "Ja, innerhalb von 14 Tagen nach Kenntnis",
+        "Ja, wenn der Kunde zustimmt"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "§ 499 Abs. 3 BGB schließt die Kündigung allein wegen unvollständiger Angaben oder fehlerhafter Prüfung aus."
+    },
+    {
+      "id": "3.7-Q032",
+      "chapter": "3.7",
+      "section": "3.7.3-c",
+      "topic": "Ausnahme",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 32,
+      "question": "Wann darf die Bank trotz § 499 Abs. 3 BGB kündigen?",
+      "answers": [
+        "Wenn die Dokumentation der Prüfung bei der Bank verloren gegangen ist",
+        "Wenn der Kunde Informationen wissentlich vorenthalten oder gefälscht hat",
+        "Wenn der Kunde den Arbeitgeber innerhalb der Probezeit gewechselt hat",
+        "Wenn die Marktzinsen seit dem Vertragsschluss deutlich gestiegen sind"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Der Schutz entfällt, wenn der Mangel der Prüfung auf wissentlich vorenthaltenen oder gefälschten Angaben des Kunden beruht."
+    },
+    {
+      "id": "3.7-Q033",
+      "chapter": "3.7",
+      "section": "3.7.3-c",
+      "topic": "Fall",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 33,
+      "question": "Die Bank wusste beim Abschluss vom befristeten Arbeitsvertrag, berücksichtigte ihn aber nicht. Der Kunde wird arbeitslos, die Bank kündigt. Folge?",
+      "answers": [
+        "Die Kündigung ist wirksam, der Kunde zahlt Vorfälligkeitsentschädigung",
+        "Der Vertrag ist nichtig, das Darlehen wird sofort fällig",
+        "Der Vertrag bleibt bestehen, der Zins sinkt auf den Pfandbriefzins",
+        "Der Vertrag ruht, bis der Kunde wieder Arbeit hat"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Skriptbeispiel: Der Vertrag bleibt bestehen und wird zum Pfandbriefzins mit der Laufzeit der Zinsbindung verzinst."
+    },
+    {
+      "id": "3.7-Q034",
+      "chapter": "3.7",
+      "section": "3.7.3-d",
+      "topic": "Grundlage",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 34,
+      "question": "Welches Einkommen ist in der Regel Grundlage der Einkommensprüfung?",
+      "answers": [
+        "Das Bruttojahresgehalt",
+        "Der Umsatz des Arbeitgebers",
+        "Das zu versteuernde Einkommen",
+        "Das monatliche Nettoeinkommen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Geprüft wird das monatliche Familien-Nettoeinkommen aus allen nachhaltigen Quellen."
+    },
+    {
+      "id": "3.7-Q035",
+      "chapter": "3.7",
+      "section": "3.7.3-d",
+      "topic": "Nicht anrechenbar",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 35,
+      "question": "Welche Einkommensteile werden grundsätzlich nicht angerechnet?",
+      "answers": [
+        "Dauerhafte Altersrente",
+        "Spesen und Fahrtkostenerstattung",
+        "Arbeitslosengeld",
+        "Überstundenvergütung"
+      ],
+      "correct": [
+        1,
+        2,
+        3
+      ],
+      "explanation": "Aufwandsersatz, unregelmäßige und befristete Leistungen zählen nicht. Eine dauerhafte Rente ist dagegen anrechenbar."
+    },
+    {
+      "id": "3.7-Q036",
+      "chapter": "3.7",
+      "section": "3.7.3-d",
+      "topic": "Saison",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 36,
+      "question": "Ein Kellner verdient in der Sommersaison deutlich mehr. Wie ist das zu behandeln?",
+      "answers": [
+        "Mit zwölf multiplizieren",
+        "Als Kapitalertrag behandeln",
+        "Den höchsten Monat für das ganze Jahr ansetzen",
+        "Nicht auf das ganze Jahr hochrechnen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Saisonbezogene Einkünfte dürfen nicht auf das Jahr hochgerechnet werden. Typisch sind sie im Bau- und Gastronomiegewerbe."
+    },
+    {
+      "id": "3.7-Q037",
+      "chapter": "3.7",
+      "section": "3.7.3-d",
+      "topic": "Mietertrag",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 37,
+      "question": "Kaltmiete 1.200 €, Abzug für Bewirtschaftung 25 %. Welcher Mietertrag wird angerechnet?",
+      "answers": [
+        "960 €",
+        "1.200 €",
+        "900 €",
+        "300 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "1.200 € − 25 % (300 €) = 900 €. Als Ertrag gilt die Kaltmiete abzüglich Bewirtschaftungskosten."
+    },
+    {
+      "id": "3.7-Q038",
+      "chapter": "3.7",
+      "section": "3.7.3-d",
+      "topic": "Mietertrag",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 38,
+      "question": "Was gilt bei Vermietung als Ausgangsgröße für den Ertrag?",
+      "answers": [
+        "Die Miete laut Mietspiegel",
+        "Die Kaltmiete",
+        "Die Warmmiete",
+        "Die Jahresrohmiete"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Heizung, Wasser und Strom trägt der Mieter. Deshalb zählt die Kaltmiete."
+    },
+    {
+      "id": "3.7-Q039",
+      "chapter": "3.7",
+      "section": "3.7.3-d",
+      "topic": "Kindergeld",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 39,
+      "question": "Was ist beim Kindergeld als Einkommen zu beachten?",
+      "answers": [
+        "Es darf gar nicht angesetzt werden",
+        "Es wird bei zwei Verdienern doppelt angesetzt",
+        "Es zählt nur bei Alleinerziehenden",
+        "Alter der Kinder und Dauer der Berechtigung"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Kindergeld fließt nur begrenzte Zeit. Deshalb ist zu prüfen, wie lange der Anspruch noch besteht."
+    },
+    {
+      "id": "3.7-Q040",
+      "chapter": "3.7",
+      "section": "3.7.3-e",
+      "topic": "Ausgaben",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 40,
+      "question": "Welche Posten zählen in der Bonitätsprüfung zu den Ausgaben?",
+      "answers": [
+        "Fahrtkostenerstattung des Arbeitgebers",
+        "Beiträge zur privaten Krankenversicherung",
+        "Leasingraten",
+        "Unterhaltszahlungen"
+      ],
+      "correct": [
+        1,
+        2,
+        3
+      ],
+      "explanation": "Alle laufenden Verpflichtungen sind Ausgaben. Die Fahrtkostenerstattung ist ein nicht anrechenbarer Einkommensteil."
+    },
+    {
+      "id": "3.7-Q041",
+      "chapter": "3.7",
+      "section": "3.7.3-e",
+      "topic": "Veränderungen",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 41,
+      "question": "Welche erkennbaren Veränderungen muss die Prüfung berücksichtigen?",
+      "answers": [
+        "Künftige Wertsteigerung des Hauses",
+        "Ausfall des mitverdienenden Partners",
+        "Renteneintritt",
+        "Mögliche Lottogewinne"
+      ],
+      "correct": [
+        1,
+        2
+      ],
+      "explanation": "Der Kunde muss auch zahlen können, wenn er in Rente geht oder ein Einkommen wegfällt – soweit das erkennbar ist."
+    },
+    {
+      "id": "3.7-Q042",
+      "chapter": "3.7",
+      "section": "3.7.3-e",
+      "topic": "Beleihungsauslauf",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 42,
+      "question": "Wie reagieren Kreditgeber oft auf einen Beleihungsauslauf über 80 %?",
+      "answers": [
+        "Sie verzichten auf die Haushaltsrechnung",
+        "Sie rechnen Überstunden voll an",
+        "Sie verlängern die Zinsbindung",
+        "Sie setzen ein höheres Existenzminimum an"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Wegen des höheren Risikos muss dem Kunden nach Abzug aller Ausgaben mehr übrig bleiben."
+    },
+    {
+      "id": "3.7-Q043",
+      "chapter": "3.7",
+      "section": "3.7.3-e",
+      "topic": "Prüfgegenstand",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 43,
+      "question": "Was wird bei der materiellen Kreditwürdigkeit im Kern geprüft?",
+      "answers": [
+        "Die Vertretungsmacht des Kunden",
+        "Das Verhältnis von Kaufpreis zu Wohnfläche",
+        "Der Leumund des Kunden",
+        "Das Verhältnis von Einnahmen zu Ausgaben"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Der Kredit muss ohne Gefährdung des Lebensunterhalts bedient werden können. Dafür werden Einnahmen und Ausgaben gegenübergestellt."
+    },
+    {
+      "id": "3.7-Q044",
+      "chapter": "3.7",
+      "section": "3.7.4-a",
+      "topic": "Grundsatz",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 44,
+      "question": "Wie ist Einkommen zu behandeln, das der Kunde nicht nachweisen kann?",
+      "answers": [
+        "Es wird nicht einkalkuliert",
+        "Es wird geschätzt",
+        "Es genügt eine Unterschrift",
+        "Es wird zur Hälfte angesetzt"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Einkommen, das nicht nachgewiesen werden kann, darf grundsätzlich nicht einkalkuliert werden."
+    },
+    {
+      "id": "3.7-Q045",
+      "chapter": "3.7",
+      "section": "3.7.4-a",
+      "topic": "Dokumentation",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 45,
+      "question": "Was verlangt § 505b Abs. 4 BGB vom Darlehensgeber bei Immobiliar-Verbraucherdarlehen?",
+      "answers": [
+        "Die Dokumentation aufbewahren",
+        "Verfahren und Angaben der Prüfung festlegen",
+        "Die Dokumentation der BaFin vorlegen",
+        "Die Prüfung dokumentieren"
+      ],
+      "correct": [
+        0,
+        1,
+        3
+      ],
+      "explanation": "Der Darlehensgeber muss festlegen, dokumentieren und aufbewahren. Eine Vorlagepflicht bei der BaFin nennt die Vorschrift nicht."
+    },
+    {
+      "id": "3.7-Q046",
+      "chapter": "3.7",
+      "section": "3.7.4-a",
+      "topic": "Aufbewahrung",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 46,
+      "question": "Wie lange muss die Dokumentation der Kreditwürdigkeitsprüfung nach § 505b BGB aufbewahrt werden?",
+      "answers": [
+        "Eine Dauer ist dort nicht geregelt",
+        "Genau fünf Jahre",
+        "Genau zwei Jahre",
+        "Bis sechs Monate nach Auszahlung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 505b Abs. 4 BGB verlangt die Aufbewahrung, nennt aber keine Frist."
+    },
+    {
+      "id": "3.7-Q047",
+      "chapter": "3.7",
+      "section": "3.7.4-a",
+      "topic": "GmbH",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 47,
+      "question": "Ein Kunde ist Angestellter seiner eigenen GmbH und legt Gehaltsabrechnungen vor. Was gilt?",
+      "answers": [
+        "Die Gehaltsabrechnungen der letzten drei Monate genügen",
+        "Es zählt nur das Stammkapital der GmbH",
+        "Zusätzlich wird die Ertragskraft der Firma analysiert",
+        "Ein Darlehen ist ausgeschlossen"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Wer in der eigenen Firma angestellt ist, bestimmt sein Gehalt selbst. Deshalb wird die Firma wie bei Selbstständigen geprüft."
+    },
+    {
+      "id": "3.7-Q048",
+      "chapter": "3.7",
+      "section": "3.7.4-a",
+      "topic": "Selbstständige",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 48,
+      "question": "Womit weisen Selbstständige ihr Einkommen in der Regel nach?",
+      "answers": [
+        "Lohnsteuerbescheinigung des Arbeitgebers",
+        "Bilanzen mit Gewinn- und Verlustrechnung",
+        "Betriebswirtschaftliche Auswertung",
+        "Einkommensteuerbescheide"
+      ],
+      "correct": [
+        1,
+        2,
+        3
+      ],
+      "explanation": "Selbstständige haben keinen Arbeitgeber. Sie belegen ihr Einkommen mit Bescheiden, Abschlüssen und Auswertungen."
+    },
+    {
+      "id": "3.7-Q049",
+      "chapter": "3.7",
+      "section": "3.7.4-a",
+      "topic": "Testat",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 49,
+      "question": "Welche Anforderung stellt das Skript an Bilanzen und Auswertungen von Selbstständigen?",
+      "answers": [
+        "Sie müssen im Handelsregister stehen",
+        "Sie müssen vom Steuerberater testiert sein",
+        "Sie müssen notariell beurkundet sein",
+        "Sie müssen von der Schufa bestätigt sein"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Bilanzen, BWA und Einnahmen-Ausgaben-Rechnungen müssen von einem Steuerberater testiert sein."
+    },
+    {
+      "id": "3.7-Q050",
+      "chapter": "3.7",
+      "section": "3.7.5-a",
+      "topic": "Existenzminimum",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 50,
+      "question": "Was muss dem Darlehensnehmer nach Abzug aller Verpflichtungen und Ausgaben verbleiben?",
+      "answers": [
+        "Mindestens die Höhe der Darlehensrate",
+        "Mindestens die Hälfte des Nettoeinkommens",
+        "Mindestens der pfändbare Betrag",
+        "Mindestens das Existenzminimum"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Das Existenzminimum – auch Sockelbetrag oder Mindestwert – muss dem Kunden für Lebenshaltung und Bewirtschaftung bleiben."
+    },
+    {
+      "id": "3.7-Q051",
+      "chapter": "3.7",
+      "section": "3.7.5-a",
+      "topic": "Festlegung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 51,
+      "question": "Wer legt die Höhe des Existenzminimums in der Haushaltsrechnung fest?",
+      "answers": [
+        "Der Vermittler nach eigenem Ermessen",
+        "Die BaFin durch Rundschreiben",
+        "Das zuständige Finanzamt am Wohnsitz des Kunden",
+        "Jeder Kreditgeber in seinen Richtlinien"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die Bonitätsgrundsätze stehen in den internen Richtlinien des jeweiligen Kreditgebers. Einen einheitlichen Betrag gibt es nicht."
+    },
+    {
+      "id": "3.7-Q052",
+      "chapter": "3.7",
+      "section": "3.7.5-a",
+      "topic": "Bestandteile",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 52,
+      "question": "Aus welchen zwei Kostenblöcken besteht das Existenzminimum?",
+      "answers": [
+        "Erwerbskosten und Erwerbsnebenkosten des Objekts",
+        "Lebenshaltungs- und Bewirtschaftungskosten",
+        "Zins- und Tilgungsanteil",
+        "Verwaltungs- und Abschlusskosten"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Der Sockelbetrag sichert Lebenshaltung (Essen, Kleidung, Auto) und Bewirtschaftung der Wohnung (Strom, Heizung, Grundsteuer)."
+    },
+    {
+      "id": "3.7-Q053",
+      "chapter": "3.7",
+      "section": "3.7.5-a",
+      "topic": "Zuordnung",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 53,
+      "question": "Welche Posten zählen zu den Bewirtschaftungskosten?",
+      "answers": [
+        "Urlaub",
+        "Rücklage für Instandhaltung",
+        "Grundsteuer",
+        "Heizung"
+      ],
+      "correct": [
+        1,
+        2,
+        3
+      ],
+      "explanation": "Bewirtschaftungskosten sind die laufenden Kosten der Wohnung. Urlaub gehört zur Lebenshaltung."
+    },
+    {
+      "id": "3.7-Q054",
+      "chapter": "3.7",
+      "section": "3.7.5-a",
+      "topic": "Lebensversicherung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 54,
+      "question": "Wie werten Kreditgeber den Beitrag zu einer Lebensversicherung in der Regel?",
+      "answers": [
+        "Als sonstige Ausgabe",
+        "Als Einnahme",
+        "Als Bewirtschaftungskosten",
+        "Als Lebenshaltungskosten"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Vorsorgebeiträge sind keine Lebenshaltung. Sie werden als sonstige Ausgaben eigens abgezogen."
+    },
+    {
+      "id": "3.7-Q055",
+      "chapter": "3.7",
+      "section": "3.7.5-a",
+      "topic": "Aufwandsverlauf",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 55,
+      "question": "Ein Vorausdarlehen wird durch einen Bausparvertrag abgelöst. Was ist für die Tragfähigkeit zu beachten?",
+      "answers": [
+        "Der Aufwand kann durch den Tilgungsbeitrag steigen",
+        "Das Existenzminimum wird nicht mehr geprüft",
+        "Der Aufwand entfällt nach der Zuteilung vollständig",
+        "Der Kunde braucht einen zweiten Gesamtschuldner"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Nach der Zuteilung ist der Tilgungsbeitrag zu zahlen. Der Aufwandsverlauf über die ganze Laufzeit ist zu betrachten."
+    },
+    {
+      "id": "3.7-Q056",
+      "chapter": "3.7",
+      "section": "3.7.5-b",
+      "topic": "Freier Betrag",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 56,
+      "question": "Nettoeinkommen 3.200 €, Leasing 250 €, neue Darlehensrate 950 €. Wie viel bleibt für den Lebensunterhalt?",
+      "answers": [
+        "1.750 €",
+        "2.250 €",
+        "2.950 €",
+        "2.000 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "3.200 € − 250 € − 950 € = 2.000 €. Dieser Betrag wird mit dem Mindestwert des Kreditgebers verglichen."
+    },
+    {
+      "id": "3.7-Q057",
+      "chapter": "3.7",
+      "section": "3.7.5-b",
+      "topic": "Methode A",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 57,
+      "question": "Mindestwerte: Hauptverdiener 700 €, Ehegatte 240 €, je Kind 200 €, Bewirtschaftung 2,50 € je m². Ehepaar, ein Kind, 120 m². Existenzminimum?",
+      "answers": [
+        "1.640 €",
+        "1.260 €",
+        "1.440 €",
+        "1.140 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "700 € + 240 € + 200 € + 120 × 2,50 € (300 €) = 1.440 €."
+    },
+    {
+      "id": "3.7-Q058",
+      "chapter": "3.7",
+      "section": "3.7.5-b",
+      "topic": "Methode B",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 58,
+      "question": "Regel: 40 % des Nettoeinkommens, mindestens aber 1.100 € plus 240 € je Kind. Nettoeinkommen 3.000 €, ein Kind. Existenzminimum?",
+      "answers": [
+        "1.340 €",
+        "1.100 €",
+        "1.200 €",
+        "2.540 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "40 % von 3.000 € sind 1.200 €. Der Mindestwert beträgt 1.100 € + 240 € = 1.340 €. Es gilt der höhere Wert."
+    },
+    {
+      "id": "3.7-Q059",
+      "chapter": "3.7",
+      "section": "3.7.5-b",
+      "topic": "Methode B",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 59,
+      "question": "Regel: 40 % des Nettoeinkommens, mindestens aber 1.100 € plus 240 € je Kind. Nettoeinkommen 4.500 €, ein Kind. Existenzminimum?",
+      "answers": [
+        "1.340 €",
+        "3.140 €",
+        "1.800 €",
+        "1.100 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "40 % von 4.500 € sind 1.800 €. Das liegt über dem Mindestwert von 1.340 €, also gilt 1.800 €."
+    },
+    {
+      "id": "3.7-Q060",
+      "chapter": "3.7",
+      "section": "3.7.5-b",
+      "topic": "Beurteilung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 60,
+      "question": "Frei für den Lebensunterhalt: 1.500 €. Mindestwert des Kreditgebers: 1.590 €. Wie ist die Finanzierung zu beurteilen?",
+      "answers": [
+        "Tragfähig, weil Kindergeld fließt",
+        "Tragfähig, es bleiben 90 € übrig",
+        "Nicht prüfbar ohne Schufa-Score",
+        "Nicht tragfähig, es fehlen 90 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Der freie Betrag liegt unter dem Mindestwert. Der Mindestwert darf nicht unterschritten werden."
+    },
+    {
+      "id": "3.7-Q061",
+      "chapter": "3.7",
+      "section": "3.7.5-b",
+      "topic": "Einordnung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 61,
+      "question": "Wo steht die private Krankenversicherung in der Einnahmen-Ausgaben-Übersicht des Skripts?",
+      "answers": [
+        "Bei den Ausgaben, als Abzug beim Einkommen",
+        "Sie bleibt unberücksichtigt",
+        "In der Lebenshaltungspauschale des Kreditgebers",
+        "Bei den Einnahmen, als Zuschlag"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Übersicht führt die private Krankenversicherung als Ausgabe, die beim Einkommen abgezogen wird."
+    },
+    {
+      "id": "3.7-Q062",
+      "chapter": "3.7",
+      "section": "3.7.5-c",
+      "topic": "K.-o.-Kriterien",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 62,
+      "question": "Welche Sachverhalte können unabhängig vom Rechenergebnis zur Ablehnung führen?",
+      "answers": [
+        "Ein Beleihungsauslauf von 50 %",
+        "Zwangsversteigerungsvermerk im Grundbuch",
+        "Harte Negativmerkmale in der Schufa",
+        "Rücklastschriften beim abzulösenden Darlehen"
+      ],
+      "correct": [
+        1,
+        2,
+        3
+      ],
+      "explanation": "Das sind typische K.-o.-Kriterien. Ein niedriger Beleihungsauslauf ist dagegen günstig."
+    },
+    {
+      "id": "3.7-Q063",
+      "chapter": "3.7",
+      "section": "3.7.5-c",
+      "topic": "Schufa",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 63,
+      "question": "Der Kunde lehnt die Schufa-Auskunft ab. Die Haushaltsrechnung zeigt einen hohen Überschuss. Was folgt in der Regel?",
+      "answers": [
+        "Kreditvergabe ohne weitere Prüfung",
+        "Keine Kreditvergabe",
+        "Kreditvergabe mit Zinsaufschlag",
+        "Kreditvergabe gegen zusätzliche Grundschuld"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Ablehnung der Schufa-Auskunft ist ein K.-o.-Kriterium. Es gilt unabhängig vom rechnerischen Ergebnis."
+    },
+    {
+      "id": "3.7-Q064",
+      "chapter": "3.7",
+      "section": "3.7.5-c",
+      "topic": "Kettenumschuldung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 64,
+      "question": "Was ist eine Kettenumschuldung?",
+      "answers": [
+        "Kredite werden immer wieder durch neue Kredite abgelöst",
+        "Ein Darlehen wird nach der Zinsbindung beim selben Institut prolongiert",
+        "Mehrere Banken finanzieren ein Objekt gemeinsam",
+        "Ein Bauspardarlehen löst ein Vorausdarlehen ab"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Wer Schulden laufend mit neuen Krediten ablöst, baut sie nicht aus dem Einkommen ab. Das gilt als laufende finanzielle Sanierung."
+    },
+    {
+      "id": "3.7-Q065",
+      "chapter": "3.7",
+      "section": "3.7.5-c",
+      "topic": "Festlegung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 65,
+      "question": "Wer bestimmt, welche K.-o.-Kriterien gelten?",
+      "answers": [
+        "Der Kunde in seinem Darlehensantrag",
+        "Die Schufa",
+        "Der jeweilige Kreditgeber",
+        "Das Grundbuchamt"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Sachverhalte hängen von den Bestimmungen des einzelnen Kreditgebers ab."
+    }
+  ]
+}

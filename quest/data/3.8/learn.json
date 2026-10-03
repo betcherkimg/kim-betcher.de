@@ -1,0 +1,971 @@
+{
+  "chapter": "3.8",
+  "title": "Kreditsicherung",
+  "sources": [
+    "BWB-Lernskript 3.8.1 Grundlagen (lernskript_03_08_01.pdf, 3 Seiten)",
+    "BWB-Lernskript 3.8.2.1 Grundschuld als Sicherungsinstrument (lernskript_03_08_02_01.pdf, 15 Seiten)",
+    "BWB-Lernskript 3.8.2.2 Formen der Grundschuld (lernskript_03_08_02_02.pdf, 4 Seiten)",
+    "BWB-Lernskript 3.8.3 Hypothek (lernskript_03_08_03.pdf, 4 Seiten)",
+    "BWB-Lernskript 3.8.4.1 Weitere Sicherheiten (lernskript_03_08_04_01.pdf, 8 Seiten)",
+    "BWB-Lernskript 3.8.4.2 Blanko-/Negativdarlehen (lernskript_03_08_04_02.pdf, 7 Seiten)"
+  ],
+  "sections": [
+    {
+      "id": "3.8.1-a",
+      "title": "Wozu Sicherheiten?",
+      "subtitle": "Überblick über die Kreditsicherung",
+      "ref": "BWB 3.8.1, S. 2–3",
+      "examRelevance": "S+P",
+      "checkId": "3.8-Q001",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Kreditsicherung** sichert ein Kreditrisiko ab – durch **Sachen, Rechte oder die Bonität anderer** Personen oder Unternehmen. Kann oder will der Schuldner nicht mehr zahlen, wird die Sicherheit **verwertet** oder in Anspruch genommen. Sie ergänzt die Tragfähigkeitsprüfung, ersetzt sie aber nicht."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Sicherung durch die Person",
+            "text": "Blankodarlehen, Bürgschaft, Gesamtschuldner"
+          },
+          "right": {
+            "title": "Sicherung durch eine Sache",
+            "text": "Grundpfandrechte, Verpfändung, Abtretung, Sicherungsübereignung"
+          }
+        },
+        {
+          "type": "table",
+          "head": [
+            "Sicherungsform",
+            "Bedeutung"
+          ],
+          "rows": [
+            [
+              "**Dingliche Sicherheit**",
+              "Grundpfandrecht an Grund und Boden (§§ 1113 ff. BGB) – der Regelfall beim Immobiliarkredit"
+            ],
+            [
+              "**Ersatzsicherheit**",
+              "tritt an die Stelle der Grundschuld"
+            ],
+            [
+              "**Zusatzsicherheit**",
+              "tritt neben die Grundschuld"
+            ],
+            [
+              "**Übergangssicherheit**",
+              "überbrückt die Zeit bis zur Eintragung der Grundschuld"
+            ],
+            [
+              "**Negativerklärung**",
+              "Darlehen ohne dingliche Sicherung gegen Verpflichtungserklärung für ein bestimmtes Objekt"
+            ],
+            [
+              "**Blankodarlehen**",
+              "Kredit ohne Sicherheiten – bei guter Bonität"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Voraussetzungen an das Beleihungsobjekt",
+          "items": [
+            "Es muss **zeitnah verwertbar** sein.",
+            "Es muss **angemessen gegen Schäden versichert** sein.",
+            "Es muss von einem **unabhängigen Sachverständigen** geschätzt werden."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Grundsatz:** Die werthaltigste Sicherheit steht an erster Stelle."
+        }
+      ],
+      "laws": [],
+      "memory": "Sicherheit durch Person oder Sache. Beim Immobiliarkredit ist das Grundpfandrecht die Regel.",
+      "examTrap": "Eine Sicherheit ersetzt keine Bonität. Sie greift erst, wenn der Kunde nicht mehr zahlt."
+    },
+    {
+      "id": "3.8.2.1-a",
+      "title": "Die Grundschuld bestellen",
+      "subtitle": "Vom Formular bis zur Eintragung",
+      "ref": "BWB 3.8.2.1, S. 2–3",
+      "examRelevance": "S+P",
+      "checkId": "3.8-Q006",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Dingliche Sicherheit** heißt: Belastung eines Grundstücks mit einem Grundpfandrecht. Banken und Bausparkassen verwenden heute in der Regel nur **Grundschulden**. Die eingetragene Grundschuld erlaubt dem Kreditgeber, sich bei Nichtzahlung durch **freihändigen Verkauf oder Zwangsversteigerung** zu befriedigen."
+        },
+        {
+          "type": "list",
+          "title": "Was belastet werden kann",
+          "items": [
+            "Grundstücke",
+            "Erbbaurechte",
+            "Miteigentumsanteile, zum Beispiel Eigentumswohnungen"
+          ]
+        },
+        {
+          "type": "steps",
+          "title": "Ablauf der Bestellung",
+          "items": [
+            {
+              "title": "Formular",
+              "text": "Der Kunde erhält das Grundschuldbestellungsformular vom Kreditgeber."
+            },
+            {
+              "title": "Notar",
+              "text": "Er beglaubigt die Unterschrift oder beurkundet die Bestellung und holt nötige Vorrangseinräumungen ein."
+            },
+            {
+              "title": "Einreichung",
+              "text": "Der Notar reicht die Urkunden beim Grundbuchamt ein."
+            },
+            {
+              "title": "Prüfung",
+              "text": "Der Rechtspfleger prüft die Anträge. Bei Fehlern setzt er eine Frist zur Behebung; sonst droht die kostenpflichtige Zurückweisung."
+            },
+            {
+              "title": "Eintragung",
+              "text": "Nach Eingang des Kostenvorschusses wird eingetragen. Versandt werden Eintragungsbekanntmachung, gegebenenfalls Grundschuldbrief und Grundbuchblattabschrift."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "In den Vordrucken sind die Ausstattungsmerkmale der Grundschuld bereits vorgesehen. **Streicht der Kunde Teile** aus dem Formular, kann die Grundschuld grundsätzlich **nicht als Sicherheit anerkannt** werden – der Kreditgeber muss prüfen, ob er mit der geänderten Fassung einverstanden ist."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Die Sicherheit kann wertlos sein, wenn bei der Verwertung kein ausreichender Erlös erzielt wird – etwa weil der Objektwert oder die Vorlasten im Grundbuch falsch eingeschätzt wurden."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 1191 Abs. 1 BGB",
+          "text": "Ein Grundstück kann in der Weise belastet werden, dass an denjenigen, zu dessen Gunsten die Belastung erfolgt, eine bestimmte Geldsumme aus dem Grundstück zu zahlen ist (Grundschuld)."
+        }
+      ],
+      "memory": "Formular vom Kreditgeber, Notar, Grundbuchamt, Rechtspfleger, Eintragung.",
+      "examTrap": "Das Formular stammt vom Kreditgeber, eingereicht wird über den Notar – nicht durch den Kunden selbst."
+    },
+    {
+      "id": "3.8.2.1-b",
+      "title": "Einfach oder vollstreckbar",
+      "subtitle": "Beglaubigung, Beurkundung, Unterwerfung",
+      "ref": "BWB 3.8.2.1, S. 4–6",
+      "examRelevance": "S+P",
+      "checkId": "3.8-Q011",
+      "content": [
+        {
+          "type": "compare",
+          "left": {
+            "title": "Einfache Grundschuld",
+            "text": "Notarielle **Beglaubigung** – der Notar bestätigt nur die Unterschrift. Kostengünstiger. Für die Verwertung braucht der Gläubiger erst einen Titel: das umständliche Verfahren der **Duldungsklage**."
+          },
+          "right": {
+            "title": "Vollstreckbare Grundschuld",
+            "text": "Notarielle **Beurkundung** – der Notar liest den ganzen Text vor, beantwortet Fragen und siegelt. Die **vollstreckbare Ausfertigung** ist bereits der Titel. Der Klageweg entfällt."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Weil die Duldungsklage zeitaufwendig und teuer sein kann, lassen viele Banken von vornherein **sofort vollstreckbare** Grundpfandrechte eintragen. Zu erkennen ist das am Eintragungstext, etwa: „Der jeweilige Eigentümer ist der sofortigen Zwangsvollstreckung unterworfen“ oder „sofort vollstreckbar gemäß § 800 ZPO“."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Klausel",
+            "Wirkung"
+          ],
+          "rows": [
+            [
+              "**Dingliche Unterwerfung**",
+              "Sofortige Zwangsvollstreckung **in das Grundstück**. Der Eigentümer duldet die Verwertung."
+            ],
+            [
+              "**Persönliche Unterwerfung**",
+              "Sofortige Zwangsvollstreckung **in das gesamte Vermögen** aller Schuldner. Muss zusätzlich in der Urkunde stehen."
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Wichtig:** Sämtliche **Eigentümer** und sämtliche **Darlehensnehmer** – Kunde, Ehepartner, gegebenenfalls Gesamtschuldner – unterschreiben die Grundschuldbestellungsurkunde und unterwerfen sich der sofortigen Zwangsvollstreckung."
+        },
+        {
+          "type": "list",
+          "title": "Ausstattung einer Grundschuld",
+          "items": [
+            "Grundschuldbetrag, Zinssatz, Nebenleistungen",
+            "Fälligkeit, Kündbarkeit, Zahlungsort",
+            "Zwangsvollstreckungsunterwerfung",
+            "Brief- oder Buchrecht",
+            "außergrundbuchliche Vereinbarungen"
+          ]
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 800 Abs. 1 ZPO",
+          "text": "Der Eigentümer kann sich in einer notariellen Urkunde der sofortigen Zwangsvollstreckung in der Weise unterwerfen, dass sie gegen den jeweiligen Eigentümer des Grundstücks zulässig ist; die Unterwerfung muss im Grundbuch eingetragen werden."
+        }
+      ],
+      "memory": "Einfach = Beglaubigung + Duldungsklage. Vollstreckbar = Beurkundung + Titel sofort.",
+      "examTrap": "Die dingliche Unterwerfung erfasst nur das Grundstück. Für das Privatvermögen braucht es die persönliche Unterwerfung."
+    },
+    {
+      "id": "3.8.2.1-c",
+      "title": "Betrag und Grundschuldzins",
+      "subtitle": "Warum 15 % im Grundbuch stehen",
+      "ref": "BWB 3.8.2.1, S. 7–8",
+      "examRelevance": "S+P",
+      "checkId": "3.8-Q017",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Grundschuldbetrag:** grundsätzlich der **Darlehensbetrag** laut Vertrag, bei mehreren Verträgen die Summe. Bei zugeteilten Bausparverträgen entspricht er dem Bauspardarlehen."
+        },
+        {
+          "type": "example",
+          "title": "Zwischen- und Vorfinanzierung",
+          "text": "Zwischenfinanzierung 100.000 €, vorhandenes Bausparguthaben 40.000 €. In der Regel wird das **Risiko** eingetragen: 100.000 € − 40.000 € = **60.000 €**. Vorhandene Ersatzsicherheiten können den Betrag weiter mindern."
+        },
+        {
+          "type": "text",
+          "text": "**Grundschuldzins:** Kreditinstitute lassen stets **höhere dingliche Zinsen** eintragen, als im Kreditvertrag vereinbart sind – üblich sind zum Beispiel 15 %."
+        },
+        {
+          "type": "list",
+          "title": "Gründe für den hohen Grundschuldzins",
+          "items": [
+            "Der Vertragszins kann sich während der Laufzeit **mehrfach ändern**.",
+            "In einem Zwangsvollstreckungsverfahren laufen **weitere Zinsen, Mahn- und Gerichtskosten** auf.",
+            "In der Zwangsversteigerung können die dinglichen Zinsen für **mehrere Jahre** geltend gemacht werden."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Manche Banken lassen zusätzlich eine **einmalige Nebenleistung** eintragen – einen Prozentsatz der Grundschuldsumme, der Mahn- und Gerichtskosten abdeckt. In der Zwangsversteigerung kann der Gläubiger **Betrag, Zinsen und Nebenleistung** geltend machen."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Der Grundschuldzins hat **nichts mit dem Sollzins** des Darlehens zu tun. Der Kunde zahlt nur den Vertragszins. Der dingliche Zins erweitert lediglich den Sicherungsrahmen."
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "Das Kapital einer Grundschuld wird erst nach **Kündigung** fällig; die Frist beträgt **sechs Monate**. Bei einer Grundschuld, die eine Geldforderung sichert, kann davon nicht abgewichen werden (§ 1193 BGB)."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 1193 BGB",
+          "text": "Das Kapital der Grundschuld wird erst nach vorgängiger Kündigung fällig; die Kündigungsfrist beträgt sechs Monate. Bei Sicherungsgrundschulden ist eine abweichende Bestimmung nicht zulässig."
+        }
+      ],
+      "memory": "Dinglicher Zins = Sicherungsrahmen. Sollzins = was der Kunde tatsächlich zahlt.",
+      "examTrap": "15 % Grundschuldzins bedeuten nicht, dass der Kunde 15 % Zinsen zahlt."
+    },
+    {
+      "id": "3.8.2.1-d",
+      "title": "Zweckerklärung",
+      "subtitle": "Das Bindeglied zwischen Darlehen und Grundschuld",
+      "ref": "BWB 3.8.2.1, S. 11–12",
+      "examRelevance": "S+P",
+      "checkId": "3.8-Q022",
+      "content": [
+        {
+          "type": "text",
+          "text": "Grundschuld und persönliche Schuld sind **voneinander völlig unabhängig**. Die eine kann ohne die andere bestehen."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Persönliche Schuld (Darlehen)",
+            "text": "Der **Darlehensnehmer** haftet mit seinem **gesamten Vermögen**. Grundlage ist der Kreditvertrag."
+          },
+          "right": {
+            "title": "Grundschuld (dingliche Sicherheit)",
+            "text": "Der **Eigentümer** haftet **nur mit dem Grundstück**. Grundlage ist die Eintragung im Grundbuch."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Damit die Grundschuld ein bestimmtes Darlehen sichert, muss der Eigentümer zustimmen. Diese Zustimmung heißt **Zweckerklärung** oder Zweckbestimmungserklärung. Sie ist das **Verbindungsglied** zwischen Grundschuld und Darlehen."
+        },
+        {
+          "type": "list",
+          "title": "Wann sie gesondert nötig ist",
+          "items": [
+            "Sind Darlehensnehmer und Eigentümer **dieselbe Person**, steht die Erklärung in der Regel schon im Bestellungsvordruck – eine gesonderte Zweckerklärung ist nicht nötig.",
+            "Sind sie **verschiedene Personen**, muss der Eigentümer zustimmen, dass seine Grundschuld das fremde Darlehen sichert – meist auf einem gesonderten Vordruck.",
+            "So können auch Objekte beliehen werden, die **nicht dem Darlehensnehmer gehören**."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Fehlt die Zweckerklärung** bei der Verwertung, kann der Kreditgeber nicht nachweisen, dass die Grundschuld das Darlehen sichert. Der Erlös geht dann **an den Eigentümer**; das Darlehen kann daraus nicht unmittelbar zurückgezahlt werden."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Baudarlehen werden normalerweise an einem **inländischen** Objekt gesichert. Möglich sind auch Grundpfandrechte an Objekten in anderen EU-Staaten, wenn diese Sicherung dort üblich ist."
+        }
+      ],
+      "laws": [],
+      "memory": "Zweckerklärung = Brücke zwischen Darlehen und Grundschuld.",
+      "examTrap": "Ohne Zweckerklärung sichert die Grundschuld nichts. Der Versteigerungserlös stünde dem Eigentümer zu."
+    },
+    {
+      "id": "3.8.2.1-e",
+      "title": "Rückgewähransprüche",
+      "subtitle": "Was dem Eigentümer zusteht, wenn getilgt ist",
+      "ref": "BWB 3.8.2.1, S. 8–11",
+      "examRelevance": "S+P",
+      "checkId": "3.8-Q027",
+      "content": [
+        {
+          "type": "text",
+          "text": "Steht der Grundschuld oder einem Teil davon **keine Forderung mehr gegenüber**, hat der Sicherungsgeber gegen den Gläubiger einen Anspruch auf Rückgabe der Sicherheit – den **Rückgewähranspruch**."
+        },
+        {
+          "type": "list",
+          "title": "Drei Wege der Rückgewähr",
+          "items": [
+            "**Abtretung** der Grundschuld oder der frei gewordenen Teile",
+            "**Löschung** der Grundschuld oder der frei gewordenen Teile",
+            "**Verzicht** des Gläubigers auf seine Rechte aus der Grundschuld"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Bei der **Verwertung** darf der Gläubiger aus dem Erlös Grundschuldkapital und Grundschuldzinsen verlangen. Er muss aber alles, was über die **tatsächliche Darlehensschuld plus Kosten** hinausgeht, an den Eigentümer auszahlen."
+        },
+        {
+          "type": "text",
+          "text": "**Abtretung der Rückgewähransprüche:** Kreditinstitute lassen sich diese Ansprüche vom Eigentümer abtreten – an der eigenen Grundschuld und an vor- oder gleichrangigen fremden Grundschulden. Ist eine solche Abtretung angezeigt und uneingeschränkt bestätigt, darf der Grundschuldgläubiger **ohne Zustimmung des anderen Gläubigers** nicht mehr über die Grundschuld verfügen. Neuvalutierung, Löschung oder Abtretung brauchen dann dessen Zustimmung."
+        },
+        {
+          "type": "list",
+          "title": "Feinheiten",
+          "items": [
+            "Bei mehreren Abtretungen gilt die mit dem **älteren Datum der Abtretungserklärung** – nicht das Datum der Anzeige.",
+            "Der Gläubiger kann die Bestätigung einschränken oder verweigern, wenn er sich die Ansprüche **selbst** hat abtreten lassen. Das ist inzwischen die Regel.",
+            "**Einmalvalutierungserklärung:** Der Gläubiger verpflichtet sich, die Grundschuld nur einmal für ein genau bezeichnetes Darlehen zu nutzen."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Form:** Seit Juni 2014 wird die Sicherungsabrede in einem **separaten Formular** getroffen – der „Sicherungsvereinbarung für eine Grundschuld mit Abtretung der Rückgewähransprüche“. Zu jedem Sicherheitenvertrag gehören **vorvertragliche Informationen** mit Empfangsbekenntnis und eine **Widerrufsbelehrung**."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Aus Transparenzgründen werden alle Sicherheiten in eigenen Formularen vereinbart, nicht im Darlehensvertrag – auch Abtretungen und Verpfändungen von Guthaben, Wertpapieren und Lebensversicherungen."
+        }
+      ],
+      "laws": [],
+      "memory": "Rückgewähr = Abtretung, Löschung oder Verzicht.",
+      "examTrap": "Entscheidend ist das Datum der Abtretungserklärung, nicht das der Anzeige beim Gläubiger."
+    },
+    {
+      "id": "3.8.2.1-f",
+      "title": "Neuvalutierung und Übertragung",
+      "subtitle": "Eine Grundschuld wiederverwenden",
+      "ref": "BWB 3.8.2.1, S. 13–15",
+      "examRelevance": "S+P",
+      "checkId": "3.8-Q033",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Neuvalutierung:** Eine bereits zugunsten des Kreditgebers eingetragene Grundschuld kann jederzeit wieder als Sicherheit für ein **weiteres Darlehen** dienen."
+        },
+        {
+          "type": "list",
+          "title": "Voraussetzungen der Neuvalutierung",
+          "items": [
+            "Die Grundschuld ist in Höhe des neuen Darlehens **nicht mehr valutiert**.",
+            "Sie ist **nicht an Dritte abgetreten**.",
+            "Es wurde **keine Einmalvalutierungserklärung** abgegeben.",
+            "Eine Abtretung der Rückgewähransprüche wurde **nicht bestätigt**.",
+            "Die Bonität des Kunden lässt ein neues Darlehen zu."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Übertragung:** Eine Grundschuld zugunsten eines anderen Instituts kann ganz oder teilweise **abgetreten** werden. Der neue Gläubiger prüft die Ausstattung – zum Beispiel einen Grundschuldzins von mindestens 15 % und die sofortige Vollstreckbarkeit nach § 800 ZPO. Passt sie nicht, ist zu prüfen, ob Löschung und Neueintragung günstiger sind."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Merkmal",
+            "Privatschriftliche Abtretung",
+            "Notarielle Abtretung"
+          ],
+          "rows": [
+            [
+              "Form",
+              "Vom Kreditinstitut ausgestellt und unterschrieben – kostengünstig",
+              "Notariell beglaubigt oder mit Siegel eines öffentlichen Instituts"
+            ],
+            [
+              "Möglich bei",
+              "nur Briefgrundschulden, mit Übergabe des Briefs",
+              "Brief- und Buchgrundschulden"
+            ],
+            [
+              "Grundbuch",
+              "Eintragung nicht möglich",
+              "Eintragung möglich, bei Buchgrundschulden erforderlich"
+            ],
+            [
+              "Zwangsvollstreckung",
+              "erst nach nachgeholter Beglaubigung und Eintragung",
+              "möglich"
+            ],
+            [
+              "Teilabtretung",
+              "möglich; der Brief wird treuhänderisch verwahrt",
+              "möglich; bei Eintragung wird ein Teilgrundschuldbrief gebildet"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Zur Abtretungserklärung gehört in der Regel eine Kopie der Grundschuldbestellung, bei vollstreckbaren Grundschulden die **vollstreckbare Ausfertigung**. Wird ein Teil ohne Eintragung abgetreten, ist die **treuhänderische Verwahrung** des Briefs nötig – ein Vertrag zwischen Eigentümer, bisherigem und neuem Gläubiger."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Bausparkassen lassen die Abtretung von Briefgrundschulden oft nicht im Grundbuch vollziehen, um dem Kunden Kosten zu sparen."
+        }
+      ],
+      "laws": [],
+      "memory": "Neuvalutierung: frei, nicht abgetreten, keine Einmalvalutierung, Rückgewähr nicht gebunden.",
+      "examTrap": "Eine Buchgrundschuld lässt sich nicht privatschriftlich abtreten. Sie braucht Notar und Grundbuch."
+    },
+    {
+      "id": "3.8.2.2-a",
+      "title": "Brief oder Buch",
+      "subtitle": "Zwei gleichwertige Formen",
+      "ref": "BWB 3.8.2.2, S. 2",
+      "examRelevance": "S+P",
+      "checkId": "3.8-Q038",
+      "content": [
+        {
+          "type": "text",
+          "text": "Eine Grundschuld kann als **Briefgrundschuld** oder als **Buchgrundschuld** bestellt werden. Beide Rechte sind grundsätzlich **gleichwertig**. Ob ein Brief erteilt wird, bestimmt die Bestellungsurkunde. Ein Brief kann auch nachträglich erstellt werden."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Merkmal",
+            "Briefrecht",
+            "Buchrecht"
+          ],
+          "rows": [
+            [
+              "Entstehung",
+              "Eintragung im Grundbuch **und** Übergabe des Briefs",
+              "Eintragung im Grundbuch"
+            ],
+            [
+              "Abtretung",
+              "Ohne Grundbucheintragung möglich – Abtretungserklärung und Briefübergabe genügen",
+              "Nur notariell mit Eintragung im Grundbuch"
+            ],
+            [
+              "Kosten",
+              "Brief kostet zusätzlich; Abtretung günstig",
+              "Kein Brief; Abtretung teuer"
+            ],
+            [
+              "Verwaltung",
+              "Hoher Aufwand – der Brief muss verwahrt werden",
+              "Geringer Aufwand"
+            ],
+            [
+              "Eintragungstext",
+              "Kein Zusatz nötig – der Brief ist der gesetzliche Normalfall",
+              "Immer mit Zusatz: „ohne Brief“, „brieflos“ oder „Buchgrundschuld“"
+            ]
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Steht im Grundbuch nur „Grundschuld“, ist es eine Briefgrundschuld. Ein Buchrecht muss als solches gekennzeichnet sein."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 1116 BGB in Verbindung mit § 1192 BGB",
+          "text": "Über das Grundpfandrecht wird ein Brief erteilt. Die Erteilung kann ausgeschlossen werden; der Ausschluss muss im Grundbuch eingetragen sein."
+        }
+      ],
+      "memory": "Kein Zusatz im Grundbuch = Brief. Buchrecht nur mit Zusatz.",
+      "examTrap": "Die Briefgrundschuld entsteht erst mit der Übergabe des Briefs, nicht schon mit der Eintragung."
+    },
+    {
+      "id": "3.8.2.2-b",
+      "title": "Erscheinungsformen",
+      "subtitle": "Einzel-, Gesamt-, Eigentümer- und Fremdgrundschuld",
+      "ref": "BWB 3.8.2.2, S. 3–4",
+      "examRelevance": "S+P",
+      "checkId": "3.8-Q043",
+      "content": [
+        {
+          "type": "table",
+          "head": [
+            "Form",
+            "Kennzeichen"
+          ],
+          "rows": [
+            [
+              "**Einzelgrundschuld**",
+              "lastet auf **einem** Pfandobjekt"
+            ],
+            [
+              "**Gesamtgrundschuld**",
+              "lastet auf **mehreren** Pfandobjekten – meist, wenn der Wert eines Grundstücks nicht reicht"
+            ],
+            [
+              "**Eigentümergrundschuld**",
+              "zugunsten des **Eigentümers** eingetragen; als Einzel- oder Gesamtgrundschuld möglich"
+            ],
+            [
+              "**Fremdgrundschuld**",
+              "Eigentümer und Gläubiger sind **verschiedene** Personen"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Bei der **Gesamtgrundschuld** kann sich der Gläubiger **wahlweise aus jedem** der belasteten Grundstücke befriedigen – insgesamt aber **nur einmal** in Höhe des Grundschuldbetrags nebst Zinsen."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Jedes Grundstück mit einem Teilbetrag",
+            "text": "Jede Grundschuld ist ein **selbstständiges** Recht und hat mit der anderen rechtlich nichts zu tun."
+          },
+          "right": {
+            "title": "Jedes Grundstück mit dem vollen Betrag",
+            "text": "Es liegt eine **Gesamtgrundschuld** vor."
+          }
+        },
+        {
+          "type": "text",
+          "text": "**Achtung bei Eigentümergrundschulden:** Entstehen sie zum Beispiel aus einer Hypothek, haben nach- und gleichrangige Gläubiger **Löschungsansprüche**. Deshalb lassen sich Kreditgeber Eigentümergrundschulden in der Regel nicht ohne genaue Prüfung als Sicherheit abtreten."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Das Skript nennt als „Fremdgrundschuld“ auch die Grundschuld an einem Objekt, das **nicht das finanzierte** ist – etwa am lastenfreien Haus der Eltern als Zusatz- oder Ersatzsicherheit."
+        }
+      ],
+      "laws": [],
+      "memory": "Gesamtgrundschuld: mehrere Objekte, voller Betrag, aber nur einmal Befriedigung.",
+      "examTrap": "Die Gesamtgrundschuld verdoppelt die Forderung nicht. Der Gläubiger bekommt den Betrag nur einmal."
+    },
+    {
+      "id": "3.8.3-a",
+      "title": "Die Hypothek",
+      "subtitle": "Akzessorisch und deshalb starr",
+      "ref": "BWB 3.8.3, S. 2–4",
+      "examRelevance": "S+P",
+      "checkId": "3.8-Q048",
+      "content": [
+        {
+          "type": "text",
+          "text": "Die **Hypothek** ist ein Pfandrecht an einem Grundstück, das den Gläubiger berechtigt, sich **wegen seiner Forderung** aus dem Grundstück zu befriedigen. Hypothek und Forderung teilen ihr rechtliches Schicksal – die Hypothek ist **akzessorisch**."
+        },
+        {
+          "type": "list",
+          "title": "Folgen der Akzessorietät",
+          "items": [
+            "Der Gläubiger erwirbt die Hypothek erst durch **Eintragung und Auszahlung** des Darlehens.",
+            "Mit jeder Rückzahlung **erlischt** sie für den Gläubiger in dieser Höhe.",
+            "In Höhe des getilgten Betrags entsteht eine **Eigentümergrundschuld**.",
+            "Der Darlehensnehmer haftet mit **Grundstück und Privatvermögen**."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Gesetzlicher Löschungsanspruch:** Gleich- und nachrangige Gläubiger können die Löschung verlangen, soweit sich die Hypothek durch Rückzahlung mit dem Eigentum vereinigt hat. Seit dem 1. Januar 1978 besteht dieser Anspruch kraft Gesetzes; zuvor brauchte es eine Löschungsvormerkung."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Merkmal",
+            "Hypothek",
+            "Grundschuld"
+          ],
+          "rows": [
+            [
+              "Forderung",
+              "vom Bestehen einer Forderung abhängig",
+              "nicht an eine Forderung gebunden"
+            ],
+            [
+              "Erwerb",
+              "Eintragung **und** Auszahlung",
+              "Eintragung"
+            ],
+            [
+              "Neuvalutierung",
+              "nicht möglich",
+              "freie Teile können neu genutzt werden"
+            ],
+            [
+              "Löschungsanspruch",
+              "gesetzlich, für gleich- und nachrangige Gläubiger",
+              "keiner; Rückgewähransprüche können die Verfügung einschränken"
+            ],
+            [
+              "Abtretung",
+              "nur in Höhe der Restvaluta",
+              "in voller Höhe"
+            ],
+            [
+              "Haftung",
+              "Grundstück und Vermögen des Schuldners",
+              "Grundstück; gesamtes Vermögen nur bei persönlicher Unterwerfung"
+            ],
+            [
+              "Brief, Vollstreckungsklausel",
+              "möglich",
+              "möglich"
+            ],
+            [
+              "Zinsen und Kosten in der Versteigerung",
+              "mit abgesichert",
+              "mit abgesichert"
+            ]
+          ]
+        },
+        {
+          "type": "example",
+          "title": "Vorlast bewerten",
+          "text": "Im ersten Rang steht eine Hypothek über 100.000 €, die Restschuld beträgt 60.000 €. Als **Vorlast** zählen nur **60.000 €** – eine Neuvalutierung ist ausgeschlossen. Bei einer Ablösung kann die Hypothek nur in Höhe des aktuellen Risikos abgetreten werden."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Bei einer vorrangigen **Grundschuld** ist dagegen grundsätzlich der volle Nennbetrag als Vorlast anzusetzen, weil sie neu valutiert werden kann. Die Hypothek spielt in der Baufinanzierung heute nur noch eine untergeordnete Rolle."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 1113 Abs. 1 BGB",
+          "text": "Ein Grundstück kann in der Weise belastet werden, dass an denjenigen, zu dessen Gunsten die Belastung erfolgt, eine bestimmte Geldsumme zur Befriedigung wegen einer ihm zustehenden Forderung aus dem Grundstück zu zahlen ist (Hypothek)."
+        }
+      ],
+      "memory": "Hypothek hängt an der Forderung. Grundschuld steht für sich.",
+      "examTrap": "Eine Hypothek lässt sich nicht neu valutieren. Als Vorlast zählt deshalb nur die Restschuld."
+    },
+    {
+      "id": "3.8.4.1-a",
+      "title": "Ersatz- und Zusatzsicherheiten",
+      "subtitle": "Statt oder neben der Grundschuld",
+      "ref": "BWB 3.8.4.1, S. 2–5",
+      "examRelevance": "S+P",
+      "checkId": "3.8-Q054",
+      "content": [
+        {
+          "type": "text",
+          "text": "Neben der Grundschuld können Banken und Bausparkassen andere Sicherheiten nutzen. Das eröffnet auch **Mietern** und Kunden mit **Kleinkrediten** den Zugang zum Immobiliardarlehen – ohne die Kosten einer Grundschuld."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Ersatzsicherheit",
+            "text": "**Ersetzt** die grundbuchliche Absicherung ganz oder für einen Teilbetrag."
+          },
+          "right": {
+            "title": "Zusatzsicherheit",
+            "text": "Wird **zusätzlich** zur Grundschuld verlangt und unterstützt sie. Gilt nicht als eigenständige Absicherung."
+          }
+        },
+        {
+          "type": "example",
+          "title": "Skriptbeispiel",
+          "text": "Beleihungswert 125.000 €, Beleihungsgrenze 80 % = 100.000 €, Finanzierungsbedarf 110.000 €. **Als Ersatzsicherheit:** Grundschuld 100.000 €, für die restlichen 10.000 € eine Ersatzsicherheit. **Als Zusatzsicherheit:** Grundschuld über die vollen 110.000 €, dazu 10.000 € Zusatzsicherheit für den Teil über der Grenze."
+        },
+        {
+          "type": "list",
+          "title": "Warum Zusatzsicherheiten großzügiger beurteilt werden",
+          "items": [
+            "Die Zusatzsicherheit **ergänzt** eine bestehende Grundschuld.",
+            "Die Grundschuld gewinnt durch die laufende Tilgung an **Werthaltigkeit**.",
+            "Deshalb ist der Ermessensspielraum bei Zusatzsicherheiten etwas weiter – die **Prüfkriterien** sind aber dieselben."
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Prüfkriterien",
+          "items": [
+            "**zuverlässige und aktuelle Wertermittlung**",
+            "**hohe Wertbeständigkeit**",
+            "**leichte Verwertbarkeit**"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Diese Kriterien schließen **Goldbarren, Kunstgegenstände, Autos und Warenlager** grundsätzlich aus."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Bausparkassen dürfen selbst genutztes Wohneigentum bis zum Beleihungswert beleihen, sonst bis zu vier Fünfteln (§ 7 Abs. 1 BausparkG). Im Skriptbeispiel lässt die Bausparkasse intern nur 80 % zu."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 7 Abs. 3 BausparkG",
+          "text": "Von einer Sicherung durch Grundpfandrechte kann abgesehen werden, soweit ausreichende anderweitige Sicherheiten gestellt werden."
+        }
+      ],
+      "memory": "Ersatz = statt der Grundschuld. Zusatz = neben der Grundschuld.",
+      "examTrap": "Ein Auto ist leicht zu verkaufen, aber nicht wertbeständig. Es scheidet als Ersatzsicherheit aus."
+    },
+    {
+      "id": "3.8.4.1-b",
+      "title": "Welche Sicherheiten taugen",
+      "subtitle": "Bürgschaft, Abtretung, Verpfändung, Übergang",
+      "ref": "BWB 3.8.4.1, S. 5–8",
+      "examRelevance": "S+P",
+      "checkId": "3.8-Q059",
+      "content": [
+        {
+          "type": "table",
+          "head": [
+            "Sicherheit",
+            "Einordnung"
+          ],
+          "rows": [
+            [
+              "**Selbstschuldnerische Bürgschaft eines Kreditinstituts**",
+              "geeignet"
+            ],
+            [
+              "**Ausfallbürgschaft**, etwa einer Gemeinde",
+              "geeignet"
+            ],
+            [
+              "**Bürgschaft einer Privatperson**",
+              "**nicht** geeignet – hängt an Bonität und Schicksal des Bürgen"
+            ],
+            [
+              "**Sparguthaben**",
+              "Abtretung; das Sparbuch ist mit zu übergeben"
+            ],
+            [
+              "**Festgeld**",
+              "meist nur Übergangssicherheit, weil kurzfristig angelegt"
+            ],
+            [
+              "**Bausparguthaben, Sparbriefe**",
+              "Abtretung oder Verpfändung"
+            ],
+            [
+              "**Kapitallebensversicherung**",
+              "Abtretung des Rückkaufswerts, im Skript bis 80 %"
+            ],
+            [
+              "**Wertpapiere**",
+              "Verpfändung, nur mit Abschlag vom Kurswert"
+            ]
+          ]
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Abtretung",
+            "text": "Die Forderung **geht auf den Kreditgeber über**. Er wird neuer Gläubiger – etwa des Sparguthabens oder der Versicherungsleistung."
+          },
+          "right": {
+            "title": "Verpfändung",
+            "text": "Der Kunde **bleibt Inhaber**. Der Kreditgeber erhält ein Pfandrecht und darf erst bei Fälligkeit seiner Forderung verwerten."
+          }
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "**Bürgschaftsarten:** Bei der gewöhnlichen Bürgschaft kann der Bürge verlangen, dass der Gläubiger zuerst beim Schuldner vollstreckt (Einrede der Vorausklage, § 771 BGB). Bei der **selbstschuldnerischen** Bürgschaft verzichtet er darauf – der Gläubiger kann ihn sofort in Anspruch nehmen. Das ist die bankübliche Form. Bei der **Ausfallbürgschaft** haftet der Bürge erst für den nachgewiesenen endgültigen Ausfall. Die Bürgschaftserklärung braucht die **Schriftform** (§ 766 BGB)."
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das Skript nennt Beleihungsgrenzen für Wertpapiere (80 % für mündelsichere Schuldverschreibungen, 75 % für lombardfähige, 60 % für Aktien und Fondsanteile) und schreibt sie dem Bausparkassengesetz zu. Das heutige Gesetz verlangt nur **ausreichende anderweitige Sicherheiten**; die Abschläge legen die Institute selbst fest. Die Prozentsätze werden hier nicht abgefragt."
+        },
+        {
+          "type": "list",
+          "title": "Übergangssicherheiten bis zur Eintragung",
+          "items": [
+            "**Notarbestätigung** über die rangrichtige Eintragung der Grundschuld – auf Formular oder formlos",
+            "**Treuhandauftrag** an den Notar: Auszahlung nur unter der Auflage der rangrichtigen Eintragung",
+            "Daneben alle Ersatzsicherheiten, zum Beispiel abgetretenes Festgeld beim Pfandtausch"
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Wird eine Lebensversicherung als Sicherheit oder zur Tilgung eingesetzt, kann das **steuerliche Nachteile** haben. Der Kunde sollte seinen Steuerberater fragen. Treuhandaufträge gibt es auch bei Löschungsbewilligungen, Vorrangseinräumungen und Grundschuldabtretungen."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 765 Abs. 1 BGB",
+          "text": "Durch den Bürgschaftsvertrag verpflichtet sich der Bürge gegenüber dem Gläubiger eines Dritten, für die Erfüllung der Verbindlichkeit des Dritten einzustehen."
+        },
+        {
+          "ref": "§ 766 Satz 1 BGB",
+          "text": "Zur Gültigkeit des Bürgschaftsvertrags ist schriftliche Erteilung der Bürgschaftserklärung erforderlich."
+        }
+      ],
+      "memory": "Bankbürgschaft ja, Privatbürgschaft nein. Notarbestätigung überbrückt die Zeit bis zur Eintragung.",
+      "examTrap": "Selbstschuldnerisch heißt: Der Gläubiger muss nicht erst den Schuldner verklagen."
+    },
+    {
+      "id": "3.8.4.2-a",
+      "title": "Darlehen gegen Negativerklärung",
+      "subtitle": "Ohne Grundschuld, aber mit Versprechen",
+      "ref": "BWB 3.8.4.2, S. 2–5",
+      "examRelevance": "S+P",
+      "checkId": "3.8-Q065",
+      "content": [
+        {
+          "type": "text",
+          "text": "Beim **Darlehen ohne dingliche Sicherung** gibt der Darlehensnehmer eine **Verpflichtungserklärung** ab, auch **Negativerklärung** genannt. Sie ersetzt Grundpfandrecht und Ersatzsicherheit."
+        },
+        {
+          "type": "list",
+          "title": "Der Kunde erklärt",
+          "items": [
+            "Das Grundstück ist noch **beleihungsfähig**.",
+            "Er wird es ohne Zustimmung **nicht weiter belasten und nicht veräußern** – sonst wird das Darlehen fällig.",
+            "Er hat **keine weiteren Darlehen** gegen Negativerklärung beantragt oder erhalten.",
+            "Er lässt **auf Verlangen eine Grundschuld** eintragen."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Die Erklärung unterschreiben **alle Darlehensnehmer und Eigentümer** – im Kreditvertrag oder auf einem eigenen Formular."
+        },
+        {
+          "type": "list",
+          "title": "Voraussetzungen",
+          "items": [
+            "Der Darlehensnehmer ist **Eigentümer** eines Hauses oder einer Eigentumswohnung – nur Eigentümer können die Erklärung abgeben.",
+            "Das Objekt ist einschließlich des neuen Darlehens **nicht über 80 % des Beleihungswerts** belastet.",
+            "Nötig sind eine **vollständige Beleihungsprüfung** und ein **aktueller Grundbuchauszug**."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Rangfolge der Sicherheiten:** Ein Darlehen ohne dingliche Sicherung soll nur gewährt werden, wenn **keine anderen Sicherheiten** zur Verfügung stehen – etwa freie Grundschuldteile, Wertpapiere oder Sparguthaben. Zuerst wird die werthaltigste Sicherheit genutzt, nur der Rest läuft ohne dingliche Sicherung."
+        },
+        {
+          "type": "example",
+          "title": "Skriptbeispiel",
+          "text": "Darlehensrisiko 25.000 €. **Fall 1:** Der Kunde will 15.000 € neu als Grundschuld eintragen und 10.000 € gegen Negativerklärung – **nicht möglich**; dann ist für das ganze Darlehen eine Grundschuld einzutragen. **Fall 2:** Eine alte Grundschuld kann mit 15.000 € neu valutiert werden – die restlichen **10.000 €** gibt es ohne dingliche Sicherung."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Bausparkassen bieten Kleindarlehen bis 15.000 € in der Regel generell gegen Negativerklärung an. Je Objekt und Bausparvertrag gibt es nur ein solches Darlehen: Bei drei Objekten und zwei Bausparverträgen sind es höchstens zwei."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 7 Abs. 4 Nr. 1 BausparkG",
+          "text": "Von einer Sicherung kann abgesehen werden, wenn sich der Darlehensnehmer verpflichtet, eine mögliche Sicherung durch Grundpfandrechte nicht durch Verpfändung oder Veräußerung des Objekts zu verhindern (Verpflichtungserklärung)."
+        }
+      ],
+      "memory": "Negativerklärung: nicht belasten, nicht verkaufen, auf Verlangen Grundschuld.",
+      "examTrap": "Die Negativerklärung kann nur ein Eigentümer abgeben. Für Mieter kommt das Blankodarlehen in Frage."
+    },
+    {
+      "id": "3.8.4.2-b",
+      "title": "Blankodarlehen und Höchstbeträge",
+      "subtitle": "Sicherheit allein durch Bonität",
+      "ref": "BWB 3.8.4.2, S. 3, 5–7",
+      "examRelevance": "S+P",
+      "checkId": "3.8-Q071",
+      "content": [
+        {
+          "type": "text",
+          "text": "Beim **Blankodarlehen** wird auf Sicherheiten **ganz verzichtet**. Die Sicherheit liegt allein in der **Bonität** des Kunden – der Kreditgeber muss die Kreditwürdigkeit deshalb mit **besonderer Sorgfalt** prüfen."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Regel bei Bausparkassen",
+            "Inhalt"
+          ],
+          "rows": [
+            [
+              "**Höchstbetrag**",
+              "50.000 € im Einzelfall – für Darlehen gegen Verpflichtungserklärung und für Blankodarlehen (§ 12 Abs. 1 BausparkV)"
+            ],
+            [
+              "**Zusammenrechnung**",
+              "Blanko- und Negativdarlehen dürfen zusammen 50.000 € nicht übersteigen"
+            ],
+            [
+              "**Keine Kumulierung**",
+              "Beide Formen werden nicht in einem Antrag kombiniert"
+            ],
+            [
+              "**Mehrere Darlehen**",
+              "Der Höchstbetrag kann sich aus mehreren Darlehen zusammensetzen"
+            ],
+            [
+              "**Konditionen**",
+              "gegebenenfalls Aufschlag; bei zugeteilten Bauspardarlehen keiner"
+            ],
+            [
+              "**Verwendung**",
+              "nur für wohnwirtschaftliche Zwecke"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Das Einkommen muss ausreichend decken",
+          "items": [
+            "Lebenshaltungskosten",
+            "Bewirtschaftungskosten des bewohnten Objekts",
+            "Zins- und Tilgungsraten aller Fremdkredite",
+            "Rate des beantragten Darlehens"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Banken** können höhere Beträge vorsehen oder die Darlehenshöhe vom Einkommen abhängig machen – zum Beispiel das Vierfache des Monatseinkommens. Darlehen ohne dingliche Sicherung gibt es meist nur bei Bauspardarlehen und eventuell Vorausdarlehen; bei Hypothekendarlehen sind sie generell nicht möglich."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Das Blankodarlehen kommt besonders **Mietern** entgegen, die ihren Bausparvertrag sonst kaum einsetzen könnten – etwa für eine Mietermodernisierung. Ehepaare und minderjährige Kinder treten als **ein** Darlehensnehmer auf. Das Skript rechnet mit 50.000 € „pro Person“; die Verordnung selbst spricht vom Einzelfall."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 12 Abs. 1 BausparkV",
+          "text": "Darlehen gegen Verpflichtungserklärung oder ohne Sicherung dürfen im Einzelfall nur bis zu einem Betrag von 50.000 Euro gewährt werden."
+        },
+        {
+          "ref": "§ 7 Abs. 4 Nr. 2 BausparkG",
+          "text": "Von einer Sicherung kann abgesehen werden, wenn sie wegen der geringen Höhe des Darlehens nicht erforderlich erscheint."
+        }
+      ],
+      "memory": "Bausparkasse: höchstens 50.000 € blanko oder gegen Negativerklärung – zusammen.",
+      "examTrap": "Blanko heißt nicht ungeprüft. Gerade ohne Sicherheit steht die Bonität an erster Stelle."
+    }
+  ]
+}

@@ -1400,12 +1400,14 @@ body[data-view="dashboard"] .invpop::before {
 }
 @keyframes routeFlow { to { stroke-dashoffset: -320; } }
 .map-node { position: absolute; left: var(--x); top: var(--y); z-index: 4; transform: translate(-50%, -50%); }
+/* Der ganze aktive Knoten liegt über Nachbarn: sein transformierter Container bildet eine eigene Ebene. */
+.map-node:hover, .map-node:focus-within, .map-node.is-open { z-index: 10; }
 .map-marker {
-  width: 52px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   border: 3px solid #ffe095;
-  border-radius: 50% 50% 50% 12px;
-  transform: rotate(-45deg);
+  border-radius: 50%;
+  transform: none;
   background: linear-gradient(145deg, #0b2553, #0a6cf5);
   box-shadow: 0 4px 0 #5f3b08, 0 0 0 3px rgba(38, 23, 0, .45), 0 8px 22px rgba(0, 0, 0, .38);
   color: white;
@@ -1414,8 +1416,8 @@ body[data-view="dashboard"] .invpop::before {
   place-items: center;
   transition: transform .16s, filter .16s;
 }
-.map-marker span { transform: rotate(45deg); font-family: var(--font-display); font-weight: 900; font-size: 1.22rem; text-shadow: 0 2px 2px rgba(0, 0, 0, .4); }
-.map-node:hover .map-marker, .map-node:focus-within .map-marker { transform: rotate(-45deg) scale(1.12); filter: brightness(1.12); }
+.map-marker span { transform: none; font-family: var(--font-display); font-weight: 900; font-size: 1.22rem; text-shadow: 0 2px 2px rgba(0, 0, 0, .4); }
+.map-node:hover .map-marker, .map-node:focus-within .map-marker { transform: scale(1.1); filter: brightness(1.12); }
 .map-node.is-mastered .map-marker { background: linear-gradient(145deg, #106a45, #18a66c); }
 .map-node.is-progress .map-marker { background: linear-gradient(145deg, #9a5c00, #e9a400); }
 .map-node.is-current .map-marker::after { content: ''; position: absolute; inset: -12px; border: 3px solid rgba(255, 233, 142, .9); border-radius: 50%; animation: mapPulse 1.8s ease-out infinite; }
@@ -1669,8 +1671,8 @@ body[data-view='dashboard'] .corner-tools {
 
 /* ---------- gesperrte Weltkartenlevel ---------- */
 .map-node.is-locked .map-marker { cursor: default; filter: saturate(.25) brightness(.72); background: linear-gradient(145deg,#42546f,#22344f); opacity: .88; }
-.map-node.is-locked:hover .map-marker, .map-node.is-locked:focus-within .map-marker { transform: rotate(-45deg); filter: saturate(.25) brightness(.78); }
-.map-marker__lock { position:absolute; transform:rotate(45deg); right:-5px; bottom:-6px; width:18px; height:18px; display:grid; place-items:center; border-radius:50%; background:#071f46; color:#ffe095; box-shadow:0 0 0 2px #ffe095; }
+.map-node.is-locked:hover .map-marker, .map-node.is-locked:focus-within .map-marker { transform:scale(1.1); filter: saturate(.25) brightness(.78); }
+.map-marker__lock { position:absolute; transform:none; right:-5px; bottom:-6px; width:18px; height:18px; display:grid; place-items:center; border-radius:50%; background:#071f46; color:#ffe095; box-shadow:0 0 0 2px #ffe095; }
 .map-marker__lock svg, .map-pop__lock svg { width:11px; height:11px; }
 .map-pop__lock svg { width:17px; height:17px; }
 .map-node.is-locked .map-pop { pointer-events:none; }
@@ -1949,9 +1951,19 @@ body[data-view='dashboard'] .hpchip__bar {
   align-self: start;
 }
 @media (max-width: 760px) {
+  /* Schmal: Icon + Titel/Text oben, Regeln und Rekord darunter über die volle Breite */
   .mode--carousel {
     min-height: 0 !important;
+    grid-template-columns: auto 1fr !important;
+    grid-template-areas:
+      'icon title'
+      'icon text'
+      'rules rules'
+      'stat stat' !important;
+    row-gap: 8px !important;
   }
+  .mode--carousel .mode__rules,
+  .mode--carousel .mode__stat { justify-self: start; }
 }
 
 
@@ -1975,3 +1987,147 @@ body[data-view='dashboard'] .hpchip__bar {
   width: 44% !important;
   margin-inline: auto;
 }
+
+
+/* Ränge und Errungenschaften: eine gemeinsame, schlanke Übersicht. */
+.rankchip { border: 0; cursor: pointer; text-align: left; }
+.rankchip:hover { filter: brightness(1.08); }
+.rankoverview {
+  width: min(860px, calc(100vw - 24px)); max-width: none;
+  max-height: calc(100dvh - 32px); padding: 0; border: 2px solid var(--gold);
+  border-radius: var(--r-lg); background: var(--white); color: var(--ink);
+  box-shadow: 0 24px 80px rgba(0,0,0,.4); overflow: auto;
+  font: inherit;
+}
+.rankoverview::backdrop { background: rgba(4,18,43,.76); }
+.rankoverview__head {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  padding: 20px 24px; background: var(--ink); color: var(--white);
+  position: sticky; top: 0; z-index: 1;
+}
+.rankoverview__head h2 { font-size: clamp(1.25rem, 3vw, 1.7rem); }
+.rankoverview__head .btn { flex: none; background: #244775; color: var(--white); border-color: var(--blue-soft); }
+.rankoverview__head .btn:hover { background: #214778; }
+.rankoverview__eyebrow { font-size: .8rem; color: #ffe08a; margin-bottom: 4px; }
+.rankoverview__body { padding: 20px 24px 24px; }
+.rankoverview__summary { padding: 16px; border-radius: var(--r-md); background: var(--gold-bg); font-size: .9rem; }
+.rankoverview__summary > p:first-child { font-size: 1.05rem; }
+.rankoverview__xp { color: var(--ink-2); margin-top: 3px; }
+.rankoverview__summary .bar { margin: 10px 0; }
+.rankoverview__columns { display: grid; grid-template-columns: .9fr 1.2fr; gap: 24px; margin-top: 22px; }
+.rankoverview__columns h3 { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 1.05rem; margin-bottom: 12px; }
+.rankoverview__columns h3 small { color: var(--ink-2); font: 500 .8rem var(--font-mono); white-space: nowrap; }
+.rankoverview__list { display: grid; gap: 8px; list-style: none; padding: 0; margin: 0; }
+.rankentry { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--ice); }
+.rankentry > div { min-width: 0; }
+.rankentry strong { display: block; font-size: .92rem; line-height: 1.25; }
+.rankentry small { display: block; color: var(--ink-2); font-size: .8rem; line-height: 1.4; margin-top: 4px; }
+.rankentry__icon { width: 26px; flex: none; text-align: center; font-size: 1.15rem; }
+.rankentry__status { display: block; font-size: .72rem; font-weight: 700; margin-top: 5px; color: var(--ink-2); }
+.rankentry.is-earned { background: var(--good-bg); border-color: #a6d9c7; }
+.rankentry.is-earned .rankentry__status { color: #08714f; }
+.rankentry.is-current { background: var(--gold-bg); border: 2px solid var(--gold); }
+.rankentry.is-current .rankentry__status { color: #805500; }
+.rankentry.is-locked .rankentry__icon { filter: grayscale(1); opacity: .65; }
+@media (max-width: 640px) {
+  body:not([data-view='dashboard']) .rankchip { display: flex; }
+  .rankoverview__head { padding: 16px; gap: 10px; }
+  .rankoverview__body { padding: 16px; }
+  .rankoverview__columns { grid-template-columns: 1fr; gap: 22px; }
+}
+
+/* Lange Bossnamen müssen auch auf Laptop und iPad vollständig passen. */
+.bosscine__name--long { font-size: clamp(1.85rem, 4vw, 3rem); }
+
+/* Dekorative Strahlen dürfen das Boss-Intro nicht verbreitern. */
+.bosscine__backdrop { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.bosscine__text { min-width: 0; }
+
+
+/* Unabhängige Welten, gemeinsame Spielerwerte. */
+.worldnav { display:none; }
+body[data-view='dashboard'] .worldnav {
+  position:absolute; left:calc(100% + 8px); top:50%; transform:translateY(-50%);
+  display:grid; gap:8px; width:185px; pointer-events:auto;
+}
+.worldnav__button {
+  display:grid; gap:2px; padding:10px 14px; min-height:58px; border-radius:14px;
+  border:2px solid #aabbd5; background:rgba(5,24,56,.95); color:white;
+  text-align:left; cursor:pointer; box-shadow:0 5px 14px rgba(0,0,0,.28);
+}
+.worldnav__button strong { font-family:var(--font-display); font-size:.95rem; }
+.worldnav__button span { font-size:.75rem; color:#d2dff1; }
+.worldnav__button:hover { filter:brightness(1.15); }
+.worldnav__button--vermittlung[aria-pressed='true'] { background:linear-gradient(145deg,#0b2553,#0a6cf5); border-color:#ffe095; }
+.worldnav__button--kredit[aria-pressed='true'] { background:linear-gradient(145deg,#482379,#9254dc); border-color:#ffe095; }
+.worldmap[data-world='kredit'] .map-marker {
+  width:56px; height:56px; border-radius:50%; transform:none;
+  background:linear-gradient(145deg,#482379,#9254dc);
+}
+.worldmap[data-world='kredit'] .map-marker span { transform:none; }
+.worldmap[data-world='kredit'] .map-node:hover .map-marker,
+.worldmap[data-world='kredit'] .map-node:focus-within .map-marker { transform:scale(1.1); }
+.worldmap[data-world='kredit'] .map-node.is-locked .map-marker {
+  background:linear-gradient(145deg,#482379,#9254dc); filter:none; opacity:.94; cursor:pointer;
+}
+.worldmap[data-world='kredit'] .map-node.is-mastered .map-marker { background:linear-gradient(145deg,#106a45,#18a66c); }
+.worldmap[data-world='kredit'] .map-node.is-progress .map-marker { background:linear-gradient(145deg,#9a5c00,#e9a400); }
+.map-node.is-open .map-pop { opacity:1; visibility:visible; pointer-events:auto; transform:none; }
+.map-node.is-locked .map-marker { cursor:pointer; }
+.worldmap[data-world='kredit'] .map-node--13 .map-pop,
+.worldmap[data-world='kredit'] .map-node--19 .map-pop,
+.worldmap[data-world='kredit'] .map-node--20 .map-pop,
+.worldmap[data-world='kredit'] .map-node--21 .map-pop { top:auto; bottom:64px; }
+.worldmap[data-world='kredit'] .map-node--17 .map-pop,
+.worldmap[data-world='kredit'] .map-node--18 .map-pop,
+.worldmap[data-world='kredit'] .map-node--19 .map-pop,
+.worldmap[data-world='kredit'] .map-node--20 .map-pop,
+.worldmap[data-world='kredit'] .map-node--24 .map-pop { left:auto; right:64px; }
+.worldmap[data-world='kredit'] .map-node--17 .map-pop::before,
+.worldmap[data-world='kredit'] .map-node--18 .map-pop::before,
+.worldmap[data-world='kredit'] .map-node--19 .map-pop::before,
+.worldmap[data-world='kredit'] .map-node--20 .map-pop::before,
+.worldmap[data-world='kredit'] .map-node--24 .map-pop::before { left:auto; right:-9px; transform:rotate(225deg); }
+.worldmap[data-world='kredit'] .map-node--13 .map-pop::before,
+.worldmap[data-world='kredit'] .map-node--19 .map-pop::before,
+.worldmap[data-world='kredit'] .map-node--20 .map-pop::before,
+.worldmap[data-world='kredit'] .map-node--21 .map-pop::before { top:auto; bottom:25px; }
+
+
+.worldmap[data-world='kredit'] .map-marker__lock { transform:none; }
+
+.map-node.is-locked:not(.is-open) .map-pop { opacity:0; visibility:hidden; pointer-events:none; }
+
+/* Beide Karten bleiben bildschirmfüllend; Bedienelemente brauchen weniger Platz. */
+body[data-view='dashboard'] .topbar[data-world='kredit'] { --hud-size:188px; }
+body[data-view='dashboard'] .worldnav { width:128px; gap:5px; top:calc(50% + 24px); }
+.worldnav__button { min-height:44px; padding:6px 9px; border-radius:10px; line-height:1.15; }
+.worldnav__button strong { font-size:.78rem; }
+.worldnav__button span { font-size:.64rem; }
+
+/* Neue Kreditreich-Karte: unten links frei für HUD und Kartenwahl. */
+.worldmap-shell[data-world='kredit'] .worldmap-viewport {
+  align-items:flex-start;
+  justify-content:flex-start;
+}
+.worldmap[data-world='kredit'] {
+  width:max(100vw,calc(100dvh * 1.7768331562));
+}
+
+/* Unbekannte Bosse: Silhouette und Fragezeichen bis zum ersten Versus-Sieg. */
+.map-pop__bossart { position:absolute; right:12px; top:10px; width:82px; height:82px; }
+.map-pop__bossart .map-pop__bossimg { position:static; display:block; width:100%; height:100%; }
+.map-pop__bossart.is-hidden .map-pop__bossimg { filter:brightness(0); }
+.map-pop__mystery {
+  position:absolute; inset:0; display:grid; place-items:center; pointer-events:none;
+  color:#ffe095; font-family:var(--font-display); font-size:2.8rem; font-weight:900; line-height:1;
+  text-shadow:0 2px 0 #593a05,0 0 5px #071f46,0 0 12px #071f46;
+}
+
+/* Prozentanzeige vor der Boss-Silhouette; offene Vorschauen fangen Klicks selbst ab. */
+.map-pop__head { position:relative; z-index:2; }
+.map-pop__bossart { z-index:1; pointer-events:none; }
+
+/* Gesperrte Modi sind auch in der Karten-Vorschau nicht anklickbar. */
+.map-pop__modes button:disabled { opacity:.45; cursor:not-allowed; }
+.map-pop__modes button:disabled:hover { background:rgba(255,255,255,.08); transform:none; }

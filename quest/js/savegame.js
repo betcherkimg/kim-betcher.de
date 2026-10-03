@@ -32,7 +32,7 @@ export function createChapterProgress() {
     learnCompleted: [], storyWins: 0, versusWins: 0, bossWins: 0,
     bestStory: 0, bestVersus: 0, bestBoss: 0, bestCarousel: 0, bestCarouselPct: 0,
     stars: { story: 0, versus: 0, boss: 0 },
-    checksDone: [], learnXp: [], mistakes: {}, levelCompleted: false, coinFirst: [],
+    checksDone: [], learnXp: [], mistakes: {}, unlocked: false, levelCompleted: false, coinFirst: [],
   };
 }
 
@@ -41,11 +41,12 @@ export function createDefaultState() {
   return {
     app: '34i-Quest', saveVersion: SAVE_VERSION, createdAt: now, updatedAt: now,
     player: {
-      xp: 0, answered: 0, correct: 0, bestCombo: 0, achievements: [], lastDay: null, dayStreak: 0, lastGiftDay: null, heroClass: null, dailyFocus: { day: null, left: 0 },
+      xp: 0, answered: 0, correct: 0, bestCombo: 0, achievements: [], lastDay: null, dayStreak: 0, lastGiftDay: null, heroClass: null, dailyFocus: { day: null, left: 0 }, openRun: null,
       hp: 100, maxHp: 100, coins: 0, inventory: { small: 0, medium: 0, large: 0, spark: 0, focus: 0, pause: 0, heart: 0, skip: 0 },
     },
-    settings: { sound: true, music: true, shuffleAnswers: true },
+    settings: { sound: true, music: true, shuffleAnswers: true, world: 'vermittlung' },
     progress: {},
+    finalExam: { unlocked:false, visited:false, attempts:0, bestScore:0, passed:false },
     lastQuestions: {},
   };
 }
@@ -72,12 +73,17 @@ export function normalizeState(raw) {
     lastGiftDay: typeof p.lastGiftDay === 'string' ? p.lastGiftDay : null,
     heroClass: ['collector', 'saver', 'normal', 'lucky'].includes(p.heroClass) ? p.heroClass : null,
     dailyFocus: { day: typeof p.dailyFocus?.day === 'string' ? p.dailyFocus.day : null, left: Math.min(2, num(p.dailyFocus?.left)) },
+    // Laufender Run (Story/Versus/Boss): wird die Seite mittendrin geschlossen, zählt er beim nächsten Start als Niederlage
+    openRun: p.openRun && ['story', 'versus', 'boss'].includes(p.openRun.mode) && typeof p.openRun.chapter === 'string'
+      ? { mode: p.openRun.mode, chapter: p.openRun.chapter } : null,
     hp: Math.min(maxHp, num(p.hp, maxHp)), maxHp, coins: Math.floor(num(p.coins)),
     inventory: { small: num(inv.small), medium: num(inv.medium), large: num(inv.large), spark: num(inv.spark),
       focus: num(inv.focus), pause: num(inv.pause), heart: num(inv.heart), skip: num(inv.skip) },
   };
   const st = raw.settings || {};
-  s.settings = { sound: st.sound !== false, music: st.music !== false, shuffleAnswers: st.shuffleAnswers !== false };
+  s.settings = { sound: st.sound !== false, music: st.music !== false, shuffleAnswers: st.shuffleAnswers !== false, world: ['kredit','pruefstein'].includes(st.world) ? st.world : 'vermittlung' };
+  const exam = raw.finalExam || {};
+  s.finalExam = { unlocked:exam.unlocked === true, visited:exam.visited === true, attempts:Math.floor(num(exam.attempts)), bestScore:Math.min(150, Math.floor(num(exam.bestScore))), passed:exam.passed === true };
   for (const [id, cp] of Object.entries(raw.progress || {})) {
     if (!cp || typeof cp !== 'object') continue;
     const base = createChapterProgress();
@@ -91,8 +97,10 @@ export function normalizeState(raw) {
       bestStory: num(cp.bestStory), bestVersus: num(cp.bestVersus), bestBoss: num(cp.bestBoss),
       bestCarousel: num(cp.bestCarousel), bestCarouselPct: Math.min(100, num(cp.bestCarouselPct)),
       stars: { story: num(stars.story), versus: num(stars.versus), boss: num(stars.boss) },
-      mistakes, levelCompleted: cp.levelCompleted === true, coinFirst: strArr(cp.coinFirst),
+      mistakes, unlocked: cp.unlocked === true, levelCompleted: cp.levelCompleted === true, coinFirst: strArr(cp.coinFirst),
     };
+    // Der Level-Abschluss-Bonus ist resetfest: bereits abgeschlossene Level gelten als ausgezahlt
+    if (s.progress[id].levelCompleted && !s.progress[id].coinFirst.includes('level')) s.progress[id].coinFirst.push('level');
   }
   for (const [id, lq] of Object.entries(raw.lastQuestions || {})) {
     if (!lq || typeof lq !== 'object') continue;
@@ -175,7 +183,17 @@ export class SaveGame {
     this.guest = false;
     this.canWrite = await this.ensurePermission(handle);
     if (!this.canWrite) throw new SaveGameError(SaveError.PERMISSION, 'Ohne Schreibrecht kann der Spielstand nicht angelegt werden.');
-    await this.flush(true);
+    // Erster Schreibvorgang direkt und mit Fehlerprüfung – save() würde einen Fehler nur als Status melden
+    try {
+      await this.writeOnce();
+      this.dirty = false;
+    } catch {
+      this.handle = null;
+      this.state = null;
+      this.canWrite = false;
+      throw new SaveGameError(SaveError.WRITE, 'Der Spielstand konnte nicht in die Datei geschrieben werden. Bitte einen anderen Speicherort wählen.');
+    }
+    this.emit('saved');
     await rememberHandle(handle);
     return this.state;
   }

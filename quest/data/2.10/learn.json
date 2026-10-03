@@ -1,0 +1,254 @@
+{
+  "chapter": "2.10",
+  "title": "Europa & Binnenmarkt",
+  "sources": [
+    "BWB-Lernskript 2.10 Europäischer Binnenmarkt: Dienstleistungs- und Niederlassungsfreiheit",
+    "AEUV, Richtlinien 2006/123/EG und 2014/17/EU – Rechtsstand 03.10.2026"
+  ],
+  "sections": [
+    {
+      "id": "2.10-a",
+      "title": "Der Binnenmarkt und seine vier Freiheiten",
+      "subtitle": "Personen, Waren, Dienstleistungen, Kapital",
+      "ref": "BWB 2.10",
+      "examRelevance": "S",
+      "checkId": "2.10-Q001",
+      "content": [
+        {
+          "type": "text",
+          "text": "In einem **Binnenmarkt** müssen die **vier Freiheiten** verwirklicht sein. Sie stehen schon im **EWG-Vertrag von 1957**."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Freiheit",
+            "Kern"
+          ],
+          "rows": [
+            [
+              "**Personenverkehr**",
+              "sich in jedem EU-Land aufhalten, dort arbeiten und bleiben"
+            ],
+            [
+              "**Warenverkehr**",
+              "freier Austausch von Waren – ohne Zölle und Mengenbeschränkungen"
+            ],
+            [
+              "**Dienstleistungen**",
+              "Dienstleistungen über die Grenze hinweg erbringen"
+            ],
+            [
+              "**Kapitalverkehr**",
+              "freier Geld-, Kapital- und Zahlungsverkehr"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Für den Vermittler sind vor allem zwei Fragen wichtig: Darf er **im Ausland tätig werden** – und in welcher Form? Dafür stehen die **Niederlassungsfreiheit** und die **Dienstleistungsfreiheit**."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 26 AEUV",
+          "text": "Binnenmarkt: Raum ohne Binnengrenzen mit freiem Verkehr von Waren, Personen, Dienstleistungen und Kapital."
+        }
+      ],
+      "memory": "Vier Freiheiten: Personen, Waren, Dienstleistungen, Kapital."
+    },
+    {
+      "id": "2.10-b",
+      "title": "Personenverkehr und Niederlassungsfreiheit",
+      "subtitle": "Dauerhaft im anderen Mitgliedstaat arbeiten",
+      "ref": "BWB 2.10",
+      "examRelevance": "S",
+      "checkId": "2.10-Q005",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Personenverkehrsfreiheit:** Alle EU-Bürger dürfen sich in jedem EU-Land aufhalten, einen Beruf ausüben und dort bleiben. **Arbeitnehmer** haben dieses Recht seit **1957**."
+        },
+        {
+          "type": "text",
+          "text": "**Niederlassungsfreiheit:** Seit der Errichtung des Binnenmarkts (**1992**) dürfen auch **Selbstständige** in jedem Mitgliedstaat tätig werden. Das Recht umfasst,"
+        },
+        {
+          "type": "list",
+          "items": [
+            "eine **selbstständige Erwerbstätigkeit** aufzunehmen und auszuüben,",
+            "**Unternehmen zu gründen und zu leiten**,",
+            "und zwar **nach den gleichen Bestimmungen**, die der Staat für seine **eigenen Staatsbürger** festgelegt hat."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Ausnahme",
+          "text": "Ausgenommen von Niederlassungs- und Dienstleistungsfreiheit sind Tätigkeiten, die mit der **Ausübung öffentlicher Gewalt** verbunden sind."
+        },
+        {
+          "type": "example",
+          "text": "Eine deutsche Vermittlerin eröffnet ein Büro in Wien und will dort dauerhaft arbeiten. Sie nutzt die Niederlassungsfreiheit – und muss die Voraussetzungen erfüllen, die Österreich auch von Inländern verlangt."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 45 AEUV",
+          "text": "Freizügigkeit der Arbeitnehmer."
+        },
+        {
+          "ref": "Art. 49 AEUV",
+          "text": "Niederlassungsfreiheit."
+        },
+        {
+          "ref": "Art. 51 AEUV",
+          "text": "Ausnahme: Ausübung öffentlicher Gewalt."
+        }
+      ],
+      "memory": "Niederlassen heißt: dauerhaft dort – zu den Regeln, die für Inländer gelten.",
+      "examTrap": "Niederlassungsfreiheit bedeutet nicht Freiheit von Regeln: Es gelten die Bedingungen des Aufnahmestaats, wie für dessen eigene Bürger."
+    },
+    {
+      "id": "2.10-c",
+      "title": "Dienstleistungsfreiheit",
+      "subtitle": "Vorübergehend über die Grenze – der Sitz bleibt zu Hause",
+      "ref": "BWB 2.10",
+      "examRelevance": "S",
+      "checkId": "2.10-Q010",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Dienstleistungsfreiheit** bedeutet, Dienstleistungen in einem anderen Mitgliedstaat **vorübergehend** anzubieten und zu erbringen, aber **im Herkunftsland ansässig** zu bleiben. Beispiele: Versicherungsabschlüsse, Beratungstätigkeiten."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Niederlassungsfreiheit",
+            "text": "**Dauerhaft** im anderen Staat: eigenes Büro, eigene Firma."
+          },
+          "right": {
+            "title": "Dienstleistungsfreiheit",
+            "text": "**Vorübergehend** im anderen Staat: Der Sitz bleibt im Herkunftsland."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Die **Dienstleistungsrichtlinie** von **2006** – Umsetzungsfrist **28. Dezember 2009** – soll einen offenen Binnenmarkt für Dienstleistungen schaffen und zugleich deren **Qualität für die Verbraucher** sichern. Sie nützt vor allem **Verbrauchern** sowie **kleinen und mittleren Unternehmen**."
+        },
+        {
+          "type": "list",
+          "title": "Mittel der Richtlinie",
+          "items": [
+            "Überprüfung und Vereinfachung bestehender Vorschriften",
+            "**einheitliche Ansprechpartner**",
+            "**Zusammenarbeit der Verwaltungen**"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "In mehreren Mitgliedstaaten hat sich die Umsetzung **erheblich verzögert**."
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "**Finanzdienstleistungen** sind vom Anwendungsbereich der Dienstleistungsrichtlinie ausgenommen. Für Immobiliardarlehen gilt die **Wohnimmobilienkreditrichtlinie** als Spezialregel."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 56 AEUV",
+          "text": "Freier Dienstleistungsverkehr."
+        },
+        {
+          "ref": "Richtlinie 2006/123/EG",
+          "text": "Dienstleistungsrichtlinie."
+        }
+      ],
+      "memory": "Dienstleistung: hinfahren und zurück. Niederlassung: bleiben.",
+      "examTrap": "Wer nur gelegentlich Kunden im Nachbarland berät, braucht dort keine Niederlassung."
+    },
+    {
+      "id": "2.10-d",
+      "title": "Waren- und Kapitalverkehr",
+      "subtitle": "Zollunion und freier Kapitalfluss",
+      "ref": "BWB 2.10",
+      "examRelevance": "S",
+      "checkId": "2.10-Q015",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Warenverkehrsfreiheit:** Die Öffnung der nationalen Märkte soll das **Produktangebot verbessern und erweitern** und knappe Güter **verbilligen**. **Zölle und mengenmäßige Beschränkungen** wurden bis **1968** abgeschafft – die **Zollunion**."
+        },
+        {
+          "type": "text",
+          "text": "**Kapitalverkehrsfreiheit:** Kapitalflüsse zwischen den Mitgliedstaaten sind grundsätzlich **nicht beschränkt**. Im Zuge der **Wirtschafts- und Währungsunion** wurde der Geld-, Kapital- und Zahlungsverkehr zum **1. Juli 1990** vollständig liberalisiert; Fiskal- und Geldpolitik werden stärker koordiniert."
+        },
+        {
+          "type": "example",
+          "text": "Ein Käufer aus Deutschland finanziert ein Ferienhaus in Spanien mit einem Darlehen einer niederländischen Bank. Dass das Geld frei über die Grenzen fließen darf, sichert die Kapitalverkehrsfreiheit."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 28, 30 AEUV",
+          "text": "Zollunion, Verbot von Zöllen."
+        },
+        {
+          "ref": "Art. 63 AEUV",
+          "text": "Freier Kapital- und Zahlungsverkehr."
+        }
+      ],
+      "memory": "Waren: Zollunion 1968. Kapital: frei seit 1. Juli 1990."
+    },
+    {
+      "id": "2.10-e",
+      "title": "Diskriminierungsverbot, Parlament und Wohnimmobilienkreditrichtlinie",
+      "subtitle": "Der europäische Rahmen für den Vermittler",
+      "ref": "BWB 2.10",
+      "examRelevance": "S",
+      "checkId": "2.10-Q019",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Diskriminierungsverbot:** Kein Unionsbürger darf **aufgrund seiner Staatsangehörigkeit** benachteiligt werden."
+        },
+        {
+          "type": "text",
+          "text": "Das **Europäische Parlament** war treibende Kraft bei der Liberalisierung der selbstständigen Tätigkeiten. Es achtet darauf, dass Tätigkeiten, die **Inländern vorbehalten** bleiben, eng abgegrenzt sind, und überwacht die Umsetzung der Richtlinien."
+        },
+        {
+          "type": "text",
+          "text": "Die **Wohnimmobilienkreditrichtlinie** wurde in Deutschland zum **21. März 2016** wirksam. Ihr Ziel ist ein besserer **Verbraucherschutz**:"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Vorgaben für die **Information** des Verbrauchers",
+            "Vorgaben für die **Kreditwürdigkeitsprüfung**",
+            "eine eigene, auf **geprüfter Sachkunde** beruhende **Berufserlaubnis** für Vermittler von Immobiliar-Verbraucherdarlehen"
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung: Europäischer Pass",
+          "text": "Die Richtlinie erlaubt es Vermittlern, mit ihrer Zulassung aus dem Heimatstaat auch in **anderen Mitgliedstaaten** tätig zu werden – über die Dienstleistungs- oder die Niederlassungsfreiheit. Vorher ist die Absicht der **zuständigen Behörde im Heimatstaat anzuzeigen**."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 18 AEUV",
+          "text": "Verbot der Diskriminierung aus Gründen der Staatsangehörigkeit."
+        },
+        {
+          "ref": "Richtlinie 2014/17/EU",
+          "text": "Wohnimmobilienkreditrichtlinie."
+        },
+        {
+          "ref": "§ 34i GewO",
+          "text": "Umsetzung der Erlaubnispflicht in Deutschland."
+        }
+      ],
+      "memory": "Die Wohnimmobilienkreditrichtlinie brachte Information, Kreditwürdigkeitsprüfung und die Erlaubnis nach § 34i.",
+      "examTrap": "Die Erlaubnis nach § 34i GewO ist kein deutscher Sonderweg – sie setzt eine EU-Richtlinie um."
+    }
+  ]
+}

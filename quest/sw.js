@@ -4,21 +4,42 @@
  * Bei neuer contentVersion in chapters.json wird der Content-Cache geleert.
  * Bei App-Updates: STATIC_VERSION erhöhen.
  */
-const STATIC_VERSION = 'v18';
+const STATIC_VERSION = 'v45';
 const STATIC_CACHE = `34i-quest-static-${STATIC_VERSION}`;
 const CONTENT_CACHE = '34i-quest-content-v1';
 
 const SHELL = [
   './', 'index.html', 'manifest.json',
-  'css/style.css',
+  'css/style.css', 'css/exam.css',
   'css/fonts/bricolage-grotesque-var.woff2',
   'css/fonts/atkinson-hyperlegible-latin-400-normal.woff2',
   'css/fonts/atkinson-hyperlegible-latin-700-normal.woff2',
   'css/fonts/atkinson-hyperlegible-latin-400-italic.woff2',
   'css/fonts/jetbrains-mono-latin-500-normal.woff2',
-  'js/app.js', 'js/game.js', 'js/savegame.js', 'js/content-loader.js', 'js/audio.js',
+  'js/app.js', 'js/game.js', 'js/savegame.js', 'js/content-loader.js', 'js/worlds.js', 'js/audio.js', 'js/exam.js',
   'assets/logo.webp', 'assets/icon-192.png', 'assets/icon-512.png', 'assets/coin.webp', 'assets/coin-lg.webp',
-  'assets/world/quest-map.webp',
+  'assets/world/quest-map.webp', 'assets/world/quest-map-13-24.webp', 'assets/world/quest-map-25.webp',
+  // Klassenbilder gehören zur App (Charakterwahl, Inventar). Boss-Bilder kommen aus den Leveldaten
+  // und werden von der App beim Start bzw. beim Öffnen eines Levels vorgeladen und hier zur Laufzeit gecacht.
+  'assets/classes/sammler.webp', 'assets/classes/sammler-bust.webp',
+  'assets/classes/sparfuchs.webp', 'assets/classes/sparfuchs-bust.webp',
+  'assets/classes/normalo.webp', 'assets/classes/normalo-bust.webp',
+  'assets/classes/glueckspilz.webp', 'assets/classes/glueckspilz-bust.webp',
+  // Kreditreich-Porträts stehen auch ohne Verbindung auf der Karte bereit.
+  'assets/bosses/elyra-bust.webp',
+  'assets/bosses/velmoran-bust.webp',
+  'assets/bosses/aurivex-bust.webp',
+  'assets/bosses/miralith-bust.webp',
+  'assets/bosses/takturion-bust.webp',
+  'assets/bosses/jadira-bust.webp',
+  'assets/bosses/morvane-bust.webp',
+  'assets/bosses/noctaris-bust.webp',
+  'assets/bosses/florathis-bust.webp',
+  'assets/bosses/nexovar-bust.webp',
+  'assets/bosses/ruvar-bust.webp',
+  'assets/bosses/aevor-bust.webp',
+  'assets/bosses/valerian-pruefstein-bust.webp', 'assets/bosses/valerian-pruefstein.webp',
+
 ];
 
 self.addEventListener('install', (event) => {

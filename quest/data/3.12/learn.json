@@ -1,0 +1,546 @@
+{
+  "chapter": "3.12",
+  "title": "Beendigung des Kreditvertrages",
+  "sources": [
+    "BWB-Lernskript 3.12.1 Kündigungsmöglichkeiten durch Kreditgeber und Kreditnehmer (lernskript_03_12_01.pdf, 10 Seiten)",
+    "BWB-Lernskript 3.12.2 Risiken (lernskript_03_12_02.pdf, 5 Seiten)",
+    "BWB-Lernskript 3.12.3 Kreditprolongation (lernskript_03_12_03.pdf, 3 Seiten)",
+    "BWB-Lernskript 3.12.4 Umschuldung (lernskript_03_12_04.pdf, 3 Seiten)"
+  ],
+  "sections": [
+    {
+      "id": "3.12.1-a",
+      "title": "Kündigung durch den Darlehensgeber",
+      "subtitle": "Ordentlich nur mit Vereinbarung, außerordentlich bei Gefahr",
+      "ref": "BWB 3.12.1, S. 2–5",
+      "examRelevance": "S+P",
+      "checkId": "3.12-Q001",
+      "content": [
+        {
+          "type": "text",
+          "text": "Ein Kreditvertrag endet regulär mit der vollständigen Rückzahlung. Vorher kann er durch **Kündigung** enden. Zu unterscheiden ist, **wer** kündigt und ob die Kündigung **ordentlich** (mit Frist, ohne besonderen Grund) oder **außerordentlich** (aus wichtigem Grund) erfolgt."
+        },
+        {
+          "type": "text",
+          "text": "**Ordentliche Kündigung:** Der Darlehensgeber kann nur ordentlich kündigen, wenn das im Darlehensvertrag **vereinbart** ist. Eine gesetzliche Ausnahme gilt für Darlehen **ohne bestimmte Laufzeit**: Sie können von beiden Seiten mit einer Frist von **drei Monaten** gekündigt werden (§ 488 Abs. 3 BGB)."
+        },
+        {
+          "type": "text",
+          "text": "**Außerordentliche Kündigung nach § 490 Abs. 1 BGB:** wenn in den **Vermögensverhältnissen** des Darlehensnehmers oder in der **Werthaltigkeit einer Sicherheit** eine **wesentliche Verschlechterung** eintritt oder einzutreten droht und dadurch die Rückzahlung – auch unter Verwertung der Sicherheit – **gefährdet** wird."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Zeitpunkt",
+            "Kündigungsrecht"
+          ],
+          "rows": [
+            [
+              "**Vor Auszahlung**",
+              "im Zweifel **stets** fristlos"
+            ],
+            [
+              "**Nach Auszahlung**",
+              "nur **in der Regel** fristlos"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Anforderungen",
+          "items": [
+            "Die Verschlechterung muss **wesentlich** sein – nicht nur vorübergehend, und der Rückzahlungsanspruch muss gefährdet sein.",
+            "Kann das Darlehen samt Zinsen noch aus dem verminderten Vermögen zurückgezahlt werden, ist sie **nicht wesentlich**.",
+            "Die Gründe müssen **gerichtlich nachprüfbar** sein. Es braucht **Fakten**, bloße Befürchtungen reichen nicht.",
+            "Eine **drohende** Verschlechterung genügt – etwa die anstehende Insolvenz des Arbeitgebers oder der geplante Bau eines Flughafens neben dem Objekt.",
+            "Die Kündigung entfällt, wenn der Kunde **anderweitige werthaltige Sicherheiten oder Mitschuldner** stellt."
+          ]
+        },
+        {
+          "type": "example",
+          "title": "Beispiele",
+          "text": "Arbeitslosigkeit ohne Aussicht auf neue Stelle (Einkommen) oder ein Brandschaden ohne ausreichenden Versicherungsschutz (Sicherheit) können die Kündigung rechtfertigen."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Vor einer Kündigung sollte immer das **persönliche Gespräch** mit dem Kunden und ein Lösungsansatz gesucht werden."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 488 Abs. 3 BGB",
+          "text": "Ist für die Rückzahlung des Darlehens eine Zeit nicht bestimmt, hängt die Fälligkeit von der Kündigung ab. Die Kündigungsfrist beträgt drei Monate."
+        },
+        {
+          "ref": "§ 490 Abs. 1 BGB",
+          "text": "Bei wesentlicher Verschlechterung der Vermögensverhältnisse oder der Werthaltigkeit einer Sicherheit, durch die die Rückzahlung gefährdet wird, kann der Darlehensgeber vor Auszahlung im Zweifel stets, nach Auszahlung nur in der Regel fristlos kündigen."
+        }
+      ],
+      "memory": "Darlehensgeber: ordentlich nur mit Vereinbarung, außerordentlich bei wesentlicher Verschlechterung oder Verzug.",
+      "examTrap": "Nicht jede Einkommenseinbuße berechtigt zur Kündigung. Sie muss wesentlich sein und die Rückzahlung gefährden."
+    },
+    {
+      "id": "3.12.1-b",
+      "title": "Kündigung wegen Zahlungsverzugs",
+      "subtitle": "Die Gesamtfälligstellung nach § 498 BGB",
+      "ref": "BWB 3.12.1, S. 3, 5",
+      "examRelevance": "S+P",
+      "checkId": "3.12-Q008",
+      "content": [
+        {
+          "type": "text",
+          "text": "Zahlt der Darlehensnehmer seine Raten nicht, kann der Darlehensgeber ein in Teilzahlungen zu tilgendes Verbraucherdarlehen kündigen und die **gesamte Restschuld fällig stellen** – aber nur, wenn **alle** folgenden Voraussetzungen erfüllt sind."
+        },
+        {
+          "type": "steps",
+          "title": "Voraussetzungen",
+          "items": [
+            {
+              "title": "Zwei Raten",
+              "text": "Verzug mit **mindestens zwei aufeinanderfolgenden** Teilzahlungen, ganz oder teilweise."
+            },
+            {
+              "title": "Mindestrückstand",
+              "text": "Der Rückstand erreicht einen Mindestanteil des **Nennbetrags** des Darlehens (Tabelle)."
+            },
+            {
+              "title": "Nachfrist",
+              "text": "Der Darlehensgeber hat erfolglos eine **zweiwöchige Frist** zur Zahlung gesetzt – mit der Erklärung, bei Nichtzahlung die **gesamte Restschuld** zu verlangen."
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "head": [
+            "Vertragsart",
+            "Mindestrückstand"
+          ],
+          "rows": [
+            [
+              "**Immobiliar-Verbraucherdarlehen**",
+              "**2,5 %** des Nennbetrags"
+            ],
+            [
+              "Allgemein-Verbraucherdarlehen, Laufzeit über drei Jahre",
+              "5 % des Nennbetrags"
+            ],
+            [
+              "Allgemein-Verbraucherdarlehen, Laufzeit bis drei Jahre",
+              "10 % des Nennbetrags"
+            ]
+          ]
+        },
+        {
+          "type": "example",
+          "title": "Rechenbeispiel",
+          "text": "Immobiliardarlehen 240.000 €, Rate 1.200 €. Der Kunde ist mit zwei Raten in Verzug: 2.400 €. Der Mindestrückstand beträgt 2,5 % von 240.000 € = **6.000 €**. Die Schwelle ist noch nicht erreicht – erst bei **fünf** rückständigen Raten."
+        },
+        {
+          "type": "text",
+          "text": "Der Darlehensgeber **soll** dem Darlehensnehmer spätestens mit der Fristsetzung ein **Gespräch über eine einverständliche Regelung** anbieten."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Der Prozentsatz bezieht sich auf den **Nennbetrag** des Darlehens – nicht auf die Restschuld und nicht auf die Rate."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 498 Abs. 1 BGB",
+          "text": "Kündigung wegen Zahlungsverzugs nur, wenn der Darlehensnehmer mit mindestens zwei aufeinander folgenden Teilzahlungen und mit mindestens 10 beziehungsweise 5 Prozent des Nennbetrags in Verzug ist und eine zweiwöchige Zahlungsfrist mit Androhung der Gesamtfälligstellung erfolglos gesetzt wurde."
+        },
+        {
+          "ref": "§ 498 Abs. 2 BGB",
+          "text": "Bei einem Immobiliar-Verbraucherdarlehensvertrag muss der Darlehensnehmer mit mindestens 2,5 Prozent des Nennbetrags in Verzug sein."
+        }
+      ],
+      "memory": "Zwei Raten, 2,5 % des Nennbetrags, zwei Wochen Nachfrist – erst dann die Kündigung.",
+      "examTrap": "Zwei offene Raten allein genügen nicht. Auch der Mindestrückstand und die Nachfrist müssen erfüllt sein."
+    },
+    {
+      "id": "3.12.1-c",
+      "title": "Ordentliche Kündigung des Darlehensnehmers",
+      "subtitle": "Die Rechte aus § 489 BGB",
+      "ref": "BWB 3.12.1, S. 6–9",
+      "examRelevance": "S+P",
+      "checkId": "3.12-Q015",
+      "content": [
+        {
+          "type": "table",
+          "head": [
+            "Darlehen mit …",
+            "Kündigung möglich",
+            "Frist"
+          ],
+          "rows": [
+            [
+              "**gebundenem Sollzins**, Bindung endet vor der Rückzahlung",
+              "zum **Ablauf der Sollzinsbindung**, wenn keine neue Zinsvereinbarung getroffen ist",
+              "**ein Monat**"
+            ],
+            [
+              "**gebundenem Sollzins**, in jedem Fall",
+              "nach Ablauf von **zehn Jahren** seit vollständigem Empfang",
+              "**sechs Monate**"
+            ],
+            [
+              "**veränderlichem Sollzins**",
+              "**jederzeit**",
+              "**drei Monate**"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Während der Sollzinsbindung kann **keine Seite** eine Anpassung des Zinses verlangen. Das **Sonderkündigungsrecht nach zehn Jahren** hat **nur der Darlehensnehmer**. Die Kündigung kann ganz oder teilweise erfolgen. Wird nach dem Empfang eine neue Vereinbarung über Rückzahlungszeit oder Sollzins getroffen, beginnt die Zehnjahresfrist mit dieser Vereinbarung."
+        },
+        {
+          "type": "example",
+          "title": "Skriptbeispiel",
+          "text": "Darlehen mit 15 Jahren Sollzinsbindung, vollständig ausgezahlt am 01.03.2014. Kündigung möglich ab 01.03.2024. Mit sechs Monaten Frist ist die Rückzahlung frühestens zum **01.09.2024** möglich."
+        },
+        {
+          "type": "text",
+          "text": "**Zwei-Wochen-Regel:** Zahlt der Darlehensnehmer den geschuldeten Betrag **nicht binnen zwei Wochen** nach Wirksamwerden der Kündigung zurück, **gilt die Kündigung als nicht erfolgt**. Das Darlehen läuft zu den alten Bedingungen weiter."
+        },
+        {
+          "type": "text",
+          "text": "**Erläuterungspflicht:** Vor Vertragsschluss muss der Darlehensgeber angemessen erläutern, ob der Vertrag zu Zweck und Vermögensverhältnissen des Kunden passt (§ 491a Abs. 3 BGB). Werden Finanzprodukte **im Paket** angeboten, ist zu erläutern, ob sie **gesondert gekündigt** werden können und welche Folgen das hat."
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "Das Kündigungsrecht aus § 489 BGB kann vertraglich **nicht ausgeschlossen oder erschwert** werden. Bei einer Kündigung nach § 489 BGB fällt **keine Vorfälligkeitsentschädigung** an."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 489 Abs. 1 BGB",
+          "text": "Kündigung bei gebundenem Sollzins: mit einem Monat Frist frühestens zum Ende der Sollzinsbindung; in jedem Fall nach Ablauf von zehn Jahren nach dem vollständigen Empfang mit sechs Monaten Frist."
+        },
+        {
+          "ref": "§ 489 Abs. 2 BGB",
+          "text": "Ein Darlehensvertrag mit veränderlichem Zinssatz kann jederzeit mit einer Frist von drei Monaten gekündigt werden."
+        },
+        {
+          "ref": "§ 489 Abs. 3 BGB",
+          "text": "Eine Kündigung des Darlehensnehmers gilt als nicht erfolgt, wenn er den geschuldeten Betrag nicht binnen zwei Wochen nach Wirksamwerden der Kündigung zurückzahlt."
+        }
+      ],
+      "memory": "Gebunden: ein Monat zum Bindungsende oder sechs Monate nach zehn Jahren. Variabel: drei Monate.",
+      "examTrap": "Die zehn Jahre laufen ab der vollständigen Auszahlung – nicht ab der Unterschrift."
+    },
+    {
+      "id": "3.12.1-d",
+      "title": "Außerordentliche Kündigung des Darlehensnehmers",
+      "subtitle": "Berechtigtes Interesse nach § 490 Abs. 2 BGB",
+      "ref": "BWB 3.12.1, S. 9–10",
+      "examRelevance": "S+P",
+      "checkId": "3.12-Q022",
+      "content": [
+        {
+          "type": "text",
+          "text": "Auch **während der Sollzinsbindung** kann der Darlehensnehmer ein grundpfandrechtlich gesichertes Darlehen vorzeitig kündigen – wenn seine **berechtigten Interessen** dies gebieten."
+        },
+        {
+          "type": "list",
+          "title": "Voraussetzungen",
+          "items": [
+            "Der Sollzins ist **gebunden**.",
+            "Das Darlehen ist durch ein **Grund- oder Schiffspfandrecht** gesichert.",
+            "Seit dem **vollständigen Empfang** sind **sechs Monate** vergangen.",
+            "Ein **berechtigtes Interesse** liegt vor.",
+            "Die Kündigungsfrist beträgt **drei Monate**."
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Berechtigtes Interesse",
+          "items": [
+            "**Verkauf** des beliehenen Objekts",
+            "anderweitige Verwertung wegen **Scheidung oder Arbeitslosigkeit**",
+            "Der Kunde braucht **weitere Darlehensmittel**, der bisherige Darlehensgeber gibt sie nicht, ein anderes Institut würde sie gegen Absicherung am selben Objekt bewilligen"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Preis:** Der Darlehensnehmer muss dem Darlehensgeber den Schaden aus der vorzeitigen Kündigung ersetzen – die **Vorfälligkeitsentschädigung**."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Immobiliar-Verbraucherdarlehen mit gebundenem Sollzins",
+            "text": "Vorzeitige Rückzahlung in der Zinsbindung nur bei **berechtigtem Interesse** – und gegen Vorfälligkeitsentschädigung."
+          },
+          "right": {
+            "title": "Allgemein-Verbraucherdarlehen",
+            "text": "**Jederzeitiges Rückzahlungsrecht**. Weder Kündigung noch berechtigtes Interesse sind nötig."
+          }
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "Kein berechtigtes Interesse ist es, wenn der Kunde nur **niedrigere Marktzinsen nutzen** möchte. Dafür gibt es das Kündigungsrecht nach zehn Jahren."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 490 Abs. 2 BGB",
+          "text": "Der Darlehensnehmer kann einen Darlehensvertrag mit gebundenem Sollzinssatz, der durch ein Grund- oder Schiffspfandrecht gesichert ist, mit drei Monaten Frist vorzeitig kündigen, wenn seine berechtigten Interessen dies gebieten und seit dem vollständigen Empfang sechs Monate abgelaufen sind. Er hat den Schaden aus der vorzeitigen Kündigung zu ersetzen."
+        },
+        {
+          "ref": "§ 500 Abs. 2 BGB",
+          "text": "Der Darlehensnehmer kann seine Verbindlichkeiten jederzeit vorzeitig erfüllen; bei Immobiliar-Verbraucherdarlehen mit gebundenem Sollzins während der Sollzinsbindung nur bei berechtigtem Interesse."
+        }
+      ],
+      "memory": "Verkauf, Scheidung, Arbeitslosigkeit: Kündigung mit drei Monaten Frist – gegen Vorfälligkeitsentschädigung.",
+      "examTrap": "Sinkende Zinsen sind kein berechtigtes Interesse."
+    },
+    {
+      "id": "3.12.2-a",
+      "title": "Vorfälligkeitsentschädigung",
+      "subtitle": "Wann sie anfällt – und wann nicht",
+      "ref": "BWB 3.12.2, S. 2–3",
+      "examRelevance": "S+P",
+      "checkId": "3.12-Q029",
+      "content": [
+        {
+          "type": "text",
+          "text": "Die **Vorfälligkeitsentschädigung** gleicht den Nachteil aus, der dem Darlehensgeber durch die vorzeitige Ablösung entsteht. Verlangen kann er eine **angemessene** Entschädigung für den **unmittelbar** mit der vorzeitigen Rückzahlung zusammenhängenden Schaden – wenn der Darlehensnehmer zum Zeitpunkt der Rückzahlung Zinsen zu einem **gebundenen Sollzins** schuldet."
+        },
+        {
+          "type": "list",
+          "title": "Der Anspruch ist ausgeschlossen, wenn",
+          "items": [
+            "Die Rückzahlung stammt aus einer **Versicherung**, die laut Darlehensvertrag zur Sicherung der Rückzahlung abgeschlossen werden musste – etwa einer Restschuldversicherung.",
+            "Im Vertrag sind die Angaben zu **Laufzeit, Kündigungsrecht des Darlehensnehmers oder Berechnung der Vorfälligkeitsentschädigung unzureichend**."
+          ]
+        },
+        {
+          "type": "table",
+          "head": [
+            "Allgemein-Verbraucherdarlehen",
+            "Obergrenze"
+          ],
+          "rows": [
+            [
+              "Restlaufzeit über ein Jahr",
+              "**1 %** des vorzeitig zurückgezahlten Betrags"
+            ],
+            [
+              "Restlaufzeit bis ein Jahr",
+              "**0,5 %** des vorzeitig zurückgezahlten Betrags"
+            ],
+            [
+              "in jedem Fall",
+              "nicht mehr als die **Sollzinsen**, die bis zur regulären Rückzahlung angefallen wären"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Diese Grenzen gelten nicht für Immobiliar-Verbraucherdarlehen.** Dort richtet sich die Entschädigung nach dem tatsächlichen Schaden und kann deutlich höher ausfallen."
+        },
+        {
+          "type": "list",
+          "title": "Keine Vorfälligkeitsentschädigung",
+          "items": [
+            "bei Kündigung nach **§ 489 BGB** – zum Ende der Zinsbindung, nach zehn Jahren oder bei variablem Zins,",
+            "bei Kündigung wegen fehlerhafter **Kreditwürdigkeitsprüfung** (§ 505d BGB, Level 19),",
+            "bei Allgemein-Verbraucherdarlehen, wenn der gebundene Sollzins **nicht schon bei Vertragsabschluss** vereinbart war."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Das Skript fasst die letzte Regel so: Beim Allgemein-Verbraucherdarlehen kann eine Entschädigung nur in der **ersten Sollzinsperiode** verlangt werden."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 502 Abs. 1 BGB",
+          "text": "Der Darlehensgeber kann im Fall der vorzeitigen Rückzahlung eine angemessene Vorfälligkeitsentschädigung für den unmittelbar damit zusammenhängenden Schaden verlangen, wenn der Darlehensnehmer Zinsen zu einem gebundenen Sollzinssatz schuldet."
+        },
+        {
+          "ref": "§ 502 Abs. 2 BGB",
+          "text": "Ausgeschlossen, wenn die Rückzahlung aus einer vertraglich verlangten Versicherung bewirkt wird oder die Vertragsangaben zu Laufzeit, Kündigungsrecht oder Berechnung der Entschädigung unzureichend sind."
+        },
+        {
+          "ref": "§ 502 Abs. 3 BGB",
+          "text": "Bei Allgemein-Verbraucherdarlehensverträgen höchstens 1 Prozent, bei einer Restlaufzeit bis zu einem Jahr 0,5 Prozent des vorzeitig zurückgezahlten Betrags, und nicht mehr als die noch anfallenden Sollzinsen."
+        }
+      ],
+      "memory": "Gebundener Zins + vorzeitige Rückzahlung = Entschädigung. Deckel von 1 % und 0,5 % nur beim Allgemein-Verbraucherdarlehen.",
+      "examTrap": "Die Obergrenzen von 1 % und 0,5 % gelten nicht für die Baufinanzierung."
+    },
+    {
+      "id": "3.12.2-b",
+      "title": "Information, Berechnung, Nichtabnahme",
+      "subtitle": "Wie die Entschädigung ermittelt wird",
+      "ref": "BWB 3.12.2, S. 3–5",
+      "examRelevance": "S+P",
+      "checkId": "3.12-Q036",
+      "content": [
+        {
+          "type": "text",
+          "text": "Teilt der Darlehensnehmer eines Immobiliar-Verbraucherdarlehens mit, dass er **vorzeitig zurückzahlen möchte**, muss der Darlehensgeber ihm **unverzüglich** die nötigen Informationen auf einem **dauerhaften Datenträger** übermitteln (§ 493 Abs. 5 BGB)."
+        },
+        {
+          "type": "list",
+          "title": "Inhalt der Information",
+          "items": [
+            "Auskunft über die **Zulässigkeit** der vorzeitigen Rückzahlung",
+            "bei Zulässigkeit die **Höhe des zurückzuzahlenden Betrags**",
+            "gegebenenfalls die **Höhe der Vorfälligkeitsentschädigung**"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Stützen sich die Angaben auf **Annahmen**, müssen diese nachvollziehbar und sachlich gerechtfertigt sein und **offengelegt** werden."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Aktiv-Aktiv-Methode",
+            "text": "Annahme: Die Bank vergibt das Geld **wieder als Darlehen**. Schaden = **Zinsmargenschaden** (entgangener Nettogewinn) + **Zinsverschlechterungsschaden** (Differenz zum aktuellen Darlehenszins). Legt die Zinsmarge offen – deshalb selten genutzt."
+          },
+          "right": {
+            "title": "Aktiv-Passiv-Methode",
+            "text": "Annahme: Die Bank legt das Geld in **Hypothekenpfandbriefen** mit der Restlaufzeit der Zinsbindung an. Schaden = Differenz zwischen **Vertragszins und Pfandbriefrendite**. Die übliche Methode."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Bei beiden Methoden sind die **ersparten Verwaltungs- und Risikokosten herauszurechnen** – die Bank hat mit dem abgelösten Darlehen keinen Aufwand und kein Risiko mehr."
+        },
+        {
+          "type": "text",
+          "text": "**Nichtabnahmeentschädigung:** eine besondere Form der Vorfälligkeitsentschädigung. Sie fällt an, wenn ein **rechtsverbindlicher Darlehensvertrag** besteht, die **14-tägige Widerrufsfrist abgelaufen** ist und der Kunde erklärt, das Darlehen **nicht in Anspruch zu nehmen**. Die Mittel werden also gar nicht abgerufen. Berechnet wird sie mit denselben Methoden."
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "Widerruft der Kunde **innerhalb** der Widerrufsfrist, schuldet er keine Nichtabnahmeentschädigung."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 493 Abs. 5 BGB",
+          "text": "Teilt der Darlehensnehmer eines Immobiliar-Verbraucherdarlehens mit, dass er eine vorzeitige Rückzahlung beabsichtigt, übermittelt ihm der Darlehensgeber unverzüglich auf einem dauerhaften Datenträger die für die Prüfung erforderlichen Informationen."
+        }
+      ],
+      "memory": "Aktiv-Aktiv: neu verleihen. Aktiv-Passiv: in Pfandbriefe anlegen. Nichtabnahme: Darlehen wird gar nicht abgerufen.",
+      "examTrap": "Die Nichtabnahmeentschädigung setzt voraus, dass die Widerrufsfrist schon abgelaufen ist."
+    },
+    {
+      "id": "3.12.3-a",
+      "title": "Prolongation",
+      "subtitle": "Weiter beim bisherigen Kreditgeber",
+      "ref": "BWB 3.12.3, S. 2–3",
+      "examRelevance": "S+P",
+      "checkId": "3.12-Q043",
+      "content": [
+        {
+          "type": "text",
+          "text": "Nach der ersten Sollzinsbindung bleibt in der Regel eine **Restschuld**. Der Darlehensgeber muss den Darlehensnehmer **spätestens drei Monate vor Ende der Sollzinsbindung** unterrichten, **ob er zu einer neuen Zinsvereinbarung bereit ist** (§ 493 Abs. 1 BGB). Ist er bereit, nennt er den aktuell angebotenen Sollzins."
+        },
+        {
+          "type": "list",
+          "title": "Was dann gilt",
+          "items": [
+            "Meist macht das Kreditinstitut ein **Prolongationsangebot** – verpflichtet ist es dazu **nicht**.",
+            "Haben sich **Bonität oder Sicherheiten verschlechtert**, kann es das Darlehen zum Ablauf der Sollzinsbindung auch **fällig stellen**.",
+            "Nimmt der Kunde das Angebot an, läuft das Darlehen zu den **genannten Konditionen** weiter."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Der Kunde kann über den Zins **nachverhandeln**. Ein **Anrecht** auf einen besseren Zins als im Angebot hat er nicht."
+        },
+        {
+          "type": "list",
+          "title": "Argumente für eine bessere Kondition",
+          "items": [
+            "**geringerer Bearbeitungsaufwand** als bei der Erstfinanzierung",
+            "**geringeres Ausfallrisiko** – das Zahlungsverhalten ist bekannt, ein Teil ist getilgt",
+            "**bessere Besicherung** durch die Tilgung, gegebenenfalls ist der Wert der Immobilie gestiegen"
+          ]
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 493 Abs. 1 BGB",
+          "text": "Endet die Sollzinsbindung vor der für die Rückzahlung bestimmten Zeit, unterrichtet der Darlehensgeber den Darlehensnehmer spätestens drei Monate vor Ende der Sollzinsbindung darüber, ob er zu einer neuen Sollzinsbindungsabrede bereit ist."
+        }
+      ],
+      "memory": "Drei Monate vor Bindungsende muss die Bank sagen, ob sie verlängert – nicht, dass sie verlängert.",
+      "examTrap": "Die Informationspflicht ist keine Angebotspflicht. Die Bank muss sich nur erklären."
+    },
+    {
+      "id": "3.12.4-a",
+      "title": "Umschuldung",
+      "subtitle": "Wechsel zu einem anderen Kreditgeber",
+      "ref": "BWB 3.12.4, S. 2–3",
+      "examRelevance": "S+P",
+      "checkId": "3.12-Q048",
+      "content": [
+        {
+          "type": "text",
+          "text": "Ist der Kunde mit dem Prolongationsangebot nicht einverstanden, kann er das Darlehen zum Ablauf der Zinsbindung durch ein **anderes Kreditinstitut ablösen** lassen. Das neue Institut braucht **alle üblichen Bonitäts- und Objektunterlagen** und prüft neu."
+        },
+        {
+          "type": "steps",
+          "title": "Ablauf",
+          "items": [
+            {
+              "title": "Ankündigung",
+              "text": "Das neue Institut teilt dem bisherigen mit, dass das Darlehen zum Ablauf der Zinsbindung abgelöst wird."
+            },
+            {
+              "title": "Ablösung",
+              "text": "Am Tag der Umschuldung überweist es den offenen Betrag und fordert die **Übertragung der Sicherheiten** an – etwa die Grundschuldabtretung."
+            },
+            {
+              "title": "Umstellung",
+              "text": "Ab dann zahlt der Kunde den Kapitaldienst an das **neue** Institut; die Sicherheiten werden umgeschrieben."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Kosten:** Bei der Grundschuldabtretung fallen **Notarkosten** für die Abtretungsurkunde und **Gerichtskosten** für die Umschreibung im Grundbuch an."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Weg",
+            "Vorteile",
+            "Nachteile"
+          ],
+          "rows": [
+            [
+              "**Prolongation**",
+              "geringer Aufwand – keine neuen Unterlagen, kein neuer Antrag; keine Kosten",
+              "meist nur eine Standardkondition, nicht unbedingt das günstigste Angebot"
+            ],
+            [
+              "**Umschuldung**",
+              "Chance auf günstigere Angebote anderer Institute",
+              "neuer Antrag mit allen Unterlagen und neuer Prüfung; Gebühren für die Übertragung der Sicherheiten"
+            ]
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Ein Angebot eines anderen Instituts ist auch ein gutes Argument in der Nachverhandlung mit dem bisherigen Kreditgeber. Wie eine Grundschuld abgetreten wird, kennst du aus Level 20."
+        }
+      ],
+      "laws": [],
+      "memory": "Prolongation: bequem und kostenlos. Umschuldung: oft günstiger, aber mit Aufwand und Gebühren.",
+      "examTrap": "Bei der Umschuldung prüft die neue Bank die Bonität von Grund auf. Hat sie sich verschlechtert, kann der Wechsel scheitern."
+    }
+  ]
+}

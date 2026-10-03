@@ -11,6 +11,7 @@
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="preload" href="css/fonts/bricolage-grotesque-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/exam.css">
   <script type="module" src="js/app.js"></script>
 </head>
 <body>
@@ -26,10 +27,11 @@
         <button class="hpchip" id="hpChip" data-action="toggle-inv" aria-haspopup="true" aria-expanded="false" aria-controls="invPop" title="Lebenspunkte und Heiltränke"></button>
         <button class="shopchip" id="shopChip" data-action="toggle-inv" aria-haspopup="true" aria-expanded="false" aria-controls="invPop" title="Shop und Inventar"></button>
         <div class="coinchip" id="coinChip" title="Quest-Coins"></div>
-        <div class="rankchip" id="rankChip" title="Rang und Erfahrung"></div>
+        <button type="button" class="rankchip" id="rankChip" data-action="open-ranks" aria-haspopup="dialog" aria-expanded="false" aria-controls="rankDialog" title="Ränge und Errungenschaften ansehen"></button>
         <span class="chip chip--streak" id="streakChip" title="Lerntage in Folge"></span>
         <div class="invpop" id="invPop" role="dialog" aria-label="Heiltränke" hidden></div>
       </div>
+      <nav class="worldnav" id="worldNav" aria-label="Welt wählen"></nav>
       <div class="corner-tools" aria-label="Spielwerkzeuge">
         <button class="chip chip--btn chip--help" id="helpBtn" data-action="open-help" title="So funktioniert 34i-Quest" aria-label="Spielanleitung öffnen">?</button>
         <button class="chip chip--btn chip--music" id="musicBtn" data-action="toggle-music" aria-pressed="true" title="Musik an/aus"></button>
@@ -90,11 +92,17 @@
     <section class="screen" data-screen="result" hidden>
       <div id="resultView"></div>
     </section>
+    <section class="screen" data-screen="exam" hidden><div id="finalExamView" tabindex="-1"></div></section>
+    <section class="screen" data-screen="exam-result" hidden><div id="finalExamResultView"></div></section>
   </main>
+
+  <div class="exam-transition" id="examTransition" aria-hidden="true" hidden><p>Die letzte Schwelle<small>Valerian Prüfstein erwartet dich.</small></p></div>
 
   <div class="gameover" id="gameOver" role="status" aria-live="assertive" hidden>
     <div class="gameover__title">GAME OVER</div>
   </div>
+
+  <dialog class="rankoverview" id="rankDialog" aria-labelledby="rankDialogTitle"></dialog>
 
   <div class="toasts" id="toasts" aria-live="polite"></div>
   <div class="flash" id="flash" aria-hidden="true"></div>

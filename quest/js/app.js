@@ -1,12 +1,14 @@
 /* 34i-Quest – App: Screens, Rendering, Spielfluss, Effekte */
 
 import * as Content from './content-loader.js';
+import { WORLDS, worldForLevel, chaptersForWorld, isChapterUnlocked, levelWasCompleted } from './worlds.js';
 import { SaveGame, SaveError, isSupported, createChapterProgress, SAVE_NAME } from './savegame.js';
-import { MODES, TEST_UNLOCK_ALL_MODES, MAX_HP, MODE_HP_LOSS, POTIONS, rollQuestionReward, selectQuestions, prepareQuestion, Run, rankFor, ACHIEVEMENTS, Countdown,
-  BOSS_CRIT_SECONDS, BOSS_FOCUS_SECONDS, DAILY_FOCUS_GIFT, BOSS_CHEST_POTION_CHANCE, BOSS_TAUNTS,
+import { MODES, isModeUnlocked, isBossPortraitRevealed, MAX_HP, MODE_HP_LOSS, POTIONS, rollQuestionReward, selectQuestions, prepareQuestion, Run, rankFor, RANKS, ACHIEVEMENTS, Countdown,
+  BOSS_CRIT_SECONDS, BOSS_FOCUS_SECONDS, BOSS_CHEST_POTION_CHANCE, BOSS_TAUNTS,
   COIN_REWARDS, COIN_LEVEL_COMPLETE, SHOP, coinsForWin, BATTLE_ITEMS, BATTLE_ITEM_ORDER, carouselOrder, carouselChest,
   HERO_CLASSES, HERO_CLASS_ORDER, heroClass } from './game.js';
 import * as Audio from './audio.js';
+import { EXAM, EXAM_TEST_ACCESS, allLevelsCompleted, examAccessible, buildExam, scoreExam, examMapHtml, examIntroHtml, examQuestionHtml, examResultHtml, examTimerText } from './exam.js';
 
 /* =========================================================
    Grundgerüst
@@ -18,6 +20,7 @@ const timeouts = new Set();
 
 const ui = {
   screen: 'terminal',
+  worldScroll: {},
   busy: false,
   chapterId: null,
   learnIdx: 0,
@@ -28,6 +31,7 @@ const ui = {
   runToken: 0,
   result: null,         // letzte Auswertung
   newAchievements: [],
+  checkPenalty: new Set(),   // Checkpoints, deren HP-Abzug in dieser Sitzung schon fällig war
 };
 
 const $ = (id) => document.getElementById(id);
@@ -68,6 +72,13 @@ function playerVitals() {
 }
 
 const COIN_IMG = '<img class="coin" src="assets/coin.webp" alt="" width="20" height="20">';
+
+/** Bildpfade aus den Leveldaten nur übernehmen, wenn sie wie ein lokaler Bildpfad aussehen */
+const safeImg = (v) => (typeof v === 'string' && /^[\w./-]+\.(webp|png|jpe?g|avif)$/i.test(v) && !v.includes('..') ? v : '');
+/** Bilder im Hintergrund laden – der Service Worker legt sie dabei für den Offline-Betrieb ab */
+function warmImages(urls) {
+  urls.filter(Boolean).forEach((u) => { const im = new Image(); im.decoding = 'async'; im.src = u; });
+}
 
 /* ---------- Charakterklasse ---------- */
 const cls = () => heroClass(playerVitals().heroClass);
@@ -185,6 +196,7 @@ function rerenderCurrent() {
   if (ui.screen === 'dashboard') renderDashboard();
   else if (ui.screen === 'chapter') renderChapter();
   else if (ui.screen === 'result' && ui.result) renderResult();
+  else if (ui.screen === 'run' && ui.run?.started) renderHotbar();
 }
 
 /** Alte Abschnitts-IDs auf neue umschreiben, sobald ein überarbeitetes Lernskript geladen ist */
@@ -221,7 +233,7 @@ function clearRunTimers() {
 
 function showScreen(name) {
   document.querySelectorAll('section[data-screen]').forEach((el) => { el.hidden = el.dataset.screen !== name; });
-  $('topbar').hidden = name === 'terminal' || name === 'onboard';
+  $('topbar').hidden = name === 'terminal' || name === 'onboard' || (name === 'exam' && !ui.exam);
   document.body.dataset.view = name;
   ui.screen = name;
   syncMusic();
@@ -257,7 +269,6 @@ const I = {
    Sound (WebAudio, kein Asset nötig)
    ========================================================= */
 
-let audio = null;
 function sfx(kind) {
   if (!S() || !S().settings.sound) return;
   Audio.sfx(kind);
@@ -266,11 +277,13 @@ function sfx(kind) {
 /** Musik passend zum Bildschirm: ruhig im Menü, Abenteuer in den Runs, Kampf im Boss */
 function musicFor(screen) {
   if (screen === 'terminal') return null;
+  if (ui.examTransition || screen === 'exam' || screen === 'exam-result' || (screen !== 'run' && S()?.settings.world === EXAM.id)) return 'dark';
   if (screen === 'run' && ui.run) return ui.run.mode.id === 'boss' ? 'boss' : 'quest';
   return 'calm';
 }
 function syncMusic() {
   if (!S()) return;
+  document.body.dataset.musicTrack = musicFor(ui.screen) || 'silent';
   Audio.setSfxEnabled(S().settings.sound);
   Audio.setMusicEnabled(S().settings.music !== false);
   Audio.setTrack(musicFor(ui.screen));
@@ -346,6 +359,38 @@ function confetti(amount = 140) {
    Fortschritt, XP, Erfolge
    ========================================================= */
 
+function chapterUnlocked(id) {
+  return isChapterUnlocked(Content.getChapterMeta(id), Content.getManifest(), S());
+}
+
+function retainLevelUnlocks() {
+  const manifest = Content.getManifest();
+  if (!manifest || !S()) return;
+  let changed = false;
+  // Ältere Spielstände können alle Aufgaben erledigt haben, ohne das heutige Abschlussfeld.
+  for (const chapter of manifest.chapters) {
+    const p = S().progress[chapter.id];
+    if (p && !levelWasCompleted(p) && chapterStatus(chapter.id).mastered) {
+      p.levelCompleted = true;
+      if (!Array.isArray(p.coinFirst)) p.coinFirst = [];
+      p.coinFirst.push('level');
+      changed = true;
+    }
+  }
+  for (const chapter of manifest.chapters) {
+    if (!isChapterUnlocked(chapter, manifest, S())) continue;
+    const p = prog(chapter.id);
+    if (!p.unlocked) { p.unlocked = true; changed = true; }
+  }
+  if (changed) persist();
+}
+
+function chapterLockHint(meta) {
+  return meta?.available
+    ? `Schließe zuerst Level ${meta.level - 1} vollständig ab: Lernskript, Story, Versus und Boss.`
+    : 'Die Lerninhalte für dieses Level werden noch vorbereitet.';
+}
+
 function chapterSectionsTotal(id) {
   return Content.getCachedChapter(id)?.learn?.sections.length || 0;
 }
@@ -420,17 +465,21 @@ function unlock(id) {
   return true;
 }
 
+/** Level abgeschlossen? Füllt die HP auf; der Coin-Bonus wird pro Level nur einmal gezahlt (resetfest). */
 function checkMastery(id) {
   const p = prog(id);
-  if (!chapterStatus(id).mastered || p.levelCompleted) return false;
+  if (!chapterStatus(id).mastered || p.levelCompleted) return { completed: false, coins: 0 };
   p.levelCompleted = true;
   const pl = playerVitals();
   pl.hp = pl.maxHp;
-  addCoins(levelCoins());
+  if (!Array.isArray(p.coinFirst)) p.coinFirst = [];
+  const first = !p.coinFirst.includes('level');
+  const coins = first ? levelCoins() : 0;
+  if (first) { p.coinFirst.push('level'); addCoins(coins); }
   unlock('master');
-  toast(`${levelLabel(id)} abgeschlossen – HP voll und +${levelCoins()} Quest-Coins!`, { icon: '🏆', tone: 'gold', ms: 5200 });
+  toast(first ? `${levelLabel(id)} abgeschlossen – HP voll und +${coins} Quest-Coins!` : `${levelLabel(id)} wieder abgeschlossen – HP voll.`, { icon: '🏆', tone: 'gold', ms: 5200 });
   confetti(120);
-  return true;
+  return { completed: true, coins };
 }
 
 /**
@@ -454,7 +503,7 @@ function resetLevelModesAfterLoss(id) {
 
 
 let gameOverTimer = null;
-function showGameOver(chapterId, { returnToLearn = false } = {}) {
+function showGameOver(chapterId, { returnToLearn = false, toResult = false } = {}) {
   const overlay = $('gameOver');
   if (!overlay) return;
   clearTimeout(gameOverTimer);
@@ -466,7 +515,11 @@ function showGameOver(chapterId, { returnToLearn = false } = {}) {
   gameOverTimer = setTimeout(async () => {
     overlay.classList.remove('gameover--show');
     overlay.hidden = true;
-    if (returnToLearn && ui.chapterId === chapterId) {
+    if (toResult && ui.result && !ui.run) {
+      // Nach dem GAME OVER trotzdem die Auswertung zeigen – sonst fehlt die Nachbesprechung genau dann, wenn sie am meisten bringt
+      renderResult();
+      showScreen('result');
+    } else if (returnToLearn && ui.chapterId === chapterId) {
       renderLearn();
       showScreen('learn');
     } else {
@@ -514,6 +567,7 @@ function renderHeader() {
       <span class="bar bar--xp"><span style="width:${r.pct}%"></span></span>
     </span>
     <span class="rankchip__xp">${pl.xp} XP</span>`;
+  $('rankChip').setAttribute('aria-label', `Ränge und Errungenschaften ansehen, Rang ${r.level}: ${r.title}, ${pl.xp} XP`);
   $('streakChip').innerHTML = `${I.flame}<span>${pl.dayStreak || 0}</span>`;
   $('streakChip').title = `${pl.dayStreak || 0} Lerntag(e) in Folge`;
   const musicOn = S().settings.music !== false;
@@ -530,6 +584,68 @@ function renderHeader() {
   $('soundBtn').setAttribute('aria-pressed', String(on));
   $('soundBtn').setAttribute('aria-label', on ? 'Ton ausschalten' : 'Ton einschalten');
 }
+
+/** Ränge und Errungenschaften direkt aus den bestehenden Spielregeln anzeigen. */
+function openRankOverview() {
+  if (!S()) return;
+  if (ui.run) {
+    toast('Ränge und Errungenschaften kannst du nach dem Run ansehen.', { icon: '🏆' });
+    return;
+  }
+  toggleInv(false);
+  const pl = playerVitals();
+  const rank = rankFor(pl.xp);
+  const earned = new Set(pl.achievements);
+  const count = ACHIEVEMENTS.filter((a) => earned.has(a.id)).length;
+  const xpText = (xp) => xp.toLocaleString('de-DE');
+  const dialog = $('rankDialog');
+  dialog.innerHTML = `
+    <header class="rankoverview__head">
+      <div><p class="rankoverview__eyebrow">Dein Fortschritt</p><h2 id="rankDialogTitle">Ränge &amp; Errungenschaften</h2></div>
+      <button type="button" class="btn btn--ghost btn--sm" data-action="close-ranks" autofocus aria-label="Übersicht schließen">Schließen</button>
+    </header>
+    <div class="rankoverview__body">
+      <section class="rankoverview__summary" aria-label="Dein aktueller Rang">
+        <p>Rang ${rank.level} · <strong>${esc(rank.title)}</strong></p>
+        <p class="rankoverview__xp">${xpText(pl.xp)} XP gesammelt</p>
+        <div class="bar bar--xp" role="progressbar" aria-label="Fortschritt zum nächsten Rang" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${rank.pct}"><span style="width:${rank.pct}%"></span></div>
+        <p>${rank.next ? `Noch <strong>${xpText(rank.toNext)} XP</strong> bis ${esc(rank.next.title)}.` : 'Du hast den höchsten Rang erreicht!'}</p>
+      </section>
+      <div class="rankoverview__columns">
+        <section aria-labelledby="rankListTitle">
+          <h3 id="rankListTitle">Deine Ränge <small>${rank.level} / ${RANKS.length}</small></h3>
+          <ol class="rankoverview__list">${RANKS.map((r, i) => {
+            const current = i + 1 === rank.level;
+            const reached = pl.xp >= r.xp;
+            return `<li class="rankentry ${current ? 'is-current' : reached ? 'is-earned' : 'is-locked'}" ${current ? 'aria-current="step"' : ''}>
+              <span class="rankentry__icon" aria-hidden="true">${current ? '👑' : reached ? '✓' : '🔒'}</span>
+              <div><strong>${esc(r.title)}</strong><small>Rang ${i + 1} · ab ${xpText(r.xp)} XP</small><span class="rankentry__status">${current ? 'Aktueller Rang' : reached ? 'Erreicht' : 'Noch nicht erreicht'}</span></div>
+            </li>`;
+          }).join('')}</ol>
+        </section>
+        <section aria-labelledby="achievementListTitle">
+          <h3 id="achievementListTitle">Errungenschaften <small>${count} / ${ACHIEVEMENTS.length}</small></h3>
+          <ul class="rankoverview__list">${ACHIEVEMENTS.map((a) => {
+            const reached = earned.has(a.id);
+            return `<li class="rankentry ${reached ? 'is-earned' : 'is-locked'}">
+              <span class="rankentry__icon" aria-hidden="true">${a.icon}</span>
+              <div><strong>${esc(a.title)}</strong><small>${esc(a.text)}</small><span class="rankentry__status">${reached ? '✓ Freigeschaltet' : 'Noch offen'}</span></div>
+            </li>`;
+          }).join('')}</ul>
+        </section>
+      </div>
+    </div>`;
+  if (!dialog.open) dialog.showModal();
+  $('rankChip').setAttribute('aria-expanded', 'true');
+}
+
+// Native Dialoge halten den Tastaturfokus und schließen auch mit Escape.
+$('rankDialog').addEventListener('close', () => $('rankChip').setAttribute('aria-expanded', 'false'));
+$('rankDialog').addEventListener('click', (event) => {
+  if (event.target !== $('rankDialog')) return;
+  const box = $('rankDialog').getBoundingClientRect();
+  if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) $('rankDialog').close();
+});
 
 function renderInvPop() {
   const pl = playerVitals();
@@ -563,7 +679,7 @@ function renderInvPop() {
       const canBuy = pl.coins >= priceOf(k);
       return `<li class="shoprow shoprow--item ${have ? '' : 'is-empty'}">
         <span class="shoprow__icon">${it.icon}</span>
-        <span class="shoprow__body"><b>${esc(it.label)} <kbd>${it.key}</kbd></b><small>${esc(it.text)}${it.modes.length === 1 ? ' · nur Boss' : ''}</small></span>
+        <span class="shoprow__body"><b>${esc(it.label)} <kbd>${it.key}</kbd></b><small>${esc(it.text)}${!it.modes.includes('story') ? ' · nur Boss' : !it.modes.includes('boss') ? ' · nicht im Boss' : ''}</small></span>
         <span class="shoprow__have" title="Im Inventar">×${have}</span>
         <button class="btn btn--sm btn--buy" data-action="buy-item" data-kind="${k}" ${canBuy ? '' : 'disabled'} title="Kaufen für ${priceOf(k)} Coins">${COIN_IMG}${priceOf(k)}</button>
       </li>`;
@@ -621,7 +737,7 @@ async function bootTerminal() {
   try {
     const m = await Content.loadManifest();
     const avail = m.chapters.filter((c) => c.available).length;
-    termLine(`Lerninhalte geladen: Version ${m.contentVersion}, ${avail} von ${m.chapters.length} Leveln spielbar.`, 'ok');
+    termLine(`Lerninhalte geladen: Version ${m.contentVersion}, ${avail} von ${m.chapters.length} Levels mit Lerninhalten.`, 'ok');
   } catch (err) {
     termLine(`Lerninhalte nicht erreichbar: ${err.message}`, 'bad');
     termLine('Tipp: Die App über http://localhost starten, nicht per Doppelklick auf die Datei.', 'muted');
@@ -686,12 +802,49 @@ const saveActions = {
   },
 };
 
+/** Laufender Run im Spielstand vermerken, sobald „Aufgeben“ HP kosten würde (siehe abortRun) */
+function markRunOpen(run) {
+  const pl = S().player;
+  if (!run || run.mode.id === 'carousel' || pl.openRun) return;
+  pl.openRun = { mode: run.mode.id, chapter: run.chapterId };
+  persist();
+}
+
+/**
+ * Wurde die Seite mitten in einem Run geschlossen oder neu geladen, zählt das wie „Aufgeben“ –
+ * sonst ließe sich jede Niederlage per Neuladen umgehen.
+ */
+function settleOpenRun() {
+  const pl = playerVitals();
+  const o = pl.openRun;
+  if (!o) return;
+  pl.openRun = null;
+  const mode = MODES[o.mode];
+  const loss = MODE_HP_LOSS[o.mode] || 0;
+  if (mode && loss) {
+    const hpEvent = damageHp(loss, '', { quiet: true });
+    let msg = `Abgebrochener ${mode.label}-Run in ${levelLabel(o.chapter)} zählt als Niederlage: −${hpEvent.lost} HP`;
+    if (hpEvent.revived) msg += ' · Lebensfunke hat dich gerettet';
+    if (hpEvent.knockout) {
+      resetLevelModesAfterLoss(o.chapter);
+      pl.hp = pl.maxHp;
+      msg = `Abgebrochener ${mode.label}-Run: GAME OVER. Story, Versus und Boss in ${levelLabel(o.chapter)} starten neu, HP wieder ${pl.maxHp}.`;
+    }
+    toast(msg, { icon: '🏳️', tone: 'bad', ms: 7000 });
+  }
+  persist();
+  renderHeader();
+}
+
 async function enterGame() {
   const m = Content.getManifest();
-  if (m) await Promise.all(m.chapters.filter((c) => c.available && c.level <= 3).map((c) => Content.loadChapterContent(c.id, ['learn'])));
+  const open = m ? m.chapters.filter((c) => c.available) : [];
+  await Promise.all(open.map((c) => Content.loadChapterContent(c.id, ['learn'])));
+  warmImages(open.map((c) => safeImg(c.boss?.bust)));
   // Überarbeitete Lernskripte: bereits verstandene Abschnitte übernehmen
-  const migrated = m ? m.chapters.filter((c) => c.available && c.level <= 3).map((c) => migrateLegacySections(c.id)).some(Boolean) : false;
+  const migrated = open.map((c) => migrateLegacySections(c.id)).some(Boolean);
   if (migrated) { persist(); toast('Lernskript aktualisiert – dein Fortschritt wurde übernommen.', { icon: '📘' }); }
+  retainLevelUnlocks();
   renderHeader();
   setSaveChip(save.guest ? 'guest' : save.canWrite ? 'ready' : 'permission');
   if (!playerVitals().heroClass) {
@@ -699,8 +852,10 @@ async function enterGame() {
     openOnboard('new');
   } else {
     grantDailyGift();
+    settleOpenRun();
     renderDashboard();
     showScreen('dashboard');
+    if (maybeUnlockExam() || (examRecord().unlocked && !examRecord().visited)) openExamMap();
   }
   // Der Klick auf „Laden/Neu starten“ ist die nötige Nutzeraktion – Musik darf direkt starten
   Audio.unlockAudio();
@@ -803,40 +958,6 @@ function confirmClass() {
    2 · Missionsauswahl
    ========================================================= */
 
-function nextMission() {
-  const m = Content.getManifest();
-  if (!m) return null;
-  for (const c of m.chapters.filter((x) => x.available)) {
-    const st = chapterStatus(c.id);
-    if (st.mastered) continue;
-    const label = `Level ${c.level}`;
-    if (!st.learnDone) {
-      const learn = Content.getCachedChapter(c.id)?.learn;
-      const p = prog(c.id);
-      const sec = learn?.sections.find((s) => !p.learnCompleted.includes(s.id));
-      return { chapter: c, label: `${label}: Lernskript ${st.done ? 'weiterlesen' : 'starten'}`, detail: sec ? `Nächster Abschnitt: ${sec.title}` : '', action: `data-action="open-learn" data-id="${esc(c.id)}"` };
-    }
-    if (!st.story) return { chapter: c, label: `${label}: Story starten`, detail: '10 Fragen in Lernreihenfolge – danach wird Versus freigeschaltet.', action: `data-action="start-mode" data-mode="story" data-id="${esc(c.id)}"` };
-    if (!st.versus) return { chapter: c, label: `${label}: Versus spielen`, detail: '5 Zufallsfragen, ein Fehler und es ist vorbei.', action: `data-action="start-mode" data-mode="versus" data-id="${esc(c.id)}"` };
-    if (!st.boss) return { chapter: c, label: `${label}: Boss wagen`, detail: '6 Fragen, 15 Sekunden pro Frage. 4 richtige besiegen den Boss, 3 Fehler beenden den Kampf.', action: `data-action="start-mode" data-mode="boss" data-id="${esc(c.id)}"` };
-  }
-  return null;
-}
-
-function potionButton(kind) {
-  const pl = playerVitals();
-  const item = POTIONS[kind];
-  const count = pl.inventory[kind] || 0;
-  if (kind === 'spark') {
-    return `<div class="lootitem lootitem--spark" title="Wird bei 0 HP automatisch verbraucht und belebt dich mit voller HP wieder.">
-      <span class="lootitem__icon">${item.icon}</span><span class="lootitem__body"><b>${esc(item.label)}</b><small>Auto-Wiederbelebung</small></span><strong>×${count}</strong>
-    </div>`;
-  }
-  return `<button class="lootitem" data-action="use-potion" data-kind="${kind}" ${count <= 0 || pl.hp >= pl.maxHp ? 'disabled' : ''} title="${esc(item.label)} benutzen: +${item.heal}% HP">
-    <span class="lootitem__icon">${item.icon}</span><span class="lootitem__body"><b>${esc(item.label)}</b><small>+${item.heal} HP</small></span><strong>×${count}</strong>
-  </button>`;
-}
-
 function renderDashboard() {
   const m = Content.getManifest();
   if (!m) {
@@ -844,26 +965,39 @@ function renderDashboard() {
     return;
   }
 
-  // Marker sitzen direkt auf den roten Punkten der 1672 × 941 Weltkarte.
-  // Die Route läuft ohne separaten Hafen von Level 1 bis zum Finale in Level 12.
-  const coords = {
-    1: [23.13, 62.27], 2: [11.31, 43.96], 3: [12.53, 14.67],
-    4: [35.05, 17.39], 5: [66.31, 16.83], 6: [86.81, 18.26],
-    7: [88.93, 45.06], 8: [82.61, 63.70], 9: [90.32, 82.41],
-    10: [67.63, 80.61], 11: [43.53, 79.94], 12: [52.02, 46.63]
-  };
-  const path = 'M387 586 C320 540 245 480 189 414 C176 330 184 220 209 138 C320 118 455 128 586 164 C760 120 935 118 1109 158 C1240 112 1370 124 1451 172 C1515 250 1520 340 1487 424 C1470 490 1435 548 1381 599 C1465 646 1520 710 1510 775 C1400 830 1250 820 1131 759 C1000 835 850 830 728 752 C700 650 780 520 870 439';
-  const current = m.chapters.find((c) => c.available && !chapterStatus(c.id).mastered) || m.chapters[0];
+  retainLevelUnlocks();
+  if (S()?.settings.world === EXAM.id && examAccessible(m, S())) {
+    renderWorldNav(EXAM.id);
+    $('dashboardView').innerHTML = examMapHtml(examRecord());
+    return;
+  }
+  const world = WORLDS.find((w) => w.id === S()?.settings.world) || WORLDS[0];
+  const chapters = chaptersForWorld(world, m);
+  const coords = world.coords;
+  const path = world.path;
+  const current = chapters.find((c) => chapterUnlocked(c.id) && !levelWasCompleted(S().progress[c.id]))
+    || chapters.find((c) => chapterUnlocked(c.id));
+  renderWorldNav(world.id);
 
   const panel = (c) => {
-    const st = chapterStatus(c.id);
-    const boss = c.level === 1 ? 'Richter Rabenfeder' : c.level === 2 ? 'Notar Nebelsiegel' : c.level === 3 ? 'Grundherr Eisenklaue' : '';
-    const bossImg = c.level === 1 ? 'assets/bosses/richter-rabenfeder-bust.webp' : c.level === 2 ? 'assets/bosses/notar-nebelsiegel-bust.webp' : c.level === 3 ? 'assets/bosses/grundherr-eisenklaue-bust.webp' : '';
-    if (!c.available) {
-      return `<div class="map-pop map-pop--locked" role="group" aria-label="Level ${esc(c.level)} noch nicht verfügbar">
+    const open = chapterUnlocked(c.id);
+    const st = open ? chapterStatus(c.id) : {pct:0,mastered:false};
+    // Boss-Kurzinfo kommt aus chapters.json (Feld „boss“) – kein Level ist im Code verdrahtet
+    const boss = c.boss?.name || '';
+    const bossTitle = c.boss?.title || '';
+    const bossImg = safeImg(c.boss?.bust);
+    const bossHidden = !isBossPortraitRevealed(open ? prog(c.id) : null, open);
+    const bossPortrait = bossImg ? `<span class="map-pop__bossart ${bossHidden ? 'is-hidden' : ''}" ${bossHidden ? 'role="img" aria-label="Unbekannter Boss – gewinne Versus, um das Porträt aufzudecken"' : 'aria-hidden="true"'}>
+      <img class="map-pop__bossimg" src="${esc(bossImg)}" alt="" width="82" height="82" loading="lazy" decoding="async">
+      ${bossHidden ? '<span class="map-pop__mystery" aria-hidden="true">?</span>' : ''}
+    </span>` : '';
+    if (!open) {
+      return `<div class="map-pop map-pop--locked" role="group" aria-label="Level ${esc(c.level)} noch gesperrt">
         <div class="map-pop__head"><span class="map-pop__lvl">LEVEL ${esc(c.level)}</span><span class="map-pop__lock">${I.lock}</span></div>
+        ${bossPortrait}
         <h2>${esc(c.title)}</h2>
-        <p class="map-pop__boss">Dieses Level ist sichtbar, aber noch nicht mit Lerninhalten befüllt.</p>
+        ${boss ? `<p class="map-pop__boss">${esc(boss)}${bossTitle ? ` - ${esc(bossTitle)}` : ''}</p>` : ''}
+        <p>${esc(chapterLockHint(c))}</p>
       </div>`;
     }
     return `<div class="map-pop" role="group" aria-label="Level ${esc(c.level)} Optionen">
@@ -871,39 +1005,40 @@ function renderDashboard() {
         <span class="map-pop__lvl">LEVEL ${esc(c.level)}</span>
         <span class="map-pop__pct">${st.pct}%</span>
       </div>
-      ${bossImg ? `<img class="map-pop__bossimg" src="${bossImg}" alt="" width="96" height="96">` : ''}
+      ${bossPortrait}
       <h2>${esc(c.title)}</h2>
-      ${boss ? `<p class="map-pop__boss">${esc(boss)}${c.level === 3 ? ' · Wächter der Rangordnung' : ''}</p>` : ''}
+      ${boss ? `<p class="map-pop__boss">${esc(boss)}${bossTitle ? ` · ${esc(bossTitle)}` : ''}</p>` : ''}
       <span class="map-pop__bar"><span style="width:${st.pct}%"></span></span>
       <div class="map-pop__modes">
         <button data-action="open-learn" data-id="${esc(c.id)}">${I.book}<span>Lernskript</span></button>
         <button data-action="start-mode" data-mode="story" data-id="${esc(c.id)}">${I.path}<span>Story</span></button>
-        <button data-action="start-mode" data-mode="versus" data-id="${esc(c.id)}">${I.swords}<span>Versus</span></button>
-        <button data-action="start-mode" data-mode="boss" data-id="${esc(c.id)}">${I.crown}<span>Boss</span></button>
+        <button ${isModeUnlocked('versus', prog(c.id)) ? 'data-action="start-mode"' : 'disabled aria-disabled="true" title="Gewinne zuerst die Story."'} data-mode="versus" data-id="${esc(c.id)}">${I.swords}<span>Versus</span></button>
+        <button ${isModeUnlocked('boss', prog(c.id)) ? 'data-action="start-mode"' : 'disabled aria-disabled="true" title="Gewinne zuerst Versus."'} data-mode="boss" data-id="${esc(c.id)}">${I.crown}<span>Boss</span></button>
       </div>
     </div>`;
   };
 
-  const nodes = m.chapters.map((c) => {
-    const xy = coords[c.level];
-    const st = chapterStatus(c.id);
-    const cls = !c.available ? 'is-locked' : st.mastered ? 'is-mastered' : st.pct > 0 ? 'is-progress' : 'is-new';
-    const markerAttrs = c.available
+  const nodes = chapters.map((c) => {
+    const xy = coords[c.level] || [50, 50];   // Level ohne Kartenpunkt landet in der Mitte statt die Karte zu zerlegen
+    const open = chapterUnlocked(c.id);
+    const st = open ? chapterStatus(c.id) : {pct:0,mastered:false};
+    const cls = !open ? 'is-locked' : st.mastered ? 'is-mastered' : st.pct > 0 ? 'is-progress' : 'is-new';
+    const markerAttrs = open
       ? `data-action="open-chapter" data-id="${esc(c.id)}"`
-      : 'disabled aria-disabled="true"';
-    return `<div class="map-node map-node--${c.level} ${cls} ${current?.id === c.id ? 'is-current' : ''}" style="--x:${xy[0]}%;--y:${xy[1]}%">
-      <button class="map-marker" ${markerAttrs} aria-label="Level ${esc(c.level)}: ${esc(c.title)}${c.available ? '' : ' – noch nicht verfügbar'}">
-        <span>${esc(c.level)}</span>${c.available ? '' : `<i class="map-marker__lock">${I.lock}</i>`}
+      : 'data-action="preview-level" aria-expanded="false"';
+    return `<div class="map-node map-node--${c.level} ${cls} ${current && current.id === c.id ? 'is-current' : ''}" style="--x:${xy[0]}%;--y:${xy[1]}%">
+      <button class="map-marker" ${markerAttrs} aria-label="Level ${esc(c.level)}: ${esc(c.title)}${open ? '' : ' – noch gesperrt'}">
+        <span>${esc(c.level)}</span>${open ? '' : `<i class="map-marker__lock">${I.lock}</i>`}
       </button>
       ${panel(c)}
     </div>`;
   }).join('');
 
   $('dashboardView').innerHTML = `
-    <div class="worldmap-shell">
-      <div class="worldmap-viewport" id="worldmapViewport" tabindex="0" aria-label="Levelkarte – die Karte passt sich dem Bildschirm an und kann bei Bedarf horizontal und vertikal gescrollt werden">
-        <div class="worldmap">
-          <img class="worldmap__bg" src="assets/world/quest-map.webp" alt="Fantastische Inselwelt mit zwölf Levelinseln" width="1672" height="941">
+    <div class="worldmap-shell" data-world="${world.id}">
+      <div class="worldmap-viewport" id="worldmapViewport" tabindex="0" aria-label="${esc(world.name)} – Level ${world.firstLevel} bis ${world.lastLevel}">
+        <div class="worldmap" data-world="${world.id}">
+          <img class="worldmap__bg" src="${world.image}" alt="${esc(world.name)} – Inselwelt für Level ${world.firstLevel} bis ${world.lastLevel}" width="1672" height="941">
           <svg class="worldmap__route" viewBox="0 0 1672 941" aria-hidden="true" preserveAspectRatio="none">
             <path class="route-shadow" d="${path}"/>
             <path class="route-main" d="${path}"/>
@@ -916,7 +1051,10 @@ function renderDashboard() {
   requestAnimationFrame(() => {
     const vp = $('worldmapViewport');
     const active = document.querySelector('.map-node.is-current');
-    if (!vp || !active) return;
+    if (!vp) return;
+    const position = ui.worldScroll[world.id];
+    if (position) { vp.scrollLeft = position.left; vp.scrollTop = position.top; return; }
+    if (!active) return;
     if (vp.scrollWidth > vp.clientWidth) {
       vp.scrollLeft = Math.max(0, active.offsetLeft - vp.clientWidth * 0.34);
     }
@@ -925,44 +1063,65 @@ function renderDashboard() {
     }
   });
 }
-function chapterCard(c) {
-  const level = c.level ?? '?';
-  if (!c.available) {
-    return `<div class="ccard ccard--locked" aria-disabled="true">
-      <span class="ccard__num"><small>LEVEL</small>${esc(level)}</span>
-      <h3 class="ccard__title">${esc(c.title)}</h3>
-      <span class="lockbadge">${I.lock} LOCKED</span>
-    </div>`;
-  }
-  const st = chapterStatus(c.id);
-  const mark = (ok, label) => `<li class="${ok ? 'is-done' : ''}"><span aria-hidden="true">${ok ? '✓' : '○'}</span> ${label}</li>`;
-  const tag = st.mastered ? '<span class="tag tag--gold">🏆 Level abgeschlossen</span>' : st.pct > 0 ? '<span class="tag">In Arbeit</span>' : '<span class="tag tag--new">Neu</span>';
-  return `<button class="ccard" data-action="open-chapter" data-id="${esc(c.id)}">
-    <span class="ccard__num"><small>LEVEL</small>${esc(level)}</span>
-    <h3 class="ccard__title">${esc(c.title)}</h3>
-    <span class="ccard__pct">Fortschritt ${st.pct} %</span>
-    <span class="bar"><span style="width:${st.pct}%"></span></span>
-    <ul class="ccard__checks">
-      ${mark(st.learnDone, `Lernskript <small>${st.done}/${st.total}</small>`)}
-      ${mark(st.story, 'Story')}
-      ${mark(st.versus, 'Versus')}
-      ${mark(st.boss, 'Boss')}
-    </ul>
-    ${tag}
-  </button>`;
-}
-
 /* =========================================================
    3 · Kapitel
    ========================================================= */
 
+function switchWorld(id) {
+  if (ui.screen !== 'dashboard' || !WORLDS.some((w) => w.id === id) || S().settings.world === id) return;
+  const previous = S().settings.world || WORLDS[0].id;
+  const viewport = $('worldmapViewport');
+  if (viewport) ui.worldScroll[previous] = {left:viewport.scrollLeft,top:viewport.scrollTop};
+  toggleInv(false);
+  S().settings.world = id;
+  persist();
+  renderDashboard();
+  syncMusic();
+  $('worldNav').querySelector(`[data-world="${id}"]`)?.focus({preventScroll:true});
+}
+
+function selectChapterWorld(id) {
+  const world = worldForLevel(levelNo(id));
+  if (world && S().settings.world !== world.id) {
+    S().settings.world = world.id;
+    persist();
+  }
+}
+
+function closeMapPreview() {
+  document.querySelectorAll('.map-node.is-open').forEach((node) => {
+    node.classList.remove('is-open');
+    node.querySelector('.map-marker')?.setAttribute('aria-expanded','false');
+  });
+}
+
+function previewMapLevel(button) {
+  const node = button.closest('.map-node');
+  const open = !node.classList.contains('is-open');
+  closeMapPreview();
+  node.classList.toggle('is-open',open);
+  button.setAttribute('aria-expanded',String(open));
+}
+
+document.addEventListener('click',(event) => {
+  if (!event.target.closest('.map-node')) closeMapPreview();
+});
+document.addEventListener('keydown',(event) => {
+  if (event.key !== 'Escape') return;
+  const button = document.querySelector('.map-node.is-open .map-marker');
+  if (button) { closeMapPreview(); button.focus({preventScroll:true}); }
+});
+
 async function openChapter(id) {
   const meta = Content.getChapterMeta(id);
-  if (!meta || !meta.available) { toast('Dieses Level ist noch gesperrt.', { icon: '🔒' }); return; }
+  if (!chapterUnlocked(id)) { toast(chapterLockHint(meta), { icon: '🔒' }); return; }
+  selectChapterWorld(id);
   ui.chapterId = id;
   $('chapterView').innerHTML = '<p class="loading">Level wird geladen …</p>';
   showScreen('chapter');
   await Content.loadChapterContent(id);
+  const b = Content.getCachedChapter(id)?.boss?.boss;
+  if (b) warmImages([safeImg(b.image), safeImg(b.bust)]);
   renderChapter();
 }
 
@@ -982,13 +1141,13 @@ function renderChapter() {
   const p = prog(id);
   const st = chapterStatus(id);
   const pl = playerVitals();
-  const versusLocked = !TEST_UNLOCK_ALL_MODES && !st.story;
-  const bossLocked = !TEST_UNLOCK_ALL_MODES && !st.versus;
+  const versusLocked = !isModeUnlocked('versus', p);
+  const bossLocked = !isModeUnlocked('boss', p);
   const bossName = data?.boss?.boss?.name || 'Level-Boss';
   const carouselTotal = (data?.questions?.questions?.length || 0) + (data?.boss?.questions?.length || 0);
 
   const card = ({ key, icon, title, text, rules, stat, disabled, lockText, action }) => `
-    <button class="mode mode--${key} ${disabled ? 'mode--locked' : ''}" ${disabled ? 'aria-disabled="true"' : action}>
+    <button class="mode mode--${key} ${disabled ? 'mode--locked' : ''}" ${disabled ? 'disabled aria-disabled="true"' : action}>
       <span class="mode__icon">${disabled ? I.lock : icon}</span>
       <span class="mode__title">${title}</span>
       <span class="mode__text">${disabled ? esc(lockText) : text}</span>
@@ -1045,6 +1204,8 @@ function renderChapter() {
    ========================================================= */
 
 async function openLearn(id, sectionId) {
+  if (!chapterUnlocked(id)) { toast(chapterLockHint(levelMeta(id)), { icon: '🔒' }); return; }
+  selectChapterWorld(id);
   ui.chapterId = id;
   await Content.loadChapterContent(id);
   const learn = Content.getCachedChapter(id)?.learn;
@@ -1120,18 +1281,22 @@ function renderLearn() {
     </div>`;
 }
 
+/** Ersatzfrage: nur aus dem aktuellen oder bereits gelesenen Abschnitten – nie Stoff, der noch vor einem liegt */
 function pickRecoveryQuestion(sec, tried = []) {
-  const pool = Content.getCachedChapter(ui.chapterId)?.questions?.questions || [];
+  const data = Content.getCachedChapter(ui.chapterId);
+  const pool = data?.questions?.questions || [];
+  const order = new Map((data?.learn?.sections || []).map((s, i) => [s.id, i]));
+  const here = order.get(sec.id) ?? 0;
   const triedSet = new Set(tried);
   const fresh = (list) => list.filter((q) => !triedSet.has(q.id));
-  const choices = [
-    fresh(pool.filter((q) => q.section === sec.id && (q.difficulty || 1) === 1)),
-    fresh(pool.filter((q) => (q.difficulty || 1) === 1)),
-    fresh(pool.filter((q) => q.section === sec.id && (q.difficulty || 1) <= 2)),
-    pool.filter((q) => (q.difficulty || 1) === 1),
-  ].find((x) => x.length) || [];
+  const easy = (list) => list.filter((q) => (q.difficulty || 1) === 1);
+  const seen = pool.filter((q) => order.has(q.section) && order.get(q.section) <= here && (q.taxonomyLevel || 1) <= 2);
+  const own = seen.filter((q) => q.section === sec.id);
+  const choices = [fresh(easy(own)), fresh(own), fresh(easy(seen)), fresh(seen)].find((x) => x.length) || [];
   return choices.length ? choices[Math.floor(Math.random() * choices.length)] : null;
 }
+
+const checkKey = (checkpointId) => `${ui.chapterId}:${checkpointId}`;
 
 function renderCheckpoint(sec) {
   const data = Content.getCachedChapter(ui.chapterId);
@@ -1144,26 +1309,30 @@ function renderCheckpoint(sec) {
     ui.check = {
       checkpointId: base.id, qid: base.id, q: prepared,
       selected: alreadySolved ? [...prepared.correct] : [], done: alreadySolved, ok: alreadySolved,
-      recovery: false, tried: [base.id], message: '',
+      // Der HP-Abzug fällt pro Checkpoint nur einmal an – auch wenn man den Abschnitt erneut öffnet
+      recovery: ui.checkPenalty.has(checkKey(base.id)), tried: [base.id], message: '',
     };
   }
   const c = ui.check;
   const solved = p.checksDone.includes(c.checkpointId);
+  const failed = c.done && !c.ok;
   const answers = c.q.answers.map((a, i) => {
     let cls = '';
     if (c.done) cls = c.q.correct.includes(i) ? (c.selected.includes(i) || c.ok ? 'is-correct' : 'is-missed') : c.selected.includes(i) ? 'is-wrong' : 'is-dim';
     else if (c.selected.includes(i)) cls = 'is-selected';
     return `<li><button class="answer answer--sm ${cls}" data-action="check-pick" data-i="${i}" ${c.done ? 'disabled' : ''}><span class="answer__key">${String.fromCharCode(65 + i)}</span><span>${esc(a)}</span></button></li>`;
   }).join('');
-  const reward = c.recovery ? 'Wiederholungsfrage' : solved ? 'geschafft ✓' : '+10 XP';
+  const reward = solved ? 'geschafft ✓' : c.recovery ? 'Wiederholungsfrage' : '+10 XP';
   return `<section class="checkpoint" aria-label="Checkpoint">
     <header><h2>Checkpoint</h2><span>${reward}</span></header>
     <p class="checkpoint__q">${esc(c.q.question)}</p>
     ${c.q.type === 'multi' ? '<p class="qhint">Mehrere Antworten richtig – wähle alle.</p>' : ''}
     <ol class="answers answers--sm">${answers}</ol>
     ${c.done
-      ? `<p class="feedback ${c.ok ? 'feedback--ok' : 'feedback--bad'}"><strong>${c.ok ? 'Richtig.' : 'Nicht ganz.'}</strong> ${esc(c.q.explanation)}</p>`
+      ? `<p class="feedback ${c.ok ? 'feedback--ok' : 'feedback--bad'}" role="status"><strong>${c.ok ? 'Richtig.' : 'Nicht ganz.'}</strong> ${esc(c.q.explanation)}</p>`
       : c.q.type === 'multi' ? `<button class="btn btn--primary btn--sm" data-action="check-submit" ${c.selected.length ? '' : 'disabled'}>Prüfen</button>` : ''}
+    ${c.message ? `<p class="qhint">${esc(c.message)}</p>` : ''}
+    ${failed ? `<button class="btn btn--primary btn--sm" data-action="check-next">Weiter zur Ersatzfrage ${I.next}</button>` : ''}
   </section>`;
 }
 
@@ -1189,14 +1358,15 @@ function checkSubmit() {
     if (!p.checksDone.includes(c.checkpointId)) p.checksDone.push(c.checkpointId);
     if (!c.recovery) addXp(10);
     maybeDropReward(c.q);
+    c.message = '';
     persist();
-    $('checkpoint').innerHTML = renderCheckpoint(sec);
     renderLearn();
     return;
   }
 
-  // Die erste falsche Checkpoint-Antwort kostet 10 HP. Danach folgt eine Ersatzfrage; weitere Fehlversuche kosten nicht nochmals HP.
+  // Die erste falsche Checkpoint-Antwort kostet 10 HP – einmalig je Checkpoint. Weitere Fehlversuche kosten nichts.
   if (!c.recovery) {
+    ui.checkPenalty.add(checkKey(c.checkpointId));
     const hpEvent = damageHp(10, 'Checkpoint verfehlt');
     if (hpEvent.knockout) {
       resetLevelModesAfterLoss(ui.chapterId);
@@ -1208,26 +1378,28 @@ function checkSubmit() {
       showGameOver(ui.chapterId, { returnToLearn: true });
       return;
     }
-  }
-  const tried = [...new Set([...(c.tried || []), c.qid])];
-  const replacement = pickRecoveryQuestion(sec, tried);
-  if (replacement) {
-    ui.check = {
-      checkpointId: c.checkpointId,
-      qid: replacement.id,
-      q: prepareQuestion(replacement, S().settings.shuffleAnswers),
-      selected: [], done: false, ok: false, recovery: true,
-      tried: [...tried, replacement.id],
-      message: c.recovery ? 'Noch einmal – kein zusätzlicher HP-Abzug.' : '−10 HP. Die Ersatzfrage kostet keine weiteren HP.',
-    };
+    c.message = '−10 HP. Die Ersatzfrage kostet keine weiteren HP.';
   } else {
-    c.done = false;
-    c.selected = [];
-    c.recovery = true;
-    c.message = 'Keine weitere Ersatzfrage verfügbar – versuche diese Frage erneut. Kein zusätzlicher HP-Abzug.';
+    c.message = 'Kein zusätzlicher HP-Abzug – gleich noch einmal.';
   }
+  // Die verfehlte Frage bleibt mit Lösung und Erklärung stehen; weiter geht es per Schaltfläche (checkNext)
+  c.tried = [...new Set([...(c.tried || []), c.qid])];
   persist();
-  renderLearn();
+  $('checkpoint').innerHTML = renderCheckpoint(sec);
+}
+
+/** Nach einer falschen Checkpoint-Antwort: Ersatzfrage holen (oder dieselbe Frage neu gemischt, wenn es keine gibt) */
+function checkNext() {
+  const c = ui.check;
+  if (!c || !c.done || c.ok) return;
+  const sec = Content.getCachedChapter(ui.chapterId).learn.sections[ui.learnIdx];
+  const replacement = pickRecoveryQuestion(sec, c.tried);
+  const shuffle = S().settings.shuffleAnswers;
+  ui.check = replacement
+    ? { checkpointId: c.checkpointId, qid: replacement.id, q: prepareQuestion(replacement, shuffle), selected: [], done: false, ok: false, recovery: true, tried: [...c.tried, replacement.id], message: '' }
+    : { ...c, q: prepareQuestion(c.q, shuffle), selected: [], done: false, ok: false, recovery: true, message: 'Keine weitere Ersatzfrage aus dem bisherigen Stoff – versuche diese Frage noch einmal.' };
+  $('checkpoint').innerHTML = renderCheckpoint(sec);
+  $('checkpoint').scrollIntoView({ block: 'nearest', behavior: reducedMotion() ? 'auto' : 'smooth' });
 }
 
 function learnToggle() {
@@ -1262,6 +1434,7 @@ function learnToggle() {
   const nextOpen = learn.sections.findIndex((s, k) => k > ui.learnIdx && !p.learnCompleted.includes(s.id));
   if (nextOpen >= 0) { ui.learnIdx = nextOpen; ui.check = null; renderLearn(); window.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' }); }
   else renderLearn();
+  portalAfterCompletion();
 }
 
 function learnGo(idx) {
@@ -1277,8 +1450,15 @@ function learnGo(idx) {
    ========================================================= */
 
 async function startMode(modeId, chapterId) {
+  if (!chapterUnlocked(chapterId)) { toast(chapterLockHint(levelMeta(chapterId)), { icon: '🔒' }); return; }
   const mode = MODES[modeId];
   if (!mode) return;
+  const progress = prog(chapterId);
+  if (!isModeUnlocked(modeId, progress)) {
+    toast(modeId === 'versus' ? 'Versus ist noch gesperrt. Gewinne zuerst die Story.' : 'Der Bossfight ist noch gesperrt. Gewinne zuerst Versus.', { icon: '🔒' });
+    return;
+  }
+  selectChapterWorld(chapterId);
   if (modeId !== 'carousel' && playerVitals().hp <= 0) {
     resetLevelModesAfterLoss(chapterId);
     const pl = playerVitals(); pl.hp = pl.maxHp; persist(); renderHeader();
@@ -1293,16 +1473,6 @@ async function startMode(modeId, chapterId) {
   const data = Content.getCachedChapter(chapterId);
   const poolData = mode.source === 'boss' ? data?.boss : data?.questions;  // Karussell: questions + boss
   if (!poolData?.questions?.length) { toast('Für diesen Modus fehlen die Fragen.', { icon: '⚠️', tone: 'bad' }); return; }
-  const progress = prog(chapterId);
-  if (!TEST_UNLOCK_ALL_MODES && modeId === 'versus' && !progress.storyWins) {
-    toast('Versus ist noch gesperrt. Gewinne zuerst die Story.', { icon: '🔒' });
-    return;
-  }
-  if (!TEST_UNLOCK_ALL_MODES && modeId === 'boss' && !progress.versusWins) {
-    toast('Der Bossfight ist noch gesperrt. Gewinne zuerst Versus.', { icon: '🔒' });
-    return;
-  }
-
   const p = progress;
   const pool = poolData.questions;
   const picked = modeId === 'carousel'
@@ -1312,7 +1482,6 @@ async function startMode(modeId, chapterId) {
   ui.chapterId = chapterId;
   const run = new Run(modeId, chapterId, prepared);
   const bossInfo = data?.boss?.boss || {};
-  const safeImg = (v) => (typeof v === 'string' && /^[\w./-]+\.(webp|png|jpe?g|avif)$/i.test(v) && !v.includes('..') ? v : '');
   run.bossInfo = {
     name: bossInfo.name || 'Level-Boss', title: bossInfo.title || '',
     taunts: { ...BOSS_TAUNTS, ...(bossInfo.taunts || {}) },
@@ -1387,7 +1556,7 @@ function renderBossIntro() {
     : `<div class="bosscine__seal">${sealSvg(0)}</div>`;
   $('runView').innerHTML = `
     <div class="bosscine" id="bossCine" data-action="boss-skip" style="--accent:${esc(b.accent)}" role="dialog" aria-modal="true" aria-labelledby="bossName">
-      <div class="bosscine__rays" aria-hidden="true"></div>
+      <div class="bosscine__backdrop" aria-hidden="true"><div class="bosscine__rays"></div></div>
       <div class="bosscine__bar bosscine__bar--top" aria-hidden="true"><span>${ticker}</span></div>
       <div class="bosscine__bar bosscine__bar--bottom" aria-hidden="true"><span>${ticker}</span></div>
       <div class="bosscine__flash" aria-hidden="true"></div>
@@ -1395,7 +1564,7 @@ function renderBossIntro() {
         <div class="bosscine__figure">${art}</div>
         <div class="bosscine__text">
           <p class="bosscine__kicker">${esc(levelLabel(run.chapterId))} · Boss</p>
-          <h1 class="bosscine__name" id="bossName" aria-label="${esc(b.name)}">${letters}</h1>
+          <h1 class="bosscine__name${b.name.split(' ').some((word) => word.length > 12) ? ' bosscine__name--long' : ''}" id="bossName" aria-label="${esc(b.name)}">${letters}</h1>
           <p class="bosscine__title">${esc(b.title)}</p>
           <blockquote class="bosscine__say" id="bossCineSay" aria-live="polite"></blockquote>
           <div class="bosscine__panel">
@@ -1404,7 +1573,7 @@ function renderBossIntro() {
               <li><b>${run.mode.killHits}</b> richtig = Sieg</li>
               <li><b>${run.mode.lives}</b> Fehler = Niederlage</li>
               <li><b>${run.mode.seconds} s</b> pro Frage</li>
-              <li>Items <b>F1–F4</b></li>
+              <li>Items <b>F1 · F2 · F4</b></li>
             </ul>
             <p class="bosscine__stakes">
               <span class="win">Sieg: Siegtruhe mit ${COIN_REWARDS.boss.base * cls().coinMult}–${((COIN_REWARDS.boss.base * 2) + COIN_REWARDS.boss.perfect) * cls().coinMult} Quest-Coins</span>
@@ -1414,7 +1583,7 @@ function renderBossIntro() {
               <button class="btn btn--boss btn--xl" id="btnFight" data-action="boss-fight">Kampf beginnen</button>
               <button class="btn btn--ghost" data-action="abort-run">Noch nicht – zurück</button>
             </div>
-            <p class="bosscine__hint">Enter startet · Antworten mit A–D · F1 Fokus · F2 Pauser · F3 Herz · F4 Überspringer</p>
+            <p class="bosscine__hint">Enter startet · Antworten mit A–D · F1 Fokus · F2 Pauser · F4 Überspringer</p>
           </div>
         </div>
       </div>
@@ -1454,6 +1623,7 @@ function startBossFight() {
   if (!run || run.mode.id !== 'boss' || run.started) return;
   if (!run.introReady) { finishBossIntro(); return; }
   run.started = true;
+  markRunOpen(run);   // ab hier zählt Verlassen als Niederlage
   clearToasts();
   sfx('level');
   renderRun();
@@ -1565,7 +1735,7 @@ function itemState(id) {
   const run = ui.run;
   const it = BATTLE_ITEMS[id];
   if (!run || !it) return { ok: false, reason: 'Nur in einem Run' };
-  if (!it.modes.includes(run.mode.id)) return { ok: false, reason: it.modes.length === 1 ? 'Nur im Boss' : 'In diesem Modus nicht verfügbar' };
+  if (!it.modes.includes(run.mode.id)) return { ok: false, reason: !it.modes.includes('story') ? 'Nur im Boss' : run.mode.id === 'boss' ? 'Im Boss nicht einsetzbar – dort entscheiden 3 Fehler' : 'In diesem Modus nicht verfügbar' };
   if (run.mode.id === 'boss' && !run.started) return { ok: false, reason: 'Erst nach Kampfbeginn' };
   const used = run.itemUse[run.idx] || {};
   switch (id) {
@@ -1663,6 +1833,7 @@ function useItem(id) {
     countdown.stop();
     ui.answered = true;
     run.skip();
+    markRunOpen(run);
     const pips = document.querySelectorAll('.pips li');
     if (pips[run.idx]) pips[run.idx].className = 'is-skip';
     document.querySelectorAll('#answers .answer').forEach((b) => { b.disabled = true; b.classList.add('is-dim'); });
@@ -1706,10 +1877,15 @@ function submitAnswer(timedOut = false) {
   if (!run || ui.answered) return;
   if (!timedOut && ui.selected.length === 0) return;
   ui.answered = true;
-  const secondsLeft = countdown.secondsLeft();
+  // Gewertet wird die Restzeit der Grundzeit: Fokus verlängert zwar die Uhr, bringt aber weder Punkte
+  // noch „Kritisch“ oder „Schnellzieher“.
+  const elapsed = countdown.elapsed();
+  const secondsLeft = run.mode.seconds ? Math.max(0, run.mode.seconds - elapsed) : 0;
+  const paused = !!(run.itemUse[run.idx] || {}).pause;
   countdown.stop();
   const q = run.current;
   const res = run.answer(ui.selected, { timedOut, secondsLeft });
+  markRunOpen(run);
   const submitBtn = $('btnSubmit');
   if (submitBtn) submitBtn.hidden = true;
   const st = S();
@@ -1724,7 +1900,7 @@ function submitAnswer(timedOut = false) {
     unlock('first_hit');
     if (run.combo >= 5) unlock('combo_5');
     if (run.combo >= 10) unlock('combo_10');
-    if (run.mode.id === 'boss' && run.mode.seconds - secondsLeft < 3) unlock('quick_draw');
+    if (run.mode.id === 'boss' && elapsed < 3 && !paused) unlock('quick_draw');
     // Karussell und Rettung: keine Zufallsbeute – dort gibt es die Truhe bzw. HP
     if (run.mode.id !== 'carousel') droppedNow = maybeDropReward(q);
   } else {
@@ -1765,7 +1941,7 @@ function submitAnswer(timedOut = false) {
     const hits = run.correctCount;
     const seal = $('bossSeal');
     const t = run.bossInfo.taunts;
-    const crit = res.correct && secondsLeft >= BOSS_CRIT_SECONDS && !(run.itemUse[run.idx] || {}).pause;
+    const crit = res.correct && secondsLeft >= BOSS_CRIT_SECONDS && !paused;
     if (crit) run.crits += 1;
     const bossHp = run.mode.killHits || run.total;
     if (seal && res.correct) { seal.innerHTML = bossVisual(run.bossInfo, Math.round((Math.min(hits, bossHp) / bossHp) * 5)); seal.classList.add(crit ? 'is-crit' : 'is-hit'); }
@@ -1785,10 +1961,7 @@ function submitAnswer(timedOut = false) {
     flash(res.correct ? (crit ? 'Kritisch!' : 'Treffer!') : timedOut ? 'Zeit um!' : 'Autsch!', res.correct ? 'ok' : 'bad');
     renderHotbar();
     // Kein Weiter-Button: kurz Lösung zeigen, dann sofort weiter.
-    // Letztes Leben verloren: etwas länger warten, damit ein Herz (F3) noch retten kann.
-    const lastBreath = run.lives <= 0 && !res.correct;
-    if (lastBreath) hotbarHint('Letztes Leben verloren – F3 Herz rettet dich!');
-    later(() => advance(), res.correct ? 620 : lastBreath ? 1800 : 750);
+    later(() => advance(), res.correct ? 620 : 750);
     return;
   }
 
@@ -1807,6 +1980,8 @@ function advance() {
   const run = ui.run;
   if (!run) return;
   if (run.finished) { finishRun(); return; }
+  // Aktuelle Frage noch ohne Ergebnis? Dann wurde schon weitergeschaltet (z. B. F4 und sofort Enter) – nicht doppelt springen.
+  if (run.results.length <= run.idx) return;
   run.next();
   renderRun();
   window.scrollTo({ top: 0 });
@@ -1822,6 +1997,7 @@ function finishRun() {
   const m = run.mode.id;
   let hpEvent = null;
   let levelCompletedNow = false;
+  let levelBonus = 0;
   let levelReset = false;
   let chest = null;
   let coins = null;
@@ -1868,7 +2044,9 @@ function finishRun() {
           pl.inventory[chest] = (pl.inventory[chest] || 0) + 1;
         }
       }
-      levelCompletedNow = checkMastery(id);
+      const mastery = checkMastery(id);
+      levelCompletedNow = mastery.completed;
+      levelBonus = mastery.coins;
     } else {
       ({ hpEvent, levelReset } = applyDefeat(run));
     }
@@ -1879,23 +2057,23 @@ function finishRun() {
   }
   if (coins?.total) addCoins(coins.total);
   addXp(sum.xp);
+  S().player.openRun = null;
   persist();
 
-  if (hpEvent?.knockout) {
-    ui.run = null;
-    renderHeader();
-    showGameOver(id);
-    return;
-  }
-
-  ui.result = { sum, run, hpEvent, levelCompletedNow, levelReset, chest, coins, carousel };
+  ui.result = { sum, run, hpEvent, levelCompletedNow, levelBonus, levelReset, chest, coins, carousel };
   ui.run = null;
   renderHeader();
+  if (hpEvent?.knockout) {
+    // Erst GAME OVER, danach die Auswertung mit Nachbesprechung
+    showGameOver(id, { toResult: true });
+    return;
+  }
   renderResult();
   showScreen('result');
   if (m === 'carousel') {
     if (carousel?.chestTier) { sfx('chest'); confetti(carousel.ratio >= 0.75 ? 180 : 80); } else sfx('lose');
   } else if (sum.won) { sfx('win'); confetti(m === 'boss' ? 220 : 130); } else sfx('lose');
+  portalAfterCompletion();
 }
 
 /** Niederlage verrechnen – gilt auch für „Aufgeben“, sonst ließe sich die Strafe umgehen. */
@@ -1932,6 +2110,7 @@ function abortRun(silent = false) {
   clearRunTimers();
   if (run.mode.id !== 'carousel') lastQ(run.chapterId)[run.mode.id] = run.questions.map((q) => q.id);
   ui.run = null;
+  S().player.openRun = null;
   if (penalty) {
     const { hpEvent } = applyDefeat(run);
     persist();
@@ -1959,7 +2138,7 @@ function answerText(q, idxs) {
 }
 
 function renderResult() {
-  const { sum, run, hpEvent, levelCompletedNow, levelReset, chest, coins, carousel } = ui.result;
+  const { sum, run, hpEvent, levelCompletedNow, levelBonus = 0, levelReset, chest, coins, carousel } = ui.result;
   const pl = playerVitals();
   const boss = run.bossInfo?.name || 'Der Boss';
   const titles = {
@@ -1977,13 +2156,13 @@ function renderResult() {
   } else if (sum.won) {
     sub = sum.stars === 3 ? 'Ohne einen einzigen Fehler. Stark.' : 'Geschafft – mit etwas Luft nach oben.';
   } else if (levelReset) {
-    sub = 'K.o.! Deine HP sind aufgebraucht – die Spielmodi dieses Levels wurden zurückgesetzt, du startest das Level wieder von vorn.';
+    sub = 'K.o.! Deine HP waren aufgebraucht – Story, Versus und Boss dieses Levels starten wieder von vorn. Das Lernskript bleibt erhalten.';
   } else {
     sub = `Run verloren. Beim nächsten Versuch startet ${run.mode.label} wieder bei Frage 1.`;
   }
   const hpNote = hpEvent
     ? (hpEvent.revived ? '✨ Lebensfunke verbraucht: Wiederbelebung mit voller HP.'
-      : hpEvent.knockout ? 'GAME OVER'
+      : hpEvent.knockout ? `GAME OVER – deine HP stehen wieder auf ${pl.hp}/${pl.maxHp}.`
         : `💔 −${hpEvent.lost} HP. Aktuell ${pl.hp}/${pl.maxHp} HP.`)
     : '';
   const quote = sum.mode === 'boss' ? (sum.won ? run.bossInfo.taunts.defeat : run.bossInfo.taunts.victory) : '';
@@ -1996,9 +2175,9 @@ function renderResult() {
     coins.first ? `+${coins.first} erster Sieg` : '',
     coins.perfect ? `+${coins.perfect} makellos` : '',
     coins?.classBonus ? `+${coins.classBonus} ${cls().name}` : '',
-    levelCompletedNow ? `+${levelCoins()} Level-Abschluss` : '',
+    levelBonus ? `+${levelBonus} Level-Abschluss` : '',
   ].filter(Boolean).join(' · ') : '';
-  const coinTotal = (coins?.total || 0) + (levelCompletedNow ? levelCoins() : 0);
+  const coinTotal = (coins?.total || 0) + levelBonus;
   const isBossWin = (sum.mode === 'boss' && sum.won) || (sum.mode === 'carousel' && !!carousel?.chestTier);
   const lootHtml = (lootList.length || chestItem || coinTotal || sum.mode === 'carousel') ? `
     <section class="loot" aria-label="Belohnung">
@@ -2063,6 +2242,178 @@ function renderResult() {
     </div>`;
 }
 
+
+
+
+/* =========================================================
+   25 · Letzte Schwelle
+   ========================================================= */
+function examRecord() {
+  return S().finalExam || (S().finalExam = {unlocked:false,visited:false,attempts:0,bestScore:0,passed:false});
+}
+
+function renderWorldNav(id) {
+  $('topbar').dataset.world = id;
+  $('worldNav').innerHTML = WORLDS.map(w => `<button type="button" class="worldnav__button worldnav__button--${w.id}" data-action="switch-world" data-world="${w.id}" aria-pressed="${w.id === id}"><strong>${esc(w.name)}</strong><span>Level ${w.firstLevel}–${w.lastLevel}</span></button>`).join('')
+    + (examAccessible(Content.getManifest(), S()) ? `<button type="button" class="worldnav__button worldnav__button--pruefstein" data-action="exam-map" aria-pressed="${id === EXAM.id}"><strong>Letzte Schwelle</strong><span>Level 25${!examRecord().unlocked && EXAM_TEST_ACCESS ? ' · Test' : ''}</span></button>` : '');
+}
+
+function maybeUnlockExam() {
+  const record = examRecord();
+  if (record.unlocked || !allLevelsCompleted(Content.getManifest(), S())) return false;
+  record.unlocked = true;
+  persist();
+  return true;
+}
+
+function portalAfterCompletion() {
+  if (maybeUnlockExam()) openExamMap();
+}
+
+async function openExamMap() {
+  if (!S() || ui.examTransition || ui.examLoading || !examAccessible(Content.getManifest(), S())) return;
+  if (!abortRun() || !leaveExam()) return;
+  toggleInv(false);
+  clearTimeout(ui.examIntroTimer);
+  clearToasts();
+  const record = examRecord();
+  maybeUnlockExam();
+  const first = !record.visited;
+  const overlay = $('examTransition');
+  ui.examTransition = true;
+  try {
+    if (first) {
+      overlay.hidden = false;
+      void overlay.offsetWidth;
+      overlay.classList.add('is-dark');
+      Audio.setTrack('dark');
+      await new Promise(resolve => setTimeout(resolve, reducedMotion() ? 100 : 700));
+    }
+    S().settings.world = EXAM.id;
+    record.visited = true;
+    ui.exam = null;
+    persist();
+    renderHeader();
+    renderDashboard();
+    showScreen('dashboard');
+    if (first) {
+      await new Promise(resolve => setTimeout(resolve, reducedMotion() ? 100 : 400));
+      overlay.classList.remove('is-dark');
+      await new Promise(resolve => setTimeout(resolve, reducedMotion() ? 0 : 400));
+      overlay.hidden = true;
+    }
+  } finally { ui.examTransition = false; }
+}
+
+function openExamIntro() {
+  if (ui.examLoading || ui.examTransition || !examAccessible(Content.getManifest(), S()) || !leaveExam()) return;
+  ui.exam = null;
+  ui.examIntroReady = false;
+  clearTimeout(ui.examIntroTimer);
+  $('finalExamView').innerHTML = examIntroHtml(examRecord(), !examRecord().unlocked);
+  showScreen('exam');
+  if (reducedMotion()) finishExamIntro();
+  else ui.examIntroTimer = setTimeout(finishExamIntro, 3600);
+}
+
+function finishExamIntro() {
+  if (ui.screen !== 'exam' || ui.exam) return;
+  clearTimeout(ui.examIntroTimer);
+  ui.examIntroReady = true;
+  $('examCine')?.classList.add('is-ready');
+  if ($('examBegin')) $('examBegin').disabled = false;
+}
+
+
+async function startExam() {
+  if (ui.examLoading || !examAccessible(Content.getManifest(), S()) || !leaveExam()) return;
+  if (!ui.examIntroReady) { finishExamIntro(); return; }
+  ui.examLoading = true;
+  const startButton = document.querySelector('[data-action="exam-start"]');
+  if (startButton) { startButton.disabled = true; startButton.textContent = 'Prüfung wird vorbereitet …'; }
+  try {
+    const chapters = Content.getManifest().chapters.filter(c => c.level >= 1 && c.level <= 24);
+    // Nur Boss-Pools laden; keine doppelte Sammlung und keine neuen Bilddateien.
+    const contents = await Promise.all(chapters.map(c => Content.loadChapterContent(c.id, ['boss'])));
+    const pools = chapters.map((c,i) => ({...c,questions:contents[i].boss?.questions || []}));
+    const questions = buildExam(pools).map(q => prepareQuestion(q, S().settings.shuffleAnswers));
+    ui.exam = {questions, answers:questions.map(() => []), index:0,deadline:Date.now()+EXAM.seconds*1000};
+    ui.examResult = null;
+    renderExam();
+    showScreen('exam');
+    clearInterval(ui.examTimer);
+    ui.examTimer = setInterval(tickExam, 1000);
+  } catch (error) {
+    toast(error.message || 'Die Prüfung konnte nicht geladen werden.', {tone:'bad',ms:7000});
+    if (startButton) { startButton.disabled = false; startButton.textContent = 'Prüfung beginnen'; }
+  } finally { ui.examLoading = false; }
+}
+
+function renderExam() { if (ui.exam) $('finalExamView').innerHTML = examQuestionHtml(ui.exam); }
+
+function tickExam() {
+  if (!ui.exam) { clearInterval(ui.examTimer); return; }
+  if (Date.now() >= ui.exam.deadline) { submitExam(true); return; }
+  const timer = $('examTimer');
+  if (timer) {
+    timer.textContent = examTimerText(ui.exam.deadline);
+    timer.classList.toggle('is-low',ui.exam.deadline-Date.now() <= 5*60*1000);
+  }
+}
+
+function pickExamAnswer(index) {
+  const run = ui.exam;
+  if (!run || !Number.isInteger(index)) return;
+  if (Date.now() >= run.deadline) { submitExam(true); return; }
+  const q = run.questions[run.index];
+  if (index < 0 || index >= q.answers.length) return;
+  const current = run.answers[run.index];
+  run.answers[run.index] = q.type === 'multi'
+    ? current.includes(index) ? current.filter(i => i !== index) : [...current,index]
+    : [index];
+  // Absichtlich weder isCorrect, Punktestand, HP noch Antwort-Sound aufrufen.
+  renderExam();
+  document.querySelector(`[data-action="exam-answer"][data-i="${index}"]`)?.focus({preventScroll:true});
+}
+
+function moveExam(delta) {
+  const run = ui.exam;
+  if (!run || (delta > 0 && !run.answers[run.index].length)) return;
+  if (Date.now() >= run.deadline) { submitExam(true); return; }
+  run.index = Math.max(0,Math.min(run.questions.length-1,run.index+delta));
+  renderExam();
+  window.scrollTo({top:0});
+  $('finalExamView').focus({preventScroll:true});
+}
+
+function submitExam(timeExpired = false) {
+  const run = ui.exam;
+  if (!run || (!timeExpired && run.answers.some(a => !a.length))) return;
+  clearInterval(ui.examTimer);
+  timeExpired ||= Date.now() >= run.deadline;
+  const result = scoreExam(run.questions,run.answers);
+  result.timeExpired = timeExpired;
+  result.answered = run.answers.filter(a=>a.length).length;
+  const record = examRecord();
+  record.attempts += 1;
+  record.bestScore = Math.max(record.bestScore,result.points);
+  record.passed ||= result.passed;
+  persist();
+  ui.examResult = result;
+  ui.exam = null;
+  $('finalExamResultView').innerHTML = examResultHtml(result);
+  showScreen('exam-result');
+}
+
+function leaveExam() {
+  if (!ui.exam) return true;
+  if (ui.exam.answers.some(a => a.length) && !confirm('Prüfung verlassen? Die Antworten dieses Versuchs werden verworfen.')) return false;
+  ui.exam = null;
+  clearInterval(ui.examTimer);
+  return true;
+}
+
+
 /* =========================================================
    Ereignisse
    ========================================================= */
@@ -2077,6 +2428,8 @@ const ACTIONS = {
   'use-potion': (d) => usePotion(d.kind),
   'buy-item': (d) => buyItem(d.kind),
   'toggle-inv': () => toggleInv(),
+  'open-ranks': () => openRankOverview(),
+  'close-ranks': () => $('rankDialog').close(),
   'boss-fight': () => startBossFight(),
   'boss-skip': () => finishBossIntro(),
   'use-item': (d) => useItem(d.item),
@@ -2084,9 +2437,20 @@ const ACTIONS = {
   'pick-class': (d) => { ui.onboard.pick = d.id; sfx('click'); drawOnboard(); },
   'confirm-class': () => confirmClass(),
   'open-help': () => { if (ui.run) { toast('Die Anleitung gibt es außerhalb eines Runs.', { icon: 'ℹ️' }); return; } toggleInv(false); openOnboard('help'); },
-  'onboard-close': () => { const back = ui.onboard?.returnTo; if (back === 'chapter') renderChapter(); else if (back !== 'learn' && back !== 'result') renderDashboard(); showScreen(['chapter', 'learn', 'result'].includes(back) ? back : 'dashboard'); },
+  'onboard-close': () => { const back = ui.onboard?.returnTo; if (back === 'chapter') renderChapter(); else if (!['learn', 'result', 'exam', 'exam-result'].includes(back)) renderDashboard(); showScreen(['chapter', 'learn', 'result', 'exam', 'exam-result'].includes(back) ? back : 'dashboard'); },
   'toggle-music': () => { S().settings.music = S().settings.music === false; syncMusic(); renderHeader(); persist(); },
-  'go-dashboard': () => { if (ui.screen === 'terminal') return; if (!abortRun()) return; renderDashboard(); showScreen('dashboard'); },
+  'switch-world': (d) => switchWorld(d.world),
+  'preview-level': (_d, button) => previewMapLevel(button),
+  'go-dashboard': () => { if (ui.screen === 'terminal' || ui.examLoading || ui.examTransition) return; if (!abortRun() || !leaveExam()) return; renderDashboard(); showScreen('dashboard'); },
+  'exam-map': () => openExamMap(),
+  'exam-intro': () => openExamIntro(),
+  'exam-start': () => startExam(),
+  'exam-cine-skip': () => finishExamIntro(),
+  'exam-answer': (d) => pickExamAnswer(Number(d.i)),
+  'exam-prev': () => moveExam(-1),
+  'exam-next': () => moveExam(1),
+  'exam-submit': () => submitExam(),
+  'exam-leave': () => openExamMap(),
   'open-chapter': (d) => openChapter(d.id),
   'back-chapter': () => { if (!abortRun()) return; openChapter(ui.chapterId); },
   'open-learn': (d) => { if (!abortRun()) return; openLearn(d.id, d.section); },
@@ -2096,7 +2460,7 @@ const ACTIONS = {
   'learn-toggle': () => learnToggle(),
   'check-pick': (d) => checkPick(Number(d.i)),
   'check-submit': () => checkSubmit(),
-  'check-retry': () => { ui.check = null; $('checkpoint').innerHTML = renderCheckpoint(Content.getCachedChapter(ui.chapterId).learn.sections[ui.learnIdx]); },
+  'check-next': () => checkNext(),
   'start-mode': (d) => startMode(d.mode, d.id),
   'answer': (d) => pickAnswer(Number(d.i)),
   'submit': () => submitAnswer(false),
@@ -2172,7 +2536,11 @@ document.addEventListener('animationend', (e) => {
 function registerSW() {
   if (!('serviceWorker' in navigator)) return;
   let reloading = false;
+  // Beim allerersten Besuch übernimmt der Service Worker die Seite per clients.claim() – das ist kein Update
+  // und darf keinen Reload auslösen. Neu geladen wird nur, wenn ein vorhandener Worker abgelöst wird.
+  let hadController = !!navigator.serviceWorker.controller;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController) { hadController = true; return; }
     if (reloading) return;
     reloading = true;
     location.reload();

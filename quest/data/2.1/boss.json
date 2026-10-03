@@ -43,13 +43,13 @@
       "examRelevance": "S",
       "question": "17-Jährige kauft Laptop auf Raten. Händler fordert die Eltern zur Erklärung auf, drei Wochen Stille. Folge?",
       "answers": [
+        "Vertrag schwebt weiter, bis sie volljährig wird und selbst entscheidet",
         "Genehmigung gilt als verweigert – Vertrag unwirksam",
-        "Genehmigung gilt als erteilt",
-        "Vertrag schwebt bis zum 18. Geburtstag",
-        "Vertrag über § 110 wirksam"
+        "Vertrag über § 110 wirksam",
+        "Genehmigung gilt als erteilt"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "§ 108 Abs. 2 BGB: Zwei Wochen Schweigen = Verweigerung."
     },
@@ -68,14 +68,14 @@
       "examRelevance": "S",
       "question": "Ein 16-Jähriger ohne Zustimmung der Eltern. Was stimmt?",
       "answers": [
-        "Geschenktes Fahrrad annehmen: wirksam",
-        "Handyvertrag über 24 Monate: schwebend unwirksam",
         "Kinokarte bar vom Taschengeld: nichtig",
-        "Kinokarte bar vom Taschengeld: schwebend unwirksam"
+        "Kinokarte bar vom Taschengeld: schwebend unwirksam",
+        "Geschenktes Fahrrad annehmen: wirksam",
+        "Handyvertrag über 24 Monate: schwebend unwirksam"
       ],
       "correct": [
-        0,
-        1
+        2,
+        3
       ],
       "explanation": "Lediglich rechtlicher Vorteil = wirksam. Dauerverpflichtung = schwebend. Bar vom Taschengeld = wirksam nach § 110."
     },
@@ -117,13 +117,13 @@
       "examRelevance": "S",
       "question": "Mit 17 ohne Zustimmung Vertrag geschlossen. Mit 18 zahlt er bewusst weiter Raten, ohne etwas zu erklären. Folge?",
       "answers": [
-        "Stillschweigende Genehmigung – Vertrag wirksam",
-        "Vertrag bleibt schwebend unwirksam",
         "Eltern müssen noch genehmigen",
-        "Vertrag ist nichtig"
+        "Vertrag ist nichtig",
+        "Vertrag bleibt schwebend unwirksam",
+        "Stillschweigende Genehmigung – Vertrag wirksam"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "Der Volljährige kann auch durch schlüssiges Verhalten genehmigen."
     },
@@ -140,13 +140,13 @@
       "examRelevance": "S",
       "question": "Der Händler wusste, dass der Käufer 15 ist. Die Eltern schweigen noch. Kann der Händler widerrufen?",
       "answers": [
-        "Nein, das Widerrufsrecht ist ausgeschlossen",
-        "Ja, bis zur Genehmigung",
         "Ja, innerhalb von 14 Tagen",
+        "Nein, das Widerrufsrecht ist ausgeschlossen",
+        "Ja, solange die Eltern noch nicht genehmigt haben",
         "Ja, aber nur schriftlich"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "§ 109 BGB: Wer die Minderjährigkeit kannte, kann nicht widerrufen."
     },
@@ -164,13 +164,13 @@
       "examRelevance": "S",
       "question": "Bausparvertrag eines 14-Jährigen, acht Jahre Laufzeit, Eltern stimmten zu, Familiengericht nicht. Mit 18 genehmigt er selbst. Folge?",
       "answers": [
-        "Der Vertrag ist wirksam",
+        "Er muss neu abgeschlossen werden",
         "Nichtig, weil das Gericht fehlte",
         "Die Eltern haften für alle Raten",
-        "Er muss neu abgeschlossen werden"
+        "Der Vertrag ist wirksam"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "Die Genehmigung des volljährig Gewordenen ersetzt die fehlende gerichtliche Genehmigung."
     },
@@ -187,13 +187,13 @@
       "examRelevance": "S",
       "question": "Online-Shop zeigt Fernseher für 99 € statt 999 €. Kunde klickt „Bestellen“. Was ist der Klick?",
       "answers": [
-        "Der Antrag des Kunden",
         "Die Annahme eines Angebots",
         "Eine Aufforderung zum Antrag",
-        "Ein Scheingeschäft"
+        "Ein Scheingeschäft",
+        "Der Antrag des Kunden"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "Die Shop-Seite ist Aufforderung zum Antrag. Der Klick ist der Antrag, der Shop kann ablehnen."
     },
@@ -211,14 +211,14 @@
       "examRelevance": "S",
       "question": "Bank bietet 3,4 % an. Kunde schreibt 3,1 % hinein und unterschreibt. Bank reagiert nicht. Was stimmt?",
       "answers": [
+        "Vertrag zu 3,4 %",
         "Es besteht kein Vertrag",
         "Die Unterschrift des Kunden gilt als neuer Antrag",
-        "Vertrag zu 3,1 %, weil die Bank schwieg",
-        "Vertrag zu 3,4 %"
+        "Vertrag zu 3,1 %, weil die Bank schwieg"
       ],
       "correct": [
-        0,
-        1
+        1,
+        2
       ],
       "explanation": "Abgeänderte Annahme = Ablehnung + neuer Antrag. Schweigen der Bank ist keine Annahme."
     },
@@ -236,14 +236,14 @@
       "examRelevance": "S",
       "question": "Nichtig oder anfechtbar – welche Zuordnungen stimmen?",
       "answers": [
-        "Verschrieben: anfechtbar",
-        "Scheinkaufvertrag zur Steuerersparnis: nichtig",
+        "Arglistige Täuschung: nichtig ohne Erklärung",
         "17-Jähriger ohne Zustimmung: nichtig",
-        "Arglistige Täuschung: nichtig ohne Erklärung"
+        "Verschrieben: anfechtbar",
+        "Scheinkaufvertrag zur Steuerersparnis: nichtig"
       ],
       "correct": [
-        0,
-        1
+        2,
+        3
       ],
       "explanation": "Minderjährige: schwebend unwirksam. Täuschung: nur anfechtbar."
     },
@@ -261,13 +261,13 @@
       "examRelevance": "S",
       "question": "Welche Aussage zum Sachenrecht ist FALSCH?",
       "answers": [
-        "Beliebige neue dingliche Rechte sind vereinbar",
-        "Dingliche Rechte wirken gegen jedermann",
+        "Die Grundschuld ist ein dingliches Recht",
         "Bei Grundstücken schafft das Grundbuch Publizität",
-        "Die Grundschuld ist ein dingliches Recht"
+        "Beliebige neue dingliche Rechte sind vereinbar",
+        "Dingliche Rechte wirken gegen jedermann"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Typenzwang: Nur die gesetzlich vorgesehenen dinglichen Rechte gibt es."
     },
@@ -291,9 +291,9 @@
         "Sachdarlehen"
       ],
       "correct": [
-        0
+        1
       ],
-      "explanation": "Bauspardarlehen mit Negativerklärung zählen dazu – und der Zweck (Erhalt einer Immobilie) genügt ohnehin."
+      "explanation": "Weder Grundpfandrecht noch Reallast, und Modernisieren ist kein „Erwerb oder Erhaltung des Eigentumsrechts“ (§ 491 Abs. 3 BGB). Die Negativerklärung ersetzt die Grundschuld nach heutigem Recht nicht."
     },
     {
       "id": "2.1-B112",
@@ -309,13 +309,13 @@
       "examRelevance": "S",
       "question": "Vertrag am 1.3., Pflichtangabe fehlte, nachgeholt am 10.4. Widerruf am 5.5. Rechtzeitig?",
       "answers": [
-        "Ja, die Monatsfrist läuft bis 10.5.",
-        "Nein, 14 Tage ab 1.3. sind vorbei",
         "Nein, 14 Tage ab 10.4. sind vorbei",
-        "Nur mit Begründung"
+        "Nur mit Begründung",
+        "Ja, die Monatsfrist läuft bis 10.5.",
+        "Nein, 14 Tage ab 1.3. sind vorbei"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Nach Nachholung beginnt eine Frist von einem Monat."
     },
@@ -332,13 +332,13 @@
       "examRelevance": "S",
       "question": "Pflichtangaben wurden nie nachgeholt. Der Kunde will nach zwei Jahren das Immobiliardarlehen widerrufen. Geht das?",
       "answers": [
-        "Nein, das Recht ist nach einem Jahr und 14 Tagen erloschen",
-        "Ja, die Frist hat nie begonnen",
         "Ja, innerhalb von 14 Tagen ab heute",
+        "Ja, ohne Pflichtangaben hat die Frist nie begonnen",
+        "Nein, nach einem Jahr und 14 Tagen erloschen",
         "Nur per Anfechtung"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Absolute Erlöschensregel bei Immobiliar-Verbraucherdarlehen."
     },
@@ -356,13 +356,13 @@
       "examRelevance": "S",
       "question": "Kunde widerruft am 10. Tag telefonisch und eindeutig, ohne Grund. Wirksam?",
       "answers": [
+        "Nur, wenn die Bank zustimmt",
         "Ja, eine eindeutige Erklärung genügt",
-        "Nein, Schriftform ist nötig",
         "Nein, ohne Grund geht es nicht",
-        "Nur, wenn die Bank zustimmt"
+        "Nein, Schriftform ist nötig"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "Formfrei und ohne Begründung. Schriftlich wird nur empfohlen."
     },
@@ -380,13 +380,13 @@
       "examRelevance": "S",
       "question": "Vermittler täuscht über Mieteinnahmen einer Anlagewohnung; Kauf und Darlehen sind verbunden. Was kann der Kunde tun?",
       "answers": [
-        "Den Darlehensvertrag nach § 123 BGB anfechten",
+        "Den Darlehensvertrag ohne Grund kündigen",
         "Nichts, getäuscht hat nur der Vermittler",
-        "Nur den Kaufvertrag widerrufen",
-        "Den Darlehensvertrag ohne Grund kündigen"
+        "Den Darlehensvertrag nach § 123 BGB anfechten",
+        "Nur den Kaufvertrag widerrufen"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "War die Täuschung für den Darlehensvertrag ursächlich – beim verbundenen Geschäft regelmäßig – kann er anfechten."
     },
@@ -405,13 +405,13 @@
       "question": "Dienst- oder Werkvertrag – welche Zuordnungen stimmen?",
       "answers": [
         "Stundenweise bezahlte Finanzberatung ohne Erfolgsschuld: Dienstvertrag",
-        "Dachsanierung durch Dachdecker: Werkvertrag",
+        "Arbeitsvertrag: Werkvertrag",
         "Wertgutachten: Dienstvertrag",
-        "Arbeitsvertrag: Werkvertrag"
+        "Dachsanierung durch Dachdecker: Werkvertrag"
       ],
       "correct": [
         0,
-        1
+        3
       ],
       "explanation": "Tätigkeit = Dienst, Ergebnis = Werk."
     },
@@ -429,13 +429,13 @@
       "examRelevance": "S",
       "question": "Ein Freund erledigt kostenlos einen Behördengang für dich. Welcher Vertrag?",
       "answers": [
-        "Auftrag",
-        "Geschäftsbesorgungsvertrag",
+        "Dienstvertrag",
         "Werkvertrag",
-        "Dienstvertrag"
+        "Auftrag",
+        "Geschäftsbesorgungsvertrag"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Unentgeltlich = Auftrag. Gegen Geld wäre es Geschäftsbesorgung."
     },
@@ -453,13 +453,13 @@
       "examRelevance": "S",
       "question": "Obstwiese gegen Jahreszahlung überlassen – der Nutzer darf die Äpfel ernten und verkaufen. Welcher Vertrag?",
       "answers": [
-        "Pacht",
         "Miete",
         "Leihe",
+        "Pacht",
         "Sachdarlehen"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Gebrauch plus Fruchtgenuss = Pacht."
     },
@@ -477,14 +477,14 @@
       "examRelevance": "S",
       "question": "Bürgschaft nur telefonisch zugesagt. Was stimmt?",
       "answers": [
-        "Formunwirksam – Schriftform fehlt",
         "Zahlt der Bürge die Schuld, ist der Mangel geheilt",
         "Wirksam, weil mündlich klar",
-        "Nur notariell wäre sie wirksam"
+        "Nur notariell wäre sie wirksam",
+        "Formunwirksam – Schriftform fehlt"
       ],
       "correct": [
         0,
-        1
+        3
       ],
       "explanation": "§ 766 BGB: schriftlich, Heilung durch Erfüllung."
     },
@@ -502,13 +502,13 @@
       "examRelevance": "S",
       "question": "Wohnungsmiete „fest für fünf Jahre“, nur mündlich. Was gilt?",
       "answers": [
-        "Unbefristet, frühestens zum Ablauf eines Jahres kündbar",
-        "Genau fünf Jahre bindend",
         "Nichtig",
+        "Unbefristet, frühestens nach einem Jahr kündbar",
+        "Genau fünf Jahre bindend, weil die Abrede eindeutig war",
         "Jederzeit fristlos kündbar"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "§ 550 BGB."
     },
@@ -525,13 +525,13 @@
       "examRelevance": "S",
       "question": "Darlehen ohne vereinbarte Laufzeit. Die Bank kündigt am 1. März. Wann ist es fällig?",
       "answers": [
-        "Am 1. Juni",
+        "Am 1. September",
         "Sofort",
         "Am 1. April",
-        "Am 1. September"
+        "Am 1. Juni"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "§ 488 Abs. 3 BGB: drei Monate."
     },
@@ -549,14 +549,14 @@
       "examRelevance": "S",
       "question": "Kauf beim Bäcker. Was stimmt?",
       "answers": [
-        "Einigung über Kauf = Verpflichtungsgeschäft",
         "Übergabe der Ware und Zahlung = Erfüllungsgeschäft",
+        "Einigung und Erfüllung sind immer ein einziges Geschäft",
         "Erst die Zahlung schließt den Kaufvertrag",
-        "Einigung und Erfüllung sind immer ein einziges Geschäft"
+        "Einigung über Kauf = Verpflichtungsgeschäft"
       ],
       "correct": [
         0,
-        1
+        3
       ],
       "explanation": "Zwei Ebenen, auch wenn sie im Alltag zeitgleich ablaufen."
     },
@@ -574,13 +574,13 @@
       "question": "Eine Bausparkasse AG schließt einen Vertrag. Was stimmt?",
       "answers": [
         "Die AG selbst ist rechtsfähig",
-        "Sie handelt durch ihre Vertreter, etwa den Vorstand",
         "Sie ist eine natürliche Person",
+        "Sie handelt durch ihre Vertreter, etwa den Vorstand",
         "Vertragspartner sind die Aktionäre"
       ],
       "correct": [
         0,
-        1
+        2
       ],
       "explanation": "Juristische Person: selbst Trägerin von Rechten, handelt durch Organe."
     }

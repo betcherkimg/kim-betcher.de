@@ -1,0 +1,579 @@
+{
+  "chapter": "3.5",
+  "questions": [
+    {
+      "id": "3.5-Q001",
+      "chapter": "3.5",
+      "section": "3.5-a",
+      "topic": "Formel",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 1,
+      "question": "Wie lautet die Formel für die Monatsrate eines Annuitätendarlehens?",
+      "answers": [
+        "(Zins − Tilgung) × Darlehen ÷ 1.200",
+        "(Zins + Tilgung) × Darlehen ÷ 1.200",
+        "Zins × Tilgung × Darlehen ÷ 12",
+        "(Zins + Tilgung) × Darlehen ÷ 100"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Zins- und Tilgungssatz werden addiert, mit dem Darlehen multipliziert und durch 100 × 12 geteilt. Ohne die 12 ergibt sich die Jahresleistung."
+    },
+    {
+      "id": "3.5-Q002",
+      "chapter": "3.5",
+      "section": "3.5-a",
+      "topic": "Bestandteile",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 2,
+      "question": "Welche Größen braucht man, um die Rate eines Annuitätendarlehens zu berechnen?",
+      "answers": [
+        "Anfänglicher Tilgungssatz",
+        "Darlehensbetrag",
+        "Zinssatz",
+        "Beleihungswert"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Die Rate hängt nur von Darlehen, Zins und Anfangstilgung ab. Der Beleihungswert beeinflusst den Zins, steht aber nicht in der Formel."
+    },
+    {
+      "id": "3.5-Q003",
+      "chapter": "3.5",
+      "section": "3.5-a",
+      "topic": "Rate berechnen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 3,
+      "question": "Darlehen 150.000 €, Zins 4 %, anfängliche Tilgung 2 %. Wie hoch ist die Monatsrate?",
+      "answers": [
+        "500 €",
+        "9.000 €",
+        "250 €",
+        "750 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "(4 + 2) × 150.000 ÷ 1.200 = 750 €. 9.000 € ist die Jahresleistung, 500 € wären nur die Zinsen."
+    },
+    {
+      "id": "3.5-Q004",
+      "chapter": "3.5",
+      "section": "3.5-a",
+      "topic": "Rate berechnen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 4,
+      "question": "Darlehen 180.000 €, Zins 3 %, anfängliche Tilgung 1 %. Wie hoch ist die Monatsrate?",
+      "answers": [
+        "150 €",
+        "720 €",
+        "450 €",
+        "600 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "(3 + 1) × 180.000 ÷ 1.200 = 600 €. Davon sind 450 € Zinsen und 150 € Tilgung."
+    },
+    {
+      "id": "3.5-Q005",
+      "chapter": "3.5",
+      "section": "3.5-a",
+      "topic": "Jahresleistung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 5,
+      "question": "Darlehen 200.000 €, Zins 3,5 %, anfängliche Tilgung 2,5 %. Wie hoch ist die Jahresleistung?",
+      "answers": [
+        "7.000 €",
+        "1.000 €",
+        "12.000 €",
+        "5.000 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "(3,5 + 2,5) % von 200.000 € sind 12.000 € im Jahr. Geteilt durch 12 ergibt das 1.000 € im Monat."
+    },
+    {
+      "id": "3.5-Q006",
+      "chapter": "3.5",
+      "section": "3.5-b",
+      "topic": "Zinsanteil",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 6,
+      "question": "Darlehen 100.000 €, Zins 3 %. Wie hoch ist der Zinsanteil der ersten Monatsrate?",
+      "answers": [
+        "250,00 €",
+        "333,33 €",
+        "83,33 €",
+        "3.000,00 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "3 × 100.000 ÷ 1.200 = 250 €. 3.000 € sind die Zinsen für ein ganzes Jahr."
+    },
+    {
+      "id": "3.5-Q007",
+      "chapter": "3.5",
+      "section": "3.5-b",
+      "topic": "Tilgungsanteil",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 7,
+      "question": "Rate 333,33 €, Zinsanteil im ersten Monat 250,00 €. Wie hoch ist der Tilgungsanteil?",
+      "answers": [
+        "583,33 €",
+        "250,00 €",
+        "33,33 €",
+        "83,33 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Tilgungsanteil = Rate − Zinsanteil = 333,33 € − 250,00 € = 83,33 €."
+    },
+    {
+      "id": "3.5-Q008",
+      "chapter": "3.5",
+      "section": "3.5-b",
+      "topic": "Zweiter Monat",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 8,
+      "question": "Nach der ersten Rate beträgt die Restschuld 99.916,67 €, der Zins 3 %. Wie hoch ist der Zinsanteil im zweiten Monat?",
+      "answers": [
+        "249,58 €",
+        "249,79 €",
+        "83,54 €",
+        "250,00 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "99.916,67 × 3 ÷ 1.200 = 249,79 €. Der Zins wird auf die Restschuld gerechnet und sinkt deshalb."
+    },
+    {
+      "id": "3.5-Q009",
+      "chapter": "3.5",
+      "section": "3.5-b",
+      "topic": "Tilgungsanteil",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 9,
+      "question": "Restschuld 120.000 €, Zins 4 %, Monatsrate 700 €. Wie hoch ist der Tilgungsanteil dieser Rate?",
+      "answers": [
+        "280 €",
+        "400 €",
+        "700 €",
+        "300 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Zinsanteil: 4 × 120.000 ÷ 1.200 = 400 €. Tilgung: 700 € − 400 € = 300 €."
+    },
+    {
+      "id": "3.5-Q010",
+      "chapter": "3.5",
+      "section": "3.5-b",
+      "topic": "Getilgter Anteil",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 10,
+      "question": "Ein Darlehen wird mit 1 % anfänglich getilgt. Wie viel ist nach zehn Jahren getilgt?",
+      "answers": [
+        "Rund 30 %",
+        "Genau 10 %",
+        "Etwas weniger als 10 %",
+        "Etwas mehr als 10 %"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die ersparten Zinsen erhöhen die Tilgung von Monat zu Monat. Im Skriptbeispiel sind nach zehn Jahren 11,64 % getilgt."
+    },
+    {
+      "id": "3.5-Q011",
+      "chapter": "3.5",
+      "section": "3.5-c",
+      "topic": "Bezugsgröße",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 11,
+      "question": "Worauf wird laut Skript die neue Gesamtrate nach Ablauf der Zinsbindung gerechnet?",
+      "answers": [
+        "Auf den Kaufpreis",
+        "Auf den Beleihungswert",
+        "Auf die Restschuld",
+        "Auf das Ursprungsdarlehen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die neue Rate ergibt sich aus neuem Zins plus Tilgungssatz, bezogen auf den ursprünglichen Darlehensbetrag."
+    },
+    {
+      "id": "3.5-Q012",
+      "chapter": "3.5",
+      "section": "3.5-c",
+      "topic": "Neue Rate",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 12,
+      "question": "Ursprungsdarlehen 100.000 €, Tilgung 1 %. Der Zins steigt bei der Prolongation von 3 % auf 5 %. Neue Rate auf das Ursprungsdarlehen?",
+      "answers": [
+        "441,78 €",
+        "416,67 €",
+        "500,00 €",
+        "333,33 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "(5 + 1) × 100.000 ÷ 1.200 = 500 €. 441,78 € ergäben sich, wenn man fälschlich die Restschuld einsetzt."
+    },
+    {
+      "id": "3.5-Q013",
+      "chapter": "3.5",
+      "section": "3.5-c",
+      "topic": "Tilgung nach Prolongation",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 13,
+      "question": "Neue Rate 500 €, Restschuld 88.355,31 €, neuer Zins 5 %. Wie hoch ist der Tilgungsanteil der ersten neuen Rate?",
+      "answers": [
+        "83,33 €",
+        "131,85 €",
+        "368,15 €",
+        "112,16 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Zinsanteil: 5 × 88.355,31 ÷ 1.200 = 368,15 €. Tilgung: 500 € − 368,15 € = 131,85 €."
+    },
+    {
+      "id": "3.5-Q014",
+      "chapter": "3.5",
+      "section": "3.5-d",
+      "topic": "Gesamtrate",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 14,
+      "question": "Woraus besteht die Gesamtrate eines Zinszahlungsdarlehens mit Bausparvertrag bis zur Zuteilung?",
+      "answers": [
+        "Darlehenszins plus Sparbeitrag",
+        "Darlehenszins plus Tilgung",
+        "Nur dem Sparbeitrag",
+        "Nur dem Darlehenszins"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Darlehen wird nicht getilgt. Stattdessen bespart der Kunde das Koppelprodukt."
+    },
+    {
+      "id": "3.5-Q015",
+      "chapter": "3.5",
+      "section": "3.5-d",
+      "topic": "Gesamtrate berechnen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 15,
+      "question": "Darlehen 100.000 € zu 3 %, Bausparvertrag über 100.000 € mit 3 ‰ Sparbeitrag. Wie hoch ist die Gesamtrate bis zur Zuteilung?",
+      "answers": [
+        "250 €",
+        "550 €",
+        "600 €",
+        "300 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Zinsen 250 € plus Sparbeitrag 3 × 100.000 ÷ 1.000 = 300 € ergeben 550 €."
+    },
+    {
+      "id": "3.5-Q016",
+      "chapter": "3.5",
+      "section": "3.5-d",
+      "topic": "Sparbeitrag",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 16,
+      "question": "Bausparsumme 150.000 €, Regelsparbeitrag 4 ‰. Wie hoch ist der monatliche Sparbeitrag?",
+      "answers": [
+        "500 €",
+        "60 €",
+        "6.000 €",
+        "600 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "4 × 150.000 ÷ 1.000 = 600 €. Promille heißt geteilt durch 1.000. 500 € ergäben sich bei Teilung durch 1.200."
+    },
+    {
+      "id": "3.5-Q017",
+      "chapter": "3.5",
+      "section": "3.5-d",
+      "topic": "Nach Zuteilung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 17,
+      "question": "Bausparsumme 100.000 €, Tilgungsbeitrag 6 ‰. Was zahlt der Kunde nach der Zuteilung monatlich?",
+      "answers": [
+        "850 €",
+        "250 €",
+        "550 €",
+        "600 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "6 × 100.000 ÷ 1.000 = 600 €. Der Zins für das abgelöste Vorausdarlehen entfällt."
+    },
+    {
+      "id": "3.5-Q018",
+      "chapter": "3.5",
+      "section": "3.5-d",
+      "topic": "Zinsrisiko",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 18,
+      "question": "Warum hat der Kunde im Skriptbeispiel mit Bausparvertrag kein Zinsänderungsrisiko?",
+      "answers": [
+        "Die Bank trägt die Tilgung",
+        "Der Bauspardarlehenszins ist garantiert",
+        "Das Darlehen ist variabel verzinst",
+        "Der Marktzins kann nicht steigen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Fällt die Zuteilung mit dem Ende der Sollzinsbindung zusammen, schließt das Bauspardarlehen mit seinem garantierten Zins nahtlos an."
+    },
+    {
+      "id": "3.5-Q019",
+      "chapter": "3.5",
+      "section": "3.5-e",
+      "topic": "Formel",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 19,
+      "question": "Wie wird der anfängliche Tilgungssatz aus Rate, Darlehen und Zins berechnet?",
+      "answers": [
+        "Rate × 1.200 ÷ Darlehen − Zinssatz",
+        "Rate ÷ 1.200 × Darlehen",
+        "Darlehen ÷ Rate − Zinssatz",
+        "Rate × 12 ÷ Darlehen + Zinssatz"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Ratenformel wird umgestellt: Erst die Jahresleistung in Prozent des Darlehens ausrechnen, dann den Zinssatz abziehen."
+    },
+    {
+      "id": "3.5-Q020",
+      "chapter": "3.5",
+      "section": "3.5-e",
+      "topic": "Tilgungssatz",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 20,
+      "question": "Darlehen 100.000 €, Zins 5 %, Rate 666,67 €. Wie hoch ist der anfängliche Tilgungssatz?",
+      "answers": [
+        "8 %",
+        "2 %",
+        "3 %",
+        "1,67 %"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "666,67 × 1.200 ÷ 100.000 = 8 %. Abzüglich 5 % Zins bleiben 3 %."
+    },
+    {
+      "id": "3.5-Q021",
+      "chapter": "3.5",
+      "section": "3.5-e",
+      "topic": "Tilgungssatz",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 21,
+      "question": "Darlehen 200.000 €, Zins 4 %, Rate 1.000 €. Wie hoch ist der anfängliche Tilgungssatz?",
+      "answers": [
+        "3 %",
+        "2 %",
+        "6 %",
+        "1 %"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "1.000 × 1.200 ÷ 200.000 = 6 %. Abzüglich 4 % Zins bleiben 2 %."
+    },
+    {
+      "id": "3.5-Q022",
+      "chapter": "3.5",
+      "section": "3.5-e",
+      "topic": "Kreditbetrag",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 22,
+      "question": "Ein Kunde kann 900 € im Monat zahlen. Zins 4 %, Tilgung 2 %. Welches Darlehen ist damit höchstens möglich?",
+      "answers": [
+        "180.000 €",
+        "216.000 €",
+        "150.000 €",
+        "270.000 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Jahresleistung 10.800 €. Bei 6 % Annuität: 10.800 ÷ 0,06 = 180.000 €."
+    },
+    {
+      "id": "3.5-Q023",
+      "chapter": "3.5",
+      "section": "3.5-e",
+      "topic": "Kapitaldienst",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 23,
+      "question": "Ein Kunde spart 700 € Miete und kann 300 € zusätzlich aufbringen. Wie hoch ist der mögliche Kapitaldienst im Jahr?",
+      "answers": [
+        "8.400 €",
+        "3.600 €",
+        "1.000 €",
+        "12.000 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "700 € + 300 € = 1.000 € im Monat, mal 12 sind 12.000 € im Jahr."
+    },
+    {
+      "id": "3.5-Q024",
+      "chapter": "3.5",
+      "section": "3.5-f",
+      "topic": "Tilgung und Laufzeit",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 24,
+      "question": "Wie wirkt ein höherer Tilgungssatz bei gleichem Zins auf die Finanzierungsdauer?",
+      "answers": [
+        "Sie wird kürzer",
+        "Sie bleibt gleich",
+        "Sie wird länger",
+        "Sie verdoppelt sich"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Wer mehr pro Monat zurückzahlt, braucht weniger Monate."
+    },
+    {
+      "id": "3.5-Q025",
+      "chapter": "3.5",
+      "section": "3.5-f",
+      "topic": "Zins und Laufzeit",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 25,
+      "question": "Warum verkürzt ein höherer Zinssatz bei gleichem Tilgungssatz die Laufzeit?",
+      "answers": [
+        "Die Rate wird niedriger",
+        "Die Bank tilgt dann selbst mit",
+        "Die Zinsbindung ist kürzer",
+        "Die ersparten Zinsen sind größer"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Ab dem zweiten Monat wächst die Tilgung um die ersparten Zinsen – und die sind bei höherem Zins größer."
+    },
+    {
+      "id": "3.5-Q026",
+      "chapter": "3.5",
+      "section": "3.5-f",
+      "topic": "Stärke",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 26,
+      "question": "Welcher Effekt verkürzt die Laufzeit laut Skript stärker?",
+      "answers": [
+        "Beide gleich stark",
+        "Ein höherer Zinssatz",
+        "Ein höherer Tilgungssatz",
+        "Keiner von beiden"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Der Zinseffekt ist deutlich spürbar, aber schwächer als der Effekt einer höheren Tilgung."
+    }
+  ]
+}

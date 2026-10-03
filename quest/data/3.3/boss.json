@@ -1,0 +1,372 @@
+{
+  "chapter": "3.3",
+  "boss": {
+    "name": "Aurivex",
+    "title": "Der Tribut der Türme",
+    "image": "assets/bosses/aurivex.webp",
+    "bust": "assets/bosses/aurivex-bust.webp",
+    "accent": "#e4b44d",
+    "taunts": {
+      "intro": "Jeder Turm verlangt seinen Tribut: Steuer, Notar, Makler, Zinsen. Zähl richtig – oder zahl doppelt.",
+      "hit": [
+        "Ein Goldstück fällt aus meiner Rüstung.",
+        "Richtig gezählt. Der Turm wankt.",
+        "Dieser Tribut entgeht mir."
+      ],
+      "miss": [
+        "Verrechnet. Der Tribut wächst.",
+        "Du hast eine Position vergessen.",
+        "Gold für Aurivex."
+      ],
+      "timeout": [
+        "Bereitstellungszinsen laufen …",
+        "Zu langsam. Der Tribut ist fällig."
+      ],
+      "final": "Der letzte Turm. Alle Kosten, alle Mittel – was bleibt als Lücke?",
+      "low": "Mein Gold … es schmilzt …",
+      "defeat": "Kein Tribut mehr. Dein Kostenplan steht auf festem Grund.",
+      "victory": "Die Lücke war größer als gedacht. Zurück ins Lernskript."
+    }
+  },
+  "questions": [
+    {
+      "id": "3.3-B001",
+      "chapter": "3.3",
+      "section": "3.3.2-a",
+      "topic": [
+        "Grunderwerbsteuer",
+        "Berechnung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Kaufpreis 320.000 €, Grunderwerbsteuersatz 6,5 %. Wie hoch ist die Steuer?",
+      "answers": [
+        "19.200 €",
+        "11.200 €",
+        "16.000 €",
+        "20.800 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "320.000 € × 6,5 % = 20.800 €."
+    },
+    {
+      "id": "3.3-B002",
+      "chapter": "3.3",
+      "section": "3.3.2-a",
+      "topic": [
+        "Grunderwerbsteuer",
+        "Zubehör"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Kaufpreis 300.000 €, davon 12.000 € für die gesondert ausgewiesene Einbauküche. Steuersatz 5 %. Wie hoch ist die Grunderwerbsteuer?",
+      "answers": [
+        "600 €",
+        "15.000 €",
+        "15.600 €",
+        "14.400 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Zubehör gehört nicht zum Grundstück: (300.000 € − 12.000 €) × 5 % = 14.400 €."
+    },
+    {
+      "id": "3.3-B003",
+      "chapter": "3.3",
+      "section": "3.3.2-a",
+      "topic": [
+        "Grunderwerbsteuer",
+        "Neubau"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Ein Kunde kauft ein unbebautes Grundstück für 100.000 € und baut später selbst für 300.000 €. Steuersatz 5 %. Grunderwerbsteuer?",
+      "answers": [
+        "5.000 €",
+        "15.000 €",
+        "0 €",
+        "20.000 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Besteuert wird nur der Grundstückskauf: 100.000 € × 5 % = 5.000 €. Das selbst errichtete Haus ist nicht Gegenstand des Kaufs."
+    },
+    {
+      "id": "3.3-B004",
+      "chapter": "3.3",
+      "section": "3.3.2-b",
+      "topic": [
+        "Nebenkosten",
+        "Gesamt"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Kaufpreis 250.000 €. Grunderwerbsteuer 5 %, Notar und Grundbuch pauschal 2 %, kein Makler. Wie hoch sind die direkten Erwerbsnebenkosten?",
+      "answers": [
+        "5.000 €",
+        "12.500 €",
+        "20.000 €",
+        "17.500 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Grunderwerbsteuer 12.500 € plus Notar und Grundbuch 5.000 € ergeben 17.500 €."
+    },
+    {
+      "id": "3.3-B005",
+      "chapter": "3.3",
+      "section": "3.3.2-b",
+      "topic": [
+        "Makler",
+        "Mehrwertsteuer"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Kaufpreis 200.000 €, Maklercourtage 3 % zuzüglich 19 % Mehrwertsteuer. Wie hoch ist die Courtage brutto?",
+      "answers": [
+        "7.900 €",
+        "6.000 €",
+        "7.140 €",
+        "44.000 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "3 % von 200.000 € sind 6.000 €. Mit 19 % Mehrwertsteuer: 6.000 € × 1,19 = 7.140 €."
+    },
+    {
+      "id": "3.3-B006",
+      "chapter": "3.3",
+      "section": "3.3.3-a",
+      "topic": [
+        "Bauzeitzinsen",
+        "Formel"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Darlehen 240.000 €, Bauzeit 10 Monate, Zins 4 %. Wie hoch sind die Bauzeitzinsen nach der Skriptformel?",
+      "answers": [
+        "2.000 €",
+        "4.000 €",
+        "8.000 €",
+        "9.600 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "240.000 × 5 Monate × 4 ÷ 1.200 = 4.000 €. Gerechnet wird mit der halben Bauzeit."
+    },
+    {
+      "id": "3.3-B007",
+      "chapter": "3.3",
+      "section": "3.3.3-a",
+      "topic": [
+        "Bereitstellungszinsen",
+        "Berechnung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Darlehen 200.000 €, davon 80.000 € ausgezahlt. Bereitstellungszins 0,25 % pro Monat. Wie viel fällt in einem Monat an?",
+      "answers": [
+        "500 €",
+        "200 €",
+        "300 €",
+        "3.000 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Nicht ausgezahlt sind 120.000 €. 120.000 € × 0,25 % = 300 €."
+    },
+    {
+      "id": "3.3-B008",
+      "chapter": "3.3",
+      "section": "3.3.3-b",
+      "topic": [
+        "Disagio",
+        "Darlehenshöhe"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Ein Kunde braucht 288.000 € ausgezahlt. Das Darlehen hat 4 % Disagio. Wie hoch muss der Darlehensbetrag sein?",
+      "answers": [
+        "300.000 €",
+        "276.480 €",
+        "299.520 €",
+        "288.000 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "288.000 € ÷ 0,96 = 300.000 €. Von 300.000 € werden 96 % ausgezahlt."
+    },
+    {
+      "id": "3.3-B009",
+      "chapter": "3.3",
+      "section": "3.3.4-a",
+      "topic": [
+        "Eigenmittel",
+        "Zuordnung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Sparguthaben 30.000 €, Zuschuss der Eltern 10.000 €, Darlehen des Onkels 15.000 €. Wie viel davon ist echtes Eigenkapital?",
+      "answers": [
+        "55.000 €",
+        "25.000 €",
+        "30.000 €",
+        "40.000 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Sparguthaben und Zuschuss sind Eigenkapital. Das Darlehen des Onkels ist Eigenkapitalersatz und muss zurückgezahlt werden."
+    },
+    {
+      "id": "3.3-B010",
+      "chapter": "3.3",
+      "section": "3.3.4-a",
+      "topic": [
+        "Eigenleistung",
+        "Lohnkosten"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Der Bauherr fliest selbst. Ein Fachbetrieb hätte 9.000 € verlangt, davon 3.500 € Material. Welche Eigenleistung erkennt die Bank an?",
+      "answers": [
+        "5.500 €",
+        "9.000 €",
+        "12.500 €",
+        "3.500 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Anerkannt werden nur die ersparten Lohnkosten: 9.000 € − 3.500 € = 5.500 €."
+    },
+    {
+      "id": "3.3-B011",
+      "chapter": "3.3",
+      "section": "3.3.4-b",
+      "topic": [
+        "Eigenmittel",
+        "Abwägung"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Ein Kunde will alle Ersparnisse und seine Lebensversicherung einsetzen, um das Darlehen klein zu halten. Welche Risiken nennt das Skript?",
+      "answers": [
+        "Schlechtere Zinskonditionen",
+        "Keine Reserve für Notfälle",
+        "Lücke in der Altersvorsorge",
+        "Höherer Beleihungsauslauf"
+      ],
+      "correct": [
+        1,
+        2
+      ],
+      "explanation": "Mehr Eigenmittel senken Auslauf und Zins. Der Preis dafür sind fehlende Reserven und eine fehlende Einkommensquelle im Alter."
+    },
+    {
+      "id": "3.3-B012",
+      "chapter": "3.3",
+      "section": "3.3.5-b",
+      "topic": [
+        "Finanzierungslücke",
+        "Gesamtrechnung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Kaufpreis 300.000 €, Nebenkosten 30.000 €. Ersparnisse 70.000 €, davon 10.000 € Reserve. Zugesagtes Arbeitgeberdarlehen 20.000 €. Finanzierungslücke?",
+      "answers": [
+        "260.000 €",
+        "250.000 €",
+        "270.000 €",
+        "240.000 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Gesamtkosten 330.000 €. Eingesetzt werden 60.000 € Eigenmittel und 20.000 € Fremdmittel: 330.000 € − 80.000 € = 250.000 €."
+    },
+    {
+      "id": "3.3-B013",
+      "chapter": "3.3",
+      "section": "3.3.5-b",
+      "topic": [
+        "Gesamtkosten",
+        "Neubau"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Neubau: Grundstück 90.000 €, Baukosten 280.000 €, Baunebenkosten 30.000 €, Außenanlagen 15.000 €, Erwerbs- und Finanzierungskosten 15.000 €. Gesamtkosten?",
+      "answers": [
+        "370.000 €",
+        "400.000 €",
+        "430.000 €",
+        "415.000 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "90.000 + 280.000 + 30.000 + 15.000 + 15.000 = 430.000 €. Alle Kostenblöcke gehören in den Plan."
+    },
+    {
+      "id": "3.3-B014",
+      "chapter": "3.3",
+      "section": "3.3.5-a",
+      "topic": [
+        "Fremdmittel",
+        "Einordnung"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Welche Fremdmittel werden laut Skript in der Regel zinslos oder zinsgünstig gewährt?",
+      "answers": [
+        "Verwandtendarlehen",
+        "Darlehen von Kreditinstituten",
+        "Förderkredite",
+        "Arbeitgeberdarlehen"
+      ],
+      "correct": [
+        0,
+        2,
+        3
+      ],
+      "explanation": "Die ersten drei Fremdmittel der Skriptliste sind meist zinslos oder zinsgünstig. Bankdarlehen laufen zu Marktkonditionen."
+    }
+  ]
+}

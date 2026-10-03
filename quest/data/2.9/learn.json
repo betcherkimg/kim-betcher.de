@@ -1,0 +1,245 @@
+{
+  "chapter": "2.9",
+  "title": "Aufsicht & Zuständigkeiten",
+  "sources": [
+    "BWB-Lernskript 2.9 Zuständigkeiten der Aufsicht",
+    "KWG, CRR, SSM-Verordnung, GewO – Rechtsstand 03.10.2026"
+  ],
+  "sections": [
+    {
+      "id": "2.9-a",
+      "title": "Warum Bankenaufsicht?",
+      "subtitle": "Stabile Banken als Voraussetzung der Wirtschaft",
+      "ref": "BWB 2.9",
+      "examRelevance": "S",
+      "checkId": "2.9-Q001",
+      "content": [
+        {
+          "type": "text",
+          "text": "Ein funktionierendes Bank- und Finanzdienstleistungswesen ist für die **Leistungsfähigkeit der Volkswirtschaft** unverzichtbar. Die Bankenaufsicht soll **Fehlentwicklungen vorbeugen**, die das reibungslose Funktionieren des Bankensystems stören könnten."
+        },
+        {
+          "type": "text",
+          "text": "Die Aufsichtsgesetze stehen **im Einklang mit der freien Marktwirtschaft**:"
+        },
+        {
+          "type": "list",
+          "items": [
+            "**Geschäftspolitisch verantwortlich** sind allein die **Geschäftsleiter** – die Aufsicht führt die Bank nicht.",
+            "Die Institute müssen **qualitative und quantitative Rahmenbedingungen** erfüllen.",
+            "Sie sind verpflichtet, der Aufsicht **ihre Bücher offenzulegen**."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Zur Erinnerung",
+          "text": "Die BaFin handelt im öffentlichen Interesse und schützt die Verbraucher in ihrer Gesamtheit (Level 6). Die Schutzzwecke des KWG kennst du aus Level 4."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 6 KWG",
+          "text": "Aufgaben der Bundesanstalt: Missständen im Kredit- und Finanzdienstleistungswesen entgegenwirken."
+        },
+        {
+          "ref": "§ 44 KWG",
+          "text": "Auskünfte und Prüfungen der Institute."
+        }
+      ],
+      "memory": "Die Aufsicht setzt den Rahmen – das Geschäft führen die Geschäftsleiter.",
+      "examTrap": "Aufsicht heißt nicht Mitentscheiden: Über einzelne Kredite oder die Geschäftspolitik entscheidet die Bank selbst."
+    },
+    {
+      "id": "2.9-b",
+      "title": "Rechtsgrundlagen der Aufsicht",
+      "subtitle": "Drei Säulen und einige Spezialgesetze",
+      "ref": "BWB 2.9",
+      "examRelevance": "S",
+      "checkId": "2.9-Q005",
+      "content": [
+        {
+          "type": "table",
+          "head": [
+            "Grundlage",
+            "Inhalt"
+          ],
+          "rows": [
+            [
+              "**Kreditwesengesetz (KWG)**",
+              "nationales Aufsichtsrecht für Banken und Finanzdienstleister"
+            ],
+            [
+              "**CRR** (Capital Requirements Regulation)",
+              "EU-Verordnung zur **angemessenen Kapitalausstattung**"
+            ],
+            [
+              "**SSM-Verordnung**",
+              "überträgt Aufsichtsaufgaben auf die **Europäische Zentralbank** und regelt die Zusammenarbeit mit den nationalen Behörden"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Daneben gelten Spezialgesetze",
+          "items": [
+            "Wertpapierhandelsgesetz",
+            "Pfandbriefgesetz",
+            "Depotgesetz",
+            "**Bausparkassengesetz**",
+            "**Sparkassengesetze der Bundesländer**"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Diese Regeln gelten für die **Gründung** einer Bank ebenso wie für den **laufenden Betrieb**."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Verordnung (EU) Nr. 575/2013",
+          "text": "CRR – Eigenmittelanforderungen."
+        },
+        {
+          "ref": "Verordnung (EU) Nr. 1024/2013",
+          "text": "SSM-Verordnung – Aufsichtsaufgaben der EZB."
+        }
+      ],
+      "memory": "KWG national, CRR fürs Kapital, SSM-Verordnung für die EZB."
+    },
+    {
+      "id": "2.9-c",
+      "title": "Risikoorientierte Aufsicht",
+      "subtitle": "Je mehr Risiko, desto genauer der Blick",
+      "ref": "BWB 2.9",
+      "examRelevance": "S",
+      "checkId": "2.9-Q009",
+      "content": [
+        {
+          "type": "text",
+          "text": "Wie intensiv eine Bank beaufsichtigt wird, hängt von **Art und Umfang ihrer Geschäfte** ab – und damit von den **eingegangenen Risiken**. Das ist die **risikoorientierte Aufsicht**."
+        },
+        {
+          "type": "list",
+          "title": "Darauf achtet die Aufsicht vor allem",
+          "items": [
+            "genügend **Eigenkapital**",
+            "genügend **Liquidität**",
+            "angemessene **Risikokontrollmechanismen**"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Stellt die BaFin in ihrer **Solvenzaufsicht erhebliche Defizite** fest und liegen die gesetzlichen Voraussetzungen vor, kann sie **aufsichtsrechtliche Maßnahmen** ergreifen – gegebenenfalls **in Abstimmung mit der EZB**."
+        },
+        {
+          "type": "example",
+          "text": "Eine kleine Regionalbank mit einfachem Kreditgeschäft wird weniger intensiv geprüft als ein Institut mit umfangreichem, riskantem Handelsgeschäft."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 25a KWG",
+          "text": "Ordnungsgemäße Geschäftsorganisation, Risikomanagement."
+        },
+        {
+          "ref": "§§ 45 ff. KWG",
+          "text": "Maßnahmen bei unzureichenden Eigenmitteln oder unzureichender Liquidität."
+        }
+      ],
+      "memory": "Eigenkapital, Liquidität, Risikokontrolle – die drei Prüfpunkte.",
+      "examTrap": "Die Intensität richtet sich nach dem Risiko, nicht nach der Größe des Instituts allein."
+    },
+    {
+      "id": "2.9-d",
+      "title": "Europäische Aufsicht: der SSM",
+      "subtitle": "EZB und nationale Behörden arbeiten zusammen",
+      "ref": "BWB 2.9",
+      "examRelevance": "S",
+      "checkId": "2.9-Q014",
+      "content": [
+        {
+          "type": "text",
+          "text": "Der **einheitliche europäische Aufsichtsmechanismus** (Single Supervisory Mechanism, **SSM**) ist am **4. November 2014** gestartet."
+        },
+        {
+          "type": "list",
+          "title": "Ziele",
+          "items": [
+            "**Sicherheit und Solidität** des europäischen Bankensystems gewährleisten",
+            "**finanzielle Integration und Stabilität** in Europa verbessern"
+          ]
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Europäische Zentralbank (EZB)",
+            "text": "Nimmt die ihr durch die SSM-Verordnung übertragenen Aufsichtsaufgaben wahr. Die **bedeutenden Institute** beaufsichtigt sie **direkt**."
+          },
+          "right": {
+            "title": "BaFin",
+            "text": "Ist die **national zuständige Behörde** (National Competent Authority, NCA) und damit Teil der europäischen Aufsicht. Die **weniger bedeutenden Institute** beaufsichtigt sie zusammen mit der Bundesbank."
+          }
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Die Unterscheidung in bedeutende und weniger bedeutende Institute ist eine Ergänzung zum BWB-Skript. Die dort genannten Institutszahlen stammen von 2016 und sind kein Lernstoff."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Verordnung (EU) Nr. 1024/2013",
+          "text": "SSM-Verordnung: Aufgaben der EZB, Zusammenarbeit mit den nationalen Behörden."
+        }
+      ],
+      "memory": "SSM = EZB plus nationale Aufseher. In Deutschland ist die BaFin die nationale Behörde.",
+      "examTrap": "Der SSM ersetzt die BaFin nicht – sie ist Teil davon."
+    },
+    {
+      "id": "2.9-e",
+      "title": "BaFin und Bundesbank – und wer den Vermittler beaufsichtigt",
+      "subtitle": "Arbeitsteilung nach § 7 KWG",
+      "ref": "BWB 2.9",
+      "examRelevance": "S",
+      "checkId": "2.9-Q019",
+      "content": [
+        {
+          "type": "text",
+          "text": "In Deutschland **teilen sich BaFin und Deutsche Bundesbank** die Bankenaufsicht. Die Zusammenarbeit regelt **§ 7 KWG**."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Deutsche Bundesbank",
+            "text": "**Laufende Überwachung:** wertet die regelmäßigen **Berichte und Meldungen** der Institute aus und prüft, ob **Eigenkapitalausstattung** und **Risikosteuerung** angemessen sind."
+          },
+          "right": {
+            "title": "BaFin",
+            "text": "Trifft die **aufsichtsrechtlichen Maßnahmen** – von der Erlaubnis bis zum Eingriff bei Defiziten."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Wie die laufende Überwachung durchgeführt und ihre Qualität gesichert wird, legt die **Aufsichtsrichtlinie** fest, die die BaFin mit der Bundesbank erlassen hat."
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung: Aufsicht über den Vermittler",
+          "text": "Der **Immobiliardarlehensvermittler** wird **nicht von der BaFin** beaufsichtigt. Zuständig ist die nach Landesrecht bestimmte Behörde der Gewerbeaufsicht – je nach Bundesland die IHK oder das Gewerbeamt (Level 5 und 6)."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 7 KWG",
+          "text": "Zusammenarbeit von BaFin und Deutscher Bundesbank."
+        },
+        {
+          "ref": "§ 34i GewO",
+          "text": "Erlaubnis und Aufsicht über Immobiliardarlehensvermittler durch die zuständige Behörde."
+        }
+      ],
+      "memory": "Bundesbank wertet aus, BaFin greift ein.",
+      "examTrap": "Die Bundesbank prüft und meldet – Maßnahmen gegen ein Institut erlässt die BaFin."
+    }
+  ]
+}

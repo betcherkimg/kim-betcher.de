@@ -27,7 +27,13 @@ export function validateManifest(raw) {
     if (seen.has(c.id)) { errors.push(`Level-ID ${c.id} doppelt`); return false; }
     seen.add(c.id);
     return true;
-  }).map((c, i) => ({ id: c.id, level: isInt(c.level) ? c.level : i + 1, title: c.title, short: c.short || '', block: c.block || 'questline-1', available: c.available === true }));
+  }).map((c, i) => ({
+    id: c.id, level: isInt(c.level) ? c.level : i + 1, title: c.title, short: c.short || '', block: c.block || 'questline-1', available: c.available === true,
+    // Optional: Boss-Kurzinfo für die Weltkarte (Name, Titel, Porträt) – so braucht ein neues Level keine Code-Änderung
+    boss: c.boss && typeof c.boss === 'object'
+      ? { name: isStr(c.boss.name) ? c.boss.name : '', title: isStr(c.boss.title) ? c.boss.title : '', bust: isStr(c.boss.bust) ? c.boss.bust : '' }
+      : null,
+  }));
   return { ok: errors.length === 0 && chapters.length > 0, errors, data: { contentVersion: raw.contentVersion | 0, blocks: raw.blocks || {}, chapters } };
 }
 
@@ -102,6 +108,8 @@ async function fetchJson(url) {
   } catch {
     throw new Error(`Keine Verbindung – ${url} ist auch nicht im Offline-Speicher.`);
   }
+  // Der Service Worker antwortet mit 503, wenn weder Netz noch Offline-Kopie da sind
+  if (res.status === 503) throw new Error(`Keine Verbindung – ${url} ist auch nicht im Offline-Speicher.`);
   if (!res.ok) throw new Error(`${url} nicht gefunden (HTTP ${res.status}).`);
   try {
     return await res.json();

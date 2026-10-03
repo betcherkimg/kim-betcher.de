@@ -1,0 +1,395 @@
+{
+  "chapter": "2.5",
+  "boss": {
+    "name": "Zunftmeister Torwacht",
+    "title": "Prüfer des Zugangs",
+    "image": "assets/bosses/zunftmeister-torwacht.webp",
+    "bust": "assets/bosses/zunftmeister-torwacht-bust.webp",
+    "accent": "#DC944F",
+    "taunts": {
+      "intro": "Halt! Durch mein Tor kommt nur, wer Erlaubnis, Nachweis und Versicherung vorzeigt.",
+      "hit": [
+        "Der Nachweis ist in Ordnung.",
+        "Du kennst die Zunftregeln. Noch.",
+        "Das Tor öffnet sich einen Spalt."
+      ],
+      "miss": [
+        "Zutritt verweigert!",
+        "Ohne Nachweis kein Durchlass.",
+        "Torwacht schließt das Tor."
+      ],
+      "timeout": [
+        "Frist versäumt.",
+        "Die Sprechzeit ist vorbei."
+      ],
+      "final": "Letzte Prüfung. Erlaubnis oder Versagung.",
+      "low": "Mein Tor … es gibt nach …",
+      "defeat": "Zugang gewährt. Trag dich ins Register ein.",
+      "victory": "Versagt. Zurück ins Lernskript."
+    }
+  },
+  "questions": [
+    {
+      "id": "2.5-B001",
+      "chapter": "2.5",
+      "section": "2.5.1-a",
+      "topic": [
+        "§ 34c",
+        "§ 34i"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Vermittler hat nur die Erlaubnis nach § 34c GewO. Er vermittelt ein Darlehen ohne Grundschuld für den Kauf einer Wohnung. Zulässig?",
+      "answers": [
+        "Nein, nötig wäre § 34f",
+        "Nein, dafür braucht er § 34i",
+        "Ja, ohne Grundschuld genügt § 34c",
+        "Ja, § 34c deckt Darlehen aller Art"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Ein Darlehen für den Erwerb ist auch ohne Grundschuld ein Immobiliar-Verbraucherdarlehen. Dessen Vermittlung verlangt die Erlaubnis nach § 34i GewO."
+    },
+    {
+      "id": "2.5-B002",
+      "chapter": "2.5",
+      "section": "2.5.1-a",
+      "topic": [
+        "Angestellte",
+        "Erlaubnispflicht"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Eine angestellte Kreditberaterin einer Bank berät Kunden zur Baufinanzierung. Braucht sie selbst eine Erlaubnis nach § 34i GewO?",
+      "answers": [
+        "Ja, jeder Berater braucht sie",
+        "Ja, sobald sie Provision erhält",
+        "Nein, sie ist angestellt",
+        "Nein, aber eine Erlaubnis nach § 34c"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Erlaubnispflicht trifft Gewerbetreibende. Angestellte brauchen keine eigene Erlaubnis; Kreditinstitute mit KWG-Erlaubnis ebenfalls nicht."
+    },
+    {
+      "id": "2.5-B003",
+      "chapter": "2.5",
+      "section": "2.5.1-a",
+      "topic": [
+        "Inland",
+        "Versagung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Eine Gesellschaft mit Hauptsitz in Zürich und einem Zweigbüro in Konstanz beantragt die Erlaubnis nach § 34i GewO. Ergebnis?",
+      "answers": [
+        "Versagung – Gesellschaften sind ausgeschlossen",
+        "Erteilung mit höherer Versicherungssumme",
+        "Versagung – der Hauptsitz liegt nicht im Inland",
+        "Erteilung – das Büro in Konstanz genügt"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Hauptniederlassung oder Hauptsitz müssen im Inland liegen. Ein Zweigbüro reicht nicht."
+    },
+    {
+      "id": "2.5-B004",
+      "chapter": "2.5",
+      "section": "2.5.1-b",
+      "topic": [
+        "Studium",
+        "Berufserfahrung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Betriebswirt mit Hochschulabschluss hat zwei Jahre Immobiliardarlehen vermittelt. Ist seine Sachkunde nachgewiesen?",
+      "answers": [
+        "Ja, zwei Jahre reichen aus",
+        "Ja, das Studium genügt",
+        "Nein, ein Studium zählt nie",
+        "Nein, ein Jahr fehlt"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Ein wirtschaftswissenschaftliches Studium wird nur mit drei Jahren Berufserfahrung in der Immobiliardarlehensvermittlung anerkannt. Bis dahin bleibt die Sachkundeprüfung."
+    },
+    {
+      "id": "2.5-B005",
+      "chapter": "2.5",
+      "section": "2.5.1-c",
+      "topic": [
+        "Fünfjahresfrist",
+        "Zuverlässigkeit"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Antragsteller wurde vor sieben Jahren rechtskräftig wegen Betrugs verurteilt, seither nichts. Greift die Regelvermutung der Unzuverlässigkeit?",
+      "answers": [
+        "Nein, Betrug ist kein einschlägiges Delikt",
+        "Ja, die Frist beträgt zehn Jahre",
+        "Ja, Betrug wirkt zeitlich unbegrenzt",
+        "Nein, die fünf Jahre sind abgelaufen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Maßgeblich sind rechtskräftige Verurteilungen in den letzten fünf Jahren vor Antragstellung. Betrug ist einschlägig, liegt hier aber zu lange zurück."
+    },
+    {
+      "id": "2.5-B006",
+      "chapter": "2.5",
+      "section": "2.5.1-c",
+      "topic": [
+        "Sachkunde",
+        "Vermögensverhältnisse"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Antragstellerin: Bankkauffrau, Versicherung vorhanden, im letzten Jahr Vermögensauskunft abgegeben. Was gilt?",
+      "answers": [
+        "Ihre Vermögensverhältnisse gelten als ungeordnet",
+        "Ihre Sachkunde ist nachgewiesen",
+        "Die Erlaubnis ist zu erteilen",
+        "Sie muss die Sachkundeprüfung ablegen"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Der Abschluss als Bankkauffrau ersetzt die Prüfung. Die Abgabe der Vermögensauskunft ist aber ein Regelbeispiel für ungeordnete Vermögensverhältnisse – die Erlaubnis scheitert daran."
+    },
+    {
+      "id": "2.5-B007",
+      "chapter": "2.5",
+      "section": "2.5.1-c",
+      "topic": [
+        "Beschäftigte",
+        "Zuverlässigkeit"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Vermittler beschäftigt einen Kundenberater, der vor zwei Jahren wegen Unterschlagung verurteilt wurde. Ist das ein Problem?",
+      "answers": [
+        "Ja, auch Beschäftigte zählen",
+        "Ja, aber nur bei Honorarberatung",
+        "Nein, es zählt nur der Inhaber",
+        "Nein, solange der Berater sachkundig ist"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Vermittler muss sich von der Zuverlässigkeit der Personen überzeugen, die unmittelbar an Vermittlung und Beratung mitwirken."
+    },
+    {
+      "id": "2.5-B008",
+      "chapter": "2.5",
+      "section": "2.5.1-d",
+      "topic": [
+        "Jahressumme",
+        "Mindestdeckung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Mindestdeckung. Im selben Jahr entstehen zwei Schäden von je 400.000 €. Was zahlt die Versicherung höchstens?",
+      "answers": [
+        "750.000 €",
+        "920.000 €",
+        "460.000 €",
+        "800.000 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Jeder Fall liegt unter 460.000 €. Für alle Fälle eines Jahres ist die Leistung aber auf 750.000 € begrenzt."
+    },
+    {
+      "id": "2.5-B009",
+      "chapter": "2.5",
+      "section": "2.5.1-d",
+      "topic": [
+        "Summe je Fall",
+        "Mindestdeckung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Mindestdeckung. Ein einzelner Beratungsfehler verursacht 500.000 € Schaden. Was zahlt die Versicherung höchstens?",
+      "answers": [
+        "750.000 €",
+        "250.000 €",
+        "460.000 €",
+        "500.000 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Je Vermittlungs- und Beratungsfall sind bei Mindestdeckung 460.000 € versichert. Den Rest trägt der Vermittler selbst."
+    },
+    {
+      "id": "2.5-B010",
+      "chapter": "2.5",
+      "section": "2.5.1-d",
+      "topic": [
+        "Leistungsumfang",
+        "Vergleich"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Kunde erstreitet per Vergleich 80.000 € wegen Falschberatung. Dazu kommen Anwalts- und Gerichtskosten. Was deckt die Berufshaftpflicht?",
+      "answers": [
+        "Schadensersatz und die Kosten",
+        "Nur Ansprüche aus Urteilen",
+        "Nichts – Vergleiche sind freiwillig",
+        "Nur die Anwaltskosten"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Versicherung tritt für Schadensersatzansprüche aus Vergleich oder Urteil ein und trägt Gerichts- und Anwaltskosten."
+    },
+    {
+      "id": "2.5-B011",
+      "chapter": "2.5",
+      "section": "2.5.1-e",
+      "topic": [
+        "Register",
+        "Unverzüglich"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Erlaubnis am 1.3., Tätigkeit ab 1.4., Registereintrag erst im Oktober beantragt. Bewertung?",
+      "answers": [
+        "In Ordnung – die Erlaubnis genügt",
+        "Verstoß – einzutragen ist unverzüglich",
+        "In Ordnung – ein Jahr Zeit",
+        "Verstoß – Eintrag vor der Erlaubnis"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Erlaubnis und Registrierung sind zwei Schritte. Die Eintragung ist unverzüglich nach Aufnahme der Tätigkeit zu veranlassen."
+    },
+    {
+      "id": "2.5-B012",
+      "chapter": "2.5",
+      "section": "2.5.1-f",
+      "topic": [
+        "Honorarberater",
+        "Marktbreite"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Honorarberater vergleicht nur zwei Darlehen seiner Hausbank und empfiehlt das günstigere. Bewertung?",
+      "answers": [
+        "Unzulässig – er darf nichts empfehlen",
+        "Zulässig, wenn der Kunde zustimmt",
+        "Unzulässig – zu wenig Marktbreite",
+        "Zulässig – zwei Angebote genügen"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Der Honorarberater muss eine ausreichende Anzahl am Markt verfügbarer Darlehen auf Geeignetheit prüfen und dann eine Empfehlung aussprechen."
+    },
+    {
+      "id": "2.5-B013",
+      "chapter": "2.5",
+      "section": "2.5.2-a",
+      "topic": [
+        "Handelsvertreter",
+        "Interessenvertretung"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein selbstständiger Handelsvertreter (§ 84 HGB) vermittelt für eine Bausparkasse. Was trifft zu?",
+      "answers": [
+        "Ihn vertritt ein Berufsverband oder eine Berufsvereinigung",
+        "Er ist Arbeitnehmer mit Tarifbindung",
+        "Er handelt in fremdem Namen",
+        "Er ist an kein Unternehmen gebunden"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "Der Handelsvertreter ist selbstständig, aber ständig für ein Unternehmen in fremdem Namen tätig. Seine Interessen vertreten Berufsverbände oder Berufsvereinigungen."
+    },
+    {
+      "id": "2.5-B014",
+      "chapter": "2.5",
+      "section": "2.5.2-a",
+      "topic": [
+        "Unlauterer Wettbewerb",
+        "Berufsverband"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Konkurrent wirbt irreführend mit einer „staatlich geprüften Zinsgarantie“. Wer geht dagegen typischerweise vor?",
+      "answers": [
+        "Der Betriebsrat",
+        "Der Berufsverband",
+        "Das Vermittlerregister",
+        "Die Gewerkschaft"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Bekämpfung des unlauteren Wettbewerbs gehört zu den Aufgaben der Berufsverbände – notfalls über Musterprozesse."
+    },
+    {
+      "id": "2.5-B015",
+      "chapter": "2.5",
+      "section": "2.5.3-a",
+      "topic": [
+        "Gewerkschaft",
+        "Tarifvertrag"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Angestellte Bankberater wollen 6 % mehr Gehalt durchsetzen. Wer verhandelt – und mit welchem Druckmittel?",
+      "answers": [
+        "Die IHK, per Schlichtung",
+        "Der Berufsverband, per Musterprozess",
+        "Der Berufsverband, mit Streik",
+        "Die Gewerkschaft, notfalls mit Streik"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Tarifverträge schließen die Gewerkschaften. Ihr Druckmittel in der Tarifauseinandersetzung ist der Streik."
+    }
+  ]
+}

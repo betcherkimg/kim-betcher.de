@@ -1,0 +1,928 @@
+{
+  "chapter": "3.7",
+  "title": "Kreditwürdigkeitsprüfung",
+  "sources": [
+    "BWB-Lernskript 3.7.1 Grundlagen (lernskript_03_07_01.pdf, 4 Seiten)",
+    "BWB-Lernskript 3.7.2 Kreditfähigkeit (lernskript_03_07_02.pdf, 4 Seiten)",
+    "BWB-Lernskript 3.7.3 Kreditwürdigkeit (lernskript_03_07_03.pdf, 12 Seiten)",
+    "BWB-Lernskript 3.7.4 Bonitätsnachweis (lernskript_03_07_04.pdf, 5 Seiten)",
+    "BWB-Lernskript 3.7.5 Tragfähigkeit der Finanzierung (lernskript_03_07_05.pdf, 7 Seiten)"
+  ],
+  "sections": [
+    {
+      "id": "3.7.1-a",
+      "title": "Kredit heißt Vertrauen",
+      "subtitle": "Bonität und Prüfungspflicht",
+      "ref": "BWB 3.7.1, S. 2–3",
+      "examRelevance": "S+P",
+      "checkId": "3.7-Q001",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Kredit** kommt vom lateinischen „credere“ – glauben. Der Kreditgeber leistet **heute**, der Kreditnehmer verspricht eine Gegenleistung in der **Zukunft**. So wird der eine zum **Gläubiger**, der andere zum **Schuldner**."
+        },
+        {
+          "type": "text",
+          "text": "**Bonität** (lateinisch „bonus“ – gut) heißt: Der Kunde ist gut genug, Zinsen, Tilgung und Kosten zu erbringen. Vor jeder Kreditentscheidung steht deshalb ein **Bonitätsurteil** – eine Einschätzung des künftigen Verhaltens und der künftigen wirtschaftlichen Lage des Kunden. Besonders wichtig ist es bei einer **neuen Kundenverbindung**."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Wer prüft?",
+            "Rechtsgrundlage",
+            "Zweck"
+          ],
+          "rows": [
+            [
+              "Kreditinstitute",
+              "§ 18a KWG",
+              "Aufsichtsrecht"
+            ],
+            [
+              "Versicherungen",
+              "§ 15a VAG",
+              "Aufsichtsrecht"
+            ],
+            [
+              "Alle Darlehensgeber bei Verbraucherdarlehen",
+              "§§ 505a ff. BGB",
+              "Zivilrecht – schützt den Verbraucher"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Grundsätze",
+          "items": [
+            "Gesammelt werden Daten über die **persönlichen und materiellen Verhältnisse** des Kunden.",
+            "Je genauer die Datensammlung, desto sicherer die Kreditentscheidung.",
+            "Alle Angaben sind **vollständig** zu machen und **eindeutig zu belegen**.",
+            "**Bonität geht vor Sicherheit:** Das Einkommen zählt mehr als die Immobilie (§ 505b Abs. 2 BGB).",
+            "Prüft der Kreditgeber nicht ordentlich, treffen ihn die Folgen selbst (Abschnitt „Wenn die Prüfung fehlerhaft war“)."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Im Fließtext nennt das Skript „§§ 18 ff. KWG“ und „§ 15 VAG“. Für Verbraucherdarlehen einschlägig sind **§ 18a KWG** und **§ 15a VAG** – so steht es auch im Lernziel des Skripts."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 505a Abs. 1 BGB",
+          "text": "Der Darlehensgeber hat vor dem Abschluss eines Verbraucherdarlehensvertrags die Kreditwürdigkeit des Darlehensnehmers zu prüfen."
+        },
+        {
+          "ref": "§ 18a Abs. 1 KWG",
+          "text": "Kreditinstitute prüfen vor Abschluss eines Verbraucherdarlehensvertrags die Kreditwürdigkeit des Verbrauchers."
+        }
+      ],
+      "memory": "Bonität vor Sicherheit: erst das Einkommen, dann die Immobilie.",
+      "examTrap": "KWG und VAG sind Aufsichtsrecht. Die Rechte des Kunden bei fehlerhafter Prüfung stehen im BGB."
+    },
+    {
+      "id": "3.7.1-b",
+      "title": "Kreditscoring",
+      "subtitle": "Punkte statt Bauchgefühl",
+      "ref": "BWB 3.7.1, S. 3–4",
+      "examRelevance": "S",
+      "checkId": "3.7-Q006",
+      "content": [
+        {
+          "type": "text",
+          "text": "Ein **Kreditscore** ist ein **Zahlenwert auf Basis einer statistischen Analyse**, der die Kreditwürdigkeit einer Person abbildet. Mit dem Scoring ermitteln Unternehmen die Kreditwürdigkeit nach einem festen Verfahren mehr oder weniger **automatisiert**."
+        },
+        {
+          "type": "steps",
+          "title": "So entsteht ein Score",
+          "items": [
+            {
+              "title": "Merkmale erfassen",
+              "text": "zum Beispiel „Kunde seit“, Wohnort, Beruf, Sicherheiten."
+            },
+            {
+              "title": "Punkte vergeben und gewichten",
+              "text": "nach festen Regeln – der **Scorekarte**."
+            },
+            {
+              "title": "Zusammenfassen",
+              "text": "zu einer einzigen Bonitätsnote, dem Gesamtscore."
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Wofür Scores genutzt werden",
+          "items": [
+            "**Kreditentscheidung:** Reicht die Bonität, kann der Kredit gewährt werden.",
+            "**Zinssatz:** Der Score kann die Kondition bestimmen.",
+            "**Kreditlinie:** Der Score kann die Höhe des Rahmens bestimmen."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Ziel** ist es, Risiken zu vermeiden und zu **objektivierten Entscheidungen** zu kommen. Je besser das Modell die Wirklichkeit abbildet, desto weniger Kreditausfälle. Deshalb müssen Scoring-Modelle und ihre Merkmale **ständig gepflegt** werden."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Kreditfähigkeit",
+            "text": "**Darf** der Kunde? Die rechtliche Fähigkeit, wirksam Kreditverträge zu schließen."
+          },
+          "right": {
+            "title": "Kreditwürdigkeit",
+            "text": "**Kann und will** der Kunde? Persönliche Zuverlässigkeit und wirtschaftliche Leistungsfähigkeit."
+          }
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Die Bonitätsprüfung fragt immer beides: **Kann** der Kunde die Verpflichtungen tragen – und **will** er es? Geprüft wird zuerst die Kreditfähigkeit, dann die Kreditwürdigkeit."
+        }
+      ],
+      "laws": [],
+      "memory": "Score = statistischer Zahlenwert. Scorekarte = Regeln für Punkte und Gewichte.",
+      "examTrap": "Ein Score dient nicht nur dem Ja oder Nein. Er kann auch Zinssatz und Kreditlinie bestimmen."
+    },
+    {
+      "id": "3.7.2-a",
+      "title": "Kreditfähigkeit",
+      "subtitle": "Rechtsfähig und geschäftsfähig",
+      "ref": "BWB 3.7.2, S. 2–3",
+      "examRelevance": "S+P",
+      "checkId": "3.7-Q010",
+      "content": [
+        {
+          "type": "text",
+          "text": "Vor der eigentlichen Bonitätsprüfung steht die Frage: Ist der Kunde überhaupt **berechtigt, rechtsgültige Kreditgeschäfte abzuschließen**? Unterschieden werden natürliche Personen, Personengemeinschaften (Eheleute) sowie Handelsgesellschaften und juristische Personen."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Rechtsfähigkeit",
+            "text": "Die Fähigkeit, **Träger von Rechten und Pflichten** zu sein. Sie beginnt mit der **Vollendung der Geburt** (§ 1 BGB). Geprüft wird sie über die **Legitimationsprüfung**."
+          },
+          "right": {
+            "title": "Geschäftsfähigkeit",
+            "text": "Die Fähigkeit, **Rechtsgeschäfte wirksam selbst vorzunehmen**. Für ein Kreditgeschäft muss der Kunde **voll geschäftsfähig** sein – in der Regel ab dem **18. Geburtstag**."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Rechtsfähig sind neben allen natürlichen Personen auch **juristische Personen** und bestimmte **Personengesellschaften**."
+        },
+        {
+          "type": "list",
+          "title": "Minderjährige brauchen für einen Kredit",
+          "items": [
+            "die **Zustimmung des gesetzlichen Vertreters** und",
+            "die **Genehmigung des Familiengerichts**."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Wichtig:** Auch wenn die Eltern zustimmen – **Schuldner ist der Minderjährige**. Er haftet für den Kredit."
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das Skript nennt § 1822 Nr. 8 BGB. Die Vorschrift ist seit 2023 aufgehoben. Heute ergibt sich die Genehmigungspflicht aus **§ 1643 Abs. 1 BGB in Verbindung mit § 1854 Nr. 2 BGB**. Am Inhalt hat sich nichts geändert."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 1 BGB",
+          "text": "Die Rechtsfähigkeit des Menschen beginnt mit der Vollendung der Geburt."
+        },
+        {
+          "ref": "§ 1643 Abs. 1 BGB",
+          "text": "Die Eltern bedürfen der Genehmigung des Familiengerichts in den Fällen, in denen ein Betreuer die Genehmigung des Betreuungsgerichts braucht – dazu gehört die Aufnahme von Geld auf Kredit."
+        }
+      ],
+      "memory": "Rechtsfähig ab Geburt, voll geschäftsfähig ab 18.",
+      "examTrap": "Stimmen die Eltern zu, haften nicht sie. Schuldner bleibt der Minderjährige."
+    },
+    {
+      "id": "3.7.2-b",
+      "title": "Ehepaare und Gesellschaften",
+      "subtitle": "Wer unterschreibt, wer haftet",
+      "ref": "BWB 3.7.2, S. 3–4",
+      "examRelevance": "S",
+      "checkId": "3.7-Q015",
+      "content": [
+        {
+          "type": "compare",
+          "left": {
+            "title": "Zugewinngemeinschaft",
+            "text": "Der **gesetzliche Güterstand**. Er entsteht **automatisch mit der Eheschließung**. Bei einer Scheidung wird der Zugewinn ausgeglichen. In der Regel **unterschreiben beide** den Kreditvertrag – damit sind beide Kreditnehmer."
+          },
+          "right": {
+            "title": "Gütertrennung",
+            "text": "Wird im **Ehevertrag** vereinbart. Die Vermögen bleiben getrennt und werden getrennt verwaltet. Für ein Darlehen ist der **Gütertrennungsvertrag vorzulegen**. Dann kann jeder **einzeln** einen Kredit aufnehmen – wenn das Institut einverstanden ist."
+          }
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das Skript verweist auf das Güterrechtsregister beim Amtsgericht. Dieses Register wurde zum **1. Januar 2023 abgeschafft**. Nachgewiesen wird die Gütertrennung durch den Ehevertrag."
+        },
+        {
+          "type": "text",
+          "text": "Treten **Personengesellschaften oder juristische Personen** als Kreditnehmer auf, ist genau zu prüfen, ob die handelnden Personen kraft **gesetzlicher oder vertraglicher Vertretungsmacht** zur Kreditaufnahme berechtigt sind."
+        },
+        {
+          "type": "list",
+          "title": "Zusätzliche Unterlagen",
+          "items": [
+            "**Registerauszüge** aus Handels-, Vereins- oder Genossenschaftsregister",
+            "**Satzungen**",
+            "gegebenenfalls **Unterschriftsproben**"
+          ]
+        }
+      ],
+      "laws": [],
+      "memory": "Zugewinngemeinschaft automatisch, Gütertrennung nur per Ehevertrag.",
+      "examTrap": "Unterschreibt nur ein Ehepartner, ist auch nur dieser Kreditnehmer. Die Ehe allein macht den anderen nicht zum Schuldner."
+    },
+    {
+      "id": "3.7.3-a",
+      "title": "Persönliche Kreditwürdigkeit",
+      "subtitle": "Kann man dem Kunden vertrauen?",
+      "ref": "BWB 3.7.3, S. 2–3",
+      "examRelevance": "S+P",
+      "checkId": "3.7-Q019",
+      "content": [
+        {
+          "type": "text",
+          "text": "Die persönliche Kreditwürdigkeit fragt, ob man dem Kunden **persönlich vertrauen** kann. Dieser Teil der Prüfung berührt eine sehr sensible Sphäre."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Kriterium",
+            "Was betrachtet wird"
+          ],
+          "rows": [
+            [
+              "**Integrität**",
+              "Leumund, Zuverlässigkeit, bisherige Erfahrungen – Auskünfte von Schufa oder Creditreform"
+            ],
+            [
+              "**Beruf**",
+              "Ausbildung, derzeitiger Arbeitsplatz und Branche, Stellung in der Firma"
+            ],
+            [
+              "**Familie**",
+              "Familien- und Güterstand, Lebensstil, unterhaltsberechtigte Personen"
+            ],
+            [
+              "**Wohnsituation**",
+              "Eigentum oder Miete, weiteres Immobilienvermögen"
+            ],
+            [
+              "**Vermögen**",
+              "Vorhandene Werte und Rücklagen"
+            ],
+            [
+              "**Alter**",
+              "Berücksichtigt die Laufzeit das Ende der Erwerbstätigkeit?"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Negativmerkmale – führen in der Regel zur Ablehnung",
+          "items": [
+            "Vermögensauskunft gegenüber dem Gerichtsvollzieher",
+            "fruchtlose Pfändung",
+            "Lohnabtretung und Lohnpfändung",
+            "Zwangsvollstreckung aus einem gerichtlichen oder notariellen Titel"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Die Informationen stammen aus dem **Darlehensantrag**. Aufnehmen kann sie meist nur der **Außendienst** – die Darlehensabteilung ist auf diese Zuarbeit angewiesen. Der Kunde legt seine wirtschaftlichen Verhältnisse offen, gegebenenfalls in einer **Selbstauskunft**."
+        },
+        {
+          "type": "steps",
+          "title": "Das Verfahren in drei Schritten",
+          "items": [
+            {
+              "title": "Anfordern",
+              "text": "der erforderlichen Unterlagen."
+            },
+            {
+              "title": "Auswerten",
+              "text": "der Angaben und Belege."
+            },
+            {
+              "title": "Dokumentieren",
+              "text": "des Ergebnisses."
+            }
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das Skript spricht von der „eidesstattlichen Versicherung“. Seit 2013 heißt das Verfahren **Vermögensauskunft**. Außerdem beschreibt das Skript die Schufa-Abfrage als Berechtigung durch den Kunden; heute wird der Kunde in der Regel über die Datenübermittlung **informiert**."
+        }
+      ],
+      "laws": [],
+      "memory": "Sechs Kriterien: Integrität, Beruf, Familie, Wohnsituation, Vermögen, Alter.",
+      "examTrap": "Persönliche Kreditwürdigkeit ist nicht das Einkommen. Das Einkommen gehört zur materiellen Kreditwürdigkeit."
+    },
+    {
+      "id": "3.7.3-b",
+      "title": "Materielle Kreditwürdigkeit",
+      "subtitle": "Nachhaltig prüfen – über die ganze Laufzeit",
+      "ref": "BWB 3.7.3, S. 4–6",
+      "examRelevance": "S+P",
+      "checkId": "3.7-Q024",
+      "content": [
+        {
+          "type": "text",
+          "text": "Der Aufwand aus der Finanzierung und allen sonstigen Verpflichtungen muss **ohne Gefährdung des Lebensunterhalts** tragbar sein. Dafür genügt der Blick auf Einkommen und Vermögen nicht. Entscheidend ist, **welche Belastungen** dem Einkommen gegenüberstehen – heute und in den **weiteren Lebensphasen**."
+        },
+        {
+          "type": "list",
+          "title": "Nachhaltige Kreditwürdigkeitsprüfung",
+          "items": [
+            "Der Kreditgeber muss die Fähigkeit des Kunden zur Bedienung des Kredits **über die gesamte Laufzeit** prüfen und **dokumentieren**.",
+            "Künftige Ereignisse sind einzubeziehen – etwa ein **geringeres Einkommen im Ruhestand**, wenn die Laufzeit so weit reicht.",
+            "Der Kunde muss alle Pflichten aus dem Vertrag in der vereinbarten Weise erfüllen können."
+          ]
+        },
+        {
+          "type": "table",
+          "head": [
+            "Vertragsart",
+            "Der Vertrag darf nur geschlossen werden, wenn …"
+          ],
+          "rows": [
+            [
+              "Allgemein-Verbraucherdarlehen",
+              "**keine erheblichen Zweifel** an der Rückzahlung bestehen"
+            ],
+            [
+              "Immobiliar-Verbraucherdarlehen",
+              "es **wahrscheinlich** ist, dass der Kunde seinen Verpflichtungen nachkommt"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "§ 505b Abs. 2 BGB für Immobiliar-Verbraucherdarlehen",
+          "items": [
+            "Grundlage sind **notwendige, ausreichende und angemessene Informationen** zu Einkommen, Ausgaben und anderen wirtschaftlichen Umständen.",
+            "Die Prüfung muss **eingehend** sein.",
+            "Sie darf sich **nicht hauptsächlich** darauf stützen, dass der Wert der Wohnimmobilie das Darlehen übersteigt oder steigen wird.",
+            "**Ausnahme:** Das Darlehen dient dem **Bau oder der Renovierung** der Wohnimmobilie."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Folge:** Fällt die Prüfung negativ aus, **darf** der Darlehensgeber den Vertrag nicht schließen. Das Skript formuliert es so: Der Kunde hat einen Rechtsanspruch auf Ablehnung seines Kreditantrags."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "§ 18a KWG und das Versicherungsaufsichtsrecht regeln die Prüfung ebenfalls – aber aus **aufsichtsrechtlichen** Gründen. Seit der Umsetzung der Wohnimmobilienkreditrichtlinie hat der Kunde zusätzlich einen **zivilrechtlichen Anspruch** auf eine ordnungsgemäße Prüfung."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 505a Abs. 1 Satz 2 BGB",
+          "text": "Der Vertrag darf nur geschlossen werden, wenn keine erheblichen Zweifel bestehen (Allgemein-Verbraucherdarlehen) beziehungsweise es wahrscheinlich ist (Immobiliar-Verbraucherdarlehen), dass der Darlehensnehmer seinen Verpflichtungen vertragsgemäß nachkommt."
+        },
+        {
+          "ref": "§ 505b Abs. 2 BGB",
+          "text": "Eingehende Prüfung auf der Grundlage notwendiger, ausreichender und angemessener Informationen; kein hauptsächliches Abstellen auf den Wert der Wohnimmobilie, außer bei Bau oder Renovierung."
+        }
+      ],
+      "memory": "Immobiliar: „wahrscheinlich“. Allgemein: „keine erheblichen Zweifel“.",
+      "examTrap": "Die Rate von heute reicht nicht. Geprüft wird die Tragfähigkeit über die ganze Laufzeit – auch im Ruhestand."
+    },
+    {
+      "id": "3.7.3-c",
+      "title": "Wenn die Prüfung fehlerhaft war",
+      "subtitle": "Sanktionen nach § 505d und § 499 BGB",
+      "ref": "BWB 3.7.3, S. 6–8; 3.7.4, S. 2",
+      "examRelevance": "S+P",
+      "checkId": "3.7-Q029",
+      "content": [
+        {
+          "type": "text",
+          "text": "Früher diente die Prüfpflicht nur dem öffentlichen Interesse und der Sicherheit des Bankensystems. Der Verbraucher konnte daraus kaum Rechte ableiten. Seit der Umsetzung der Wohnimmobilienkreditrichtlinie **schützt die Pflicht den Verbraucher** – mit eigenen Sanktionsrechten."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Folge des Verstoßes",
+            "Inhalt"
+          ],
+          "rows": [
+            [
+              "**Zinsermäßigung**",
+              "Gebundener Sollzins sinkt auf den marktüblichen **Pfandbriefzins** mit der Laufzeit der Sollzinsbindung"
+            ],
+            [
+              "**Zinsermäßigung bei variablem Zins**",
+              "Sinkt auf den marktüblichen Zinssatz für **Dreimonatsgeld** unter europäischen Banken"
+            ],
+            [
+              "**Kündigungsrecht des Kunden**",
+              "**Jederzeit fristlos**, ohne Vorfälligkeitsentschädigung"
+            ],
+            [
+              "**Kein Kündigungsrecht der Bank**",
+              "Die Bank kann nicht allein wegen unvollständiger Angaben oder fehlerhafter Prüfung kündigen (§ 499 Abs. 3 BGB)"
+            ],
+            [
+              "**Keine Ansprüche wegen Pflichtverletzung**",
+              "wenn der Zahlungsausfall auf einem Umstand beruht, bei dem der Vertrag gar nicht hätte geschlossen werden dürfen"
+            ]
+          ]
+        },
+        {
+          "type": "example",
+          "title": "Skriptbeispiel 1",
+          "text": "Zehn Jahre Zinsbindung. Nach vier Jahren wird der Kunde arbeitslos und gerät in Rückstand. Die Bank kündigt. Es zeigt sich: Schon beim Abschluss war bekannt, dass das Arbeitsverhältnis **befristet** war – die Bank hat das nicht berücksichtigt. **Folge:** Der Darlehensvertrag bleibt bestehen, und der Zins sinkt auf den **zehnjährigen Pfandbriefzins**."
+        },
+        {
+          "type": "example",
+          "title": "Skriptbeispiel 2",
+          "text": "15 Jahre Zinsbindung. Nach fünf Jahren sind die Zinsen stark gefallen. Der Kunde beruft sich auf eine fehlerhafte Kreditwürdigkeitsprüfung. **Folge:** Hat die Bank tatsächlich gegen die Prüfpflicht verstoßen, kann der Kunde **sofort kündigen** – ohne Vorfälligkeitsentschädigung."
+        },
+        {
+          "type": "list",
+          "title": "Grenzen der Sanktionen",
+          "items": [
+            "Der Vertrag hätte **auch bei ordnungsgemäßer Prüfung** geschlossen werden dürfen – dann gibt es weder Zinsermäßigung noch Sonderkündigung.",
+            "Der Kunde hat Auskünfte **vorsätzlich oder grob fahrlässig** falsch erteilt oder vorenthalten.",
+            "Die Bank darf doch kündigen, wenn der Kunde Informationen **wissentlich vorenthalten oder gefälscht** hat."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Daneben nennt das Skript die Haftung für **Falschberatung** (Schadensersatz bei falscher Produktempfehlung) und den Verlust von Rechten bei **fehlender Aufklärung** – etwa des Anspruchs auf Vorfälligkeitsentschädigung."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 505d Abs. 1 BGB",
+          "text": "Bei Verstoß gegen die Pflicht zur Kreditwürdigkeitsprüfung ermäßigt sich der Sollzins auf den marktüblichen Kapitalmarktzins; der Darlehensnehmer kann jederzeit fristlos kündigen, ein Anspruch auf Vorfälligkeitsentschädigung besteht nicht."
+        },
+        {
+          "ref": "§ 499 Abs. 3 BGB",
+          "text": "Keine Kündigung durch den Darlehensgeber allein wegen unvollständiger Angaben oder nicht ordnungsgemäßer Kreditwürdigkeitsprüfung – außer der Darlehensnehmer hat Informationen wissentlich vorenthalten oder gefälscht."
+        }
+      ],
+      "memory": "Fehlerhafte Prüfung: Pfandbriefzins, fristlose Kündigung ohne Entschädigung, keine Bankkündigung.",
+      "examTrap": "Der Vertrag wird nicht unwirksam. Er bleibt bestehen – zu einem niedrigeren Zins."
+    },
+    {
+      "id": "3.7.3-d",
+      "title": "Einkommen",
+      "subtitle": "Was zählt – und was nicht",
+      "ref": "BWB 3.7.3, S. 8–11",
+      "examRelevance": "S+P",
+      "checkId": "3.7-Q034",
+      "content": [
+        {
+          "type": "text",
+          "text": "Grundlage ist in der Regel das **monatliche Nettoeinkommen** der Familie. Es kann aus mehreren Quellen stammen. Angerechnet wird nur, was **regelmäßig und nachhaltig** fließt."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Einkunftsart",
+            "Behandlung"
+          ],
+          "rows": [
+            [
+              "**Lohn und Gehalt**",
+              "Nettoeinkommen des Kunden, des Ehegatten und weiterer Gesamtschuldner"
+            ],
+            [
+              "**13. und 14. Gehalt, Minijob**",
+              "Je nach Kreditgeber unterschiedlich einbezogen"
+            ],
+            [
+              "**Saisoneinkünfte**",
+              "Dürfen nicht auf das ganze Jahr hochgerechnet werden (Bau, Gastronomie)"
+            ],
+            [
+              "**Selbstständige, Freiberufler**",
+              "Keine pauschale Aussage – jeder Kreditgeber hat eine eigene Politik"
+            ],
+            [
+              "**Renten und Pensionen**",
+              "Besonders genau prüfen; Grundlage sind Bescheide über dauerhafte Bezüge"
+            ],
+            [
+              "**Nebentätigkeit**",
+              "Bei vielen Kreditgebern anrechenbar, wenn langfristig erzielbar und belegt"
+            ],
+            [
+              "**Vermietung**",
+              "Kaltmiete abzüglich Bewirtschaftungskosten – im Skript **25 %**"
+            ],
+            [
+              "**Kapitalvermögen**",
+              "Nach internen Richtlinien; Nachweise auf spekulative Werte prüfen"
+            ],
+            [
+              "**Kindergeld**",
+              "Alter der Kinder und Dauer der Berechtigung beachten"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Grundsätzlich nicht angerechnet",
+          "items": [
+            "**Aufwandsersatz:** Spesen, Fahrtkostenerstattung, Essensgeld",
+            "**Unregelmäßiges:** Überstundenvergütung, Aushilfstätigkeit",
+            "**Befristete Leistungen:** Arbeitslosengeld, Elterngeld, Ausbildungsvergütung"
+          ]
+        },
+        {
+          "type": "example",
+          "title": "Mieteinnahmen",
+          "text": "Kaltmiete 800 €. Abzug für Verwaltung, Betrieb, Instandhaltung und Mietausfallwagnis 25 % = 200 €. Angerechnet werden **600 €**. Die Darlehensraten für das Mietobjekt sind zusätzlich als Ausgabe zu berücksichtigen."
+        },
+        {
+          "type": "text",
+          "text": "**Staatliche Vergünstigungen** bei selbst genutztem Wohneigentum – etwa Wohnungsbauprämie, Arbeitnehmersparzulage oder Wohn-Riester-Förderung – können das Einkommen erhöhen oder die Ausgaben senken, wenn der Kunde **tatsächlich Anspruch** darauf hat."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Das Skript nennt noch den „450-Euro-Job“ und das „Erziehungsgeld“. Die Minijob-Grenze ändert sich laufend; das Erziehungsgeld wurde durch das **Elterngeld** abgelöst. Der Abzug von 25 % ist ein Beispielwert und je Kreditgeber verschieden."
+        }
+      ],
+      "laws": [],
+      "memory": "Angerechnet wird nur Einkommen, das regelmäßig und nachhaltig fließt.",
+      "examTrap": "Als Mietertrag gilt die Kaltmiete – und davon nur der Teil nach Abzug der Bewirtschaftungskosten."
+    },
+    {
+      "id": "3.7.3-e",
+      "title": "Ausgaben und Veränderungen",
+      "subtitle": "Die Gegenseite der Rechnung",
+      "ref": "BWB 3.7.3, S. 11–12",
+      "examRelevance": "S+P",
+      "checkId": "3.7-Q040",
+      "content": [
+        {
+          "type": "text",
+          "text": "Der Kunde muss den Kredit **ohne Gefährdung seines Lebensunterhalts** bedienen können. Geprüft wird das **Verhältnis von Einnahmen zu Ausgaben**. Alle vom Kunden angegebenen Ausgaben müssen bezahlt werden – und gehen deshalb in die Prüfung ein."
+        },
+        {
+          "type": "list",
+          "title": "Typische Ausgaben",
+          "items": [
+            "Finanzierungskosten des neuen Darlehens",
+            "Aufwendungen für weitere Darlehen",
+            "zu zahlende Miete",
+            "private Krankenversicherung",
+            "Pacht- und Erbbauzinsen",
+            "Leasingverträge",
+            "Unterhaltszahlungen",
+            "Gehaltsabtretungen",
+            "Beiträge für Lebensversicherungen",
+            "sonstige laufende Ausgaben für die Lebenshaltung"
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Der Kunde muss auch zahlen können, wenn",
+          "items": [
+            "er **in Rente** geht,",
+            "der **mitverdienende Ehepartner ausfällt**,",
+            "das Einkommen auf andere Weise sinkt –",
+            "soweit solche Änderungen **erkennbar** sind."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Beleihungsauslauf:** Bei hohen Ausläufen – zum Beispiel über **80 % des Beleihungswerts** – legen Kreditgeber oft ein **höheres Existenzminimum** fest, weil das Risiko höher ist. Der Auslauf ist damit ein Faktor der Kreditwürdigkeit."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Wie der Beleihungswert ermittelt wird, folgt in Level 21. Hier genügt: Je höher der Auslauf, desto strenger die Haushaltsrechnung."
+        }
+      ],
+      "laws": [],
+      "memory": "Einnahmen gegen Ausgaben – heute und nach erkennbaren Veränderungen.",
+      "examTrap": "Ein hoher Beleihungsauslauf macht die Bonitätsprüfung strenger, nicht lockerer."
+    },
+    {
+      "id": "3.7.4-a",
+      "title": "Bonitätsnachweise",
+      "subtitle": "Ohne Beleg kein Einkommen",
+      "ref": "BWB 3.7.4, S. 2–5",
+      "examRelevance": "S+P",
+      "checkId": "3.7-Q044",
+      "content": [
+        {
+          "type": "text",
+          "text": "Bei Immobiliar-Verbraucherdarlehen muss der Darlehensgeber die **Verfahren und Angaben**, auf die sich die Prüfung stützt, **festlegen, dokumentieren und aufbewahren** (§ 505b Abs. 4 BGB). So lässt sich später nachvollziehen, ob die Prüfung vertretbar war. Eine **Aufbewahrungsdauer** nennt das Gesetz nicht."
+        },
+        {
+          "type": "text",
+          "text": "**Grundsatz:** Einkommen, das **nicht nachgewiesen** werden kann, darf nicht einkalkuliert werden. Welche Belege nötig sind, hängt von Art und Höhe des Darlehens sowie von der Risiko- und Firmenpolitik des Kreditgebers ab."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Einkunftsart",
+            "Nachweise"
+          ],
+          "rows": [
+            [
+              "**Arbeitnehmer**",
+              "Gehaltsabrechnungen der letzten Monate, Einkommensteuerbescheid, Jahreseinkommen laut Gehaltsmitteilung"
+            ],
+            [
+              "**Angestellte in der eigenen GmbH**",
+              "Gehaltsbescheinigung allein genügt nicht – die **Ertragskraft der Firma** wird analysiert"
+            ],
+            [
+              "**Selbstständige, Freiberufler**",
+              "Einkommensteuerbescheide, Einnahmen-Ausgaben-Rechnung, Bilanzen mit GuV, BWA, Bestätigung des Steuerberaters"
+            ],
+            [
+              "**Vermietung**",
+              "Aufstellung der Einnahmen und Ausgaben, Mietverträge, Kontoauszüge"
+            ],
+            [
+              "**Rente, Pension**",
+              "Bescheide über regelmäßige und dauerhafte Bezüge"
+            ],
+            [
+              "**Kindergeld**",
+              "Bestätigung der Kindergeldkasse oder Gehaltsmitteilung"
+            ],
+            [
+              "**Kapitalerträge**",
+              "Depotaufstellungen, Sparbücher, Kontoauszüge, Zinsbestätigung"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Besonderheiten",
+          "items": [
+            "Bilanzen, BWA und Einnahmen-Ausgaben-Rechnungen müssen von einem **Steuerberater testiert** sein.",
+            "Bei **Firmengründungen** sollte vor dem Antrag eine **Vorprüfung** durch den Kreditgeber erfolgen.",
+            "**Kontoauszüge** belegen bei älteren Mietverträgen die aktuelle Miete."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Die Unterlagenliste für den Kreditantrag kennst du aus Level 18. Hier geht es darum, **warum** sie verlangt wird: Nur belegtes Einkommen zählt."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 505b Abs. 4 BGB",
+          "text": "Bei Immobiliar-Verbraucherdarlehensverträgen ist der Darlehensgeber verpflichtet, die Verfahren und Angaben, auf die sich die Kreditwürdigkeitsprüfung stützt, festzulegen, zu dokumentieren und die Dokumentation aufzubewahren."
+        }
+      ],
+      "memory": "Nicht nachgewiesen heißt nicht angerechnet.",
+      "examTrap": "Beim Gesellschafter-Geschäftsführer reicht die Gehaltsabrechnung nicht. Geprüft wird die Firma dahinter."
+    },
+    {
+      "id": "3.7.5-a",
+      "title": "Existenzminimum",
+      "subtitle": "Was dem Kunden bleiben muss",
+      "ref": "BWB 3.7.5, S. 2–4",
+      "examRelevance": "S+P",
+      "checkId": "3.7-Q050",
+      "content": [
+        {
+          "type": "text",
+          "text": "Nach Abzug **aller** monatlichen Zahlungsverpflichtungen und sonstigen Ausgaben muss dem Darlehensnehmer mindestens das **Existenzminimum** verbleiben. Es heißt auch **Sockelbetrag** oder **Mindestwert**."
+        },
+        {
+          "type": "text",
+          "text": "Die Höhe legt **jeder Kreditgeber selbst** in seinen internen Richtlinien fest. Es gibt keinen einheitlichen gesetzlichen Betrag für die Haushaltsrechnung."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Lebenshaltungskosten",
+            "text": "Speisen und Getränke, Kleidung und persönliche Dinge, Urlaub und Kultur, Auto (ohne Finanzierungs- oder Leasingrate), persönliche Versicherungen wie die Haftpflicht."
+          },
+          "right": {
+            "title": "Bewirtschaftungskosten",
+            "text": "Regelmäßige Kosten der eigenen Wohnung: Strom, Wasser, Heizung, Müllabfuhr, Grundsteuer, Instandhaltungsrücklage, Hausrat- und Wohngebäudeversicherung."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Beiträge für eine **Lebensversicherung oder Vorsorge** werten Kreditgeber in der Regel als **sonstige Ausgaben**, nicht als Lebenshaltung."
+        },
+        {
+          "type": "steps",
+          "title": "Der freie Betrag",
+          "items": [
+            {
+              "title": "Einnahmen",
+              "text": "alle anrechenbaren, belegten Einkünfte."
+            },
+            {
+              "title": "minus Ausgaben",
+              "text": "laufende Verpflichtungen ohne die neue Finanzierung."
+            },
+            {
+              "title": "minus Existenzminimum",
+              "text": "Lebenshaltung und Bewirtschaftung."
+            },
+            {
+              "title": "= freier Betrag",
+              "text": "In diesem Rahmen sollte sich der Aufwand für die Finanzierung **auf Dauer** bewegen."
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Blick nach vorn",
+          "items": [
+            "**Einkommensänderungen** und das **Ende der Sollzinsbindung** sind einzuplanen.",
+            "Der **Aufwandsverlauf** zählt: Nach der Ablösung durch einen Bausparvertrag steigt der Aufwand, weil dann der Tilgungsbeitrag zu zahlen ist.",
+            "Für **Renovierungen und laufende Kosten** sollte ein größeres Polster eingerechnet werden.",
+            "Erfordert die Lebenssituation des Kunden **höhere Ausgaben als die Pauschalen**, sind die höheren Werte anzusetzen.",
+            "Reicht es nicht, kann der Beitritt eines **Gesamtschuldners** helfen – mit eigener Bonitätsprüfung."
+          ]
+        }
+      ],
+      "laws": [],
+      "memory": "Existenzminimum = Lebenshaltung + Bewirtschaftung. Die Höhe bestimmt der Kreditgeber.",
+      "examTrap": "Die Leasingrate fürs Auto gehört nicht in die Lebenshaltungspauschale. Sie ist eine eigene Ausgabe."
+    },
+    {
+      "id": "3.7.5-b",
+      "title": "Die Haushaltsrechnung",
+      "subtitle": "Der Beispielhaushalt des Skripts",
+      "ref": "BWB 3.7.5, S. 4, 6–7",
+      "examRelevance": "S+P",
+      "checkId": "3.7-Q056",
+      "content": [
+        {
+          "type": "table",
+          "head": [
+            "Einnahmen",
+            "Ausgaben"
+          ],
+          "rows": [
+            [
+              "Lohn und Gehalt",
+              "Finanzierungskosten"
+            ],
+            [
+              "Renten und Pensionen",
+              "Weitere Darlehen, Bauzeitzinsen"
+            ],
+            [
+              "Kindergeld, Kindesunterhalt",
+              "Pacht- und Erbbauzinsen"
+            ],
+            [
+              "Nachhaltige Nebeneinkünfte",
+              "Leasingverträge, Miete"
+            ],
+            [
+              "Mietüberschüsse",
+              "Mietfehlbeträge bei Vermietung"
+            ],
+            [
+              "Pflegegeld (teilweise)",
+              "Unterhaltsverpflichtungen"
+            ],
+            [
+              "–",
+              "Private Krankenversicherung (Abzug beim Einkommen)"
+            ],
+            [
+              "–",
+              "Lebensversicherungen (wenn abgetreten)"
+            ]
+          ]
+        },
+        {
+          "type": "example",
+          "title": "Beispielhaushalt",
+          "text": "Ehepaar, ein Arbeitnehmer, zwei Kinder, Wohnung 100 m². **Einnahmen:** Gehalt 2.396 € + Kindergeld 438 € = 2.834 €. **Ausgaben:** Leasing 200 € + Lebensversicherung 160 € + neue Baufinanzierung 800 € = 1.160 €. **Frei für den Lebensunterhalt:** 2.834 € − 1.160 € = **1.674 €**."
+        },
+        {
+          "type": "text",
+          "text": "Ob 1.674 € reichen, hängt von den **Mindestwerten des Kreditgebers** ab. Das Skript zeigt zwei Beispiele."
+        },
+        {
+          "type": "steps",
+          "title": "Methode A: feste Beträge je Person und Quadratmeter",
+          "items": [
+            {
+              "title": "Hauptverdiener",
+              "text": "700 €"
+            },
+            {
+              "title": "Ehegatte",
+              "text": "240 €"
+            },
+            {
+              "title": "Zwei Kinder zu je 200 €",
+              "text": "400 €"
+            },
+            {
+              "title": "Bewirtschaftung 100 m² × 2,50 €",
+              "text": "250 €"
+            },
+            {
+              "title": "Existenzminimum",
+              "text": "**1.590 €** – die 1.674 € reichen."
+            }
+          ]
+        },
+        {
+          "type": "steps",
+          "title": "Methode B: Prozentsatz mit Untergrenze",
+          "items": [
+            {
+              "title": "40 % des Nettoeinkommens",
+              "text": "40 % von 2.834 € = 1.133,60 €"
+            },
+            {
+              "title": "Mindestens aber",
+              "text": "Alleinstehende 800 €, Verheiratete mit einem Arbeitnehmer 1.100 €, mit zwei Arbeitnehmern 1.400 €; je Kind 240 €"
+            },
+            {
+              "title": "Mindestwert hier",
+              "text": "1.100 € + 2 × 240 € = 1.580 €"
+            },
+            {
+              "title": "Existenzminimum",
+              "text": "Der höhere Wert gilt: **1.580 €** – die 1.674 € reichen."
+            }
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das Skript nennt für 40 % des Nettoeinkommens 1.112 €. Das passt zu einem älteren Kindergeldbetrag; mit den abgedruckten 2.834 € sind es 1.133,60 €. Am Ergebnis ändert das nichts, weil der Mindestwert von 1.580 € höher ist."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Alle Beträge sind **Beispielwerte**. Kindergeld und Pauschalen ändern sich; in Aufgaben stehen die anzusetzenden Werte dabei."
+        }
+      ],
+      "laws": [],
+      "memory": "Frei für den Lebensunterhalt = Einnahmen − Ausgaben. Vergleich mit dem Mindestwert des Kreditgebers.",
+      "examTrap": "Bei „40 %, mindestens aber …“ gilt der höhere der beiden Werte."
+    },
+    {
+      "id": "3.7.5-c",
+      "title": "K.-o.-Kriterien",
+      "subtitle": "Wann die Rechnung nicht mehr zählt",
+      "ref": "BWB 3.7.5, S. 5",
+      "examRelevance": "S+P",
+      "checkId": "3.7-Q062",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Unabhängig vom rechnerischen Ergebnis** kann der Kunde kreditunwürdig sein. Die Kriterien legt jeder Kreditgeber selbst fest. Typisch sind:"
+        },
+        {
+          "type": "list",
+          "title": "Keine Kreditvergabe bei",
+          "items": [
+            "**harte Negativmerkmale** bei Schufa oder Creditreform",
+            "**Ablehnung der Schufa-Auskunft** durch den Kunden",
+            "**Zwangsversteigerungsvermerk** im Grundbuch",
+            "**Zahlungsrückstände oder Rücklastschriften** bei abzulösenden Darlehen",
+            "**negative Erfahrungen** aus der bisherigen Geschäftsverbindung",
+            "laufende finanzielle Sanierung durch **Kettenumschuldungen**",
+            "**hoher Beleihungsauslauf** zusammen mit weiteren negativen Merkmalen"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Kettenumschuldung** bedeutet: Ein Kredit wird immer wieder durch einen neuen, höheren Kredit abgelöst. Das zeigt, dass der Kunde seine Schulden nicht aus dem Einkommen abbauen kann."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Ein K.-o.-Kriterium schlägt die Haushaltsrechnung. Auch ein hoher freier Betrag gleicht ein hartes Negativmerkmal nicht aus."
+        }
+      ],
+      "laws": [],
+      "memory": "K.-o.-Kriterien gelten unabhängig vom Rechenergebnis.",
+      "examTrap": "Verweigert der Kunde die Schufa-Auskunft, ist das selbst schon ein Ablehnungsgrund."
+    }
+  ]
+}

@@ -1,0 +1,538 @@
+{
+  "chapter": "2.10",
+  "questions": [
+    {
+      "id": "2.10-Q001",
+      "chapter": "2.10",
+      "section": "2.10-a",
+      "topic": "Vier Freiheiten",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 1,
+      "question": "Welche Freiheiten gehören zu den vier Grundfreiheiten des Binnenmarkts?",
+      "answers": [
+        "Personenverkehrsfreiheit",
+        "Warenverkehrsfreiheit",
+        "Kapitalverkehrsfreiheit",
+        "Steuerfreiheit"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Die vier Freiheiten sind Personen-, Waren-, Dienstleistungs- und Kapitalverkehrsfreiheit."
+    },
+    {
+      "id": "2.10-Q002",
+      "chapter": "2.10",
+      "section": "2.10-a",
+      "topic": "Ursprung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 2,
+      "question": "In welchem Vertrag wurden die vier Freiheiten schon genannt?",
+      "answers": [
+        "Im Schengener Abkommen von 1985",
+        "Im Vertrag von Lissabon von 2007",
+        "Im Vertrag von Maastricht von 1992",
+        "Im EWG-Vertrag von 1957"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die vier Freiheiten stehen bereits im Vertrag zur Gründung der Europäischen Wirtschaftsgemeinschaft von 1957."
+    },
+    {
+      "id": "2.10-Q003",
+      "chapter": "2.10",
+      "section": "2.10-a",
+      "topic": "Zuordnung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 3,
+      "question": "Ein deutscher Berater fährt für zwei Termine nach Straßburg und berät dort Kunden, ohne ein Büro zu eröffnen. Welche Freiheit nutzt er?",
+      "answers": [
+        "Die Warenverkehrsfreiheit",
+        "Die Dienstleistungsfreiheit",
+        "Die Kapitalverkehrsfreiheit",
+        "Die Niederlassungsfreiheit"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Wer vorübergehend im Ausland tätig wird und im Herkunftsland ansässig bleibt, nutzt die Dienstleistungsfreiheit."
+    },
+    {
+      "id": "2.10-Q004",
+      "chapter": "2.10",
+      "section": "2.10-a",
+      "topic": "Binnenmarkt",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 4,
+      "question": "Was kennzeichnet einen Binnenmarkt?",
+      "answers": [
+        "Die vier Freiheiten sind verwirklicht",
+        "Die Steuersätze sind in den Mitgliedstaaten gleich",
+        "Die Mitgliedstaaten haben eine gemeinsame Regierung",
+        "Es gibt eine gemeinsame Währung in jedem Mitgliedstaat"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Ein Binnenmarkt setzt voraus, dass Personen, Waren, Dienstleistungen und Kapital frei verkehren können."
+    },
+    {
+      "id": "2.10-Q005",
+      "chapter": "2.10",
+      "section": "2.10-b",
+      "topic": "Niederlassung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 5,
+      "question": "Was umfasst die Niederlassungsfreiheit?",
+      "answers": [
+        "In einem anderen Mitgliedstaat ohne jede Zulassung jeden Beruf auszuüben",
+        "Selbstständig tätig zu werden und Unternehmen zu gründen",
+        "Waren ohne Zoll in einen anderen Mitgliedstaat zu liefern",
+        "Kapital ohne Meldung in einen anderen Mitgliedstaat zu überweisen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Das Niederlassungsrecht umfasst, selbstständige Erwerbstätigkeiten aufzunehmen und auszuüben sowie Unternehmen zu gründen und zu leiten."
+    },
+    {
+      "id": "2.10-Q006",
+      "chapter": "2.10",
+      "section": "2.10-b",
+      "topic": "Gleiche Bedingungen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 6,
+      "question": "Eine deutsche Vermittlerin lässt sich dauerhaft in Österreich nieder. Welche Bedingungen gelten für sie?",
+      "answers": [
+        "Dieselben wie für österreichische Staatsbürger",
+        "Keine – im Binnenmarkt gelten nationale Regeln nicht mehr",
+        "Ausschließlich die deutschen Vorschriften",
+        "Strengere als für Inländer"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Niederlassung erfolgt nach den gleichen Bestimmungen, die der Aufnahmestaat für seine eigenen Staatsbürger festgelegt hat."
+    },
+    {
+      "id": "2.10-Q007",
+      "chapter": "2.10",
+      "section": "2.10-b",
+      "topic": "Arbeitnehmer",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 7,
+      "question": "Seit wann haben Arbeitnehmer das Recht, in jedem Mitgliedsland zu leben und zu arbeiten?",
+      "answers": [
+        "Seit 1968",
+        "Seit 1992",
+        "Seit 2009",
+        "Seit 1957"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Arbeitnehmer haben dieses Recht seit 1957. Für Selbstständige kam die Niederlassungsfreiheit mit dem Binnenmarkt 1992."
+    },
+    {
+      "id": "2.10-Q008",
+      "chapter": "2.10",
+      "section": "2.10-b",
+      "topic": "Selbstständige",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 8,
+      "question": "Seit wann dürfen auch Selbstständige in jedem Mitgliedstaat tätig werden?",
+      "answers": [
+        "Seit der Dienstleistungsrichtlinie 2006",
+        "Seit der Zollunion 1968",
+        "Seit dem EWG-Vertrag 1957",
+        "Seit der Errichtung des Binnenmarkts 1992"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Mit der Errichtung des Europäischen Binnenmarkts dürfen Selbstständige seit 1992 in jedem Land tätig werden."
+    },
+    {
+      "id": "2.10-Q009",
+      "chapter": "2.10",
+      "section": "2.10-b",
+      "topic": "Öffentliche Gewalt",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 9,
+      "question": "Für welche Tätigkeiten gelten Niederlassungs- und Dienstleistungsfreiheit nicht?",
+      "answers": [
+        "Für Tätigkeiten in der Finanzberatung",
+        "Für Tätigkeiten von Handwerkern",
+        "Für Tätigkeiten mit Kundenkontakt",
+        "Bei Ausübung öffentlicher Gewalt"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Nach Art. 51 AEUV sind Tätigkeiten ausgenommen, die mit der Ausübung öffentlicher Gewalt verbunden sind."
+    },
+    {
+      "id": "2.10-Q010",
+      "chapter": "2.10",
+      "section": "2.10-c",
+      "topic": "Abgrenzung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 10,
+      "question": "Worin liegt der Unterschied zwischen Dienstleistungs- und Niederlassungsfreiheit?",
+      "answers": [
+        "Tätigkeit im Inland gegenüber Tätigkeit im Ausland",
+        "Vorübergehende Tätigkeit gegenüber dauerhafter Ansiedlung",
+        "Entgeltliche Tätigkeit gegenüber unentgeltlicher Tätigkeit",
+        "Angestellte Tätigkeit gegenüber selbstständiger Tätigkeit"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Bei der Dienstleistungsfreiheit bleibt der Anbieter im Herkunftsland ansässig und wird nur vorübergehend tätig. Die Niederlassung ist auf Dauer angelegt."
+    },
+    {
+      "id": "2.10-Q011",
+      "chapter": "2.10",
+      "section": "2.10-c",
+      "topic": "Richtlinie",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 11,
+      "question": "Bis wann mussten die Mitgliedstaaten die Dienstleistungsrichtlinie von 2006 umsetzen?",
+      "answers": [
+        "Bis 25. Mai 2018",
+        "Bis 21. März 2016",
+        "Bis 1. Juli 1990",
+        "Bis 28. Dezember 2009"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die Dienstleistungsrichtlinie wurde 2006 angenommen, die Umsetzungsfrist endete am 28. Dezember 2009."
+    },
+    {
+      "id": "2.10-Q012",
+      "chapter": "2.10",
+      "section": "2.10-c",
+      "topic": "Ziele",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 12,
+      "question": "Welche Ziele verfolgt die Dienstleistungsrichtlinie?",
+      "answers": [
+        "Einen offenen Binnenmarkt für Dienstleistungen",
+        "Die Qualität der Dienstleistungen für Verbraucher",
+        "Den Schutz inländischer Anbieter",
+        "Einheitliche Preise für Dienstleistungen"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Die Richtlinie soll einen offenen Binnenmarkt für Dienstleistungen schaffen und zugleich deren Qualität für die Verbraucher sichern."
+    },
+    {
+      "id": "2.10-Q013",
+      "chapter": "2.10",
+      "section": "2.10-c",
+      "topic": "Ansprechpartner",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 13,
+      "question": "Mit welchen Mitteln vereinfacht die Dienstleistungsrichtlinie den Marktzugang?",
+      "answers": [
+        "Eine zentrale EU-Behörde für Gewerbeanmeldungen",
+        "Einheitliche Steuersätze für Dienstleister",
+        "Einheitliche Ansprechpartner und Zusammenarbeit der Verwaltungen",
+        "Abschaffung der Berufszulassungen in der EU"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Zu den Langzeitprojekten der Richtlinie gehören die Einführung einheitlicher Ansprechpartner und die Verwaltungszusammenarbeit."
+    },
+    {
+      "id": "2.10-Q014",
+      "chapter": "2.10",
+      "section": "2.10-c",
+      "topic": "Nutznießer",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 14,
+      "question": "Wem nützt die Dienstleistungsrichtlinie nach dem Lernskript besonders?",
+      "answers": [
+        "Notaren und Gerichten",
+        "Staatlichen Monopolbetrieben",
+        "Verbrauchern und kleinen und mittleren Unternehmen",
+        "Großkonzernen, Zentralbanken und staatlichen Förderinstituten"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Richtlinie hat umfangreiche potenzielle Vorteile für Verbraucher sowie für kleine und mittlere Unternehmen (KMU)."
+    },
+    {
+      "id": "2.10-Q015",
+      "chapter": "2.10",
+      "section": "2.10-d",
+      "topic": "Waren",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 15,
+      "question": "Welches Ziel verfolgt die Warenverkehrsfreiheit?",
+      "answers": [
+        "Die Warenpreise in der EU zu vereinheitlichen",
+        "Die Ausfuhr in Drittstaaten zu begrenzen",
+        "Die heimische Produktion vor Importen zu schützen",
+        "Mehr Angebot, günstigere Güter"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Durch die Öffnung der nationalen Märkte soll das Produktangebot verbessert und erweitert und knappe Güter verbilligt werden."
+    },
+    {
+      "id": "2.10-Q016",
+      "chapter": "2.10",
+      "section": "2.10-d",
+      "topic": "Zollunion",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 16,
+      "question": "Was wurde mit der Zollunion bis 1968 abgeschafft?",
+      "answers": [
+        "Zölle und mengenmäßige Beschränkungen",
+        "Grenzkontrollen für Personen",
+        "Nationale Währungen und Notenbanken",
+        "Berufszulassungen für Selbstständige"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Zölle und mengenmäßige Beschränkungen zwischen den Mitgliedstaaten wurden bis 1968 abgeschafft."
+    },
+    {
+      "id": "2.10-Q017",
+      "chapter": "2.10",
+      "section": "2.10-d",
+      "topic": "Kapital",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 17,
+      "question": "Seit wann ist der Geld-, Kapital- und Zahlungsverkehr in der EU vollständig liberalisiert?",
+      "answers": [
+        "Seit 1. Januar 1968",
+        "Seit 28. Dezember 2009",
+        "Seit 1. Juli 1990",
+        "Seit 21. März 2016"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Im Zuge der Wirtschafts- und Währungsunion wurde der Kapitalverkehr zum 1. Juli 1990 vollständig liberalisiert."
+    },
+    {
+      "id": "2.10-Q018",
+      "chapter": "2.10",
+      "section": "2.10-d",
+      "topic": "Kapitalfall",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 18,
+      "question": "Ein Käufer aus Deutschland finanziert eine Wohnung in Italien über eine französische Bank. Welche Grundfreiheit ermöglicht den Geldfluss über die Grenzen?",
+      "answers": [
+        "Die Warenverkehrsfreiheit",
+        "Die Personenverkehrsfreiheit",
+        "Die Niederlassungsfreiheit",
+        "Die Kapitalverkehrsfreiheit"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die Kapitalverkehrsfreiheit sichert, dass Kapitalflüsse zwischen den Mitgliedstaaten grundsätzlich nicht beschränkt werden."
+    },
+    {
+      "id": "2.10-Q019",
+      "chapter": "2.10",
+      "section": "2.10-e",
+      "topic": "Diskriminierungsverbot",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 19,
+      "question": "Was verbietet das Diskriminierungsverbot des EU-Rechts?",
+      "answers": [
+        "Die Benachteiligung wegen der Staatsangehörigkeit",
+        "Die Ablehnung eines Darlehens mangels Bonität",
+        "Berufszulassungen mit Sachkundeprüfung",
+        "Unterschiedliche Preise in den Mitgliedstaaten"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Kein Unionsbürger darf aufgrund seiner Staatsangehörigkeit benachteiligt werden."
+    },
+    {
+      "id": "2.10-Q020",
+      "chapter": "2.10",
+      "section": "2.10-e",
+      "topic": "Anwendung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 20,
+      "question": "Eine Bank lehnt den Darlehensantrag eines Niederländers mit Wohnsitz in Deutschland allein wegen seines Passes ab. Wogegen verstößt das?",
+      "answers": [
+        "Gegen das Diskriminierungsverbot",
+        "Gegen die Warenverkehrsfreiheit",
+        "Gegen die Dienstleistungsrichtlinie",
+        "Gegen nichts – die Bank ist frei"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Eine Benachteiligung allein wegen der Staatsangehörigkeit eines Unionsbürgers ist unzulässig."
+    },
+    {
+      "id": "2.10-Q021",
+      "chapter": "2.10",
+      "section": "2.10-e",
+      "topic": "WIKR-Datum",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 21,
+      "question": "Seit wann ist die Wohnimmobilienkreditrichtlinie in Deutschland wirksam umgesetzt?",
+      "answers": [
+        "Seit 28. Dezember 2009",
+        "Seit 1. Juli 1990",
+        "Seit 21. März 2016",
+        "Seit 4. November 2014"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Wohnimmobilienkreditrichtlinie wurde in Deutschland zum 21. März 2016 rechtswirksam eingeführt."
+    },
+    {
+      "id": "2.10-Q022",
+      "chapter": "2.10",
+      "section": "2.10-e",
+      "topic": "WIKR-Inhalt",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 22,
+      "question": "Was hat die Wohnimmobilienkreditrichtlinie gebracht?",
+      "answers": [
+        "Vorgaben für die Kreditwürdigkeitsprüfung",
+        "Einheitliche Darlehenszinsen in der EU",
+        "Eine Berufserlaubnis mit Sachkundenachweis",
+        "Vorgaben für die Information des Verbrauchers"
+      ],
+      "correct": [
+        0,
+        2,
+        3
+      ],
+      "explanation": "Die Richtlinie verbessert den Verbraucherschutz durch Informations- und Prüfvorgaben und durch die eigene Berufserlaubnis für Vermittler."
+    },
+    {
+      "id": "2.10-Q023",
+      "chapter": "2.10",
+      "section": "2.10-e",
+      "topic": "Europäischer Pass",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 23,
+      "question": "Ein Vermittler mit Erlaubnis nach § 34i GewO will künftig auch Kunden in Frankreich betreuen. Was muss er vorher tun?",
+      "answers": [
+        "Nichts – der Binnenmarkt ist frei",
+        "Die deutsche Erlaubnis zurückgeben",
+        "Die Absicht seiner zuständigen Behörde anzeigen",
+        "Die Sachkundeprüfung in Frankreich wiederholen"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Wohnimmobilienkreditrichtlinie erlaubt die Tätigkeit in anderen Mitgliedstaaten mit der Heimatzulassung – nach vorheriger Anzeige bei der zuständigen Behörde."
+    },
+    {
+      "id": "2.10-Q024",
+      "chapter": "2.10",
+      "section": "2.10-e",
+      "topic": "Parlament",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 24,
+      "question": "Worauf hat das Europäische Parlament bei der Liberalisierung der selbstständigen Tätigkeiten besonders geachtet?",
+      "answers": [
+        "Auf einheitliche Gebühren für alle Selbstständigen",
+        "Auf die enge Abgrenzung der Inländer-Vorbehalte",
+        "Auf die Abschaffung der nationalen Parlamente",
+        "Auf Vorrang der eigenen Bürger bei der Zulassung"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Das Parlament legte Wert auf eine strenge Abgrenzung der Tätigkeiten, die Inländern vorbehalten bleiben können."
+    }
+  ]
+}

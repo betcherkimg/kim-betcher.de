@@ -1,0 +1,394 @@
+{
+  "chapter": "2.6",
+  "boss": {
+    "name": "Schildhüter Panzerbund",
+    "title": "Wächter der Kundenrechte",
+    "image": "assets/bosses/schildhueter-panzerbund.webp",
+    "bust": "assets/bosses/schildhueter-panzerbund-bust.webp",
+    "accent": "#A9BD73",
+    "taunts": {
+      "intro": "Kundenrechte stehen unter meinem Schutz. Zeig mir, dass du sie kennst – oder weiche.",
+      "hit": [
+        "Du kennst das Kleingedruckte. Gut.",
+        "Mein Schild gibt nach …",
+        "Ein informierter Gegner."
+      ],
+      "miss": [
+        "Abgeprallt!",
+        "Wer die Rechte nicht kennt, kommt nicht vorbei.",
+        "Panzerbund hält stand."
+      ],
+      "timeout": [
+        "Bedenkzeit abgelaufen.",
+        "Zu lange gezögert."
+      ],
+      "final": "Letzter Schlag. Effektiv oder nur zum Schein?",
+      "low": "Mein Panzer … er bekommt Risse …",
+      "defeat": "Du schützt die Kunden so gut wie ich. Geh weiter.",
+      "victory": "An meinem Schild gescheitert. Zurück ins Lernskript."
+    }
+  },
+  "questions": [
+    {
+      "id": "2.6-B001",
+      "chapter": "2.6",
+      "section": "2.6.1-b",
+      "topic": [
+        "Einbeziehung",
+        "Individualabrede"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "AGB: Hinweis und Kenntnisnahme waren gegeben. Mündlich wurde aber ausdrücklich eine kürzere Kündigungsfrist ausgehandelt. Was gilt?",
+      "answers": [
+        "Die gesetzliche Frist – beides entfällt",
+        "Die für den Anbieter günstigere Frist",
+        "Die Frist aus den AGB, da wirksam einbezogen",
+        "Die ausgehandelte Frist"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Auch wirksam einbezogene AGB treten hinter eine individuell ausgehandelte Regelung zurück."
+    },
+    {
+      "id": "2.6-B002",
+      "chapter": "2.6",
+      "section": "2.6.1-b",
+      "topic": [
+        "Unangemessene Benachteiligung",
+        "Rechtsfolge"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Vertrag enthält eine Knebelklausel, die den Kunden unangemessen benachteiligt. Er will deshalb gar nichts mehr zahlen. Zu Recht?",
+      "answers": [
+        "Ja – bis ein Gericht entschieden hat",
+        "Nein – nur die Klausel fällt weg",
+        "Ja – der gesamte Vertrag ist nichtig",
+        "Nein – die Klausel gilt wie unterschrieben"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die benachteiligende Klausel ist unwirksam. Der Vertrag bleibt im Übrigen bestehen, an die Stelle der Klausel tritt das Gesetz."
+    },
+    {
+      "id": "2.6-B003",
+      "chapter": "2.6",
+      "section": "2.6.1-c",
+      "topic": [
+        "AGG",
+        "ABB"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Bausparkasse: Wo stehen (1) die Berechnung des Beleihungswerts und (2) die Verzinsung des Bausparguthabens?",
+      "answers": [
+        "(1) AGG – (2) ABB",
+        "Beides in den ABB",
+        "(1) ABB – (2) AGG",
+        "Beides in den AGG"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Beleihungswertermittlung betrifft den Geschäftsbetrieb und steht in den AGG. Die Verzinsung der Einlagen ist Vertragsinhalt und steht in den ABB."
+    },
+    {
+      "id": "2.6-B004",
+      "chapter": "2.6",
+      "section": "2.6.1-d",
+      "topic": [
+        "Schwarze Liste",
+        "Gratis-Werbung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Anbieter wirbt mit „Finanzierungs-Check gratis“. Am Ende verlangt er 49 € Bearbeitungsgebühr. Wie ist das einzuordnen?",
+      "answers": [
+        "Stets unzulässig – schwarze Liste",
+        "Zulässig, wenn die Gebühr marktüblich ist",
+        "Zulässig gegenüber Verbrauchern",
+        "Unzulässig erst ab 100 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Eine Leistung als „gratis“ anzubieten, obwohl Kosten anfallen, steht auf der schwarzen Liste und ist gegenüber Verbrauchern stets unzulässig."
+    },
+    {
+      "id": "2.6-B005",
+      "chapter": "2.6",
+      "section": "2.6.1-d",
+      "topic": [
+        "Telefonwerbung",
+        "Einwilligung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Vermittler ruft Privatpersonen aus dem Telefonbuch an und bietet eine Anschlussfinanzierung an. Eine Einwilligung hat er nicht. Bewertung?",
+      "answers": [
+        "Unzumutbare Belästigung",
+        "Zulässig bei unterdrückter Nummer",
+        "Vergleichende Werbung",
+        "Zulässig, da das Angebot nützlich ist"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Telefonwerbung gegenüber Verbrauchern ist ohne vorherige ausdrückliche Einwilligung eine unzumutbare Belästigung (§ 7 UWG)."
+    },
+    {
+      "id": "2.6-B006",
+      "chapter": "2.6",
+      "section": "2.6.1-e",
+      "topic": [
+        "Widerrufsinformation",
+        "Darlehensart"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Fehlerhafte Widerrufsinformation, nie korrigiert. Vertragsschluss vor 18 Monaten. Bei welchem Darlehen ist der Widerruf nach bisherigem Recht noch möglich?",
+      "answers": [
+        "Nur beim Allgemein-Verbraucherdarlehen",
+        "Bei keinem",
+        "Bei beiden",
+        "Nur beim Immobiliar-Verbraucherdarlehen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Beim Immobiliar-Verbraucherdarlehen erlischt das Widerrufsrecht nach 12 Monaten und 14 Tagen. Beim Allgemein-Verbraucherdarlehen besteht es bis 19.11.2026 unbefristet fort."
+    },
+    {
+      "id": "2.6-B007",
+      "chapter": "2.6",
+      "section": "2.6.1-f",
+      "topic": [
+        "Effektivzins",
+        "Kostenarten"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Sollzins, Vermittlungsprovision, Notarkosten der Grundschuld, Grundbuchgebühr der Grundschuld. Was bleibt beim effektiven Jahreszins außen vor?",
+      "answers": [
+        "Die Vermittlungsprovision",
+        "Die Notarkosten",
+        "Die Grundbuchgebühr",
+        "Nichts davon"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Notarkosten werden nicht einbezogen. Provision und die Kosten der Eintragung der Sicherheit ins Grundbuch gehören in den Effektivzins."
+    },
+    {
+      "id": "2.6-B008",
+      "chapter": "2.6",
+      "section": "2.6.1-f",
+      "topic": [
+        "Effektivzins",
+        "Vergleich"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Angebot A: Sollzins 3,4 %, keine Nebenkosten. Angebot B: Sollzins 3,3 %, dazu Pflichtkonto und Bewertungsgebühr. Woran erkennt der Kunde das günstigere?",
+      "answers": [
+        "Am effektiven Jahreszins",
+        "An der Monatsrate",
+        "Am Sollzins",
+        "An der Zinsbindung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Sollzins blendet die Nebenkosten aus. Der effektive Jahreszins bezieht Pflichtkonto und Bewertung ein und macht die Angebote vergleichbar."
+    },
+    {
+      "id": "2.6-B009",
+      "chapter": "2.6",
+      "section": "2.6.1-f",
+      "topic": [
+        "Pflichtversicherung",
+        "Freiwillige Versicherung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Darlehen mit zwei Versicherungen: Die Gebäudeversicherung verlangt die Bank, die Unfallversicherung schließt der Kunde freiwillig ab. Was zählt in den Effektivzins?",
+      "answers": [
+        "Keine von beiden",
+        "Beide",
+        "Die Unfallversicherung",
+        "Die Gebäudeversicherung"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Einbezogen wird nur, was Voraussetzung für das Darlehen ist. Freiwillige Zusatzleistungen bleiben unberücksichtigt."
+    },
+    {
+      "id": "2.6-B010",
+      "chapter": "2.6",
+      "section": "2.6.1-g",
+      "topic": [
+        "Kollektiver Verbraucherschutz",
+        "Schlichtung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Kunde streitet mit seiner Bank über 800 € Vorfälligkeitsentschädigung. Welche Stelle ist für seinen Einzelfall die richtige?",
+      "answers": [
+        "Das Bundesfinanzministerium",
+        "Die Gewerbeaufsicht des Landes",
+        "Der Ombudsmann des Bankenverbands",
+        "Die Bankenaufsicht der BaFin in Bonn"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die BaFin schützt die Verbraucher nur in ihrer Gesamtheit. Den Einzelfall klären Schlichtungsstellen und Ombudsleute – notfalls die Gerichte."
+    },
+    {
+      "id": "2.6-B011",
+      "chapter": "2.6",
+      "section": "2.6.1-h",
+      "topic": [
+        "BaFin",
+        "Gewerbeaufsicht"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Was trifft zu?",
+      "answers": [
+        "Die Gewerbeaufsicht ist Sache der Länder",
+        "Die BaFin untersteht dem Bundesfinanzministerium",
+        "Die BaFin wird aus Steuern finanziert",
+        "Die Gewerbeaufsicht beaufsichtigt die Banken"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Die BaFin steht unter Rechts- und Fachaufsicht des Bundesfinanzministeriums und finanziert sich aus Umlagen. Die Gewerbeaufsicht richten die Länder ein."
+    },
+    {
+      "id": "2.6-B012",
+      "chapter": "2.6",
+      "section": "2.6.2-a",
+      "topic": [
+        "Voraussetzungen",
+        "Gericht"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Kunde hat seine Bank bereits verklagt. Während des Prozesses beantragt er zusätzlich die Schlichtung. Was geschieht?",
+      "answers": [
+        "Das Gericht setzt den Prozess aus",
+        "Die Schlichtungsstelle wird nicht tätig",
+        "Beide Verfahren laufen parallel",
+        "Die Schlichtung geht dem Prozess vor"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Befasst sich bereits ein Gericht mit der Sache, greifen die Schlichter nicht ein."
+    },
+    {
+      "id": "2.6-B013",
+      "chapter": "2.6",
+      "section": "2.6.2-a",
+      "topic": [
+        "Bindung",
+        "Gerichtsweg"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Der Ombudsmann der privaten Banken weist die Beschwerde des Kunden ab. Kann der Kunde noch klagen?",
+      "answers": [
+        "Ja, der Spruch bindet ihn nicht",
+        "Nein, der Spruch ist für beide bindend",
+        "Nein, es sei denn, die Bank stimmt zu",
+        "Ja, aber nur bei der BaFin"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Gebunden ist allenfalls die Bank. Dem Verbraucher bleibt der Weg zu den ordentlichen Gerichten."
+    },
+    {
+      "id": "2.6-B014",
+      "chapter": "2.6",
+      "section": "2.6.2-b",
+      "topic": [
+        "Ablauf",
+        "Fristen"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Schlichtung: Die Bank lehnt in ihrer Stellungnahme ab. Was folgt als Nächstes?",
+      "answers": [
+        "Das Verfahren ist beendet",
+        "Die BaFin entscheidet",
+        "Der Kunde darf sich äußern – ein Monat",
+        "Der Schlichter lädt Bank und Kunde zur Verhandlung"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Nach einer ablehnenden Stellungnahme erhält der Kunde einen Monat zur Äußerung. Danach geht der Vorgang an den Schlichter, der nach Unterlagen entscheidet."
+    },
+    {
+      "id": "2.6-B015",
+      "chapter": "2.6",
+      "section": "2.6.2-b",
+      "topic": [
+        "Zuständige Stelle",
+        "Bausparkasse"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Kunde streitet mit einer Landesbausparkasse über die Abrechnung seines Bauspardarlehens. Wohin wendet er sich zur Schlichtung?",
+      "answers": [
+        "An den Ombudsmann der privaten Banken",
+        "An den Verband der Privaten Bausparkassen",
+        "An die Gewerbeaufsicht",
+        "An die Schlichtungsstelle der LBS"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Zuständig ist die Schlichtungsstelle des Verbands, dem das Institut angehört – hier die der Landesbausparkassen."
+    }
+  ]
+}

@@ -1,0 +1,1638 @@
+{
+  "chapter": "3.2",
+  "title": "Kreditprodukte",
+  "sources": [
+    "BWB-Lernskripte 3.2.1 bis 3.2.10.4 (13 PDFs: Annuitäten-, Zinszahlungs-, Tilgungsdarlehen, Zwischenfinanzierung, Anschluss-/Forwarddarlehen, Cap-, Fest-, Policendarlehen, Bausparen, KfW und Länder, Eigenheimrente, WoP, VL)",
+    "BGB §§ 488, 489, 493, 500",
+    "BauSparkG §§ 1, 7",
+    "VVG § 169",
+    "EStG §§ 10a, 84–86, 92a",
+    "WoPG §§ 2a, 3",
+    "5. VermBG § 13",
+    "WoFG"
+  ],
+  "sections": [
+    {
+      "id": "3.2.1-a",
+      "title": "Annuitätendarlehen: das Prinzip",
+      "subtitle": "Gleiche Rate, wandernde Anteile",
+      "ref": "BWB 3.2.1, S. 2–3",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q001",
+      "content": [
+        {
+          "type": "text",
+          "text": "Das Annuitätendarlehen ist das Standardprodukt der Baufinanzierung. Sein Merkmal: eine **gleichbleibende Rate aus Zins und Tilgung**, die Annuität. Sie gilt für die gesamte Zinsfestschreibung und wird üblicherweise monatlich gezahlt."
+        },
+        {
+          "type": "steps",
+          "title": "So arbeitet die Rate",
+          "items": [
+            {
+              "title": "Zuerst die Zinsen",
+              "text": "Aus jeder Rate werden zuerst die Zinsen auf die aktuelle Restschuld bezahlt."
+            },
+            {
+              "title": "Der Rest tilgt",
+              "text": "Was von der Rate übrig bleibt, senkt die Restschuld."
+            },
+            {
+              "title": "Die Anteile wandern",
+              "text": "Weil die Restschuld sinkt, sinkt der Zinsanteil – und der Tilgungsanteil steigt um genau diesen Betrag."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Deshalb heißt es im Vertrag: Tilgung von x % **„zuzüglich ersparter Zinsen“**. Der vereinbarte Tilgungssatz ist nur der Anfangswert."
+        },
+        {
+          "type": "list",
+          "title": "Das solltest du wissen",
+          "items": [
+            "Anbieter: Geschäftsbanken, Sparkassen, Volksbanken, Hypothekenbanken – auch das Bauspardarlehen funktioniert als Annuitätendarlehen",
+            "Sicherheit: heute fast ausschließlich die Grundschuld; der Begriff „Hypothek“ ist nur noch Umgangssprache",
+            "Vorteil: planbare, vergleichsweise niedrige Monatsbelastung",
+            "Tilgungsanteile können staatlich gefördert sein (Arbeitnehmersparzulage, Riester)",
+            "Im Einzelfall möglich: Tilgungsaussetzung in den ersten Jahren oder Änderung des Tilgungssatzes"
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das Skript nennt 1 % als „übliche“ Anfangstilgung. Das stammt aus Hochzinszeiten. Bei niedrigen Zinsen sind höhere Tilgungssätze sinnvoll und werden von Banken teils verlangt – das sagt das Skript selbst."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 488 Abs. 1 BGB",
+          "text": "Der Darlehensgeber stellt einen Geldbetrag zur Verfügung. Der Darlehensnehmer zahlt den geschuldeten Zins und zahlt das Darlehen bei Fälligkeit zurück."
+        }
+      ],
+      "memory": "Rate bleibt gleich, Zinsanteil sinkt, Tilgungsanteil steigt.",
+      "examTrap": "Der Tilgungssatz im Vertrag gilt nur am Anfang. Die Tilgung wächst mit jeder Rate um die ersparten Zinsen."
+    },
+    {
+      "id": "3.2.1-b",
+      "title": "Tilgungsplan und Restschuld",
+      "subtitle": "Die Rate in Zahlen",
+      "ref": "BWB 3.2.1, S. 4–5",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q005",
+      "content": [
+        {
+          "type": "text",
+          "text": "Der **Tilgungsplan** zeigt für jede Periode Zinsanteil, Tilgungsanteil und Restschuld. Skriptbeispiel: 100.000 €, Sollzins 2,8 %, Anfangstilgung 2 %."
+        },
+        {
+          "type": "steps",
+          "title": "Rechenweg",
+          "items": [
+            {
+              "title": "Jahresannuität",
+              "text": "100.000 € × (2,8 % + 2 %) = 4.800 €"
+            },
+            {
+              "title": "Monatsrate",
+              "text": "4.800 € ÷ 12 = 400 €"
+            },
+            {
+              "title": "Erste Rate",
+              "text": "Zinsen 100.000 € × 2,8 % ÷ 12 = 233,33 € – Tilgung 400 € − 233,33 € = 166,67 €"
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "head": [
+            "Jahr",
+            "Zinsanteil",
+            "Tilgungsanteil",
+            "Annuität",
+            "Restschuld"
+          ],
+          "rows": [
+            [
+              "1",
+              "2.774 €",
+              "2.026 €",
+              "4.800 €",
+              "97.974 €"
+            ],
+            [
+              "2",
+              "2.717 €",
+              "2.083 €",
+              "4.800 €",
+              "95.891 €"
+            ],
+            [
+              "3",
+              "2.658 €",
+              "2.142 €",
+              "4.800 €",
+              "93.748 €"
+            ],
+            [
+              "5",
+              "2.534 €",
+              "2.266 €",
+              "4.800 €",
+              "89.280 €"
+            ],
+            [
+              "8",
+              "2.336 €",
+              "2.464 €",
+              "4.800 €",
+              "82.090 €"
+            ],
+            [
+              "10",
+              "2.194 €",
+              "2.606 €",
+              "4.800 €",
+              "**76.950 €**"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Die Restschuld sinkt anfangs langsam und später immer schneller. Nach zehn Jahren sind hier erst rund 23 % getilgt. Bis zur vollständigen Rückzahlung dauert es bei unverändertem Zins rund 31 Jahre."
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Im Tilgungsplan des Skripts steht für das achte Jahr ein Tilgungsanteil von 3.464 €. Das ist ein Druckfehler – richtig sind 2.464 € (4.800 € − 2.336 €)."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Bei monatlicher Zahlung sind die Jahreszinsen etwas niedriger als 2,8 % der Anfangsschuld, weil schon unterjährig getilgt wird. In Prüfungsaufgaben wird oft vereinfacht mit Jahreswerten gerechnet."
+        }
+      ],
+      "laws": [],
+      "memory": "Annuität = Darlehen × (Zins + Anfangstilgung). Zinsanteil = Restschuld × Zins.",
+      "examTrap": "Die Zinsen werden immer auf die aktuelle Restschuld gerechnet, nie auf die ursprüngliche Darlehenssumme."
+    },
+    {
+      "id": "3.2.1-c",
+      "title": "Zins, Tilgung und Laufzeit",
+      "subtitle": "Wie die drei zusammenhängen",
+      "ref": "BWB 3.2.1, S. 3–5 und 7",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q009",
+      "content": [
+        {
+          "type": "text",
+          "text": "Die Laufzeit steht beim Annuitätendarlehen nicht im Vertrag. Sie **ergibt sich** aus Zinssatz und Anfangstilgung."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Zins",
+            "Anfangstilgung",
+            "Monatsrate (100.000 €)",
+            "Laufzeit rund"
+          ],
+          "rows": [
+            [
+              "2,8 %",
+              "1 %",
+              "316,67 €",
+              "47 Jahre"
+            ],
+            [
+              "2,8 %",
+              "2 %",
+              "400,00 €",
+              "31 Jahre"
+            ],
+            [
+              "2,8 %",
+              "3,8 %",
+              "550,00 €",
+              "20 Jahre"
+            ],
+            [
+              "6 %",
+              "1 %",
+              "583,33 €",
+              "32,5 Jahre"
+            ],
+            [
+              "10 %",
+              "1 %",
+              "916,67 €",
+              "24 Jahre"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Drei Regeln",
+          "items": [
+            "**Höhere Tilgung** verkürzt die Laufzeit und senkt die Zinskosten – die Rate steigt.",
+            "**Höherer Zins** verkürzt bei gleicher Anfangstilgung ebenfalls die Laufzeit: Die ersparten Zinsen sind größer, die Tilgung wächst schneller. Billiger wird es dadurch nicht.",
+            "Bei **niedrigen Zinsen** sollte der Tilgungssatz höher gewählt werden, sonst wird die Laufzeit sehr lang."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Ein **Volltilgerdarlehen** ist so berechnet, dass es am Ende der Zinsbindung vollständig zurückgezahlt ist. Im Skriptbeispiel: 2,8 % Zins, 3,8 % Tilgung, 20 Jahre fest – Rate 550 €. Ein Zinsänderungsrisiko gibt es dann nicht."
+        },
+        {
+          "type": "text",
+          "text": "**Sondertilgungen** sind während der Zinsbindung nur mit Zustimmung des Kreditgebers möglich, meist gegen Vorfälligkeitsentschädigung. Viele Institute vereinbaren aber von vornherein kostenlose Sondertilgungsrechte bis zu einem jährlichen Betrag."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Die Laufzeit laut Tilgungsplan trifft in der Praxis selten zu: Nach Ablauf der Zinsbindung gelten neue Konditionen, und damit ändern sich Rate oder Laufzeit. Das Skript nennt für 2,8 % / 1 % rund 46 Jahre; exakt gerechnet sind es knapp 48."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 500 Abs. 2 BGB",
+          "text": "Bei einem Immobiliar-Verbraucherdarlehen mit gebundenem Sollzins kann der Darlehensnehmer während der Zinsbindung nur vorzeitig erfüllen, wenn er ein berechtigtes Interesse hat."
+        },
+        {
+          "ref": "§ 489 Abs. 1 Nr. 2 BGB",
+          "text": "Nach Ablauf von zehn Jahren seit dem vollständigen Empfang kann der Darlehensnehmer ein Darlehen mit gebundenem Sollzins mit einer Frist von sechs Monaten kündigen."
+        }
+      ],
+      "memory": "Mehr Tilgung: höhere Rate, kürzere Laufzeit, weniger Zinsen.",
+      "examTrap": "Höherer Zins bedeutet bei gleicher Anfangstilgung eine kürzere Laufzeit – aber eine höhere Rate und höhere Gesamtkosten."
+    },
+    {
+      "id": "3.2.1-d",
+      "title": "Zinsänderungsrisiko",
+      "subtitle": "Was nach der Zinsbindung passiert",
+      "ref": "BWB 3.2.1, S. 5–7",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q013",
+      "content": [
+        {
+          "type": "text",
+          "text": "Der Zins ist meist nur für einen Teil der Laufzeit festgeschrieben, oft zehn Jahre. Danach wird die Restschuld zum dann gültigen Zins weiterfinanziert. Steigt der Zins, steigt die Rate – das ist das **Zinsänderungsrisiko**."
+        },
+        {
+          "type": "example",
+          "title": "Skriptbeispiel",
+          "text": "100.000 €, 2,8 % Zins, 2 % Tilgung: Rate 400 €. Nach zehn Jahren beträgt die Restschuld rund 77.000 €. Steigt der Zins auf 5 % und bleibt die Tilgung bei 2 %, rechnet das Skript die neue Annuität auf die Ursprungssumme: 100.000 € × 7 % ÷ 12 = **583,33 €**."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Anfangstilgung",
+            "Rate",
+            "Restschuld nach 10 Jahren",
+            "Risiko"
+          ],
+          "rows": [
+            [
+              "1 %",
+              "316,67 €",
+              "rund 88.500 €",
+              "hoch"
+            ],
+            [
+              "2 %",
+              "400,00 €",
+              "rund 77.000 €",
+              "mittel"
+            ],
+            [
+              "3,8 % (Volltilger, 20 Jahre fest)",
+              "550,00 €",
+              "–",
+              "keines"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "So lässt sich das Risiko begrenzen",
+          "items": [
+            "Lange Zinsfestschreibung wählen (20 bis 30 Jahre)",
+            "Höhere Tilgung wählen – die Restschuld am Ende der Zinsbindung ist kleiner",
+            "Volltilgerdarlehen: Zinsbindung und Laufzeit sind identisch"
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Ob die neue Rate auf die Ursprungssumme oder auf die Restschuld gerechnet wird, hängt von der Vereinbarung ab. Das Skript rechnet „in der Regel“ auf die Ursprungssumme."
+        }
+      ],
+      "laws": [],
+      "memory": "Niedrige Rate heute = hohe Restschuld morgen = hohes Zinsänderungsrisiko.",
+      "examTrap": "Eine niedrige Anfangstilgung macht die Rate bequem, aber die Restschuld am Ende der Zinsbindung hoch."
+    },
+    {
+      "id": "3.2.2-a",
+      "title": "Zinszahlungsdarlehen und Festdarlehen",
+      "subtitle": "Endfällig statt laufend getilgt",
+      "ref": "BWB 3.2.2, S. 2 und 3.2.7, S. 2",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q017",
+      "content": [
+        {
+          "type": "text",
+          "text": "Beim **Zinszahlungsdarlehen** wird während der Laufzeit **nicht getilgt**. Der Kunde zahlt nur Zinsen – immer auf die **volle Darlehenssumme**. Die Rückzahlung erfolgt am Ende in einem Betrag: Das Darlehen ist **endfällig**."
+        },
+        {
+          "type": "list",
+          "title": "Andere Namen für dasselbe Prinzip",
+          "items": [
+            "Festdarlehen",
+            "Tilgungsaussetzungsdarlehen",
+            "Vorausdarlehen",
+            "Festhypothek"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Getilgt wird indirekt: Parallel bespart der Kunde ein **Tilgungsersatzmittel**, das bei Fälligkeit das Darlehen ablöst. Die Beiträge dorthin heißen **indirekte Tilgung**. Der Kreditgeber lässt sich das Tilgungsprodukt als zusätzliche Sicherheit **abtreten**."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Annuitätendarlehen",
+            "text": "Direkte Tilgung mit jeder Rate. Restschuld sinkt laufend. Zinsen sinken mit der Restschuld. Rate = Zins + Tilgung."
+          },
+          "right": {
+            "title": "Zinszahlungsdarlehen",
+            "text": "Keine Tilgung während der Laufzeit. Schuld bleibt bis zum Ende voll bestehen. Zinsen bleiben gleich hoch. Rate = Zins + Sparbeitrag für das Tilgungsprodukt."
+          }
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Das Gegenstück zum endfälligen Darlehen ist laut Skript das Tilgungsdarlehen. Die Rate kann sich bei Ablauf der Zinsbindung oder bei Zuteilung eines Bausparvertrags ändern."
+        }
+      ],
+      "laws": [],
+      "memory": "Endfällig: nur Zinsen zahlen, am Ende alles auf einmal.",
+      "examTrap": "Festdarlehen heißt nicht „fester Zins“, sondern feste Darlehenssumme: Es wird während der Laufzeit nicht getilgt."
+    },
+    {
+      "id": "3.2.2-b",
+      "title": "Tilgungsersatz: Chancen und Risiken",
+      "subtitle": "Womit endfällige Darlehen abgelöst werden",
+      "ref": "BWB 3.2.2, S. 3–4 und 3.2.7, S. 2–4",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q021",
+      "content": [
+        {
+          "type": "table",
+          "head": [
+            "Tilgungsersatzmittel",
+            "Besonderheit"
+          ],
+          "rows": [
+            [
+              "**Bausparvertrag**",
+              "Garantierter Darlehenszins ab Zuteilung, Sondertilgung jederzeit, staatliche Förderung"
+            ],
+            [
+              "**Kapitallebensversicherung**",
+              "Ablaufleistung nicht garantiert; Rückzahlung bei Fälligkeit, spätestens nach 30 Jahren"
+            ],
+            [
+              "**Fondssparplan / Investmentfonds**",
+              "Ertrag schwankt mit dem Kapitalmarkt"
+            ],
+            [
+              "Private Rentenversicherung, klassischer Sparplan",
+              "ebenfalls möglich"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Risiken",
+          "items": [
+            "Reicht die Ablaufleistung von Versicherung oder Fonds nicht, bleibt eine **Deckungslücke**.",
+            "Wird der Bausparvertrag nicht rechtzeitig zugeteilt, muss weiterfinanziert werden.",
+            "Die Zinsen fallen die ganze Zeit auf die **volle Darlehenssumme** an – insgesamt deutlich mehr als beim Annuitätendarlehen.",
+            "Passen Fälligkeit des Tilgungsprodukts und Zinsbindung nicht zusammen, entsteht ein Zinsänderungsrisiko."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Deshalb gilt: **Fälligkeit des Tilgungsprodukts und Zinsfestschreibung sollten übereinstimmen.** Die Mindestbesparung des Tilgungsprodukts ist Bestandteil des Kreditvertrags. Mit einem Bausparvertrag sind sogar konstante Raten über die gesamte Laufzeit möglich (Konstantmodell, siehe Bausparfinanzierung)."
+        },
+        {
+          "type": "text",
+          "text": "Sinnvoll ist die Konstruktion vor allem bei **vermieteten Objekten**: Die Schuldzinsen bleiben gleich hoch und sind als Werbungskosten abziehbar. Die Sparraten können staatlich gefördert sein (vermögenswirksame Leistungen, Riester)."
+        },
+        {
+          "type": "list",
+          "title": "Festdarlehen mit Lebensversicherung",
+          "items": [
+            "Angeboten vom Lebensversicherer selbst oder von Kreditinstituten, Zinsbindung ab fünf Jahren",
+            "Absicherung in der Regel an erster Rangstelle",
+            "Lebensversicherer dürfen selbst nur erstrangig bis **60 % des Beleihungswerts** finanzieren; darüber braucht es eine Bankbürgschaft oder es gibt einen Zinsaufschlag"
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Die steuerlichen Aussagen des Skripts zur Lebensversicherung (Beiträge als Vorsorgeaufwendungen, hälftige Steuerfreiheit der Erträge) hängen vom Abschlussdatum ab und werden hier nicht abgefragt. Das Skript sagt selbst: Bei Steuerfragen gehört der Steuerberater des Kunden dazu."
+        }
+      ],
+      "laws": [],
+      "memory": "Tilgungsersatz und Zinsbindung müssen zusammen enden.",
+      "examTrap": "Die Sparbeiträge senken die Darlehensschuld nicht. Die Zinsen laufen bis zum Schluss auf den vollen Betrag."
+    },
+    {
+      "id": "3.2.3-a",
+      "title": "Tilgungsdarlehen",
+      "subtitle": "Gleiche Tilgung, sinkende Rate",
+      "ref": "BWB 3.2.3, S. 2–4",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q026",
+      "content": [
+        {
+          "type": "text",
+          "text": "Beim **Tilgungsdarlehen** (auch Ratendarlehen, Abzahlungsdarlehen) wird nicht die Rate vereinbart, sondern die **Tilgung**. Sie bleibt über die Laufzeit gleich (linear). Die Zinsen werden zusätzlich auf die Restschuld berechnet – deshalb **sinkt die Rate** von Zahlung zu Zahlung."
+        },
+        {
+          "type": "steps",
+          "title": "Skriptbeispiel",
+          "items": [
+            {
+              "title": "Tilgung",
+              "text": "Darlehen ÷ Anzahl der Tilgungsvorgänge. 100.000 € bei 5 % Tilgung: 5.000 € im Jahr, Laufzeit 20 Jahre."
+            },
+            {
+              "title": "Zinsen",
+              "text": "2,8 % auf die Restschuld: im ersten Jahr 2.800 €, im zweiten Jahr 2.660 €."
+            },
+            {
+              "title": "Rate",
+              "text": "Erstes Jahr 7.800 € (650 € im Monat), zweites Jahr 7.660 €."
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "head": [
+            "Tilgungsdarlehen",
+            "Zins",
+            "Tilgung",
+            "Rate"
+          ],
+          "rows": [
+            [
+              "Jahr 1",
+              "5.000 €",
+              "20.000 €",
+              "25.000 €"
+            ],
+            [
+              "Jahr 2",
+              "4.000 €",
+              "20.000 €",
+              "24.000 €"
+            ],
+            [
+              "Jahr 3",
+              "3.000 €",
+              "20.000 €",
+              "23.000 €"
+            ],
+            [
+              "Jahr 4",
+              "2.000 €",
+              "20.000 €",
+              "22.000 €"
+            ],
+            [
+              "Jahr 5",
+              "1.000 €",
+              "20.000 €",
+              "21.000 €"
+            ],
+            [
+              "**Summe**",
+              "**15.000 €**",
+              "100.000 €",
+              "115.000 €"
+            ]
+          ]
+        },
+        {
+          "type": "table",
+          "head": [
+            "Annuitätendarlehen",
+            "Zins",
+            "Tilgung",
+            "Rate"
+          ],
+          "rows": [
+            [
+              "Jahr 1",
+              "5.000 €",
+              "18.097 €",
+              "23.097 €"
+            ],
+            [
+              "Jahr 2",
+              "4.095 €",
+              "19.002 €",
+              "23.097 €"
+            ],
+            [
+              "Jahr 3",
+              "3.145 €",
+              "19.952 €",
+              "23.097 €"
+            ],
+            [
+              "Jahr 4",
+              "2.147 €",
+              "20.950 €",
+              "23.097 €"
+            ],
+            [
+              "Jahr 5",
+              "1.100 €",
+              "21.998 €",
+              "23.097 €"
+            ],
+            [
+              "**Summe**",
+              "**15.487 €**",
+              "100.000 €",
+              "115.487 €"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Einordnung",
+          "items": [
+            "Die Restschuld sinkt vor allem am Anfang schneller als beim Annuitätendarlehen.",
+            "Die Zinskosten sind insgesamt niedriger.",
+            "Die Anfangsbelastung ist am höchsten – deshalb ist das Tilgungsdarlehen in der Immobilienfinanzierung selten.",
+            "Außerhalb der Immobilienfinanzierung ist es die Norm, etwa bei betrieblichen Investitionen.",
+            "Kleine Tilgungsbeträge führen zu langen Laufzeiten mit Zinsänderungsrisiko."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Vergleichstabelle: 100.000 €, 5 % Zins, 5 Jahre, jährliche Zahlung. Die Werte des Annuitätendarlehens sind nachgerechnet; das Skript rundet im letzten Jahr abweichend."
+        }
+      ],
+      "laws": [],
+      "memory": "Annuität: Rate gleich, Tilgung steigt. Tilgungsdarlehen: Tilgung gleich, Rate sinkt.",
+      "examTrap": "Beim Tilgungsdarlehen ist die erste Rate die höchste. Wer nur auf die Zinssumme schaut, übersieht die hohe Anfangsbelastung."
+    },
+    {
+      "id": "3.2.4-a",
+      "title": "Zwischenfinanzierung und Vorfinanzierung",
+      "subtitle": "Die Brücke bis zur Endfinanzierung",
+      "ref": "BWB 3.2.4, S. 2–4",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q031",
+      "content": [
+        {
+          "type": "text",
+          "text": "Oft stehen eingeplante Mittel nicht zu dem Zeitpunkt bereit, an dem sie gebraucht werden. Eine **Zwischenfinanzierung** überbrückt diese Zeit. Sie funktioniert wie ein Zinszahlungsdarlehen: Der Kunde zahlt nur Zinsen, getilgt wird in einer Summe, sobald die endgültigen Mittel fließen."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Zwischenfinanzierung",
+            "text": "Die Endfinanzierung steht **bereits (rechtlich) fest**. Die Ablösung ist gesichert, die Bank trägt ein normales Kreditrisiko. Laufzeit meist unter fünf Jahren, kurzfristige Zinssätze."
+          },
+          "right": {
+            "title": "Vorfinanzierung",
+            "text": "Die Endfinanzierung ist **noch nicht gesichert**. Beispiel: Ein neu abgeschlossener Bausparvertrag hat die Mindestansparung noch nicht erreicht."
+          }
+        },
+        {
+          "type": "list",
+          "title": "Typische Anlässe",
+          "items": [
+            "Ein Bausparvertrag ist noch **nicht zuteilungsreif** (Mindestansparung erreicht, Zuteilung steht aus)",
+            "Eigenkapital steckt in Geldanlagen, die erst später fällig werden",
+            "Sparverträge oder Lebensversicherungen sind noch nicht fällig",
+            "Der **Verkaufserlös der alten Immobilie** fließt erst nach der Kaufpreisfälligkeit der neuen"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Der monatliche Aufwand besteht nur aus den **Zinsen**. Beim Bausparvertrag können Sparbeiträge dazukommen, damit die Belastung vor und nach der Zuteilung gleich ist. Nach Zuteilung und Ablösung zahlt der Kunde den Zins- und Tilgungsbeitrag für das Bauspardarlehen."
+        },
+        {
+          "type": "text",
+          "text": "**Bestehende Verträge einbinden:** Eine laufende Kapitallebensversicherung oder ein Bausparvertrag muss nicht aufgelöst werden. Ein Teil des Darlehens wird tilgungsfrei aufgenommen und bei Fälligkeit des Vertrags abgelöst."
+        }
+      ],
+      "laws": [],
+      "memory": "Zwischenfinanzierung: Ablösung steht fest. Vorfinanzierung: Ablösung steht noch aus.",
+      "examTrap": "Entscheidend für die Abgrenzung ist nicht die Laufzeit, sondern ob die Endfinanzierung schon gesichert ist."
+    },
+    {
+      "id": "3.2.5-a",
+      "title": "Anschlussfinanzierung",
+      "subtitle": "Wenn die Zinsbindung endet",
+      "ref": "BWB 3.2.5, S. 2–4",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q035",
+      "content": [
+        {
+          "type": "text",
+          "text": "Kaum ein Darlehen ist am Ende der Zinsbindung getilgt. Für die Restschuld wird eine neue Zinsfestschreibung gebraucht: die **Anschlussfinanzierung**. Zinsbindungen von 1 bis 30 Jahren sind möglich, üblich sind 10 bis 15 Jahre."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Weg",
+            "Was passiert"
+          ],
+          "rows": [
+            [
+              "**Ablösung**",
+              "Der Kunde zahlt die Restschuld aus eigenen Mitteln zurück"
+            ],
+            [
+              "**Prolongation**",
+              "Neue Zinsbindung bei der bisherigen Bank"
+            ],
+            [
+              "**Umschuldung**",
+              "Eine andere Bank löst die Restschuld ab"
+            ],
+            [
+              "**Forwarddarlehen**",
+              "Die Anschlusskondition wird schon Monate oder Jahre vorher gesichert"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Bankenwahl",
+          "items": [
+            "Die bisherige Bank ist **nicht verpflichtet**, eine Anschlussfinanzierung anzubieten – etwa bei verschlechterter Bonität.",
+            "Sie muss den Kunden aber **spätestens drei Monate vor Ende der Zinsbindung** informieren, ob sie zu einer neuen Vereinbarung bereit ist.",
+            "Konditionen der Hausbank sind **verhandelbar**: Die Verlängerung macht ihr wenig Aufwand. Alte Risikozuschläge sollten neu verhandelt werden.",
+            "Vergleichsangebote anderer Banken zahlen sich meist aus."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Für die Wahl zählt nicht nur der Zinssatz. Wichtig sind auch die **Dauer der neuen Zinsbindung**, der **Tilgungssatz** und die **Flexibilität**: Sondertilgungsrechte und die Möglichkeit, die Tilgung zu ändern."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Ablauf, Kosten und Fristen der Umschuldung folgen in Level 24. Die Informationspflicht stammt aus dem Risikobegrenzungsgesetz von 2008 und steht heute in § 493 BGB."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 493 Abs. 1 BGB",
+          "text": "Spätestens drei Monate vor Ende der Sollzinsbindung unterrichtet der Darlehensgeber den Darlehensnehmer, ob er zu einer neuen Sollzinsbindungsabrede bereit ist. Erklärt er sich bereit, nennt er den dann angebotenen Sollzinssatz."
+        }
+      ],
+      "memory": "Drei Monate vorher muss die Bank sagen, ob sie verlängert.",
+      "examTrap": "Die Informationspflicht ist keine Angebotspflicht: Die Bank muss sich erklären, aber nicht verlängern."
+    },
+    {
+      "id": "3.2.5-b",
+      "title": "Forwarddarlehen",
+      "subtitle": "Den Zins von heute für morgen sichern",
+      "ref": "BWB 3.2.5, S. 2 und 4–6",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q039",
+      "content": [
+        {
+          "type": "text",
+          "text": "Ein **Forwarddarlehen** ist üblicherweise ein Annuitätendarlehen, das erst nach einer Vorlaufzeit ausgezahlt wird. Der Zins wird aber schon bei Vertragsschluss festgelegt. Am häufigsten wird es für die **Anschlussfinanzierung** genutzt."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Merkmal",
+            "Inhalt"
+          ],
+          "rows": [
+            [
+              "**Forward-Periode**",
+              "Zeit zwischen Vertragsschluss und Auszahlung, bis zu **60 Monate**"
+            ],
+            [
+              "Kosten in der Vorlaufzeit",
+              "Keine Kredit- und **keine Bereitstellungszinsen**"
+            ],
+            [
+              "Preis",
+              "**Zinsaufschlag** gegenüber einem sofort ausgezahlten Darlehen"
+            ],
+            [
+              "Höhe des Aufschlags",
+              "Abhängig von der Länge der Forward-Periode und der aktuellen Zinsstruktur"
+            ],
+            [
+              "Typischer Einsatz",
+              "Zinsbindung endet in 12 bis 60 Monaten, der Kunde erwartet **steigende Zinsen**"
+            ]
+          ]
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Echtes Forwarddarlehen",
+            "text": "Die Zinsbindungsfrist beginnt erst mit der **Auszahlung**."
+          },
+          "right": {
+            "title": "Unechtes Forwarddarlehen",
+            "text": "Die Zinsbindungsfrist beginnt **sofort** bei Vertragsschluss."
+          }
+        },
+        {
+          "type": "text",
+          "text": "**Risiko:** Der Kunde **muss das Darlehen abnehmen** – auch wenn die Marktzinsen bis zur Auszahlung gefallen sind. Dann zahlt er den Aufschlag und verpasst die günstigeren Konditionen."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Die Skriptangaben zum durchschnittlichen Aufschlag (Stand 2015) und zur Entstehungsgeschichte sind keine Prüfungszahlen. Auch ein Zinszahlungsdarlehen kann als Forwarddarlehen gestaltet werden, etwa mit einem neuen Bausparvertrag."
+        }
+      ],
+      "laws": [],
+      "memory": "Forward: heute festlegen, später auszahlen, Aufschlag zahlen, abnehmen müssen.",
+      "examTrap": "Während der Forward-Periode fallen keine Bereitstellungszinsen an. Der Preis steckt im Zinsaufschlag."
+    },
+    {
+      "id": "3.2.6-a",
+      "title": "Cap-Darlehen",
+      "subtitle": "Variabler Zins mit Deckel",
+      "ref": "BWB 3.2.6, S. 2–3",
+      "examRelevance": "S",
+      "checkId": "3.2-Q044",
+      "content": [
+        {
+          "type": "text",
+          "text": "Ein **Cap-Darlehen** hat einen **variablen Zins**, der alle paar Monate an einen kurzfristigen Referenzzins angepasst wird, zum Beispiel den EURIBOR. Eine vereinbarte **Zinsobergrenze (Cap)** darf er nicht überschreiten. Ein **Floor** ist das Gegenstück: eine Zinsuntergrenze."
+        },
+        {
+          "type": "example",
+          "title": "Beispiel",
+          "text": "Fünfjahreskredit mit variablem Zins und Cap bei 5 %. Steigt der Marktzins auf 6 %, zahlt der Kunde höchstens 5 %. Fällt der Marktzins, sinkt auch sein Zins."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Zinsentwicklung",
+            "Wirkung"
+          ],
+          "rows": [
+            [
+              "Zinsen **steigen**",
+              "Das Risiko ist durch den Cap begrenzt. Günstiger als ein Festzinsdarlehen ist das Cap-Darlehen aber nur, solange der Festzins bei Abschluss über dem Cap lag."
+            ],
+            [
+              "Zinsen **bleiben gleich oder fallen**",
+              "Ein variables Darlehen ohne Cap ist günstiger, weil die Cap-Prämie entfällt."
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Weitere Eigenschaften",
+          "items": [
+            "Die Bank verlangt eine **Cap-Prämie** – eine Art Versicherungsprämie. Ihre Höhe hängt von der Laufzeit und vom Abstand zwischen aktuellem Zins und Obergrenze ab.",
+            "Bei vorzeitiger Rückzahlung fällt wie bei variablen Darlehen **keine Vorfälligkeitsentschädigung** an.",
+            "Nur wenige Banken bieten Cap-Darlehen an – der Konditionenvergleich ist schwierig."
+          ]
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 489 Abs. 2 BGB",
+          "text": "Ein Darlehen mit veränderlichem Zinssatz kann der Darlehensnehmer jederzeit mit einer Frist von drei Monaten kündigen."
+        }
+      ],
+      "memory": "Cap = Deckel nach oben. Floor = Boden nach unten.",
+      "examTrap": "Der Cap schützt nur vor steigenden Zinsen und kostet eine Prämie. Bei fallenden Zinsen ist das variable Darlehen ohne Cap günstiger."
+    },
+    {
+      "id": "3.2.8-a",
+      "title": "Policendarlehen",
+      "subtitle": "Die Lebensversicherung beleihen",
+      "ref": "BWB 3.2.8, S. 2",
+      "examRelevance": "S",
+      "checkId": "3.2-Q048",
+      "content": [
+        {
+          "type": "text",
+          "text": "Beim **Policendarlehen** dient der **Rückkaufswert einer Lebensversicherung** als Sicherheit. Weil das Risiko für den Kreditgeber gering ist, sind die Zinsen in der Regel niedrig, und auf eine **Bonitätsprüfung wird meist verzichtet**."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Merkmal",
+            "Inhalt"
+          ],
+          "rows": [
+            [
+              "Sicherheit",
+              "Kapitalbildende oder fondsgebundene Lebensversicherung"
+            ],
+            [
+              "Höchstbetrag",
+              "Rückkaufswert, gegebenenfalls mit Überschussanteilen, abzüglich Kapitalertragsteuer"
+            ],
+            [
+              "Anbieter",
+              "Der Versicherer selbst, spezialisierte Banken, Unternehmen im Zweitmarkt"
+            ],
+            [
+              "Funktionsweise",
+              "Wie ein Zinszahlungsdarlehen: nur Zinsen, Rückzahlung in einer Summe"
+            ],
+            [
+              "Zinssätze",
+              "Können je nach Anbieter stark voneinander abweichen"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Das Policendarlehen ist eine **Alternative zur Kündigung, zur Beitragsfreistellung und zum Verkauf** der Versicherung: Der Kunde bekommt Liquidität, ohne den Vertrag und den Versicherungsschutz aufzugeben."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 169 VVG",
+          "text": "Wird eine Lebensversicherung durch Kündigung beendet, zahlt der Versicherer den Rückkaufswert."
+        }
+      ],
+      "memory": "Policendarlehen: Geld aus der Police, ohne sie zu kündigen.",
+      "examTrap": "Die Grenze ist der Rückkaufswert – nicht die Versicherungssumme und nicht die erwartete Ablaufleistung."
+    },
+    {
+      "id": "3.2.9-a",
+      "title": "Das Bauspardarlehen",
+      "subtitle": "Was nach der Zuteilung kommt",
+      "ref": "BWB 3.2.9, S. 2–3 und 6–7",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q052",
+      "content": [
+        {
+          "type": "text",
+          "text": "Ein Bausparvertrag hat drei Phasen: **Sparphase**, **Zuteilung** und **Darlehensphase**. Mit der Zuteilung stehen Guthaben und Darlehen bereit: **Bausparguthaben + Bauspardarlehen = Bausparsumme**."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Merkmal",
+            "Inhalt"
+          ],
+          "rows": [
+            [
+              "Darlehenshöhe",
+              "In der Regel **Bausparsumme minus Guthaben**"
+            ],
+            [
+              "Zinssatz",
+              "Ergibt sich aus dem Tarif und steht **schon bei Vertragsabschluss** für die gesamte Darlehenslaufzeit fest (Zinsgarantie)"
+            ],
+            [
+              "Rate",
+              "Feste Annuität aus Zins und Tilgung, als **Promillesatz der Bausparsumme** pro Monat"
+            ],
+            [
+              "Laufzeit",
+              "Ergibt sich aus Tilgungsbeitrag und Zinssatz des Tarifs"
+            ],
+            [
+              "Auszahlung",
+              "Normalerweise zu 100 %; bei einigen Tarifen ist ein Disagio möglich"
+            ],
+            [
+              "Bereithaltung",
+              "Begrenzt, je nach Bausparkasse ein bis zwei Jahre; gegebenenfalls Bereitstellungszinsen"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Besonderheiten",
+          "items": [
+            "**Sondertilgungen** sind jederzeit und in jeder Höhe möglich – trotz festem Zins.",
+            "Es gibt **keine Vorfälligkeitsentschädigung** und **keine Nichtabnahmeentschädigung**, wohl aber Bereitstellungszinsen.",
+            "Eine Sondertilgung **verkürzt die Laufzeit**. Ab bestimmten Mindestbeträgen kann stattdessen der Tilgungsbeitrag gesenkt werden; dann bleibt die Laufzeit gleich.",
+            "Die **Wohnungsbauprämie** gibt es nur in der Sparphase."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das Skript nennt ein Agio von 2 bis 3 % der Darlehenssumme und eine Zinsspanne von 0,5 bis 6,75 %. Darlehensgebühren bei Bauspardarlehen hat der BGH 2016 für unwirksam erklärt, und Zinssätze sind tarifabhängig. Beides sind keine Prüfungszahlen."
+        }
+      ],
+      "laws": [],
+      "memory": "Bausparsumme = Guthaben + Darlehen. Zins garantiert, Sondertilgung frei.",
+      "examTrap": "Der Tilgungsbeitrag wird auf die Bausparsumme gerechnet, nicht auf das Darlehen."
+    },
+    {
+      "id": "3.2.9-b",
+      "title": "Verwendung und Sicherung",
+      "subtitle": "Wohnwirtschaftlich und nachrangig",
+      "ref": "BWB 3.2.9, S. 3–6",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q057",
+      "content": [
+        {
+          "type": "text",
+          "text": "Das Bauspardarlehen ist **zweckgebunden**: Es muss nach dem Bausparkassengesetz und den Allgemeinen Bausparbedingungen (ABB) für **wohnwirtschaftliche Zwecke** verwendet werden. Der **Verwendungsnachweis** ist spätestens **zwölf Monate nach Auszahlung** zu erbringen."
+        },
+        {
+          "type": "list",
+          "title": "Wohnwirtschaftliche Zwecke",
+          "items": [
+            "Neubau oder Kauf von Gebäuden, die überwiegend Wohnzwecken dienen",
+            "Ausbau, Umbau, Anbau",
+            "Erhaltung, Verbesserung (Modernisierung), Wiederaufbau",
+            "Erwerb von Bauland oder Erbbaurechten samt Erschließung",
+            "Auszahlung von Miterben",
+            "Ablösung von Darlehen, die für solche Maßnahmen aufgenommen wurden (Umschuldung)"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Zulässig sind zum Beispiel auch der Einkauf in ein Altenwohnheim (Dauerwohnrecht), Modernisierungen durch Mieter und Baumaßnahmen der Kinder. **Gewerblich** darf nur begrenzt finanziert werden: Objekte, die mit dem Wohnungsbau zusammenhängen oder das Wohngebiet versorgen. Die Verwendung nach dem Bausparkassengesetz ist **weiter gefasst** als nach dem Wohnungsbau-Prämiengesetz."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Sicherung",
+            "Regel"
+          ],
+          "rows": [
+            [
+              "Grundschuld",
+              "Üblich, in der Regel an **zweiter Rangstelle** – der erste Rang bleibt für die Bank frei"
+            ],
+            [
+              "Beleihungsgrenze",
+              "Laut Skript bis zu 100 % des Beleihungswerts"
+            ],
+            [
+              "Ersatzsicherheiten",
+              "Möglich, wenn kein inländisches Grundpfandrecht gestellt werden kann"
+            ],
+            [
+              "Blanko- / Negativdarlehen",
+              "Laut Skript bis 50.000 € ohne Grundpfandrecht"
+            ],
+            [
+              "Objekte im EU-Ausland",
+              "Grundsätzlich möglich, praktisch durch abweichendes Grundbuchrecht stark eingeschränkt"
+            ]
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Die Beleihungsgrenze von 100 % gilt nach dem Bausparkassengesetz für selbst genutztes Wohneigentum; im Übrigen liegt die Grenze bei 80 % des Beleihungswerts. Einzelheiten zu Blanko- und Negativdarlehen folgen in Level 20."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 1 Abs. 3 BauSparkG",
+          "text": "Definiert die wohnungswirtschaftlichen Maßnahmen, für die Bauspardarlehen gewährt werden dürfen."
+        },
+        {
+          "ref": "§ 7 BauSparkG",
+          "text": "Bauspardarlehen sind grundsätzlich durch Grundpfandrechte zu sichern; die Vorschrift regelt Beleihungsgrenzen, Ersatzsicherheiten und den Verzicht auf Sicherheiten bei kleinen Darlehen."
+        }
+      ],
+      "memory": "Bauspardarlehen: wohnwirtschaftlich verwenden, binnen zwölf Monaten nachweisen, nachrangig sichern.",
+      "examTrap": "Die Nachrangigkeit ist ein Vorteil für den Kunden: Die Bank bekommt den ersten Rang und damit ihre besten Konditionen."
+    },
+    {
+      "id": "3.2.9-c",
+      "title": "Bausparfinanzierung vor der Zuteilung",
+      "subtitle": "Vorausdarlehen, Zwischenkredit, Konstantmodell",
+      "ref": "BWB 3.2.9, S. 7–12",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q062",
+      "content": [
+        {
+          "type": "text",
+          "text": "Ist der Bausparvertrag **noch nicht zugeteilt**, wird die Wartezeit mit einem **Zinszahlungsdarlehen** überbrückt. Es ist ein eigenes Kreditkonto, aber an den Bausparvertrag gebunden: Der Vertrag wird **abgetreten** – als Sicherheit und zur späteren Ablösung."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Bestandsvertrag: Zwischenkredit",
+            "text": "Die Mindestansparung ist erreicht. Der Kunde zahlt nur Zinsen, die Zuteilung erfolgt in der Regel innerhalb von fünf Jahren."
+          },
+          "right": {
+            "title": "Neuvertrag: Vorausdarlehen",
+            "text": "Der Vertrag wird neu abgeschlossen. Zu den Zinsen kommen **Sparbeiträge**. Die Zuteilung sollte innerhalb der Zinsfestschreibung liegen."
+          }
+        },
+        {
+          "type": "steps",
+          "title": "Das Konstantmodell",
+          "items": [
+            {
+              "title": "Vor der Zuteilung",
+              "text": "Zinsen für das Zinszahlungsdarlehen plus Sparbeitrag für den Bausparvertrag."
+            },
+            {
+              "title": "Zuteilung",
+              "text": "Die Bausparsumme löst das Zinszahlungsdarlehen in einer Summe ab."
+            },
+            {
+              "title": "Nach der Zuteilung",
+              "text": "Zins- und Tilgungsbeitrag für das Bauspardarlehen – in gleicher Höhe wie zuvor."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Beim **Konstantmodell** sind Zins plus Sparbeitrag genauso hoch wie der spätere Tilgungsbeitrag. Der Kunde hat eine **verlässliche, konstante Rate** und wegen des garantierten Bausparzinses **kein Zinsänderungsrisiko**."
+        },
+        {
+          "type": "list",
+          "title": "Das musst du beachten",
+          "items": [
+            "Die Zinsen werden auf die **volle Darlehenssumme** berechnet. Das Bausparguthaben wird nicht verrechnet, aber weiter verzinst.",
+            "Die Zinsbindung darf den voraussichtlichen Zuteilungstermin nicht überschreiten, sonst droht eine Vorfälligkeitsentschädigung. Am günstigsten ist **„fest bis zur Zuteilung“**.",
+            "Bleibt der Zwischenkredit im Rahmen des **Bausparguthabens**, genügt ein Verwendungsnachweis. Umfasst er auch das Bauspardarlehen, sind Beleihungsprüfung und Sicherung nötig.",
+            "Den Kredit gewährt die Bausparkasse selbst oder eine Bank; die Grundschuld wird für einen der Partner eingetragen und bei Bedarf abgetreten."
+          ]
+        }
+      ],
+      "laws": [],
+      "memory": "Konstantmodell: Zins + Sparen vorher = Zins + Tilgung nachher.",
+      "examTrap": "Der Zuteilungstermin ist unverbindlich. Eine zu lange Zinsbindung des Vorausdarlehens kann deshalb teuer werden."
+    },
+    {
+      "id": "3.2.9-d",
+      "title": "Unterbesparung und Auffüllungskredit",
+      "subtitle": "Zwei Varianten mit Folgen",
+      "ref": "BWB 3.2.9, S. 9 und 13–14",
+      "examRelevance": "S",
+      "checkId": "3.2-Q067",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Unterbesparung:** Kann der Kunde den Regelsparbeitrag nicht zahlen, lässt sich der Sparbeitrag von üblichen 3 bis 5 ‰ oft bis auf 1 ‰ der Bausparsumme senken. Dann reicht das Guthaben am Ende der Zinsbindung nur für **Teilbausparsummen**. Der Rest muss **prolongiert** werden – der Kunde trägt ein Zinsänderungsrisiko. Sonderzahlungen in der Sparphase verkleinern die Lücke."
+        },
+        {
+          "type": "text",
+          "text": "**Auffüllungskredit:** Die Ansparung wird ganz oder teilweise **aus Kreditmitteln** eingezahlt. So erwirbt der Kunde den Anspruch auf das Bauspardarlehen, ohne vorher gespart zu haben. Die Zuteilung erfolgt je nach Tarif nach zwei bis vier Jahren."
+        },
+        {
+          "type": "steps",
+          "title": "Skriptbeispiel",
+          "items": [
+            {
+              "title": "Ausgangslage",
+              "text": "Darlehenswunsch 20.000 €, Auffüllung 20.000 € (50 %), Zwischenkredit insgesamt 40.000 €."
+            },
+            {
+              "title": "Zinsen",
+              "text": "40.000 € × 2 % ÷ 12 = 66,67 € im Monat."
+            },
+            {
+              "title": "Tilgungsbeitrag ab Zuteilung",
+              "text": "120 € im Monat."
+            },
+            {
+              "title": "Sparanteil",
+              "text": "120 € − 66,67 € = 53,33 €. Mit diesem Sparanteil zahlt der Kunde von Anfang an konstant 120 €."
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Regeln zum Auffüllungskredit",
+          "items": [
+            "Die Auffüllung darf **nicht von der Bausparkasse selbst** gewährt werden.",
+            "Das Modell lohnt sich bei **günstigem Kapitalmarktzins** und **kurzer Zuteilungszeit**.",
+            "Die Sparrate kann wegen der Auffüllung auch bei 0 € liegen."
+          ]
+        }
+      ],
+      "laws": [],
+      "memory": "Auffüllung: Guthaben auf Kredit – nie von der Bausparkasse selbst.",
+      "examTrap": "Beim Auffüllungskredit zahlt der Kunde Zinsen auf mehr Geld, als er für sein Vorhaben braucht."
+    },
+    {
+      "id": "3.2.10-a",
+      "title": "KfW-Förderung",
+      "subtitle": "Bundesförderung über die Hausbank",
+      "ref": "BWB 3.2.10.1, S. 2–4",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q072",
+      "content": [
+        {
+          "type": "text",
+          "text": "Die **KfW** ist die Förderbank des Bundes. Ihre Kredite sind in der Regel **günstiger als der Kapitalmarktzins** und können **tilgungsfreie Anlaufjahre** enthalten. Gefördert werden vor allem selbst genutztes Wohneigentum, energieeffizientes Bauen und Sanieren, erneuerbare Energien und der altersgerechte Umbau."
+        },
+        {
+          "type": "steps",
+          "title": "Der Antragsweg",
+          "items": [
+            {
+              "title": "Beratung",
+              "text": "Der Kunde spricht mit seiner Bank, Bausparkasse oder seinem Vermittler."
+            },
+            {
+              "title": "Antrag",
+              "text": "Der Antrag wird **über ein Kreditinstitut** gestellt – nicht direkt bei der KfW – und zwar **vor Beginn des Vorhabens**."
+            },
+            {
+              "title": "Prüfung",
+              "text": "Das durchleitende Institut prüft Bonität und Sicherheiten und reicht den Antrag weiter."
+            },
+            {
+              "title": "Auszahlung",
+              "text": "Nach der Zusage zahlt das Institut den Kredit aus und übernimmt die laufende Abwicklung."
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "head": [
+            "Punkt",
+            "Regel"
+          ],
+          "rows": [
+            [
+              "Antragszeitpunkt",
+              "Vor Vorhabensbeginn. **Umschuldung und Nachfinanzierung** sind ausgeschlossen."
+            ],
+            [
+              "Sicherheiten",
+              "Grundpfandrechte; **nachrangige** Grundschulden genügen"
+            ],
+            [
+              "Auszahlung",
+              "Zu 100 %; für nicht abgerufene Beträge können Bereitstellungszinsen anfallen"
+            ],
+            [
+              "Tilgung",
+              "Nach den tilgungsfreien Anlaufjahren in Annuitäten"
+            ],
+            [
+              "Kombination",
+              "Weitere öffentliche Mittel können zusätzlich genutzt werden"
+            ]
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "Das durchleitende Institut übernimmt bei wohnwirtschaftlichen KfW-Krediten in der Regel die Haftung gegenüber der KfW. Deshalb prüft es die Kreditwürdigkeit wie bei einem eigenen Darlehen und ist nicht verpflichtet, den Antrag anzunehmen."
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Programmnummern, Höchstbeträge, Laufzeiten und Kontaktdaten des Skripts sind teils überholt und ändern sich laufend. Gelernt und gefragt werden hier nur die Grundzüge. Als Beispiel nennt das Skript das Wohneigentumsprogramm mit bis zu 100.000 € je Wohneinheit."
+        }
+      ],
+      "laws": [],
+      "memory": "KfW: Antrag vor dem Vorhaben und immer über ein Kreditinstitut.",
+      "examTrap": "Wer schon gekauft oder mit dem Bau begonnen hat, bekommt die Förderung nicht mehr. Der Antrag muss vorher gestellt sein."
+    },
+    {
+      "id": "3.2.10-b",
+      "title": "Wohnraumförderung der Länder",
+      "subtitle": "Sechs Grundsätze und ein Zuschuss",
+      "ref": "BWB 3.2.10.1, S. 5–8",
+      "examRelevance": "S",
+      "checkId": "3.2-Q077",
+      "content": [
+        {
+          "type": "text",
+          "text": "Neben dem Bund fördern die **Bundesländer** mit zinsvergünstigten Darlehen. Grundlage ist das **Wohnraumförderungsgesetz (WoFG)**. Jedes Land bestimmt selbst, wie viel Geld es für welche Maßnahme bereitstellt – die Richtlinien sind von Land zu Land verschieden. Auch Kreise, Gemeinden und Energieversorger haben eigene Programme."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Grundsatz",
+            "Inhalt"
+          ],
+          "rows": [
+            [
+              "**Antragszeitpunkt**",
+              "Vor Kaufvertrag und Baubeginn – oder mit kostenfreier Rücktrittsklausel im Kaufvertrag"
+            ],
+            [
+              "**Einkommensgrenzen**",
+              "Gelten in allen Ländern, in unterschiedlicher Höhe"
+            ],
+            [
+              "**Kein Rechtsanspruch**",
+              "Vergabe nach sozialer Dringlichkeit und Eingangsdatum, solange Mittel da sind"
+            ],
+            [
+              "**Eigenbeteiligung**",
+              "Eigenkapital je nach Land 10 bis 25 %; Eigenleistungen können teils angerechnet werden"
+            ],
+            [
+              "**Zahlungsfähigkeit**",
+              "Die Behörde prüft, ob die Belastung tragbar ist"
+            ],
+            [
+              "**Wohnungsgröße**",
+              "Muss der Zweckbestimmung angemessen sein"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Gefördert wird je nach Land und Einkommen mit zins- und tilgungsfreien Darlehen oder mit Darlehen einige Prozentpunkte unter Marktzins. Die Sicherung erfolgt über **nachrangige Grundschulden**. Anträge nehmen die Wohnungsbauförderungsstellen der Kreise, Städte und Gemeinden entgegen."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Wohnraumförderung",
+            "text": "Zinsvergünstigtes **Darlehen**. Einkommensgrenzen gelten. Wohnungsgröße spielt eine Rolle."
+          },
+          "right": {
+            "title": "Energieförderung der Länder",
+            "text": "Direkter **Zuschuss**, der nicht zurückgezahlt wird. **Keine** Einkommensgrenzen, keine Vorgabe zur Wohnungsgröße."
+          }
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das Skript nennt die Länderförderung „neben der Eigenheimzulage“. Die Eigenheimzulage wurde 2006 abgeschafft."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "WoFG",
+          "text": "Das Wohnraumförderungsgesetz regelt die soziale Wohnraumförderung; die Länder gestalten Programme und Einkommensgrenzen selbst aus."
+        }
+      ],
+      "memory": "Länderförderung: vorher beantragen, Einkommensgrenze, kein Anspruch, Eigenkapital nötig.",
+      "examTrap": "Auf beide Länderförderungen gibt es keinen Rechtsanspruch – bei den Energiezuschüssen gilt das Windhundprinzip."
+    },
+    {
+      "id": "3.2.10-c",
+      "title": "Riester-Förderung: Zulagen und Berechtigte",
+      "subtitle": "Die Grundlagen des AVmG",
+      "ref": "BWB 3.2.10.2, S. 2–8",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q081",
+      "content": [
+        {
+          "type": "text",
+          "text": "Seit 2002 fördert der Staat die private, kapitalgedeckte Altersvorsorge in **zertifizierten** Verträgen: Rentenversicherungen, Fonds- und Banksparpläne und – seit 2008 – **Bausparverträge**."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Förderung",
+            "Höhe pro Jahr"
+          ],
+          "rows": [
+            [
+              "**Grundzulage**",
+              "175 €"
+            ],
+            [
+              "**Kinderzulage**",
+              "185 € je Kind; **300 €** für ab 2008 geborene Kinder"
+            ],
+            [
+              "Berufseinsteiger-Bonus",
+              "Einmalig 200 € für unter 25-Jährige"
+            ],
+            [
+              "Sonderausgabenabzug",
+              "Bis **2.100 €** (Eigenbeitrag plus Zulagen), § 10a EStG"
+            ]
+          ]
+        },
+        {
+          "type": "steps",
+          "title": "Der Mindesteigenbeitrag",
+          "items": [
+            {
+              "title": "Gesamtbeitrag",
+              "text": "4 % des rentenversicherungspflichtigen Vorjahreseinkommens, höchstens 2.100 €."
+            },
+            {
+              "title": "Zulagen abziehen",
+              "text": "Grundzulage und Kinderzulagen mindern den eigenen Beitrag."
+            },
+            {
+              "title": "Untergrenze",
+              "text": "Mindestens der **Sockelbetrag von 60 €** im Jahr."
+            }
+          ]
+        },
+        {
+          "type": "example",
+          "title": "Skriptbeispiel",
+          "text": "Moritz verdiente im Vorjahr 40.000 €, seine Frau Renate hat kein eigenes Einkommen, ein Kind (geboren 2012). Beide haben einen eigenen Vertrag. Gesamtbeitrag Moritz: 4 % × 40.000 € = 1.600 €. Abzüglich zwei Grundzulagen (350 €) und Kinderzulage (300 €) bleibt ein Mindesteigenbeitrag von **950 €**. Renate zahlt den Sockelbetrag von 60 €. Zulagen insgesamt: 650 €."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Gruppe",
+            "Wer gehört dazu"
+          ],
+          "rows": [
+            [
+              "**Unmittelbar** berechtigt",
+              "Pflichtversicherte der gesetzlichen Rentenversicherung, Beamte, rentenversicherungspflichtige Selbstständige, Arbeitslose, Kindererziehende in den ersten drei Jahren, Bezieher einer Rente wegen voller Erwerbsminderung"
+            ],
+            [
+              "**Mittelbar** berechtigt",
+              "Ehe- oder Lebenspartner eines unmittelbar Berechtigten mit eigenem Vertrag, nicht dauernd getrennt lebend"
+            ],
+            [
+              "**Nicht** berechtigt",
+              "Nicht rentenversicherungspflichtige Selbstständige, freiwillig Versicherte, Mitglieder berufsständischer Versorgungswerke, Altersrentner und Pensionäre"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Ablauf",
+          "items": [
+            "Wer weniger als den Mindesteigenbeitrag zahlt, erhält die Zulagen nur **anteilig**.",
+            "Der Anbieter beantragt die Zulage jährlich per **Dauerzulagenantrag** bei der Zulagenstelle.",
+            "Die Kinderzulage wird standardmäßig der **Mutter** zugeordnet.",
+            "**Günstigerprüfung:** Das Finanzamt prüft, ob der Steuervorteil aus dem Sonderausgabenabzug höher ist als die Zulagen. Die Differenz wird erstattet."
+          ]
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 10a EStG",
+          "text": "Altersvorsorgebeiträge und Zulagen können bis 2.100 € jährlich als Sonderausgaben abgezogen werden; das Finanzamt führt die Günstigerprüfung durch."
+        },
+        {
+          "ref": "§§ 84–86 EStG",
+          "text": "Grundzulage, Kinderzulage und Mindesteigenbeitrag (4 % der Vorjahreseinnahmen abzüglich Zulagen, mindestens Sockelbetrag)."
+        }
+      ],
+      "memory": "4 % vom Vorjahresbrutto, höchstens 2.100 €, minus Zulagen, mindestens 60 €.",
+      "examTrap": "Maßgeblich ist das Einkommen des Vorjahres. Und: Die Zulagen zählen zum Gesamtbeitrag – der Kunde zahlt nur die Differenz."
+    },
+    {
+      "id": "3.2.10-d",
+      "title": "Wohn-Riester",
+      "subtitle": "Die Eigenheimrente und ihr Preis im Alter",
+      "ref": "BWB 3.2.10.2, S. 9–14",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q088",
+      "content": [
+        {
+          "type": "text",
+          "text": "Mit dem **Eigenheimrentengesetz** (seit 01.08.2008) wurde die selbst genutzte Wohnimmobilie in die Riester-Förderung einbezogen – kurz **Wohn-Riester**."
+        },
+        {
+          "type": "list",
+          "title": "Vier Bausteine",
+          "items": [
+            "**Entnahme** von gefördertem Riester-Kapital für selbst genutztes Wohneigentum",
+            "**Bausparvertrag** als gefördertes Riester-Produkt",
+            "Förderung der **Tilgungsleistungen** für zertifizierte Baudarlehen",
+            "**Nachgelagerte Besteuerung** über das Wohnförderkonto"
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Voraussetzungen",
+          "items": [
+            "Der Zulageberechtigte muss **(Mit-)Eigentümer** sein. Wollen beide Ehepartner fördern, müssen beide Eigentümer sein.",
+            "Das Objekt wurde **entgeltlich angeschafft oder hergestellt**.",
+            "Es liegt im **Inland, in der EU oder im EWR**.",
+            "Es ist **Hauptwohnsitz oder Lebensmittelpunkt** und wird **selbst genutzt**.",
+            "Das Riester-Darlehen darf die **anteiligen Anschaffungs- oder Herstellungskosten** nach dem Miteigentumsanteil nicht übersteigen."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Das Wohnförderkonto** ist ein fiktives Konto. Darauf werden alle geförderten Beiträge und Zulagen verbucht und pauschal mit **2 % pro Jahr** verzinst. Es bildet die Bemessungsgrundlage für die Steuer im Alter – damit Wohn-Riester und Geld-Riester gleich behandelt werden."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Variante 1: Verteilung",
+            "text": "Der Betrag wird gleichmäßig bis zum **85. Lebensjahr** verteilt und in voller Höhe versteuert."
+          },
+          "right": {
+            "title": "Variante 2: Einmalbesteuerung",
+            "text": "Bei Rentenbeginn werden auf einen Schlag nur **70 %** versteuert – ein Nachlass von 30 %."
+          }
+        },
+        {
+          "type": "text",
+          "text": "**Liquiditätsrisiko im Ruhestand:** Die Steuer wird fällig, obwohl aus dem Vertrag kein Geld fließt – das geförderte Kapital steckt in der Immobilie. Der Kunde muss die Steuer aus seinen übrigen Alterseinkünften zahlen."
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das Skript schreibt, ein Wechsel von der Einmalbesteuerung in die Verteilung sei später möglich. Tatsächlich geht es umgekehrt: Wer verteilt, kann später noch die Einmalbesteuerung mit Nachlass wählen. Die Richtung des Wechsels wird hier nicht abgefragt."
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "Wird die Selbstnutzung aufgegeben, droht die sofortige Besteuerung des Wohnförderkontos, sofern nicht rechtzeitig reinvestiert wird."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 92a EStG",
+          "text": "Regelt die Verwendung des geförderten Kapitals für eine selbst genutzte Wohnung, das Wohnförderkonto und dessen Besteuerung."
+        }
+      ],
+      "memory": "Wohn-Riester: Förderung heute, Steuer im Alter – ohne dass Geld fließt.",
+      "examTrap": "Das Wohnförderkonto ist kein Guthaben. Es ist eine Rechengröße, die im Alter versteuert wird."
+    },
+    {
+      "id": "3.2.10-e",
+      "title": "Wohnungsbauprämie",
+      "subtitle": "Die Prämie fürs Bausparen",
+      "ref": "BWB 3.2.10.3, S. 2–7",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q094",
+      "content": [
+        {
+          "type": "text",
+          "text": "Die **Wohnungsbauprämie (WoP)** gibt es nach diesem Skript **ausschließlich für Bausparverträge**. Gefördert werden Sparzahlungen und Guthabenzinsen."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Merkmal",
+            "Alleinstehende",
+            "Verheiratete"
+          ],
+          "rows": [
+            [
+              "Prämiensatz",
+              "10 %",
+              "10 %"
+            ],
+            [
+              "Begünstigter Höchstbetrag pro Jahr",
+              "700 €",
+              "1.400 €"
+            ],
+            [
+              "Höchste Prämie",
+              "70 €",
+              "140 €"
+            ],
+            [
+              "Einkommensgrenze (zu versteuerndes Einkommen)",
+              "35.000 €",
+              "70.000 €"
+            ],
+            [
+              "Mindestsparleistung",
+              "50 € im Jahr",
+              "50 € im Jahr"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Voraussetzungen und Antrag",
+          "items": [
+            "Berechtigt sind unbeschränkt einkommensteuerpflichtige natürliche Personen **ab dem Jahr, in dem sie 16 werden** (Vollwaisen ohne Altersgrenze) – auch Rentner, Hausfrauen, Schüler und Studenten.",
+            "Maßgeblich ist das **zu versteuernde Einkommen**, nicht das Brutto. Das Bruttogehalt kann deutlich über der Grenze liegen.",
+            "**Abflussprinzip:** Das Geld muss bis zum 31.12. vom Konto abgeflossen sein.",
+            "Der Antrag kommt mit dem Jahreskontoauszug und ist bis zum **31.12. des Folgejahres** nach Erhalt einzureichen. Die Bausparkasse fordert die Prämie beim Finanzamt an."
+          ]
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Verträge bis 31.12.2008",
+            "text": "Bindungsfrist **sieben Jahre**. Danach kann frei verfügt werden."
+          },
+          "right": {
+            "title": "Verträge ab 01.01.2009",
+            "text": "Die Prämie gibt es nur bei **wohnwirtschaftlicher Verwendung** – zeitlich unbegrenzt."
+          }
+        },
+        {
+          "type": "list",
+          "title": "Verfügungen",
+          "items": [
+            "**Jungsparrecht:** Wer bei Vertragsabschluss noch keine 25 Jahre alt war, darf nach sieben Jahren einmalig frei verfügen. Ausgezahlt wird die Prämie der letzten sieben Jahre.",
+            "**Unschädlich** sind außerdem: Tod, Erwerbsunfähigkeit über 90 %, Arbeitslosigkeit von mehr als einem Jahr.",
+            "**Prämienschädlich** sind Kündigung und Guthabenauszahlung vor Zuteilung – auch wenn das Geld dann zum Wohnen verwendet wird.",
+            "Eine prämienunschädliche Verwendung innerhalb der Bindungsfrist ist nur im **Inland** möglich."
+          ]
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 2a WoPG",
+          "text": "Einkommensgrenzen: 35.000 € für Alleinstehende, 70.000 € für Ehegatten (zu versteuerndes Einkommen)."
+        },
+        {
+          "ref": "§ 3 WoPG",
+          "text": "Die Prämie beträgt 10 % der Aufwendungen; begünstigt sind höchstens 700 € beziehungsweise 1.400 € im Jahr."
+        }
+      ],
+      "memory": "WoP: 10 % auf 700 / 1.400 €, Grenze 35.000 / 70.000 € zu versteuerndes Einkommen.",
+      "examTrap": "Die Einkommensgrenze bezieht sich auf das zu versteuernde Einkommen. Kunden mit höherem Brutto sind oft trotzdem prämienberechtigt."
+    },
+    {
+      "id": "3.2.10-f",
+      "title": "Vermögenswirksame Leistungen",
+      "subtitle": "Arbeitnehmersparzulage nach dem 5. VermBG",
+      "ref": "BWB 3.2.10.4, S. 2–9",
+      "examRelevance": "S+P",
+      "checkId": "3.2-Q100",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Vermögenswirksame Leistungen (VL)** sind Geldleistungen, die der **Arbeitgeber** für den Arbeitnehmer anlegt. Auf bestimmte Anlageformen zahlt der Staat die **Arbeitnehmersparzulage (ANSpZ)**."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Merkmal",
+            "Bausparen / Entschuldung",
+            "Beteiligungssparen"
+          ],
+          "rows": [
+            [
+              "Sparzulage",
+              "**9 %**",
+              "**20 %**"
+            ],
+            [
+              "Begünstigter Höchstbetrag pro Jahr",
+              "470 €",
+              "400 €"
+            ],
+            [
+              "Höchste Zulage (aufgerundet)",
+              "43 €",
+              "80 €"
+            ],
+            [
+              "Bindungsfrist",
+              "7 Jahre",
+              "7 Jahre"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Regeln",
+          "items": [
+            "Berechtigt sind alle **Arbeitnehmer** in einem aktiven Arbeitsverhältnis: Arbeiter, Angestellte, Auszubildende, Beamte, Richter, Soldaten.",
+            "Die VL muss **direkt vom Arbeitgeber** an das Anlageinstitut überwiesen werden. Lastschrift oder Dauerauftrag des Arbeitnehmers sind nicht möglich.",
+            "Zahlt der Arbeitgeber nichts oder zu wenig dazu, kann der Arbeitnehmer **aus seinem Gehalt aufstocken**.",
+            "Beide Anlageformen können **nebeneinander** genutzt werden: bis 870 € im Jahr.",
+            "Ein **Banksparplan** ist möglich, wird aber nicht mit Sparzulage gefördert."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Verwendung beim Bausparen:** In der Sparphase sind VL Sparzahlungen. In der Darlehensphase und bei Hypotheken können sie zur **Tilgung oder Zinszahlung** eingesetzt werden (Entschuldung)."
+        },
+        {
+          "type": "list",
+          "title": "Antrag und Bindung",
+          "items": [
+            "Die Sparzulage wird **mit der Einkommensteuererklärung** beantragt; das Finanzamt setzt sie nach Ablauf des Jahres fest.",
+            "Beim Bausparen beginnt die Bindungsfrist mit dem **Vertragsabschluss**.",
+            "**Unschädlich** vor Fristablauf: Zuteilung oder Finanzierung des Bausparvertrags mit wohnwirtschaftlicher Verwendung, Tod, Erwerbsunfähigkeit über 90 %, Arbeitslosigkeit von mehr als einem Jahr.",
+            "**Schädlich:** Kündigung oder Teilkündigung – auch wenn das Geld für den Wohnungsbau verwendet wird."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Die Einkommensgrenzen im Skript (17.900 / 35.800 € und 20.000 / 40.000 €) sind überholt. Seit 2024 gelten für beide Anlageformen **40.000 € für Alleinstehende und 80.000 € für Verheiratete** (zu versteuerndes Einkommen). Der Skripthinweis, bei zu hohem Einkommen ersatzweise Wohnungsbauprämie auf die VL zu beantragen, läuft damit praktisch leer."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 13 5. VermBG",
+          "text": "Anspruch auf Arbeitnehmersparzulage: 9 % auf höchstens 470 € beim Bausparen, 20 % auf höchstens 400 € beim Beteiligungssparen; Einkommensgrenze 40.000 € / 80.000 €."
+        }
+      ],
+      "memory": "VL: 9 % auf 470 € fürs Bausparen, 20 % auf 400 € für Beteiligungen, sieben Jahre Bindung.",
+      "examTrap": "VL kann nur der Arbeitgeber überweisen. Wer selbst einzahlt, bekommt keine Sparzulage."
+    }
+  ]
+}

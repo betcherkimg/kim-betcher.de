@@ -57,47 +57,48 @@
       "chapter": "2.3",
       "section": "2.3.3-a",
       "topic": [
-        "Rangfolge",
+        "Ortsprinzip",
         "Zeitprinzip"
       ],
       "type": "single",
       "difficulty": 3,
       "taxonomyLevel": 3,
       "examRelevance": "S+P",
-      "question": "Abt. II/1: Wegerecht vom 12.04.; Abt. III/1: Grundschuld vom 08.04. Welche Aussage stimmt grundsätzlich?",
+      "question": "Abt. III/1: Grundschuld vom 08.04. – Abt. II/1: Nießbrauch vom 12.04. – Abt. III/2: Grundschuld vom 20.04. Welche Rechte gehen III/2 im Rang vor?",
       "answers": [
-        "Die Grundschuld steht vor dem Wegerecht",
-        "Das Wegerecht steht immer vor jeder Grundschuld",
-        "Beide sind allein wegen unterschiedlicher Abteilungen gleichrangig",
-        "Die laufende Nummer entscheidet abteilungsübergreifend"
+        "Nur III/1",
+        "Nur der Nießbrauch",
+        "III/1 und der Nießbrauch",
+        "III/1 – der Nießbrauch ist gleichrangig"
       ],
       "correct": [
-        0
+        2
       ],
-      "explanation": "Zwischen Abteilung II und III entscheidet grundsätzlich das Eintragungsdatum: 08.04. vor 12.04."
+      "explanation": "III/1 geht nach dem Ortsprinzip vor, der Nießbrauch nach dem Zeitprinzip (12.04. vor 20.04.). Beide sind Vorlasten für III/2."
     },
     {
       "id": "2.3-B003",
       "chapter": "2.3",
       "section": "2.3.3-a",
       "topic": [
-        "Gleichrang"
+        "Gleichrang",
+        "Rangrücktritt"
       ],
       "type": "single",
       "difficulty": 3,
       "taxonomyLevel": 3,
       "examRelevance": "S+P",
-      "question": "Ein Wohnrecht in Abt. II und eine Grundschuld in Abt. III werden am selben Tag eingetragen; im Eintragungstext steht nichts Abweichendes. Welcher Rang gilt?",
+      "question": "Wohnrecht (Abt. II) und Grundschuld (Abt. III) wurden am selben Tag ohne Rangvermerk eingetragen. Die Bank will den ersten Rang. Was ist nötig?",
       "answers": [
-        "Gleichrang",
-        "Immer Grundschuld zuerst",
-        "Immer Wohnrecht zuerst",
-        "Rang ist nicht bestimmbar"
+        "Neueintragung der Grundschuld am Folgetag",
+        "Nichts – Abteilung III geht ohnehin vor",
+        "Das Wohnrecht muss im Rang zurücktreten",
+        "Nichts – die Grundschuld hat Nr. 1"
       ],
       "correct": [
-        0
+        2
       ],
-      "explanation": "Rechte in verschiedenen Abteilungen mit gleichem Eintragungstag sind grundsätzlich gleichrangig."
+      "explanation": "Gleicher Eintragungstag in verschiedenen Abteilungen heißt Gleichrang. Den ersten Rang bekommt die Bank nur, wenn die Wohnungsberechtigte im Rang zurücktritt."
     },
     {
       "id": "2.3-B004",
@@ -110,15 +111,15 @@
       "difficulty": 3,
       "taxonomyLevel": 3,
       "examRelevance": "S+P",
-      "question": "A-Bank Nr. 1: 10.000 €, Bausparkasse Nr. 2: 15.000 €, B-Bank Nr. 3: 13.000 €. Die Bausparkasse tritt hinter Nr. 3 zurück. Wie hoch ist ihr neuer Vorrang?",
+      "question": "A-Bank Nr. 1: 10.000 €, Bausparkasse Nr. 2: 15.000 €, B-Bank Nr. 3: 13.000 €. Die Bausparkasse tritt hinter Nr. 3 zurück. Wie hoch sind ihre Vorlasten danach?",
       "answers": [
-        "23.000 €",
         "10.000 €",
         "13.000 €",
+        "23.000 €",
         "38.000 €"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Vor der Bausparkasse liegen danach 10.000 € + 13.000 € = 23.000 € Vorlast."
     },
@@ -134,17 +135,17 @@
       "difficulty": 3,
       "taxonomyLevel": 3,
       "examRelevance": "S+P",
-      "question": "Eine Auflassungsvormerkung steht vor der später einzutragenden Grundschuld des Kreditgebers. Warum ist das problematisch?",
+      "question": "Die Auflassungsvormerkung steht im Rang vor der Grundschuld der Bank. Warum ist das ein Problem?",
       "answers": [
-        "Der Vormerkungsberechtigte muss spätere beeinträchtigende Eintragungen nicht gegen sich gelten lassen",
-        "Die Grundschuld wird dadurch automatisch zur Hypothek",
-        "Der Käufer wird sofort Eigentümer",
-        "Die Grundschuld darf nie in Abteilung III stehen"
+        "Die Vormerkung macht den Käufer schon zum Eigentümer",
+        "Die Vormerkung ist selbst ein Grundpfandrecht",
+        "Die Vormerkung sperrt das Grundbuch",
+        "Die Grundschuld wirkt nicht gegen den Vormerkungsberechtigten"
       ],
       "correct": [
-        0
+        3
       ],
-      "explanation": "Die Vormerkung schützt den gesicherten Anspruch gerade gegenüber späteren Verfügungen/Eintragungen."
+      "explanation": "Die Vormerkung schützt den gesicherten Anspruch gerade gegenüber späteren Verfügungen – also auch gegenüber der später eingetragenen Grundschuld."
     },
     {
       "id": "2.3-B006",
@@ -155,18 +156,18 @@
         "Beleihung"
       ],
       "type": "single",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
+      "difficulty": 2,
+      "taxonomyLevel": 2,
       "examRelevance": "S+P",
-      "question": "Ein lebenslanges Wohnrecht steht im Vorrang vor der geplanten Grundschuld. Was ist aus Beleihungssicht laut Skript typisch?",
+      "question": "Ein lebenslanges Wohnrecht steht im Rang vor der geplanten Grundschuld. Was ist aus Beleihungssicht typisch?",
       "answers": [
-        "Rangrücktritt oder Kapitalisierung prüfen",
-        "Immer ohne Prüfung akzeptieren",
-        "Automatisch löschen lassen ohne Zustimmung",
-        "Als Grundpfandrecht in Abteilung III behandeln"
+        "Die höhere Grundschuld geht automatisch vor",
+        "Es bleibt unberücksichtigt, da es in Abteilung II steht",
+        "Rangrücktritt oder Kapitalisierung des Wohnrechts",
+        "Umtragung des Wohnrechts in Abteilung III"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Ein Wohnrecht kann die Verwertbarkeit einschränken; daher sind Rangrücktritt oder Kapitalisierung typische Maßnahmen."
     },
@@ -178,20 +179,20 @@
         "Bergschadenverzicht"
       ],
       "type": "single",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
+      "difficulty": 2,
+      "taxonomyLevel": 2,
       "examRelevance": "S+P",
-      "question": "Im Grundbuch steht ein Bergschadenverzicht. Welche Aussage entspricht dem Skript?",
+      "question": "Im Grundbuch steht ein Bergschadenverzicht. Wie stuft das Skript das Objekt ein?",
       "answers": [
-        "Das Objekt ist grundsätzlich beleihungsunfähig",
-        "Das Recht ist immer wertneutral",
-        "Es ist ein Grundpfandrecht",
-        "Es steht nur im Baulastenverzeichnis"
+        "Unbedenklich, sobald eine Gebäudeversicherung besteht",
+        "Unbedenklich, weil es in Abteilung III steht",
+        "Wertneutral wie ein übliches Leitungsrecht",
+        "Grundsätzlich beleihungsunfähig"
       ],
       "correct": [
-        0
+        3
       ],
-      "explanation": "Das Skript stuft den Bergschadenverzicht als grundsätzlich beleihungsschädlich ein."
+      "explanation": "Mit dem Bergschadenverzicht entfällt der Ersatz für Bergschäden – das Skript stuft das Objekt deshalb als grundsätzlich beleihungsunfähig ein."
     },
     {
       "id": "2.3-B008",
@@ -202,14 +203,14 @@
         "Grundschuld"
       ],
       "type": "multi",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
+      "difficulty": 2,
+      "taxonomyLevel": 2,
       "examRelevance": "S+P",
       "question": "Welche Aussagen trennen Hypothek und Grundschuld korrekt?",
       "answers": [
-        "Hypothek ist akzessorisch",
         "Grundschuld ist abstrakt",
         "Grundschuld kann über Sicherungsvereinbarung an Forderungen gekoppelt werden",
+        "Hypothek ist akzessorisch",
         "Hypothek ist unabhängig von jeder Forderung"
       ],
       "correct": [
@@ -231,17 +232,17 @@
       "difficulty": 3,
       "taxonomyLevel": 3,
       "examRelevance": "S+P",
-      "question": "Welchen Rang muss das Erbbaurecht im Grundstücksgrundbuch nach dem Skript grundsätzlich haben?",
+      "question": "Auf einem Grundstück lastet eine Grundschuld. Nun soll ein Erbbaurecht bestellt werden. Was ist nötig?",
       "answers": [
-        "Erste Rangstelle",
-        "Beliebige Rangstelle",
-        "Nur hinter allen Grundschulden",
-        "Es wird nicht im Grundstücksgrundbuch eingetragen"
+        "Nichts – das Erbbaurecht kann im Rang danach stehen",
+        "Übertragung der Grundschuld ins Erbbaugrundbuch",
+        "Eintragung des Erbbaurechts in Abteilung III",
+        "Die Grundschuld muss zurücktreten oder weichen"
       ],
       "correct": [
-        0
+        3
       ],
-      "explanation": "Das Erbbaurecht wird in Abteilung II bestellt und muss nach dem Skript an erster Rangstelle stehen."
+      "explanation": "Das Erbbaurecht kann nur an ausschließlich erster Rangstelle bestellt werden – vorrangige Rechte müssen weichen."
     },
     {
       "id": "2.3-B010",
@@ -252,14 +253,14 @@
         "Beleihung"
       ],
       "type": "multi",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
+      "difficulty": 2,
+      "taxonomyLevel": 2,
       "examRelevance": "S+P",
       "question": "Welche Punkte sprechen bei einer Erbbaurechtsbeleihung für genaue Prüfung?",
       "answers": [
+        "Zustimmungserfordernisse des Grundstückseigentümers",
         "Restlaufzeit des Erbbaurechts",
         "Wertmindernde Vertragsklauseln",
-        "Zustimmungserfordernisse des Grundstückseigentümers",
         "Bodenwert vollständig als Teil der Sicherheit ansetzen"
       ],
       "correct": [
@@ -280,16 +281,16 @@
       "type": "single",
       "difficulty": 3,
       "taxonomyLevel": 3,
-      "examRelevance": "S+P",
-      "question": "Eheleute sind je zu 1/2 Miteigentümer. Die Bank will das gesamte Objekt als Sicherheit. Wer muss die Grundschuldbestellung unterschreiben?",
+      "examRelevance": "S",
+      "question": "Eheleute sind je zu 1/2 Miteigentümer. Die Bank will das ganze Objekt als Sicherheit. Wer muss die Grundschuld bestellen?",
       "answers": [
-        "Beide Eigentümer",
-        "Nur einer, weil jeder über seinen Anteil verfügen kann",
-        "Nur der mit höherem Einkommen",
-        "Nur der Notar"
+        "Wer das Darlehen aufnimmt",
+        "Einer – jeder kann über seinen Anteil verfügen",
+        "Beide Miteigentümer",
+        "Wer in Abteilung I zuerst steht"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Soll die Sicherheit alle Miteigentumsanteile erfassen, müssen alle Eigentümer mitwirken."
     },
@@ -304,42 +305,42 @@
       "type": "single",
       "difficulty": 3,
       "taxonomyLevel": 3,
-      "examRelevance": "S+P",
-      "question": "Für eine Löschung liegt die formgerechte Löschungsbewilligung vor. Wie muss der Antrag beim Grundbuchamt laut Skript gestellt werden?",
+      "examRelevance": "S",
+      "question": "Die Berechtigte bewilligt die Löschung ihres Wohnrechts beglaubigt, der Eigentümer beantragt sie per einfachem Brief. Genügt das?",
       "answers": [
-        "Er kann formlos gestellt werden",
-        "Er muss zwingend notariell beurkundet sein",
-        "Er ist nur mündlich zulässig",
-        "Ein Antrag ist nie nötig"
+        "Nein – auch der Antrag muss beglaubigt sein",
+        "Nein – nötig ist eine notarielle Beurkundung",
+        "Ja – Bewilligung formgerecht, Antrag formlos",
+        "Ja – beides ist formlos möglich"
       ],
       "correct": [
-        0
+        2
       ],
-      "explanation": "Die Eintragungsgrundlage braucht die geforderte Form; der Antrag selbst ist formlos."
+      "explanation": "Die Eintragungsgrundlage (hier die Löschungsbewilligung) braucht die vorgeschriebene Form; der Antrag selbst ist formlos."
     },
     {
       "id": "2.3-B013",
       "chapter": "2.3",
       "section": "2.3.5-a",
       "topic": [
-        "Baulast",
-        "Grundbuch"
+        "Öffentliche Last",
+        "Baulast"
       ],
       "type": "single",
       "difficulty": 3,
       "taxonomyLevel": 3,
       "examRelevance": "S+P",
-      "question": "Der Grundbuchauszug ist frei von Lasten. Darf daraus geschlossen werden, dass keine Abstandsflächenbaulast besteht?",
+      "question": "Grundbuch und Baulastenverzeichnis sind leer. Die Straße vor dem Grundstück wurde gerade ausgebaut. Was ist noch zu klären?",
       "answers": [
-        "Nein, Baulasten sind im Baulastenverzeichnis zu prüfen",
-        "Ja, alles Relevante steht zwingend im Grundbuch",
-        "Ja, wenn Abteilung II leer ist",
-        "Nur bei Wohnungseigentum"
+        "Erschließungsbeiträge in Abteilung III",
+        "Erschließungsbeiträge in der Grundakte",
+        "Nichts – beide Register sind lastenfrei",
+        "Offene Erschließungsbeiträge bei der Gemeinde"
       ],
       "correct": [
-        0
+        3
       ],
-      "explanation": "Baulasten sind öffentlich-rechtliche Verpflichtungen und stehen nicht im Grundbuch."
+      "explanation": "Öffentliche Lasten wie Erschließungsbeiträge stehen weder im Grundbuch noch im Baulastenverzeichnis – Auskunft gibt die Gemeinde."
     },
     {
       "id": "2.3-B014",
@@ -349,20 +350,20 @@
         "Vorkaufsrecht"
       ],
       "type": "single",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
-      "examRelevance": "S+P",
-      "question": "Ein dinglich Vorkaufsberechtigter übt sein Recht aus. Welche Rechtsfolge beschreibt das Skript?",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "V verkauft für 300.000 € an K. N hat ein dingliches Vorkaufsrecht und übt es aus. Zu welchem Preis kauft N?",
       "answers": [
-        "Er tritt zu den gleichen Bedingungen an die Stelle des Käufers",
-        "Er erhält nur Schadensersatz",
-        "Er wird ohne Kaufvertrag Eigentümer",
-        "Der ursprüngliche Verkäufer verliert jedes Verfügungsrecht dauerhaft"
+        "Zum neu mit V ausgehandelten Preis",
+        "300.000 € – wie im Vertrag mit K",
+        "Zum Verkehrswert laut Gutachten",
+        "Zum Preis bei Bestellung des Rechts"
       ],
       "correct": [
-        0
+        1
       ],
-      "explanation": "Das Vorkaufsrecht ermöglicht den Eintritt in den geschlossenen Kaufvertrag zu gleichen Bedingungen."
+      "explanation": "Der Vorkaufsberechtigte tritt zu denselben Bedingungen in den mit dem Dritten geschlossenen Kaufvertrag ein."
     },
     {
       "id": "2.3-B015",
@@ -373,16 +374,16 @@
         "Abteilung III"
       ],
       "type": "multi",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
-      "examRelevance": "S+P",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
       "question": "Welche Veränderungen können bei Grundpfandrechten in den Veränderungsspalten dokumentiert werden?",
       "answers": [
-        "Rangveränderung",
-        "Abtretung",
-        "Nachträglicher Briefausschluss",
         "Nachträgliche Brieferteilung",
-        "Änderung der Grundstücksgröße ohne Vermessung"
+        "Abtretung",
+        "Rangveränderung",
+        "Nachträglicher Briefausschluss",
+        "Wechsel des Grundstückseigentümers"
       ],
       "correct": [
         0,
@@ -390,7 +391,7 @@
         2,
         3
       ],
-      "explanation": "Das Skript nennt alle vier als typische Veränderungen."
+      "explanation": "Rangänderung, Abtretung sowie nachträglicher Briefausschluss oder Brieferteilung stehen in den Veränderungsspalten der Abteilung III. Ein Eigentümerwechsel gehört in Abteilung I."
     },
     {
       "id": "2.3-B016",
@@ -401,20 +402,20 @@
         "Beleihung"
       ],
       "type": "single",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
+      "difficulty": 2,
+      "taxonomyLevel": 2,
       "examRelevance": "S+P",
-      "question": "Im Grundbuch ist ein Widerspruch eingetragen. Welche Folge ist für die Darlehenssicherung laut Skript typischerweise zu beachten?",
+      "question": "Im Grundbuch ist ein Widerspruch eingetragen. Was heißt das laut Skript für die Darlehenssicherung?",
       "answers": [
-        "In der Regel ist sie bis zur Löschung des Widerspruchs nicht möglich",
-        "Der Widerspruch verbessert automatisch den Rang des Kreditgebers",
-        "Der Widerspruch betrifft nur das Kataster",
-        "Der Widerspruch hat niemals Einfluss auf die Beleihung"
+        "Unproblematisch – er steht nur in der Grundakte",
+        "Unproblematisch – er betrifft nur das Kataster",
+        "Möglich – die Grundschuld erhält Vorrang",
+        "Meist erst nach Löschung des Widerspruchs"
       ],
       "correct": [
-        0
+        3
       ],
-      "explanation": "Der Widerspruch zerstört den öffentlichen Glauben; die Beleihungsfähigkeit ist zu prüfen und eine Darlehenssicherung ist in der Regel bis zur Löschung nicht möglich."
+      "explanation": "Der Widerspruch zerstört den öffentlichen Glauben der betroffenen Eintragung; eine Darlehenssicherung ist in der Regel bis zur Löschung nicht möglich."
     },
     {
       "id": "2.3-B017",
@@ -426,19 +427,19 @@
       ],
       "type": "single",
       "difficulty": 3,
-      "taxonomyLevel": 3,
-      "examRelevance": "S+P",
-      "question": "Ein Altenteil kann nicht im Rang hinter die Grundschuld treten. Welche Behandlung nennt das Skript als mögliche Ausnahme?",
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "question": "Ein Altenteil kann ausnahmsweise nicht hinter die Grundschuld zurücktreten. Wie wird es bei der Beleihung behandelt?",
       "answers": [
-        "Kapitalisierung nach Alter des Berechtigten und Jahreswert; der Betrag wird als Vorlast bewertet",
-        "Vollständige Nichtberücksichtigung",
-        "Automatische Umwandlung in eine Hypothek",
-        "Eintragung in Abteilung I"
+        "Wie eine Grundschuld in Abteilung III",
+        "Kapitalisiert und als Vorlast bewertet",
+        "Abzug eines Jahreswerts vom Kaufpreis",
+        "Gar nicht – es steht in Abteilung II"
       ],
       "correct": [
-        0
+        1
       ],
-      "explanation": "Ist ein Rangrücktritt ausnahmsweise nicht möglich, kann das Altenteil kapitalisiert und als Vorlast bewertet werden."
+      "explanation": "Kapitalisiert wird nach Alter des Berechtigten und Jahreswert; der Betrag zählt als Vorlast."
     },
     {
       "id": "2.3-B018",
@@ -449,18 +450,18 @@
         "Rang"
       ],
       "type": "single",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
+      "difficulty": 2,
+      "taxonomyLevel": 2,
       "examRelevance": "S+P",
-      "question": "Ein Nießbrauch soll im Vorrang vor einer neuen Grundschuld bestehen bleiben. Welche Aussage passt zum Skript?",
+      "question": "Ein Nießbrauch soll im Rang vor der neuen Grundschuld bleiben. Wie ist das zu werten?",
       "answers": [
-        "Das ist problematisch, weil der Nießbrauch die Nutzung durch den Eigentümer einschränkt und den Grundschulden nicht im Rang vorgehen soll",
-        "Nießbrauch darf immer zwingend vorgehen",
-        "Nießbrauch steht nur im Bestandsverzeichnis",
-        "Nießbrauch ist stets vererblich und daher unschädlich"
+        "Unproblematisch – er endet mit dem Verkauf des Grundstücks",
+        "Problematisch – er schränkt den Eigentümer stark ein",
+        "Unproblematisch – er hat keinen Rang",
+        "Problematisch nur in Abteilung III"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "Der Nießbrauch schränkt die Nutzung durch den Eigentümer ein und soll den Grundschulden nicht im Rang vorgehen."
     },
@@ -473,18 +474,18 @@
         "Beleihung"
       ],
       "type": "single",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
+      "difficulty": 2,
+      "taxonomyLevel": 2,
       "examRelevance": "S+P",
-      "question": "Auf dem Grundstück lastet ein normales Leitungsrecht zugunsten eines Versorgers. Welche Einordnung nennt das Skript grundsätzlich?",
+      "question": "Auf dem Grundstück lastet ein übliches Leitungsrecht eines Versorgers. Wie ist es bei der Beleihung einzuordnen?",
       "answers": [
-        "Es schränkt die Beleihung grundsätzlich nicht ein und kann Vorrang haben",
-        "Es macht das Objekt grundsätzlich beleihungsunfähig",
-        "Es muss immer gelöscht werden",
-        "Es ist eine Grundschuld"
+        "Muss vor der Grundschuld gelöscht werden",
+        "Macht das Objekt beleihungsunfähig",
+        "Grundsätzlich unschädlich, darf vorgehen",
+        "Wird kapitalisiert und als Vorlast angesetzt"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Ein gewöhnliches Leitungsrecht schränkt die Beleihung grundsätzlich nicht ein und darf im Rang vorgehen."
     },
@@ -500,17 +501,17 @@
       "difficulty": 3,
       "taxonomyLevel": 3,
       "examRelevance": "S+P",
-      "question": "Eine voll ausgezahlte Hypothek wurde teilweise zurückgezahlt. Welche Vorlast ist laut Skript bei der Hypothek grundsätzlich zu berücksichtigen?",
+      "question": "Eine voll ausgezahlte Hypothek über 100.000 € ist auf 60.000 € getilgt. Welche Vorlast ist grundsätzlich anzusetzen?",
       "answers": [
-        "Die derzeitige Restschuld",
-        "Immer der ursprüngliche Nennbetrag unabhängig von Tilgung",
-        "Null Euro, sobald einmal getilgt wurde",
-        "Nur die Zinsen"
+        "100.000 € – der eingetragene Nennbetrag",
+        "40.000 € – der getilgte Teil",
+        "60.000 € – die aktuelle Restschuld",
+        "0 € – eine Hypothek zählt nicht als Vorlast"
       ],
       "correct": [
-        0
+        2
       ],
-      "explanation": "Wegen des gesetzlichen Löschungsanspruchs ist bei einer voll ausgezahlten Hypothek grundsätzlich die aktuelle Restschuld als Vorlast zu berücksichtigen."
+      "explanation": "Wegen des gesetzlichen Löschungsanspruchs zählt bei einer voll ausgezahlten Hypothek grundsätzlich die aktuelle Restschuld als Vorlast."
     },
     {
       "id": "2.3-B021",
@@ -521,20 +522,20 @@
         "Neuvalutierung"
       ],
       "type": "single",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
+      "difficulty": 2,
+      "taxonomyLevel": 2,
       "examRelevance": "S+P",
-      "question": "Ein Darlehen ist getilgt, die eingetragene Grundschuld besteht aber fort. Wofür kann sie laut Skript mit Zustimmung des Eigentümers genutzt werden?",
+      "question": "Das Darlehen ist getilgt, die Grundschuld steht noch im Grundbuch. Wofür kann sie mit Zustimmung des Eigentümers dienen?",
       "answers": [
-        "Für die Sicherung eines neuen Darlehens durch Neuvalutierung",
-        "Nur noch zur Sicherung der bereits getilgten Forderung",
-        "Für eine automatische Eigentumsübertragung",
-        "Für die Eintragung einer Baulast"
+        "Zur Sicherung eines Wohnrechts",
+        "Für ein neues Darlehen (Neuvalutierung)",
+        "Nur für denselben Betrag bei derselben Bank",
+        "Für nichts – sie ist mit der Tilgung erloschen"
       ],
       "correct": [
-        0
+        1
       ],
-      "explanation": "Die abstrakte Grundschuld kann mit Zustimmung des Eigentümers neuvalutiert werden."
+      "explanation": "Die abstrakte Grundschuld besteht fort und kann mit Zustimmung des Eigentümers neu valutiert werden."
     },
     {
       "id": "2.3-B022",
@@ -548,17 +549,17 @@
       "difficulty": 3,
       "taxonomyLevel": 3,
       "examRelevance": "S+P",
-      "question": "Abt. II/1 wurde am 10.06. eingetragen, Abt. III/1 ebenfalls am 10.06.; Abt. III/2 am 12.06. Welches Rangbild ist grundsätzlich richtig?",
+      "question": "Abt. II/1 und Abt. III/1 wurden am 10.06. eingetragen, Abt. III/2 am 12.06. Welches Rangbild stimmt?",
       "answers": [
-        "II/1 und III/1 gleichrangig, danach III/2",
-        "III/2 zuerst, dann II/1, dann III/1",
-        "Abteilung III steht immer vollständig vor Abteilung II",
-        "Nur die laufenden Nummern entscheiden über alle Abteilungen hinweg"
+        "Alle drei gleichrangig",
+        "III/1, dann III/2, dann II/1",
+        "II/1, dann III/1, dann III/2",
+        "II/1 und III/1 gleichrangig, danach III/2"
       ],
       "correct": [
-        0
+        3
       ],
-      "explanation": "Abteilungsübergreifend gilt das Zeitprinzip; gleicher Eintragungstag führt grundsätzlich zu Gleichrang."
+      "explanation": "Zwischen den Abteilungen gilt das Zeitprinzip; gleicher Eintragungstag führt zu Gleichrang."
     },
     {
       "id": "2.3-B023",
@@ -569,20 +570,20 @@
         "Vorlast"
       ],
       "type": "single",
-      "difficulty": 3,
-      "taxonomyLevel": 3,
+      "difficulty": 2,
+      "taxonomyLevel": 2,
       "examRelevance": "S+P",
-      "question": "Ein Grundbuch enthält einen noch nicht ausgenutzten Rangvorbehalt. Wie ist er laut Skript bei der Beleihung zu behandeln?",
+      "question": "Im Grundbuch steht ein noch nicht ausgenutzter Rangvorbehalt. Wie ist er bei der Beleihung zu behandeln?",
       "answers": [
-        "Als Vorlast",
-        "Gar nicht, solange er nicht genutzt ist",
-        "Wie eine Eigentumsangabe in Abteilung I",
-        "Als Baulast außerhalb des Grundbuchs"
+        "Gar nicht, solange er nicht ausgenutzt ist",
+        "Als Grundschuld des Eigentümers",
+        "Als Verfügungsbeschränkung, die eine Beleihung ausschließt",
+        "Als Vorlast"
       ],
       "correct": [
-        0
+        3
       ],
-      "explanation": "Ein Rangvorbehalt ist als Vorlast zu bewerten; bei geplanter Ausnutzung ist zu prüfen, ob diese noch möglich ist."
+      "explanation": "Ein Rangvorbehalt ist als Vorlast zu bewerten – auch wenn er noch nicht ausgenutzt wurde."
     },
     {
       "id": "2.3-B024",
@@ -596,17 +597,17 @@
       "difficulty": 3,
       "taxonomyLevel": 3,
       "examRelevance": "S+P",
-      "question": "Der Grundbuchauszug zeigt keinerlei Belastung. Der Käufer plant einen Anbau direkt an die Grenze. Welche zusätzliche Prüfung ist nach dem Skript besonders wichtig?",
+      "question": "Das Grundbuch ist lastenfrei. Der Käufer plant einen Anbau direkt an der Grenze. Welche Prüfung ist besonders wichtig?",
       "answers": [
-        "Einsicht in das Baulastenverzeichnis bei der Baubehörde",
-        "Nur Prüfung von Abteilung III",
-        "Nur Prüfung der Grundakte auf Hypothekenbriefe",
-        "Keine weitere Prüfung, weil das Grundbuch lastenfrei ist"
+        "Einsicht in die Grundakte",
+        "Einsicht ins Baulastenverzeichnis",
+        "Einsicht in Abteilung III des Nachbarn",
+        "Keine – das Grundbuch genügt"
       ],
       "correct": [
-        0
+        1
       ],
-      "explanation": "Abstandsflächen- und andere Baulasten stehen nicht im Grundbuch und sind im Baulastenverzeichnis zu prüfen."
+      "explanation": "Abstandsflächen- und andere Baulasten stehen nicht im Grundbuch, sondern im Baulastenverzeichnis."
     }
   ]
 }

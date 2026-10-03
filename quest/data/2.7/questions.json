@@ -1,0 +1,1023 @@
+{
+  "chapter": "2.7",
+  "questions": [
+    {
+      "id": "2.7-Q001",
+      "chapter": "2.7",
+      "section": "2.7.1-a",
+      "topic": "Ziel",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 1,
+      "question": "Was soll das Wettbewerbsrecht in erster Linie bewirken?",
+      "answers": [
+        "Einheitliche Preise in jeder Branche",
+        "Chancengleichheit am Markt",
+        "Staatliche Lenkung von Angebot und Nachfrage",
+        "Schutz etablierter Anbieter vor neuen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Das Wettbewerbsrecht soll Chancengleichheit schaffen: Ein fairer Wettbewerb dient allen Marktteilnehmern."
+    },
+    {
+      "id": "2.7-Q002",
+      "chapter": "2.7",
+      "section": "2.7.1-a",
+      "topic": "UWG und GWB",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 2,
+      "question": "Mehrere große Anbieter sprechen ihre Preise ab. Welches Gesetz richtet sich gegen dieses Kartell?",
+      "answers": [
+        "Das Rechtsdienstleistungsgesetz",
+        "Das Gesetz gegen den unlauteren Wettbewerb",
+        "Die Preisangabenverordnung",
+        "Das Gesetz gegen Wettbewerbsbeschränkungen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Das GWB verhindert beherrschende Marktmacht, etwa durch Kartelle. Das UWG regelt das faire Verhalten im Wettbewerb."
+    },
+    {
+      "id": "2.7-Q003",
+      "chapter": "2.7",
+      "section": "2.7.1-a",
+      "topic": "Unlauter",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 3,
+      "question": "Wann heißt eine Handlung im Wettbewerb „unlauter“?",
+      "answers": [
+        "Wenn sie den Preis der Konkurrenz deutlich unterbietet",
+        "Wenn sie die Wettbewerbsbedingungen verfälscht",
+        "Wenn sie ohne Genehmigung der Kammer erfolgt",
+        "Wenn sie einem Mitbewerber Kunden abnimmt"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Unlauter sind Handlungen, die die Wettbewerbsbedingungen verfälschen. Kunden gewinnen und Preise unterbieten gehört zum erlaubten Wettbewerb."
+    },
+    {
+      "id": "2.7-Q004",
+      "chapter": "2.7",
+      "section": "2.7.1-b",
+      "topic": "Unterlassung",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 4,
+      "question": "Wer kann nach dem UWG Unterlassung einer unlauteren Werbung verlangen?",
+      "answers": [
+        "Verbraucherverbände",
+        "Mitbewerber",
+        "Der einzelne Verbraucher",
+        "Industrie- und Handelskammern"
+      ],
+      "correct": [
+        0,
+        1,
+        3
+      ],
+      "explanation": "Unterlassungsansprüche stehen Mitbewerbern, Wettbewerbs- und Verbraucherverbänden sowie den Kammern zu – nicht dem einzelnen Verbraucher."
+    },
+    {
+      "id": "2.7-Q005",
+      "chapter": "2.7",
+      "section": "2.7.1-b",
+      "topic": "Verbraucher",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 5,
+      "question": "Eine Verbraucherin ärgert sich über eine irreführende Anzeige eines Vermittlers und will ihn auf Unterlassung verklagen. Geht das?",
+      "answers": [
+        "Ja, wenn sie auf die Anzeige hin angerufen hat",
+        "Nein, gegen Werbung gibt es keinen Rechtsschutz",
+        "Ja, jeder Betroffene kann auf Unterlassung klagen",
+        "Nein, das können Verbände für sie tun"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Der einzelne Verbraucher hat keinen Unterlassungsanspruch aus dem UWG. Verbände und Kammern können ihn geltend machen."
+    },
+    {
+      "id": "2.7-Q006",
+      "chapter": "2.7",
+      "section": "2.7.1-b",
+      "topic": "Generalklausel",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 6,
+      "question": "Wann ist eine geschäftliche Handlung gegenüber Verbrauchern nach § 3 UWG unlauter?",
+      "answers": [
+        "Wenn sie den Verbraucher zu einem Vertrag bewegt, den er später aus eigenen Gründen bereut",
+        "Wenn sie ohne vorherige Abstimmung mit dem zuständigen Berufsverband vorgenommen wird",
+        "Wenn sie dem Unternehmer einen höheren Gewinn bringt als seinen Mitbewerbern am selben Markt",
+        "Wenn sie die unternehmerische Sorgfalt verletzt und Verbraucher wesentlich beeinflussen kann"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "§ 3 Abs. 2 UWG stellt auf die unternehmerische Sorgfalt und die Eignung ab, das wirtschaftliche Verhalten des Verbrauchers wesentlich zu beeinflussen."
+    },
+    {
+      "id": "2.7-Q007",
+      "chapter": "2.7",
+      "section": "2.7.1-b",
+      "topic": "Schutzrichtung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 7,
+      "question": "Was soll der Wettbewerb aus Sicht der Verbraucher gewährleisten?",
+      "answers": [
+        "Die Beratung durch einen neutralen Dritten",
+        "Einen festen Preis für vergleichbare Leistungen",
+        "Ein Rückgaberecht bei jedem Vertrag",
+        "Eine unverfälschte Entscheidung"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Verbraucher sollen unverfälscht entscheiden können und von freiem Wettbewerb profitieren – durch faire Preise und Angebotsvielfalt."
+    },
+    {
+      "id": "2.7-Q008",
+      "chapter": "2.7",
+      "section": "2.7.1-c",
+      "topic": "Begriff",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 8,
+      "question": "Wann liegt vergleichende Werbung vor?",
+      "answers": [
+        "Wenn die Werbung das eigene Angebot als das beste bezeichnet",
+        "Wenn die Werbung zwei eigene Tarife gegenüberstellt",
+        "Wenn sie einen Mitbewerber erkennbar macht",
+        "Wenn die Werbung einen Durchschnittspreis der Branche nennt"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Vergleichende Werbung macht unmittelbar oder mittelbar einen Mitbewerber oder dessen Waren und Dienstleistungen erkennbar."
+    },
+    {
+      "id": "2.7-Q009",
+      "chapter": "2.7",
+      "section": "2.7.1-c",
+      "topic": "Gleicher Bedarf",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 9,
+      "question": "Ein Vermittler vergleicht in einer Anzeige den Zins eines Bauspardarlehens mit dem Zins eines Dispositionskredits der Bank X und nennt den Dispo „Wucher“. Was ist daran unlauter?",
+      "answers": [
+        "Die Produkte dienen nicht dem gleichen Bedarf",
+        "Die Bank X wird namentlich genannt",
+        "Der Vergleich bezieht sich auf den Preis",
+        "Die Bank X wird herabgesetzt"
+      ],
+      "correct": [
+        0,
+        3
+      ],
+      "explanation": "Verglichen werden darf nur, was dem gleichen Bedarf dient, und nicht herabsetzend. Den Mitbewerber zu nennen und Preise zu vergleichen ist erlaubt."
+    },
+    {
+      "id": "2.7-Q010",
+      "chapter": "2.7",
+      "section": "2.7.1-c",
+      "topic": "Nachprüfbarkeit",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 10,
+      "question": "„Wir sind günstiger als die Sparkasse nebenan“ – ohne jede Angabe, worauf sich das bezieht. Woran scheitert diese Werbung?",
+      "answers": [
+        "Preisvergleiche sind unzulässig",
+        "Der Vergleich ist nicht schriftlich belegt",
+        "Die Sparkasse ist erkennbar gemacht",
+        "Der Vergleich ist nicht nachprüfbar"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Ein Vergleich muss sich objektiv auf nachprüfbare Eigenschaften oder den Preis beziehen. Eine pauschale Behauptung kann der Verbraucher nicht überprüfen."
+    },
+    {
+      "id": "2.7-Q011",
+      "chapter": "2.7",
+      "section": "2.7.1-c",
+      "topic": "Rufausnutzung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 11,
+      "question": "Ein kleiner Vermittler wirbt: „Beratung in der Qualität von Bausparkasse Y – nur billiger“. Er hat mit Y nichts zu tun. Wie ist das einzuordnen?",
+      "answers": [
+        "Unlauter – er nutzt den guten Ruf eines Mitbewerbers aus",
+        "Zulässig – er vergleicht nur die Qualität",
+        "Unlauter – über Qualität darf in der Werbung nicht gesprochen werden",
+        "Zulässig – der Name ist allgemein bekannt"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Vergleichende Werbung ist unlauter, wenn sie den Ruf eines Mitbewerbers ausnutzt oder beeinträchtigt."
+    },
+    {
+      "id": "2.7-Q012",
+      "chapter": "2.7",
+      "section": "2.7.1-d",
+      "topic": "Erkennbarkeit",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 12,
+      "question": "Was muss für den Kunden nach dem Gebot der Firmenklarheit erkennbar sein?",
+      "answers": [
+        "Wie hoch die Provision des Vermittlers ausfällt",
+        "Welche Mitbewerber ähnliche Produkte anbieten",
+        "Wie lange der Vermittler schon tätig ist",
+        "Für welches Unternehmen der Vermittler gerade handelt"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Der Kunde muss klar erkennen können, ob der Berater als Vermittler einer Bausparkasse, einer Bank oder einer Versicherung auftritt."
+    },
+    {
+      "id": "2.7-Q013",
+      "chapter": "2.7",
+      "section": "2.7.1-d",
+      "topic": "Firmierung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 13,
+      "question": "Ein Handelsvertreter einer Bausparkasse gestaltet sein Briefpapier: groß das eigene Logo „Finanzzentrum Meier“, klein am Rand der Name der Bausparkasse. Wie ist das zu bewerten?",
+      "answers": [
+        "Unzulässig – die eigene Firmierung muss zurücktreten",
+        "Zulässig – die Bausparkasse wird ja genannt",
+        "Zulässig – er ist selbstständiger Unternehmer",
+        "Unzulässig – ein eigenes Logo ist ihm verboten"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "In der Korrespondenz hat die Firmierung des Vermittlers nach Rang und Größe hinter dem vertretenen Unternehmen zurückzustehen."
+    },
+    {
+      "id": "2.7-Q014",
+      "chapter": "2.7",
+      "section": "2.7.1-d",
+      "topic": "Titel",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 14,
+      "question": "Ein Vermittler ohne Studium nennt sich auf der Visitenkarte „Diplom-Finanzökonom und Bankdirektor a. D.“. Welcher Grundsatz ist verletzt?",
+      "answers": [
+        "Titel bedürfen der Zustimmung des Kunden",
+        "Titel sind in der Finanzvermittlung nicht gestattet",
+        "Titel dürfen nur auf Briefpapier geführt werden",
+        "Titel dürfen nicht über die Qualifikation täuschen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Titel und Berufsbezeichnungen dürfen keinen falschen Eindruck über Aufgaben, Zuständigkeiten, Vollmachten oder Qualifikation erwecken."
+    },
+    {
+      "id": "2.7-Q015",
+      "chapter": "2.7",
+      "section": "2.7.1-d",
+      "topic": "Angaben",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 15,
+      "question": "Welche Angaben zum Unternehmen sind nach dem Lernskript klar zu kommunizieren?",
+      "answers": [
+        "Unternehmensform",
+        "Firmenname",
+        "Geschäftsfeld",
+        "Jahresumsatz"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Zu nennen sind Firmenname, Unternehmensform, Name und Anzahl der Gesellschafter und das Geschäftsfeld. Der Umsatz gehört nicht dazu."
+    },
+    {
+      "id": "2.7-Q016",
+      "chapter": "2.7",
+      "section": "2.7.1-d",
+      "topic": "Erlaubnisse",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 16,
+      "question": "Welche Erlaubnis nach der Gewerbeordnung betrifft die Vermittlung von Versicherungen?",
+      "answers": [
+        "§ 34d GewO",
+        "§ 34c GewO",
+        "§ 34i GewO",
+        "§ 34f GewO"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 34d GewO regelt die Versicherungsvermittlung, § 34c die Immobilienvermittlung, § 34i die Vermittlung von Immobiliardarlehen."
+    },
+    {
+      "id": "2.7-Q017",
+      "chapter": "2.7",
+      "section": "2.7.1-e",
+      "topic": "Wirkung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 17,
+      "question": "Ein Vermittler verstößt gegen den freiwilligen Verhaltenskodex seines Verbands. Welche rechtliche Folge hat das für sich genommen?",
+      "answers": [
+        "Keine – es zählt das UWG",
+        "Schadensersatz an den Verband",
+        "Der Entzug der Gewerbeerlaubnis",
+        "Ein Bußgeld der Aufsichtsbehörde"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Verstöße gegen selbst auferlegte Kodizes ziehen keine rechtlichen Folgen nach sich. Wettbewerbsverstöße werden nach dem UWG geahndet."
+    },
+    {
+      "id": "2.7-Q018",
+      "chapter": "2.7",
+      "section": "2.7.1-e",
+      "topic": "Bedeutung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 18,
+      "question": "Welche Bedeutung haben Verhaltenskodizes der Branche trotzdem?",
+      "answers": [
+        "Sie gehen dem UWG als Spezialregel vor",
+        "Sie binden auch Nichtmitglieder des Verbands",
+        "Sie prägen die allgemeine Verkehrsauffassung",
+        "Sie ersetzen die Erlaubnis nach der GewO"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Kodizes übersetzen das UWG für die Branche und bilden die Grundsätze der Verkehrsauffassung – also den Maßstab dafür, was als unlauter gilt."
+    },
+    {
+      "id": "2.7-Q019",
+      "chapter": "2.7",
+      "section": "2.7.1-f",
+      "topic": "Unterlassung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 19,
+      "question": "Ab wann besteht der Unterlassungsanspruch nach § 8 UWG?",
+      "answers": [
+        "Erst nach einem eingetretenen Schaden",
+        "Schon wenn eine Zuwiderhandlung droht",
+        "Erst nach einer erfolglosen Abmahnung",
+        "Erst nach dem dritten Verstoß"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Der Anspruch auf Unterlassung besteht bereits, wenn eine unzulässige Handlung droht – ein Schaden muss noch nicht entstanden sein."
+    },
+    {
+      "id": "2.7-Q020",
+      "chapter": "2.7",
+      "section": "2.7.1-f",
+      "topic": "Haftung des Inhabers",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 20,
+      "question": "Ein Mitarbeiter eines Vermittlerbüros verschickt irreführende Werbung. Gegen wen richtet sich der Unterlassungsanspruch?",
+      "answers": [
+        "Auch gegen den Inhaber des Büros",
+        "Gegen niemanden, solange kein Schaden entsteht",
+        "Nur gegen den Darlehensgeber",
+        "Nur gegen den Mitarbeiter"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Begeht ein Mitarbeiter oder Beauftragter die Zuwiderhandlung, sind Unterlassungs- und Beseitigungsanspruch auch gegen den Inhaber des Unternehmens begründet."
+    },
+    {
+      "id": "2.7-Q021",
+      "chapter": "2.7",
+      "section": "2.7.1-f",
+      "topic": "Schadensersatz",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 21,
+      "question": "Was setzt der Schadensersatzanspruch eines Mitbewerbers nach § 9 UWG voraus?",
+      "answers": [
+        "Vorsatz oder Fahrlässigkeit",
+        "Kein Verschulden",
+        "Vorsatz – Fahrlässigkeit genügt nicht",
+        "Eine strafrechtliche Verurteilung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Schadensersatz schuldet, wer vorsätzlich oder fahrlässig eine unzulässige geschäftliche Handlung vornimmt."
+    },
+    {
+      "id": "2.7-Q022",
+      "chapter": "2.7",
+      "section": "2.7.1-f",
+      "topic": "Gewinnabschöpfung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 22,
+      "question": "Ein Anbieter erzielt durch vorsätzlich irreführende Werbung zulasten vieler Kunden einen Gewinn. Ein Verband setzt die Gewinnabschöpfung durch. Wohin fließt das Geld?",
+      "answers": [
+        "An die Mitbewerber",
+        "An den klagenden Verband",
+        "An die geschädigten Kunden",
+        "An den Bundeshaushalt"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Bei der Gewinnabschöpfung nach § 10 UWG ist der Gewinn an den Bundeshaushalt herauszugeben."
+    },
+    {
+      "id": "2.7-Q023",
+      "chapter": "2.7",
+      "section": "2.7.1-f",
+      "topic": "Strafbare Werbung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 23,
+      "question": "Ein Vermittler wirbt in einer Zeitungsanzeige wissentlich mit einem erfundenen „Sonderzins“, um ein besonders günstiges Angebot vorzutäuschen. Was droht ihm nach § 16 UWG?",
+      "answers": [
+        "Ein Bußgeld bis 300.000 €",
+        "Freiheitsstrafe bis zu zwei Jahren oder Geldstrafe",
+        "Nur eine Abmahnung",
+        "Freiheitsstrafe von sechs Monaten bis zu fünf Jahren"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Wer in der Absicht, ein besonders günstiges Angebot vorzutäuschen, öffentlich mit unwahren Angaben irreführend wirbt, macht sich strafbar."
+    },
+    {
+      "id": "2.7-Q024",
+      "chapter": "2.7",
+      "section": "2.7.1-f",
+      "topic": "Schneeballsystem",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 24,
+      "question": "Kunden wird ein Bonus versprochen, wenn sie weitere Kunden werben, die ihrerseits wieder werben sollen. Wie ordnet das UWG das ein?",
+      "answers": [
+        "Als unzumutbare Belästigung",
+        "Als strafbare progressive Kundenwerbung",
+        "Als vergleichende Werbung",
+        "Als zulässige Empfehlungswerbung unter Kunden"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "§ 16 Abs. 2 UWG stellt die progressive Kundenwerbung – das Schneeballsystem – unter Strafe."
+    },
+    {
+      "id": "2.7-Q025",
+      "chapter": "2.7",
+      "section": "2.7.2-a",
+      "topic": "Kern",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 25,
+      "question": "Wann ist eine geschäftliche Handlung irreführend im Sinne des § 5 UWG?",
+      "answers": [
+        "Wenn sie das eigene Angebot in positivem Licht darstellt und Nachteile knapp behandelt",
+        "Wenn sie ohne schriftliche Unterlagen und nur im persönlichen Gespräch erfolgt",
+        "Wenn sie täuscht und so eine Entscheidung auslösen kann, die sonst unterblieben wäre",
+        "Wenn sie dem Kunden ein Produkt anbietet, das er ursprünglich nicht nachgefragt hatte"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Irreführend ist eine Handlung, die geeignet ist, den Verbraucher zu einer geschäftlichen Entscheidung zu veranlassen, die er andernfalls nicht getroffen hätte."
+    },
+    {
+      "id": "2.7-Q026",
+      "chapter": "2.7",
+      "section": "2.7.2-a",
+      "topic": "Seltene Vorteile",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 26,
+      "question": "Ein Vermittler stellt die Zuteilung eines Bausparvertrags „schon nach zwei Jahren“ als Normalfall dar, obwohl das nur selten gelingt. Bewertung?",
+      "answers": [
+        "Zulässig – die Aussage ist nicht frei erfunden",
+        "Aggressiv – der Kunde wird unter Druck gesetzt",
+        "Irreführend – seltener Vorteil als Regelfall",
+        "Zulässig – Kunden müssen selbst nachfragen"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Irreführend ist auch das Hervorheben von Vorteilen, die erfahrungsgemäß nur selten eintreten."
+    },
+    {
+      "id": "2.7-Q027",
+      "chapter": "2.7",
+      "section": "2.7.2-a",
+      "topic": "Versteckte Bedingungen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 27,
+      "question": "Die Vorfälligkeitsregelung steht winzig in einer Fußnote auf der letzten Seite der Werbebroschüre. Welches Merkmal irreführender Werbung liegt nahe?",
+      "answers": [
+        "Ausnutzung des Rufs eines Mitbewerbers",
+        "Versteckte Erwähnung wesentlicher Vertragsbestimmungen",
+        "Täuschung über die Identität des Unternehmens",
+        "Unwahre Angabe über Garantieversprechen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Irreführend kann auch sein, wesentliche Vertragsbestimmungen nur versteckt zu erwähnen."
+    },
+    {
+      "id": "2.7-Q028",
+      "chapter": "2.7",
+      "section": "2.7.2-a",
+      "topic": "Abschließend?",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 28,
+      "question": "Sind die im Gesetz genannten Beispiele irreführender Handlungen abschließend?",
+      "answers": [
+        "Ja, anderes ist stets zulässig",
+        "Ja, bis der Gesetzgeber sie ergänzt",
+        "Nein, im Einzelfall entscheiden die Gerichte",
+        "Nein, die Liste führt der Berufsverband fort"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Beispiele in § 5 UWG sind nicht abschließend. Ob eine Irreführung vorliegt, klärt im Streitfall die Rechtsprechung."
+    },
+    {
+      "id": "2.7-Q029",
+      "chapter": "2.7",
+      "section": "2.7.2-b",
+      "topic": "Grundsatz",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 29,
+      "question": "Welcher Grundsatz gilt für Rechtsdienstleistungen und Steuerberatung?",
+      "answers": [
+        "Verbot mit Erlaubnisvorbehalt",
+        "Freiheit der Berufsausübung",
+        "Anzeigepflicht bei der Kammer",
+        "Erlaubnis mit Verbotsvorbehalt"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Rechts- und Steuerberatung sind grundsätzlich verboten, solange keine Erlaubnis besteht. Das schützt vor unqualifiziertem Rat."
+    },
+    {
+      "id": "2.7-Q030",
+      "chapter": "2.7",
+      "section": "2.7.2-b",
+      "topic": "Steuervorteil",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 30,
+      "question": "Ein Kunde fragt in der Finanzierungsberatung nach Steuervorteilen bei einem Riester-Vertrag. Was darf der Vermittler?",
+      "answers": [
+        "Die Steuererklärung für den Kunden erstellen",
+        "Die Steuerersparnis in Euro ausrechnen",
+        "Gar nichts zum Thema Steuern sagen",
+        "Auf mögliche Steuerersparnisse hinweisen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Der allgemeine Hinweis auf mögliche Steuervorteile ist erlaubt. Für die genaue Höhe ist an einen Steuerberater zu verweisen."
+    },
+    {
+      "id": "2.7-Q031",
+      "chapter": "2.7",
+      "section": "2.7.2-b",
+      "topic": "Verweis",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 31,
+      "question": "Der Kunde will wissen, wie viel Steuern er durch die vermietete Wohnung genau spart. Wie verhält sich der Vermittler richtig?",
+      "answers": [
+        "Er verweist an einen Steuerberater",
+        "Er sichert eine Mindestersparnis schriftlich zu",
+        "Er rechnet es überschlägig für ihn aus",
+        "Er nennt die Ersparnis eines ähnlichen Kunden"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die individuelle Berechnung ist Hilfe in Steuersachen. Sie ist den dazu befugten Personen vorbehalten."
+    },
+    {
+      "id": "2.7-Q032",
+      "chapter": "2.7",
+      "section": "2.7.2-b",
+      "topic": "Wohnungsbauprämie",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 32,
+      "question": "Darf der Vermittler dem Bausparkunden helfen, den Antrag auf Wohnungsbauprämie auszufüllen?",
+      "answers": [
+        "Ja, aber nur gegen ein gesondertes Honorar",
+        "Ja, das gehört zur Kundenbetreuung",
+        "Nein, das darf nur die Bausparkasse selbst",
+        "Nein, das ist unerlaubte Steuerberatung"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Unterstützung beim Ausfüllen des Wohnungsbauprämienantrags ist im Rahmen der Betreuung des Kunden erlaubt."
+    },
+    {
+      "id": "2.7-Q033",
+      "chapter": "2.7",
+      "section": "2.7.2-c",
+      "topic": "B2C",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 33,
+      "question": "Was braucht ein Vermittler, bevor er einen Verbraucher zu Werbezwecken anruft?",
+      "answers": [
+        "Eine bestehende Geschäftsbeziehung",
+        "Dessen vorherige ausdrückliche Einwilligung",
+        "Eine schriftliche Ankündigung des Anrufs",
+        "Dessen mutmaßliches Interesse am Angebot"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Telefonwerbung gegenüber Verbrauchern ist ohne vorherige ausdrückliche Einwilligung eine unzumutbare Belästigung (§ 7 Abs. 2 UWG)."
+    },
+    {
+      "id": "2.7-Q034",
+      "chapter": "2.7",
+      "section": "2.7.2-c",
+      "topic": "B2B",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 34,
+      "question": "Ein Vertreter für Kopiergeräte ruft ohne Einwilligung ein Maschinenbauunternehmen an. Wie beurteilt die Rechtsprechung das?",
+      "answers": [
+        "Zulässig – Werbeanrufe im B2B sind frei",
+        "Zulässig – unter Unternehmern genügt jedes Interesse",
+        "Unzulässig – auch im B2B gilt das Opt-in",
+        "Unzulässig – Kopierer sind nicht das Kerngeschäft"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Im B2B genügt die mutmaßliche Einwilligung. Sie wird angenommen, wenn der Anruf das Kerngeschäft betrifft – bei einem bloßen Hilfsgeschäft nicht."
+    },
+    {
+      "id": "2.7-Q035",
+      "chapter": "2.7",
+      "section": "2.7.2-c",
+      "topic": "Verbundpartner",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 35,
+      "question": "Eine Kundin hat schriftlich in die telefonische Baufinanzierungsberatung eingewilligt. Der Vermittler ruft sie an, um eine Hausratversicherung des Verbundpartners anzubieten. Zulässig?",
+      "answers": [
+        "Ja, sie hat Anrufen zugestimmt",
+        "Nein, die Einwilligung deckt das nicht",
+        "Ja, Verbundpartner gelten als ein Unternehmen",
+        "Nein, Einwilligungen gelten nur drei Monate"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Einwilligung gilt nur für das, was sie nennt. Für Versicherungen oder Verbundpartner braucht es eine eigene oder klar erweiterte Einwilligung."
+    },
+    {
+      "id": "2.7-Q036",
+      "chapter": "2.7",
+      "section": "2.7.2-c",
+      "topic": "Verstecktes Opt-in",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 36,
+      "question": "Die Einwilligung in Werbeanrufe steht mitten im Kleingedruckten eines Antragsformulars, das der Kunde insgesamt unterschreibt. Genügt das?",
+      "answers": [
+        "Ja, die Unterschrift deckt den gesamten Text des Formulars",
+        "Ja, wenn das Formular mehrseitig ist",
+        "Nein, die Einwilligung darf nicht versteckt sein",
+        "Nein, sie muss notariell beglaubigt sein"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Das Opt-in muss klar hervorgehen. Eine Unterschrift, die die Einwilligung zwischen anderen Erklärungen „versteckt“, genügt nicht."
+    },
+    {
+      "id": "2.7-Q037",
+      "chapter": "2.7",
+      "section": "2.7.2-c",
+      "topic": "E-Mail",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 37,
+      "question": "Ein Vermittler hat die E-Mail-Adresse eines Kunden durch einen Vertragsabschluss erhalten. Unter welcher Bedingung darf er ihm Werbung für eigene ähnliche Produkte mailen?",
+      "answers": [
+        "Kein Widerspruch, Hinweis auf Widerspruchsrecht",
+        "Der Vertragsschluss liegt weniger als ein Jahr zurück",
+        "Der Kunde hat die erste Werbemail geöffnet",
+        "Die Mail enthält höchstens ein Angebot"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Bestandskunden-Ausnahme erlaubt E-Mail-Werbung für eigene ähnliche Produkte, solange der Kunde nicht widersprochen hat und jedes Mal auf sein Widerspruchsrecht hingewiesen wird."
+    },
+    {
+      "id": "2.7-Q038",
+      "chapter": "2.7",
+      "section": "2.7.2-c",
+      "topic": "Rufnummer",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 38,
+      "question": "Was gilt bei Werbeanrufen für die Rufnummer des Anrufers?",
+      "answers": [
+        "Sie muss eine kostenlose 0800-Nummer sein",
+        "Sie darf nicht unterdrückt werden",
+        "Sie muss vorab per Post mitgeteilt werden",
+        "Sie darf auf Wunsch des Anrufers verborgen bleiben"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Bei Werbeanrufen darf die Rufnummernanzeige nicht unterdrückt werden. So kann der Verbraucher Verstöße der Bundesnetzagentur melden."
+    },
+    {
+      "id": "2.7-Q039",
+      "chapter": "2.7",
+      "section": "2.7.2-c",
+      "topic": "Bußgeld",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 39,
+      "question": "Wer verfolgt unerlaubte Werbeanrufe bei Verbrauchern – und mit welchem Bußgeldrahmen?",
+      "answers": [
+        "Die IHK, bis 100.000 €",
+        "Die BaFin, bis 50.000 €",
+        "Die Bundesnetzagentur, bis 300.000 €",
+        "Das Gewerbeamt, bis 5.000 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Unerlaubte Telefonwerbung gegenüber Verbrauchern ist eine Ordnungswidrigkeit. Die Bundesnetzagentur kann bis zu 300.000 € Bußgeld verhängen."
+    },
+    {
+      "id": "2.7-Q040",
+      "chapter": "2.7",
+      "section": "2.7.2-d",
+      "topic": "Fremdes Ansehen",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 40,
+      "question": "Was zählt nach den Wettbewerbsrichtlinien der Branche zur unzulässigen Ausnutzung fremden Ansehens?",
+      "answers": [
+        "Nennung des vertretenen Unternehmens",
+        "Werbung mit bekannten Persönlichkeiten",
+        "Veröffentlichung von Dankschreiben",
+        "Angabe der eigenen Registrierungsnummer"
+      ],
+      "correct": [
+        1,
+        2
+      ],
+      "explanation": "Untersagt ist, Werbung auf bekannte Persönlichkeiten aufzubauen sowie Dank- und Empfehlungsschreiben oder Gutachten zu veröffentlichen."
+    },
+    {
+      "id": "2.7-Q041",
+      "chapter": "2.7",
+      "section": "2.7.2-d",
+      "topic": "Geschäftsgeheimnis",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 41,
+      "question": "Ein Vermittler wechselt zur Konkurrenz und nimmt die interne Kalkulation seines früheren Unternehmens mit, um sie dort weiterzugeben. Was gilt?",
+      "answers": [
+        "Zulässig – das Dienstverhältnis ist beendet",
+        "Strafbar – auch nach Ende des Dienstverhältnisses",
+        "Strafbar – aber erst, wenn dem Unternehmen ein Schaden entsteht",
+        "Zulässig – solange er kein Geld dafür nimmt"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Geschäfts- und Betriebsgeheimnisse dürfen auch nach dem Dienstverhältnis nicht unbefugt weitergegeben werden. Schon der Versuch ist strafbar; hinzu kommt Schadensersatz."
+    },
+    {
+      "id": "2.7-Q042",
+      "chapter": "2.7",
+      "section": "2.7.2-d",
+      "topic": "Zugaben",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 42,
+      "question": "Ein Vermittler verspricht jedem Neukunden einen Einkaufsgutschein über 25 €. Wie ist das grundsätzlich einzuordnen?",
+      "answers": [
+        "Zulässig, solange es nicht übertrieben anlockt",
+        "Unzulässig, weil Geschenke im Vertrieb verboten sind",
+        "Unzulässig, weil nur Sachwerte erlaubt sind",
+        "Zulässig nur bis zu einem Wert von 10 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Geld- und Sachgeschenke sind grundsätzlich erlaubt. Eine feste Grenze gibt es nicht – entscheidend sind Anlockwirkung und Vergleichbarkeit im Einzelfall."
+    },
+    {
+      "id": "2.7-Q043",
+      "chapter": "2.7",
+      "section": "2.7.2-d",
+      "topic": "Vergleichbarkeit",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 43,
+      "question": "Ein Stromanbieter rechnet seine einmalige Wechselprämie in den beworbenen Jahrespreis ein. Warum ist das problematisch?",
+      "answers": [
+        "Der Jahrespreis darf nie beworben werden",
+        "Wechselprämien sind generell verboten",
+        "Die Prämie muss monatlich ausgezahlt werden",
+        "Der Preisvergleich mit anderen Anbietern wird verfälscht"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Einmalige Prämien dürfen nicht mit den laufenden Tarifen verrechnet werden – sonst lässt sich das Angebot nicht mehr fair vergleichen."
+    },
+    {
+      "id": "2.7-Q044",
+      "chapter": "2.7",
+      "section": "2.7.2-e",
+      "topic": "Pflichtangabe",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 44,
+      "question": "Ein Vermittler wirbt auf einem Plakat mit einem Zinssatz für Baudarlehen. Welche Angabe muss die Werbung enthalten?",
+      "answers": [
+        "Die Provision des Vermittlers in Euro",
+        "Den effektiven Jahreszins – auch so bezeichnet",
+        "Die Registrierungsnummer der Bank",
+        "Den Beleihungswert der Immobilie"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Wer unter Angabe von Preisen für Kredite wirbt, muss die Gesamtkosten als jährlichen Prozentsatz angeben und als „effektiver Jahreszins“ bezeichnen."
+    },
+    {
+      "id": "2.7-Q045",
+      "chapter": "2.7",
+      "section": "2.7.2-e",
+      "topic": "Anfänglicher Effektivzins",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 45,
+      "question": "Der Zinssatz eines beworbenen Darlehens kann sich nach zehn Jahren ändern. Wie ist der Preis in der Werbung zu bezeichnen?",
+      "answers": [
+        "Als vorläufiger Nominalzins",
+        "Als garantierter effektiver Jahreszins",
+        "Als anfänglicher effektiver Jahreszins",
+        "Als durchschnittlicher Sollzins"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Sind Änderungen des Zinssatzes oder anderer preisbestimmender Faktoren vorgesehen, ist der anfängliche effektive Jahreszins anzugeben."
+    },
+    {
+      "id": "2.7-Q046",
+      "chapter": "2.7",
+      "section": "2.7.2-e",
+      "topic": "Zweck",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 46,
+      "question": "Warum verlangt die Preisangabenverordnung den effektiven Jahreszins schon in der Werbung?",
+      "answers": [
+        "Damit der Vermittler seine Vergütung offenlegt",
+        "Damit der Kunde an das Angebot gebunden ist",
+        "Damit Angebote für den Verbraucher vergleichbar sind",
+        "Damit die Aufsicht die Zinshöhe genehmigen kann"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die einheitliche Angabe macht Darlehensangebote vergleichbar – und verhindert Lockangebote mit niedrigem Sollzins."
+    }
+  ]
+}

@@ -23,6 +23,8 @@ function ensure() {
   const AC = window.AudioContext || window.webkitAudioContext;
   if (!AC) return null;
   ctx = new AC();
+  const audioState = () => { if (document.body) document.body.dataset.audioState = ctx.state; };
+  ctx.addEventListener('statechange',audioState); audioState();
   master = ctx.createGain();
   master.gain.value = 0.9;
   const comp = ctx.createDynamicsCompressor();
@@ -61,7 +63,7 @@ function ensure() {
 /** Nach einer Nutzeraktion aufrufen – Browser erlauben Ton erst dann. */
 export function unlockAudio() {
   if (!ensure()) return;
-  if (ctx.state === 'suspended') ctx.resume();
+  if (ctx.state === 'suspended' || ctx.state === 'interrupted') ctx.resume();
   if (musicOn && wantedTrack) startMusic(wantedTrack);
 }
 
@@ -164,7 +166,7 @@ function gulp(t) {
 
 export function sfx(kind) {
   if (!sfxOn || !ensure()) return;
-  if (ctx.state === 'suspended') ctx.resume();
+  if (ctx.state === 'suspended' || ctx.state === 'interrupted') ctx.resume();
   const t = ctx.currentTime + 0.01;
   switch (kind) {
     case 'ok': tone(660, t, { gain: 0.12, release: 0.12 }); tone(990, t + 0.08, { gain: 0.12, release: 0.22 }); break;
@@ -226,6 +228,11 @@ const TRACKS = {
     ],
     scale: [62, 64, 65, 67, 69, 71, 72, 74, 76, 77],
     melodyChance: 0.38, pattern: [0, 2, 1, 2, 0, 2, 1, 2],
+  },
+  dark: {
+    tempo:44, ambient:true, volume:0.28, drums:false,
+    songs:[[[38,41,45],[36,40,43],[35,38,41],[38,41,45]], [[33,36,40],[35,38,41],[38,41,45],[36,40,43]]],
+    scale:[33,35,36,38,40,41,45], melodyChance:0,
   },
   boss: {
     tempo: 124, drums: 'war', bassEvery: 1,
@@ -310,6 +317,29 @@ function drum(t, kind) {
   }
 }
 
+function darkDrone(chord,t,dur) {
+  const low = ctx.createBiquadFilter();
+  low.type = 'lowpass'; low.frequency.value = 650;
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.0001,t);
+  gain.gain.linearRampToValueAtTime(0.075,t+0.9);
+  gain.gain.setValueAtTime(0.065,t+dur*0.55);
+  gain.gain.linearRampToValueAtTime(0.0001,t+dur);
+  chord.forEach((note,i) => {
+    const oscillator = ctx.createOscillator();
+    oscillator.type = 'triangle';
+    oscillator.frequency.value = NOTE(note);
+    const amplitude = ctx.createGain(); amplitude.gain.value = i === 0 ? 0.9 : 0.55;
+    oscillator.connect(amplitude).connect(low); oscillator.start(t); oscillator.stop(t+dur+0.05);
+    // Die leise Oktave bleibt auch auf Laptop-Lautsprechern hörbar.
+    const overtone = ctx.createOscillator(); const harmonic = ctx.createGain();
+    overtone.type = 'sine'; overtone.frequency.value = NOTE(note+12);
+    harmonic.gain.value = 0.3; overtone.connect(harmonic).connect(low);
+    overtone.start(t); overtone.stop(t+dur+0.05);
+  });
+  low.connect(gain); gain.connect(musicBus); gain.connect(reverbSend);
+}
+
 function newMotif(cfg) {
   const len = 4;
   let idx = Math.floor(cfg.scale.length / 3);
@@ -325,6 +355,13 @@ function scheduleStep(cfg, t) {
   const stepInBar = music.step % 8;
   const bar = Math.floor(music.step / 8);
   const chord = song[bar % song.length];
+
+  if (cfg.ambient) {
+    if (stepInBar === 0) darkDrone(chord,t,eighth*8+1.5);
+    music.step += 1;
+    if (music.step % 64 === 0) music.song += 1;
+    return;
+  }
 
   // Arpeggio
   const note = chord[cfg.pattern[stepInBar]] + 12;
@@ -377,6 +414,7 @@ function startMusic(track) {
   const fadeIn = () => {
     music.pending = 0;
     music.track = track;
+    if (document.body) document.body.dataset.musicPlaying = track;
     music.song = Math.floor(Math.random() * TRACKS[track].songs.length);
     music.step = 0;
     music.nextTime = ctx.currentTime + 0.1;
@@ -385,7 +423,8 @@ function startMusic(track) {
     music.timer = setInterval(scheduler, 30);
     musicBus.gain.cancelScheduledValues(ctx.currentTime);
     musicBus.gain.setValueAtTime(Math.max(0.0001, musicBus.gain.value), ctx.currentTime);
-    musicBus.gain.linearRampToValueAtTime(MUSIC_VOLUME, ctx.currentTime + 1.5);
+    musicBus.gain.linearRampToValueAtTime(TRACKS[track].volume || MUSIC_VOLUME, ctx.currentTime + 1.5);
+    scheduler();
   };
   if (music.timer) {
     // Überblenden: kurz ausblenden, dann neues Stück
@@ -407,6 +446,7 @@ function stopMusic() {
   clearInterval(music.timer);
   music.timer = 0;
   music.track = null;
+  if (document.body) document.body.dataset.musicPlaying = 'silent';
   musicBus.gain.cancelScheduledValues(ctx.currentTime);
   musicBus.gain.setValueAtTime(musicBus.gain.value, ctx.currentTime);
   musicBus.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.8);

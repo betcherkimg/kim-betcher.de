@@ -1,0 +1,388 @@
+{
+  "chapter": "3.6",
+  "boss": {
+    "name": "Jadira",
+    "title": "Architektin der tausend Pläne",
+    "image": "assets/bosses/jadira.webp",
+    "bust": "assets/bosses/jadira-bust.webp",
+    "accent": "#75ba9a",
+    "taunts": {
+      "intro": "Tausend Pläne habe ich gezeichnet. Die meisten fallen in sich zusammen, weil eine Zahl nicht stimmt. Zeig mir deinen.",
+      "hit": [
+        "Dieser Plan trägt.",
+        "Sauber gerechnet. Mein Jadestift zittert.",
+        "Kein Fehler in deiner Statik."
+      ],
+      "miss": [
+        "Dein Plan hat einen Riss.",
+        "Eine Unterlage fehlt.",
+        "Die Summe geht nicht auf."
+      ],
+      "timeout": [
+        "Die Baustelle wartet nicht.",
+        "Der Auszahlungstermin ist verstrichen."
+      ],
+      "final": "Der letzte Plan. Kosten, Mittel, Rate, Bonität – stimmt alles zusammen?",
+      "low": "Meine Pläne … sie verblassen …",
+      "defeat": "Dein Plan steht – vom Fundament bis zum First. Ich lege den Stift nieder.",
+      "victory": "Dein Plan ist eingestürzt. Zurück ins Lernskript."
+    }
+  },
+  "questions": [
+    {
+      "id": "3.6-B001",
+      "chapter": "3.6",
+      "section": "3.6.1-b",
+      "topic": [
+        "Finanzierungslücke"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Gesamtkosten 420.000 €. Festgeld 60.000 €, Bausparguthaben 30.000 €, zugesagtes Arbeitgeberdarlehen 20.000 €. Wie hoch ist die Finanzierungslücke?",
+      "answers": [
+        "360.000 €",
+        "310.000 €",
+        "330.000 €",
+        "400.000 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "420.000 € − 60.000 € − 30.000 € − 20.000 € = 310.000 €. Auch zugesagte Fremdmittel zählen zu den vorhandenen Mitteln."
+    },
+    {
+      "id": "3.6-B002",
+      "chapter": "3.6",
+      "section": "3.6.1-b",
+      "topic": [
+        "Über- und Unterfinanzierung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Gesamtkosten 350.000 €. Eigenmittel 70.000 €, vorhandene Fremdmittel 30.000 €, neue Darlehen 240.000 €. Was liegt vor?",
+      "answers": [
+        "Ausgeglichener Plan",
+        "Unterfinanzierung um 10.000 €",
+        "Überfinanzierung um 10.000 €",
+        "Überfinanzierung um 30.000 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Mittel summieren sich auf 340.000 €. Es fehlen 10.000 € – der Plan ist unterfinanziert."
+    },
+    {
+      "id": "3.6-B003",
+      "chapter": "3.6",
+      "section": "3.6.1-c",
+      "topic": [
+        "Beleihungswert"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Gesamtkosten 400.000 €, davon 25.000 € Erwerbsneben- und Finanzierungskosten. Sicherheitsabschlag 10 %. Beleihungswert?",
+      "answers": [
+        "375.000 €",
+        "360.000 €",
+        "400.000 €",
+        "337.500 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Beleihungsfähig sind 375.000 €. Abzüglich 10 % (37.500 €) ergibt sich ein Beleihungswert von 337.500 €."
+    },
+    {
+      "id": "3.6-B004",
+      "chapter": "3.6",
+      "section": "3.6.1-c",
+      "topic": [
+        "Beleihungsauslauf"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Beleihungswert 300.000 €, Finanzierungslücke 225.000 €. Wie hoch ist der Beleihungsauslauf?",
+      "answers": [
+        "80 %",
+        "75 %",
+        "60 %",
+        "133 %"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "225.000 € ÷ 300.000 € = 75 %."
+    },
+    {
+      "id": "3.6-B005",
+      "chapter": "3.6",
+      "section": "3.6.1-d",
+      "topic": [
+        "Gesamtbelastung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Annuitätendarlehen 180.000 € (3 % Zins, 2 % Tilgung) und Bauspardarlehen mit 5 ‰ der Bausparsumme 40.000 €. Monatliche Gesamtbelastung?",
+      "answers": [
+        "750 €",
+        "917 €",
+        "200 €",
+        "950 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Annuitätendarlehen: 180.000 € × 5 % ÷ 12 = 750 €. Bauspardarlehen: 5 ‰ von 40.000 € = 200 €. Zusammen 950 €."
+    },
+    {
+      "id": "3.6-B006",
+      "chapter": "3.6",
+      "section": "3.6.1-d",
+      "topic": [
+        "Bausparrate",
+        "Bezugsgröße"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Bausparsumme 50.000 €, Guthaben 20.000 €, Zins- und Tilgungsbeitrag 6 ‰. Bauspardarlehen und Monatsrate?",
+      "answers": [
+        "50.000 € – 300 €",
+        "30.000 € – 300 €",
+        "20.000 € – 120 €",
+        "30.000 € – 180 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Darlehen: 50.000 € − 20.000 € = 30.000 €. Rate: 6 ‰ der Bausparsumme = 300 €."
+    },
+    {
+      "id": "3.6-B007",
+      "chapter": "3.6",
+      "section": "3.6.1-d",
+      "topic": [
+        "Arbeitgeberdarlehen"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Arbeitgeberdarlehen 30.000 €, 1 % Zins, 5 % Tilgung als Annuität. Monatsrate?",
+      "answers": [
+        "25 €",
+        "125 €",
+        "150 €",
+        "1.800 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "30.000 € × 6 % = 1.800 € im Jahr, geteilt durch 12 sind 150 €."
+    },
+    {
+      "id": "3.6-B008",
+      "chapter": "3.6",
+      "section": "3.6.1-e",
+      "topic": [
+        "Bonität",
+        "Rechnung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Einkünfte 4.000 €, Lebenshaltungspauschale 40 %, Darlehensraten 1.200 €, Leasingrate 300 €. Welcher Betrag verbleibt?",
+      "answers": [
+        "500 €",
+        "900 €",
+        "1.200 €",
+        "2.400 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Lebenshaltung 1.600 €. 4.000 € − 1.600 € − 1.200 € − 300 € = 900 €."
+    },
+    {
+      "id": "3.6-B009",
+      "chapter": "3.6",
+      "section": "3.6.1-e",
+      "topic": [
+        "Bonität",
+        "Immobilienwert"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Das Objekt ist 500.000 € wert, das Darlehen beträgt 200.000 €. Das Einkommen reicht für die Rate nicht aus. Darf die Bank zusagen?",
+      "answers": [
+        "Nein – die Bonität entscheidet",
+        "Nein – der Auslauf ist zu hoch",
+        "Ja – bei erstrangiger Grundschuld",
+        "Ja – der Objektwert deckt das Darlehen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Zusage darf nicht hauptsächlich auf den Wert der Immobilie gestützt werden. Maßgeblich ist, ob der Kunde die Rate tragen kann."
+    },
+    {
+      "id": "3.6-B010",
+      "chapter": "3.6",
+      "section": "3.6.3-a",
+      "topic": [
+        "Unterlagen",
+        "Zuordnung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Ein selbstständiger Schreiner und seine angestellte Ehefrau beantragen ein Darlehen. Welche Einkommensnachweise werden gebraucht?",
+      "answers": [
+        "Er: Rentenbescheid – Sie: Bilanzen und BWA",
+        "Er: Bilanzen – Sie: Gehaltsabrechnungen",
+        "Beide: nur Kontoauszüge",
+        "Beide: drei Gehaltsabrechnungen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Selbstständige belegen ihr Einkommen mit Steuerbescheiden, Bilanzen und BWA, Arbeitnehmer mit Gehaltsabrechnungen."
+    },
+    {
+      "id": "3.6-B011",
+      "chapter": "3.6",
+      "section": "3.6.3-b",
+      "topic": [
+        "Unterlagen",
+        "Eigentumswohnung"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Ein Kunde kauft eine vermietete Eigentumswohnung und setzt die Miete als Einkommen an. Welche Unterlagen kommen speziell dafür hinzu?",
+      "answers": [
+        "Nachweis Bauland",
+        "Teilungserklärung",
+        "Mietvertrag",
+        "Baufortschrittsanzeige"
+      ],
+      "correct": [
+        1,
+        2
+      ],
+      "explanation": "Die Teilungserklärung gehört zu jeder Eigentumswohnung, der Mietvertrag belegt die Mieteinnahmen. Bauland- und Baufortschrittsnachweise betreffen Grundstück und Neubau."
+    },
+    {
+      "id": "3.6-B012",
+      "chapter": "3.6",
+      "section": "3.6.3-b",
+      "topic": [
+        "Grundbuch",
+        "Abteilungen"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Im Grundbuch stehen ein Wohnrecht der Mutter und eine Grundschuld der Sparkasse. In welchen Abteilungen?",
+      "answers": [
+        "Beide: Abteilung II",
+        "Wohnrecht: III – Grundschuld: II",
+        "Wohnrecht: II – Grundschuld: III",
+        "Wohnrecht: I – Grundschuld: III"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Lasten und Beschränkungen stehen in Abteilung II, Grundpfandrechte in Abteilung III."
+    },
+    {
+      "id": "3.6-B013",
+      "chapter": "3.6",
+      "section": "3.6.4-a",
+      "topic": [
+        "Auszahlung",
+        "Vorhaben"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Welche Auszahlungsunterlage gehört zu welchem Vorhaben: (1) Baufortschrittsanzeige (2) Gläubigerbestätigung (3) notarieller Kaufvertrag?",
+      "answers": [
+        "Neubau – Kauf – Umschuldung",
+        "Umschuldung – Kauf – Neubau",
+        "Neubau – Umschuldung – Kauf",
+        "Kauf – Neubau – Umschuldung"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Beim Neubau wird nach Baufortschritt ausgezahlt, bei der Umschuldung bestätigt der bisherige Gläubiger die Daten, beim Kauf liegt der Kaufvertrag vor."
+    },
+    {
+      "id": "3.6-B014",
+      "chapter": "3.6",
+      "section": "3.6.4-a",
+      "topic": [
+        "Auszahlung",
+        "Rang"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Vereinbart ist eine erstrangige Grundschuld. Im Grundbuch steht noch eine alte Grundschuld des Verkäufers im ersten Rang. Was gilt für die Auszahlung?",
+      "answers": [
+        "Keine Auszahlung, bis der Rang stimmt",
+        "Auszahlung nach Zahlung der Grunderwerbsteuer",
+        "Auszahlung zur Hälfte",
+        "Auszahlung sofort in voller Höhe"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Grundpfandrecht muss an der richtigen Rangstelle eingetragen sein. Die alte Grundschuld muss gelöscht werden oder im Rang zurücktreten."
+    },
+    {
+      "id": "3.6-B015",
+      "chapter": "3.6",
+      "section": "3.6.3-c",
+      "topic": [
+        "Stimmigkeit",
+        "Plausibilität"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Beim Sichten der Unterlagen fällt auf: Die Gehaltsabrechnung zeigt ein anderes Schriftbild und einen Rechenfehler. Was ist die richtige Reaktion?",
+      "answers": [
+        "Unterlage kommentarlos einreichen",
+        "Verdacht klären, nicht ungeprüft weitergeben",
+        "Nur den Antrag ohne Nachweis einreichen",
+        "Den Fehler selbst korrigieren"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Der Berater prüft Plausibilität und Echtheit. Bei Verdacht auf gefälschte Unterlagen gibt er sie nicht ungeprüft weiter."
+    }
+  ]
+}

@@ -1,0 +1,1865 @@
+{
+  "chapter": "2.4",
+  "questions": [
+    {
+      "id": "2.4-Q001",
+      "chapter": "2.4",
+      "section": "2.4.1-a",
+      "topic": "Verbraucherbegriff",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 1,
+      "question": "Wonach richtet sich, ob ein Darlehensnehmer als Verbraucher handelt?",
+      "answers": [
+        "Nach dem Zweck, zu dem er das Geschäft abschließt",
+        "Nach der Art der Sicherheit, die er stellt",
+        "Nach der Höhe seines regelmäßigen Einkommens",
+        "Nach seinem Beruf zum Zeitpunkt des Vertragsschlusses"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Verbraucher ist nach § 13 BGB, wer zu überwiegend privaten Zwecken handelt. Der Beruf allein sagt darüber nichts."
+    },
+    {
+      "id": "2.4-Q002",
+      "chapter": "2.4",
+      "section": "2.4.1-a",
+      "topic": "Verbraucherbegriff",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 2,
+      "question": "Eine selbstständige Architektin finanziert die Eigentumswohnung, in die sie mit ihrer Familie einzieht. Wie ist sie einzuordnen?",
+      "answers": [
+        "Als Verbraucherin nur, wenn ihr Ehemann mit unterschreibt",
+        "Als Verbraucherin, weil der Zweck privat ist",
+        "Als Unternehmerin, weil sie selbstständig tätig ist",
+        "Als Unternehmerin, wenn die Bank sie als Geschäftskundin führt"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Auch Selbstständige und Freiberufler sind Verbraucher, wenn sie aus privaten Gründen finanzieren. Entscheidend ist der Zweck des Geschäfts."
+    },
+    {
+      "id": "2.4-Q003",
+      "chapter": "2.4",
+      "section": "2.4.1-a",
+      "topic": "Verbraucherdarlehen",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 3,
+      "question": "Welche zwei Vertragsarten fasst der Oberbegriff „Verbraucherdarlehensvertrag“ zusammen?",
+      "answers": [
+        "Besicherte Darlehensverträge und Blankodarlehen",
+        "Entgeltliche und unentgeltliche Darlehensverträge",
+        "Darlehensverträge von Banken und von Arbeitgebern",
+        "Allgemein- und Immobiliar-Verbraucherdarlehensverträge"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "§ 491 Abs. 1 BGB: Verbraucherdarlehensverträge sind Allgemein-Verbraucherdarlehensverträge und Immobiliar-Verbraucherdarlehensverträge."
+    },
+    {
+      "id": "2.4-Q004",
+      "chapter": "2.4",
+      "section": "2.4.1-a",
+      "topic": "Unentgeltliches Darlehen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 4,
+      "question": "Ein Händler gibt einem Verbraucher ein Darlehen ohne Zinsen und ohne Kosten, lässt sich aber eine Sicherheit stellen. Liegt ein Verbraucherdarlehensvertrag vor?",
+      "answers": [
+        "Ja, sobald eine Sicherheit bestellt wird",
+        "Nein, die Sicherheit macht das Darlehen nicht entgeltlich",
+        "Ja, weil der Darlehensgeber Unternehmer ist",
+        "Nein, weil ein Händler kein Darlehensgeber im Sinne des Gesetzes ist"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Ein Verbraucherdarlehen setzt Entgeltlichkeit voraus. Eine Besicherung ist keine Gegenleistung. Rechtsstand bis 19.11.2026 – danach erfasst das Recht der Allgemein-Verbraucherdarlehen auch zins- und gebührenfreie Darlehen."
+    },
+    {
+      "id": "2.4-Q005",
+      "chapter": "2.4",
+      "section": "2.4.1-a",
+      "topic": "Arbeitgeberdarlehen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 5,
+      "question": "Ein Arbeitgeber gibt einer Mitarbeiterin ein Darlehen deutlich unter dem marktüblichen Zins. Er bietet es nur Beschäftigten an. Wie ist es einzuordnen?",
+      "answers": [
+        "Als Immobiliar-Verbraucherdarlehen, wenn es dem Hauskauf dient",
+        "Als unentgeltliches Darlehen",
+        "Weder als Allgemein- noch als Immobiliar-Verbraucherdarlehen",
+        "Als Allgemein-Verbraucherdarlehen"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Vergünstigte Arbeitgeberdarlehen stehen im Ausnahmekatalog des § 491 Abs. 2 BGB und sind nach Abs. 3 auch keine Immobiliar-Verbraucherdarlehen. Das BWB-Skript ist hier an einer Stelle ungenau."
+    },
+    {
+      "id": "2.4-Q006",
+      "chapter": "2.4",
+      "section": "2.4.1-b",
+      "topic": "Definition IVD",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 6,
+      "question": "Wann ist ein entgeltliches Darlehen an einen Verbraucher ein Immobiliar-Verbraucherdarlehen?",
+      "answers": [
+        "Wenn es zu den für Immobiliendarlehen marktüblichen Bedingungen vergeben wird",
+        "Wenn es grundpfandrechtlich besichert ist und zugleich dem Erwerb oder Erhalt des Eigentums dient",
+        "Sobald das Geld in irgendeiner Form für eine Immobilie verwendet wird",
+        "Wenn es grundpfandrechtlich besichert ist oder dem Erwerb bzw. Erhalt des Eigentums dient"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "§ 491 Abs. 3 BGB nennt zwei Wege, von denen einer genügt: die Sicherheit (Grundpfandrecht oder Reallast) oder der Zweck (Erwerb oder Erhaltung des Eigentumsrechts)."
+    },
+    {
+      "id": "2.4-Q007",
+      "chapter": "2.4",
+      "section": "2.4.1-b",
+      "topic": "Sicherheit entscheidet",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 7,
+      "question": "Ein Verbraucher nimmt 40.000 € für ein Auto auf. Die Bank lässt sich dafür eine Grundschuld an seinem Haus eintragen. Welche Darlehensart liegt vor?",
+      "answers": [
+        "Allgemein-Verbraucherdarlehen, solange er das Haus selbst bewohnt",
+        "Immobiliar-Verbraucherdarlehen, denn die Grundschuld genügt",
+        "Kein Verbraucherdarlehen, da Zweck und Sicherheit auseinanderfallen",
+        "Allgemein-Verbraucherdarlehen, denn es ist ein Konsumkredit"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Ist das Darlehen durch ein Grundpfandrecht besichert, kommt es auf den Verwendungszweck nicht an."
+    },
+    {
+      "id": "2.4-Q008",
+      "chapter": "2.4",
+      "section": "2.4.1-b",
+      "topic": "Erwerbskosten",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 8,
+      "question": "Ein Käufer finanziert Grunderwerbsteuer, Notar und Makler über ein eigenes Darlehen ohne Grundschuld. Wie ist dieses Darlehen einzuordnen?",
+      "answers": [
+        "Als Immobiliar-Verbraucherdarlehen",
+        "Als Allgemein-Verbraucherdarlehen, weil die Grundschuld fehlt",
+        "Als Immobiliar-Verbraucherdarlehen, sofern dieselbe Bank auch den Kaufpreis finanziert",
+        "Als Allgemein-Verbraucherdarlehen, weil Nebenkosten kein Kaufpreis sind"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Erwerbskosten gehören zum Erwerb der Immobilie. Der Zweck allein macht das Darlehen zum Immobiliar-Verbraucherdarlehen."
+    },
+    {
+      "id": "2.4-Q009",
+      "chapter": "2.4",
+      "section": "2.4.1-b",
+      "topic": "Anbau und Ausbau",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 9,
+      "question": "Zwei Darlehen ohne Grundschuld: Familie A baut einen Wintergarten an, Familie B baut das Dachgeschoss aus. Wie ordnet die Zuordnungstabelle sie ein?",
+      "answers": [
+        "Beide: Allgemein-Verbraucherdarlehen",
+        "A: Allgemein-, B: Immobiliar-Verbraucherdarlehen",
+        "Beide: Immobiliar-Verbraucherdarlehen",
+        "A: Immobiliar-, B: Allgemein-Verbraucherdarlehen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Der Anbau schafft neue Gebäudesubstanz und zählt zum Immobiliar-Verbraucherdarlehen. Der Dachausbau im Bestand ist wie eine Modernisierung ein Allgemein-Verbraucherdarlehen."
+    },
+    {
+      "id": "2.4-Q010",
+      "chapter": "2.4",
+      "section": "2.4.1-b",
+      "topic": "Erhaltung des Eigentumsrechts",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 10,
+      "question": "Einem Eigentümer droht die Zwangsversteigerung. Ein Darlehen ohne Grundschuld soll sie abwenden. Welche Darlehensart liegt vor?",
+      "answers": [
+        "Allgemein-Verbraucherdarlehen – es wird nichts erworben",
+        "Immobiliar-Verbraucherdarlehen – es dient der Erhaltung des Eigentumsrechts",
+        "Kein Verbraucherdarlehen – es ist eine Sanierungsmaßnahme",
+        "Allgemein-Verbraucherdarlehen – es fehlt die dingliche Sicherheit"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "„Erhaltung des Eigentumsrechts“ meint, das Eigentum zu behalten. Dazu zählt die Abwendung einer Zwangsversteigerung."
+    },
+    {
+      "id": "2.4-Q011",
+      "chapter": "2.4",
+      "section": "2.4.1-b",
+      "topic": "Grundstücksgleiches Recht",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 11,
+      "question": "Ein Verbraucher kauft ein Erbbaurecht und finanziert den Kaufpreis ohne Grundpfandrecht. Wie ist das Darlehen einzuordnen?",
+      "answers": [
+        "Immobiliar-Verbraucherdarlehen, wenn der Grundstückseigentümer zustimmt",
+        "Immobiliar-Verbraucherdarlehen – das Erbbaurecht ist ein grundstücksgleiches Recht",
+        "Allgemein-Verbraucherdarlehen – ohne Grundpfandrecht zählt der Kauf von Grundstücken, nicht von Rechten",
+        "Allgemein-Verbraucherdarlehen – er wird nicht Eigentümer des Grundstücks"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "§ 491 Abs. 3 BGB erfasst auch den Erwerb grundstücksgleicher Rechte. Das Erbbaurecht ist das wichtigste Beispiel."
+    },
+    {
+      "id": "2.4-Q012",
+      "chapter": "2.4",
+      "section": "2.4.1-b",
+      "topic": "Blankodarlehen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 12,
+      "question": "Eine Bank gibt ihrem Kunden ein Blankodarlehen für neue Fenster. Sie hat bereits eine Grundschuld mit weiter Zweckerklärung, die auch dieses Darlehen sichert. Einordnung?",
+      "answers": [
+        "Allgemein-Verbraucherdarlehen, weil es um eine Modernisierung geht",
+        "Allgemein-Verbraucherdarlehen, weil es als Blankodarlehen bezeichnet ist",
+        "Immobiliar-Verbraucherdarlehen, weil die Grundschuld es mitsichert",
+        "Immobiliar-Verbraucherdarlehen, weil Fenster zum Gebäude gehören"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Über die weite Zweckerklärung ist auch das neue Darlehen grundpfandrechtlich gesichert. Dann entscheidet die Sicherheit, nicht der Zweck."
+    },
+    {
+      "id": "2.4-Q013",
+      "chapter": "2.4",
+      "section": "2.4.1-b",
+      "topic": "Zuordnung AVD",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 13,
+      "question": "Welche Darlehen ohne Grundschuld sind Allgemein-Verbraucherdarlehen?",
+      "answers": [
+        "Darlehen zur Umschuldung eines Immobiliar-Verbraucherdarlehens",
+        "Darlehen für den Badumbau im eigenen Haus",
+        "Darlehen für den Kauf eines Fertighauses",
+        "Darlehen ohne Angabe eines Verwendungszwecks"
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "explanation": "Modernisierung und Darlehen ohne Zweckangabe sind Allgemein-Verbraucherdarlehen. Kauf und Umschuldung eines Immobiliar-Verbraucherdarlehens dienen Erwerb bzw. Erhaltung des Eigentums."
+    },
+    {
+      "id": "2.4-Q014",
+      "chapter": "2.4",
+      "section": "2.4.1-c",
+      "topic": "Maßstab IVD",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 14,
+      "question": "Welcher Maßstab gilt bei der Kreditwürdigkeitsprüfung für ein Immobiliar-Verbraucherdarlehen?",
+      "answers": [
+        "Es dürfen keine erheblichen Zweifel an der Rückzahlung des Darlehens bestehen",
+        "Der Wert der Immobilie muss den Darlehensbetrag übersteigen",
+        "Es muss wahrscheinlich sein, dass der Kunde seine Pflichten erfüllt",
+        "Der Kunde muss die Rückzahlung schriftlich zusichern"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Beim Immobiliar-Verbraucherdarlehen braucht es eine positive Prognose. „Keine erheblichen Zweifel“ ist der mildere Maßstab des Allgemein-Verbraucherdarlehens."
+    },
+    {
+      "id": "2.4-Q015",
+      "chapter": "2.4",
+      "section": "2.4.1-c",
+      "topic": "Maßstab AVD",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 15,
+      "question": "Für einen Ratenkredit findet die Bank keine Negativmerkmale – aber auch nichts, was ausdrücklich für den Kunden spricht. Darf sie das Allgemein-Verbraucherdarlehen vergeben?",
+      "answers": [
+        "Ja, es genügt, dass keine erheblichen Zweifel bestehen",
+        "Ja, aber nur gegen eine zusätzliche Sicherheit",
+        "Nein, ohne positive Prognose ist ein Verbraucherdarlehen unzulässig",
+        "Nein, es müssen positive Anhaltspunkte vorliegen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Beim Allgemein-Verbraucherdarlehen reicht es, wenn die Prüfung keine Negativmerkmale ergibt. Punkte, die ausdrücklich für die Vergabe sprechen, verlangt erst das Immobiliar-Verbraucherdarlehen."
+    },
+    {
+      "id": "2.4-Q016",
+      "chapter": "2.4",
+      "section": "2.4.1-c",
+      "topic": "Nachweis",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 16,
+      "question": "Ein Darlehen wird notleidend. Im Rechtsstreit geht es darum, ob die Kreditwürdigkeit sorgfältig geprüft wurde. Wer muss das nachweisen?",
+      "answers": [
+        "Der Vermittler",
+        "Der gerichtliche Sachverständige",
+        "Der Darlehensnehmer",
+        "Die Bank"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die Bank muss nachweisen, dass sie die Kreditwürdigkeitsprüfung sorgfältig durchgeführt hat und das Ergebnis den gesetzlichen Anforderungen entspricht."
+    },
+    {
+      "id": "2.4-Q017",
+      "chapter": "2.4",
+      "section": "2.4.1-c",
+      "topic": "Folgen",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 17,
+      "question": "Die Bank hat die Kreditwürdigkeit nicht ordnungsgemäß geprüft und hätte das Darlehen nicht vergeben dürfen. Welche Folgen hat das?",
+      "answers": [
+        "Der Kunde muss das Darlehen sofort zurückzahlen",
+        "Der Sollzins sinkt auf einen marktüblichen Zinssatz",
+        "Der Darlehensvertrag ist von Anfang an nichtig",
+        "Der Kunde kann jederzeit fristlos kündigen, ohne Vorfälligkeitsentschädigung"
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "explanation": "§ 505d BGB: Der Zins ermäßigt sich rückwirkend, und der Darlehensnehmer kann jederzeit fristlos kündigen. Der Vertrag selbst bleibt wirksam."
+    },
+    {
+      "id": "2.4-Q018",
+      "chapter": "2.4",
+      "section": "2.4.1-c",
+      "topic": "Ausnahme",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 18,
+      "question": "Die Bank hat nachlässig geprüft. Der Kunde hatte ihr allerdings vorsätzlich ein zu hohes Gehalt angegeben. Kann er die Zinsermäßigung verlangen?",
+      "answers": [
+        "Nein, soweit der Mangel auf seinen falschen Angaben beruht",
+        "Nein, weil der Vertrag durch die Täuschung nichtig ist",
+        "Ja, allerdings erst ab der Entdeckung des Fehlers",
+        "Ja, denn die Prüfpflicht liegt bei der Bank und nicht bei ihm"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Folgen des § 505d BGB treten nicht ein, soweit der Mangel der Prüfung auf vorsätzlich oder grob fahrlässig falschen oder vorenthaltenen Angaben des Kunden beruht."
+    },
+    {
+      "id": "2.4-Q019",
+      "chapter": "2.4",
+      "section": "2.4.2-a",
+      "topic": "Pflichtangaben",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 19,
+      "question": "Welche Angabe gehört zu den allgemeinen Informationen, die Anbieter von Immobiliar-Verbraucherdarlehen bereithalten müssen?",
+      "answers": [
+        "Der Verkehrswert der zu finanzierenden Immobilie",
+        "Die Provision des Vermittlers in Euro",
+        "Ein repräsentatives Beispiel mit effektivem Jahreszins",
+        "Die Kreditwürdigkeit des einzelnen Interessenten"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Zu den allgemeinen Informationen gehört ein repräsentatives Beispiel mit Nettodarlehensbetrag, Gesamtkosten, Gesamtbetrag und effektivem Jahreszins. Sie sind nicht auf einen einzelnen Kunden zugeschnitten."
+    },
+    {
+      "id": "2.4-Q020",
+      "chapter": "2.4",
+      "section": "2.4.2-a",
+      "topic": "Abgrenzung ESIS",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 20,
+      "question": "Ein Interessent hat noch keinerlei Angaben zu sich gemacht. Was kann er vom Anbieter trotzdem schon erhalten?",
+      "answers": [
+        "Ein bindendes Vertragsangebot",
+        "Das ESIS-Merkblatt mit seinen persönlichen Konditionen",
+        "Die allgemeinen Informationen zu den angebotenen Darlehen",
+        "Das Ergebnis der Kreditwürdigkeitsprüfung"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die allgemeinen Informationen sind für alle gleich und jederzeit verfügbar. Das ESIS-Merkblatt setzt die Angaben des Kunden voraus."
+    },
+    {
+      "id": "2.4-Q021",
+      "chapter": "2.4",
+      "section": "2.4.2-a",
+      "topic": "Fremdwährung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 21,
+      "question": "Ein Anbieter hat auch Darlehen in Schweizer Franken im Programm. Was muss er in den allgemeinen Informationen dazu tun?",
+      "answers": [
+        "Eine Kursabsicherung als Pflichtprodukt mitverkaufen",
+        "Die Darlehen auf Kunden mit Einkommen in Franken beschränken",
+        "Einen festen Umtauschkurs für die gesamte Laufzeit zusagen",
+        "Die Währungen nennen und die möglichen Folgen für den Darlehensnehmer erläutern"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Werden Darlehen in fremder Währung angeboten, sind die in Betracht kommenden Währungen anzugeben und die Konsequenzen eines Fremdwährungsdarlehens zu erläutern."
+    },
+    {
+      "id": "2.4-Q022",
+      "chapter": "2.4",
+      "section": "2.4.2-b",
+      "topic": "Vorzeitige Rückzahlung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 22,
+      "question": "Wann kann ein Darlehensnehmer ein Immobiliar-Verbraucherdarlehen mit gebundenem Sollzins während der Zinsbindung vorzeitig zurückzahlen?",
+      "answers": [
+        "Erst nach Ablauf der halben Zinsbindung",
+        "Wenn er ein berechtigtes Interesse hat",
+        "Jederzeit, ohne weitere Voraussetzung",
+        "Nur mit Zustimmung des Darlehensgebers"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Während der Sollzinsbindung ist die vorzeitige Erfüllung beim Immobiliar-Verbraucherdarlehen nur bei berechtigtem Interesse möglich (§ 500 Abs. 2 BGB)."
+    },
+    {
+      "id": "2.4-Q023",
+      "chapter": "2.4",
+      "section": "2.4.2-b",
+      "topic": "Berechtigtes Interesse",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 23,
+      "question": "Welcher Grund ist kein berechtigtes Interesse für die vorzeitige Rückzahlung während der Zinsbindung?",
+      "answers": [
+        "Die Immobilie wird wegen Scheidung verkauft",
+        "Die Immobilie wird wegen eines beruflichen Umzugs verkauft",
+        "Die Immobilie wird wegen Arbeitslosigkeit verkauft",
+        "Eine andere Bank bietet einen niedrigeren Zins"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Berechtigt ist das Interesse, wenn sich bei der Immobilie selbst etwas ändern muss – etwa durch Arbeitslosigkeit, Scheidung oder beruflichen Umzug. Der Wunsch nach günstigeren Zinsen genügt nicht."
+    },
+    {
+      "id": "2.4-Q024",
+      "chapter": "2.4",
+      "section": "2.4.2-b",
+      "topic": "Form",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 24,
+      "question": "Eine Kundin verkauft ihre Wohnung wegen eines beruflichen Umzugs und will das Darlehen während der Zinsbindung ablösen. Welche Form muss sie einhalten?",
+      "answers": [
+        "Notariell beglaubigte Kündigungserklärung",
+        "Keine – eine Kündigung ist dafür nicht nötig",
+        "Kündigung in Textform mit einem Monat Frist",
+        "Schriftliche Kündigung mit drei Monaten Frist"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Für die vorzeitige Rückzahlung aus berechtigtem Interesse ist keine Kündigung des Darlehens erforderlich. Sie kann formlos erfolgen."
+    },
+    {
+      "id": "2.4-Q025",
+      "chapter": "2.4",
+      "section": "2.4.2-b",
+      "topic": "Kündigungsfrist",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 25,
+      "question": "Ein Allgemein-Verbraucherdarlehen hat keine feste Laufzeit. Im Vertrag steht für den Kunden eine Kündigungsfrist von drei Monaten. Was gilt?",
+      "answers": [
+        "Die Klausel gilt, weil sie vereinbart wurde",
+        "Der Kunde kann zum Quartalsende kündigen",
+        "Die Klausel ist unwirksam",
+        "Die Frist verkürzt sich von selbst auf zwei Monate"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Ohne feste Rückzahlungszeit kann der Darlehensnehmer kündigen, ohne eine Frist einzuhalten. Eine Vereinbarung über mehr als einen Monat Kündigungsfrist ist unwirksam (§ 500 Abs. 1 BGB)."
+    },
+    {
+      "id": "2.4-Q026",
+      "chapter": "2.4",
+      "section": "2.4.2-b",
+      "topic": "Kündigung durch die Bank",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 26,
+      "question": "Die Bank merkt nach Vertragsschluss, dass ihre eigene Kreditwürdigkeitsprüfung lückenhaft war. Der Kunde hatte alles wahrheitsgemäß angegeben. Darf sie deshalb kündigen?",
+      "answers": [
+        "Nein, eigene Prüffehler geben ihr kein Kündigungsrecht",
+        "Ja, innerhalb von 14 Tagen nach der Entdeckung",
+        "Nein, sie darf aber den Sollzins anheben",
+        "Ja, wenn sie dem Kunden seine Kosten erstattet"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Darlehensgeber kann nicht allein deshalb kündigen oder eine Änderung verlangen, weil seine Kreditwürdigkeitsprüfung mangelhaft war (§ 499 Abs. 3 BGB). Anders nur, wenn der Kunde Angaben wissentlich vorenthalten oder gefälscht hat."
+    },
+    {
+      "id": "2.4-Q027",
+      "chapter": "2.4",
+      "section": "2.4.2-c",
+      "topic": "Bedenkzeit",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 27,
+      "question": "Wie lang ist die Bedenkzeit, die bei bestimmten Immobiliar-Verbraucherdarlehen einzuräumen ist?",
+      "answers": [
+        "Mindestens 3 Werktage",
+        "Mindestens 7 Tage",
+        "14 Tage",
+        "Ein Monat"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Bedenkzeit beträgt mindestens sieben Tage (§ 495 Abs. 3 BGB). 14 Tage ist die Widerrufsfrist."
+    },
+    {
+      "id": "2.4-Q028",
+      "chapter": "2.4",
+      "section": "2.4.2-c",
+      "topic": "Anwendungsfall",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 28,
+      "question": "In welchem Fall erhält der Darlehensnehmer eine Bedenkzeit?",
+      "answers": [
+        "Bei Immobiliar-Verbraucherdarlehen mit Widerrufsrecht, zusätzlich zur Widerrufsfrist",
+        "Bei einem notariell beurkundeten Immobiliar-Verbraucherdarlehen ohne Widerrufsrecht",
+        "Wenn er sie vor dem Notartermin ausdrücklich verlangt",
+        "Bei einem Allgemein-Verbraucherdarlehen ohne feste Laufzeit"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Bedenkzeit ersetzt das Widerrufsrecht dort, wo es ausgeschlossen ist – etwa bei notariell beurkundeten Verträgen und bestimmten Umschuldungen."
+    },
+    {
+      "id": "2.4-Q029",
+      "chapter": "2.4",
+      "section": "2.4.2-c",
+      "topic": "Bindung der Bank",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 29,
+      "question": "Die Bank hat ein Darlehensangebot abgegeben, für das die Bedenkzeit läuft. Zwei Tage später steigen die Marktzinsen. Kann sie ihr Angebot zurückziehen?",
+      "answers": [
+        "Nein, sie ist während der Bedenkzeit gebunden",
+        "Ja, wenn sie ein neues ESIS-Merkblatt übergibt",
+        "Ja, solange der Kunde nicht angenommen hat",
+        "Nein, sie darf aber den Zins anpassen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Während der Bedenkzeit ist der Darlehensgeber an sein Angebot gebunden. Das Zinsänderungsrisiko dieser Tage trägt er."
+    },
+    {
+      "id": "2.4-Q030",
+      "chapter": "2.4",
+      "section": "2.4.2-c",
+      "topic": "Beginn",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 30,
+      "question": "Womit beginnt die Bedenkzeit?",
+      "answers": [
+        "Mit der positiven Kreditentscheidung der Bank",
+        "Mit Übergabe des ESIS-Merkblatts",
+        "Mit dem ersten Beratungsgespräch",
+        "Mit Aushändigung des Vertragsangebots"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die Bedenkzeit beginnt, wenn dem Darlehensnehmer das Vertragsangebot ausgehändigt wird."
+    },
+    {
+      "id": "2.4-Q031",
+      "chapter": "2.4",
+      "section": "2.4.2-c",
+      "topic": "Fehlende Widerrufsangaben",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 31,
+      "question": "Im Darlehensvertrag fehlen die Pflichtangaben zum Widerrufsrecht. Was folgt daraus – neben dem späteren Fristbeginn?",
+      "answers": [
+        "Die Bank verletzt eine Pflicht und kann Schadensersatz schulden",
+        "Der Kunde erhält alle gezahlten Zinsen zurück",
+        "Der Darlehensvertrag ist insgesamt nichtig",
+        "Das Widerrufsrecht entfällt ersatzlos"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Fehlende Pflichtangaben zum Widerrufsrecht sind eine Pflichtverletzung des Darlehensgebers. Sie begründet einen Schadensersatzanspruch des Darlehensnehmers."
+    },
+    {
+      "id": "2.4-Q032",
+      "chapter": "2.4",
+      "section": "2.4.3-a",
+      "topic": "Zeitpunkt",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 32,
+      "question": "Wann muss der Immobiliardarlehensvermittler dem Kunden seine Statusinformationen geben?",
+      "answers": [
+        "Rechtzeitig vor Beginn der Vermittlung oder Beratung",
+        "Nur wenn der Kunde danach fragt",
+        "Spätestens bei Auszahlung des Darlehens",
+        "Zusammen mit dem unterschriftsreifen Darlehensvertrag"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die statusbezogenen Informationen sind vor Beginn der eigentlichen Tätigkeit zu erteilen (Art. 247 § 13b EGBGB)."
+    },
+    {
+      "id": "2.4-Q033",
+      "chapter": "2.4",
+      "section": "2.4.3-a",
+      "topic": "Bindung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 33,
+      "question": "Ein Vermittler arbeitet ausschließlich für zwei Banken. Was muss er dem Kunden dazu mitteilen?",
+      "answers": [
+        "Die Namen aller Banken, die ähnliche Darlehen anbieten",
+        "Dass er nur für diese beiden tätig ist – und ihre Namen",
+        "Dass er nicht unabhängig ist – Namen sind freiwillig",
+        "Nichts, solange er keine Beratung anbietet"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Ist der Vermittler an einen oder mehrere Darlehensgeber gebunden oder ausschließlich für sie tätig, muss er das offenlegen und die Darlehensgeber namentlich nennen."
+    },
+    {
+      "id": "2.4-Q034",
+      "chapter": "2.4",
+      "section": "2.4.3-a",
+      "topic": "Provision",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 34,
+      "question": "Beim Erstgespräch steht die Höhe der Provision noch nicht fest. Was teilt der Vermittler dem Kunden mit?",
+      "answers": [
+        "Einen Höchstbetrag, der nicht überschritten wird",
+        "Dass die Bank den Kunden nach der Auszahlung informiert",
+        "Nichts – die Angabe entfällt dann",
+        "Dass der genaue Betrag später im ESIS-Merkblatt steht"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Ist die Höhe der Provisionen noch nicht bekannt, muss der Vermittler mitteilen, dass der tatsächliche Betrag zu einem späteren Zeitpunkt im ESIS-Merkblatt angegeben wird."
+    },
+    {
+      "id": "2.4-Q035",
+      "chapter": "2.4",
+      "section": "2.4.3-a",
+      "topic": "Genannte Darlehensgeber",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 35,
+      "question": "In seinen Statusinformationen führt ein Vermittler auch zwei Großbanken auf, für die er gar nicht tätig ist. Ist das zulässig?",
+      "answers": [
+        "Nein, er darf nur Darlehensgeber nennen, für die er tätig ist",
+        "Ja, solange er sie als Beispiele kennzeichnet",
+        "Nein, Darlehensgeber darf er nicht namentlich nennen",
+        "Ja, wenn er mit diesen Banken eine Zusammenarbeit konkret vorbereitet"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Es dürfen keine Darlehensgeber angegeben werden, für die der Vermittler nicht tätig ist."
+    },
+    {
+      "id": "2.4-Q036",
+      "chapter": "2.4",
+      "section": "2.4.3-a",
+      "topic": "Inhalt",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 36,
+      "question": "Welche Angaben gehören zu den Statusinformationen des Vermittlers?",
+      "answers": [
+        "Ob er auch Beratungsleistungen anbietet",
+        "Register und Registrierungsnummer",
+        "Der effektive Jahreszins des empfohlenen Darlehens",
+        "Beschwerdemöglichkeiten und außergerichtliche Streitbeilegung"
+      ],
+      "correct": [
+        0,
+        1,
+        3
+      ],
+      "explanation": "Register, Beratungsangebot und Beschwerdewege gehören zu den sieben Statusangaben. Der effektive Jahreszins ist eine Angabe zum Darlehen und steht im ESIS-Merkblatt."
+    },
+    {
+      "id": "2.4-Q037",
+      "chapter": "2.4",
+      "section": "2.4.3-a",
+      "topic": "Weitergabe von Kundenangaben",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 37,
+      "question": "Der Kunde nennt dem Vermittler eine laufende Unterhaltspflicht. Der Vermittler lässt sie im Antrag weg, damit die Finanzierung „durchgeht“. Wie ist das zu bewerten?",
+      "answers": [
+        "Zulässig – die Prüfung der Angaben ist Sache der Bank",
+        "Zulässig, wenn der Kunde einverstanden ist",
+        "Unzulässig – er muss vollständig weitergeben",
+        "Unzulässig erst, wenn das Darlehen später ausfällt"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Der Vermittler muss die Angaben des Kunden, die für die Kreditwürdigkeitsprüfung nötig sind, dem Darlehensgeber richtig und vollständig übermitteln."
+    },
+    {
+      "id": "2.4-Q038",
+      "chapter": "2.4",
+      "section": "2.4.3-b",
+      "topic": "Erläuterungspflicht",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 38,
+      "question": "Wozu dienen die angemessenen Erläuterungen vor Vertragsschluss?",
+      "answers": [
+        "Der Kunde soll beurteilen können, ob der Vertrag zu Zweck und Vermögen passt",
+        "Die Bank soll die Kreditwürdigkeit abschließend beurteilen können",
+        "Der Vermittler soll seine Haftung wirksam ausschließen können",
+        "Der Kunde soll eine persönliche Produktempfehlung bekommen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Erläuterungen sollen den Darlehensnehmer in die Lage versetzen, selbst zu beurteilen, ob der Vertrag dem verfolgten Zweck und seinen Vermögensverhältnissen gerecht wird."
+    },
+    {
+      "id": "2.4-Q039",
+      "chapter": "2.4",
+      "section": "2.4.3-b",
+      "topic": "Paketprodukte",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 39,
+      "question": "Ein Darlehen wird im Paket mit einem Girokonto und einer Versicherung angeboten. Was muss dem Kunden dazu erläutert werden?",
+      "answers": [
+        "Nur der Gesamtpreis des Pakets",
+        "Dass Paketprodukte gemeinsam gekündigt werden müssen",
+        "Welche Marge der Anbieter mit den einzelnen Produkten erzielt",
+        "Ob die Produkte einzeln kündbar sind und welche Folgen das hat"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Bei Paketangeboten ist zu erläutern, ob die Produkte gesondert gekündigt werden können und welche Folgen die Kündigung hat."
+    },
+    {
+      "id": "2.4-Q040",
+      "chapter": "2.4",
+      "section": "2.4.3-b",
+      "topic": "Vertragsentwurf",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 40,
+      "question": "Der Kunde erhält ein Angebot für ein Immobiliar-Verbraucherdarlehen. Was ist ihm dabei zusätzlich anzubieten?",
+      "answers": [
+        "Ein Termin zur notariellen Beurkundung",
+        "Eine kostenlose zweite Wertermittlung",
+        "Ein Vertragsentwurf",
+        "Ein Gespräch mit einem Honorarberater"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Mit der Übergabe eines Angebots ist dem Kunden anzubieten, einen Vertragsentwurf auszuhändigen oder zu übermitteln."
+    },
+    {
+      "id": "2.4-Q041",
+      "chapter": "2.4",
+      "section": "2.4.3-b",
+      "topic": "Erläutern oder beraten",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 41,
+      "question": "Ein Kunde verzichtet auf Beratung. Der Vermittler erklärt ihm Hauptmerkmale und Folgen des gewählten Darlehens, gibt aber keine Empfehlung ab. Was ist das?",
+      "answers": [
+        "Eine unzulässige Vermittlung ohne Beratung",
+        "Eine Beratung mit Empfehlung",
+        "Eine unverbindliche Konditionsauskunft",
+        "Die geschuldete Erläuterung"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Erläutern heißt erklären, damit der Kunde selbst entscheiden kann. Zur Beratung wird es erst durch eine individuelle Empfehlung."
+    },
+    {
+      "id": "2.4-Q042",
+      "chapter": "2.4",
+      "section": "2.4.3-c",
+      "topic": "Begriff",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 42,
+      "question": "Was ist das ESIS-Merkblatt?",
+      "answers": [
+        "Ein standardisiertes Informationsblatt mit den vorvertraglichen Informationen zum Darlehen",
+        "Die standardisierte Selbstauskunft des Kunden für die Kreditwürdigkeitsprüfung",
+        "Das Protokoll des Beratungsgesprächs mit den Wünschen des Kunden",
+        "Der Nachweis über Erlaubnis und Registrierung des Vermittlers"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "ESIS steht für European Standardised Information Sheet. Es bündelt die vorvertraglichen Informationen zum konkreten Darlehen in einheitlicher Form."
+    },
+    {
+      "id": "2.4-Q043",
+      "chapter": "2.4",
+      "section": "2.4.3-c",
+      "topic": "Zeitpunkt",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 43,
+      "question": "Nach dem Erstgespräch liegen alle Angaben des Kunden zu Bedarf, finanzieller Situation und Zielen vor. Ein Vertrag ist noch nicht in Sicht. Was gilt für das ESIS-Merkblatt?",
+      "answers": [
+        "Es wird erst zusammen mit dem Darlehensvertrag übergeben",
+        "Es entfällt, solange kein Vertrag zustande kommt",
+        "Es ist erst nach der Kreditzusage der Bank fällig",
+        "Es ist jetzt unverzüglich zu übergeben"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Das ESIS-Merkblatt ist so früh wie möglich zu übergeben – sobald der Kunde die erforderlichen Angaben gemacht hat. Auf einen späteren Vertragsschluss kommt es nicht an."
+    },
+    {
+      "id": "2.4-Q044",
+      "chapter": "2.4",
+      "section": "2.4.3-c",
+      "topic": "Dauerhafter Datenträger",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 44,
+      "question": "Der Vermittler schickt das ESIS-Merkblatt als PDF per E-Mail. Genügt das?",
+      "answers": [
+        "Nein, es ist persönlich auszuhändigen",
+        "Ja, sofern eine qualifizierte elektronische Signatur beigefügt ist",
+        "Ja, die E-Mail ist ein dauerhafter Datenträger",
+        "Nein, es muss auf Papier mit Unterschrift vorliegen"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Das ESIS-Merkblatt braucht Textform auf einem dauerhaften Datenträger. Das kann Papier sein, ein USB-Stick oder eine E-Mail."
+    },
+    {
+      "id": "2.4-Q045",
+      "chapter": "2.4",
+      "section": "2.4.3-c",
+      "topic": "Konditionsauskunft",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 45,
+      "question": "Eine Interessentin fragt am Telefon, mit welchem Zins sie bei zehn Jahren Zinsbindung ungefähr rechnen muss. Der Vermittler nennt eine unverbindliche Spanne. Muss er ein ESIS-Merkblatt übergeben?",
+      "answers": [
+        "Nein, bei unverbindlichen Konditionsauskünften nicht",
+        "Ja, innerhalb von 14 Tagen nach dem Telefonat",
+        "Nein, weil am Telefon keine Informationspflichten bestehen",
+        "Ja, bei jeder Auskunft zum Zins"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Bei unverbindlichen Konditionsauskünften besteht keine Pflicht, das ESIS-Merkblatt zu übergeben."
+    },
+    {
+      "id": "2.4-Q046",
+      "chapter": "2.4",
+      "section": "2.4.3-c",
+      "topic": "Aktualisierung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 46,
+      "question": "Nach Übergabe des ESIS-Merkblatts ändert die Bank die Konditionen ihres Angebots. Was steht dem Kunden zu?",
+      "answers": [
+        "Eine mündliche Erläuterung der Änderungen",
+        "Nichts – das erste Merkblatt bleibt maßgeblich",
+        "Eine Verlängerung der Bedenkzeit auf einen Monat",
+        "Ein aktualisiertes ESIS-Merkblatt"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Ändert sich das Angebot bis zum Vertragsschluss, hat der Darlehensnehmer Anspruch auf ein aktualisiertes ESIS-Merkblatt."
+    },
+    {
+      "id": "2.4-Q047",
+      "chapter": "2.4",
+      "section": "2.4.3-c",
+      "topic": "Gestaltung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 47,
+      "question": "Was gilt für Aufbau und Gestaltung des ESIS-Merkblatts?",
+      "answers": [
+        "Sie sind gesetzlich vorgegeben",
+        "Der Vermittler darf unwichtige Abschnitte weglassen",
+        "Sie richten sich nach den Wünschen des Kunden",
+        "Darlehensgeber verwenden ihr eigenes Muster"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Form und Optik des ESIS-Merkblatts sind vorgegeben. So lassen sich Angebote verschiedener Anbieter direkt vergleichen."
+    },
+    {
+      "id": "2.4-Q048",
+      "chapter": "2.4",
+      "section": "2.4.3-c",
+      "topic": "Inhalt",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 48,
+      "question": "Welche Angaben enthält das ESIS-Merkblatt?",
+      "answers": [
+        "Den vom Gutachter ermittelten Wert der Immobilie",
+        "Häufigkeit, Höhe und Anzahl der Raten",
+        "Das Ergebnis der Kreditwürdigkeitsprüfung",
+        "Folgen, wenn der Kunde seine Pflichten nicht einhält"
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "explanation": "Das ESIS-Merkblatt beschreibt das Darlehen: Hauptmerkmale, Raten, Tilgungsplan, vorzeitige Rückzahlung, Widerruf, Folgen bei Nichteinhaltung. Prüfungsergebnis und Objektwert gehören nicht dazu."
+    },
+    {
+      "id": "2.4-Q049",
+      "chapter": "2.4",
+      "section": "2.4.3-d",
+      "topic": "Vergütungsanspruch",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 49,
+      "question": "Wann schuldet der Verbraucher dem Darlehensvermittler die vereinbarte Vergütung?",
+      "answers": [
+        "Wenn das Darlehen ausgezahlt ist und nicht mehr widerrufen werden kann",
+        "Sobald der Vermittlungsvertrag unterschrieben ist",
+        "Sobald die Bank das Darlehen verbindlich zusagt",
+        "Sobald der Darlehensvertrag unterschrieben ist"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 655c BGB: Die Vergütung ist erst geschuldet, wenn das Darlehen infolge der Vermittlung geleistet wird und ein Widerruf nicht mehr möglich ist."
+    },
+    {
+      "id": "2.4-Q050",
+      "chapter": "2.4",
+      "section": "2.4.3-d",
+      "topic": "Umschuldung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 50,
+      "question": "Ein Vermittler vermittelt bewusst eine Umschuldung. Das neue Darlehen hat einen höheren effektiven Jahreszins als das abgelöste. Hat er Anspruch auf Vergütung vom Verbraucher?",
+      "answers": [
+        "Ja, wenn der Kunde die Umschuldung selbst gewünscht hat",
+        "Nein, für Umschuldungen fällt keine Vergütung an",
+        "Ja, wenn die Monatsrate sinkt",
+        "Nein, der effektive Jahreszins darf sich nicht erhöhen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Dient das Darlehen mit Wissen des Vermittlers der vorzeitigen Ablösung eines anderen Darlehens, entsteht der Vergütungsanspruch nur, wenn sich der effektive Jahreszins nicht erhöht."
+    },
+    {
+      "id": "2.4-Q051",
+      "chapter": "2.4",
+      "section": "2.4.3-d",
+      "topic": "Vermittlungsvertrag",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 51,
+      "question": "Ein Vermittler lässt den Kunden einen Darlehensantrag unterschreiben, in dem auch die Vermittlungsvergütung geregelt ist. Was folgt daraus?",
+      "answers": [
+        "Der Darlehensvertrag ist nichtig, der Vermittlungsvertrag wirksam",
+        "Der Vermittlungsvertrag ist wirksam, weil er schriftlich vorliegt",
+        "Der Vermittlungsvertrag ist nichtig",
+        "Beide Verträge sind wirksam, die Vergütung halbiert sich"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Der Darlehensvermittlungsvertrag braucht die Schriftform und darf nicht mit dem Darlehensantrag verbunden werden. Sonst ist er nichtig (§ 655b BGB)."
+    },
+    {
+      "id": "2.4-Q052",
+      "chapter": "2.4",
+      "section": "2.4.3-d",
+      "topic": "Grundlage der Empfehlung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 52,
+      "question": "Was muss der Kunde vor einer Beratung über die Grundlage der Empfehlung erfahren?",
+      "answers": [
+        "Welche Darlehensgeber ihn bereits abgelehnt haben",
+        "Ob nur eigene oder auch viele Produkte anderer Anbieter einbezogen werden",
+        "Welche Produkte andere Kunden zuletzt gewählt haben",
+        "Welche Marge der Darlehensgeber mit dem Darlehen erzielt"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Vor der Beratung ist anzugeben, ob die Empfehlung nur oder im Wesentlichen auf eigenen Produkten beruht oder auch auf einer größeren Anzahl von Produkten anderer Anbieter – dazu das Entgelt für die Beratung."
+    },
+    {
+      "id": "2.4-Q053",
+      "chapter": "2.4",
+      "section": "2.4.3-d",
+      "topic": "Honorarberater",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 53,
+      "question": "Eine Bank bietet einem Honorar-Immobiliardarlehensberater eine Abschlussprovision an. Was gilt?",
+      "answers": [
+        "Er darf sie nicht annehmen",
+        "Er darf sie annehmen, wenn sie sein Honorar nicht übersteigt",
+        "Er darf sie annehmen, wenn er sie dem Kunden offenlegt",
+        "Er darf sie annehmen, wenn er sie mit dem Kunden teilt"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Honorar-Immobiliardarlehensberater dürfen vom Darlehensgeber keine Zuwendungen annehmen und nicht von ihm abhängig sein (§ 34i Abs. 5 GewO). Offenlegen allein genügt nicht."
+    },
+    {
+      "id": "2.4-Q054",
+      "chapter": "2.4",
+      "section": "2.4.4-a",
+      "topic": "Anwendungsbereich",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 54,
+      "question": "Für welche Darlehen macht das Gesetz Vorgaben zur Beratung?",
+      "answers": [
+        "Für Darlehen an Unternehmer und Verbraucher",
+        "Für Allgemein-Verbraucherdarlehen ab 75.000 €",
+        "Für alle Verbraucherdarlehen",
+        "Für Immobiliar-Verbraucherdarlehen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "§ 511 BGB regelt die Beratung bei Immobiliar-Verbraucherdarlehen. Für Allgemein-Verbraucherdarlehen gibt es weiterhin keine gesetzlichen Vorgaben zur Beratung."
+    },
+    {
+      "id": "2.4-Q055",
+      "chapter": "2.4",
+      "section": "2.4.4-a",
+      "topic": "Verzicht",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 55,
+      "question": "Ein Kunde erklärt, er brauche keine Beratung – er wisse genau, was er wolle. Darf der Vermittler ohne Beratung vermitteln?",
+      "answers": [
+        "Nein, es sei denn, ein Notar bestätigt den Verzicht",
+        "Ja, der Kunde kann auf die Beratung verzichten",
+        "Nein, bei Immobiliar-Verbraucherdarlehen ist Beratung zwingend",
+        "Ja, solange das Darlehen 50.000 € nicht übersteigt"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Der Gesetzgeber sieht die Beratung als gesonderte Leistung, die mit Gewährung oder Vermittlung kombiniert werden kann. Der Kunde kann darauf verzichten."
+    },
+    {
+      "id": "2.4-Q056",
+      "chapter": "2.4",
+      "section": "2.4.4-a",
+      "topic": "Informationen einholen",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 56,
+      "question": "Worüber muss sich der Berater informieren, bevor er ein Darlehen empfiehlt?",
+      "answers": [
+        "Bedarf, persönliche und finanzielle Situation, Präferenzen und Ziele",
+        "Einkommen und Schulden – weitere Angaben sind freiwillig",
+        "Lage, Baujahr und Zustand der zu finanzierenden Immobilie",
+        "Vermögensverhältnisse aller Angehörigen des Kunden"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Vor der Beratung sind Bedarf, persönliche und finanzielle Situation sowie Präferenzen und Ziele zu ermitteln – soweit für eine passende Empfehlung erforderlich."
+    },
+    {
+      "id": "2.4-Q057",
+      "chapter": "2.4",
+      "section": "2.4.4-a",
+      "topic": "Beratungsbedarf",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 57,
+      "question": "Im Gespräch zeigt sich an den Rückfragen der Kundin, dass sie Begriffe wie „Sollzinsbindung“ nicht einordnen kann. Was folgt daraus für den Berater?",
+      "answers": [
+        "Er darf weiter vom durchschnittlichen Verbraucher ausgehen",
+        "Er muss die Beratung an dieser Stelle abbrechen",
+        "Er muss die Kundin an einen Honorarberater verweisen",
+        "Er muss von einem erhöhten Beratungsbedarf ausgehen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Das Leitbild des durchschnittlichen Verbrauchers gilt nur, solange Rückfragen oder andere Anhaltspunkte keinen erhöhten Beratungsbedarf zeigen."
+    },
+    {
+      "id": "2.4-Q058",
+      "chapter": "2.4",
+      "section": "2.4.4-b",
+      "topic": "Produktauswahl",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 58,
+      "question": "Ein ungebundener Vermittler berät zu einem Immobiliar-Verbraucherdarlehen. Wie viele Darlehensverträge muss er auf Geeignetheit prüfen?",
+      "answers": [
+        "Mindestens drei Angebote verschiedener Darlehensgeber",
+        "Nur das eine Produkt, das der Kunde vorschlägt",
+        "Eine ausreichende Zahl am Markt verfügbarer Verträge",
+        "Alle am Markt verfügbaren Angebote"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Der ungebundene Vermittler prüft eine ausreichende Zahl am Markt verfügbarer Verträge (§ 655a Abs. 3 BGB) – nicht alle. Auf die eigene Palette dürfen sich nur Darlehensgeber und gebundene Vermittler beschränken."
+    },
+    {
+      "id": "2.4-Q059",
+      "chapter": "2.4",
+      "section": "2.4.4-b",
+      "topic": "Realistische Annahmen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 59,
+      "question": "Ein Berater plant damit, dass beide Ehepartner 30 Jahre ohne Unterbrechung voll verdienen, und sieht keinen Puffer vor. Wie ist das zu bewerten?",
+      "answers": [
+        "Unzulässig – anzusetzen ist der ungünstigste denkbare Fall",
+        "Zulässig, wenn die Kunden die Planung unterschreiben",
+        "Zulässig – maßgeblich sind die aktuellen Einkommensdaten",
+        "Nicht realistisch – er baut auf störungsfreien Verlauf"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Realistisch heißt nicht risikoarm, aber auch nicht die zufallsabhängige Annahme, dass die Laufzeit ohne Störung verläuft. Der ungünstigste Fall ist ebenso wenig der Maßstab."
+    },
+    {
+      "id": "2.4-Q060",
+      "chapter": "2.4",
+      "section": "2.4.4-b",
+      "topic": "Aktualität",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 60,
+      "question": "Die Angaben des Kunden wurden vor acht Monaten erfasst. Jetzt soll die Beratung fortgesetzt werden. Was muss der Berater tun?",
+      "answers": [
+        "Nachfragen, ob sich etwas geändert hat",
+        "Die Angaben von der Bank bestätigen lassen",
+        "Nichts – erfasste Angaben bleiben gültig",
+        "Die Unterlagen vollständig neu anfordern"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Ist seit der Erfassung ein größerer Zeitraum vergangen, muss sich der Berater nach Änderungen erkundigen."
+    },
+    {
+      "id": "2.4-Q061",
+      "chapter": "2.4",
+      "section": "2.4.4-b",
+      "topic": "Ende der Beratung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 61,
+      "question": "Der Arbeitsvertrag des Kunden ist befristet und endet in vier Monaten – ohne Aussicht auf Verlängerung oder eine neue Stelle. Was kann daraus folgen?",
+      "answers": [
+        "Der Berater muss trotzdem ein Produkt empfehlen",
+        "Die Befristung bleibt als allgemeines Lebensrisiko außer Betracht",
+        "Die Beratung endet vorzeitig, weil ein Darlehen nicht in Frage kommt",
+        "Der Berater empfiehlt ein Darlehen mit kürzerer Laufzeit"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Besonders gravierende Mängel der Kapitaldienstfähigkeit können die Beratung vorzeitig beenden – das Skript nennt genau diesen Fall."
+    },
+    {
+      "id": "2.4-Q062",
+      "chapter": "2.4",
+      "section": "2.4.4-b",
+      "topic": "Keine Empfehlung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 62,
+      "question": "Nach der Prüfung passt kein Darlehen zum Kunden. Was muss der Berater tun?",
+      "answers": [
+        "Den Kunden an einen anderen Vermittler verweisen",
+        "Auf dauerhaftem Datenträger mitteilen, dass er kein Produkt empfehlen kann",
+        "Mündlich absagen – eine Dokumentation entfällt dann",
+        "Das am wenigsten ungeeignete Produkt empfehlen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Der Berater empfiehlt geeignete Produkte oder weist darauf hin, dass er keines empfehlen kann. Auch dieser Hinweis gehört auf einen dauerhaften Datenträger."
+    },
+    {
+      "id": "2.4-Q063",
+      "chapter": "2.4",
+      "section": "2.4.4-b",
+      "topic": "Risikoarten",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 63,
+      "question": "Welche Risiken zählen zu den allgemeinen Lebensrisiken, die in die Beratung einzubeziehen sind?",
+      "answers": [
+        "Wechselkurs beim Fremdwährungsdarlehen",
+        "Berufsunfähigkeit",
+        "Arbeitslosigkeit",
+        "Absehbarer Renteneintritt"
+      ],
+      "correct": [
+        1,
+        2
+      ],
+      "explanation": "Berufsunfähigkeit und Arbeitslosigkeit können jeden treffen. Wechselkurs und absehbarer Renteneintritt sind individuelle Risikofaktoren dieses Kunden."
+    },
+    {
+      "id": "2.4-Q064",
+      "chapter": "2.4",
+      "section": "2.4.4-c",
+      "topic": "Beratungsprotokoll",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 64,
+      "question": "Ist bei der Immobiliardarlehensberatung ein gesondertes Beratungsprotokoll gesetzlich vorgeschrieben?",
+      "answers": [
+        "Ja, aber nur bei der Honorarberatung",
+        "Nein, es ist aber empfehlenswert",
+        "Ja, in Schriftform mit Unterschrift des Kunden",
+        "Ja, sobald das Darlehen 100.000 € übersteigt"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Eine gesetzliche Pflicht zu einem gesonderten Beratungsprotokoll besteht nicht. Wegen möglicher Rechtsstreitigkeiten ist es empfehlenswert."
+    },
+    {
+      "id": "2.4-Q065",
+      "chapter": "2.4",
+      "section": "2.4.4-c",
+      "topic": "Beratung abgelehnt",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 65,
+      "question": "Ein Kunde lehnt die Beratung ab. Was sollte der Vermittler für seine Unterlagen einholen?",
+      "answers": [
+        "Nichts – ohne Beratung gibt es nichts zu dokumentieren",
+        "Die Zustimmung des Darlehensgebers",
+        "Eine schriftliche Bestätigung des Kunden",
+        "Eine notarielle Verzichtserklärung"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Zu den empfohlenen Inhalten der Dokumentation gehört die schriftliche Bestätigung des Kunden, falls er eine Beratung ablehnt."
+    },
+    {
+      "id": "2.4-Q066",
+      "chapter": "2.4",
+      "section": "2.4.4-c",
+      "topic": "Gutachter",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 66,
+      "question": "Welche Anforderungen gelten für Gutachter, die Immobilien für grundpfandrechtlich besicherte Immobiliar-Verbraucherdarlehen bewerten?",
+      "answers": [
+        "Extern beauftragt und vom Kunden bezahlt",
+        "Fachlich kompetent und unabhängig vom Darlehensvergabeprozess",
+        "Öffentlich bestellt, vereidigt und von außerhalb der Bank beauftragt",
+        "Von der BaFin zugelassen und registriert"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Interne wie externe Gutachter müssen fachlich kompetent und so unabhängig vom Vergabeprozess sein, dass sie objektiv bewerten können."
+    },
+    {
+      "id": "2.4-Q067",
+      "chapter": "2.4",
+      "section": "2.4.4-c",
+      "topic": "Dokumentation der Bewertung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 67,
+      "question": "Was muss das Kreditinstitut mit der Bewertung einer Immobilie tun, die als Sicherheit für ein Immobiliar-Verbraucherdarlehen dient?",
+      "answers": [
+        "Dem Grundbuchamt zur Eintragung vorlegen",
+        "Vom Darlehensnehmer gegenzeichnen lassen",
+        "Auf dauerhaftem Datenträger dokumentieren und aufbewahren",
+        "Jährlich von einem zweiten Gutachter bestätigen lassen"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Bewertungen sind auf einem dauerhaften Datenträger zu dokumentieren, und die Dokumentation ist aufzubewahren."
+    },
+    {
+      "id": "2.4-Q068",
+      "chapter": "2.4",
+      "section": "2.4.5-a",
+      "topic": "Zwecke",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 68,
+      "question": "Welche Zwecke verfolgt das Kreditwesengesetz?",
+      "answers": [
+        "Bekämpfung von Geldwäsche und Terrorismusfinanzierung",
+        "Erlaubnis und Registrierung der Darlehensvermittler",
+        "Preisstabilität und Steuerung der Geldmenge",
+        "Funktionsfähigkeit der Kreditwirtschaft, Einlagenschutz und Verbraucherschutz"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Das KWG sichert die Funktionsfähigkeit der Kreditwirtschaft, schützt die Einlagen der Gläubiger und dient dem Verbraucherschutz."
+    },
+    {
+      "id": "2.4-Q069",
+      "chapter": "2.4",
+      "section": "2.4.5-a",
+      "topic": "Maßnahmen",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 69,
+      "question": "Welche Anforderungen sichern nach dem KWG die Funktionsfähigkeit einer Bank?",
+      "answers": [
+        "Angemessenes haftendes Eigenkapital",
+        "Einheitliche Zinssätze für Immobiliendarlehen",
+        "Begrenzung von Großkrediten",
+        "Jederzeitige Zahlungsfähigkeit (Liquidität)"
+      ],
+      "correct": [
+        0,
+        2,
+        3
+      ],
+      "explanation": "Liquidität, Eigenkapital, Risikostreuung, Großkreditgrenzen und eine unabhängige Geschäftsführung sichern die Bank. Zinssätze gibt das KWG nicht vor."
+    },
+    {
+      "id": "2.4-Q070",
+      "chapter": "2.4",
+      "section": "2.4.5-a",
+      "topic": "Wert der Immobilie",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 70,
+      "question": "Worauf darf die Kreditwürdigkeitsprüfung bei Immobiliar-Verbraucherdarlehen nicht hauptsächlich gestützt werden?",
+      "answers": [
+        "Auf das Einkommen des Darlehensnehmers",
+        "Auf seine regelmäßigen Ausgaben",
+        "Auf seine sonstigen wirtschaftlichen Verhältnisse",
+        "Auf die erwartete Wertsteigerung der Immobilie"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die Prüfung darf nicht hauptsächlich darauf beruhen, dass der Wert der Immobilie voraussichtlich zunimmt oder den Darlehensbetrag übersteigt (§ 18a KWG)."
+    },
+    {
+      "id": "2.4-Q071",
+      "chapter": "2.4",
+      "section": "2.4.5-a",
+      "topic": "Erhöhung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 71,
+      "question": "Ein Jahr nach Vertragsschluss soll der Nettodarlehensbetrag von 200.000 € um 60.000 € aufgestockt werden. Die erste Prüfung hatte nur den alten Betrag erfasst. Was gilt?",
+      "answers": [
+        "Neu zu prüfen ist nur bei Zahlungsverzug",
+        "Die Kreditwürdigkeit ist neu zu prüfen",
+        "Es genügt eine neue Bewertung der Immobilie",
+        "Die erste Prüfung gilt für die gesamte Laufzeit"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Wird der Nettodarlehensbetrag nach Vertragsschluss deutlich erhöht, ist die Kreditwürdigkeit neu zu prüfen – außer der Erhöhungsbetrag war schon in die ursprüngliche Prüfung einbezogen."
+    },
+    {
+      "id": "2.4-Q072",
+      "chapter": "2.4",
+      "section": "2.4.6-a",
+      "topic": "Begriff",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 72,
+      "question": "Was versteht man unter Geldwäsche?",
+      "answers": [
+        "Das Umtauschen größerer Bargeldbeträge in eine fremde Währung",
+        "Das Einschleusen illegal erlangter Vermögenswerte in den legalen Wirtschaftskreislauf",
+        "Das Verschweigen von Kapitalerträgen gegenüber dem Finanzamt",
+        "Das Herstellen und Verbreiten gefälschter Banknoten"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Geldwäsche schleust kriminelle Gewinne in den legalen Wirtschaftskreislauf ein, um sie zu erhalten und dem Zugriff der Strafverfolgung zu entziehen."
+    },
+    {
+      "id": "2.4-Q073",
+      "chapter": "2.4",
+      "section": "2.4.6-a",
+      "topic": "Umfang",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 73,
+      "question": "Was gehört zu den allgemeinen Sorgfaltspflichten?",
+      "answers": [
+        "Identifizierung des Vertragspartners",
+        "Zustimmung der Geschäftsleitung zu jedem Neukunden",
+        "Abklärung des wirtschaftlich Berechtigten",
+        "Informationen zu Zweck und Art der Geschäftsbeziehung"
+      ],
+      "correct": [
+        0,
+        2,
+        3
+      ],
+      "explanation": "Allgemeine Sorgfaltspflichten: identifizieren, Zweck und Art klären, wirtschaftlich Berechtigten abklären, laufend überwachen. Besondere Genehmigungen gehören zu den verstärkten Pflichten."
+    },
+    {
+      "id": "2.4-Q074",
+      "chapter": "2.4",
+      "section": "2.4.6-a",
+      "topic": "Smurfing",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 74,
+      "question": "Ein Kunde ohne laufende Geschäftsbeziehung zahlt an drei Tagen je 6.000 € bar ein. Die Zahlungen gehören erkennbar zusammen. Was gilt?",
+      "answers": [
+        "Die Beträge werden zusammengerechnet – die Schwelle ist erreicht",
+        "Bareinzahlungen unter 10.000 € bleiben pflichtenfrei",
+        "Sorgfaltspflichten greifen erst ab der vierten Einzahlung",
+        "Die Einzahlungen liegen einzeln unter der Schwelle – keine Pflichten"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Wird eine größere Summe aufgeteilt, um unter 15.000 € zu bleiben (Smurfing), sind die allgemeinen Sorgfaltspflichten trotzdem anzuwenden."
+    },
+    {
+      "id": "2.4-Q075",
+      "chapter": "2.4",
+      "section": "2.4.6-a",
+      "topic": "Identitätszweifel",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 75,
+      "question": "Ein langjähriger Kunde legt Unterlagen vor, deren Geburtsdatum von den gespeicherten Daten abweicht. Was folgt daraus?",
+      "answers": [
+        "Nichts – Bestandskunden werden nicht erneut geprüft",
+        "Pflichten entstehen erst ab 15.000 € Transaktionswert",
+        "Es genügen vereinfachte Sorgfaltspflichten",
+        "Die allgemeinen Sorgfaltspflichten sind anzuwenden"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Zweifel an der Identität des Vertragspartners lösen die allgemeinen Sorgfaltspflichten aus – unabhängig von Betrag und Dauer der Geschäftsbeziehung."
+    },
+    {
+      "id": "2.4-Q076",
+      "chapter": "2.4",
+      "section": "2.4.6-a",
+      "topic": "Verantwortung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 76,
+      "question": "Ein Darlehensvermittler identifiziert den Kunden im Auftrag der Bank. Wer bleibt für die Erfüllung der Sorgfaltspflichten verantwortlich?",
+      "answers": [
+        "Der Kunde",
+        "Die Gewerbeaufsicht",
+        "Die Bank",
+        "Der Vermittler"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Verpflichtete ist die Bank. Lässt sie Sorgfaltspflichten durch einen Dritten ausführen, bleibt die Verantwortung bei ihr (§ 17 GwG)."
+    },
+    {
+      "id": "2.4-Q077",
+      "chapter": "2.4",
+      "section": "2.4.6-b",
+      "topic": "Identifizieren",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 77,
+      "question": "Aus welchen zwei Schritten besteht die Identifizierung?",
+      "answers": [
+        "Angaben erheben und anhand von Dokumenten überprüfen",
+        "Ausweis kopieren und an die BaFin übermitteln",
+        "Kunden befragen und Antworten bestätigen lassen",
+        "Unterschrift einholen und Schufa abfragen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Identifizieren heißt: die Identität durch Erheben von Angaben feststellen und diese Angaben anhand von Dokumenten überprüfen."
+    },
+    {
+      "id": "2.4-Q078",
+      "chapter": "2.4",
+      "section": "2.4.6-b",
+      "topic": "Zeitpunkt",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 78,
+      "question": "Wann muss der Vertragspartner identifiziert sein?",
+      "answers": [
+        "Sobald ein Verdacht auf Geldwäsche entsteht",
+        "Vor Begründung der Geschäftsbeziehung oder Ausführung der Transaktion",
+        "Spätestens 14 Tage, nachdem die Geschäftsbeziehung begründet worden ist",
+        "Spätestens bei Auszahlung des Darlehens"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Identifizierung muss vor Begründung der Geschäftsbeziehung bzw. vor Ausführung der Transaktion erfolgen."
+    },
+    {
+      "id": "2.4-Q079",
+      "chapter": "2.4",
+      "section": "2.4.6-b",
+      "topic": "Angaben",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 79,
+      "question": "Welche Angaben sind zur Identifizierung einer natürlichen Person zu erheben?",
+      "answers": [
+        "Geburtsort und Geburtsdatum",
+        "Staatsangehörigkeit",
+        "Anschrift",
+        "Familienstand"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Zu erheben sind Name, Geburtsort, Geburtsdatum, Staatsangehörigkeit und Anschrift. Der Familienstand gehört nicht dazu."
+    },
+    {
+      "id": "2.4-Q080",
+      "chapter": "2.4",
+      "section": "2.4.6-b",
+      "topic": "Ausweis",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 80,
+      "question": "Ein Neukunde hat nur seinen Führerschein dabei. Kann er damit identifiziert werden?",
+      "answers": [
+        "Nein, es sei denn, der Vermittler kennt ihn persönlich",
+        "Nein, nötig ist ein amtlicher Lichtbildausweis wie der Personalausweis",
+        "Ja, wenn zusätzlich eine Bankkarte vorliegt",
+        "Ja, denn der Führerschein trägt ein Lichtbild"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Identität wird anhand eines gültigen Personalausweises, Reisepasses oder gleichwertigen amtlichen Lichtbildausweises überprüft. Der Führerschein reicht nicht."
+    },
+    {
+      "id": "2.4-Q081",
+      "chapter": "2.4",
+      "section": "2.4.6-b",
+      "topic": "Juristische Person",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 81,
+      "question": "Wie wird die Identität einer GmbH überprüft?",
+      "answers": [
+        "Anhand des Personalausweises des Geschäftsführers",
+        "Anhand der Registerdaten, etwa eines Handelsregisterauszugs",
+        "Anhand einer Bestätigung des Steuerberaters",
+        "Anhand von Briefkopf und Steuernummer"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Bei juristischen Personen dient ein Auszug aus dem Handels- oder Genossenschaftsregister oder ein gleichwertiges Dokument. Die Einsicht in die Registerdaten genügt."
+    },
+    {
+      "id": "2.4-Q082",
+      "chapter": "2.4",
+      "section": "2.4.6-b",
+      "topic": "Wirtschaftlich Berechtigter",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 82,
+      "question": "Ab welcher Beteiligung an einer Gesellschaft wird vermutet, dass jemand wirtschaftlich Berechtigter ist?",
+      "answers": [
+        "Schon bei einer geringen Beteiligung, gleich in welcher Höhe",
+        "Bei mindestens 10 % der Kapitalanteile",
+        "Bei mehr als 25 % der Kapital- oder Stimmrechtsanteile",
+        "Erst bei mehr als 50 % der Stimmrechte"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Kontrolle oder Eigentum wird vermutet, wenn eine natürliche Person unmittelbar oder mittelbar mehr als 25 % der Kapital- oder Stimmrechtsanteile hält."
+    },
+    {
+      "id": "2.4-Q083",
+      "chapter": "2.4",
+      "section": "2.4.6-b",
+      "topic": "PEP",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 83,
+      "question": "Eine Bundestagsabgeordnete mit Wohnsitz in Deutschland möchte ein Darlehen aufnehmen. Ist sie eine politisch exponierte Person?",
+      "answers": [
+        "Ja, auf den Wohnsitz kommt es nicht an",
+        "Ja, aber nur bei Geschäften über 15.000 €",
+        "Nein, das sind nur Amtsträger im Ausland",
+        "Nein, erst ab einem Ministeramt"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Für den PEP-Status ist unerheblich, ob die Person einen Wohnsitz im Ausland hat. Auch Abgeordnete des Bundestags und des Europäischen Parlaments sind PEP."
+    },
+    {
+      "id": "2.4-Q084",
+      "chapter": "2.4",
+      "section": "2.4.6-b",
+      "topic": "Übertragung auf Dritte",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 84,
+      "question": "Welche Aufgabe kann auf einen Dritten übertragen werden?",
+      "answers": [
+        "Die Abklärung des PEP-Status",
+        "Die Genehmigung der Geschäftsbeziehung mit einer PEP",
+        "Die Verantwortung für die Einhaltung des GwG",
+        "Die Durchführung der verstärkten Sorgfaltspflichten"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die verstärkten Sorgfaltspflichten kann kein Dritter übernehmen. Die Abklärung des PEP-Status zählt nicht dazu und kann übertragen werden."
+    }
+  ]
+}

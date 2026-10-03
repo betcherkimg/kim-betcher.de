@@ -1,0 +1,900 @@
+{
+  "chapter": "2.8",
+  "title": "Datenschutz & Kundendaten",
+  "sources": [
+    "BWB-Lernskript 2.8.1 Datensicherheit",
+    "BWB-Lernskript 2.8.2 Umgang mit Informationen",
+    "BWB-Lernskript 2.8.3 Verschwiegenheit",
+    "DSGVO, BDSG, DDG, HGB, AO – Rechtsstand 03.10.2026"
+  ],
+  "sections": [
+    {
+      "id": "2.8.1-a",
+      "title": "DSGVO: Grundlagen und Geltung",
+      "subtitle": "Ein Datenschutzrecht für die ganze EU",
+      "ref": "BWB 2.8.1",
+      "examRelevance": "S",
+      "checkId": "2.8-Q001",
+      "content": [
+        {
+          "type": "text",
+          "text": "Die **Datenschutz-Grundverordnung (DSGVO)** gilt seit dem **25. Mai 2018** unmittelbar in allen EU-Staaten – für Unternehmen wie für Behörden. Das **Bundesdatenschutzgesetz (BDSG)** ergänzt sie dort, wo die DSGVO nationale Regeln zulässt."
+        },
+        {
+          "type": "text",
+          "text": "**Datenschutz ist Grundrechtsschutz:** Geschützt werden **natürliche Personen** bei der Verarbeitung ihrer personenbezogenen Daten (Art. 8 EU-Grundrechtecharta)."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Anwendungsbereich",
+            "Regel"
+          ],
+          "rows": [
+            [
+              "**Sachlich**",
+              "automatisierte Verarbeitung (EDV) **und** manuelle Verarbeitung in einem **strukturierten Ablagesystem** – z. B. Personal- oder Darlehensakten"
+            ],
+            [
+              "**Räumlich: Marktortprinzip**",
+              "Entscheidend ist, ob Waren oder Dienstleistungen **in der EU angeboten** werden – nicht, wo das Unternehmen sitzt"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "items": [
+            "Unternehmen **ohne Niederlassung in der EU** müssen einen **Vertreter in der EU** benennen.",
+            "**One-Stop-Shop:** Betroffene können sich an die Datenschutzbehörde **in ihrem Heimatland** wenden – auch wenn das Unternehmen im Ausland sitzt."
+          ]
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 1 DSGVO",
+          "text": "Schutz natürlicher Personen bei der Verarbeitung personenbezogener Daten."
+        },
+        {
+          "ref": "Art. 2, 3 DSGVO",
+          "text": "Sachlicher und räumlicher Anwendungsbereich."
+        },
+        {
+          "ref": "Art. 27 DSGVO",
+          "text": "Vertreter in der EU."
+        }
+      ],
+      "memory": "Wer in der EU anbietet, muss die DSGVO einhalten – egal wo er sitzt.",
+      "examTrap": "Auch die Papierakte fällt unter die DSGVO, wenn sie geordnet abgelegt ist."
+    },
+    {
+      "id": "2.8.1-b",
+      "title": "Personenbezogene Daten",
+      "subtitle": "Was geschützt ist – und was besonders",
+      "ref": "BWB 2.8.1",
+      "examRelevance": "S",
+      "checkId": "2.8-Q005",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Personenbezogene Daten** sind alle Angaben, die sich auf eine **identifizierte oder identifizierbare** natürliche Person beziehen. Identifiziert wird jemand über den Namen; **identifizierbar** wird er oft erst durch die **Kombination** mehrerer Angaben."
+        },
+        {
+          "type": "list",
+          "title": "Beispiele",
+          "items": [
+            "Adresse, Telefonnummer, Geburtsdatum, Foto",
+            "Gehalt, Immobilienbesitz, Kontodaten",
+            "Kundennummer, Benutzerkennung, Bestellungen",
+            "Beurteilungen, Arbeitszeiten, Hobbys"
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Besondere Kategorien – strengere Regeln (Art. 9 DSGVO)",
+          "items": [
+            "ethnische Herkunft",
+            "politische Meinungen",
+            "religiöse oder weltanschauliche Überzeugungen",
+            "Gewerkschaftszugehörigkeit",
+            "genetische und biometrische Daten",
+            "**Gesundheitsdaten**",
+            "Sexualleben und sexuelle Orientierung"
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Wichtig",
+          "text": "**Gehalt, Kontodaten und Vermögen** sind personenbezogen und vertraulich – sie gehören aber **nicht** zu den besonderen Kategorien. Für Angaben über **Straftaten** gilt eine eigene Regel (Art. 10 DSGVO)."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 4 Nr. 1 DSGVO",
+          "text": "Personenbezogene Daten."
+        },
+        {
+          "ref": "Art. 9 DSGVO",
+          "text": "Besondere Kategorien personenbezogener Daten."
+        }
+      ],
+      "memory": "Personenbezogen ist alles, was sich einer Person zuordnen lässt. Besonders geschützt ist, was diskriminieren kann.",
+      "examTrap": "Die Religionszugehörigkeit auf der Gehaltsabrechnung ist eine besondere Kategorie – das Gehalt selbst nicht."
+    },
+    {
+      "id": "2.8.1-c",
+      "title": "Verbot mit Erlaubnisvorbehalt",
+      "subtitle": "Keine Verarbeitung ohne Rechtsgrundlage",
+      "ref": "BWB 2.8.1 / 2.8.2",
+      "examRelevance": "S+P",
+      "checkId": "2.8-Q010",
+      "content": [
+        {
+          "type": "text",
+          "text": "Jede Verarbeitung personenbezogener Daten ist **zunächst verboten**. Erlaubt ist sie nur, wenn eine **Rechtsgrundlage** vorliegt – aus der DSGVO oder aus nationalem Recht, das die DSGVO zulässt."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Rechtsgrundlage (Art. 6 DSGVO)",
+            "Beispiel aus der Vermittlung"
+          ],
+          "rows": [
+            [
+              "**Einwilligung**",
+              "Newsletter, E-Mail-Adresse für Werbung"
+            ],
+            [
+              "**Vertrag oder Vertragsanbahnung**",
+              "Name, Anschrift, Telefonnummer für das Finanzierungsangebot"
+            ],
+            [
+              "**Rechtliche Verpflichtung**",
+              "Lohndaten an das Finanzamt, Aufbewahrung nach Steuerrecht"
+            ],
+            [
+              "**Berechtigtes Interesse**",
+              "Vertragsverwaltung, Datenaustausch im Konzern"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Für Daten, die zur **Anbahnung oder Erfüllung des Vertrags** nötig sind, braucht es **keine Einwilligung**. Für alles **darüber hinaus** – private Fotos, Religionszugehörigkeit, weitere Bedarfe – schon."
+        },
+        {
+          "type": "example",
+          "text": "Der Arbeitgeber übermittelt Lohndaten elektronisch an das Finanzamt. Rechtsgrundlage ist das Steuerrecht – eine Einwilligung des Mitarbeiters ist nicht nötig."
+        },
+        {
+          "type": "text",
+          "text": "Besondere Kategorien (Art. 9) und Daten über Straftaten (Art. 10) brauchen eine **eigene, engere Erlaubnis**."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 6 Abs. 1 DSGVO",
+          "text": "Rechtmäßigkeit der Verarbeitung: sechs Erlaubnistatbestände."
+        },
+        {
+          "ref": "Art. 9 Abs. 2 DSGVO",
+          "text": "Ausnahmen vom Verarbeitungsverbot für besondere Kategorien."
+        }
+      ],
+      "memory": "Erst die Rechtsgrundlage, dann die Verarbeitung.",
+      "examTrap": "Die Einwilligung ist nur eine von mehreren Rechtsgrundlagen. Für Vertragsdaten ist sie nicht erforderlich."
+    },
+    {
+      "id": "2.8.1-d",
+      "title": "Grundsätze der Verarbeitung",
+      "subtitle": "Zweck, Maß und Technik",
+      "ref": "BWB 2.8.1 / 2.8.3",
+      "examRelevance": "S",
+      "checkId": "2.8-Q015",
+      "content": [
+        {
+          "type": "list",
+          "items": [
+            "**Zweckbindung:** Daten dürfen nur für den festgelegten Zweck verwendet werden.",
+            "**Datenminimierung:** Nur so viele Daten wie nötig – „keine Daten, kein Missbrauch“.",
+            "**Vertraulichkeit:** Schutz vor unbefugtem Zugriff – auch über das Vertragsverhältnis hinaus."
+          ]
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Privacy by Design",
+            "text": "**Datenschutz durch Technikgestaltung:** Die gesamte IT – vom PC bis zur Website – berücksichtigt den Datenschutz von Anfang an. Mittel: Pseudonymisierung, Verschlüsselung, Löschroutinen."
+          },
+          "right": {
+            "title": "Privacy by Default",
+            "text": "**Datenschutzfreundliche Voreinstellungen:** Die Standardeinstellung bietet den größtmöglichen Datenschutz – z. B. ein Browser, der Cookies von Haus aus ablehnt."
+          }
+        },
+        {
+          "type": "steps",
+          "title": "Datenlebenszyklus – der Datenschutz gilt in jeder Phase",
+          "items": [
+            {
+              "title": "Erheben",
+              "text": "Erfassen, erfragen, auslesen."
+            },
+            {
+              "title": "Verwenden",
+              "text": "Speichern, ordnen, abgleichen, übermitteln."
+            },
+            {
+              "title": "Archivieren",
+              "text": "Zugriff einschränken, sperren."
+            },
+            {
+              "title": "Löschen",
+              "text": "Löschen oder vernichten."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Schon beim **Erstkontakt** ist der Interessent zu informieren, dass Daten erfasst werden und nur der Angebotserstellung dienen. Kommt **kein Vertrag** zustande, sind sie zu **löschen**."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 5 DSGVO",
+          "text": "Grundsätze: Rechtmäßigkeit, Zweckbindung, Datenminimierung, Speicherbegrenzung, Integrität und Vertraulichkeit."
+        },
+        {
+          "ref": "Art. 25 DSGVO",
+          "text": "Datenschutz durch Technikgestaltung und durch datenschutzfreundliche Voreinstellungen."
+        }
+      ],
+      "memory": "By Design: eingebaut. By Default: voreingestellt."
+    },
+    {
+      "id": "2.8.1-e",
+      "title": "Verantwortung und Datenschutzbeauftragter",
+      "subtitle": "Wer haftet – und wer berät",
+      "ref": "BWB 2.8.1",
+      "examRelevance": "S",
+      "checkId": "2.8-Q019",
+      "content": [
+        {
+          "type": "table",
+          "head": [
+            "Ebene",
+            "Rolle"
+          ],
+          "rows": [
+            [
+              "**Geschäftsführung**",
+              "trägt und **behält die Hauptverantwortung**"
+            ],
+            [
+              "**Führungskräfte**",
+              "setzen die Regeln als verlängerter Arm der Geschäftsführung um"
+            ],
+            [
+              "**Mitarbeiter**",
+              "schützen die Daten im Tagesgeschäft, melden Lücken und Verstöße; werden regelmäßig **geschult**"
+            ],
+            [
+              "**Datenschutzbeauftragter (DSB)**",
+              "**berät und überwacht** – die Verantwortung bleibt bei der Geschäftsführung"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Auch **Mitarbeiter** können bei Vorsatz oder grober Fahrlässigkeit zur Verantwortung gezogen werden: Bußgeld, Strafe, Schadensersatz, Abmahnung oder Kündigung."
+        },
+        {
+          "type": "list",
+          "title": "Ein DSB ist zu benennen, wenn",
+          "items": [
+            "in der Regel **mindestens 20 Personen** ständig mit der automatisierten Verarbeitung personenbezogener Daten beschäftigt sind,",
+            "die Kerntätigkeit in der **umfangreichen Überwachung** von Personen oder der umfangreichen Verarbeitung **besonderer Kategorien** besteht,",
+            "Verarbeitungen eine **Datenschutz-Folgenabschätzung** erfordern – unabhängig von der Personenzahl."
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Aufgaben des DSB",
+          "items": [
+            "Mitarbeiter schulen, Geschäftsführung und IT beraten",
+            "Einhaltung der DSGVO überwachen",
+            "erste Anlaufstelle für Betroffene und bei Datenpannen"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Der DSB kann ein **Mitarbeiter oder ein Externer** sein. Seine Kontaktdaten sind der **Aufsichtsbehörde** des Bundeslands mitzuteilen."
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das BWB-Skript nennt noch die Schwelle von **10 Personen**. Seit November 2019 liegt sie bei **20** (§ 38 BDSG)."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 37–39 DSGVO",
+          "text": "Benennung, Stellung und Aufgaben des Datenschutzbeauftragten."
+        },
+        {
+          "ref": "§ 38 BDSG",
+          "text": "Benennungspflicht ab in der Regel 20 Personen."
+        }
+      ],
+      "memory": "Die Geschäftsführung verantwortet, der Datenschutzbeauftragte berät.",
+      "examTrap": "Wer einen Datenschutzbeauftragten benennt, gibt die Verantwortung nicht ab."
+    },
+    {
+      "id": "2.8.1-f",
+      "title": "Sanktionen",
+      "subtitle": "Was ein Verstoß kosten kann",
+      "ref": "BWB 2.8.1 / 2.8.3",
+      "examRelevance": "S",
+      "checkId": "2.8-Q024",
+      "content": [
+        {
+          "type": "list",
+          "items": [
+            "Unzulässig gespeicherte Daten sind **unverzüglich zu löschen**.",
+            "Betroffene haben Anspruch auf **Schadensersatz**.",
+            "**Bußgeld** bis zu **20 Millionen Euro** oder **4 % des weltweiten Jahresumsatzes** – je nachdem, welcher Betrag **höher** ist.",
+            "In schweren Fällen liegt eine **Straftat** vor."
+          ]
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 82 DSGVO",
+          "text": "Haftung und Recht auf Schadensersatz."
+        },
+        {
+          "ref": "Art. 83 DSGVO",
+          "text": "Geldbußen."
+        }
+      ],
+      "memory": "20 Millionen oder 4 % – der höhere Betrag zählt."
+    },
+    {
+      "id": "2.8.2-a",
+      "title": "Einwilligung",
+      "subtitle": "Freiwillig, aktiv, widerruflich",
+      "ref": "BWB 2.8.2",
+      "examRelevance": "S+P",
+      "checkId": "2.8-Q027",
+      "content": [
+        {
+          "type": "list",
+          "title": "Eine wirksame Einwilligung muss",
+          "items": [
+            "**aktiv** erklärt werden – ein **voreingestelltes Häkchen** ist keine Einwilligung,",
+            "den **Zweck** nennen, für den die Daten verarbeitet werden,",
+            "auf die **jederzeitige Widerrufbarkeit** hinweisen,",
+            "nach **Datenkategorien getrennt** sein: notwendige Vertragsdaten hier, freiwillige Angaben dort."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Der Verantwortliche muss die Einwilligung **nachweisen** können. Online dient dazu das **Double-Opt-in**: Der Kunde bestätigt seine Anmeldung in einem zweiten Schritt, etwa über einen Link in einer E-Mail."
+        },
+        {
+          "type": "text",
+          "text": "**Alte Einwilligungen** gelten grundsätzlich weiter. Fehlt ihnen aber der Hinweis auf den Widerruf oder der Zweck, sollten sie **neu eingeholt und dokumentiert** werden."
+        },
+        {
+          "type": "note",
+          "title": "Werbung",
+          "text": "Für eine **Werbeeinwilligung** gelten zwei Gesetze nebeneinander: die DSGVO für die Datenverarbeitung und das **UWG** für die Ansprache per Telefon oder E-Mail (Level 7)."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 7 DSGVO",
+          "text": "Bedingungen für die Einwilligung: Nachweis, Widerruf, Freiwilligkeit."
+        },
+        {
+          "ref": "Art. 4 Nr. 11 DSGVO",
+          "text": "Einwilligung: unmissverständliche, bestätigende Handlung."
+        }
+      ],
+      "memory": "Kein Häkchen ab Werk. Zweck nennen. Widerruf jederzeit.",
+      "examTrap": "Schweigen oder ein vorangekreuztes Kästchen ist keine Einwilligung."
+    },
+    {
+      "id": "2.8.2-b",
+      "title": "Informationspflichten und Website",
+      "subtitle": "Der Kunde erfährt es bei der Erhebung",
+      "ref": "BWB 2.8.1 / 2.8.2",
+      "examRelevance": "S+P",
+      "checkId": "2.8-Q032",
+      "content": [
+        {
+          "type": "text",
+          "text": "Die Informationspflichten sind **zum Zeitpunkt der Erhebung** zu erfüllen – also schon gegenüber dem Interessenten. Dazu dienen die **Datenschutzhinweise**."
+        },
+        {
+          "type": "list",
+          "title": "Mitzuteilen sind",
+          "items": [
+            "Name und Kontaktdaten des **Verantwortlichen** und des Datenschutzbeauftragten",
+            "**Zweck** und **Rechtsgrundlage** der Verarbeitung",
+            "**Empfänger** der Daten; geplante Übermittlung in ein **Drittland**",
+            "**Speicherdauer**",
+            "die **Rechte** des Betroffenen, einschließlich Widerruf und **Beschwerde bei der Aufsichtsbehörde**",
+            "ob die Angabe der Daten **vorgeschrieben oder für den Vertrag nötig** ist"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Stammen die Daten **nicht vom Betroffenen selbst**, ist zusätzlich die **Quelle** anzugeben – etwa die Schufa."
+        },
+        {
+          "type": "list",
+          "title": "Geschäftliche Website",
+          "items": [
+            "**Datenschutzerklärung** mit Rechtsgrund, Speicherdauer, Cookies, Tracking- und Analysediensten, eingebundenen Netzwerken",
+            "**Impressum** mit Name, Anschrift, Rechtsform und Kontaktdaten",
+            "Newsletter nur mit **aktiver Einwilligung**; **HTTPS-Verschlüsselung**, wo Kontaktdaten eingegeben werden"
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Paragraphen",
+          "text": "Das Skript nennt für das Impressum das Telemediengesetz. Seit 2024 steht die Pflicht im **Digitale-Dienste-Gesetz**."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 13 DSGVO",
+          "text": "Informationspflicht bei Erhebung beim Betroffenen."
+        },
+        {
+          "ref": "Art. 14 DSGVO",
+          "text": "Informationspflicht, wenn die Daten nicht beim Betroffenen erhoben wurden."
+        },
+        {
+          "ref": "§ 5 DDG",
+          "text": "Impressumspflicht."
+        }
+      ],
+      "memory": "Informiert wird bei der Erhebung – nicht erst beim Vertrag."
+    },
+    {
+      "id": "2.8.2-c",
+      "title": "Rechte der Betroffenen",
+      "subtitle": "Auskunft, Berichtigung, Löschung und mehr",
+      "ref": "BWB 2.8.1 / 2.8.3",
+      "examRelevance": "S+P",
+      "checkId": "2.8-Q036",
+      "content": [
+        {
+          "type": "table",
+          "head": [
+            "Recht",
+            "Inhalt"
+          ],
+          "rows": [
+            [
+              "**Auskunft**",
+              "Welche Daten sind gespeichert, wozu, wie lange, an wen gingen sie?"
+            ],
+            [
+              "**Berichtigung**",
+              "Falsche Daten sind umgehend zu korrigieren"
+            ],
+            [
+              "**Löschung / Vergessenwerden**",
+              "Daten ohne Zweck oder Rechtsgrundlage sind zu löschen; wer sie weitergegeben hat, informiert die Empfänger"
+            ],
+            [
+              "**Einschränkung**",
+              "Daten bleiben gespeichert, dürfen aber nicht weiter genutzt werden"
+            ],
+            [
+              "**Datenübertragbarkeit**",
+              "Herausgabe in einem gängigen Format – z. B. beim Anbieterwechsel"
+            ],
+            [
+              "**Widerspruch**",
+              "gegen Verarbeitung aus berechtigtem Interesse, vor allem **Direktwerbung**"
+            ],
+            [
+              "**Widerruf**",
+              "einer erteilten Einwilligung – jederzeit, für die Zukunft"
+            ],
+            [
+              "**Beschwerde**",
+              "bei der Datenschutz-Aufsichtsbehörde"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Grenze der Löschung:** Solange eine **gesetzliche Aufbewahrungspflicht** besteht oder der Zweck fortdauert, darf – und muss – das Unternehmen die Daten behalten."
+        },
+        {
+          "type": "text",
+          "text": "Für **Auskunftsersuchen** sollte ein fester, schriftlich geregelter Ablauf bestehen."
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "Anträge von Betroffenen sind **innerhalb eines Monats** zu beantworten (Art. 12 DSGVO)."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 15–18 DSGVO",
+          "text": "Auskunft, Berichtigung, Löschung, Einschränkung."
+        },
+        {
+          "ref": "Art. 20, 21 DSGVO",
+          "text": "Datenübertragbarkeit, Widerspruch."
+        },
+        {
+          "ref": "Art. 77 DSGVO",
+          "text": "Beschwerde bei der Aufsichtsbehörde."
+        }
+      ],
+      "memory": "Widerruf nimmt die Einwilligung zurück. Widerspruch stoppt Werbung aus berechtigtem Interesse.",
+      "examTrap": "Ein Löschantrag setzt die Aufbewahrungspflichten nicht außer Kraft."
+    },
+    {
+      "id": "2.8.2-d",
+      "title": "Verarbeitungsverzeichnis und Folgenabschätzung",
+      "subtitle": "Dokumentieren, was mit den Daten geschieht",
+      "ref": "BWB 2.8.2",
+      "examRelevance": "S",
+      "checkId": "2.8-Q042",
+      "content": [
+        {
+          "type": "text",
+          "text": "Am Anfang steht die **Bestandsanalyse**: Wo, warum und auf welcher Rechtsgrundlage werden Kundendaten verarbeitet? Wie lange? Wer nutzt sie? An wen gehen sie?"
+        },
+        {
+          "type": "list",
+          "title": "Das Verzeichnis der Verarbeitungstätigkeiten hält fest",
+          "items": [
+            "Verantwortlicher und Datenschutzbeauftragter",
+            "**Zweck** und **Rechtsgrundlage**",
+            "Kategorien der Personen, Daten und **Empfänger**",
+            "Übermittlung in Drittstaaten",
+            "**Löschfristen**",
+            "technische und organisatorische Maßnahmen"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Eine **Datenschutz-Folgenabschätzung (DSFA)** ist nötig, wenn die Verarbeitung voraussichtlich ein **hohes Risiko** für Rechte und Freiheiten der Betroffenen birgt. Sie beschreibt die Vorgänge, **bewertet die Risiken** und nennt die Schutzmaßnahmen."
+        },
+        {
+          "type": "text",
+          "text": "Die Verpflichtung der Mitarbeiter auf **Vertraulichkeit** und ihre **Schulung** sind ebenfalls zu dokumentieren."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 30 DSGVO",
+          "text": "Verzeichnis von Verarbeitungstätigkeiten."
+        },
+        {
+          "ref": "Art. 35 DSGVO",
+          "text": "Datenschutz-Folgenabschätzung."
+        }
+      ],
+      "memory": "Verzeichnis: was wir tun. Folgenabschätzung: was dabei schiefgehen kann."
+    },
+    {
+      "id": "2.8.2-e",
+      "title": "Auftragsverarbeitung und Drittländer",
+      "subtitle": "Wenn andere mit den Kundendaten arbeiten",
+      "ref": "BWB 2.8.2",
+      "examRelevance": "S",
+      "checkId": "2.8-Q045",
+      "content": [
+        {
+          "type": "text",
+          "text": "Beauftragt ein Unternehmen einen **externen Dienstleister** mit der Verarbeitung personenbezogener Daten, muss es mit ihm einen **Auftragsverarbeitungsvertrag (AV-Vertrag)** schließen. Der Dienstleister darf die Daten **nur nach Weisung** verarbeiten."
+        },
+        {
+          "type": "list",
+          "title": "Typische Fälle",
+          "items": [
+            "IT-Dienstleister und Hoster",
+            "Cloud-Anbieter",
+            "Webagentur mit Zugriff auf Kontaktformulardaten",
+            "externe Lohnbuchhaltung"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Drittland:** Liegen die Daten auf Servern außerhalb der EU – etwa in den USA oder Indien –, braucht die Übermittlung eine **besondere Grundlage**: einen **Angemessenheitsbeschluss** der EU-Kommission oder **EU-Standardvertragsklauseln**."
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das im BWB-Skript genannte **Privacy Shield** ist seit 2020 ungültig. Der **Steuerberater** arbeitet nach überwiegender Auffassung eigenverantwortlich; das Skript verlangt für die Lohnabrechnung einen Vertrag, in dem der Schutz der Mitarbeiterdaten geklärt ist."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 28 DSGVO",
+          "text": "Auftragsverarbeiter: Vertrag, Weisungsbindung."
+        },
+        {
+          "ref": "Art. 44–46 DSGVO",
+          "text": "Übermittlung in Drittländer."
+        }
+      ],
+      "memory": "Fremder Dienstleister = AV-Vertrag. Server außerhalb der EU = besondere Grundlage.",
+      "examTrap": "Der Auftraggeber bleibt verantwortlich – auch wenn der Dienstleister den Fehler macht."
+    },
+    {
+      "id": "2.8.2-f",
+      "title": "Mitarbeiterdaten",
+      "subtitle": "Datenschutz im Arbeitsverhältnis",
+      "ref": "BWB 2.8.2",
+      "examRelevance": "S",
+      "checkId": "2.8-Q049",
+      "content": [
+        {
+          "type": "text",
+          "text": "Mitarbeiterdaten dürfen **für die Zwecke des Beschäftigungsverhältnisses** verarbeitet werden. Alles **darüber hinaus** braucht die **Einwilligung** des Mitarbeiters – zum Beispiel sein **Foto auf der Unternehmenswebsite**."
+        },
+        {
+          "type": "text",
+          "text": "Wegen des **Über- und Unterordnungsverhältnisses** ist eine Einwilligung im Arbeitsverhältnis nur ausnahmsweise wirklich freiwillig – vor allem dann, wenn der Mitarbeiter einen **Vorteil** davon hat: private Internetnutzung, private Nutzung des Dienstwagens, Gesundheitsmanagement."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Ist die **private Nutzung** von E-Mail und Internet erlaubt, sollten Umfang, Kontrollen und die Löschung beim Ausscheiden **vereinbart** werden.",
+            "Bei **begründetem Verdacht** auf Straftaten oder Pflichtverstöße ist eine Überprüfung zulässig.",
+            "**Betriebsvereinbarungen** müssen der DSGVO entsprechen."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Form",
+          "text": "Das Skript verlangt für die Einwilligung die Schriftform. Seit 2019 genügt nach § 26 BDSG auch die **elektronische Form**."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 26 BDSG",
+          "text": "Datenverarbeitung für Zwecke des Beschäftigungsverhältnisses; Einwilligung."
+        },
+        {
+          "ref": "Art. 88 DSGVO",
+          "text": "Öffnungsklausel für den Beschäftigtendatenschutz."
+        }
+      ],
+      "memory": "Was der Arbeitsvertrag braucht: erlaubt. Was darüber hinausgeht: Einwilligung."
+    },
+    {
+      "id": "2.8.2-g",
+      "title": "Datenpannen",
+      "subtitle": "72 Stunden für die Meldung",
+      "ref": "BWB 2.8.2",
+      "examRelevance": "S+P",
+      "checkId": "2.8-Q052",
+      "content": [
+        {
+          "type": "list",
+          "title": "Beispiele für Datenschutzverletzungen",
+          "items": [
+            "Phishing, Hacking, Trojaner",
+            "Zerstörung des Servers durch Brand oder Blitz",
+            "Versand von Kundendaten an die **falsche Adresse**",
+            "verlorener Laptop oder USB-Stick"
+          ]
+        },
+        {
+          "type": "steps",
+          "items": [
+            {
+              "title": "Aufsichtsbehörde",
+              "text": "Meldung **unverzüglich, möglichst binnen 72 Stunden** an die zuständige Datenschutzbehörde."
+            },
+            {
+              "title": "Ausnahme",
+              "text": "Keine Meldepflicht, wenn die Panne voraussichtlich **kein Risiko** für die Rechte und Freiheiten der Betroffenen bedeutet."
+            },
+            {
+              "title": "Betroffene",
+              "text": "Bei voraussichtlich **hohem Risiko** sind zusätzlich die betroffenen Personen **unverzüglich** zu benachrichtigen."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Weil „kein Risiko“ schwer abzugrenzen ist, empfiehlt es sich, im Zweifel zu melden. Für den Ernstfall sollte ein **fester Ablauf** bestehen; der Datenschutzbeauftragte ist einzubinden."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 33 DSGVO",
+          "text": "Meldung an die Aufsichtsbehörde binnen 72 Stunden."
+        },
+        {
+          "ref": "Art. 34 DSGVO",
+          "text": "Benachrichtigung der Betroffenen bei hohem Risiko."
+        }
+      ],
+      "memory": "Risiko: Behörde in 72 Stunden. Hohes Risiko: auch die Betroffenen.",
+      "examTrap": "Nicht jede Panne muss dem Kunden mitgeteilt werden – nur die mit hohem Risiko. Die Behörde erfährt es früher."
+    },
+    {
+      "id": "2.8.2-h",
+      "title": "Aufbewahren und Löschen",
+      "subtitle": "Das Löschkonzept",
+      "ref": "BWB 2.8.2",
+      "examRelevance": "S",
+      "checkId": "2.8-Q056",
+      "content": [
+        {
+          "type": "text",
+          "text": "Ist der **Zweck erfüllt** und besteht **keine gesetzliche Aufbewahrungspflicht** mehr, sind personenbezogene Daten zu **löschen**. Jedes Unternehmen braucht dafür ein **Löschkonzept**."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Unterlagen",
+            "Aufbewahrung"
+          ],
+          "rows": [
+            [
+              "Geschäftsbriefe",
+              "**6 Jahre**"
+            ],
+            [
+              "steuerrelevante Unterlagen",
+              "**10 Jahre**"
+            ],
+            [
+              "Bewerbungsunterlagen abgelehnter Bewerber",
+              "**6 Monate**"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "items": [
+            "Kommt mit einem Interessenten **kein Vertrag** zustande, sind seine Daten zu löschen.",
+            "**Papierunterlagen** mit personenbezogenen Daten sind zu **schreddern**."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "Für **Buchungsbelege** gilt seit 2025 eine Frist von **8 Jahren**; Bücher und Jahresabschlüsse bleiben bei 10 Jahren."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 17 DSGVO",
+          "text": "Recht auf Löschung; Ausnahmen bei rechtlichen Pflichten."
+        },
+        {
+          "ref": "§ 257 HGB, § 147 AO",
+          "text": "Handels- und steuerrechtliche Aufbewahrungsfristen."
+        }
+      ],
+      "memory": "Zweck weg, Frist abgelaufen: löschen.",
+      "examTrap": "Während der Aufbewahrungsfrist darf nicht gelöscht werden – auch nicht auf Wunsch des Kunden."
+    },
+    {
+      "id": "2.8.3-a",
+      "title": "Technische und organisatorische Maßnahmen",
+      "subtitle": "Vertraulich, unverändert, verfügbar, belastbar",
+      "ref": "BWB 2.8.3",
+      "examRelevance": "S",
+      "checkId": "2.8-Q060",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Technische und organisatorische Maßnahmen (TOM)** schützen personenbezogene Daten. Sie sind zu **dokumentieren** und auf ihre **Wirksamkeit** zu bewerten."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Schutzziel",
+            "Kontrollen"
+          ],
+          "rows": [
+            [
+              "**Vertraulichkeit**",
+              "**Zutritt** (kein Unbefugter kommt zu den Anlagen) · **Zugang** (kein Unbefugter nutzt die Systeme) · **Zugriff** (jeder sieht nur, wofür er berechtigt ist) · **Trennung** (Daten für verschiedene Zwecke getrennt)"
+            ],
+            [
+              "**Integrität**",
+              "**Weitergabe** (bei Übertragung und Transport nicht lesbar oder veränderbar; nachvollziehbar, wohin Daten gingen) · **Eingabe** (wer hat was eingegeben oder geändert?) · **Auftrag** (Verarbeitung nur nach Weisung)"
+            ],
+            [
+              "**Verfügbarkeit**",
+              "Schutz vor zufälliger Zerstörung und Verlust: Diebstahl, Feuer, Wasser"
+            ],
+            [
+              "**Belastbarkeit**",
+              "Systeme fallen bei Störungen nicht vollständig aus; Daten lassen sich **wiederherstellen**"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Beispiele",
+          "items": [
+            "Schließanlage, Firmenausweis mit Bereichszutritt",
+            "PC mit Kennwortschutz, keine offenen USB-Schnittstellen",
+            "Verschlüsselung, Pseudonymisierung, automatische Löschung",
+            "Notstrom, doppelte Datensicherung an zwei Standorten"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Personenbezogene Daten sollen **nicht ungeschützt per E-Mail** verschickt werden – das Skript verlangt Schutzmaßnahmen wie **Verschlüsselung**."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 32 DSGVO",
+          "text": "Sicherheit der Verarbeitung: Vertraulichkeit, Integrität, Verfügbarkeit, Belastbarkeit."
+        }
+      ],
+      "memory": "Zutritt: zum Raum. Zugang: zum System. Zugriff: zu den Daten.",
+      "examTrap": "Zutritt, Zugang und Zugriff sind drei verschiedene Kontrollen – in genau dieser Reihenfolge von außen nach innen."
+    },
+    {
+      "id": "2.8.3-b",
+      "title": "Drei Schutzbereiche, eine Aufgabe",
+      "subtitle": "Datenschutz, Informationsschutz, IT-Sicherheit",
+      "ref": "BWB 2.8.3",
+      "examRelevance": "S",
+      "checkId": "2.8-Q065",
+      "content": [
+        {
+          "type": "table",
+          "head": [
+            "Bereich",
+            "Schützt",
+            "Gefahr"
+          ],
+          "rows": [
+            [
+              "**Datenschutz**",
+              "natürliche Personen und ihre personenbezogenen Daten",
+              "Verletzung von Grundrechten"
+            ],
+            [
+              "**Informationsschutz**",
+              "alle Unternehmensinformationen",
+              "Informationsabfluss"
+            ],
+            [
+              "**IT-Sicherheit**",
+              "Hardware, Software, Daten",
+              "Verlust, Zerstörung, Missbrauch"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "In größeren Unternehmen gibt es dafür drei Funktionsträger: **Datenschutzbeauftragter**, **Informationssicherheitsbeauftragter** und **IT-Sicherheitsbeauftragter**. Die Bereiche überschneiden und ergänzen sich."
+        },
+        {
+          "type": "text",
+          "text": "**Verschwiegenheit:** Personenbezogene Daten dürfen nicht unbefugt an Dritte gelangen – weder technisch noch im Gespräch. Die Pflicht zur Vertraulichkeit besteht **über das Ende des Vertrags- oder Arbeitsverhältnisses hinaus**."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 32 DSGVO",
+          "text": "Sicherheit der Verarbeitung."
+        }
+      ],
+      "memory": "Datenschutz schützt Menschen. Informationsschutz schützt das Unternehmen. IT-Sicherheit schützt die Technik."
+    }
+  ]
+}

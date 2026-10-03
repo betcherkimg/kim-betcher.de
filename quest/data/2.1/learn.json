@@ -624,14 +624,18 @@
             ],
             [
               "**Immobiliar-Verbraucherdarlehen**",
-              "Entgeltliches Darlehen an einen Verbraucher, das **entweder** durch ein **Grundpfandrecht oder eine Reallast besichert** ist **oder** dem **Erwerb oder Erhalt** eines Grundstücks, Gebäudes oder grundstücksgleichen Rechts dient"
+              "Entgeltliches Darlehen an einen Verbraucher, das **entweder** durch ein **Grundpfandrecht oder eine Reallast besichert** ist **oder** für den **Erwerb oder die Erhaltung des Eigentumsrechts** an einem Grundstück oder Gebäude bzw. eines grundstücksgleichen Rechts bestimmt ist"
             ]
           ]
         },
         {
           "type": "note",
           "title": "Achtung, Skript",
-          "text": "Das Skript definiert das Immobiliardarlehen am Ende noch nach altem Recht („durch Grundpfandrechte abgesichert und zu üblichen Bedingungen“). Heute reicht nach § 491 Abs. 3 BGB auch der Zweck allein – ein unbesichertes Darlehen für den Wohnungskauf ist ebenfalls ein Immobiliar-Verbraucherdarlehen."
+          "text": "Das Skript definiert das Immobiliardarlehen am Ende noch nach altem Recht („durch Grundpfandrechte abgesichert und zu üblichen Bedingungen“). Heute reicht nach § 491 Abs. 3 BGB auch der Zweck allein – ein unbesichertes Darlehen für den Wohnungskauf ist ebenfalls ein Immobiliar-Verbraucherdarlehen. Umgekehrt gilt die alte Gleichstellung der **Negativerklärung** mit einer Grundschuld nicht mehr: Ohne Grundpfandrecht entscheidet allein der Zweck."
+        },
+        {
+          "type": "example",
+          "text": "Unbesichertes Darlehen über 30.000 € für neue Fenster und eine neue Heizung im eigenen Haus: **Allgemein-Verbraucherdarlehen**. „Erhaltung des Eigentumsrechts“ meint, das Eigentum zu behalten – etwa eine drohende Zwangsversteigerung abzuwenden –, nicht die Instandhaltung des Gebäudes."
         },
         {
           "type": "list",
@@ -639,10 +643,15 @@
           "items": [
             "**Schriftform** (§ 492 BGB). Sie ist auch erfüllt, wenn Antrag und Annahme **getrennt** schriftlich erklärt werden. Die Erklärung der Bank braucht keine Unterschrift, wenn sie automatisch erstellt wird.",
             "Der Vertrag muss die **Pflichtangaben** enthalten; der Kunde erhält eine Abschrift und kann einen Tilgungsplan verlangen.",
-            "**Bauspardarlehen mit Negativerklärung** statt Grundschuld zählen ebenfalls dazu.",
+            "**Bauspardarlehen mit Negativerklärung** statt Grundschuld: Hier entscheidet der Zweck. Dient das Geld dem **Erwerb**, ist es ein Immobiliar-Verbraucherdarlehen. Für eine reine **Modernisierung oder Renovierung** ist es ein Allgemein-Verbraucherdarlehen.",
             "**Verzugszins** bei Immobiliar-Verbraucherdarlehen: **2,5 Prozentpunkte** über dem Basiszinssatz (§ 497 Abs. 4 BGB).",
             "Der Vertrag muss darauf hinweisen, ob die Forderung an Dritte **abgetreten** werden darf (seit dem Risikobegrenzungsgesetz)."
           ]
+        },
+        {
+          "type": "note",
+          "title": "Rechtsstand ab 20.11.2026",
+          "text": "Mit der Umsetzung der neuen Verbraucherkreditrichtlinie genügt beim **Allgemein-Verbraucherdarlehen** künftig die **Textform**. Außerdem entfallen die Ausnahmen für Kleinkredite unter 200 € und für kurzfristige Darlehen bis drei Monate. Bis 19.11.2026 gilt der hier beschriebene Stand."
         }
       ],
       "laws": [
@@ -659,8 +668,8 @@
           "text": "Schriftform und Pflichtangaben."
         }
       ],
-      "memory": "Immobiliar-Verbraucherdarlehen: Grundschuld ODER Immobilienzweck – eins von beiden genügt.",
-      "examTrap": "Ohne Grundschuld kein Immobiliardarlehen? Falsch. Dient das Geld dem Kauf oder Erhalt einer Immobilie, reicht das.",
+      "memory": "Immobiliar-Verbraucherdarlehen: Grundpfandrecht ODER Erwerb bzw. Erhaltung des Eigentums – eins von beiden genügt. Renovieren ohne Grundschuld gehört nicht dazu.",
+      "examTrap": "Ohne Grundschuld kein Immobiliardarlehen? Falsch – beim Kauf reicht der Zweck. Aber: „Erhaltung des Eigentumsrechts“ heißt nicht Renovieren. Ein unbesichertes Modernisierungsdarlehen ist ein Allgemein-Verbraucherdarlehen.",
       "legacyIds": [
         "2.1.2-e"
       ]
@@ -744,6 +753,11 @@
             "title": "Anfechtung durch den Kunden",
             "text": "Der **Vermittler** hat getäuscht, und das war für den Darlehensvertrag ursächlich (§ 123 BGB). Beim **verbundenen Geschäft** liegt das regelmäßig vor."
           }
+        },
+        {
+          "type": "note",
+          "title": "Rechtsstand ab 20.11.2026",
+          "text": "Die Höchstfrist von **12 Monaten und 14 Tagen** gilt dann für alle Verbraucherdarlehen – ein „ewiges“ Widerrufsrecht gibt es auch beim Allgemein-Verbraucherdarlehen nicht mehr."
         }
       ],
       "laws": [

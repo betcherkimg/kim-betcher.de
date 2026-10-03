@@ -1,0 +1,1092 @@
+{
+  "chapter": "2.4",
+  "title": "Recht der Darlehensvermittlung",
+  "sources": [
+    "BWB-Lernskript 2.4.1 Verbraucherkreditrecht",
+    "BWB-Lernskript 2.4.2 Immobiliar-Verbraucherdarlehensvertrag",
+    "BWB-Lernskript 2.4.3 Verhaltens- und Informationspflichten",
+    "BWB-Lernskript 2.4.4 Besondere Anforderungen an die Beratung",
+    "BWB-Lernskript 2.4.5 Kreditwesengesetz",
+    "BWB-Lernskript 2.4.6 Geldwäschegesetz",
+    "BGB, EGBGB, KWG, GwG, GewO, StGB – Rechtsstand 03.10.2026"
+  ],
+  "sections": [
+    {
+      "id": "2.4.1-a",
+      "title": "Verbraucher und Verbraucherdarlehen",
+      "subtitle": "Wer geschützt ist – und welche Darlehen gar nicht darunterfallen",
+      "ref": "BWB 2.4.1",
+      "examRelevance": "S",
+      "checkId": "2.4-Q001",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Verbraucher** ist jede natürliche Person, die ein Rechtsgeschäft zu Zwecken abschließt, die **überwiegend weder gewerblich noch selbstständig beruflich** sind. Es entscheidet also der **Zweck des Geschäfts** – nicht der Beruf."
+        },
+        {
+          "type": "example",
+          "text": "Eine selbstständige Architektin finanziert die Wohnung, in die sie mit ihrer Familie zieht: **Verbraucherin**. Finanziert sie ihr Büro, handelt sie als Unternehmerin."
+        },
+        {
+          "type": "text",
+          "text": "Ein **Verbraucherdarlehensvertrag** ist ein **entgeltlicher** Darlehensvertrag zwischen einem **Unternehmer als Darlehensgeber** und einem **Verbraucher als Darlehensnehmer**. Er ist der **Oberbegriff** für zwei Arten:"
+        },
+        {
+          "type": "list",
+          "items": [
+            "**Allgemein-Verbraucherdarlehen** (AVD)",
+            "**Immobiliar-Verbraucherdarlehen** (IVD)"
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Keine Verbraucherdarlehen",
+          "items": [
+            "**Unentgeltliche Darlehen** – ohne Zins und ohne Kosten. Auch eine Sicherheit macht das Darlehen nicht entgeltlich.",
+            "**Vergünstigte Arbeitgeberdarlehen** – als Nebenleistung zum Arbeitsvertrag, unter dem marktüblichen effektiven Jahreszins und nur für Beschäftigte. Sie sind **weder AVD noch IVD**."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das BWB-Skript nennt Arbeitgeberdarlehen an einer Stelle „Allgemein-Verbraucherdarlehen“, an anderer Stelle „weder Immobiliar- noch Allgemein-Verbraucherdarlehen“. Das Gesetz ist eindeutig: Sie stehen im **Ausnahmekatalog** des § 491 Abs. 2 BGB und sind nach Abs. 3 auch keine Immobiliar-Verbraucherdarlehen."
+        },
+        {
+          "type": "note",
+          "title": "Rechtsstand ab 20.11.2026",
+          "text": "Mit der Verbraucherkredit-Reform fallen auch **zinslose und gebührenfreie** Darlehen unter das Recht der Allgemein-Verbraucherdarlehen. Bis 19.11.2026 gilt der hier beschriebene Stand."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 13 BGB",
+          "text": "Verbraucher: natürliche Person, Zweck überwiegend weder gewerblich noch selbstständig beruflich."
+        },
+        {
+          "ref": "§ 491 Abs. 1 BGB",
+          "text": "Verbraucherdarlehensverträge sind Allgemein- und Immobiliar-Verbraucherdarlehensverträge."
+        },
+        {
+          "ref": "§ 491 Abs. 2 Satz 2 Nr. 4 BGB",
+          "text": "Vergünstigte Arbeitgeberdarlehen sind keine Allgemein-Verbraucherdarlehen."
+        }
+      ],
+      "memory": "Verbraucher ist, wer privat handelt. Verbraucherdarlehen = entgeltlich + Unternehmer gibt + Verbraucher nimmt.",
+      "examTrap": "Selbstständig heißt nicht automatisch Unternehmer: Wer für private Zwecke finanziert, ist Verbraucher."
+    },
+    {
+      "id": "2.4.1-b",
+      "title": "AVD oder IVD? Die Abgrenzung",
+      "subtitle": "Zwei Wege führen ins Immobiliar-Verbraucherdarlehen",
+      "ref": "BWB 2.4.1 / 2.4.2",
+      "examRelevance": "S+P",
+      "checkId": "2.4-Q006",
+      "content": [
+        {
+          "type": "text",
+          "text": "Ein entgeltliches Darlehen an einen Verbraucher ist ein **Immobiliar-Verbraucherdarlehen**, wenn **eine** von zwei Voraussetzungen erfüllt ist:"
+        },
+        {
+          "type": "steps",
+          "items": [
+            {
+              "title": "Weg 1: die Sicherheit",
+              "text": "Das Darlehen ist durch ein **Grundpfandrecht oder eine Reallast** besichert. Der Verwendungszweck ist dann egal – auch der Autokauf mit Grundschuld ist ein IVD."
+            },
+            {
+              "title": "Weg 2: der Zweck",
+              "text": "Das Darlehen dient dem **Erwerb oder der Erhaltung des Eigentumsrechts** an Grundstücken, an bestehenden oder zu errichtenden Gebäuden oder an **grundstücksgleichen Rechten** (z. B. Erbbaurecht). Eine Grundschuld ist dann nicht nötig."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**„Erhaltung des Eigentumsrechts“** heißt: das Eigentum **behalten**. Gemeint sind die Umschuldung eines IVD und die Abwendung einer Zwangs- oder Teilungsversteigerung – **nicht** Renovierung oder Modernisierung."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Darlehen **ohne** Grundschuld für …",
+            "Einordnung"
+          ],
+          "rows": [
+            [
+              "Kauf von Grundstück, Gebäude oder Fertighaus (im In- oder Ausland)",
+              "**IVD**"
+            ],
+            [
+              "Erwerbskosten: Makler, Grunderwerbsteuer, Notar",
+              "**IVD**"
+            ],
+            [
+              "Anbau eines Wintergartens",
+              "**IVD**"
+            ],
+            [
+              "Abwendung einer Zwangsversteigerung",
+              "**IVD**"
+            ],
+            [
+              "Dachausbau",
+              "AVD"
+            ],
+            [
+              "Renovierung, Substanzerhalt",
+              "AVD"
+            ],
+            [
+              "Modernisierung (Fenster, Bad, Heizung)",
+              "AVD"
+            ],
+            [
+              "Konsum (Auto, Reise, Möbel) oder ohne Zweckangabe",
+              "AVD"
+            ]
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Wintergarten und Dachausbau",
+          "text": "Die Zuordnungstabelle des BWB-Skripts trennt so: Der **Anbau** schafft neue Gebäudesubstanz (IVD), der **Ausbau** im Bestand ist Modernisierung (AVD)."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Allgemein-Verbraucherdarlehen",
+            "text": "Vermittlung mit Erlaubnis nach **§ 34c GewO**. Grundlage: Verbraucherkreditrichtlinie."
+          },
+          "right": {
+            "title": "Immobiliar-Verbraucherdarlehen",
+            "text": "Vermittlung mit Erlaubnis nach **§ 34i GewO**. Grundlage: Wohnimmobilienkreditrichtlinie."
+          }
+        },
+        {
+          "type": "example",
+          "title": "Sonderfall Blankodarlehen",
+          "text": "**Blankodarlehen** – also ohne eigene Sicherheit – für neue Fenster: grundsätzlich AVD. Hat die Bank aber schon eine Grundschuld mit **weiter Zweckerklärung**, die auch dieses Darlehen sichert, ist es ein IVD."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 491 Abs. 3 BGB",
+          "text": "Immobiliar-Verbraucherdarlehen: besichert durch Grundpfandrecht oder Reallast **oder** bestimmt für Erwerb oder Erhaltung des Eigentumsrechts."
+        },
+        {
+          "ref": "§ 34c / § 34i GewO",
+          "text": "Erlaubnis für die Vermittlung von Allgemein- bzw. Immobiliar-Verbraucherdarlehen."
+        }
+      ],
+      "memory": "Grundschuld ODER Erwerb/Erhalt des Eigentums = IVD. Alles andere = AVD.",
+      "examTrap": "Modernisierung ohne Grundschuld ist ein AVD. Dieselbe Modernisierung mit Grundschuld ist ein IVD – dann entscheidet die Sicherheit."
+    },
+    {
+      "id": "2.4.1-c",
+      "title": "Kreditwürdigkeitsprüfung",
+      "subtitle": "Zwei Maßstäbe – und harte Folgen für die Bank",
+      "ref": "BWB 2.4.1",
+      "examRelevance": "S",
+      "checkId": "2.4-Q014",
+      "content": [
+        {
+          "type": "text",
+          "text": "Vor **jedem** Verbraucherdarlehensvertrag muss der Darlehensgeber die Kreditwürdigkeit prüfen. Der Maßstab hängt von der Darlehensart ab:"
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "AVD",
+            "text": "Es dürfen **keine erheblichen Zweifel** bestehen, dass der Kunde zahlt. Es genügt, dass die Bank keine Negativmerkmale findet."
+          },
+          "right": {
+            "title": "IVD",
+            "text": "Es muss **wahrscheinlich** sein, dass der Kunde seine Pflichten erfüllt. Es braucht Punkte, die ausdrücklich **für** die Vergabe sprechen."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Kommt es zum Streit, weil das Darlehen notleidend geworden ist, muss **die Bank nachweisen**, dass sie sorgfältig geprüft hat."
+        },
+        {
+          "type": "list",
+          "title": "Folgen einer fehlerhaften Prüfung",
+          "items": [
+            "Der **Sollzins sinkt** auf einen marktüblichen Zinssatz: bei gebundenem Sollzins auf den Kapitalmarktzins für Hypothekenpfandbriefe, bei veränderlichem auf den Zins für Dreimonatsgeld unter europäischen Banken. Das gilt **rückwirkend ab Vertragsbeginn**.",
+            "Der Darlehensnehmer kann **jederzeit fristlos kündigen** – die Bank bekommt **keine Vorfälligkeitsentschädigung**."
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Diese Folgen treten nicht ein, wenn …",
+          "items": [
+            "… das Darlehen auch bei ordnungsgemäßer Prüfung hätte vergeben werden dürfen.",
+            "… der Mangel darauf beruht, dass der Kunde **vorsätzlich oder grob fahrlässig** falsche Angaben gemacht oder Angaben vorenthalten hat."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das BWB-Skript verbindet Zinssenkung und Kündigungsrecht mit „oder“. Nach § 505d BGB stehen dem Kunden **beide** Rechte zu."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 505a BGB",
+          "text": "Pflicht zur Kreditwürdigkeitsprüfung; Maßstab „keine erheblichen Zweifel“ (AVD) bzw. „wahrscheinlich“ (IVD)."
+        },
+        {
+          "ref": "§ 505d BGB",
+          "text": "Verstoß: Zinsermäßigung und fristloses Kündigungsrecht ohne Vorfälligkeitsentschädigung."
+        }
+      ],
+      "memory": "AVD: keine erheblichen Zweifel. IVD: wahrscheinlich. Prüft die Bank schlecht, zahlt sie mit Zins und Bindung.",
+      "examTrap": "Eine fehlerhafte Prüfung macht den Vertrag nicht nichtig. Er bleibt bestehen – zu schlechteren Bedingungen für die Bank."
+    },
+    {
+      "id": "2.4.2-a",
+      "title": "Transparenz: die allgemeinen Informationen",
+      "subtitle": "Was jeder Interessent erfahren kann, bevor er etwas über sich sagt",
+      "ref": "BWB 2.4.2",
+      "examRelevance": "S",
+      "checkId": "2.4-Q019",
+      "content": [
+        {
+          "type": "text",
+          "text": "Wer Immobiliar-Verbraucherdarlehen anbietet – Darlehensgeber und gebundene Vermittler –, muss **allgemeine Informationen** über diese Darlehen bereithalten. Sie sind **nicht personalisiert** – das unterscheidet sie vom ESIS-Merkblatt."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Gruppe",
+            "Pflichtangaben"
+          ],
+          "rows": [
+            [
+              "Wer und wofür",
+              "Identität und Anschrift des Anbieters · zulässige Verwendungszwecke"
+            ],
+            [
+              "Sicherheiten und Laufzeit",
+              "mögliche Sicherheiten (ggf. auch in einem anderen EU-Staat) · mögliche Laufzeiten"
+            ],
+            [
+              "Zins und Kosten",
+              "Arten von Sollzinsen (fest, veränderlich) mit ihren Konsequenzen · **repräsentatives Beispiel** mit Nettodarlehensbetrag, Gesamtkosten, Gesamtbetrag und effektivem Jahreszins · weitere Kosten außerhalb der Gesamtkosten"
+            ],
+            [
+              "Rückzahlung",
+              "Rückzahlungsoptionen mit Anzahl, Häufigkeit und Höhe der Raten · Bedingungen der vorzeitigen Rückzahlung · ggf. Hinweis, dass die vereinbarten Zahlungen das Darlehen nicht vollständig tilgen"
+            ],
+            [
+              "Bewertung, Nebenleistungen, Warnungen",
+              "ob eine **Immobilienbewertung** nötig ist, wer sie veranlasst und ob Kosten entstehen · Pflicht-Nebenleistungen und ob sie von einem anderen Anbieter stammen dürfen · allgemeine Warnung vor den Folgen bei Nichterfüllung"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Bei **Fremdwährungsdarlehen** sind zusätzlich die in Frage kommenden Währungen zu nennen und die möglichen Folgen für den Darlehensnehmer zu erläutern."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Allgemeine Informationen",
+            "text": "Für jeden Interessenten gleich. Rechenbeispiel ist **repräsentativ**. Schon vor jeder Angabe des Kunden verfügbar."
+          },
+          "right": {
+            "title": "ESIS-Merkblatt",
+            "text": "Auf den **einzelnen Kunden** zugeschnitten. Wird erst erstellt, wenn der Kunde seine Angaben gemacht hat."
+          }
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 675a BGB",
+          "text": "Informationspflicht für standardisierte Geschäfte; das BWB-Skript zitiert „Abs. 2“."
+        },
+        {
+          "ref": "Art. 247a § 1 EGBGB",
+          "text": "Katalog der Pflichtangaben."
+        }
+      ],
+      "memory": "Allgemeine Informationen = Schaufenster für alle. ESIS = Maßanfertigung für einen Kunden."
+    },
+    {
+      "id": "2.4.2-b",
+      "title": "Kündigung und vorzeitige Rückzahlung",
+      "subtitle": "Was die Bank darf – und wann der Kunde vorzeitig rauskommt",
+      "ref": "BWB 2.4.2",
+      "examRelevance": "S",
+      "checkId": "2.4-Q022",
+      "content": [
+        {
+          "type": "compare",
+          "left": {
+            "title": "Darlehensgeber",
+            "text": "Bei einem Allgemein-Verbraucherdarlehen **ohne feste Rückzahlungszeit** kann die Bank – wenn das vereinbart ist – die Auszahlung aus einem **sachlichen Grund** verweigern. Kündigen kann sie u. a., wenn der Kunde für die Kreditwürdigkeitsprüfung relevante Informationen **wissentlich vorenthalten oder gefälscht** hat."
+          },
+          "right": {
+            "title": "Darlehensnehmer",
+            "text": "Ein Allgemein-Verbraucherdarlehen **ohne feste Rückzahlungszeit** kann er ganz oder teilweise kündigen, **ohne eine Frist** einzuhalten. Eine vereinbarte Kündigungsfrist von **mehr als einem Monat** ist unwirksam."
+          }
+        },
+        {
+          "type": "note",
+          "title": "Eigene Prüffehler der Bank",
+          "text": "Allein deshalb, weil ihre Kreditwürdigkeitsprüfung mangelhaft war oder Angaben unvollständig waren, darf die Bank **nicht** kündigen oder den Vertrag ändern. Anders nur bei wissentlichem Vorenthalten oder Fälschen durch den Kunden."
+        },
+        {
+          "type": "text",
+          "text": "**Vorzeitige Rückzahlung beim IVD mit gebundenem Sollzins:** Während der Sollzinsbindung kann der Darlehensnehmer nur dann ganz oder teilweise vorzeitig zurückzahlen, wenn er ein **berechtigtes Interesse** hat."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Berechtigtes Interesse besteht z. B., wenn wegen **Arbeitslosigkeit, Scheidung oder beruflich bedingtem Umzug** die finanzierte Immobilie verkauft oder anders verwendet werden muss.",
+            "Eine **Kündigung ist dafür nicht nötig** – die vorzeitige Rückzahlung kann formlos erfolgen."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "Der bloße Wunsch, zu einer Bank mit **günstigerem Zins** zu wechseln, ist kein berechtigtes Interesse. Für die vorzeitige Rückzahlung kann die Bank eine Vorfälligkeitsentschädigung verlangen – mehr dazu in einem späteren Level."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 499 BGB",
+          "text": "Kündigungsrecht und Leistungsverweigerung des Darlehensgebers; keine Kündigung allein wegen mangelhafter Kreditwürdigkeitsprüfung."
+        },
+        {
+          "ref": "§ 500 BGB",
+          "text": "Kündigung durch den Darlehensnehmer; vorzeitige Rückzahlung, beim IVD mit gebundenem Sollzins nur bei berechtigtem Interesse."
+        }
+      ],
+      "memory": "Während der Zinsbindung raus aus dem IVD? Nur mit berechtigtem Interesse – dann aber ohne förmliche Kündigung.",
+      "examTrap": "„Jederzeit vorzeitig zurückzahlen“ gilt beim IVD mit festem Zins gerade nicht."
+    },
+    {
+      "id": "2.4.2-c",
+      "title": "Widerruf und Bedenkzeit",
+      "subtitle": "Wenn es kein Widerrufsrecht gibt, schützt die Bedenkzeit",
+      "ref": "BWB 2.4.2",
+      "examRelevance": "S",
+      "checkId": "2.4-Q027",
+      "content": [
+        {
+          "type": "text",
+          "text": "Zur Erinnerung aus Level 1: Die Widerrufsfrist beträgt **14 Tage**. Fehlen Pflichtangaben, beginnt sie erst mit der Nachholung und beträgt dann **einen Monat**. Beim IVD erlischt das Widerrufsrecht spätestens **ein Jahr und 14 Tage** nach Vertragsschluss."
+        },
+        {
+          "type": "text",
+          "text": "Fehlen im Darlehensvertrag die Pflichtangaben **zum Widerrufsrecht**, ist das eine **Pflichtverletzung des Darlehensgebers**. Der Darlehensnehmer kann **Schadensersatz** verlangen."
+        },
+        {
+          "type": "text",
+          "text": "**Bedenkzeit:** Bei manchen Immobiliar-Verbraucherdarlehen gibt es **kein Widerrufsrecht** – vor allem bei **notariell beurkundeten** Verträgen und bestimmten **Umschuldungen**. Dort tritt die Bedenkzeit an seine Stelle:"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Sie beträgt **mindestens sieben Tage**.",
+            "Sie beginnt mit der **Aushändigung des Vertragsangebots** an den Darlehensnehmer.",
+            "Der **Darlehensgeber ist** in dieser Zeit **an sein Angebot gebunden**.",
+            "Der Darlehensnehmer darf das Angebot **schon vor Ablauf** annehmen."
+          ]
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Widerrufsrecht",
+            "text": "Wirkt **nach** Vertragsschluss: Der Kunde kann sich wieder lösen."
+          },
+          "right": {
+            "title": "Bedenkzeit",
+            "text": "Wirkt **vor** Vertragsschluss: Der Kunde kann in Ruhe prüfen, die Bank kann nicht zurück."
+          }
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 495 Abs. 2 und 3 BGB",
+          "text": "Ausnahmen vom Widerrufsrecht; Bedenkzeit von mindestens sieben Tagen bei Immobiliar-Verbraucherdarlehen."
+        },
+        {
+          "ref": "§ 356b BGB",
+          "text": "Widerrufsfrist; Erlöschen beim IVD spätestens 12 Monate und 14 Tage nach Vertragsschluss."
+        }
+      ],
+      "memory": "Kein Widerruf? Dann sieben Tage Bedenkzeit – die Bank ist gebunden, der Kunde nicht.",
+      "examTrap": "Die Bedenkzeit ist keine Wartepflicht für den Kunden. Er darf früher unterschreiben."
+    },
+    {
+      "id": "2.4.3-a",
+      "title": "Statusinformationen des Vermittlers",
+      "subtitle": "Erst sagen, wer man ist – dann vermitteln",
+      "ref": "BWB 2.4.3",
+      "examRelevance": "S+P",
+      "checkId": "2.4-Q032",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Rechtzeitig vor Beginn** der Vermittlung oder Beratung muss der Immobiliardarlehensvermittler dem Kunden mitteilen, mit wem er es zu tun hat – auf einem dauerhaften Datenträger."
+        },
+        {
+          "type": "steps",
+          "title": "Die sieben Angaben",
+          "items": [
+            {
+              "title": "Identität",
+              "text": "Name und Anschrift des Vermittlers."
+            },
+            {
+              "title": "Register",
+              "text": "Name des Registers, Registrierungsnummer und wo sich der Eintrag überprüfen lässt."
+            },
+            {
+              "title": "Bindung",
+              "text": "Ob er an einen oder mehrere Darlehensgeber **gebunden** oder ausschließlich für sie tätig ist – dann mit den **Namen** dieser Darlehensgeber."
+            },
+            {
+              "title": "Beratung",
+              "text": "Ob er neben der Vermittlung auch **Beratungsleistungen** anbietet."
+            },
+            {
+              "title": "Vergütung",
+              "text": "Die **Methode**, nach der seine Vergütung berechnet wird, wenn die Höhe noch nicht feststeht."
+            },
+            {
+              "title": "Beschwerden",
+              "text": "Beschwerdemöglichkeiten und Zugang zu einem **außergerichtlichen** Beschwerde- und Rechtsbehelfsverfahren."
+            },
+            {
+              "title": "Provisionen",
+              "text": "Höhe der **Provisionen oder sonstigen Anreize** von Dritten in Euro. Steht der Betrag noch nicht fest: Hinweis, dass er später **im ESIS-Merkblatt** angegeben wird."
+            }
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Wichtig",
+          "text": "Genannt werden dürfen **nur Darlehensgeber, für die der Vermittler tatsächlich tätig ist**. Mit bekannten Namen zu werben, mit denen er nicht zusammenarbeitet, ist unzulässig."
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "Angaben des Kunden, die für die Kreditwürdigkeitsprüfung nötig sind, muss der Vermittler **richtig und vollständig** an den Darlehensgeber weitergeben. Etwas wegzulassen, damit die Finanzierung „durchgeht“, ist unzulässig."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "Art. 247 § 13b EGBGB",
+          "text": "Statusbezogene Informationspflichten des Immobiliardarlehensvermittlers; richtige und vollständige Weitergabe der Kundenangaben."
+        },
+        {
+          "ref": "§ 655a Abs. 2 BGB",
+          "text": "Der Darlehensvermittler ist gegenüber dem Verbraucher zur vorvertraglichen Information verpflichtet."
+        }
+      ],
+      "memory": "Wer bin ich, wo stehe ich im Register, für wen arbeite ich, berate ich, was verdiene ich, wo kann man sich beschweren.",
+      "examTrap": "„Provision noch unbekannt“ befreit nicht von der Angabe: Dann ist auf das ESIS-Merkblatt zu verweisen."
+    },
+    {
+      "id": "2.4.3-b",
+      "title": "Erläutern, Vertragsentwurf, Paketprodukte",
+      "subtitle": "Der Kunde soll selbst beurteilen können, ob das Darlehen passt",
+      "ref": "BWB 2.4.3",
+      "examRelevance": "S",
+      "checkId": "2.4-Q038",
+      "content": [
+        {
+          "type": "text",
+          "text": "Vor Vertragsschluss schuldet der Vermittler **angemessene Erläuterungen**. Der Darlehensnehmer soll beurteilen können, ob der Vertrag **seinem Zweck und seinen Vermögensverhältnissen** gerecht wird."
+        },
+        {
+          "type": "list",
+          "title": "Zu erläutern sind",
+          "items": [
+            "die **vorvertraglichen Informationen**,",
+            "die **Hauptmerkmale** der angebotenen Verträge,",
+            "die **vertragstypischen Auswirkungen** für den Darlehensnehmer – etwa die Folgen bei **Zahlungsverzug**."
+          ]
+        },
+        {
+          "type": "list",
+          "items": [
+            "**Paketprodukte:** Werden mit dem Darlehen weitere Finanzprodukte oder -dienstleistungen im Paket angeboten, ist zu erläutern, ob sie **gesondert gekündigt** werden können und welche **Folgen** die Kündigung hat.",
+            "**Vertragsentwurf:** Bei Übergabe eines Angebots ist dem Kunden anzubieten, einen Vertragsentwurf auszuhändigen oder zu übermitteln."
+          ]
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Erläutern",
+            "text": "Erklären, damit der Kunde **selbst** entscheiden kann. Immer geschuldet."
+          },
+          "right": {
+            "title": "Beraten",
+            "text": "Eine **individuelle Empfehlung** abgeben. Nur geschuldet, wenn Beratung vereinbart ist."
+          }
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 491a Abs. 2 BGB",
+          "text": "Vertragsentwurf: beim IVD mit dem Angebot anzubieten."
+        },
+        {
+          "ref": "§ 491a Abs. 3 BGB",
+          "text": "Angemessene Erläuterungen vor Vertragsschluss; Erläuterung von Paketprodukten."
+        }
+      ],
+      "memory": "Erläutern heißt erklären, nicht empfehlen."
+    },
+    {
+      "id": "2.4.3-c",
+      "title": "Das ESIS-Merkblatt",
+      "subtitle": "Europaweit gleich aufgebaut, für jeden Kunden einzeln erstellt",
+      "ref": "BWB 2.4.3",
+      "examRelevance": "S+P",
+      "checkId": "2.4-Q042",
+      "content": [
+        {
+          "type": "text",
+          "text": "**ESIS** steht für „European Standardised Information Sheet“. Das Merkblatt enthält die **vorvertraglichen Informationen** zum konkreten Darlehen – in **Textform** und mit **gesetzlich vorgegebenem Aufbau**. Es wird auf einem **dauerhaften Datenträger** übergeben: Papier, USB-Stick oder E-Mail."
+        },
+        {
+          "type": "list",
+          "title": "Inhalt",
+          "items": [
+            "Hauptmerkmale des Kredits, Zinssatz und Kosten",
+            "Häufigkeit, Höhe und Anzahl der Raten, Beispiel-Tilgungsplan",
+            "zusätzliche Auflagen (z. B. zulässige Kopplungsgeschäfte) und flexible Merkmale",
+            "Möglichkeiten der vorzeitigen Rückzahlung, Widerrufsrecht",
+            "Folgen, wenn der Darlehensnehmer seine Pflichten nicht einhält",
+            "Beschwerdestelle und Aufsichtsbehörde",
+            "Vergütung des Vermittlers und Grundlage seiner Empfehlung"
+          ]
+        },
+        {
+          "type": "steps",
+          "title": "Zeitpunkt",
+          "items": [
+            {
+              "title": "Kunde macht seine Angaben",
+              "text": "Bedarf, persönliche und finanzielle Situation, Präferenzen und Ziele. Das kann schon nach dem Erstgespräch der Fall sein."
+            },
+            {
+              "title": "ESIS unverzüglich",
+              "text": "Sobald die Angaben vorliegen – und **rechtzeitig vor** der Vertragserklärung des Kunden, damit er Angebote in Ruhe vergleichen kann."
+            },
+            {
+              "title": "Angebot ändert sich",
+              "text": "Der Kunde hat Anspruch auf ein **aktualisiertes** ESIS-Merkblatt."
+            },
+            {
+              "title": "Bindendes Angebot",
+              "text": "Jedem bindenden Vertragsangebot muss ein ESIS-Merkblatt beiliegen – außer der Kunde hat schon eines mit genau diesen Bedingungen."
+            }
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Keine Pflicht",
+          "text": "Bei einer **unverbindlichen Konditionsauskunft** muss kein ESIS-Merkblatt übergeben werden."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 491a Abs. 1 BGB",
+          "text": "Vorvertragliche Informationspflicht des Darlehensgebers."
+        },
+        {
+          "ref": "Art. 247 § 1 EGBGB",
+          "text": "Beim IVD: Information mit dem ESIS-Merkblatt – unverzüglich nach den Kundenangaben und rechtzeitig vor der Vertragserklärung."
+        }
+      ],
+      "memory": "Angaben da → ESIS raus. Angebot geändert → neues ESIS. Bindendes Angebot → ESIS dabei.",
+      "examTrap": "ESIS-Pflicht hängt nicht am Vertragsschluss. Sie entsteht, sobald die nötigen Kundenangaben vorliegen."
+    },
+    {
+      "id": "2.4.3-d",
+      "title": "Vergütung und Honorarberatung",
+      "subtitle": "Geld gibt es erst, wenn das Darlehen fließt und bleibt",
+      "ref": "BWB 2.4.3",
+      "examRelevance": "S",
+      "checkId": "2.4-Q049",
+      "content": [
+        {
+          "type": "text",
+          "text": "Der Vermittler eines Verbraucherdarlehens hat Anspruch auf die vereinbarte Vergütung – gegenüber dem Verbraucher aber nur unter engen Voraussetzungen:"
+        },
+        {
+          "type": "steps",
+          "title": "Vergütungsanspruch gegen den Verbraucher",
+          "items": [
+            {
+              "title": "Auszahlung",
+              "text": "Das Darlehen wird infolge der Vermittlung **an den Verbraucher geleistet**."
+            },
+            {
+              "title": "Kein Widerruf mehr",
+              "text": "Ein **Widerruf** des Darlehensvertrags ist nicht mehr möglich."
+            },
+            {
+              "title": "Bei Umschuldung",
+              "text": "Dient das Darlehen mit Wissen des Vermittlers der vorzeitigen Ablösung eines anderen Darlehens, darf sich der **effektive Jahreszins nicht erhöhen**."
+            }
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Ergänzung",
+          "text": "Der **Darlehensvermittlungsvertrag** mit einem Verbraucher braucht die **Schriftform** und darf **nicht mit dem Darlehensantrag verbunden** werden. Sonst ist er nichtig (§ 655b BGB)."
+        },
+        {
+          "type": "text",
+          "text": "**Vor einer Beratung** ist der Kunde auf einem dauerhaften Datenträger zu informieren,"
+        },
+        {
+          "type": "list",
+          "items": [
+            "wie hoch das **Entgelt** für die Beratung ist (oder wie es berechnet wird) und",
+            "ob die Empfehlung **nur oder im Wesentlichen auf eigenen Produkten** beruht oder auch auf einer **größeren Anzahl von Produkten anderer Anbieter**."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Honorar-Immobiliardarlehensberater** werden allein vom Kunden bezahlt. Sie dürfen vom Darlehensgeber **keine Zuwendungen annehmen** und nicht von ihm abhängig sein. Laut BWB-Skript unterliegen alle Informationen aus Vermittlung und Beratung dem Berufsgeheimnis."
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das BWB-Skript schreibt, Honorarberater müssten Provisionen und Zuwendungen von Darlehensgebern „offenlegen“. § 34i Abs. 5 GewO ist strenger: Sie dürfen sie **gar nicht annehmen**."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 655c BGB",
+          "text": "Vergütung nur, wenn das Darlehen geleistet ist und nicht mehr widerrufen werden kann; Sonderregel für Umschuldung."
+        },
+        {
+          "ref": "Art. 247 § 18 EGBGB",
+          "text": "Vorvertragliche Informationen bei Beratungsleistungen: Entgelt und Produktgrundlage."
+        },
+        {
+          "ref": "§ 34i Abs. 5 GewO",
+          "text": "Honorar-Immobiliardarlehensberater: keine Zuwendungen vom Darlehensgeber, keine Abhängigkeit."
+        }
+      ],
+      "memory": "Vergütung vom Verbraucher: ausgezahlt + nicht mehr widerrufbar.",
+      "examTrap": "Die Unterschrift unter dem Darlehensvertrag löst noch keinen Vergütungsanspruch aus."
+    },
+    {
+      "id": "2.4.4-a",
+      "title": "Beratung nach § 511 BGB",
+      "subtitle": "Eine eigene Leistung – mit festem Ablauf",
+      "ref": "BWB 2.4.4",
+      "examRelevance": "S+P",
+      "checkId": "2.4-Q054",
+      "content": [
+        {
+          "type": "text",
+          "text": "Gesetzliche Vorgaben für die Beratung gibt es **nur bei Immobiliar-Verbraucherdarlehen**. Für Allgemein-Verbraucherdarlehen bestehen weiterhin keine."
+        },
+        {
+          "type": "text",
+          "text": "Die Beratung ist eine **gesonderte Leistung**, die mit der Gewährung oder Vermittlung eines Darlehens kombiniert werden **kann**. Der Kunde kann deshalb **auf Beratung verzichten**."
+        },
+        {
+          "type": "steps",
+          "title": "Ablauf der Beratung",
+          "items": [
+            {
+              "title": "Vorab informieren",
+              "text": "Vorvertragliche Informationen zur Beratung übergeben: Entgelt und Produktgrundlage der Empfehlung."
+            },
+            {
+              "title": "Informationen einholen",
+              "text": "**Bedarf**, **persönliche und finanzielle Situation**, **Präferenzen und Ziele** des Darlehensnehmers – soweit für eine passende Empfehlung erforderlich."
+            },
+            {
+              "title": "Geeignetheit prüfen",
+              "text": "Eine **ausreichende Anzahl** von Darlehensverträgen prüfen – auf Grundlage **aktueller** Informationen und **realistischer** Annahmen zu den Risiken während der Laufzeit."
+            },
+            {
+              "title": "Empfehlen",
+              "text": "Ein geeignetes oder mehrere geeignete Produkte empfehlen – oder darauf hinweisen, dass **keine Empfehlung** möglich ist."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Beratungsbedarf ermitteln:** Der Berater darf vom Leitbild des **durchschnittlichen Verbrauchers** ausgehen – solange Rückfragen oder andere Anhaltspunkte keinen **erhöhten Beratungsbedarf** zeigen. Dazu erfragt er Kenntnisse und Erfahrungen mit Immobiliar-Verbraucherdarlehen: Art, Umfang, Häufigkeit und Zeitraum früherer Geschäfte."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 511 Abs. 1 BGB",
+          "text": "Vor der Beratung: Information nach Art. 247 § 18 EGBGB."
+        },
+        {
+          "ref": "§ 511 Abs. 2 BGB",
+          "text": "Informationen einholen, ausreichende Zahl von Verträgen auf Geeignetheit prüfen."
+        }
+      ],
+      "memory": "Informieren – erfragen – prüfen – empfehlen.",
+      "examTrap": "Der Verzicht auf Beratung lässt Statusinformationen, Erläuterungen und ESIS-Merkblatt unberührt."
+    },
+    {
+      "id": "2.4.4-b",
+      "title": "Risiken und Kapitaldienstfähigkeit",
+      "subtitle": "Aktuelle Daten, realistische Annahmen, ehrliche Empfehlung",
+      "ref": "BWB 2.4.4",
+      "examRelevance": "S+P",
+      "checkId": "2.4-Q058",
+      "content": [
+        {
+          "type": "text",
+          "text": "Geprüft wird eine **ausreichende Anzahl** von Darlehensverträgen – wie viele, hängt davon ab, wer berät:"
+        },
+        {
+          "type": "list",
+          "items": [
+            "**Darlehensgeber:** zumindest Verträge aus der **eigenen Produktpalette**.",
+            "**Ungebundener Vermittler:** eine ausreichende Zahl **am Markt verfügbarer** Verträge.",
+            "**Gebundener Vermittler:** die Produktpalette **seiner Darlehensgeber**."
+          ]
+        },
+        {
+          "type": "list",
+          "items": [
+            "**Aktuell** sind Informationen, solange sie im üblichen Arbeitsablauf erfasst und ausgewertet werden können. Ist seit der Erfassung **längere Zeit vergangen**, muss der Berater nach Änderungen fragen.",
+            "**Realistisch** heißt nicht „risikoarm“ – aber auch nicht die auf Zufall gestützte Hoffnung, dass die Laufzeit ohne Störung verläuft."
+          ]
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Individuelle Risikofaktoren",
+            "text": "Lebensumstände dieses Kunden, die sich in der Laufzeit ungünstig auswirken können – etwa der **Wechselkurs beim Fremdwährungsdarlehen** oder der **absehbare Renteneintritt**."
+          },
+          "right": {
+            "title": "Allgemeine Lebensrisiken",
+            "text": "Treffen jeden: **Berufsunfähigkeit** und **Arbeitslosigkeit**. Auch sie sind einzubeziehen."
+          }
+        },
+        {
+          "type": "example",
+          "title": "Mangelnde Kapitaldienstfähigkeit",
+          "text": "Der Kunde hat ein **befristetes Arbeitsverhältnis** ohne Aussicht auf Verlängerung, Übernahme oder Ersatz. Ein Darlehen kommt nicht in Frage – die Beratung kann hier **vorzeitig enden**."
+        },
+        {
+          "type": "text",
+          "text": "Am Ende steht die **Empfehlung** eines oder mehrerer geeigneter Produkte – oder der **Hinweis, dass kein Produkt empfohlen werden kann**. Beides erhält der Darlehensnehmer auf einem **dauerhaften Datenträger**."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 511 Abs. 2 BGB",
+          "text": "Prüfung auf Grundlage aktueller Informationen und realistischer Annahmen zu den Risiken während der Laufzeit."
+        },
+        {
+          "ref": "§ 511 Abs. 3 BGB",
+          "text": "Empfehlung oder Hinweis, dass keine Empfehlung möglich ist – auf dauerhaftem Datenträger."
+        },
+        {
+          "ref": "§ 655a Abs. 3 BGB",
+          "text": "Beratung durch den Vermittler: ausreichende Zahl am Markt verfügbarer Verträge; gebundene Vermittler nur aus der Palette ihrer Darlehensgeber."
+        }
+      ],
+      "memory": "Lieber keine Empfehlung als eine unpassende – und auch das „Nein“ gehört auf einen dauerhaften Datenträger.",
+      "examTrap": "„Ausreichende Anzahl“ heißt nicht „alle Angebote am Markt“. Auf die eigene Palette beschränken dürfen sich aber nur Bank und gebundener Vermittler."
+    },
+    {
+      "id": "2.4.4-c",
+      "title": "Dokumentation und Objektbewertung",
+      "subtitle": "Was Pflicht ist – und was nur klug",
+      "ref": "BWB 2.4.4",
+      "examRelevance": "S",
+      "checkId": "2.4-Q064",
+      "content": [
+        {
+          "type": "compare",
+          "left": {
+            "title": "Gesetzliche Pflicht",
+            "text": "Das **ESIS-Merkblatt** kann zur Dokumentation der Beratung dienen. Empfehlung oder Hinweis „keine Empfehlung“ auf dauerhaftem Datenträger."
+          },
+          "right": {
+            "title": "Empfehlung",
+            "text": "Ein **gesondertes Beratungsprotokoll** schreibt das Gesetz **nicht** vor. Wegen möglicher Rechtsstreitigkeiten ist es aber ratsam."
+          }
+        },
+        {
+          "type": "list",
+          "title": "Sinnvolle Inhalte eines Beratungsprotokolls",
+          "items": [
+            "Namen von Kunde und Berater, Beratungsdatum",
+            "Finanzierungsbedarf und finanzielle Situation",
+            "Kenntnisse und Erfahrungen mit Immobiliar-Verbraucherdarlehen",
+            "Präferenzen, Ziele und Wünsche",
+            "Prüfung der allgemeinen und speziellen Risiken",
+            "Empfehlung und wesentliche Gründe dafür",
+            "übergebene Unterlagen",
+            "**schriftliche Bestätigung des Kunden**, falls er eine Beratung ablehnt"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Trennung von Kreditentscheidung und Objektbewertung:** Kreditinstitute, die grundpfandrechtlich oder durch Reallast besicherte Immobiliar-Verbraucherdarlehen vergeben, müssen"
+        },
+        {
+          "type": "list",
+          "items": [
+            "bei der Bewertung **zuverlässige Standards** anwenden,",
+            "sicherstellen, dass **interne und externe Gutachter** fachlich kompetent und **vom Darlehensvergabeprozess unabhängig** sind,",
+            "die Bewertung auf einem **dauerhaften Datenträger dokumentieren und aufbewahren**."
+          ]
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 505c BGB",
+          "text": "Pflichten bei grundpfandrechtlich oder durch Reallast besicherten Immobiliar-Verbraucherdarlehen: Bewertungsstandards, unabhängige Gutachter, Dokumentation."
+        }
+      ],
+      "memory": "Protokoll: keine Pflicht, aber Schutz. Gutachter: intern erlaubt, abhängig nicht.",
+      "examTrap": "„Unabhängig“ heißt nicht „extern“. Auch ein Angestellter der Bank darf bewerten, wenn er nicht an der Kreditentscheidung beteiligt ist."
+    },
+    {
+      "id": "2.4.5-a",
+      "title": "Kreditwesengesetz",
+      "subtitle": "Stabile Banken, sichere Einlagen, geschützte Verbraucher",
+      "ref": "BWB 2.4.5",
+      "examRelevance": "S",
+      "checkId": "2.4-Q068",
+      "content": [
+        {
+          "type": "list",
+          "title": "Drei Zwecke des KWG",
+          "items": [
+            "**Funktionsfähigkeit** der Kreditwirtschaft sichern",
+            "**Einlagen** der Gläubiger von Kreditinstituten schützen",
+            "**Verbraucher** schützen"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Die Aufsicht übt die **Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin)** aus."
+        },
+        {
+          "type": "list",
+          "title": "So wird die Funktionsfähigkeit einer Bank gesichert",
+          "items": [
+            "jederzeitige Zahlungsfähigkeit (**Liquidität**)",
+            "angemessenes haftendes **Eigenkapital**",
+            "**Risikostreuung** im Kreditportfolio",
+            "Begrenzung von **Großkrediten**",
+            "Unabhängigkeit der Geschäftsführung von Einflussnahmen der Anteilseigner"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Der **Verbraucherschutz** des KWG setzt bei der **Kreditwürdigkeitsprüfung** an – mit denselben Maßstäben wie im BGB. Wird der Nettodarlehensbetrag nach Vertragsschluss **deutlich erhöht**, ist **neu zu prüfen** – es sei denn, der Erhöhungsbetrag war schon in die erste Prüfung einbezogen."
+        },
+        {
+          "type": "text",
+          "text": "Für Immobiliar-Verbraucherdarlehen gilt zusätzlich:"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Die Prüfung muss **eingehend** sein und auf notwendigen, ausreichenden und angemessenen Informationen zu **Einkommen, Ausgaben** und sonstigen wirtschaftlichen Umständen beruhen.",
+            "Sie darf **nicht hauptsächlich** darauf gestützt werden, dass der **Wert der Immobilie** voraussichtlich steigt oder den Darlehensbetrag übersteigt. Ausnahme: Das Darlehen dient dem Bau oder der Renovierung der Wohnimmobilie."
+          ]
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 18a KWG",
+          "text": "Kreditwürdigkeitsprüfung bei Verbraucherdarlehen; besondere Anforderungen beim Immobiliar-Verbraucherdarlehen."
+        },
+        {
+          "ref": "§ 6 KWG",
+          "text": "Aufgaben der BaFin."
+        }
+      ],
+      "memory": "Geprüft wird der Mensch, nicht das Haus.",
+      "examTrap": "Eine wertvolle Immobilie ersetzt keine Zahlungsfähigkeit: Der erwartete Wertzuwachs darf nicht der Hauptgrund für die Kreditzusage sein."
+    },
+    {
+      "id": "2.4.6-a",
+      "title": "Geldwäsche: Grundlagen und Sorgfaltspflichten",
+      "subtitle": "Wann geprüft werden muss – und wer verantwortlich bleibt",
+      "ref": "BWB 2.4.6",
+      "examRelevance": "S",
+      "checkId": "2.4-Q072",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Geldwäsche** ist das Einschleusen illegal erlangter Vermögenswerte in den **legalen Wirtschaftskreislauf**. So sollen sie erhalten bleiben und dem Zugriff der Strafverfolgung entzogen werden. Bekämpft wird sie durch den Straftatbestand **§ 261 StGB** und durch das **Geldwäschegesetz (GwG)**."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Stufe",
+            "Wann?"
+          ],
+          "rows": [
+            [
+              "**Allgemeine** Sorgfaltspflichten",
+              "Regelfall"
+            ],
+            [
+              "**Vereinfachte** Sorgfaltspflichten",
+              "Geringes Risiko nach Risikobewertung – z. B. inländische Behörden, börsennotierte Unternehmen, Kreditinstitute aus der EU"
+            ],
+            [
+              "**Verstärkte** Sorgfaltspflichten",
+              "Erhöhtes Risiko – z. B. politisch exponierte Personen, Kunde bei der Identifizierung nicht anwesend, zweifelhafte oder ungewöhnliche Sachverhalte, Zahlungen aus oder in Risikoländer"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Allgemeine Sorgfaltspflichten",
+          "items": [
+            "**Identifizierung** des Vertragspartners und der für ihn auftretenden Person",
+            "Informationen zu **Zweck und Art** der Geschäftsbeziehung",
+            "Abklärung und Identifizierung eines **wirtschaftlich Berechtigten**",
+            "Feststellung, ob Vertragspartner oder wirtschaftlich Berechtigter eine **politisch exponierte Person** ist",
+            "**laufende Überwachung** der Geschäftsbeziehung und der Transaktionen"
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Sie sind anzuwenden",
+          "items": [
+            "bei **Begründung einer Geschäftsbeziehung**",
+            "bei gelegentlichen Transaktionen ab **15.000 €** – auch wenn die Summe in kleinere Beträge aufgeteilt wird (**Smurfing**)",
+            "im **Verdachtsfall** – unabhängig vom Betrag",
+            "bei **Zweifeln an der Identität** des Vertragspartners, des Auftretenden oder des wirtschaftlich Berechtigten"
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Rolle des Vermittlers",
+          "text": "Verpflichtete nach dem GwG sind vor allem die **Kreditinstitute**. Identifiziert der Vermittler den Kunden für die Bank, handelt er in ihrem Auftrag – die **Verantwortung bleibt bei der Bank** (§ 17 GwG). Wer zugleich Immobilienmakler ist, hat eigene Pflichten."
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das BWB-Skript nennt für § 261 StGB noch „drei Monate bis fünf Jahre“. Seit 2021 lautet der Strafrahmen: **Freiheitsstrafe bis zu fünf Jahren oder Geldstrafe**. Auch die Paragraphen des GwG sind im Skript nach alter Zählung zitiert; die Anker unten nennen den heutigen Stand."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 10 GwG",
+          "text": "Allgemeine Sorgfaltspflichten und ihre Auslöser."
+        },
+        {
+          "ref": "§§ 14, 15 GwG",
+          "text": "Vereinfachte und verstärkte Sorgfaltspflichten."
+        },
+        {
+          "ref": "§ 17 GwG",
+          "text": "Ausführung durch Dritte; die Verantwortung bleibt beim Verpflichteten."
+        },
+        {
+          "ref": "§ 261 StGB",
+          "text": "Geldwäsche: Freiheitsstrafe bis zu fünf Jahren oder Geldstrafe."
+        }
+      ],
+      "memory": "Neue Geschäftsbeziehung, 15.000 €, Verdacht, Identitätszweifel – vier Auslöser.",
+      "examTrap": "Die 15.000-€-Schwelle gilt nur für gelegentliche Transaktionen. Bei Verdacht ist jeder Betrag genug."
+    },
+    {
+      "id": "2.4.6-b",
+      "title": "Identifizieren, wirtschaftlich Berechtigter, PEP",
+      "subtitle": "Wer steckt wirklich hinter dem Geschäft?",
+      "ref": "BWB 2.4.6",
+      "examRelevance": "S",
+      "checkId": "2.4-Q077",
+      "content": [
+        {
+          "type": "steps",
+          "title": "Identifizieren = zwei Schritte",
+          "items": [
+            {
+              "title": "Feststellen",
+              "text": "Angaben zur Person erheben."
+            },
+            {
+              "title": "Überprüfen",
+              "text": "Die Angaben anhand von Dokumenten prüfen."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Identifiziert wird, **bevor** die Geschäftsbeziehung begründet oder die Transaktion ausgeführt wird."
+        },
+        {
+          "type": "table",
+          "head": [
+            "",
+            "Angaben",
+            "Überprüfung"
+          ],
+          "rows": [
+            [
+              "**Natürliche Person**",
+              "Vor- und Nachname, Geburtsort, Geburtsdatum, Staatsangehörigkeit, Anschrift",
+              "Gültiger **Personalausweis, Reisepass** oder gleichwertiger amtlicher Lichtbildausweis"
+            ],
+            [
+              "**Juristische Person, Personengesellschaft**",
+              "Firma bzw. Name, Rechtsform, Registernummer, Anschrift des Sitzes, Mitglieder des Vertretungsorgans bzw. gesetzliche Vertreter",
+              "Auszug aus dem **Handels- oder Genossenschaftsregister**, Gründungsdokumente – die Einsicht in die Registerdaten genügt"
+            ]
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Nicht ausreichend",
+          "text": "Der **Führerschein** genügt für die Identifizierung nicht. Das BWB-Skript nennt bei den Angaben zusätzlich Geburtsname und Beruf; § 11 GwG verlangt sie nicht."
+        },
+        {
+          "type": "text",
+          "text": "**Wirtschaftlich Berechtigter** ist die natürliche Person, in deren Eigentum oder unter deren Kontrolle der Vertragspartner letztlich steht oder auf deren Veranlassung gehandelt wird. Bei Gesellschaften wird das vermutet, wenn jemand unmittelbar oder mittelbar **mehr als 25 %** der Kapital- oder Stimmrechtsanteile hält."
+        },
+        {
+          "type": "text",
+          "text": "**Politisch exponierte Person (PEP):** wer ein **hochrangiges öffentliches Amt** ausübt. **Familienmitglieder** und bekanntermaßen nahestehende Personen werden **wie eine PEP behandelt**."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Auf den **Wohnsitz kommt es nicht an**: Auch Abgeordnete des Bundestags oder des Europäischen Parlaments sind PEP.",
+            "Zu prüfen ist der Status beim **Vertragspartner und beim wirtschaftlich Berechtigten**.",
+            "Im Regelfall gelten **verstärkte Sorgfaltspflichten** mit besonderen **Genehmigungsabläufen**.",
+            "Die verstärkten Sorgfaltspflichten selbst können **nicht auf Dritte übertragen** werden – die **Abklärung des PEP-Status** dagegen schon."
+          ]
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§§ 11, 12 GwG",
+          "text": "Identifizierung: Zeitpunkt, zu erhebende Angaben, Überprüfung."
+        },
+        {
+          "ref": "§ 3 GwG",
+          "text": "Wirtschaftlich Berechtigter; Vermutung bei mehr als 25 % der Kapital- oder Stimmrechtsanteile."
+        },
+        {
+          "ref": "§ 1 Abs. 12–14, § 15 GwG",
+          "text": "Politisch exponierte Person, Familienmitglieder, nahestehende Personen; verstärkte Sorgfaltspflichten."
+        }
+      ],
+      "memory": "Erst feststellen, dann überprüfen – und immer vor dem Geschäft.",
+      "examTrap": "Genau 25 % reichen nicht. Die Vermutung greift erst bei **mehr als** 25 %."
+    }
+  ]
+}

@@ -1,0 +1,505 @@
+{
+  "chapter": "3.4",
+  "title": "Konditionenvergleich",
+  "sources": [
+    "BWB-Lernskripte 3.4.1 bis 3.4.9 (9 PDFs: Besicherung, effektiver Jahreszins, variabler Zins, Zinsfestschreibung, Tilgungssatz, Sondertilgung, tilgungsfreie Zeiten, Laufzeit, Sollzinsbindung)",
+    "PAngV §§ 16, 17",
+    "BGB § 489"
+  ],
+  "sections": [
+    {
+      "id": "3.4.1-a",
+      "title": "Beleihungsauslauf und Zins",
+      "subtitle": "Warum mehr Eigenkapital den Zins senkt",
+      "ref": "BWB 3.4.1, S. 2–4",
+      "examRelevance": "S+P",
+      "checkId": "3.4-Q001",
+      "content": [
+        {
+          "type": "text",
+          "text": "Die Grundschuld sichert der Bank die Rückzahlung: Fällt der Kredit aus, wird die Immobilie verwertet. Wie gut diese Sicherheit das Darlehen deckt, zeigt der **Beleihungsauslauf**."
+        },
+        {
+          "type": "steps",
+          "title": "So wird gerechnet",
+          "items": [
+            {
+              "title": "Beleihungswert",
+              "text": "Der Wert, der sich bei vorsichtiger Betrachtung auch mittel- und langfristig erzielen lässt. Er liegt meist unter dem Kaufpreis."
+            },
+            {
+              "title": "Beleihungsauslauf",
+              "text": "Darlehen ÷ Beleihungswert."
+            },
+            {
+              "title": "Folge",
+              "text": "Je höher der Auslauf, desto größer das Risiko der Bank – und desto höher der Zinsaufschlag."
+            }
+          ]
+        },
+        {
+          "type": "example",
+          "title": "Skriptbeispiel",
+          "text": "Kaufpreis 350.000 €, Beleihungswert 300.000 €. Mit 150.000 € Darlehen beträgt der Auslauf 150.000 ÷ 300.000 = **50 %** – kein Risikoaufschlag. Mit 250.000 € Darlehen sind es 250.000 ÷ 300.000 = **83,3 %** – die Bank verlangt einen Aufschlag, eine Art Versicherungsprämie."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Maßnahme",
+            "Rechnung",
+            "Auslauf"
+          ],
+          "rows": [
+            [
+              "Ausgangslage",
+              "250.000 ÷ 300.000",
+              "83,3 %"
+            ],
+            [
+              "**Zusatzsicherheit**: Sparbrief 15.000 € verpfändet",
+              "250.000 ÷ (300.000 + 15.000)",
+              "79,4 %"
+            ],
+            [
+              "**Mehr Eigenkapital**: Schenkung der Eltern 15.000 €",
+              "(250.000 − 15.000) ÷ 300.000",
+              "78,3 %"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Bei Darlehen **ohne Besicherung** (Blankodarlehen) ist der Zins meist deutlich höher: Ein großer Teil davon ist Risikoprämie."
+        }
+      ],
+      "laws": [],
+      "memory": "Auslauf = Darlehen ÷ Beleihungswert. Sicherheit erhöht den Nenner, Eigenkapital senkt den Zähler.",
+      "examTrap": "Gerechnet wird mit dem Beleihungswert, nicht mit dem Kaufpreis. Der Auslauf ist deshalb höher, als der Kunde erwartet."
+    },
+    {
+      "id": "3.4.1-b",
+      "title": "1a, 1b und Scoring",
+      "subtitle": "Tranchen und Kundenrisiko",
+      "ref": "BWB 3.4.1, S. 5",
+      "examRelevance": "S+P",
+      "checkId": "3.4-Q006",
+      "content": [
+        {
+          "type": "text",
+          "text": "Ein Darlehen kann in **Tranchen** aufgeteilt werden – auch auf verschiedene Darlehensgeber."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Tranche",
+            "Bereich des Beleihungsauslaufs",
+            "Zins"
+          ],
+          "rows": [
+            [
+              "**1a-Darlehen**",
+              "erstrangig, meist bis 60 %",
+              "am günstigsten"
+            ],
+            [
+              "**1b-Darlehen**",
+              "über 60 bis 80 %",
+              "risikoreicher und teurer"
+            ],
+            [
+              "Darüber hinaus",
+              "über 80 %",
+              "deutlicher Aufschlag oder Zusatzsicherheiten"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Neben dem Objekt bewertet der Kreditgeber den Kunden. Ein **Scoring** schätzt mit statistischen Methoden die **Ausfallwahrscheinlichkeit**. Viele Kreditgeber rechnen selbst und nutzen zusätzlich Scores von Auskunfteien wie der Schufa. Ist die Ausfallwahrscheinlichkeit hoch, kann der Kreditgeber einen **Sollzinsaufschlag** verlangen."
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "60 % und 80 % sind bankübliche Grenzen, keine für alle Anbieter geltenden gesetzlichen Vorgaben. Einzelheiten zum Beleihungswert folgen in Level 21."
+        }
+      ],
+      "laws": [],
+      "memory": "1a bis 60 %, 1b bis 80 % – je weiter hinten, desto teurer.",
+      "examTrap": "1a und 1b beschreiben den Beleihungsauslauf, nicht die Bonität des Kunden. Die Bonität fließt über das Scoring ein."
+    },
+    {
+      "id": "3.4.2-a",
+      "title": "Der effektive Jahreszins",
+      "subtitle": "Die Vergleichsgröße für Kreditkosten",
+      "ref": "BWB 3.4.2, S. 2–3",
+      "examRelevance": "S+P",
+      "checkId": "3.4-Q010",
+      "content": [
+        {
+          "type": "text",
+          "text": "Der **effektive Jahreszins** drückt die **Gesamtkosten** des Darlehens als jährlichen Prozentsatz des Nettodarlehensbetrags aus. Er soll dem Kunden ermöglichen, verschiedene Darlehen anhand ihrer Kosten zu vergleichen. Deshalb ist er Pflichtbestandteil des **ESIS-Merkblatts**."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "In den Gesamtkosten enthalten",
+            "text": "Sollzinsen. Kosten eines Kontos, das Voraussetzung für das Darlehen ist. Kosten der Immobilienbewertung, soweit der Kunde sie trägt. Kosten der **Grundschuldeintragung beim Grundbuchamt**. Vermittlungskosten, die der Kunde direkt trägt."
+          },
+          "right": {
+            "title": "Nicht enthalten",
+            "text": "**Notarkosten**. Kosten der **Eigentumsumschreibung** im Grundbuch. Kosten bei Vertragsverletzung (Verzug). Versicherungen und Zusatzleistungen, die keine Voraussetzung für das Darlehen sind. Kosten, die bei Angebotserstellung nicht bekannt sind, etwa **Bereitstellungszinsen**."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Der **Sollzins** ist nur der Preis für das geliehene Geld. Der effektive Jahreszins liegt in der Regel darüber, weil er weitere Kosten und die Zahlungstermine einrechnet."
+        },
+        {
+          "type": "text",
+          "text": "Sind zusätzliche Verträge Voraussetzung für das Darlehen – etwa eine Versicherung –, deren Kosten noch nicht feststehen, muss darauf klar, eindeutig und auffallend hingewiesen werden."
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das Skript nennt § 6 PAngV. Seit der Neufassung der Preisangabenverordnung 2022 steht die Regelung in **§ 16 PAngV**, die Werbung in § 17. Der Inhalt ist derselbe."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 16 Abs. 1 PAngV",
+          "text": "Wer Verbrauchern Verbraucherdarlehen anbietet, hat als Preis die Gesamtkosten als jährlichen Prozentsatz des Nettodarlehensbetrags anzugeben und als effektiven Jahreszins zu bezeichnen."
+        },
+        {
+          "ref": "§ 16 Abs. 3 und 4 PAngV",
+          "text": "Einzubeziehen sind Zinsen und alle sonstigen Kosten einschließlich Vermittlungskosten; nicht einzubeziehen sind unter anderem Notarkosten und Gebühren für die Eintragung der Eigentumsübertragung."
+        }
+      ],
+      "memory": "Grundschuld beim Grundbuchamt: drin. Notar und Eigentumsumschreibung: draußen.",
+      "examTrap": "Grundbuchkosten sind nicht gleich Grundbuchkosten: Die Grundschuldeintragung zählt mit, die Eigentumsumschreibung nicht."
+    },
+    {
+      "id": "3.4.2-b",
+      "title": "Effektivzins: Annahmen und Werbung",
+      "subtitle": "Was hinter der Zahl steckt",
+      "ref": "BWB 3.4.2, S. 3–5",
+      "examRelevance": "S+P",
+      "checkId": "3.4-Q016",
+      "content": [
+        {
+          "type": "list",
+          "title": "Annahmen",
+          "items": [
+            "Der effektive Jahreszins wird für die **gesamte Darlehenslaufzeit** berechnet.",
+            "Ist die Sollzinsbindung kürzer als die Laufzeit, wird für die Zeit danach ein **Sollzins angenommen und ausgewiesen**.",
+            "Bei Kombinationen aus Vorausdarlehen und Bausparvertrag gibt es **einen** effektiven Jahreszins für die gesamte Kombination. Früher hieß er „Gesamteffektivzins“ – heute gilt nur noch der Begriff „effektiver Jahreszins“."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Berechnung:** Alle Zahlungen werden mit dem effektiven Jahreszins auf den Auszahlungstermin abgezinst. Der Zinssatz, bei dem die Auszahlung an den Kunden genauso viel wert ist wie alle seine Zahlungen zusammen, ist der effektive Jahreszins. Das rechnet der Computer. Weil nur Zahlungsströme zählen, lassen sich auch Annuitätendarlehen und Kombi-Darlehen miteinander vergleichen."
+        },
+        {
+          "type": "list",
+          "title": "Regeln für die Werbung",
+          "items": [
+            "Der effektive Jahreszins ist **mindestens genauso hervorzuheben** wie jeder andere Zinssatz.",
+            "Es ist ein **repräsentatives Beispiel** zu nennen.",
+            "Maßstab: **Zwei Drittel** der zustande kommenden Verträge werden voraussichtlich zu diesem oder einem günstigeren effektiven Jahreszins abgeschlossen. Mit Bestkonditionen darf nicht geworben werden."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Der effektive Jahreszins macht nur Angebote mit **gleichen Voraussetzungen** vergleichbar: gleicher Betrag, gleiche Zinsbindung, gleiche Tilgung. Sondertilgungsrechte oder bereitstellungszinsfreie Zeiten zeigt er nicht."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 17 PAngV",
+          "text": "Regelt die Werbung für Verbraucherdarlehen: Pflichtangaben, repräsentatives Beispiel und die Zwei-Drittel-Regel."
+        }
+      ],
+      "memory": "Werbung: repräsentatives Beispiel, zwei Drittel der Kunden müssen es erreichen.",
+      "examTrap": "Ein niedrigerer Effektivzins bedeutet nicht automatisch das bessere Angebot – etwa wenn die Zinsbindungen verschieden lang sind."
+    },
+    {
+      "id": "3.4.3-a",
+      "title": "Variabler Zinssatz",
+      "subtitle": "Flexibel, aber ohne Planungssicherheit",
+      "ref": "BWB 3.4.3, S. 2",
+      "examRelevance": "S+P",
+      "checkId": "3.4-Q021",
+      "content": [
+        {
+          "type": "text",
+          "text": "Beim variablen Darlehen wird der Sollzins nur für eine **kurze Frist** festgelegt, meist drei Monate, und dann angepasst. Basis ist in der Regel der **EURIBOR** – der Zins, den Banken im Handel untereinander zahlen – zuzüglich einer **Zinsmarge**."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Vorteil",
+            "text": "Bei **sinkenden oder gleichbleibenden Zinsen** kann er günstiger sein als ein länger festgeschriebener Zins. Bei gleicher Rate bleibt mehr für die Tilgung. Der Kunde bleibt flexibel."
+          },
+          "right": {
+            "title": "Risiko",
+            "text": "Bei **steigenden Zinsen** wird die Finanzierung teurer als geplant. Der Kunde kann dann aber in eine Zinsfestschreibung wechseln."
+          }
+        },
+        {
+          "type": "list",
+          "title": "Typische Einsatzfälle",
+          "items": [
+            "Das alte Haus ist noch nicht verkauft – **flexible Überbrückung** bis zum Verkauf.",
+            "Der Kunde nimmt das Prolongationsangebot nicht an und **sucht am Markt** nach einer Alternative.",
+            "Die Bank will **kein Prolongationsangebot** vorlegen, das Darlehen aber auch nicht kündigen."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Ein variables Darlehen kann jederzeit mit drei Monaten Frist gekündigt oder sondergetilgt werden – ohne Vorfälligkeitsentschädigung."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 489 Abs. 2 BGB",
+          "text": "Ein Darlehen mit veränderlichem Zinssatz kann der Darlehensnehmer jederzeit unter Einhaltung einer Kündigungsfrist von drei Monaten kündigen."
+        }
+      ],
+      "memory": "Variabel = EURIBOR plus Marge, Anpassung meist alle drei Monate.",
+      "examTrap": "Variabel ist kein Dauerprodukt für die Baufinanzierung, sondern eine Übergangslösung."
+    },
+    {
+      "id": "3.4.4-a",
+      "title": "Zinsfestschreibung",
+      "subtitle": "Sicherheit hat ihren Preis",
+      "ref": "BWB 3.4.4, S. 2–3 und 3.4.9, S. 2",
+      "examRelevance": "S+P",
+      "checkId": "3.4-Q025",
+      "content": [
+        {
+          "type": "text",
+          "text": "Bank und Kunde vereinbaren den Sollzins für eine feste Dauer – die **Sollzinsbindung**. In Deutschland ist das bei Immobiliardarlehen der Standard. Gängig sind **zehn Jahre**; bei niedrigem Zinsniveau werden auch 15, 20 oder 30 Jahre gewählt."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Sicht",
+            "Vorteil",
+            "Risiko"
+          ],
+          "rows": [
+            [
+              "**Kunde**",
+              "Zins und Rate stehen bis zum Ende der Bindung fest",
+              "Sinken die Zinsen, zahlt er mehr als mit variablem Zins"
+            ],
+            [
+              "**Bank**",
+              "Planungssicherheit für die Refinanzierung",
+              "Steigen die Zinsen, kann sie nicht anpassen"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "**Je länger die Zinsbindung, desto höher der Zinssatz.** Der Kunde zahlt eine höhere Marge als „Versicherungsprämie“ gegen steigende Zinsen."
+        },
+        {
+          "type": "list",
+          "title": "Wichtige Begriffe",
+          "items": [
+            "**Volltilgerdarlehen:** Der Zins gilt bis zur letzten Rate. Es gibt kein Zinsänderungsrisiko.",
+            "**Prolongation:** Am Ende der Bindung macht die Bank ein neues Angebot, wenn sie das Darlehen fortführen will.",
+            "**Kündigung durch den Kunden:** zehn Jahre nach vollständigem Empfang des Darlehens mit sechs Monaten Frist – auch wenn die Zinsbindung länger läuft.",
+            "**Kündigung durch die Bank:** nur unter engen Voraussetzungen bei Zahlungsrückstand."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Die Zehnjahresfrist beginnt mit der **Vollauszahlung**, nicht mit dem Vertragsschluss. Einzelheiten zur Kündigung und zur Vorfälligkeitsentschädigung folgen in Level 24."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 489 Abs. 1 Nr. 2 BGB",
+          "text": "Der Darlehensnehmer kann ein Darlehen mit gebundenem Sollzins nach Ablauf von zehn Jahren seit dem vollständigen Empfang mit einer Frist von sechs Monaten kündigen."
+        }
+      ],
+      "memory": "Lange Bindung = höherer Zins, aber Schutz vor Zinsanstieg. Nach zehn Jahren kann der Kunde raus.",
+      "examTrap": "Das Kündigungsrecht nach zehn Jahren hat nur der Kunde. Die Bank bleibt an eine längere Zinsbindung gebunden."
+    },
+    {
+      "id": "3.4.5-a",
+      "title": "Tilgungssatz und Laufzeit",
+      "subtitle": "Die Stellschraube des Vermittlers",
+      "ref": "BWB 3.4.5, S. 2–3 und 3.4.8, S. 2–3",
+      "examRelevance": "S+P",
+      "checkId": "3.4-Q030",
+      "content": [
+        {
+          "type": "text",
+          "text": "Der Tilgungssatz gibt an, wie stark ein Darlehen getilgt wird. Beim Annuitätendarlehen wird die **anfängliche** Tilgung angegeben. Vergleich für 100.000 € bei monatlicher Zahlung und zehn Jahren Zinsbindung:"
+        },
+        {
+          "type": "table",
+          "head": [
+            "Zins / Tilgung",
+            "Rate",
+            "Restschuld nach 10 Jahren",
+            "Laufzeit rund"
+          ],
+          "rows": [
+            [
+              "3 % / 1 %",
+              "333,33 €",
+              "88.355 €",
+              "46 Jahre"
+            ],
+            [
+              "3 % / 3 %",
+              "500,00 €",
+              "65.065 €",
+              "23 Jahre"
+            ],
+            [
+              "5 % / 3 %",
+              "666,67 €",
+              "61.179 €",
+              "20 Jahre"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Je höher der Tilgungssatz, desto …",
+          "items": [
+            "höher die Monatsrate",
+            "schneller die Rückzahlung",
+            "niedriger die gesamten Zinsaufwendungen",
+            "geringer das Restrisiko am Ende der Zinsbindung"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Die Laufzeit ergibt sich aus dem Zusammenspiel von Zins und Tilgung. **Höhere Tilgung** verkürzt sie stark. Ein **höherer Zins** verkürzt sie bei gleicher Anfangstilgung ebenfalls: Schon im zweiten Monat ist der Tilgungsanteil höher, weil mehr Zinsen erspart werden. Günstiger wird das Darlehen dadurch nicht."
+        },
+        {
+          "type": "text",
+          "text": "Den Zins kann der Vermittler kaum beeinflussen – den Tilgungssatz schon. Das Skript empfiehlt, die Rate **so hoch wie möglich** anzusetzen, **ohne den Kunden zu überfordern**, und die Laufzeit an der Lebensplanung auszurichten: möglichst **schuldenfrei zum Renteneintritt**."
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Für den Zinsanstieg von 3 % auf 5 % nennt dieses Skriptkapitel eine neue Rate von 480 € (neuer Zins auf die Restschuld plus bisherige Tilgung). Das Kapitel Zinsrechnung rechnet dagegen auf das Ursprungsdarlehen und kommt auf 500 €. In Aufgaben steht deshalb immer dabei, wie gerechnet wird."
+        }
+      ],
+      "laws": [],
+      "memory": "Tilgung hoch: Rate hoch, Laufzeit kurz, Zinsen niedrig, Restschuld klein.",
+      "examTrap": "Eine niedrige Tilgung macht die Rate klein, aber die Restschuld groß. Das Risiko zeigt sich erst am Ende der Zinsbindung."
+    },
+    {
+      "id": "3.4.6-a",
+      "title": "Sondertilgungen",
+      "subtitle": "Außer der Reihe zurückzahlen",
+      "ref": "BWB 3.4.6, S. 2–3",
+      "examRelevance": "S+P",
+      "checkId": "3.4-Q035",
+      "content": [
+        {
+          "type": "text",
+          "text": "Eine **Sondertilgung** ist eine Zahlung über die vereinbarte Rate hinaus. Sie senkt die Darlehensschuld sofort."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Regelfall",
+            "text": "Die **Rate bleibt gleich**, das Darlehen ist **schneller zurückgezahlt**."
+          },
+          "right": {
+            "title": "Ausnahme",
+            "text": "In Absprache mit dem Darlehensgeber wird die **Rate gesenkt**, die Laufzeit bleibt etwa gleich."
+          }
+        },
+        {
+          "type": "table",
+          "head": [
+            "Darlehensart",
+            "Sondertilgung"
+          ],
+          "rows": [
+            [
+              "Festzins, **mit Vereinbarung**",
+              "Kostenfrei im vereinbarten Rahmen, zum Beispiel jährlich 5 % des Ursprungsdarlehens oder bis 10.000 €"
+            ],
+            [
+              "Festzins, **ohne Vereinbarung**",
+              "Nur im Einvernehmen mit dem Darlehensgeber, gegen Vorfälligkeitsentschädigung"
+            ],
+            [
+              "**Variabler Zins**",
+              "Mit drei Monaten Kündigungsfrist möglich"
+            ],
+            [
+              "**Bauspardarlehen**",
+              "Unbegrenzt – zeitlich und in der Höhe; geregelt in den Allgemeinen Bausparbedingungen"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Ein Sondertilgungsrecht kann die Kondition beeinflussen: Manche Institute verlangen dafür einen **kleinen Zinsaufschlag**. Im Vergleich zweier Angebote zählt deshalb nicht nur der Zins, sondern auch die Flexibilität."
+        }
+      ],
+      "laws": [],
+      "memory": "Sondertilgung: Regelfall kürzere Laufzeit, Ausnahme niedrigere Rate.",
+      "examTrap": "Ohne vertragliches Sondertilgungsrecht gibt es beim Festzinsdarlehen keinen Anspruch auf kostenfreie Sondertilgung."
+    },
+    {
+      "id": "3.4.7-a",
+      "title": "Tilgungsfreie Zeiträume",
+      "subtitle": "Entlastung heute, Belastung später",
+      "ref": "BWB 3.4.7, S. 2–3",
+      "examRelevance": "S+P",
+      "checkId": "3.4-Q039",
+      "content": [
+        {
+          "type": "text",
+          "text": "In einem **tilgungsfreien Zeitraum** zahlt der Kunde nur Zinsen. Das kommt in zwei Formen vor."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Tilgung startet später",
+            "text": "Zum Beispiel beim Neubau: Das Darlehen wird schrittweise ausgezahlt, der Kunde zahlt noch Miete. Manche Institute tilgen erst ab Vollauszahlung. KfW-Darlehen haben ein bis fünf tilgungsfreie Anlaufjahre."
+          },
+          "right": {
+            "title": "Tilgung wird ausgesetzt",
+            "text": "Bei einem **finanziellen Engpass** während der Laufzeit. Der Kunde zahlt weiter Zinsen, aber vorübergehend keine oder weniger Tilgung."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Eine Tilgungsaussetzung ist für beide Seiten meist besser, als auf der vollen Rate zu bestehen: Sonst drohen Zahlungsverzug, Rücklastschriften und am Ende die Kündigung. Ob ganz ausgesetzt oder nur reduziert wird, vereinbaren Kunde und Darlehensgeber individuell."
+        },
+        {
+          "type": "list",
+          "title": "Die Folgen",
+          "items": [
+            "**Längere Laufzeit** bei gleicher Rate – mit insgesamt **höherer Zinsbelastung**",
+            "oder eine **später höhere Rate** bei gleicher Laufzeit"
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Hinweis",
+          "text": "Nicht verwechseln: Die Tilgungsaussetzung **gegen Besparung eines Bausparvertrags** (Kombi-Kredit) ist kein tilgungsfreier Zeitraum in diesem Sinn – dort wird indirekt getilgt."
+        }
+      ],
+      "laws": [],
+      "memory": "Tilgungsfrei schont die Liquidität und kostet Zinsen.",
+      "examTrap": "In der tilgungsfreien Zeit sinkt die Restschuld nicht. Die Zinsen laufen auf den vollen Betrag weiter."
+    }
+  ]
+}

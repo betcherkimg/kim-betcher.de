@@ -24,17 +24,17 @@
             [
               "Unbebaut",
               "Kein **benutzbares** Gebäude – oder nur eines von untergeordneter Bedeutung, z. B. abbruchreif",
-              "§ 72 BewG"
+              "§ 72 BewG a. F."
             ],
             [
               "Baureif",
               "Unbebaut, im Bebauungsplan als **Bauland** festgesetzt, sofort bebaubar, Bebauung in der Nachbarschaft begonnen oder fertig. Nicht: Flächen für den Gemeinbedarf",
-              "§ 73 BewG"
+              "§ 73 BewG a. F."
             ],
             [
               "Bebaut",
               "Ein benutzbares Gebäude steht darauf. Wird in Abschnitten gebaut, zählt der bezugsfertige Teil",
-              "§ 74 BewG"
+              "§ 74 BewG a. F."
             ]
           ]
         },
@@ -44,7 +44,7 @@
         },
         {
           "type": "text",
-          "text": "Bebaute Grundstücke werden nach § 75 BewG weiter unterteilt. Maßstab ist die **Jahresrohmiete** (§ 79 BewG) – bei Selbstnutzung oder Leerstand wird die übliche Miete angesetzt."
+          "text": "Bebaute Grundstücke werden nach § 75 BewG a. F. weiter unterteilt. Maßstab ist die **Jahresrohmiete** (§ 79 BewG a. F.) – bei Selbstnutzung oder Leerstand wird die übliche Miete angesetzt."
         },
         {
           "type": "table",
@@ -85,18 +85,18 @@
         },
         {
           "type": "note",
-          "title": "Hintergrund",
-          "text": "Das BewG regelt auch die **Einheitswerte** (§ 19 BewG). Die letzte Hauptfeststellung war am 1.1.1964. Für die Grundsteuer spielen Einheitswerte seit der Grundsteuerreform (ab 2025) keine Rolle mehr. Für die Prüfung reicht: Einheitswert = steuerlicher Wert, Grundlagenwissen."
+          "title": "Rechtsstand",
+          "text": "Die alten Vorschriften zur Einheitsbewertung des Grundvermögens (u. a. §§ 72–75, 79 BewG) sind seit **1.1.2025** aufgehoben; Einheitswerte spielen für die Grundsteuer keine Rolle mehr. Die Begriffe leben fast unverändert weiter: **unbebaut** = kein benutzbares Gebäude, benutzbar ab Bezugsfertigkeit, Bauabnahme unerheblich (§ 246 BewG). Die Grundstücksarten stehen in § 249 BewG – dort zählen auch Wohnungs- und Teileigentum als eigene Arten, und die 80-%-Grenze bemisst sich nach der **Wohn- und Nutzfläche** statt nach der Jahresrohmiete. Lernskripte und Prüfungsfragen arbeiten oft noch mit den alten Begriffen – deshalb stehen sie hier („a. F.“ = alte Fassung)."
         }
       ],
       "laws": [
         {
-          "ref": "§ 72 BewG",
+          "ref": "§ 72 BewG a. F. / § 246 BewG",
           "text": "Unbebaut = kein benutzbares Gebäude. Benutzbar ab Bezugsfertigkeit, Bauabnahme nicht entscheidend."
         },
         {
-          "ref": "§ 75 BewG",
-          "text": "Arten bebauter Grundstücke: Mietwohn-, Geschäfts-, gemischt genutzte Grundstücke, Ein-/Zweifamilienhäuser, sonstige."
+          "ref": "§ 75 BewG a. F. / § 249 BewG",
+          "text": "Arten bebauter Grundstücke: Mietwohn-, Geschäfts-, gemischt genutzte Grundstücke, Ein-/Zweifamilienhäuser, sonstige (neu zusätzlich Wohnungs- und Teileigentum)."
         }
       ],
       "memory": "Benutzbar = bezugsfertig. Kein benutzbares Gebäude → unbebaut, auch wenn eine Ruine daraufsteht.",
@@ -825,7 +825,7 @@
         },
         {
           "type": "example",
-          "text": "Kaufpreis 500.000 €, Provision 7,14 % = 35.700 €. Käufer und Verkäufer zahlen je **17.850 €** – egal, wer den Makler beauftragt hat."
+          "text": "Kaufpreis 500.000 €, Provision 7,14 % = 35.700 €. Ist der Makler für **beide Seiten** tätig, zahlen Käufer und Verkäufer je **17.850 €**. Hat nur eine Seite den Makler beauftragt, darf sie höchstens die Hälfte auf die andere abwälzen (§ 656d BGB)."
         },
         {
           "type": "compare",

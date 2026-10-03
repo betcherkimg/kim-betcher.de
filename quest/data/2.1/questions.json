@@ -13,13 +13,13 @@
       "storyOrder": 1,
       "question": "Was steht an der Spitze der deutschen Rechtsordnung?",
       "answers": [
-        "Das Grundgesetz",
-        "Das Bürgerliche Gesetzbuch",
         "Die Gewerbeordnung",
-        "Das Kreditwesengesetz"
+        "Das Kreditwesengesetz",
+        "Das Bürgerliche Gesetzbuch",
+        "Das Grundgesetz"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "Das Grundgesetz steht über allen anderen Gesetzen."
     },
@@ -35,13 +35,13 @@
       "storyOrder": 2,
       "question": "Welche der folgenden Regelungen ist eine Rechtsverordnung?",
       "answers": [
+        "Grundbuchordnung (GBO)",
         "Preisangabenverordnung (PAngV)",
         "Gewerbeordnung (GewO)",
-        "Grundbuchordnung (GBO)",
         "Bürgerliches Gesetzbuch (BGB)"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "GewO und GBO sind trotz des Namens Gesetze. Die PAngV erlässt die Regierung auf Grundlage eines Gesetzes."
     },
@@ -57,14 +57,14 @@
       "storyOrder": 3,
       "question": "Welche Gesetze gehören zum öffentlichen Recht? (Mehrere richtig)",
       "answers": [
-        "Einkommensteuergesetz",
+        "Handelsgesetzbuch",
         "Kreditwesengesetz",
         "Bürgerliches Gesetzbuch",
-        "Handelsgesetzbuch"
+        "Einkommensteuergesetz"
       ],
       "correct": [
-        0,
-        1
+        1,
+        3
       ],
       "explanation": "Steuer- und Aufsichtsgesetze regeln das Verhältnis Staat–Bürger. BGB und HGB sind Zivilrecht."
     },
@@ -81,8 +81,8 @@
       "question": "Was ist Rechtsfähigkeit?",
       "answers": [
         "Die Fähigkeit, Träger von Rechten und Pflichten zu sein",
-        "Die Fähigkeit, selbst wirksam Verträge zu schließen",
         "Das Recht, vor Gericht aufzutreten",
+        "Die Fähigkeit, selbst wirksam Verträge zu schließen",
         "Die Fähigkeit, ein Testament zu errichten"
       ],
       "correct": [
@@ -103,9 +103,9 @@
       "question": "Wann beginnt die Rechtsfähigkeit eines Menschen?",
       "answers": [
         "Mit der Vollendung der Geburt",
+        "Mit der Eintragung ins Geburtenregister",
         "Mit dem 7. Geburtstag",
-        "Mit der Volljährigkeit",
-        "Mit der Eintragung ins Geburtenregister"
+        "Mit der Volljährigkeit"
       ],
       "correct": [
         0
@@ -124,13 +124,13 @@
       "storyOrder": 6,
       "question": "Ein fünfjähriges Kind erbt von seiner Großmutter ein Haus. Kann es Eigentümer werden?",
       "answers": [
-        "Ja, es ist rechtsfähig – handeln müssen aber die Eltern für es",
-        "Nein, es ist geschäftsunfähig",
-        "Erst mit 18 Jahren",
-        "Nur wenn das Familiengericht zustimmt"
+        "Nein – als Geschäftsunfähiger kann es kein Eigentum erwerben",
+        "Ja – es ist rechtsfähig, handeln müssen die Eltern",
+        "Nur wenn das Familiengericht zustimmt",
+        "Erst mit 18 Jahren, bis dahin gehört das Haus den Eltern"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "Eigentümer kann jeder Rechtsfähige sein. Die fehlende Geschäftsfähigkeit betrifft nur das eigene Handeln."
     },
@@ -146,9 +146,9 @@
       "storyOrder": 7,
       "question": "Welche Folgen hat die Volljährigkeit? (Mehrere richtig)",
       "answers": [
-        "Unbeschränkte Geschäftsfähigkeit",
         "Ende der elterlichen Sorge",
         "Prozessfähigkeit",
+        "Unbeschränkte Geschäftsfähigkeit",
         "Beginn der Rechtsfähigkeit"
       ],
       "correct": [
@@ -170,13 +170,13 @@
       "storyOrder": 8,
       "question": "Was trifft auf eine GmbH zu?",
       "answers": [
-        "Sie ist als juristische Person rechtsfähig und handelt durch ihre Vertreter",
+        "Sie handelt selbst, Vertreter braucht sie nicht",
         "Sie ist eine natürliche Person",
-        "Sie ist nicht rechtsfähig, nur ihre Gesellschafter",
-        "Sie kann keine Verträge schließen"
+        "Sie ist nicht rechtsfähig – Träger der Rechte sind ihre Gesellschafter persönlich",
+        "Sie ist als juristische Person rechtsfähig und handelt durch ihre Vertreter"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "Juristische Personen sind kraft Gesetzes rechtsfähig. Handeln tun ihre Organe, z. B. der Geschäftsführer."
     },
@@ -192,10 +192,10 @@
       "storyOrder": 9,
       "question": "Was ist Geschäftsfähigkeit?",
       "answers": [
-        "Die Fähigkeit, durch eigene Willenserklärungen wirksam Rechtsfolgen herbeizuführen",
-        "Die Fähigkeit, Träger von Rechten zu sein",
-        "Die Erlaubnis zum Betrieb eines Gewerbes",
-        "Die Fähigkeit, Kredit zu erhalten"
+        "Die Fähigkeit, durch eigene Willenserklärungen Rechtsfolgen herbeizuführen",
+        "Die Fähigkeit, Kredit zu erhalten",
+        "Die Fähigkeit, Träger von Rechten und Pflichten zu sein – sie beginnt mit der Geburt",
+        "Die Erlaubnis zum Betrieb eines Gewerbes"
       ],
       "correct": [
         0
@@ -214,14 +214,14 @@
       "storyOrder": 10,
       "question": "Wer ist geschäftsunfähig? (Mehrere richtig)",
       "answers": [
-        "Ein sechsjähriges Kind",
+        "Ein Erwachsener mit leichter Erkältung",
         "Wer dauerhaft an einer krankhaften Störung der Geistestätigkeit leidet, die die freie Willensbestimmung ausschließt",
         "Ein 16-Jähriger",
-        "Ein Erwachsener mit leichter Erkältung"
+        "Ein sechsjähriges Kind"
       ],
       "correct": [
-        0,
-        1
+        1,
+        3
       ],
       "explanation": "§ 104 BGB: unter 7 Jahren oder dauerhafte krankhafte Störung. Der 16-Jährige ist beschränkt geschäftsfähig."
     },
@@ -238,9 +238,9 @@
       "question": "Was gilt für die Willenserklärung eines Geschäftsunfähigen?",
       "answers": [
         "Sie ist nichtig",
+        "Sie ist wirksam, wenn sie vorteilhaft ist",
         "Sie ist schwebend unwirksam",
-        "Sie ist anfechtbar",
-        "Sie ist wirksam, wenn sie vorteilhaft ist"
+        "Sie ist anfechtbar"
       ],
       "correct": [
         0
@@ -259,13 +259,13 @@
       "storyOrder": 12,
       "question": "Ein volljähriger Kunde unterschreibt im Vollrausch einen Kaufvertrag. Was gilt?",
       "answers": [
-        "Die Erklärung ist nichtig",
         "Wirksam, weil er volljährig ist",
         "Schwebend unwirksam bis zur Ausnüchterung",
-        "Nur anfechtbar"
+        "Nur anfechtbar",
+        "Die Erklärung ist nichtig"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "§ 105 Abs. 2 BGB: Erklärungen in Bewusstlosigkeit oder vorübergehender Geistesstörung sind nichtig."
     },
@@ -281,13 +281,13 @@
       "storyOrder": 13,
       "question": "Wer ist beschränkt geschäftsfähig?",
       "answers": [
-        "Minderjährige von 7 bis 17 Jahren",
+        "Volljährige unter Betreuung",
         "Kinder unter 7 Jahren",
-        "Alle Personen unter 21 Jahren",
-        "Volljährige unter Betreuung"
+        "Minderjährige von 7 bis 17 Jahren",
+        "Alle Personen unter 21 Jahren"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "§ 106 BGB: ab dem 7. Geburtstag bis zur Volljährigkeit."
     },
@@ -303,13 +303,13 @@
       "storyOrder": 14,
       "question": "Ein 16-Jähriger kauft ohne Wissen der Eltern ein E-Bike für 1.500 € auf Raten. Wie ist die Rechtslage?",
       "answers": [
-        "Der Vertrag ist schwebend unwirksam, bis die Eltern genehmigen oder verweigern",
-        "Der Vertrag ist nichtig",
-        "Der Vertrag ist über den Taschengeldparagraphen wirksam",
-        "Der Vertrag ist wirksam, weil er über 16 ist"
+        "Wirksam, weil er über 16 ist",
+        "Schwebend unwirksam, bis die Eltern genehmigen oder verweigern",
+        "Wirksam über den Taschengeldparagraphen, weil er die Raten vom Taschengeld zahlt",
+        "Nichtig, weil er minderjährig ist"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "Ohne Einwilligung ist der Vertrag schwebend unwirksam (§ 108 BGB). Ratenkäufe fallen nicht unter § 110."
     },
@@ -325,13 +325,13 @@
       "storyOrder": 15,
       "question": "Die Eltern genehmigen den Vertrag ihres 15-jährigen Sohnes nachträglich. Ab wann ist er wirksam?",
       "answers": [
-        "Von Anfang an",
         "Ab der Genehmigung",
         "Ab dem 18. Geburtstag",
-        "Erst nach zwei Wochen"
+        "Erst nach zwei Wochen",
+        "Von Anfang an"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "Die Genehmigung wirkt zurück auf den Vertragsschluss."
     },
@@ -369,13 +369,13 @@
       "storyOrder": 17,
       "question": "Warum sind Ratenkäufe nicht vom Taschengeldparagraphen gedeckt?",
       "answers": [
-        "Die Leistung muss vollständig bewirkt sein – bei Raten ist sie das noch nicht",
-        "Raten sind grundsätzlich verboten",
+        "Weil Minderjährige keine Kaufverträge schließen dürfen",
         "Weil das Familiengericht zustimmen muss",
-        "Weil Minderjährige keine Kaufverträge schließen dürfen"
+        "Weil § 110 nur für Käufe gilt, denen die Eltern vorher ausdrücklich zugestimmt haben",
+        "Die Leistung muss vollständig bewirkt sein – bei Raten ist sie das noch nicht"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "§ 110 verlangt, dass der Minderjährige die Leistung mit den überlassenen Mitteln bereits bewirkt hat."
     },
@@ -392,7 +392,7 @@
       "question": "Welche Geschäfte kann ein 16-Jähriger ohne Zustimmung der Eltern wirksam abschließen? (Mehrere richtig)",
       "answers": [
         "Annahme einer Schenkung, die ihm lediglich einen rechtlichen Vorteil bringt",
-        "Eröffnung eines Gehaltskontos für seinen von den Eltern genehmigten Ausbildungsplatz",
+        "Eröffnung eines Gehaltskontos für seinen von den Eltern genehmigten Ferienjob",
         "Handyvertrag mit 24 Monaten Laufzeit",
         "Autokauf auf Kredit"
       ],
@@ -400,7 +400,7 @@
         0,
         1
       ],
-      "explanation": "§ 107 (lediglich rechtlicher Vorteil) und § 113 BGB (genehmigtes Arbeitsverhältnis). Laufende Verpflichtungen brauchen Zustimmung."
+      "explanation": "§ 107 (lediglich rechtlicher Vorteil) und § 113 BGB (von den Eltern genehmigtes Dienst- oder Arbeitsverhältnis). Laufende Verpflichtungen brauchen Zustimmung."
     },
     {
       "id": "2.1-Q119",
@@ -414,10 +414,10 @@
       "storyOrder": 19,
       "question": "Ein Minderjähriger hat ohne Zustimmung einen Vertrag geschlossen, der noch schwebt. Nun wird er 18. Was passiert?",
       "answers": [
-        "Der Vertrag wird nicht automatisch wirksam – er muss ihn selbst genehmigen",
-        "Der Vertrag wird am 18. Geburtstag automatisch wirksam",
-        "Der Vertrag ist ab dann nichtig",
-        "Die Eltern müssen trotzdem noch genehmigen"
+        "Er muss den Vertrag selbst genehmigen – automatisch wird er nicht wirksam",
+        "Der Vertrag wird mit dem 18. Geburtstag automatisch und von Anfang an wirksam",
+        "Die Eltern müssen trotzdem noch genehmigen",
+        "Der Vertrag ist ab dann nichtig"
       ],
       "correct": [
         0
@@ -458,13 +458,13 @@
       "storyOrder": 21,
       "question": "Ein Händler wusste nicht, dass sein Kunde 16 ist. Die Eltern haben sich noch nicht geäußert. Was kann der Händler tun?",
       "answers": [
-        "Seine Erklärung bis zur Genehmigung widerrufen",
-        "Nichts, er ist an den Vertrag gebunden",
         "Den Vertrag wegen Täuschung sofort als nichtig behandeln",
-        "Nur das Familiengericht anrufen"
+        "Nur das Familiengericht anrufen",
+        "Nichts, er ist an den Vertrag gebunden",
+        "Seine Erklärung bis zur Genehmigung widerrufen"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "§ 109 BGB: Widerruf bis zur Genehmigung – ausgeschlossen nur, wenn er von der Minderjährigkeit wusste."
     },
@@ -480,13 +480,13 @@
       "storyOrder": 22,
       "question": "Der Händler fordert die Eltern eines 17-Jährigen auf, sich zum Vertrag zu erklären. Sie melden sich zwei Wochen lang nicht. Was gilt?",
       "answers": [
+        "Der Vertrag ist anfechtbar",
         "Die Genehmigung gilt als verweigert",
         "Die Genehmigung gilt als erteilt",
-        "Der Vertrag schwebt weiter unbegrenzt",
-        "Der Vertrag ist anfechtbar"
+        "Der Vertrag schwebt weiter unbegrenzt"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "§ 108 Abs. 2 BGB: Nach Aufforderung zwei Wochen Zeit – Schweigen gilt als Verweigerung."
     },
@@ -502,13 +502,13 @@
       "storyOrder": 23,
       "question": "Wann braucht ein Vertrag mit einem Minderjährigen laut Lernstoff zusätzlich die Genehmigung des Familiengerichts?",
       "answers": [
-        "Bei wiederkehrenden Leistungen und einer Laufzeit über das 19. Lebensjahr hinaus",
-        "Bei jedem Kaufvertrag über 500 €",
+        "Bei jedem Vertrag, der den Minderjährigen zu einer Zahlung von mehr als 500 € verpflichtet",
         "Nur bei Schenkungen",
+        "Bei wiederkehrenden Leistungen und Laufzeit über das 19. Lebensjahr hinaus",
         "Bei jedem Vertrag mit Kindern unter 14"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Beide Voraussetzungen müssen zusammen vorliegen."
     },
@@ -524,13 +524,13 @@
       "storyOrder": 24,
       "question": "Ein 15-Jähriger schließt mit Zustimmung der Eltern einen Bausparvertrag mit monatlichen Raten über sieben Jahre. Reicht die Zustimmung der Eltern?",
       "answers": [
-        "Nein, laut Lernstoff braucht es zusätzlich das Familiengericht",
         "Ja, die Eltern entscheiden allein",
-        "Ja, Bausparverträge sind immer genehmigungsfrei",
-        "Nein, Minderjährige dürfen gar keine Bausparverträge haben"
+        "Ja, bei Sparverträgen genügt immer die Zustimmung eines Elternteils",
+        "Nein, laut Lernstoff braucht es zusätzlich das Familiengericht",
+        "Nein, Minderjährige dürfen keine Bausparverträge haben"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Wiederkehrende Leistungen und Laufzeit über das 19. Lebensjahr hinaus – die Rechtsprechung stellt auf die Vermögenseinbuße bei Kündigung ab."
     },
@@ -546,13 +546,13 @@
       "storyOrder": 25,
       "question": "Welches Gericht ist heute für diese Genehmigungen zuständig?",
       "answers": [
-        "Das Familiengericht",
-        "Das Vormundschaftsgericht",
         "Das Grundbuchamt",
-        "Das Landgericht"
+        "Das Landgericht",
+        "Das Familiengericht",
+        "Das Vormundschaftsgericht"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Das Vormundschaftsgericht gibt es seit 2009 nicht mehr."
     },
@@ -568,13 +568,13 @@
       "storyOrder": 26,
       "question": "Was für eine Willenserklärung ist eine Kündigung?",
       "answers": [
-        "Einseitig und empfangsbedürftig",
+        "Ein zweiseitig verpflichtender Vertrag",
         "Einseitig und nicht empfangsbedürftig",
         "Mehrseitig",
-        "Ein zweiseitig verpflichtender Vertrag"
+        "Einseitig und empfangsbedürftig"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "Die Kündigung wird erst mit Zugang wirksam und löst das Rechtsverhältnis für die Zukunft auf."
     },
@@ -591,8 +591,8 @@
       "question": "Welche Willenserklärung ist nicht empfangsbedürftig?",
       "answers": [
         "Testament",
-        "Kündigung",
         "Mahnung",
+        "Kündigung",
         "Antrag auf Vertragsschluss"
       ],
       "correct": [
@@ -612,13 +612,13 @@
       "storyOrder": 28,
       "question": "Warum ist die Bürgschaft ein einseitig verpflichtender Vertrag?",
       "answers": [
-        "Weil nur der Bürge eine Pflicht übernimmt",
         "Weil nur eine Person eine Erklärung abgibt",
+        "Weil nur der Bürge eine Pflicht übernimmt",
         "Weil sie nicht empfangsbedürftig ist",
         "Weil sie formfrei ist"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "Es gibt zwei Erklärungen (Vertrag), aber nur eine Seite verpflichtet sich."
     },
@@ -634,13 +634,13 @@
       "storyOrder": 29,
       "question": "Jemand steigt in einen Bus und setzt sich. Wie hat er seinen Willen erklärt?",
       "answers": [
+        "Durch Schweigen",
         "Durch konkludentes Verhalten",
         "Gar nicht – ohne Worte keine Erklärung",
-        "Schriftlich",
-        "Durch Schweigen"
+        "Schriftlich"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "Schlüssiges Verhalten ist eine Willenserklärung."
     },
@@ -657,9 +657,9 @@
       "question": "Welche Form braucht eine Willenserklärung im Privatrecht grundsätzlich?",
       "answers": [
         "Keine bestimmte Form",
+        "Textform",
         "Schriftform",
-        "Notarielle Beglaubigung",
-        "Textform"
+        "Notarielle Beglaubigung"
       ],
       "correct": [
         0
@@ -678,13 +678,13 @@
       "storyOrder": 31,
       "question": "Ein Kleid im Schaufenster ist mit 49 € statt 490 € ausgezeichnet. Muss der Händler zu 49 € verkaufen?",
       "answers": [
-        "Nein, die Auslage ist nur eine Aufforderung zum Antrag",
+        "Nur wenn der Kunde bar zahlt",
         "Ja, das Preisschild ist ein bindendes Angebot",
-        "Ja, wenn der Kunde zuerst im Laden ist",
-        "Nur wenn der Kunde bar zahlt"
+        "Nein, die Auslage ist nur eine Aufforderung zum Antrag",
+        "Ja, wenn der Kunde zuerst im Laden ist"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Erst der Kunde macht den Antrag – der Händler kann ablehnen."
     },
@@ -700,13 +700,13 @@
       "storyOrder": 32,
       "question": "Bis wann kann ein Antrag zurückgenommen werden?",
       "answers": [
-        "Wenn der Widerruf vor oder gleichzeitig mit dem Antrag zugeht",
-        "Jederzeit bis zur Annahme",
         "Innerhalb von 14 Tagen",
-        "Nie"
+        "Gar nicht mehr, sobald er abgeschickt ist",
+        "Jederzeit, solange der Empfänger den Antrag noch nicht angenommen hat",
+        "Wenn der Widerruf vor oder gleichzeitig mit dem Antrag zugeht"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "Nach Zugang ist der Antragende gebunden."
     },
@@ -722,13 +722,13 @@
       "storyOrder": 33,
       "question": "Eine Bank bietet ein Darlehen zu 3,5 % an. Der Kunde antwortet: „Einverstanden, aber zu 3,2 %.“ Was liegt vor?",
       "answers": [
-        "Kein Vertrag – die Antwort gilt als Ablehnung verbunden mit einem neuen Antrag",
-        "Ein Vertrag zu 3,5 %",
         "Ein Vertrag zu 3,2 %",
+        "Ein Vertrag zu 3,5 %, weil das Angebot der Bank zuerst abgegeben wurde",
+        "Kein Vertrag – Ablehnung verbunden mit einem neuen Antrag",
         "Ein Vertrag zum Mittelwert"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Nicht deckungsgleiche Erklärungen führen zu keinem Vertrag (§ 150 Abs. 2 BGB)."
     },
@@ -744,13 +744,13 @@
       "storyOrder": 34,
       "question": "Welche Bedeutung hat Schweigen auf einen Antrag grundsätzlich?",
       "answers": [
+        "Schweigen gilt nach 7 Tagen als Annahme",
         "Keine – Schweigen ist keine Annahme",
         "Schweigen gilt als Annahme",
-        "Schweigen gilt nach 7 Tagen als Annahme",
         "Schweigen ist eine Anfechtung"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "Nur in Ausnahmefällen, wenn eine Antwort zu erwarten wäre, kann Schweigen etwas bedeuten."
     },
@@ -766,13 +766,13 @@
       "storyOrder": 35,
       "question": "Wie kommt ein Bausparvertrag zustande?",
       "answers": [
-        "Der Kunde stellt den Antrag, die Bausparkasse nimmt mit der Bausparurkunde an",
         "Die Bausparkasse macht das Angebot, der Kunde nimmt durch Unterschrift an",
         "Durch Einzahlung der ersten Rate",
-        "Durch Beurkundung beim Notar"
+        "Durch Beurkundung beim Notar",
+        "Der Kunde stellt den Antrag, die Bausparkasse nimmt mit der Bausparurkunde an"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "Bausparantrag = Antrag, Bausparurkunde = Annahme."
     },
@@ -788,10 +788,10 @@
       "storyOrder": 36,
       "question": "Ein Bauherr erhält per Brief ein Angebot ohne Annahmefrist. Wie lange kann er annehmen?",
       "answers": [
-        "So lange, wie der Anbieter unter regelmäßigen Umständen mit einer Antwort rechnen darf",
-        "Nur sofort",
-        "Unbegrenzt",
-        "Genau 14 Tage"
+        "Solange der Anbieter regelmäßig mit einer Antwort rechnen darf",
+        "Genau 14 Tage",
+        "Nur sofort – ein Angebot ohne Frist erlischt mit dem Ende des Tages",
+        "Unbegrenzt"
       ],
       "correct": [
         0
@@ -811,14 +811,14 @@
       "question": "Welche Rechtsgeschäfte sind nichtig? (Mehrere richtig)",
       "answers": [
         "Ein Scheingeschäft",
+        "Ein Vertrag, bei dem sich jemand verschrieben hat",
         "Ein Geschäft, das eine gesetzliche Formvorschrift verletzt",
-        "Ein sittenwidriges Geschäft",
-        "Ein Vertrag, bei dem sich jemand verschrieben hat"
+        "Ein sittenwidriges Geschäft"
       ],
       "correct": [
         0,
-        1,
-        2
+        2,
+        3
       ],
       "explanation": "Wer sich verschreibt, kann anfechten – der Vertrag ist aber nicht automatisch nichtig."
     },
@@ -834,13 +834,13 @@
       "storyOrder": 38,
       "question": "Der Verkäufer verschweigt bewusst einen Wasserschaden im Keller. Was kann der Käufer tun?",
       "answers": [
-        "Den Vertrag wegen arglistiger Täuschung anfechten",
-        "Nichts, der Vertrag ist wirksam und bleibt es",
         "Der Vertrag ist automatisch nichtig",
-        "Nur widerrufen, ohne Grund"
+        "Nichts, der Vertrag ist wirksam und bleibt es",
+        "Nur widerrufen, ohne Grund",
+        "Den Vertrag wegen arglistiger Täuschung anfechten"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "Arglistige Täuschung macht anfechtbar (§ 123 BGB)."
     },
@@ -856,13 +856,13 @@
       "storyOrder": 39,
       "question": "Ein Kunde schreibt im Bestellformular 1.000 Stück statt 100. Was gilt?",
       "answers": [
-        "Er kann wegen Erklärungsirrtums anfechten",
-        "Der Vertrag ist nichtig",
         "Der Vertrag ist schwebend unwirksam",
-        "Er kann nichts tun"
+        "Er kann nichts tun",
+        "Der Vertrag ist nichtig",
+        "Er kann wegen Erklärungsirrtums anfechten"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "Verschreiben oder Versprechen ist ein Irrtum in der Erklärung."
     },
@@ -878,13 +878,13 @@
       "storyOrder": 40,
       "question": "Worin unterscheiden sich nichtige und anfechtbare Geschäfte?",
       "answers": [
-        "Nichtige sind von selbst unwirksam, anfechtbare erst nach erklärter Anfechtung – dann rückwirkend",
-        "Es gibt keinen Unterschied",
         "Anfechtbare Geschäfte sind nie wirksam",
-        "Nichtige Geschäfte werden durch Anfechtung wirksam"
+        "Nichtige sind rückwirkend unwirksam, anfechtbare nur für die Zukunft ab der Anfechtung",
+        "Nichtige Geschäfte werden durch Anfechtung wirksam",
+        "Nichtige sind von selbst unwirksam, anfechtbare erst nach Anfechtung – dann rückwirkend"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "Bis zur Anfechtung gilt das anfechtbare Geschäft."
     },
@@ -900,13 +900,13 @@
       "storyOrder": 41,
       "question": "Was ist die Folge, wenn eine gesetzlich vorgeschriebene Form nicht eingehalten wird?",
       "answers": [
+        "Das Geschäft ist schwebend unwirksam",
         "Das Geschäft ist nichtig (§ 125 BGB)",
         "Das Geschäft ist anfechtbar",
-        "Das Geschäft ist wirksam",
-        "Das Geschäft ist schwebend unwirksam"
+        "Das Geschäft ist wirksam"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "§ 125 BGB – Ausnahmen gibt es nur, wo das Gesetz eine Heilung vorsieht."
     },
@@ -922,13 +922,13 @@
       "storyOrder": 42,
       "question": "Innerhalb welcher Frist muss man wegen arglistiger Täuschung anfechten?",
       "answers": [
-        "Innerhalb eines Jahres ab Entdeckung",
-        "Unverzüglich",
         "Innerhalb von 14 Tagen",
-        "Innerhalb von drei Jahren ab Vertragsschluss"
+        "Unverzüglich",
+        "Innerhalb von drei Jahren ab Vertragsschluss",
+        "Innerhalb eines Jahres ab Entdeckung"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "§ 124 BGB. Unverzüglich gilt beim Irrtum."
     },
@@ -988,13 +988,13 @@
       "storyOrder": 45,
       "question": "Wodurch wird bei Grundstücken die Publizität der dinglichen Rechte hergestellt?",
       "answers": [
+        "Durch den Kaufvertrag",
         "Durch das Grundbuch",
         "Durch den Besitz",
-        "Durch den Kaufvertrag",
         "Durch das Liegenschaftsbuch allein"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "Bei beweglichen Sachen zeigt der Besitz die Lage, bei Grundstücken das Grundbuch beim Amtsgericht."
     },
@@ -1011,8 +1011,8 @@
       "question": "Welche der folgenden sind dingliche Rechte? (Mehrere richtig)",
       "answers": [
         "Grundschuld",
-        "Nießbrauch",
         "Vormerkung",
+        "Nießbrauch",
         "Mietvertrag"
       ],
       "correct": [
@@ -1034,13 +1034,13 @@
       "storyOrder": 47,
       "question": "Zu welcher Gruppe vertraglicher Schuldverhältnisse gehört der Pachtvertrag?",
       "answers": [
+        "Sichernde Verträge",
         "Gebrauchsüberlassungsverträge",
         "Veräußerungsverträge",
-        "Sichernde Verträge",
         "Verträge über Dienste und Werke"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "Miete, Pacht und Leihe überlassen den Gebrauch."
     },
@@ -1056,13 +1056,13 @@
       "storyOrder": 48,
       "question": "Ein Fahrrad wird gestohlen. Wer ist Besitzer, wer Eigentümer?",
       "answers": [
+        "Beide sind Eigentümer",
         "Der Dieb ist Besitzer, der Bestohlene bleibt Eigentümer",
         "Der Dieb ist Eigentümer",
-        "Beide sind Eigentümer",
-        "Niemand ist Besitzer"
+        "Der Dieb ist weder Besitzer noch Eigentümer, weil er unrechtmäßig handelt"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "Besitz ist die tatsächliche Herrschaft – auch unrechtmäßig. Eigentum bleibt beim Bestohlenen."
     },
@@ -1079,8 +1079,8 @@
       "question": "Beim Bäcker: Die Kundin bestellt, der Verkäufer sagt zu, reicht die Brötchen, sie zahlt. Was ist das Erfüllungsgeschäft?",
       "answers": [
         "Übergabe der Brötchen und Zahlung des Geldes",
-        "Die Bestellung",
         "Die Zusage des Verkäufers",
+        "Die Bestellung",
         "Bestellung und Zusage zusammen"
       ],
       "correct": [
@@ -1100,14 +1100,14 @@
       "storyOrder": 50,
       "question": "Welche Pflichten hat der Darlehensnehmer nach § 488 BGB? (Mehrere richtig)",
       "answers": [
+        "Immer eine Grundschuld bestellen",
         "Den vereinbarten Zins zahlen",
-        "Das Darlehen bei Fälligkeit zurückzahlen",
         "Den Geldbetrag zur Verfügung stellen",
-        "Immer eine Grundschuld bestellen"
+        "Das Darlehen bei Fälligkeit zurückzahlen"
       ],
       "correct": [
-        0,
-        1
+        1,
+        3
       ],
       "explanation": "Das Geld zur Verfügung stellen muss der Darlehensgeber. Eine Grundschuld ist keine gesetzliche Pflicht."
     },
@@ -1124,8 +1124,8 @@
       "question": "Für die Rückzahlung eines Darlehens ist keine Zeit bestimmt. Welche Kündigungsfrist gilt?",
       "answers": [
         "Drei Monate",
-        "Ein Monat",
         "Sechs Monate",
+        "Ein Monat",
         "14 Tage"
       ],
       "correct": [
@@ -1145,13 +1145,13 @@
       "storyOrder": 52,
       "question": "Ein Verbraucher nimmt ein Darlehen ohne Grundschuld auf, um eine Eigentumswohnung zu kaufen. Welche Art Darlehen liegt vor?",
       "answers": [
-        "Ein Immobiliar-Verbraucherdarlehen",
         "Ein Allgemein-Verbraucherdarlehen",
+        "Ein Immobiliar-Verbraucherdarlehen",
         "Gar kein Verbraucherdarlehen",
         "Ein Sachdarlehen"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "§ 491 Abs. 3 BGB: Der Zweck (Erwerb einer Immobilie) genügt – eine Besicherung ist nicht nötig."
     },
@@ -1167,15 +1167,15 @@
       "storyOrder": 53,
       "question": "Wann ist die Schriftform beim Verbraucherdarlehensvertrag auch gewahrt?",
       "answers": [
-        "Wenn Antrag und Annahme getrennt schriftlich erklärt werden",
-        "Wenn der Vertrag per E-Mail geschlossen wird",
+        "Wenn der Kunde per E-Mail zustimmt und die Bank schriftlich bestätigt",
+        "Nur bei gleichzeitiger Unterschrift in der Filiale",
         "Wenn der Kunde mündlich zustimmt",
-        "Nur bei gleichzeitiger Unterschrift in der Filiale"
+        "Wenn Antrag und Annahme getrennt schriftlich erklärt werden"
       ],
       "correct": [
-        0
+        3
       ],
-      "explanation": "§ 492 Abs. 1 BGB. Die automatisch erstellte Erklärung der Bank braucht keine Unterschrift."
+      "explanation": "§ 492 Abs. 1 BGB. Die automatisch erstellte Erklärung der Bank braucht keine Unterschrift. Ab 20.11.2026 genügt beim Allgemein-Verbraucherdarlehen die Textform."
     },
     {
       "id": "2.1-Q154",
@@ -1211,15 +1211,15 @@
       "storyOrder": 55,
       "question": "Welches Darlehen ist kein Allgemein-Verbraucherdarlehen?",
       "answers": [
-        "Ein Darlehen mit einem Nettodarlehensbetrag von 150 €",
-        "Ein Autokredit über 20.000 €",
         "Ein Ratenkredit über 3.000 € für Möbel",
-        "Ein Dispositionskredit über 2.000 €"
+        "Ein Autokredit über 20.000 €",
+        "Ein Dispositionskredit über 2.000 €",
+        "Ein Darlehen mit einem Nettodarlehensbetrag von 150 €"
       ],
       "correct": [
-        0
+        3
       ],
-      "explanation": "Unter 200 € Nettodarlehensbetrag greift § 491 Abs. 2 BGB nicht."
+      "explanation": "Unter 200 € Nettodarlehensbetrag greift die Ausnahme des § 491 Abs. 2 Satz 2 Nr. 1 BGB – es liegt kein Allgemein-Verbraucherdarlehen vor. Diese Schwelle entfällt ab 20.11.2026."
     },
     {
       "id": "2.1-Q156",
@@ -1233,13 +1233,13 @@
       "storyOrder": 56,
       "question": "Wie lang ist die Widerrufsfrist beim Verbraucherdarlehen grundsätzlich?",
       "answers": [
-        "14 Tage",
         "7 Tage",
         "Ein Monat",
+        "14 Tage",
         "Ein Jahr"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "§ 355 Abs. 2 BGB."
     },
@@ -1255,13 +1255,13 @@
       "storyOrder": 57,
       "question": "Im Darlehensvertrag fehlten Pflichtangaben. Die Bank holt sie nach. Was gilt für die Widerrufsfrist?",
       "answers": [
-        "Sie beginnt mit der Nachholung und beträgt einen Monat",
         "Sie ist bereits abgelaufen",
-        "Sie beträgt weiterhin 14 Tage ab Vertragsschluss",
-        "Ein Widerruf ist nicht mehr möglich"
+        "Ein Widerruf ist nicht mehr möglich",
+        "Sie beginnt mit der Nachholung und beträgt einen Monat",
+        "Sie beträgt weiterhin 14 Tage und beginnt mit dem Vertragsschluss"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Nachholung setzt eine einmonatige Frist in Gang."
     },
@@ -1300,7 +1300,7 @@
       "question": "Ein Kunde schickt seinen Widerruf am 14. Tag der Frist per Brief ab. Er kommt am 16. Tag an. Was gilt?",
       "answers": [
         "Rechtzeitig – die Absendung wahrt die Frist",
-        "Zu spät, es zählt der Zugang",
+        "Zu spät – es zählt der Zugang bei der Bank am 16. Tag",
         "Nur rechtzeitig mit Einschreiben",
         "Er hätte faxen müssen"
       ],
@@ -1321,13 +1321,13 @@
       "storyOrder": 60,
       "question": "Muss ein Verbraucher seinen Widerruf begründen?",
       "answers": [
+        "Nur bei Immobiliar-Verbraucherdarlehen",
         "Nein",
-        "Ja, schriftlich",
         "Ja, bei Beträgen über 10.000 €",
-        "Nur bei Immobiliar-Verbraucherdarlehen"
+        "Ja, schriftlich"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "Der Widerruf ist an keine zusätzlichen Voraussetzungen gebunden."
     },
@@ -1343,13 +1343,13 @@
       "storyOrder": 61,
       "question": "Welche Erklärung beendet einen Vertrag nur für die Zukunft?",
       "answers": [
+        "Rücktritt",
         "Kündigung",
-        "Anfechtung",
         "Widerruf",
-        "Rücktritt"
+        "Anfechtung"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "Anfechtung wirkt rückwirkend, Widerruf und Rücktritt führen zur Rückabwicklung."
     },
@@ -1365,13 +1365,13 @@
       "storyOrder": 62,
       "question": "Ein Kunde legt der Bank gefälschte Gehaltsnachweise vor. Was kann die Bank tun?",
       "answers": [
+        "Den Vertrag als nichtig behandeln, ohne etwas erklären zu müssen",
         "Den Darlehensvertrag wegen arglistiger Täuschung anfechten",
-        "Nur widerrufen",
         "Nichts, der Vertrag ist geschlossen",
-        "Den Vertrag als nichtig behandeln, ohne etwas zu erklären"
+        "Nur widerrufen"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "Täuschung über die Kreditwürdigkeit berechtigt zur Anfechtung."
     },
@@ -1387,13 +1387,13 @@
       "storyOrder": 63,
       "question": "Was schuldet der Unternehmer beim Werkvertrag?",
       "answers": [
-        "Einen bestimmten Erfolg",
+        "Die Übereignung einer Sache gegen Geld",
         "Nur das Tätigwerden",
-        "Die Überlassung einer Sache",
-        "Die Übereignung einer Sache gegen Geld"
+        "Einen bestimmten Erfolg",
+        "Die Überlassung einer Sache"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Der Erfolg unterscheidet den Werk- vom Dienstvertrag."
     },
@@ -1409,13 +1409,13 @@
       "storyOrder": 64,
       "question": "Ein Sachverständiger soll ein Wertgutachten über ein Haus erstellen. Welcher Vertrag liegt vor?",
       "answers": [
+        "Kaufvertrag",
         "Werkvertrag",
         "Dienstvertrag",
-        "Kaufvertrag",
         "Leihvertrag"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "Geschuldet ist das fertige Gutachten – ein Erfolg."
     },
@@ -1431,13 +1431,13 @@
       "storyOrder": 65,
       "question": "Worin unterscheidet sich der Geschäftsbesorgungsvertrag vom Auftrag?",
       "answers": [
-        "In der Entgeltlichkeit",
-        "In der Form",
         "In der Laufzeit",
+        "In der Form",
+        "In der Entgeltlichkeit",
         "Es gibt keinen Unterschied"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Auftrag = unentgeltlich, Geschäftsbesorgung = entgeltlich."
     },
@@ -1453,13 +1453,13 @@
       "storyOrder": 66,
       "question": "Ein Arbeitgeber kündigt einem Angestellten per E-Mail. Was gilt?",
       "answers": [
-        "Die Kündigung ist unwirksam – nötig ist Schriftform",
         "Wirksam, E-Mail genügt",
-        "Wirksam, wenn die E-Mail gelesen wurde",
-        "Wirksam, wenn eine Kopie ausgedruckt wird"
+        "Wirksam, wenn der Arbeitgeber die E-Mail ausdruckt und abheftet",
+        "Unwirksam – nötig ist die Schriftform",
+        "Wirksam, wenn die E-Mail gelesen wurde"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "§ 623 BGB: Kündigung eines Arbeitsverhältnisses nur schriftlich, elektronische Form ausgeschlossen."
     },
@@ -1475,13 +1475,13 @@
       "storyOrder": 67,
       "question": "Was unterscheidet die Pacht von der Miete?",
       "answers": [
-        "Der Pächter darf die Erträge behalten (Fruchtgenuss)",
         "Die Pacht ist unentgeltlich",
+        "Es gibt keinen Unterschied",
         "Die Pacht braucht einen Notar",
-        "Es gibt keinen Unterschied"
+        "Der Pächter darf die Erträge behalten (Fruchtgenuss)"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "Fruchtgenuss ist das Kennzeichen der Pacht."
     },
@@ -1497,13 +1497,13 @@
       "storyOrder": 68,
       "question": "Die Nachbarin überlässt ihren Anhänger kostenlos fürs Wochenende. Welcher Vertrag liegt vor?",
       "answers": [
-        "Leihvertrag",
         "Mietvertrag",
+        "Pachtvertrag",
         "Sachdarlehen",
-        "Pachtvertrag"
+        "Leihvertrag"
       ],
       "correct": [
-        0
+        3
       ],
       "explanation": "Unentgeltliche Gebrauchsüberlassung, dieselbe Sache kommt zurück."
     },
@@ -1519,13 +1519,13 @@
       "storyOrder": 69,
       "question": "Jemand borgt sich zwei Eier und gibt zwei andere zurück. Welcher Vertrag liegt vor?",
       "answers": [
-        "Sachdarlehen",
+        "Schenkung",
         "Leihe",
-        "Tausch",
-        "Schenkung"
+        "Sachdarlehen",
+        "Tausch"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "Rückgabe gleicher Art, Güte und Menge – nicht derselben Sache."
     },
@@ -1541,13 +1541,13 @@
       "storyOrder": 70,
       "question": "Welche Form braucht eine Bürgschaftserklärung eines Privatmanns?",
       "answers": [
-        "Schriftform – ein Formmangel wird durch Erfüllung geheilt",
-        "Notarielle Beurkundung",
-        "Keine Form",
-        "Textform"
+        "Textform",
+        "Schriftform – Erfüllung heilt den Formmangel",
+        "Notarielle Beurkundung – wie beim Schenkungsversprechen",
+        "Keine Form"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "§ 766 BGB."
     },
@@ -1563,15 +1563,15 @@
       "storyOrder": 71,
       "question": "Welche Verträge brauchen eine notarielle Beurkundung? (Mehrere richtig)",
       "answers": [
-        "Grundstückskaufvertrag",
-        "Schenkungsversprechen",
+        "Bürgschaft",
         "Gesellschaftsvertrag einer GmbH",
-        "Bürgschaft"
+        "Grundstückskaufvertrag",
+        "Schenkungsversprechen"
       ],
       "correct": [
-        0,
         1,
-        2
+        2,
+        3
       ],
       "explanation": "Die Bürgschaft braucht nur Schriftform."
     },
@@ -1587,13 +1587,13 @@
       "storyOrder": 72,
       "question": "Ein Wohnungsmietvertrag über drei Jahre wird nur mündlich geschlossen. Was gilt?",
       "answers": [
+        "Er gilt nur ein Jahr",
+        "Er ist wegen des Formmangels von Anfang an nichtig",
         "Er gilt als auf unbestimmte Zeit geschlossen",
-        "Er ist nichtig",
-        "Er gilt genau drei Jahre",
-        "Er gilt nur ein Jahr"
+        "Er gilt genau drei Jahre"
       ],
       "correct": [
-        0
+        2
       ],
       "explanation": "§ 550 BGB: Ohne Schriftform gilt er als unbefristet, Kündigung frühestens zum Ablauf eines Jahres nach Überlassung."
     },
@@ -1609,13 +1609,13 @@
       "storyOrder": 73,
       "question": "Welche Form braucht der Gesellschaftsvertrag einer GbR?",
       "answers": [
+        "Eintragung ins Handelsregister",
         "Keine – er ist formfrei",
         "Notarielle Beurkundung",
-        "Schriftform",
-        "Eintragung ins Handelsregister"
+        "Schriftform"
       ],
       "correct": [
-        0
+        1
       ],
       "explanation": "Die GmbH braucht den Notar, die GbR nicht."
     }

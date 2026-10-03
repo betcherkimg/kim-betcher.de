@@ -1,0 +1,597 @@
+{
+  "chapter": "2.6",
+  "title": "Verbraucherschutz & Kundenrechte",
+  "sources": [
+    "BWB-Lernskript 2.6.1.1 Gesetze, die den Verbraucherschutz regeln",
+    "BWB-Lernskript 2.6.1.2 Grundlagen des indirekten Verbraucherschutzes",
+    "BWB-Lernskript 2.6.2 Schlichtungsstellen",
+    "BGB, UWG, PAngV, KWG, BauSparkG, GewO – Rechtsstand 03.10.2026"
+  ],
+  "sections": [
+    {
+      "id": "2.6.1-a",
+      "title": "Verbraucherschutz im Überblick",
+      "subtitle": "Warum der Verbraucher besonderen Schutz braucht",
+      "ref": "BWB 2.6.1.1 / 2.6.1.2",
+      "examRelevance": "S",
+      "checkId": "2.6-Q001",
+      "content": [
+        {
+          "type": "text",
+          "text": "Verbraucher sind Anbietern **strukturell unterlegen**: Sie haben weniger Fachkenntnis, Information, Ressourcen und Erfahrung. Der Verbraucherschutz gleicht dieses Ungleichgewicht aus – vor allem gegen Geschäfte, die auf **falschen, irreführenden oder fehlenden Informationen** beruhen oder durch **Überrumpelung** zustande kommen."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Regelung",
+            "Schützt vor …"
+          ],
+          "rows": [
+            [
+              "**AGB-Recht** (§§ 305–310 BGB)",
+              "unfairem Kleingedruckten"
+            ],
+            [
+              "**UWG**",
+              "unlauterer Werbung und Belästigung"
+            ],
+            [
+              "**Widerrufsrecht** (BGB)",
+              "übereilten Vertragsschlüssen – Lösung **nach** Vertragsschluss"
+            ],
+            [
+              "**Bedenkzeit** (BGB)",
+              "übereilten Vertragsschlüssen – Zeit **vor** Vertragsschluss"
+            ],
+            [
+              "**Preisangabenverordnung**",
+              "unvergleichbaren Preisen – Pflicht zum effektiven Jahreszins"
+            ]
+          ]
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Direkter Verbraucherschutz",
+            "text": "Rechte, die der **einzelne** Verbraucher selbst geltend macht: Widerruf, AGB-Kontrolle, Schlichtung."
+          },
+          "right": {
+            "title": "Indirekter Verbraucherschutz",
+            "text": "**Aufsicht** über die Anbieter – durch BaFin und Gewerbeaufsicht. Sie schützt die Verbraucher **in ihrer Gesamtheit**."
+          }
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 13 BGB",
+          "text": "Verbraucher: natürliche Person, die zu überwiegend privaten Zwecken handelt."
+        }
+      ],
+      "memory": "Direkt = eigene Rechte. Indirekt = Aufsicht über die Anbieter."
+    },
+    {
+      "id": "2.6.1-b",
+      "title": "Allgemeine Geschäftsbedingungen",
+      "subtitle": "Wann das Kleingedruckte gilt – und wann nicht",
+      "ref": "BWB 2.6.1.1",
+      "examRelevance": "S",
+      "checkId": "2.6-Q004",
+      "content": [
+        {
+          "type": "text",
+          "text": "**Allgemeine Geschäftsbedingungen (AGB)** sind vorformulierte Klauseln für eine Vielzahl von Verträgen. Sie standardisieren Massenverträge und vereinfachen den Abschluss. Sie können gesondert beiliegen oder in den Vertrag integriert sein."
+        },
+        {
+          "type": "steps",
+          "title": "AGB werden nur Vertragsbestandteil, wenn",
+          "items": [
+            {
+              "title": "Hinweis",
+              "text": "Der Anbieter weist bei Vertragsschluss **deutlich** auf die AGB hin."
+            },
+            {
+              "title": "Kenntnisnahme",
+              "text": "Der Kunde hat die **Möglichkeit**, sie zur Kenntnis zu nehmen."
+            },
+            {
+              "title": "Einverständnis",
+              "text": "Der Kunde ist mit ihrer Geltung einverstanden."
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "items": [
+            "**Individuell ausgehandelte** Regelungen gehen den AGB vor.",
+            "Klauseln, die den Vertragspartner **unangemessen benachteiligen**, sind **unwirksam** – etwa Knebelungen oder weitgehende Freizeichnungsklauseln.",
+            "Der Vertrag bleibt im Übrigen wirksam; an die Stelle der Klausel tritt das Gesetz."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Typische Inhalte",
+          "text": "Angaben zum Anbieter, Vertragsgegenstand, Fristen, Haftungsbeschränkungen, Formerfordernisse, Gerichtsstand."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 305 BGB",
+          "text": "Einbeziehung: ausdrücklicher Hinweis, Möglichkeit der Kenntnisnahme, Einverständnis."
+        },
+        {
+          "ref": "§ 305b BGB",
+          "text": "Vorrang der Individualabrede."
+        },
+        {
+          "ref": "§ 307 BGB",
+          "text": "Unwirksamkeit bei unangemessener Benachteiligung."
+        },
+        {
+          "ref": "§ 306 BGB",
+          "text": "Rechtsfolge: Der Vertrag bleibt im Übrigen wirksam."
+        }
+      ],
+      "memory": "Hinweis + Kenntnisnahme + Einverständnis. Individuell schlägt allgemein.",
+      "examTrap": "Eine unwirksame Klausel kippt nicht den ganzen Vertrag."
+    },
+    {
+      "id": "2.6.1-c",
+      "title": "Bausparkassen: AGG und ABB",
+      "subtitle": "Zwei Regelwerke, eine Aufsicht",
+      "ref": "BWB 2.6.1.1",
+      "examRelevance": "S",
+      "checkId": "2.6-Q009",
+      "content": [
+        {
+          "type": "text",
+          "text": "Bausparkassen müssen ihrem Geschäft nach dem Bausparkassengesetz zwei Regelwerke zugrunde legen:"
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Allgemeine Geschäftsgrundsätze (AGG)",
+            "text": "Regeln den **Geschäftsbetrieb der Bausparkasse**: z. B. Voraussetzungen und Reihenfolge der **Zuteilung**, Berechnung des **Beleihungswerts**."
+          },
+          "right": {
+            "title": "Allgemeine Bedingungen für Bausparverträge (ABB)",
+            "text": "Regeln den **einzelnen Vertrag**: z. B. Verzinsung der Bauspareinlagen, Bedingungen des **Bauspardarlehens**, Höhe und Fälligkeit der Leistungen des Bausparers."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Beide unterliegen der Aufsicht der **BaFin**."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 5 BauSparkG",
+          "text": "Allgemeine Geschäftsgrundsätze und Allgemeine Bedingungen für Bausparverträge."
+        }
+      ],
+      "memory": "AGG = Betrieb der Kasse. ABB = Bedingungen des Vertrags.",
+      "examTrap": "Die Zuteilungsreihenfolge steht in den AGG, nicht in den ABB."
+    },
+    {
+      "id": "2.6.1-d",
+      "title": "UWG im Überblick",
+      "subtitle": "Fairer Wettbewerb als Verbraucherschutz",
+      "ref": "BWB 2.6.1.1",
+      "examRelevance": "S",
+      "checkId": "2.6-Q012",
+      "content": [
+        {
+          "type": "text",
+          "text": "Das **Gesetz gegen den unlauteren Wettbewerb (UWG)** schützt **Verbraucher, Mitbewerber und sonstige Marktteilnehmer** vor unlauteren geschäftlichen Handlungen – und das Interesse der **Allgemeinheit** an einem unverfälschten Wettbewerb."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Unzulässig",
+            "Kern"
+          ],
+          "rows": [
+            [
+              "**Aggressive** Handlung (§ 4a)",
+              "Belästigung, Nötigung, unzulässige Beeinflussung"
+            ],
+            [
+              "**Irreführende** Handlung (§§ 5, 5a)",
+              "unwahre Angaben, Täuschung – auch durch **Weglassen** wesentlicher Informationen"
+            ],
+            [
+              "**Vergleichende** Werbung (§ 6)",
+              "grundsätzlich erlaubt – nur wenn objektiv, sachlich, wahr und nachprüfbar"
+            ],
+            [
+              "**Unzumutbare Belästigung** (§ 7)",
+              "Werbung, die erkennbar nicht gewünscht ist – z. B. Telefonwerbung ohne Einwilligung"
+            ],
+            [
+              "**Mitbewerberschutz** (§ 4)",
+              "Herabsetzen, Nachahmen mit Herkunftstäuschung, gezieltes Behindern"
+            ]
+          ]
+        },
+        {
+          "type": "list",
+          "items": [
+            "Die **„schwarze Liste“** im Anhang zu § 3 Abs. 3 UWG nennt Handlungen, die gegenüber Verbrauchern **stets unzulässig** sind – z. B. „gratis“ werben, obwohl Kosten anfallen.",
+            "Folgen: Klage auf **Unterlassung** und **Herausgabe des Gewinns**."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Achtung, Skript",
+          "text": "Das BWB-Skript lässt für Telefonwerbung bei Privatkunden noch eine stillschweigende Zustimmung genügen. Nach § 7 UWG braucht es die **vorherige ausdrückliche Einwilligung**. Die Einzelheiten zur Werbung folgen in Level 7."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 1 UWG",
+          "text": "Schutzzweck: Mitbewerber, Verbraucher, sonstige Marktteilnehmer, Allgemeinheit."
+        },
+        {
+          "ref": "§ 7 UWG",
+          "text": "Unzumutbare Belästigungen; Telefonwerbung gegenüber Verbrauchern nur mit vorheriger ausdrücklicher Einwilligung."
+        }
+      ],
+      "memory": "Vergleichen ist erlaubt – täuschen, drängen und belästigen nicht.",
+      "examTrap": "Vergleichende Werbung ist nicht verboten. Sie muss nur objektiv, wahr und nachprüfbar sein."
+    },
+    {
+      "id": "2.6.1-e",
+      "title": "Widerruf und Bedenkzeit als Verbraucherschutz",
+      "subtitle": "Was bei fehlerhafter Widerrufsinformation gilt",
+      "ref": "BWB 2.6.1.1",
+      "examRelevance": "S",
+      "checkId": "2.6-Q016",
+      "content": [
+        {
+          "type": "text",
+          "text": "Das Widerrufsrecht erlaubt dem **Verbraucher**, sich **ohne Begründung** binnen 14 Tagen von einem geschlossenen Vertrag zu lösen. Es gilt **nicht für Unternehmer oder juristische Personen** – etwa einen eingetragenen Verein."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Widerrufsinformation fehlerhaft oder unvollständig",
+            "Folge"
+          ],
+          "rows": [
+            [
+              "Allgemein-Verbraucherdarlehen",
+              "Widerruf **ohne zeitliche Grenze** – „ewiges Widerrufsrecht“"
+            ],
+            [
+              "Immobiliar-Verbraucherdarlehen",
+              "Widerruf spätestens **12 Monate und 14 Tage** nach Vertragsschluss"
+            ],
+            [
+              "Bank korrigiert die Information nachträglich",
+              "ab dann **ein Monat** – bei beiden Darlehensarten"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Wo beim Immobiliar-Verbraucherdarlehen **kein Widerrufsrecht** besteht, schützt die **Bedenkzeit von mindestens sieben Tagen** vor Vertragsschluss (Level 4)."
+        },
+        {
+          "type": "note",
+          "title": "Rechtsstand ab 20.11.2026",
+          "text": "Das „ewige“ Widerrufsrecht entfällt auch beim Allgemein-Verbraucherdarlehen: Die Höchstfrist von 12 Monaten und 14 Tagen gilt dann für alle Verbraucherdarlehen."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§§ 355, 356b BGB",
+          "text": "Widerrufsrecht und Widerrufsfrist bei Verbraucherdarlehen."
+        },
+        {
+          "ref": "§ 495 Abs. 3 BGB",
+          "text": "Bedenkzeit bei Immobiliar-Verbraucherdarlehen ohne Widerrufsrecht."
+        }
+      ],
+      "memory": "Fehler in der Belehrung: AVD ewig, IVD 12 Monate + 14 Tage, nach Korrektur ein Monat."
+    },
+    {
+      "id": "2.6.1-f",
+      "title": "Preisangaben: der effektive Jahreszins",
+      "subtitle": "Das Preisschild des Kredits",
+      "ref": "BWB 2.6.1.1",
+      "examRelevance": "S+P",
+      "checkId": "2.6-Q019",
+      "content": [
+        {
+          "type": "text",
+          "text": "Die **Preisangabenverordnung (PAngV)** verpflichtet Kreditgeber, den **effektiven Jahreszins** anzugeben. Ziel: Der Verbraucher soll gleichartige Angebote verschiedener Anbieter **vergleichen** können."
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Sollzins",
+            "text": "Der reine **Zins** auf das Darlehen."
+          },
+          "right": {
+            "title": "Effektiver Jahreszins",
+            "text": "Zins **plus alle Kosten**, die mit dem Kredit zwingend verbunden sind – als **jährlicher Prozentsatz des Nettodarlehensbetrags**."
+          }
+        },
+        {
+          "type": "list",
+          "title": "In den Effektivzins fließen ein",
+          "items": [
+            "Sollzins, Zinsbindung, Tilgungssatz, Zahlungsweise und Tilgungsverrechnung",
+            "**Disagio**",
+            "**Vermittlungsprovisionen** und Honorare für Beratung und Vermittlung",
+            "Kosten der **Immobilienbewertung**, wenn sie für das Darlehen erforderlich ist",
+            "**Pflichtversicherungen** – also solche, die Voraussetzung für das Darlehen sind",
+            "Kosten eines vorgeschriebenen **Kontos**",
+            "Kosten für die **Eintragung der Sicherheit** ins Grundbuch"
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Nicht einbezogen werden",
+          "items": [
+            "Kosten bei **Nichterfüllung**: Mahngebühren, Verzugszinsen",
+            "**freiwillige** Versicherungen und Zusatzleistungen",
+            "Kosten, die auch bei **Barzahlung** anfielen",
+            "Grundbuchgebühren für die **Eigentumsumschreibung**",
+            "**Notarkosten** – für den Kaufvertrag wie für die Grundschuldbestellung"
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Annahmen der Berechnung",
+          "items": [
+            "Der Vertrag läuft über den **vereinbarten Zeitraum**.",
+            "Beide Seiten **erfüllen ihre Pflichten** pünktlich.",
+            "Es zählen die Konditionen **zum Zeitpunkt des Angebots**; der Darlehensgeber muss die Kosten **kennen**."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Paragraphen",
+          "text": "Das BWB-Skript zitiert § 6 PAngV. Seit der Neufassung 2022 steht die Regelung in **§ 16 PAngV**. Lassen sich Kosten zwingender Nebenleistungen nicht vorab beziffern, ist zumindest auf sie hinzuweisen."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 16 PAngV",
+          "text": "Effektiver Jahreszins und Gesamtkosten bei Verbraucherdarlehen; Abs. 3: nicht einzubeziehende Kosten."
+        }
+      ],
+      "memory": "Effektivzins = alles, was zwingend zum Kredit gehört. Notar, Verzug und Freiwilliges bleiben draußen.",
+      "examTrap": "Grundbuch ist nicht gleich Grundbuch: Die Eintragung der **Grundschuld** zählt mit, die **Eigentumsumschreibung** nicht."
+    },
+    {
+      "id": "2.6.1-g",
+      "title": "BaFin: kollektiver Verbraucherschutz",
+      "subtitle": "Aufsicht im öffentlichen Interesse",
+      "ref": "BWB 2.6.1.2",
+      "examRelevance": "S",
+      "checkId": "2.6-Q026",
+      "content": [
+        {
+          "type": "text",
+          "text": "Die **Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin)** beaufsichtigt Banken und Finanzdienstleister, Versicherer und den Wertpapierhandel unter einem Dach. Ziel ist ein **stabiles, funktionsfähiges und integres Finanzsystem**."
+        },
+        {
+          "type": "list",
+          "title": "Steckbrief",
+          "items": [
+            "**Selbstständige Anstalt des öffentlichen Rechts**",
+            "Rechts- und Fachaufsicht: **Bundesministerium der Finanzen**",
+            "Finanziert aus **Gebühren und Umlagen** der beaufsichtigten Unternehmen"
+          ]
+        },
+        {
+          "type": "compare",
+          "left": {
+            "title": "Kollektiver Verbraucherschutz",
+            "text": "Die BaFin handelt **im öffentlichen Interesse** und schützt die Verbraucher **in ihrer Gesamtheit**."
+          },
+          "right": {
+            "title": "Individueller Verbraucherschutz",
+            "text": "Den **Einzelfall** klären **Ombudsleute, Schlichtungsstellen, Verbraucherzentralen** – und notfalls die **Gerichte**."
+          }
+        },
+        {
+          "type": "list",
+          "title": "Die Bankenaufsicht wirkt Missständen entgegen, die",
+          "items": [
+            "Sicherheit der anvertrauten **Vermögenswerte** gefährden,",
+            "die ordnungsgemäße Durchführung der **Bankgeschäfte** beeinträchtigen,",
+            "erhebliche Nachteile für die **Gesamtwirtschaft** bringen können."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Mittel der Bankenaufsicht",
+          "text": "Erlaubnis zum Geschäftsbetrieb, Eigenmittel- und Liquiditätsanforderungen, Kontrolle des Risikomanagements, laufende Überwachung und Sonderprüfungen – bis zur Schließung eines Instituts. Den Aufbau der Aufsicht vertieft Level 9."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 6 Abs. 2 KWG",
+          "text": "Ziele der Bankenaufsicht."
+        },
+        {
+          "ref": "§ 4 FinDAG",
+          "text": "Die BaFin nimmt ihre Aufgaben im öffentlichen Interesse wahr."
+        }
+      ],
+      "memory": "BaFin schützt alle – nicht den Einzelnen.",
+      "examTrap": "Die BaFin entscheidet keinen Streit zwischen Kunde und Bank. Dafür gibt es Schlichtung und Gerichte."
+    },
+    {
+      "id": "2.6.1-h",
+      "title": "Gewerbeaufsicht",
+      "subtitle": "Indirekter Schutz auf Landesebene",
+      "ref": "BWB 2.6.1.2",
+      "examRelevance": "S",
+      "checkId": "2.6-Q030",
+      "content": [
+        {
+          "type": "text",
+          "text": "Jedes **Bundesland** richtet eine staatliche **Gewerbeaufsicht** ein. Sie achtet auf die Einhaltung der **Gewerbeordnung** und vieler Vorschriften des **Arbeits-, Umwelt- und Verbraucherschutzes**."
+        },
+        {
+          "type": "list",
+          "title": "Aufgaben",
+          "items": [
+            "**Erlaubnisse** erteilen, z. B. nach § 34c GewO",
+            "Betriebe zum Arbeits- und Umweltschutz **beraten und überwachen**",
+            "**Produktsicherheit** überwachen",
+            "bei gewerblichen Bauvorhaben beraten"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Welche Aufgaben ein Gewerbeaufsichtsamt genau hat, **unterscheidet sich von Land zu Land**."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 139b GewO",
+          "text": "Gewerbeaufsichtsbehörden der Länder."
+        }
+      ],
+      "memory": "BaFin: Bund, Finanzsystem. Gewerbeaufsicht: Land, Gewerbebetrieb."
+    },
+    {
+      "id": "2.6.2-a",
+      "title": "Schlichtung: Zweck und Voraussetzungen",
+      "subtitle": "Streit beilegen ohne Gericht",
+      "ref": "BWB 2.6.2",
+      "examRelevance": "S",
+      "checkId": "2.6-Q033",
+      "content": [
+        {
+          "type": "text",
+          "text": "Schlichtungsstellen dienen der **außergerichtlichen Streitbeilegung** zwischen Verbraucher und Bank oder Bausparkasse – **leicht zugänglich, kostengünstig und vergleichsweise schnell**, unter Mitwirkung einer **unabhängigen** Instanz. Typische Fälle: strittige Entgelte, vorzeitige Darlehensablösung, fehlerhafte Abrechnung, Kontokündigung."
+        },
+        {
+          "type": "list",
+          "title": "Voraussetzungen und Grenzen",
+          "items": [
+            "Das Institut muss dem Verfahren **angeschlossen** sein.",
+            "Kein Verfahren, wenn sich bereits ein **Gericht** mit der Sache befasst oder befasst hat.",
+            "Kein Verfahren, wenn zur Klärung **Zeugen** gehört werden müssten."
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Wirkung",
+          "items": [
+            "Kommt keine Einigung zustande, bleibt dem Verbraucher der **Weg zu den ordentlichen Gerichten**.",
+            "Beim **Ombudsmann der privaten Banken** ist der Schlichtungsspruch bis zu einer bestimmten Streitsumme **für die Bank bindend** – nicht für den Kunden.",
+            "Nur bei wenigen Schiedsstellen ist der Gerichtsweg danach ausgeschlossen."
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Vorher klären",
+          "text": "Ablauf und spätere Klagemöglichkeit, Kosten, Besetzung der Stelle. Die Schlichter werden von der Bankenseite ausgewählt und bezahlt; bei größeren Streitwerten lohnt vorab anwaltlicher Rat. Die Bindungsgrenze nennt das BWB-Skript mit 5.000 € – maßgeblich ist die aktuelle Verfahrensordnung."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 14 UKlaG",
+          "text": "Schlichtungsverfahren bei Streitigkeiten aus Bankgeschäften; Verbraucherschlichtungsstellen."
+        }
+      ],
+      "memory": "Schlichtung: freiwillig, günstig, nach Aktenlage – und das Gericht bleibt offen.",
+      "examTrap": "Bindend ist der Spruch des Ombudsmanns nur für die Bank. Der Kunde kann trotzdem klagen."
+    },
+    {
+      "id": "2.6.2-b",
+      "title": "Schlichtung: Ablauf und zuständige Stellen",
+      "subtitle": "Von der Beschwerde zum Schlichtungsvorschlag",
+      "ref": "BWB 2.6.2",
+      "examRelevance": "S",
+      "checkId": "2.6-Q037",
+      "content": [
+        {
+          "type": "steps",
+          "title": "Ablauf",
+          "items": [
+            {
+              "title": "Antrag",
+              "text": "Die Geschäftsstelle bestätigt den Eingang, prüft die Unterlagen und fordert bei Bedarf weitere an."
+            },
+            {
+              "title": "Stellungnahme des Unternehmens",
+              "text": "Zulässige Anträge gehen an das Unternehmen – Frist: **ein Monat**."
+            },
+            {
+              "title": "Abhilfe?",
+              "text": "Erfüllt das Unternehmen das Anliegen, ist das Verfahren **beendet**."
+            },
+            {
+              "title": "Äußerung des Kunden",
+              "text": "Lehnt das Unternehmen ab, kann sich der Kunde binnen **eines Monats** äußern."
+            },
+            {
+              "title": "Entscheidung",
+              "text": "Der Schlichter entscheidet **anhand der Unterlagen**. Eine Beweisaufnahme gibt es nur, soweit der Beweis durch **Vorlage von Unterlagen** möglich ist."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Die Ombudsleute leisten **keine individuelle Rechtsberatung**."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Institut",
+            "Schlichtungsstelle"
+          ],
+          "rows": [
+            [
+              "Private Banken",
+              "Ombudsmann der privaten Banken (Bundesverband deutscher Banken)"
+            ],
+            [
+              "Sparkassen",
+              "Schlichtungsstelle des Sparkassenverbands"
+            ],
+            [
+              "Volks- und Raiffeisenbanken",
+              "Kundenbeschwerdestelle des BVR"
+            ],
+            [
+              "Öffentliche Banken",
+              "Ombudsmann der öffentlichen Banken (VÖB)"
+            ],
+            [
+              "Private Bausparkassen",
+              "Verband der Privaten Bausparkassen"
+            ],
+            [
+              "Landesbausparkassen",
+              "Schlichtungsstelle der LBS"
+            ],
+            [
+              "Kein Verband zuständig",
+              "Schlichtungsstelle der Deutschen Bundesbank oder der BaFin"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Welchem Verband ein Institut angehört, steht in den **Vertragsunterlagen** oder ist beim Institut zu erfragen. Die **BaFin** selbst ist **keine klassische Schlichtungsstelle**, sondern eine Ordnungsbehörde."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 14 UKlaG",
+          "text": "Private und behördliche Verbraucherschlichtungsstellen im Finanzbereich."
+        }
+      ],
+      "memory": "Die Stelle richtet sich nach dem Verband des Instituts.",
+      "examTrap": "Der Schlichter hört keine Zeugen. Was sich nicht mit Unterlagen belegen lässt, gehört vor Gericht."
+    }
+  ]
+}

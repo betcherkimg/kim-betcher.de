@@ -1,0 +1,2724 @@
+{
+  "chapter": "3.11",
+  "questions": [
+    {
+      "id": "3.11-Q001",
+      "chapter": "3.11",
+      "section": "3.11.1-a",
+      "topic": "Begriff",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 1,
+      "question": "Wann besteht ein Zinsänderungsrisiko?",
+      "answers": [
+        "Wenn die Sollzinsbindung kürzer ist als die Darlehenslaufzeit",
+        "Wenn der Effektivzins über dem Sollzins liegt",
+        "Wenn die Sollzinsbindung länger als zehn Jahre vereinbart wurde",
+        "Wenn das Darlehen innerhalb der Zinsbindung getilgt ist"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Bleibt am Ende der Bindung eine Restschuld, muss sie zum dann geltenden Zins weiterfinanziert werden."
+    },
+    {
+      "id": "3.11-Q002",
+      "chapter": "3.11",
+      "section": "3.11.1-a",
+      "topic": "Variabler Zins",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 2,
+      "question": "Wie wirkt ein steigender Marktzins auf ein variabel verzinstes Darlehen?",
+      "answers": [
+        "Die monatliche Rate steigt",
+        "Die Rate bleibt bis zum Laufzeitende fest",
+        "Das Darlehen wird automatisch fällig",
+        "Die monatliche Rate sinkt"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Beim variablen Zins folgt der Darlehenszins dem Markt – nach oben wie nach unten."
+    },
+    {
+      "id": "3.11-Q003",
+      "chapter": "3.11",
+      "section": "3.11.1-a",
+      "topic": "Sollzinsbindung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 3,
+      "question": "Wer ist während der Sollzinsbindung an den vereinbarten Zins gebunden?",
+      "answers": [
+        "Nur der Darlehensnehmer",
+        "Keiner, der Zins folgt dem Markt",
+        "Darlehensnehmer und Darlehensgeber",
+        "Nur der Darlehensgeber"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "In der Bindungsfrist gilt der vereinbarte Sollzins für beide Seiten."
+    },
+    {
+      "id": "3.11-Q004",
+      "chapter": "3.11",
+      "section": "3.11.1-a",
+      "topic": "Kündigung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 4,
+      "question": "Ein Darlehen hat 15 Jahre Sollzinsbindung. Wann kann der Darlehensnehmer frühestens ohne Entschädigung kündigen?",
+      "answers": [
+        "Jederzeit, mit einem Monat Frist",
+        "Erst zum Ende der 15 Jahre",
+        "Nach zehn Jahren, mit sechs Monaten Frist",
+        "Nach fünf Jahren, mit drei Monaten Frist"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "§ 489 Abs. 1 Nr. 2 BGB gibt dem Darlehensnehmer nach zehn Jahren ein Kündigungsrecht mit sechsmonatiger Frist."
+    },
+    {
+      "id": "3.11-Q005",
+      "chapter": "3.11",
+      "section": "3.11.1-a",
+      "topic": "Kündigung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 5,
+      "question": "Wem steht das Kündigungsrecht nach zehn Jahren Sollzinsbindung zu?",
+      "answers": [
+        "Nur dem Darlehensgeber",
+        "Beiden Vertragsparteien",
+        "Nur dem Darlehensnehmer",
+        "Dem Bürgen des Darlehens"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Der Kreditgeber hat kein entsprechendes Kündigungsrecht."
+    },
+    {
+      "id": "3.11-Q006",
+      "chapter": "3.11",
+      "section": "3.11.1-a",
+      "topic": "Prolongation",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 6,
+      "question": "Die Sollzinsbindung läuft aus. Wozu ist der Darlehensgeber verpflichtet?",
+      "answers": [
+        "Er muss die Restschuld in ein Bauspardarlehen umwandeln",
+        "Er muss den alten Zins für weitere zehn Jahre anbieten",
+        "Er muss den niedrigsten Marktzins anbieten",
+        "Er muss nicht zu alten Konditionen verlängern"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Der Darlehensgeber macht in der Regel ein Prolongationsangebot, ist an die alten Konditionen aber nicht gebunden."
+    },
+    {
+      "id": "3.11-Q007",
+      "chapter": "3.11",
+      "section": "3.11.1-a",
+      "topic": "Umschuldung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 7,
+      "question": "Warum kann eine Umschuldung am Ende der Zinsbindung scheitern?",
+      "answers": [
+        "Umschuldungen sind gesetzlich verboten",
+        "Die Bonität des Kunden hat sich verschlechtert",
+        "Die Grundschuld erlischt mit der Zinsbindung",
+        "Der alte Darlehensgeber muss zustimmen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Ein neuer Anbieter prüft die Kreditwürdigkeit neu. Nach Arbeitslosigkeit oder Einkommensrückgang wird es schwierig."
+    },
+    {
+      "id": "3.11-Q008",
+      "chapter": "3.11",
+      "section": "3.11.1-b",
+      "topic": "Folgen",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 8,
+      "question": "Welche Folgen kann ein Zinsanstieg zum Ende der Sollzinsbindung haben?",
+      "answers": [
+        "Die Laufzeit verlängert sich bei gleicher Rate",
+        "Die Restschuld wird erlassen",
+        "Die monatliche Rate steigt",
+        "Die Grundschuld wird höher"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "Entweder steigt die Rate bei gleicher Tilgung, oder bei gleicher Rate sinkt die Tilgung und die Laufzeit wird länger."
+    },
+    {
+      "id": "3.11-Q009",
+      "chapter": "3.11",
+      "section": "3.11.1-b",
+      "topic": "Darlehensform",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 9,
+      "question": "Bei welcher Darlehensform ist das Zinsänderungsrisiko am höchsten?",
+      "answers": [
+        "Beim Zinszahlungsdarlehen",
+        "Beim zugeteilten Bauspardarlehen",
+        "Beim Volltilgerdarlehen",
+        "Beim Annuitätendarlehen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Beim endfälligen Darlehen wird nichts getilgt. Die volle Darlehenssumme steht am Ende der Bindung zur Anschlussfinanzierung."
+    },
+    {
+      "id": "3.11-Q010",
+      "chapter": "3.11",
+      "section": "3.11.1-b",
+      "topic": "Ausschluss",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 10,
+      "question": "Wie lässt sich das Zinsänderungsrisiko vollständig ausschalten?",
+      "answers": [
+        "Durch Rückzahlung innerhalb der Zinsbindung",
+        "Durch eine höhere Grundschuld",
+        "Durch Vereinbarung eines variablen Sollzinses",
+        "Durch eine Restschuldversicherung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Bleibt am Ende der Bindung keine Restschuld, gibt es nichts mehr, das neu verzinst werden müsste."
+    },
+    {
+      "id": "3.11-Q011",
+      "chapter": "3.11",
+      "section": "3.11.1-b",
+      "topic": "Neue Rate",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 11,
+      "question": "Restschuld 150.000 €. Bisher 2 % Zins und 2 % Tilgung auf die Restschuld, künftig 4 % Zins bei gleicher Tilgung. Um wie viel steigt die Monatsrate?",
+      "answers": [
+        "Um 500 €",
+        "Um 750 €",
+        "Um 125 €",
+        "Um 250 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Bisher 150.000 × 4 % ÷ 12 = 500 €, künftig 150.000 × 6 % ÷ 12 = 750 €. Anstieg 250 €."
+    },
+    {
+      "id": "3.11-Q012",
+      "chapter": "3.11",
+      "section": "3.11.1-b",
+      "topic": "Gleiche Rate",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 12,
+      "question": "Restschuld 120.000 €, Rate 600 €, neuer Zins 5 %. Wie viel der Rate fließt im ersten Monat noch in die Tilgung?",
+      "answers": [
+        "300 €",
+        "100 €",
+        "500 €",
+        "600 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Zinsanteil: 120.000 × 5 % ÷ 12 = 500 €. Für die Tilgung bleiben 100 €."
+    },
+    {
+      "id": "3.11-Q013",
+      "chapter": "3.11",
+      "section": "3.11.1-b",
+      "topic": "Empfehlung",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 13,
+      "question": "Welche Empfehlungen gibt das Skript für eine Niedrigzinsphase?",
+      "answers": [
+        "Möglichst hohe Tilgung",
+        "Möglichst variabel finanzieren",
+        "Sondertilgungsrechte vereinbaren",
+        "Möglichst lange Sollzinsbindung"
+      ],
+      "correct": [
+        0,
+        2,
+        3
+      ],
+      "explanation": "Lange Bindung, hohe Tilgung und Sondertilgungen verringern die Restschuld, die später neu verzinst wird."
+    },
+    {
+      "id": "3.11-Q014",
+      "chapter": "3.11",
+      "section": "3.11.1-b",
+      "topic": "Restschuld",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 14,
+      "question": "Ein Darlehen wird mit 2 % anfänglich getilgt. Wie viel ist nach zehn Jahren ungefähr noch offen?",
+      "answers": [
+        "Rund drei Viertel",
+        "Rund die Hälfte",
+        "Nichts mehr",
+        "Rund ein Viertel"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Selbst mit 2 % Tilgung sind nach zehn Jahren noch rund drei Viertel der Ausgangssumme offen."
+    },
+    {
+      "id": "3.11-Q015",
+      "chapter": "3.11",
+      "section": "3.11.1-c",
+      "topic": "Begriff",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 15,
+      "question": "Was ist ein Tilgungsersatzmittel?",
+      "answers": [
+        "Eine Bürgschaft für die Restschuld",
+        "Ein Sparvertrag, der das Darlehen am Ende ablöst",
+        "Eine Versicherung gegen steigende Zinsen",
+        "Ein zweites Darlehen zur Zahlung der laufenden Zinsen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Statt zu tilgen, spart der Kunde Kapital an – etwa in einem Bausparvertrag oder einer Lebensversicherung."
+    },
+    {
+      "id": "3.11-Q016",
+      "chapter": "3.11",
+      "section": "3.11.1-c",
+      "topic": "Tilgungslücke",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 16,
+      "question": "Wodurch kann bei einem Tilgungsersatzmittel eine Tilgungslücke entstehen?",
+      "answers": [
+        "Gebühren oder Steuern wurden nicht einkalkuliert",
+        "Die Auszahlung kommt später als das Ende der Zinsbindung",
+        "Der Sollzins des Darlehens sinkt",
+        "Die Kapitalanlage bringt weniger Ertrag als geplant"
+      ],
+      "correct": [
+        0,
+        1,
+        3
+      ],
+      "explanation": "Reicht das Angesparte zum Ablösetermin nicht oder steht es nicht bereit, bleibt ein Teil der Schuld offen."
+    },
+    {
+      "id": "3.11-Q017",
+      "chapter": "3.11",
+      "section": "3.11.1-c",
+      "topic": "Bausparvertrag",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 17,
+      "question": "Welchen Nachteil hat der Bausparvertrag als Tilgungsersatzmittel?",
+      "answers": [
+        "Die Bausparsumme ist nicht garantiert",
+        "Der Zuteilungszeitpunkt ist nicht garantiert",
+        "Der Darlehenszins des Bauspardarlehens ist nicht garantiert",
+        "Das Guthaben ist nicht verzinst"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Der Darlehenszins steht fest, aber wann zugeteilt wird, kann die Bausparkasse nicht zusagen."
+    },
+    {
+      "id": "3.11-Q018",
+      "chapter": "3.11",
+      "section": "3.11.1-c",
+      "topic": "Fonds",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 18,
+      "question": "Welches Risiko trägt ein Investmentfonds-Sparplan als Tilgungsersatz?",
+      "answers": [
+        "Der Zuteilungstermin kann sich verschieben",
+        "Die Zulagen müssen zurückgezahlt werden",
+        "Der Rückkaufswert ist auf 80 % begrenzt",
+        "Eine negative Rendite ist möglich"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Fonds bieten Renditechancen, aber keine Garantie. Entwickelt sich der Markt schlecht, fehlt Kapital für die Ablösung."
+    },
+    {
+      "id": "3.11-Q019",
+      "chapter": "3.11",
+      "section": "3.11.1-c",
+      "topic": "Lebensversicherung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 19,
+      "question": "Was erhält der Kunde, wenn er eine kapitalbildende Lebensversicherung vorzeitig kündigt?",
+      "answers": [
+        "Die Todesfallleistung",
+        "Nur den Rückkaufswert",
+        "Die volle Versicherungssumme",
+        "Alle eingezahlten Beiträge mit Zinsen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Bei Kündigung gibt es nur den Rückkaufswert – ein Nachteil, wenn das Geld vorzeitig gebraucht wird."
+    },
+    {
+      "id": "3.11-Q020",
+      "chapter": "3.11",
+      "section": "3.11.1-d",
+      "topic": "Vorteil",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 20,
+      "question": "Unter welchen Bedingungen ist ein Fremdwährungsdarlehen vorteilhaft?",
+      "answers": [
+        "Das Zinsniveau der Fremdwährung ist niedriger",
+        "Die Fremdwährung gewinnt gegenüber dem Euro an Wert",
+        "Der Zins ist variabel",
+        "Die Fremdwährung verliert gegenüber dem Euro an Wert"
+      ],
+      "correct": [
+        0,
+        3
+      ],
+      "explanation": "Nur wenn beides zusammenkommt, sinken Zinslast und Schuld. Steigt die Fremdwährung, wächst die Schuld in Euro."
+    },
+    {
+      "id": "3.11-Q021",
+      "chapter": "3.11",
+      "section": "3.11.1-d",
+      "topic": "Währungsrisiko",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 21,
+      "question": "Ein Kunde hat in Schweizer Franken finanziert. Der Franken steigt gegenüber dem Euro. Was folgt?",
+      "answers": [
+        "Er muss in Euro mehr zurückzahlen",
+        "Der Vertrag wird unwirksam",
+        "Sein Zins wird automatisch festgeschrieben",
+        "Seine Schuld sinkt, gerechnet in Euro"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Schuld lautet auf Franken. Wird der Franken teurer, kostet die Rückzahlung mehr Euro."
+    },
+    {
+      "id": "3.11-Q022",
+      "chapter": "3.11",
+      "section": "3.11.1-d",
+      "topic": "Umwandlung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 22,
+      "question": "Ab welcher Verschlechterung durch den Wechselkurs kann der Darlehensnehmer die Umwandlung in seine Landeswährung verlangen?",
+      "answers": [
+        "Mehr als 20 %",
+        "Mehr als 5 %",
+        "Mehr als 50 %",
+        "Mehr als 10 %"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "§ 503 BGB gibt das Umwandlungsrecht, wenn Restschuld oder Raten um mehr als 20 % über dem Wert bei Vertragsschluss liegen."
+    },
+    {
+      "id": "3.11-Q023",
+      "chapter": "3.11",
+      "section": "3.11.1-d",
+      "topic": "Information",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 23,
+      "question": "Was muss der Darlehensgeber tun, wenn die 20-%-Schwelle überschritten ist?",
+      "answers": [
+        "Die Raten für mindestens sechs Monate zinslos aussetzen",
+        "Das Darlehen sofort kündigen",
+        "Den Darlehensnehmer unverzüglich informieren",
+        "Das Darlehen von sich aus umstellen"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Information erfolgt auf einem dauerhaften Datenträger und wird wiederholt, bis die Schwelle wieder unterschritten ist."
+    },
+    {
+      "id": "3.11-Q024",
+      "chapter": "3.11",
+      "section": "3.11.1-d",
+      "topic": "Inhalt",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 24,
+      "question": "Was muss die Information nach § 493 Abs. 4 BGB enthalten?",
+      "answers": [
+        "Eine Prognose des künftigen Wechselkurses",
+        "Die Bedingungen der Umwandlung",
+        "Die Restschuld in Landeswährung",
+        "Den Hinweis auf das Umwandlungsrecht"
+      ],
+      "correct": [
+        1,
+        2,
+        3
+      ],
+      "explanation": "Niemand kann den Wechselkurs vorhersagen. Die Information nennt Restschuld, Umwandlungsrecht und Bedingungen."
+    },
+    {
+      "id": "3.11-Q025",
+      "chapter": "3.11",
+      "section": "3.11.1-d",
+      "topic": "Risikomix",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 25,
+      "question": "Welche Risiken treffen bei einem typischen Fremdwährungsdarlehen zusammen?",
+      "answers": [
+        "Zuteilungsrisiko",
+        "Zinsrisiko durch variablen Zins",
+        "Währungsrisiko",
+        "Kursrisiko des Tilgungsersatzes"
+      ],
+      "correct": [
+        1,
+        2,
+        3
+      ],
+      "explanation": "Fremdwährungsdarlehen verbinden Währungs-, Kurs- und Zinsrisiken. Das Zuteilungsrisiko gehört zum Bausparvertrag."
+    },
+    {
+      "id": "3.11-Q026",
+      "chapter": "3.11",
+      "section": "3.11.2-a",
+      "topic": "Begriff",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 26,
+      "question": "Was sind biometrische Risiken?",
+      "answers": [
+        "Risiken aus fehlerhaften Grundbucheinträgen",
+        "Risiken aus schwankenden Wechselkursen",
+        "Risiken wie Krankheit, Unfall oder Tod",
+        "Risiken aus steigenden Baukosten"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Biometrische Risiken betreffen Leben und Gesundheit der Person und verändern die Lebensverhältnisse grundlegend."
+    },
+    {
+      "id": "3.11-Q027",
+      "chapter": "3.11",
+      "section": "3.11.2-a",
+      "topic": "Arbeitslosigkeit",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 27,
+      "question": "Welche Absicherung gegen Arbeitslosigkeit hält das Skript für am sinnvollsten?",
+      "answers": [
+        "Eine private Arbeitslosenversicherung",
+        "Eine höhere Grundschuld",
+        "Eine eigene Rücklage durch Sparen",
+        "Eine Restschuldversicherung auf den Todesfall"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Private Arbeitslosenversicherungen haben Wartezeiten, Leistungsgrenzen und Ausschlüsse. Eine Rücklage hilft sofort."
+    },
+    {
+      "id": "3.11-Q028",
+      "chapter": "3.11",
+      "section": "3.11.2-a",
+      "topic": "Versicherung",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 28,
+      "question": "Welche Einschränkungen hat eine private Arbeitslosenversicherung?",
+      "answers": [
+        "Keine Leistung bei Eigenkündigung",
+        "Leistung erst ab dem 55. Lebensjahr",
+        "Wartezeit von vier bis 24 Monaten",
+        "Leistung meist auf ein bis zwei Jahre begrenzt"
+      ],
+      "correct": [
+        0,
+        2,
+        3
+      ],
+      "explanation": "Die Versicherung nimmt Antragsteller nur bis etwa 55 Jahre an – und zahlt nur bei unverschuldeter Arbeitslosigkeit."
+    },
+    {
+      "id": "3.11-Q029",
+      "chapter": "3.11",
+      "section": "3.11.2-a",
+      "topic": "Eigenkündigung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 29,
+      "question": "Ein Kunde mit privater Arbeitslosenversicherung kündigt selbst und findet keine neue Stelle. Zahlt die Versicherung?",
+      "answers": [
+        "Ja, wenn er älter als 55 Jahre ist",
+        "Ja, nach Ablauf der vereinbarten Wartezeit von vier Monaten",
+        "Ja, aber nur die halbe Rate",
+        "Nein, nur bei unverschuldeter Arbeitslosigkeit"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Wer seinen Arbeitsplatz selbst kündigt, bekommt nichts."
+    },
+    {
+      "id": "3.11-Q030",
+      "chapter": "3.11",
+      "section": "3.11.2-a",
+      "topic": "Ortswechsel",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 30,
+      "question": "Welches Risiko bringt ein Wechsel des Arbeitsorts für die Finanzierung?",
+      "answers": [
+        "Automatische Fälligkeit des Darlehens",
+        "Verlust der Grundschuld im Grundbuch",
+        "Wegfall der Wohngebäudeversicherung",
+        "Höhere Lebenshaltungskosten am neuen Ort"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Höhere Kosten am neuen Arbeitsort können ein Loch in die Haushaltskasse reißen. Dagegen helfen Planung und Reserven."
+    },
+    {
+      "id": "3.11-Q031",
+      "chapter": "3.11",
+      "section": "3.11.2-b",
+      "topic": "Krankheit",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 31,
+      "question": "Wie lange zahlt der Arbeitgeber bei Krankheit das Gehalt weiter?",
+      "answers": [
+        "Bis zur sechsten Woche",
+        "Bis zur Genesung",
+        "Bis zum sechsten Monat",
+        "Bis zur zweiten Woche"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Danach zahlt die Krankenkasse Krankengeld, das deutlich niedriger ist."
+    },
+    {
+      "id": "3.11-Q032",
+      "chapter": "3.11",
+      "section": "3.11.2-b",
+      "topic": "Krankentagegeld",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 32,
+      "question": "Welche Versicherung gleicht den Einkommensverlust bei längerer Krankheit aus?",
+      "answers": [
+        "Die Wohngebäudeversicherung",
+        "Die private Unfallversicherung",
+        "Die Krankentagegeldversicherung",
+        "Die Risikolebensversicherung"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Das Krankentagegeld lässt sich an die Lohnfortzahlung anpassen und wird steuerfrei ausgezahlt."
+    },
+    {
+      "id": "3.11-Q033",
+      "chapter": "3.11",
+      "section": "3.11.2-b",
+      "topic": "Berufsunfähigkeit",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 33,
+      "question": "Wer erhält keine gesetzliche Berufsunfähigkeitsrente mehr?",
+      "answers": [
+        "Wer weniger als fünf Jahre Beiträge gezahlt hat",
+        "Wer nach dem 1. Januar 1961 geboren ist",
+        "Wer vor dem 1. Januar 1961 geboren ist",
+        "Wer selbstständig tätig ist"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Für diese Jahrgänge gibt es nur noch die Erwerbsminderungsrente. Eine private Berufsunfähigkeitsversicherung ist deshalb wichtig."
+    },
+    {
+      "id": "3.11-Q034",
+      "chapter": "3.11",
+      "section": "3.11.2-b",
+      "topic": "BU-Leistung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 34,
+      "question": "Ab welchem Grad der Berufsunfähigkeit leistet eine private Berufsunfähigkeitsversicherung in der Regel?",
+      "answers": [
+        "Ab 75 %",
+        "Erst bei 100 %",
+        "Ab 20 %",
+        "Ab 50 %"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Üblich ist die Leistung ab einer Berufsunfähigkeit von 50 %."
+    },
+    {
+      "id": "3.11-Q035",
+      "chapter": "3.11",
+      "section": "3.11.2-b",
+      "topic": "Unfall",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 35,
+      "question": "Wann greift die gesetzliche Unfallversicherung?",
+      "answers": [
+        "Bei Unfällen von Rentnern und Selbstständigen",
+        "Bei Unfällen in der Freizeit, beim Sport und im Haushalt",
+        "Bei allen Unfällen im Urlaub",
+        "Bei Unfällen am Arbeitsplatz und auf dem Arbeitsweg"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Zwei Drittel aller Unfälle passieren in der Freizeit und sind gesetzlich nicht abgesichert."
+    },
+    {
+      "id": "3.11-Q036",
+      "chapter": "3.11",
+      "section": "3.11.2-b",
+      "topic": "Unfall",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 36,
+      "question": "Wonach richtet sich die Leistung der privaten Unfallversicherung?",
+      "answers": [
+        "Nach der Restschuld des Darlehens",
+        "Nach dem Grad der Beeinträchtigung laut Gliedertaxe",
+        "Nach dem letzten Nettoeinkommen",
+        "Nach der vereinbarten Invaliditätssumme"
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "explanation": "Die Invaliditätssumme ist die Berechnungsgrundlage. Die Gliedertaxe bestimmt den Grad der dauerhaften Beeinträchtigung."
+    },
+    {
+      "id": "3.11-Q037",
+      "chapter": "3.11",
+      "section": "3.11.2-b",
+      "topic": "Fall",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 37,
+      "question": "Ein selbstständiger Handwerker stürzt in der Freizeit vom Fahrrad und bleibt dauerhaft beeinträchtigt. Welche Versicherung hätte gezahlt?",
+      "answers": [
+        "Die Wohngebäudeversicherung",
+        "Eine private Unfallversicherung",
+        "Die Bauleistungsversicherung",
+        "Die gesetzliche Unfallversicherung"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Selbstständige haben keinen gesetzlichen Unfallschutz – und Freizeitunfälle deckt dieser ohnehin nicht."
+    },
+    {
+      "id": "3.11-Q038",
+      "chapter": "3.11",
+      "section": "3.11.2-c",
+      "topic": "Erbe",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 38,
+      "question": "Der Hauptverdiener stirbt. Was erben die Angehörigen neben der Immobilie?",
+      "answers": [
+        "Auch die Restschuld des Darlehens",
+        "Eine Waisenrente in Höhe der Rate",
+        "Einen Anspruch auf Erlass der Zinsen",
+        "Nur das Eigentum, die Schuld erlischt"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Mit dem Erbe gehen auch die Verpflichtungen über. Witwen- und Waisenrente fangen das oft nicht auf."
+    },
+    {
+      "id": "3.11-Q039",
+      "chapter": "3.11",
+      "section": "3.11.2-c",
+      "topic": "Restschuldversicherung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 39,
+      "question": "Was ist eine Restschuldversicherung ihrem Wesen nach?",
+      "answers": [
+        "Eine Art Bürgschaft der Bank",
+        "Eine Art Kapitallebensversicherung",
+        "Eine Art Risikolebensversicherung",
+        "Eine Art Gebäudeversicherung"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Ihr erstes Ziel ist die Deckung der Restschuld beim Tod des Versicherten."
+    },
+    {
+      "id": "3.11-Q040",
+      "chapter": "3.11",
+      "section": "3.11.2-c",
+      "topic": "Varianten",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 40,
+      "question": "Bei welcher Risikolebensversicherung wird die Versicherungssumme jährlich an die Restschuld angepasst?",
+      "answers": [
+        "Bei der kapitalbildenden",
+        "Bei der fondsgebundenen",
+        "Bei der progressiv fallenden",
+        "Bei der linearen mit konstanter Summe"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die progressiv fallende Variante folgt dem Tilgungsverlauf. Die linear fallende sinkt jedes Jahr um denselben Betrag."
+    },
+    {
+      "id": "3.11-Q041",
+      "chapter": "3.11",
+      "section": "3.11.2-c",
+      "topic": "Trennen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 41,
+      "question": "Warum rät das Skript, Risikovorsorge und Geldanlage zu trennen?",
+      "answers": [
+        "Kombiprodukte sind teuer, der Todesfallschutz fällt zu niedrig aus",
+        "Kombiprodukte zahlen im Todesfall überhaupt keine Leistung",
+        "Kombiprodukte dürfen nicht als Sicherheit an die Bank abgetreten werden",
+        "Kombiprodukte sind für Darlehensnehmer gesetzlich verboten"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Risikolebensversicherung bietet eine hohe Absicherung zu bezahlbaren Beiträgen."
+    },
+    {
+      "id": "3.11-Q042",
+      "chapter": "3.11",
+      "section": "3.11.2-c",
+      "topic": "Haftung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 42,
+      "question": "Ein Ehepaar hat gemeinsam finanziert. Nach der Trennung zieht die Frau aus. Wie steht es um ihre Haftung?",
+      "answers": [
+        "Sie haftet nur noch für die Hälfte",
+        "Sie bleibt Darlehensnehmerin und haftet weiter",
+        "Sie haftet nur noch bis zur Scheidung",
+        "Sie scheidet mit dem Auszug automatisch aus"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Wer auszieht, scheidet nicht automatisch aus dem Vertrag aus. Nötig ist eine Haftentlassung durch die Bank."
+    },
+    {
+      "id": "3.11-Q043",
+      "chapter": "3.11",
+      "section": "3.11.2-c",
+      "topic": "Haftentlassung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 43,
+      "question": "Was verlangen viele Banken für eine Haftentlassung des Ehepartners?",
+      "answers": [
+        "Eine neue Grundschuldbestellung",
+        "Eine Bestätigung des Einwohnermeldeamts",
+        "Eine formlose Trennungserklärung",
+        "Ein rechtskräftiges Scheidungsurteil"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Eine Trennung allein genügt in der Regel nicht. Während der Sollzinsbindung wird der Haftentlassung ohnehin selten entsprochen."
+    },
+    {
+      "id": "3.11-Q044",
+      "chapter": "3.11",
+      "section": "3.11.2-c",
+      "topic": "Lastenzuschuss",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 44,
+      "question": "Wo kann ein Eigentümer mit geringem Einkommen einen Lastenzuschuss beantragen?",
+      "answers": [
+        "Bei der Bausparkasse",
+        "Beim Gutachterausschuss",
+        "Bei der Wohngeldstelle",
+        "Beim Grundbuchamt"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Der Lastenzuschuss ist das Wohngeld für Eigentümer. Er hängt von Einkommen und Vermögen ab und wird zunächst für 12 Monate bewilligt."
+    },
+    {
+      "id": "3.11-Q045",
+      "chapter": "3.11",
+      "section": "3.11.2-d",
+      "topic": "Wertverlust",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 45,
+      "question": "Welche Umstände können den Wert einer Immobilie mindern?",
+      "answers": [
+        "Abschluss einer Elementarschadenversicherung",
+        "Unterlassene Instandhaltung",
+        "Überangebot und Leerstand in der Region",
+        "Bau einer stark befahrenen Straße in der Nähe"
+      ],
+      "correct": [
+        1,
+        2,
+        3
+      ],
+      "explanation": "Markt, Umfeld und Zustand bestimmen den Wert. Eine Versicherung mindert ihn nicht."
+    },
+    {
+      "id": "3.11-Q046",
+      "chapter": "3.11",
+      "section": "3.11.2-d",
+      "topic": "Markt",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 46,
+      "question": "Welche Aussage zum Immobilienmarkt trifft zu?",
+      "answers": [
+        "Preise steigen langfristig in jeder Lage",
+        "Preise können sich auch seitwärts oder abwärts bewegen",
+        "Preise sind durch den Bodenrichtwert garantiert",
+        "Preise sinken nur bei Gewerbeobjekten"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Auch Immobilien sind Schwankungen unterworfen. Beim Wiederverkauf kann der Erlös unter dem Anschaffungspreis liegen."
+    },
+    {
+      "id": "3.11-Q047",
+      "chapter": "3.11",
+      "section": "3.11.2-d",
+      "topic": "Eigentümergemeinschaft",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 47,
+      "question": "Die Eigentümergemeinschaft beschließt eine neue Heizung. Ein Eigentümer möchte die Kosten aufschieben. Geht das?",
+      "answers": [
+        "Ja, bis zum Ende seiner Zinsbindung",
+        "Nein, die Kosten sind gemeinsam zu tragen",
+        "Ja, jeder Eigentümer bestimmt den Zeitpunkt selbst",
+        "Ja, wenn er die Wohnung selbst bewohnt"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Nur wer allein Eigentümer ist, kann Maßnahmen notfalls aufschieben."
+    },
+    {
+      "id": "3.11-Q048",
+      "chapter": "3.11",
+      "section": "3.11.2-d",
+      "topic": "Rücklage",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 48,
+      "question": "Was empfiehlt das Skript für Renovierung und Instandhaltung?",
+      "answers": [
+        "Geld dafür immer einplanen und eine Rücklage bilden",
+        "Auf die Gebäudeversicherung vertrauen",
+        "Die Kosten über den Dispositionskredit decken",
+        "Maßnahmen bis zum Ende der Zinsbindung aufschieben"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Werden notwendige Maßnahmen verschleppt, drohen hohe Folgekosten."
+    },
+    {
+      "id": "3.11-Q049",
+      "chapter": "3.11",
+      "section": "3.11.2-e",
+      "topic": "Wohngebäude",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 49,
+      "question": "Welche Schäden deckt die Wohngebäudeversicherung?",
+      "answers": [
+        "Feuer und Blitzschlag",
+        "Sturm und Hagel",
+        "Überschwemmung durch Hochwasser",
+        "Leitungswasser"
+      ],
+      "correct": [
+        0,
+        1,
+        3
+      ],
+      "explanation": "Überschwemmung ist ein Elementarschaden und braucht die zusätzliche Elementarschadenversicherung."
+    },
+    {
+      "id": "3.11-Q050",
+      "chapter": "3.11",
+      "section": "3.11.2-e",
+      "topic": "Sturm",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 50,
+      "question": "Ab welcher Windstärke gilt ein Schaden in der Wohngebäudeversicherung als Sturmschaden?",
+      "answers": [
+        "Ab Windstärke 10",
+        "Ab Windstärke 12",
+        "Ab Windstärke 5",
+        "Ab Windstärke 8"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Sturm im Sinne der Versicherung beginnt bei Windstärke 8."
+    },
+    {
+      "id": "3.11-Q051",
+      "chapter": "3.11",
+      "section": "3.11.2-e",
+      "topic": "Elementar",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 51,
+      "question": "Welche Gefahren gehören zur Elementarschadenversicherung?",
+      "answers": [
+        "Leitungswasser",
+        "Überschwemmung",
+        "Erdbeben",
+        "Schneedruck"
+      ],
+      "correct": [
+        1,
+        2,
+        3
+      ],
+      "explanation": "Leitungswasser ist in der Wohngebäudeversicherung gedeckt. Die Elementarversicherung erfasst weitere Naturgefahren."
+    },
+    {
+      "id": "3.11-Q052",
+      "chapter": "3.11",
+      "section": "3.11.2-e",
+      "topic": "Grundwasser",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 52,
+      "question": "Gestiegenes Grundwasser dringt von unten in das Kellermauerwerk ein. Ist das über die Elementarschadenversicherung gedeckt?",
+      "answers": [
+        "Ja, als Überschwemmung",
+        "Nein, weil das Wasser nicht an die Oberfläche getreten ist",
+        "Nein, weil Kellerräume in dieser Versicherung nie versichert sind",
+        "Ja, als Rückstau"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Versichert ist Grundwasser nur, wenn es an die Oberfläche gelangt und von dort ins Haus läuft."
+    },
+    {
+      "id": "3.11-Q053",
+      "chapter": "3.11",
+      "section": "3.11.2-e",
+      "topic": "Rückstau",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 53,
+      "question": "Wann ist ein Rückstauschaden nicht versichert?",
+      "answers": [
+        "Wenn eine funktionierende Rückstausicherung fehlte",
+        "Wenn der Schaden durch Starkregen ausgelöst wurde",
+        "Wenn das Wasser aus Ableitungsrohren kam",
+        "Wenn das Gebäude älter als 30 Jahre ist"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Rückstausicherung ist Pflicht des Versicherungsnehmers. Fehlt sie, entfällt der Schutz."
+    },
+    {
+      "id": "3.11-Q054",
+      "chapter": "3.11",
+      "section": "3.11.2-e",
+      "topic": "Bergbau",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 54,
+      "question": "Ein Haus bekommt Risse durch eine Erdsenkung infolge von Bergbau. Zahlt die Elementarschadenversicherung?",
+      "answers": [
+        "Nein, Erdsenkung ist in Deutschland generell nicht versicherbar",
+        "Nein, versichert sind nur naturbedingte Ereignisse",
+        "Ja, aber nur zur Hälfte",
+        "Ja, jede Erdsenkung ist versichert"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Schäden durch menschlichen Einfluss wie Bergbau oder Bautätigkeit sind ausgeschlossen."
+    },
+    {
+      "id": "3.11-Q055",
+      "chapter": "3.11",
+      "section": "3.11.2-e",
+      "topic": "Rohbau",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 55,
+      "question": "Welche Versicherung schützt ein Gebäude im Rohbau vor Unwetterschäden?",
+      "answers": [
+        "Die Elementarschadenversicherung",
+        "Die Hausratversicherung",
+        "Die Wohngebäudeversicherung",
+        "Die Bauleistungsversicherung"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Wohngebäude- und Elementarversicherung greifen im Rohbau noch nicht. Die Bauleistungsversicherung zahlt bei ungewöhnlichen Wetterverhältnissen."
+    },
+    {
+      "id": "3.11-Q056",
+      "chapter": "3.11",
+      "section": "3.11.2-e",
+      "topic": "Annahme",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 56,
+      "question": "Wer entscheidet, ob ein Gebäude Elementarschutz erhält?",
+      "answers": [
+        "Die finanzierende Bank",
+        "Der Gutachterausschuss",
+        "Die Gemeinde",
+        "Der Versicherer"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Der Versicherer entscheidet nach Schadenverlauf und Gefährdungsklasse – und kann den Schutz verweigern."
+    },
+    {
+      "id": "3.11-Q057",
+      "chapter": "3.11",
+      "section": "3.11.3-a",
+      "topic": "Auslöser",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 57,
+      "question": "Welche Ereignisse können einen Kredit notleidend machen?",
+      "answers": [
+        "Zerstörung der Immobilie durch Elementarschäden",
+        "Scheidung oder Trennung",
+        "Arbeitslosigkeit oder Kurzarbeit",
+        "Vereinbarung von Sondertilgungsrechten"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Einkommensausfall, Familienereignisse und Schäden am Objekt gefährden die Rückzahlung. Sondertilgungsrechte verringern das Risiko."
+    },
+    {
+      "id": "3.11-Q058",
+      "chapter": "3.11",
+      "section": "3.11.3-a",
+      "topic": "KYC",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 58,
+      "question": "Was bedeutet das Know-your-Customer-Prinzip?",
+      "answers": [
+        "Die jährliche Befragung der Kunden zur Zufriedenheit",
+        "Die Weitergabe von Kundendaten an Auskunfteien",
+        "Die Pflicht des Kunden, seine Bank zu prüfen",
+        "Die Prüfung der Daten von Neukunden"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "KYC soll Geldwäsche, Terrorismusfinanzierung und andere Straftaten verhindern."
+    },
+    {
+      "id": "3.11-Q059",
+      "chapter": "3.11",
+      "section": "3.11.3-a",
+      "topic": "Legitimation",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 59,
+      "question": "Welche Daten werden bei der Legitimationsprüfung erfasst?",
+      "answers": [
+        "Staatsangehörigkeit und Anschrift",
+        "Religionszugehörigkeit",
+        "Geburtsdatum und Geburtsort",
+        "Name und alle Vornamen"
+      ],
+      "correct": [
+        0,
+        2,
+        3
+      ],
+      "explanation": "Die Angaben sind anhand gültiger Dokumente zu überprüfen."
+    },
+    {
+      "id": "3.11-Q060",
+      "chapter": "3.11",
+      "section": "3.11.3-a",
+      "topic": "Betrug",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 60,
+      "question": "Ein Kunde legt gefälschte Gehaltsabrechnungen vor, um ein privates Baudarlehen zu erhalten. Welcher Straftatbestand kommt in Betracht?",
+      "answers": [
+        "Untreue nach § 266 StGB",
+        "Kreditbetrug nach § 265b StGB",
+        "Nur eine Ordnungswidrigkeit",
+        "Betrug nach § 263 StGB"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "§ 265b StGB betrifft Kredite für Betriebe und Unternehmen. Beim Privatkunden gilt der allgemeine Betrugstatbestand; schon der Versuch ist strafbar."
+    },
+    {
+      "id": "3.11-Q061",
+      "chapter": "3.11",
+      "section": "3.11.3-a",
+      "topic": "Plausibilität",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 61,
+      "question": "Was lässt sich anhand des Arbeitsvertrags des Kunden prüfen?",
+      "answers": [
+        "Ob das Arbeitsverhältnis befristet ist",
+        "Ob der Kunde negative Schufa-Einträge hat",
+        "Ob das Grundstück belastet ist",
+        "Ob der Kunde verheiratet ist"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Arbeitsvertrag zeigt Dauer und Art der Beschäftigung – wichtig für die Nachhaltigkeit des Einkommens."
+    },
+    {
+      "id": "3.11-Q062",
+      "chapter": "3.11",
+      "section": "3.11.3-a",
+      "topic": "Interesse",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 62,
+      "question": "In wessen Interesse liegt eine Finanzierung „auf gesunden Beinen“?",
+      "answers": [
+        "Allein im Interesse des Kreditinstituts",
+        "Im Interesse von Kunde und Kreditinstitut",
+        "Allein im Interesse des Kunden",
+        "Allein im Interesse der Aufsicht"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Der Kunde riskiert sonst die Privatinsolvenz, das Institut Aufwand und Verluste."
+    },
+    {
+      "id": "3.11-Q063",
+      "chapter": "3.11",
+      "section": "3.11.3-b",
+      "topic": "Verzug",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 63,
+      "question": "Wann kommt der Darlehensnehmer mit einer nicht gezahlten Rate in Verzug?",
+      "answers": [
+        "Erst nach Kündigung des Darlehens",
+        "Erst nach 30 Tagen",
+        "Sofort, ohne Mahnung",
+        "Erst nach der zweiten Mahnung"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Rate ist kalendermäßig fällig. Bleibt sie aus, tritt der Verzug sofort ein."
+    },
+    {
+      "id": "3.11-Q064",
+      "chapter": "3.11",
+      "section": "3.11.3-b",
+      "topic": "Verzugszins",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 64,
+      "question": "Wie hoch ist der Verzugszinssatz bei einem Immobiliar-Verbraucherdarlehen?",
+      "answers": [
+        "2,5 Prozent über dem Sollzins",
+        "2,5 Prozentpunkte über dem Basiszinssatz",
+        "9 Prozentpunkte über dem Basiszinssatz",
+        "5 Prozentpunkte über dem Basiszinssatz"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "§ 497 Abs. 4 BGB ermäßigt den Verzugszins für Immobiliar-Verbraucherdarlehen auf 2,5 Prozentpunkte über dem Basiszinssatz."
+    },
+    {
+      "id": "3.11-Q065",
+      "chapter": "3.11",
+      "section": "3.11.3-b",
+      "topic": "Verzugszins",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 65,
+      "question": "Der Basiszinssatz beträgt angenommen 1,5 %. Welcher Verzugszins gilt für ein Immobiliar-Verbraucherdarlehen?",
+      "answers": [
+        "4,0 %",
+        "6,5 %",
+        "2,5 %",
+        "1,5 %"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "1,5 % + 2,5 Prozentpunkte = 4,0 %. 6,5 % wären es bei einem Allgemein-Verbraucherdarlehen."
+    },
+    {
+      "id": "3.11-Q066",
+      "chapter": "3.11",
+      "section": "3.11.3-b",
+      "topic": "Basiszins",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 66,
+      "question": "Wann verändert sich der Basiszinssatz?",
+      "answers": [
+        "Zum Ersten jedes Monats",
+        "Bei jeder Leitzinsentscheidung sofort",
+        "Zum 1. Januar und 1. Juli jedes Jahres",
+        "Nur zum 1. Januar jedes Jahres"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Deutsche Bundesbank gibt den jeweils geltenden Basiszinssatz im Bundesanzeiger bekannt."
+    },
+    {
+      "id": "3.11-Q067",
+      "chapter": "3.11",
+      "section": "3.11.3-b",
+      "topic": "Anrechnung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 67,
+      "question": "In welcher Reihenfolge wird eine Teilzahlung nach § 367 BGB angerechnet?",
+      "answers": [
+        "Hauptleistung, Zinsen, Kosten",
+        "Zinsen, Hauptleistung, Kosten",
+        "Hauptleistung, Kosten, Zinsen",
+        "Kosten, Zinsen, Hauptleistung"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Zuerst werden die Kosten gedeckt, dann die Zinsen. Erst der Rest mindert die Hauptschuld."
+    },
+    {
+      "id": "3.11-Q068",
+      "chapter": "3.11",
+      "section": "3.11.3-b",
+      "topic": "Anrechnung",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 68,
+      "question": "Offen sind 300 € Kosten, 700 € Zinsen und 5.000 € Hauptschuld. Der Kunde zahlt 1.200 €. Wie viel mindert nach § 367 BGB die Hauptschuld?",
+      "answers": [
+        "200 €",
+        "1.200 €",
+        "500 €",
+        "0 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "1.200 € − 300 € Kosten − 700 € Zinsen = 200 € für die Hauptleistung."
+    },
+    {
+      "id": "3.11-Q069",
+      "chapter": "3.11",
+      "section": "3.11.3-b",
+      "topic": "§ 505d",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 69,
+      "question": "Der Sollzins wurde wegen fehlerhafter Kreditwürdigkeitsprüfung herabgesetzt. Ist der Kunde damit seine Schulden los?",
+      "answers": [
+        "Ja, nach drei Jahren",
+        "Nein, aber er zahlt keine Zinsen mehr",
+        "Ja, der Vertrag ist nichtig",
+        "Nein, die Darlehensschuld bleibt bestehen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "§ 505d BGB senkt den Zins und gibt ein Kündigungsrecht. Die Schuld selbst ist weiter abzutragen."
+    },
+    {
+      "id": "3.11-Q070",
+      "chapter": "3.11",
+      "section": "3.11.3-c",
+      "topic": "Instrumente",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 70,
+      "question": "Welche außergerichtlichen Lösungen kommen bei Zahlungsproblemen in Betracht?",
+      "answers": [
+        "Verlängerung der Tilgungslaufzeit",
+        "Stundung",
+        "Zuschlag im Versteigerungstermin",
+        "Vergleich"
+      ],
+      "correct": [
+        0,
+        1,
+        3
+      ],
+      "explanation": "Stundung, Vergleich, Zinsaussetzung, Umschuldung und Laufzeitverlängerung vermeiden die Zwangsvollstreckung."
+    },
+    {
+      "id": "3.11-Q071",
+      "chapter": "3.11",
+      "section": "3.11.3-c",
+      "topic": "Ziel",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 71,
+      "question": "Was ist das Ziel des außergerichtlichen Einigungsversuchs?",
+      "answers": [
+        "Die Grundschuld löschen zu lassen",
+        "Einen vollstreckbaren Titel zu erlangen",
+        "Ein Verbraucherinsolvenzverfahren abzuwenden",
+        "Die Zwangsversteigerung zu beschleunigen"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Der Schuldner sucht eine Einigung mit allen Gläubigern auf einen gemeinsamen Schuldenbereinigungsplan."
+    },
+    {
+      "id": "3.11-Q072",
+      "chapter": "3.11",
+      "section": "3.11.3-c",
+      "topic": "Vorgaben",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 72,
+      "question": "Welche gesetzlichen Vorgaben gelten für den Inhalt eines außergerichtlichen Schuldenbereinigungsplans?",
+      "answers": [
+        "Genehmigung durch das Amtsgericht",
+        "Laufzeit von genau sechs Jahren",
+        "Keine – der Inhalt ist frei vereinbar",
+        "Mindestquote von 35 % der Schulden"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Modalitäten sind frei: Stundung, Raten, Erlass, Verwertung von Sicherheiten, Zinsverzicht."
+    },
+    {
+      "id": "3.11-Q073",
+      "chapter": "3.11",
+      "section": "3.11.3-c",
+      "topic": "Gläubiger",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 73,
+      "question": "Was gefährdet einen außergerichtlichen Schuldenbereinigungsplan besonders?",
+      "answers": [
+        "Wenn ein Gläubiger vergessen wurde",
+        "Wenn Anpassungsklauseln enthalten sind",
+        "Wenn ein Anwalt mitwirkt",
+        "Wenn der Plan schriftlich gefasst wird"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Einigung setzt voraus, dass alle Gläubiger einbezogen sind und zustimmen."
+    },
+    {
+      "id": "3.11-Q074",
+      "chapter": "3.11",
+      "section": "3.11.3-c",
+      "topic": "Anpassungsklausel",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 74,
+      "question": "Wozu dienen Anpassungsklauseln in einer Zahlungsvereinbarung?",
+      "answers": [
+        "Sie erhöhen den Zins bei jeder verspäteten Rate",
+        "Sie verpflichten den Schuldner zum Verkauf",
+        "Sie regeln vorab den Fall der Arbeitslosigkeit",
+        "Sie erlauben der Bank die sofortige Versteigerung"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Zahlungen werden dann reduziert oder ausgesetzt, ohne dass sofort die Vollstreckung droht. Umgekehrt steigen sie bei höherem Einkommen."
+    },
+    {
+      "id": "3.11-Q075",
+      "chapter": "3.11",
+      "section": "3.11.3-c",
+      "topic": "Hilfe",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 75,
+      "question": "Wer gilt als geeignete Stelle für die Begleitung eines Schuldenbereinigungsplans?",
+      "answers": [
+        "Notare",
+        "Das Grundbuchamt",
+        "Rechtsanwälte",
+        "Schuldnerberatungsstellen"
+      ],
+      "correct": [
+        0,
+        2,
+        3
+      ],
+      "explanation": "Geeignet sind qualifizierte Personen und Stellen wie Anwälte, Steuerberater, Notare und Schuldnerberatungen."
+    },
+    {
+      "id": "3.11-Q076",
+      "chapter": "3.11",
+      "section": "3.11.3-d",
+      "topic": "Reihenfolge",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 76,
+      "question": "Was muss der Schuldner vor dem Antrag auf Verbraucherinsolvenz versucht haben?",
+      "answers": [
+        "Eine außergerichtliche Einigung mit den Gläubigern",
+        "Eine Umschuldung bei drei Banken",
+        "Eine Zwangsversteigerung seiner selbst genutzten Immobilie",
+        "Eine Klage gegen den Hauptgläubiger"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Scheitern des außergerichtlichen Einigungsversuchs muss eine geeignete Person oder Stelle bescheinigen."
+    },
+    {
+      "id": "3.11-Q077",
+      "chapter": "3.11",
+      "section": "3.11.3-d",
+      "topic": "Zuständigkeit",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 77,
+      "question": "Wo wird der Antrag auf Eröffnung des Verbraucherinsolvenzverfahrens gestellt?",
+      "answers": [
+        "Bei der BaFin",
+        "Beim Grundbuchamt",
+        "Beim Amtsgericht",
+        "Bei der Schuldnerberatung"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Zuständig ist das Amtsgericht als Insolvenzgericht."
+    },
+    {
+      "id": "3.11-Q078",
+      "chapter": "3.11",
+      "section": "3.11.3-d",
+      "topic": "Frist",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 78,
+      "question": "Nach welcher Zeit kann der Schuldner nach heutigem Recht die Restschuldbefreiung erlangen?",
+      "answers": [
+        "Nach fünf Jahren",
+        "Nach drei Jahren",
+        "Nach sechs Jahren",
+        "Nach zehn Jahren"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Abtretungsfrist beträgt drei Jahre ab Eröffnung des Verfahrens – ohne Mindestquote. Die sechs Jahre des Skripts sind überholt."
+    },
+    {
+      "id": "3.11-Q079",
+      "chapter": "3.11",
+      "section": "3.11.3-d",
+      "topic": "Treuhänder",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 79,
+      "question": "An wen fließen die Zahlungen des Schuldners in der Wohlverhaltensphase?",
+      "answers": [
+        "An die Schuldnerberatung",
+        "An einen Treuhänder, der sie verteilt",
+        "An das Finanzamt",
+        "Direkt an den Gläubiger mit der größten Forderung"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Der Schuldner tritt den pfändbaren Teil seines Einkommens an den Treuhänder ab."
+    },
+    {
+      "id": "3.11-Q080",
+      "chapter": "3.11",
+      "section": "3.11.3-d",
+      "topic": "Pflichten",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 80,
+      "question": "Welche Pflichten hat der Schuldner in der Wohlverhaltensphase?",
+      "answers": [
+        "Die Immobilie selbst versteigern",
+        "Dem Treuhänder Erbschaften anzeigen",
+        "Jede zumutbare Arbeit annehmen",
+        "Keine neuen Schulden machen"
+      ],
+      "correct": [
+        1,
+        2,
+        3
+      ],
+      "explanation": "Verletzt der Schuldner seine Pflichten, kann die Restschuldbefreiung versagt werden."
+    },
+    {
+      "id": "3.11-Q081",
+      "chapter": "3.11",
+      "section": "3.11.3-d",
+      "topic": "Versagung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 81,
+      "question": "Der Schuldner verschweigt dem Treuhänder eine Erbschaft. Was droht?",
+      "answers": [
+        "Nichts, Erbschaften bleiben außen vor",
+        "Die Versagung der Restschuldbefreiung",
+        "Die Verlängerung auf sechs Jahre",
+        "Eine Geldbuße von 35 % der Schulden"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Jede Änderung der Vermögensverhältnisse ist unverzüglich anzuzeigen."
+    },
+    {
+      "id": "3.11-Q082",
+      "chapter": "3.11",
+      "section": "3.11.3-e",
+      "topic": "Wege",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 82,
+      "question": "Auf welche Arten kann die Zwangsvollstreckung in ein Grundstück erfolgen?",
+      "answers": [
+        "Zwangsverwaltung",
+        "Eintragung einer Sicherungshypothek",
+        "Zwangsversteigerung",
+        "Pfändungs- und Überweisungsbeschluss"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "§ 866 ZPO nennt diese drei Wege. Der Pfändungs- und Überweisungsbeschluss betrifft Forderungen wie Lohn."
+    },
+    {
+      "id": "3.11-Q083",
+      "chapter": "3.11",
+      "section": "3.11.3-e",
+      "topic": "Titel",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 83,
+      "question": "Was braucht der Gläubiger, um aus dem Grundpfandrecht vollstrecken zu können?",
+      "answers": [
+        "Eine Schufa-Auskunft",
+        "Einen Vollstreckungstitel",
+        "Ein Wertgutachten",
+        "Die Zustimmung des Schuldners"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Titel sind rechtskräftige Urteile und vollstreckbare Urkunden."
+    },
+    {
+      "id": "3.11-Q084",
+      "chapter": "3.11",
+      "section": "3.11.3-e",
+      "topic": "Sicherungshypothek",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 84,
+      "question": "Ab welchem Betrag kann eine Zwangssicherungshypothek eingetragen werden?",
+      "answers": [
+        "Ab mehr als 5.000 €",
+        "Ab mehr als 100 €",
+        "Ab mehr als 15.000 €",
+        "Ab mehr als 750 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Der Titel muss eine Forderung von mehr als 750 € ausweisen."
+    },
+    {
+      "id": "3.11-Q085",
+      "chapter": "3.11",
+      "section": "3.11.3-e",
+      "topic": "Nebeneinander",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 85,
+      "question": "Wie verhalten sich Sicherungshypothek, Zwangsverwaltung und Zwangsversteigerung zueinander?",
+      "answers": [
+        "Sie schließen einander nicht aus",
+        "Nur ein Weg ist jeweils zulässig",
+        "Die Reihenfolge bestimmt der Schuldner",
+        "Die Versteigerung setzt die Verwaltung voraus"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Gläubiger kann einen Weg allein oder mehrere nebeneinander betreiben."
+    },
+    {
+      "id": "3.11-Q086",
+      "chapter": "3.11",
+      "section": "3.11.3-e",
+      "topic": "Titel und Forderung",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 86,
+      "question": "Titel über 300.000 € plus Zinsen, tatsächliche Schuld mit Kosten 220.000 €, Versteigerungserlös 260.000 €. Was erhält die Bank?",
+      "answers": [
+        "330.000 €",
+        "220.000 €",
+        "300.000 €",
+        "260.000 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Der Bank steht nur zu, was der Kunde tatsächlich schuldet. Der Überschuss geht an nachrangige Berechtigte und den Eigentümer."
+    },
+    {
+      "id": "3.11-Q087",
+      "chapter": "3.11",
+      "section": "3.11.3-e",
+      "topic": "Restforderung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 87,
+      "question": "Nach der Verwertung aller Sicherheiten bleibt eine Restforderung offen. Was droht dem Schuldner?",
+      "answers": [
+        "Das gerichtliche Mahnverfahren",
+        "Die automatische Restschuldbefreiung",
+        "Die Rückgabe der Immobilie",
+        "Die Löschung der Schuld im Grundbuch"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Mit dem Mahnverfahren erlangt der Gläubiger einen Titel auch über die Restforderung."
+    },
+    {
+      "id": "3.11-Q088",
+      "chapter": "3.11",
+      "section": "3.11.3-f",
+      "topic": "Zweck",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 88,
+      "question": "Worauf greift der Gläubiger bei der Zwangsverwaltung zu?",
+      "answers": [
+        "Auf die Konten des Schuldners",
+        "Auf die Erträge des Grundstücks",
+        "Auf das Gehalt des Schuldners",
+        "Auf die Substanz des Grundstücks"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Mieten und Pachten werden zur Tilgung verwendet. Das Grundstück selbst bleibt erhalten."
+    },
+    {
+      "id": "3.11-Q089",
+      "chapter": "3.11",
+      "section": "3.11.3-f",
+      "topic": "Antrag",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 89,
+      "question": "Wo wird die Zwangsverwaltung beantragt?",
+      "answers": [
+        "Beim Notar",
+        "Beim Grundbuchamt",
+        "Bei der Gemeinde",
+        "Beim Amtsgericht"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Das Amtsgericht ordnet die Zwangsverwaltung an und setzt den Zwangsverwalter ein."
+    },
+    {
+      "id": "3.11-Q090",
+      "chapter": "3.11",
+      "section": "3.11.3-f",
+      "topic": "Wirkung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 90,
+      "question": "Welche Wirkung hat die Anordnung der Zwangsverwaltung für den Schuldner?",
+      "answers": [
+        "Er verliert sofort das Eigentum",
+        "Er darf das Grundstück frei verkaufen",
+        "Er verliert die Verwaltungs- und Benutzungsbefugnis",
+        "Er wird von der Darlehensschuld und allen Zinsen frei"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Anordnung wirkt als Beschlagnahme. Der Schuldner bleibt Eigentümer, darf aber nicht mehr verwalten."
+    },
+    {
+      "id": "3.11-Q091",
+      "chapter": "3.11",
+      "section": "3.11.3-f",
+      "topic": "Verwalter",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 91,
+      "question": "Welche Aufgaben hat der Zwangsverwalter?",
+      "answers": [
+        "Mietverträge erfüllen und neu abschließen",
+        "Betriebskostenabrechnungen erstellen",
+        "Dem Amtsgericht regelmäßig berichten",
+        "Das Grundstück an den Meistbietenden verkaufen"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Der Zwangsverwalter bewirtschaftet das Objekt. Verkauft wird nur in der Zwangsversteigerung."
+    },
+    {
+      "id": "3.11-Q092",
+      "chapter": "3.11",
+      "section": "3.11.3-f",
+      "topic": "Eignung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 92,
+      "question": "Für welches Objekt eignet sich die Zwangsverwaltung am ehesten?",
+      "answers": [
+        "Ein leer stehendes Einfamilienhaus",
+        "Eine Bauruine ohne Sanierungskonzept",
+        "Ein voll vermietetes Mehrfamilienhaus",
+        "Ein unbebautes Grundstück ohne Pacht"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Sinnvoll ist sie, wenn die Erträge die laufenden Zins- und Tilgungsleistungen dauerhaft decken."
+    },
+    {
+      "id": "3.11-Q093",
+      "chapter": "3.11",
+      "section": "3.11.3-f",
+      "topic": "Eigennutzer",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 93,
+      "question": "Der Schuldner bewohnt das zwangsverwaltete Haus selbst. Was gilt?",
+      "answers": [
+        "Die Zwangsverwaltung ist unzulässig",
+        "Er muss sofort ausziehen",
+        "Er wird selbst zum Zwangsverwalter",
+        "Ihm bleiben die unentbehrlichen Räume"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Der Schuldner beschränkt sich auf den unentbehrlichen Teil; der Rest wird vermietet."
+    },
+    {
+      "id": "3.11-Q094",
+      "chapter": "3.11",
+      "section": "3.11.3-g",
+      "topic": "Vermerk",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 94,
+      "question": "Was veranlasst das Amtsgericht mit der Anordnung der Zwangsversteigerung im Grundbuch?",
+      "answers": [
+        "Die Eintragung einer Auflassungsvormerkung",
+        "Die Eintragung des Erstehers als Eigentümer",
+        "Die Löschung aller Grundpfandrechte",
+        "Die Eintragung des Zwangsversteigerungsvermerks"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Der Vermerk macht die Beschlagnahme sichtbar. Der Schuldner kann nicht mehr frei über das Grundstück verfügen."
+    },
+    {
+      "id": "3.11-Q095",
+      "chapter": "3.11",
+      "section": "3.11.3-g",
+      "topic": "Verkehrswert",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 95,
+      "question": "Wer setzt im Zwangsversteigerungsverfahren den Verkehrswert fest?",
+      "answers": [
+        "Der betreibende Gläubiger",
+        "Der Schuldner",
+        "Der Meistbietende",
+        "Das Gericht"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Das Vollstreckungsgericht setzt den Wert fest, in der Regel auf Grundlage eines Sachverständigengutachtens."
+    },
+    {
+      "id": "3.11-Q096",
+      "chapter": "3.11",
+      "section": "3.11.3-g",
+      "topic": "Bietzeit",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 96,
+      "question": "Wie lange dauert die Bietzeit im Versteigerungstermin mindestens?",
+      "answers": [
+        "30 Minuten",
+        "60 Minuten",
+        "Einen Tag",
+        "10 Minuten"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Zwischen der Aufforderung zur Abgabe von Geboten und dem Schluss müssen mindestens 30 Minuten liegen."
+    },
+    {
+      "id": "3.11-Q097",
+      "chapter": "3.11",
+      "section": "3.11.3-g",
+      "topic": "Sicherheit",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 97,
+      "question": "Verkehrswert 300.000 €. Ein Bieter gibt ein Gebot über 200.000 € ab. Welche Sicherheit kann verlangt werden?",
+      "answers": [
+        "20.000 €",
+        "200.000 €",
+        "30.000 €",
+        "10.000 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Sicherheit beträgt 10 % des Verkehrswerts – nicht des Gebots."
+    },
+    {
+      "id": "3.11-Q098",
+      "chapter": "3.11",
+      "section": "3.11.3-g",
+      "topic": "Sicherheit",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 98,
+      "question": "Ein Bieter kann die verlangte Sicherheit im Termin nicht sofort leisten. Was geschieht mit seinem Gebot?",
+      "answers": [
+        "Es wird zurückgewiesen",
+        "Es wird als Meistgebot vorgemerkt",
+        "Es gilt unter Vorbehalt",
+        "Er kann die Sicherheit binnen einer Woche nachreichen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Ohne Sicherheit kein Gebot. Ein Nachholen ist nicht möglich."
+    },
+    {
+      "id": "3.11-Q099",
+      "chapter": "3.11",
+      "section": "3.11.3-g",
+      "topic": "Anmeldung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 99,
+      "question": "Was droht einem Gläubiger, der seine Forderung zu spät anmeldet?",
+      "answers": [
+        "Ein Rangverlust",
+        "Der Ausschluss vom nächsten Termin",
+        "Der Verlust der Forderung",
+        "Eine Geldbuße des Gerichts"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Verspätet oder gar nicht angemeldete Forderungen rücken im Rang nach hinten."
+    },
+    {
+      "id": "3.11-Q100",
+      "chapter": "3.11",
+      "section": "3.11.3-g",
+      "topic": "Teilungsversteigerung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 100,
+      "question": "Wozu dient eine Teilungsversteigerung?",
+      "answers": [
+        "Zur Verwertung nur eines Grundstücksteils",
+        "Zur Aufhebung einer Eigentümergemeinschaft",
+        "Zur Teilung des Erlöses unter Banken",
+        "Zur Befriedigung des erstrangigen Gläubigers"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Sie wird etwa unter Erben oder geschiedenen Eheleuten betrieben, nicht zur Schuldentilgung."
+    },
+    {
+      "id": "3.11-Q101",
+      "chapter": "3.11",
+      "section": "3.11.3-h",
+      "topic": "5/10-Grenze",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 101,
+      "question": "Verkehrswert 400.000 €, Meistgebot im ersten Termin 180.000 €, keine bestehen bleibenden Rechte. Was gilt?",
+      "answers": [
+        "Der Bieter muss nachbessern",
+        "Der Zuschlag wird erteilt",
+        "Der Zuschlag kann auf Antrag versagt werden",
+        "Der Zuschlag muss versagt werden"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "180.000 € liegen unter 50 % des Verkehrswerts (200.000 €). Der Zuschlag ist von Amts wegen zu versagen."
+    },
+    {
+      "id": "3.11-Q102",
+      "chapter": "3.11",
+      "section": "3.11.3-h",
+      "topic": "7/10-Grenze",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 102,
+      "question": "Verkehrswert 400.000 €, Meistgebot im ersten Termin 250.000 €. Was gilt?",
+      "answers": [
+        "Das Gebot ist unwirksam und wird zurückgewiesen",
+        "Der Zuschlag muss von Amts wegen versagt werden",
+        "Der Zuschlag kann auf Antrag versagt werden",
+        "Der Zuschlag ist zwingend sofort zu erteilen"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "250.000 € liegen über 50 % (200.000 €), aber unter 70 % (280.000 €). Ein Berechtigter mit Ausfall kann die Versagung beantragen."
+    },
+    {
+      "id": "3.11-Q103",
+      "chapter": "3.11",
+      "section": "3.11.3-h",
+      "topic": "Zweiter Termin",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 103,
+      "question": "Welche Zuschlagsgrenzen gelten im neuen Termin nach einer Versagung?",
+      "answers": [
+        "Keine mehr",
+        "Eine neue 3/10-Grenze",
+        "Nur noch die 7/10-Grenze",
+        "Weiterhin 5/10 und 7/10"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Im neuen Termin, der nach drei bis sechs Monaten stattfindet, gelten die Grenzen nicht mehr."
+    },
+    {
+      "id": "3.11-Q104",
+      "chapter": "3.11",
+      "section": "3.11.3-h",
+      "topic": "Ersteher",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 104,
+      "question": "Wie heißt der Bieter, der den Zuschlag erhält?",
+      "answers": [
+        "Erwerber kraft Auflassung",
+        "Zessionar",
+        "Ersteher",
+        "Zwangsverwalter"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Mit dem Zuschlag wird der Ersteher Eigentümer; Rechte, Lasten und Gefahr gehen auf ihn über."
+    },
+    {
+      "id": "3.11-Q105",
+      "chapter": "3.11",
+      "section": "3.11.3-h",
+      "topic": "Rangklassen",
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 105,
+      "question": "Welche Ansprüche gehen den Grundschulden bei der Erlösverteilung vor?",
+      "answers": [
+        "Kosten des Verfahrens",
+        "Hausgeld der Eigentümergemeinschaft",
+        "Öffentliche Lasten wie Grundsteuer",
+        "Persönliche Forderungen ohne dingliches Recht"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Grundpfandrechte stehen in Rangklasse 4. Verfahrenskosten, Hausgeld (Klasse 2) und öffentliche Lasten (Klasse 3) gehen vor."
+    },
+    {
+      "id": "3.11-Q106",
+      "chapter": "3.11",
+      "section": "3.11.3-h",
+      "topic": "Klasse 4",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 106,
+      "question": "Wonach richtet sich die Reihenfolge mehrerer Grundschulden innerhalb der Rangklasse 4?",
+      "answers": [
+        "Nach der Höhe der Forderung",
+        "Nach ihrem Rang im Grundbuch",
+        "Nach dem Datum der Anmeldung im Termin",
+        "Nach dem Sitz des Gläubigers"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Reicht der Erlös nicht für alle, wird der erstrangige Gläubiger vor dem zweitrangigen bedient."
+    },
+    {
+      "id": "3.11-Q107",
+      "chapter": "3.11",
+      "section": "3.11.3-h",
+      "topic": "Verteilung",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 107,
+      "question": "Erlös nach Kosten und öffentlichen Lasten 200.000 €. Rang 1: Grundschuld mit Forderung 150.000 €. Rang 2: Grundschuld mit Forderung 80.000 €. Was erhält der zweite Gläubiger?",
+      "answers": [
+        "100.000 €",
+        "80.000 €",
+        "50.000 €",
+        "0 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Zuerst wird Rang 1 voll bedient. Für Rang 2 bleiben 200.000 € − 150.000 € = 50.000 €."
+    },
+    {
+      "id": "3.11-Q108",
+      "chapter": "3.11",
+      "section": "3.11.3-i",
+      "topic": "Räumungstitel",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 108,
+      "question": "Was dient dem Ersteher als Räumungstitel gegen den bisherigen Eigentümer?",
+      "answers": [
+        "Der Grundschuldbrief",
+        "Der Zuschlagsbeschluss",
+        "Das Wertgutachten",
+        "Der Zwangsversteigerungsvermerk"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Nach § 93 ZVG kann aus dem Zuschlagsbeschluss die Räumung gegen den Besitzer vollstreckt werden."
+    },
+    {
+      "id": "3.11-Q109",
+      "chapter": "3.11",
+      "section": "3.11.3-i",
+      "topic": "Mieter",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 109,
+      "question": "Die ersteigerte Wohnung ist vermietet. Kann der Ersteher den Mieter sofort räumen lassen?",
+      "answers": [
+        "Ja, mit dem Zuschlagsbeschluss",
+        "Nein, er muss kündigen",
+        "Ja, nach zwei Wochen",
+        "Nein, der Mieter ist unkündbar"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Bei vermieteten Objekten gibt es keine sofortige Räumung. Der Ersteher hat aber ein Sonderkündigungsrecht nach § 57a ZVG."
+    },
+    {
+      "id": "3.11-Q110",
+      "chapter": "3.11",
+      "section": "3.11.3-i",
+      "topic": "Frist Wohnraum",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 110,
+      "question": "Mit welcher Frist kann der Ersteher bei Wohnraum nach § 57a ZVG kündigen?",
+      "answers": [
+        "Fristlos mit Zugang der Kündigung",
+        "Mit neun Monaten bei langer Mietdauer",
+        "Bis zum dritten Werktag zum Ablauf des übernächsten Monats",
+        "Bis zum dritten Werktag zum Ablauf desselben Monats"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Es gilt die gesetzliche Frist von rund drei Monaten – unabhängig davon, wie lange das Mietverhältnis schon besteht."
+    },
+    {
+      "id": "3.11-Q111",
+      "chapter": "3.11",
+      "section": "3.11.3-i",
+      "topic": "Erster Termin",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 111,
+      "question": "Der Ersteher lässt den ersten zulässigen Kündigungstermin verstreichen. Was folgt?",
+      "answers": [
+        "Er verliert das Sonderkündigungsrecht",
+        "Er kann jederzeit fristlos kündigen",
+        "Der Mieter muss von sich aus ausziehen",
+        "Die Frist verlängert sich um drei Monate"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Sonderkündigungsrecht besteht nur für den ersten Termin, zu dem die Kündigung zulässig ist."
+    },
+    {
+      "id": "3.11-Q112",
+      "chapter": "3.11",
+      "section": "3.11.3-i",
+      "topic": "Geschäftsraum",
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 112,
+      "question": "Bis wann muss der Ersteher bei vermieteten Geschäftsräumen kündigen?",
+      "answers": [
+        "Bis zum dritten Werktag eines Monats zum Monatsende",
+        "Bis zum Jahresende zum Ablauf des Folgejahres",
+        "Am dritten Werktag eines Quartals zum nächsten Quartalsende",
+        "Jederzeit mit einer Frist von zwei Wochen"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Bei Geschäftsräumen ist die Frist etwas länger als bei Wohnraum."
+    },
+    {
+      "id": "3.11-Q113",
+      "chapter": "3.11",
+      "section": "3.11.3-j",
+      "topic": "Übergang",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 113,
+      "question": "Der Bürge zahlt die Schuld an die Bank. Was geschieht mit der Forderung gegen den Hauptschuldner?",
+      "answers": [
+        "Sie bleibt bei der Bank",
+        "Sie geht auf den Staat über",
+        "Sie erlischt ersatzlos",
+        "Sie geht auf den Bürgen über"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Nach § 774 BGB geht die Forderung kraft Gesetzes auf den Bürgen über. Er kann sie beim Hauptschuldner einfordern."
+    },
+    {
+      "id": "3.11-Q114",
+      "chapter": "3.11",
+      "section": "3.11.3-j",
+      "topic": "Akzessorietät",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 114,
+      "question": "Ein Darlehen über 100.000 € ist zur Hälfte getilgt. Für welchen Betrag haftet der Bürge noch?",
+      "answers": [
+        "25.000 €",
+        "100.000 €",
+        "50.000 €",
+        "0 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Bürgschaft ist akzessorisch. Maßgeblich ist die aktuelle Restschuld."
+    },
+    {
+      "id": "3.11-Q115",
+      "chapter": "3.11",
+      "section": "3.11.3-j",
+      "topic": "Formen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 115,
+      "question": "Welche Bürgschaftsform ist für den Bürgen am sichersten?",
+      "answers": [
+        "Die gesamtschuldnerische Mitbürgschaft",
+        "Die Globalbürgschaft",
+        "Die Ausfallbürgschaft",
+        "Die selbstschuldnerische Bürgschaft"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Der Ausfallbürge haftet erst, wenn alle rechtlichen Mittel gegen den Schuldner ausgeschöpft sind."
+    },
+    {
+      "id": "3.11-Q116",
+      "chapter": "3.11",
+      "section": "3.11.3-j",
+      "topic": "Formen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 116,
+      "question": "Welche Bürgschaft birgt für den Bürgen das größte Risiko?",
+      "answers": [
+        "Die Globalbürgschaft",
+        "Die gewöhnliche Bürgschaft",
+        "Die Höchstbetragsbürgschaft",
+        "Die Ausfallbürgschaft"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Bei der Globalbürgschaft haftet der Bürge für alle Verbindlichkeiten, nicht nur für einen bestimmten Kredit."
+    },
+    {
+      "id": "3.11-Q117",
+      "chapter": "3.11",
+      "section": "3.11.3-j",
+      "topic": "Aval",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 117,
+      "question": "Was stellt die Bank beim Avalkredit zur Verfügung?",
+      "answers": [
+        "Ein Sparguthaben als Pfand",
+        "Ihre Bonität in Form einer Bürgschaft",
+        "Bargeld in Höhe der Bürgschaftssumme",
+        "Eine Grundschuld an ihrem Gebäude"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Beim Aval fließt zunächst kein Geld. Die Bank bürgt gegen Avalprovision; es ist eine Eventualverbindlichkeit."
+    },
+    {
+      "id": "3.11-Q118",
+      "chapter": "3.11",
+      "section": "3.11.3-j",
+      "topic": "Aval",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 118,
+      "question": "Mietbürgschaft über 9.000 €, Avalprovision 1,5 % im Jahr. Was zahlt der Mieter jährlich?",
+      "answers": [
+        "1.350 €",
+        "13,50 €",
+        "90 €",
+        "135 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "9.000 € × 1,5 % = 135 €."
+    },
+    {
+      "id": "3.11-Q119",
+      "chapter": "3.11",
+      "section": "3.11.3-j",
+      "topic": "Zession",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 119,
+      "question": "Wie heißt bei der Abtretung der neue Gläubiger?",
+      "answers": [
+        "Avalnehmer",
+        "Zessionar",
+        "Zedent",
+        "Drittschuldner"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Der Zedent tritt ab, der Zessionar erhält die Forderung."
+    },
+    {
+      "id": "3.11-Q120",
+      "chapter": "3.11",
+      "section": "3.11.3-j",
+      "topic": "Zession",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 120,
+      "question": "Was kennzeichnet die stille Zession?",
+      "answers": [
+        "Die Abtretung ist ohne notarielle Beurkundung unwirksam",
+        "Die Abtretung wird im Grundbuch eingetragen",
+        "Die Abtretung erfasst nur künftige Forderungen",
+        "Die Abtretung wird dem Drittschuldner nicht offengelegt"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Bei der offenen Zession erfährt der Drittschuldner von der Abtretung, bei der stillen nicht."
+    },
+    {
+      "id": "3.11-Q121",
+      "chapter": "3.11",
+      "section": "3.11.3-j",
+      "topic": "Lohnpfändung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 121,
+      "question": "Was beantragt der Gläubiger für eine Lohnpfändung beim Amtsgericht?",
+      "answers": [
+        "Einen Zuschlagsbeschluss",
+        "Einen Pfändungs- und Überweisungsbeschluss",
+        "Einen Zwangsverwaltungsvermerk im Grundbuch des Schuldners",
+        "Eine Sicherungshypothek"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Voraussetzung ist ein vollstreckbarer Titel. Der Beschluss wird dem Arbeitgeber zugestellt."
+    },
+    {
+      "id": "3.11-Q122",
+      "chapter": "3.11",
+      "section": "3.11.3-j",
+      "topic": "Wahlrecht",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 122,
+      "question": "Eine Forderung ist durch Grundschuld und selbstschuldnerische Bürgschaft gesichert. Wen muss der Gläubiger zuerst in Anspruch nehmen?",
+      "answers": [
+        "Beide zu gleichen Teilen",
+        "Zwingend zuerst den Bürgen",
+        "Zwingend zuerst das Grundstück",
+        "Das steht ihm frei"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Treffen mehrere Sicherheiten zusammen, kann der Gläubiger wählen, welchen Sicherungsgeber er zuerst heranzieht."
+    }
+  ]
+}

@@ -1,0 +1,1312 @@
+{
+  "chapter": "2.11",
+  "questions": [
+    {
+      "id": "2.11-Q001",
+      "chapter": "2.11",
+      "section": "2.11.1-a",
+      "topic": "Preisbildung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 1,
+      "question": "Wodurch bildet sich der Preis in einer Marktwirtschaft?",
+      "answers": [
+        "Durch die Herstellungskosten allein",
+        "Durch Angebot und Nachfrage",
+        "Durch Absprache der Anbieter",
+        "Durch staatliche Festsetzung"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Der Preismechanismus von Angebot und Nachfrage bestimmt in der Marktwirtschaft den Preis."
+    },
+    {
+      "id": "2.11-Q002",
+      "chapter": "2.11",
+      "section": "2.11.1-a",
+      "topic": "Gleichgewichtspreis",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 2,
+      "question": "Wie heißt der Preis, bei dem Angebot und Nachfrage im Gleichgewicht sind?",
+      "answers": [
+        "Verkehrswert oder Beleihungswert",
+        "Richtpreis oder Listenpreis",
+        "Gleichgewichtspreis oder Marktpreis",
+        "Höchstpreis oder Mindestpreis"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Der zum Marktgleichgewicht führende Preis heißt Gleichgewichtspreis oder Marktpreis."
+    },
+    {
+      "id": "2.11-Q003",
+      "chapter": "2.11",
+      "section": "2.11.1-a",
+      "topic": "Angebot",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 3,
+      "question": "Wie reagiert das Angebot in der Regel, wenn der Marktpreis eines Gutes steigt?",
+      "answers": [
+        "Es sinkt",
+        "Es bleibt gleich",
+        "Es fällt auf null",
+        "Es steigt"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Je höher der Marktpreis, desto höher ist in der Regel das Gesamtangebot aller Erzeuger."
+    },
+    {
+      "id": "2.11-Q004",
+      "chapter": "2.11",
+      "section": "2.11.1-a",
+      "topic": "Güterarten",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 4,
+      "question": "Butter und Margarine sind ein Beispiel für welche Art von Gütern?",
+      "answers": [
+        "Komplementärgüter",
+        "Öffentliche Güter",
+        "Investitionsgüter",
+        "Substitutionsgüter"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Substitutionsgüter ersetzen einander. Komplementärgüter ergänzen sich – etwa Auto und Kraftstoff."
+    },
+    {
+      "id": "2.11-Q005",
+      "chapter": "2.11",
+      "section": "2.11.1-a",
+      "topic": "Bedeutung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 5,
+      "question": "Warum reagiert die Volkswirtschaft empfindlich auf Schwankungen der Immobilienwirtschaft?",
+      "answers": [
+        "Weil Immobilien nur mit Krediten bezahlt werden",
+        "Weil der Staat alle Immobilienpreise festlegt",
+        "Weil sie einer der größten Wirtschaftszweige ist",
+        "Weil Immobilien schnell an Wert verlieren"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Immobilienwirtschaft ist einer der größten Wirtschaftszweige in Deutschland; Schwankungen wirken daher auf die ganze Volkswirtschaft."
+    },
+    {
+      "id": "2.11-Q006",
+      "chapter": "2.11",
+      "section": "2.11.1-b",
+      "topic": "Lage",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 6,
+      "question": "Welche zwei Faktoren bestimmen den Preis einer Immobilie vor allem?",
+      "answers": [
+        "Art und Lage der Immobilie",
+        "Alter und Beruf des Käufers",
+        "Rechtsform und Sitz des Verkäufers",
+        "Höhe und Laufzeit des Darlehens"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Immobilienpreise unterscheiden sich nach der Art der Immobilie und vor allem nach ihrer Lage."
+    },
+    {
+      "id": "2.11-Q007",
+      "chapter": "2.11",
+      "section": "2.11.1-b",
+      "topic": "Bauland",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 7,
+      "question": "In Gemeinde A wird viel Bauland ausgewiesen, in Gemeinde B gibt es kaum noch welches. Bei ähnlicher Nachfrage – wo sind die Baulandpreise höher?",
+      "answers": [
+        "In Gemeinde A",
+        "In beiden gleich",
+        "Das hängt nur vom Zins ab",
+        "In Gemeinde B"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Wo kaum noch Bauland vorhanden ist, trifft die Nachfrage auf ein knappes Angebot – die Preise sind höher."
+    },
+    {
+      "id": "2.11-Q008",
+      "chapter": "2.11",
+      "section": "2.11.1-b",
+      "topic": "Mietpreise",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 8,
+      "question": "Wo finden sich in der Regel die höchsten Mietpreise?",
+      "answers": [
+        "In Ballungszentren",
+        "In Gemeinden mit viel Bauland",
+        "In Neubaugebieten am Ortsrand",
+        "In ländlichen Gebieten"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Den größten Einfluss auf die Miete hat der Standort. Am höchsten sind die Mieten in Ballungszentren."
+    },
+    {
+      "id": "2.11-Q009",
+      "chapter": "2.11",
+      "section": "2.11.1-b",
+      "topic": "Mietpreisbremse",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 9,
+      "question": "Welches Instrument dämpft seit 2015 den Anstieg der Mieten?",
+      "answers": [
+        "Die Grundsteuerreform",
+        "Die Mietpreisbremse",
+        "Die Zollunion",
+        "Die Mindestreserve"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Mietpreisbremse wurde 2015 eingeführt und begrenzt die Miethöhe bei Neuvermietung in angespannten Märkten."
+    },
+    {
+      "id": "2.11-Q010",
+      "chapter": "2.11",
+      "section": "2.11.1-c",
+      "topic": "Kommanditist",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 10,
+      "question": "Womit haftet ein Kommanditist einer KG?",
+      "answers": [
+        "Nur mit seiner Einlage",
+        "Überhaupt nicht",
+        "Mit seinem gesamten Privatvermögen",
+        "Mit dem doppelten Betrag seiner Einlage"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Kommanditisten haften nur mit ihrer Einlage. Komplementäre haften mit ihrem gesamten Vermögen."
+    },
+    {
+      "id": "2.11-Q011",
+      "chapter": "2.11",
+      "section": "2.11.1-c",
+      "topic": "Kapitalgesellschaft",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 11,
+      "question": "Bei welcher Rechtsform ist das Privatvermögen der Gesellschafter grundsätzlich geschützt?",
+      "answers": [
+        "Bei der oHG",
+        "Bei der GmbH",
+        "Beim Einzelunternehmen",
+        "Bei der GbR"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Bei Kapitalgesellschaften wie der GmbH ist das Privatvermögen geschützt. Einzelunternehmer und Personengesellschafter haften persönlich."
+    },
+    {
+      "id": "2.11-Q012",
+      "chapter": "2.11",
+      "section": "2.11.1-c",
+      "topic": "Zusatzsicherheit",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 12,
+      "question": "Eine GmbH mit wenig Substanz beantragt einen Kredit. Was kann die Bank trotz der Haftungsbeschränkung verlangen?",
+      "answers": [
+        "Persönliche Sicherheiten der Gesellschafter",
+        "Die Auflösung der Gesellschaft",
+        "Die Umwandlung der GmbH in eine oHG",
+        "Nichts – die Haftungsbeschränkung bindet auch die Bank"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Reicht die Unternehmenssubstanz nicht aus, kann bei der Kreditvergabe das Privatvermögen zusätzlich als Sicherheit herangezogen werden."
+    },
+    {
+      "id": "2.11-Q013",
+      "chapter": "2.11",
+      "section": "2.11.1-c",
+      "topic": "Zuordnung",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 13,
+      "question": "Welche Rechtsformen sind Personengesellschaften?",
+      "answers": [
+        "oHG",
+        "KG",
+        "GmbH",
+        "GbR"
+      ],
+      "correct": [
+        0,
+        1,
+        3
+      ],
+      "explanation": "GbR, oHG und KG sind Personengesellschaften. Die GmbH ist eine Kapitalgesellschaft."
+    },
+    {
+      "id": "2.11-Q014",
+      "chapter": "2.11",
+      "section": "2.11.1-d",
+      "topic": "Bauherr",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 14,
+      "question": "Wer stellt im eigenen Namen den Bauantrag und ist Vertragspartner der bauausführenden Unternehmen?",
+      "answers": [
+        "Der Bauherr",
+        "Der Architekt",
+        "Der Subunternehmer",
+        "Der Baubetreuer"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Bauherr bestimmt das Bauvorhaben, stellt den Bauantrag im eigenen Namen und ist Vertragspartner der Unternehmen."
+    },
+    {
+      "id": "2.11-Q015",
+      "chapter": "2.11",
+      "section": "2.11.1-d",
+      "topic": "Bauträger",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 15,
+      "question": "Was kennzeichnet einen Bauträger?",
+      "answers": [
+        "Er prüft die Statik des Bauwerks",
+        "Er führt Aufträge des Generalunternehmers aus",
+        "Er ist im Auftrag eines fremden Bauherrn tätig",
+        "Er baut für den Markt und verkauft"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Der Bauträger baut für den Markt und verkauft das Objekt. Der Baubetreuer ist für einen fremden Bauherrn tätig."
+    },
+    {
+      "id": "2.11-Q016",
+      "chapter": "2.11",
+      "section": "2.11.1-d",
+      "topic": "GU und GÜ",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 16,
+      "question": "Worin unterscheidet sich der Generalübernehmer vom Generalunternehmer?",
+      "answers": [
+        "Er erbringt die Bauleistungen nicht selbst",
+        "Er haftet nicht für Baumängel",
+        "Er ist Eigentümer des Grundstücks",
+        "Er arbeitet nur für private Bauherren"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Generalunternehmer baut ganz oder teilweise selbst. Der Generalübernehmer organisiert die Durchführung, erbringt aber keine Bauleistungen selbst."
+    },
+    {
+      "id": "2.11-Q017",
+      "chapter": "2.11",
+      "section": "2.11.1-d",
+      "topic": "Baukostenrisiko",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 17,
+      "question": "Das Haus wird 40.000 € teurer als geplant. Welches Risiko des Bauherrn hat sich verwirklicht?",
+      "answers": [
+        "Das Gewährleistungsrisiko",
+        "Das Bauzeitrisiko",
+        "Das Herstellungsrisiko",
+        "Das Baukostenrisiko"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Übersteigen die Ist-Kosten die Planung, hat sich das Baukostenrisiko verwirklicht."
+    },
+    {
+      "id": "2.11-Q018",
+      "chapter": "2.11",
+      "section": "2.11.1-d",
+      "topic": "Gewährleistung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 18,
+      "question": "Nach dem Einzug zeigen sich Mängel, der Handwerksbetrieb ist inzwischen insolvent. Welches Bauherrenrisiko ist das?",
+      "answers": [
+        "Das Baukostenrisiko",
+        "Das Gewährleistungsrisiko",
+        "Das Bauzeitrisiko",
+        "Das Zinsänderungsrisiko"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Das Gewährleistungsrisiko betrifft die Frage, ob Mängelansprüche durchgesetzt werden können oder der Bauherr selbst aufkommen muss."
+    },
+    {
+      "id": "2.11-Q019",
+      "chapter": "2.11",
+      "section": "2.11.1-e",
+      "topic": "Darlehenszusage",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 19,
+      "question": "Ein Vermittler sagt dem Kunden: „Ihr Darlehen ist hiermit zugesagt.“ Wie ist das zu bewerten?",
+      "answers": [
+        "Zulässig – er vertritt die Bank",
+        "Unzulässig – außer es geschieht schriftlich",
+        "Zulässig bei Darlehen bis 100.000 €",
+        "Unzulässig – das darf nur die Bank"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Vermittler dürfen keine Darlehensgewährung zusagen. Das darf nur der Darlehensgeber selbst."
+    },
+    {
+      "id": "2.11-Q020",
+      "chapter": "2.11",
+      "section": "2.11.1-e",
+      "topic": "Makler",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 20,
+      "question": "Welche Erlaubnis braucht ein Immobilienmakler?",
+      "answers": [
+        "§ 34d GewO",
+        "§ 34c Abs. 1 Satz 1 Nr. 1 GewO",
+        "§ 34i GewO",
+        "§ 34f GewO"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Immobilienmakler brauchen neben der Gewerbeanmeldung die Erlaubnis nach § 34c Abs. 1 Satz 1 Nr. 1 GewO."
+    },
+    {
+      "id": "2.11-Q021",
+      "chapter": "2.11",
+      "section": "2.11.1-e",
+      "topic": "Verwalter kaufmännisch",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 21,
+      "question": "Welche Aufgabe gehört zum kaufmännischen Bereich der Immobilienverwaltung?",
+      "answers": [
+        "Die Wartung der Heizungsanlage",
+        "Die Wohnungsabnahme beim Auszug",
+        "Die jährliche Nebenkostenabrechnung",
+        "Die Kontrolle des Reinigungsdienstes"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Kaufmännisch sind z. B. Mieteinzug, Mietverträge, Nebenkostenabrechnung und Wirtschaftsplan. Wartung und Übergaben sind technische Aufgaben."
+    },
+    {
+      "id": "2.11-Q022",
+      "chapter": "2.11",
+      "section": "2.11.1-e",
+      "topic": "Verwalter technisch",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 22,
+      "question": "Welche Aufgabe gehört zum technischen Bereich der Immobilienverwaltung?",
+      "answers": [
+        "Anpassung von Staffelmieten",
+        "Wartung und Instandsetzung des Gebäudes",
+        "Forderungsmanagement gegenüber Mietern",
+        "Erstellung des Wirtschaftsplans"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Zum technischen Bereich gehören Betrieb und Kontrolle der Anlagen, Wartung, Instandsetzung und Wohnungsübergaben."
+    },
+    {
+      "id": "2.11-Q023",
+      "chapter": "2.11",
+      "section": "2.11.1-e",
+      "topic": "Vermieterverband",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 23,
+      "question": "Wie heißt der Spitzenverband der Vermieter?",
+      "answers": [
+        "Deutscher Mieterbund",
+        "Haus & Grund",
+        "Verband der Privaten Bausparkassen",
+        "Bundesverband deutscher Banken"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Haus & Grund vertritt die Interessen der Vermieter und ist ihr anerkannter Spitzenverband."
+    },
+    {
+      "id": "2.11-Q024",
+      "chapter": "2.11",
+      "section": "2.11.1-f",
+      "topic": "Eigennutzung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 24,
+      "question": "Mit welchem Instrument fördert der Staat die selbst genutzte Immobilie als Teil der Altersvorsorge?",
+      "answers": [
+        "Mit Wohn-Riester",
+        "Mit der Mietpreisbremse",
+        "Mit der Grunderwerbsteuer",
+        "Mit der Mindestreserve"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Wohn-Riester fördert die selbst genutzte Immobilie mit Zulagen und Steuervergünstigungen."
+    },
+    {
+      "id": "2.11-Q025",
+      "chapter": "2.11",
+      "section": "2.11.1-f",
+      "topic": "Gewerbliche Eigennutzung",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 25,
+      "question": "Welchen Vorteil hat ein Unternehmer, der seine Geschäftsräume kauft statt mietet?",
+      "answers": [
+        "Anspruch auf Wohn-Riester",
+        "Schutz vor Mieterhöhungen",
+        "Befreiung von der Grundsteuer",
+        "Steuernutzen durch AfA"
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "explanation": "Die gewerblich eigengenutzte Immobilie schützt vor Mieterhöhungen, bringt AfA als Steuervorteil und lässt sich an den eigenen Bedarf anpassen."
+    },
+    {
+      "id": "2.11-Q026",
+      "chapter": "2.11",
+      "section": "2.11.1-f",
+      "topic": "Gemischt genutzt",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 26,
+      "question": "Welche Gewerbe finden sich typischerweise in gemischt genutzten Gebäuden?",
+      "answers": [
+        "Gewerbe ohne Lärmbelästigung",
+        "Produzierende Industrie",
+        "Betriebe mit Schichtbetrieb",
+        "Speditionen und Lager"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "In gemischt genutzten Gebäuden finden sich fast ausschließlich Gewerbe ohne Lärmbelästigung – etwa Bankfilialen, Makler, Handel."
+    },
+    {
+      "id": "2.11-Q027",
+      "chapter": "2.11",
+      "section": "2.11.1-g",
+      "topic": "Geldpolitik",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 27,
+      "question": "Was ist das zentrale Ziel der Geldpolitik?",
+      "answers": [
+        "Ein ausgeglichener Staatshaushalt",
+        "Hohe Immobilienpreise",
+        "Vollbeschäftigung",
+        "Preisniveaustabilität"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Bei der Geldpolitik steht die Preisniveaustabilität als zentrales Ziel im Vordergrund."
+    },
+    {
+      "id": "2.11-Q028",
+      "chapter": "2.11",
+      "section": "2.11.1-g",
+      "topic": "Fiskalpolitik",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 28,
+      "question": "Was versteht man unter Fiskalpolitik?",
+      "answers": [
+        "Die Lohnpolitik der Tarifparteien",
+        "Die Zins- und Liquiditätspolitik der Zentralbank",
+        "Die Preispolitik der Unternehmen",
+        "Die Einnahmen- und Ausgabenpolitik des Staates"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Fiskalpolitik ist die Ein- und Ausgabenpolitik des Staates – er steuert über Steuern und Abgaben."
+    },
+    {
+      "id": "2.11-Q029",
+      "chapter": "2.11",
+      "section": "2.11.1-g",
+      "topic": "Überhitzung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 29,
+      "question": "Die Wirtschaft ist überhitzt. Wie wirkt der Staat mit seiner Fiskalpolitik bremsend ein?",
+      "answers": [
+        "Er senkt Steuern und Abgaben",
+        "Er kauft Wertpapiere am offenen Markt",
+        "Er erhöht Steuern und Abgaben",
+        "Er senkt den Leitzins"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Bei überhitzter Wirtschaft bremst der Staat durch höhere Steuern und Abgaben. Leitzins und Offenmarkt sind Instrumente der Zentralbank."
+    },
+    {
+      "id": "2.11-Q030",
+      "chapter": "2.11",
+      "section": "2.11.1-g",
+      "topic": "Angebotsorientiert",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 30,
+      "question": "Der Staat senkt die Unternehmenssteuern, damit Betriebe mehr investieren. Welche Art von Fiskalpolitik ist das?",
+      "answers": [
+        "Ordnungspolitik",
+        "Nachfrageorientierte Fiskalpolitik",
+        "Offenmarktpolitik",
+        "Angebotsorientierte Fiskalpolitik"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Angebotsorientierte Fiskalpolitik stärkt das Angebot, z. B. durch niedrigere Unternehmenssteuern. Nachfrageorientierte setzt bei der Einkommensteuer an."
+    },
+    {
+      "id": "2.11-Q031",
+      "chapter": "2.11",
+      "section": "2.11.1-g",
+      "topic": "Ordnungspolitik",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 31,
+      "question": "Welche Politik legt die langfristigen Rahmenbedingungen des Wirtschaftens fest – etwa die Wettbewerbsregeln?",
+      "answers": [
+        "Die Strukturpolitik",
+        "Die Ordnungspolitik",
+        "Die Fiskalpolitik",
+        "Die Prozesspolitik"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Ordnungspolitik setzt für einen längeren Zeitraum die Rahmenbedingungen. Prozesspolitik greift direkt in den Ablauf ein."
+    },
+    {
+      "id": "2.11-Q032",
+      "chapter": "2.11",
+      "section": "2.11.1-g",
+      "topic": "Strukturpolitik",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 32,
+      "question": "Ein Bundesland fördert gezielt eine strukturschwache Region mit Subventionen und besserer Infrastruktur. Wie nennt man das?",
+      "answers": [
+        "Währungspolitik",
+        "Regionale Strukturpolitik",
+        "Nachfrageorientierte Fiskalpolitik",
+        "Sektorale Strukturpolitik"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Strukturpolitik kann einzelne Branchen (sektoral) oder bestimmte Regionen (regional) betreffen."
+    },
+    {
+      "id": "2.11-Q033",
+      "chapter": "2.11",
+      "section": "2.11.2-a",
+      "topic": "Phasen",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 33,
+      "question": "Welche vier Phasen hat der Konjunkturzyklus?",
+      "answers": [
+        "Inflation, Deflation, Stagnation, Rezession",
+        "Aufbau, Wachstum, Reife, Sättigung",
+        "Expansion, Boom, Rezession, Depression",
+        "Angebot, Nachfrage, Gleichgewicht, Preis"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Der Konjunkturzyklus durchläuft Expansion, Boom, Rezession und Depression."
+    },
+    {
+      "id": "2.11-Q034",
+      "chapter": "2.11",
+      "section": "2.11.2-a",
+      "topic": "Boom",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 34,
+      "question": "Produktionskapazitäten stark ausgelastet, Arbeitslosenquote auf dem Tiefststand – welche Phase ist das?",
+      "answers": [
+        "Expansion",
+        "Depression",
+        "Boom",
+        "Rezession"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Der Boom ist die konjunkturelle Hochphase mit hoher Auslastung und niedrigster Arbeitslosigkeit."
+    },
+    {
+      "id": "2.11-Q035",
+      "chapter": "2.11",
+      "section": "2.11.2-a",
+      "topic": "Rezession",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 35,
+      "question": "Die Wirtschaftsleistung sinkt, die Arbeitslosigkeit beginnt zu steigen. Wie entwickeln sich in dieser Phase die Zinsen?",
+      "answers": [
+        "Sie bleiben auf Höchststand",
+        "Sie steigen",
+        "Sie sinken",
+        "Sie werden ausgesetzt"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "In der Rezession sinken die Zinsen; die Zentralbank kurbelt mit Zinssenkungen an."
+    },
+    {
+      "id": "2.11-Q036",
+      "chapter": "2.11",
+      "section": "2.11.2-a",
+      "topic": "Zentralbank im Boom",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 36,
+      "question": "Wie reagiert die Zentralbank typischerweise im Boom?",
+      "answers": [
+        "Sie greift erst in der Depression ein",
+        "Sie erhöht die Zinsen und bremst die Kreditvergabe",
+        "Sie senkt die Zinsen und fördert die Kreditvergabe",
+        "Sie stellt die Geldversorgung vorübergehend ein"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Im Boom bremsen die Zentralbanken durch Zinserhöhungen, im Abschwung kurbeln sie durch Zinssenkungen an."
+    },
+    {
+      "id": "2.11-Q037",
+      "chapter": "2.11",
+      "section": "2.11.2-a",
+      "topic": "Kreditvergabe",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 37,
+      "question": "In welcher Phase steigt die Kreditvergabe bei wachsender Wirtschaft und steigenden Einkommen an?",
+      "answers": [
+        "In keiner Phase",
+        "In der Rezession",
+        "In der Depression",
+        "In der Expansion"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "In der Expansion wächst die Wirtschaft solide; Nachfrage, Einkommen und Kreditvergabe steigen."
+    },
+    {
+      "id": "2.11-Q038",
+      "chapter": "2.11",
+      "section": "2.11.3-a",
+      "topic": "Zuständigkeit",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 38,
+      "question": "Wer ist im Euroraum für die Geldpolitik verantwortlich?",
+      "answers": [
+        "Das Europäische Parlament",
+        "Das Bundesfinanzministerium",
+        "Das ESZB mit der EZB an der Spitze",
+        "Die BaFin mit der Bundesbank"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Das Europäische System der Zentralbanken mit der EZB an der Spitze ist für die Geldpolitik in der Währungsunion verantwortlich."
+    },
+    {
+      "id": "2.11-Q039",
+      "chapter": "2.11",
+      "section": "2.11.3-a",
+      "topic": "Mindestreserve",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 39,
+      "question": "Die Zentralbank erhöht den Mindestreservesatz. Was folgt daraus für die Banken?",
+      "answers": [
+        "Sie können mehr Kredite vergeben",
+        "Sie können weniger Kredite vergeben",
+        "Sie erhalten zusätzliche Liquidität",
+        "Sie müssen ihre Zinsen senken"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Je höher der Mindestreservesatz, desto knapper die Geldmenge: Den Banken steht weniger Geld für Kredite zur Verfügung."
+    },
+    {
+      "id": "2.11-Q040",
+      "chapter": "2.11",
+      "section": "2.11.3-a",
+      "topic": "Offenmarkt Kauf",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 40,
+      "question": "Die Zentralbank kauft Wertpapiere am offenen Markt. Wie wirkt das?",
+      "answers": [
+        "Die Geldmenge bleibt gleich, nur die Kurse steigen",
+        "Die Geldmenge sinkt, Kredite werden tendenziell teurer",
+        "Die Mindestreserve der Banken erhöht sich",
+        "Mehr Geld, tendenziell billigere Kredite"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Durch den Ankauf fließt Zentralbankgeld in den Bankensektor. Die Geldmenge wächst, die Zinsen sinken tendenziell."
+    },
+    {
+      "id": "2.11-Q041",
+      "chapter": "2.11",
+      "section": "2.11.3-a",
+      "topic": "Pensionsgeschäft",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 41,
+      "question": "Die Zentralbank kauft Wertpapiere nur für eine bestimmte Zeit; die Bank muss sie zurückkaufen. Wie heißt dieses Geschäft?",
+      "answers": [
+        "Endgültiges Offenmarktgeschäft",
+        "Einlagefazilität",
+        "Wertpapierpensionsgeschäft",
+        "Mindestreservegeschäft"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Beim Wertpapierpensionsgeschäft ist die verkaufende Bank zum Rückkauf verpflichtet. Ohne Rücknahmevereinbarung ist das Geschäft endgültig."
+    },
+    {
+      "id": "2.11-Q042",
+      "chapter": "2.11",
+      "section": "2.11.3-a",
+      "topic": "Instrumente",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 42,
+      "question": "Welche Instrumente gehören zur Geldpolitik der EZB?",
+      "answers": [
+        "Ständige Fazilitäten",
+        "Offenmarktpolitik",
+        "Steuerpolitik",
+        "Mindestreservepolitik"
+      ],
+      "correct": [
+        0,
+        1,
+        3
+      ],
+      "explanation": "Die EZB nutzt Mindestreserve-, Offenmarkt- und Leitzinspolitik sowie die ständigen Fazilitäten. Steuern sind Sache des Staates."
+    },
+    {
+      "id": "2.11-Q043",
+      "chapter": "2.11",
+      "section": "2.11.3-b",
+      "topic": "Leitzinsen",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 43,
+      "question": "Welche Zinssätze zählen zu den Leitzinsen der EZB?",
+      "answers": [
+        "Einlagesatz",
+        "Spitzenrefinanzierungssatz",
+        "Mindestreservesatz",
+        "Hauptrefinanzierungssatz"
+      ],
+      "correct": [
+        0,
+        1,
+        3
+      ],
+      "explanation": "Die EZB legt drei Leitzinsen fest: für das Hauptrefinanzierungsgeschäft, die Spitzenrefinanzierungsfazilität und die Einlagefazilität."
+    },
+    {
+      "id": "2.11-Q044",
+      "chapter": "2.11",
+      "section": "2.11.3-b",
+      "topic": "Zinssenkung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 44,
+      "question": "Die EZB senkt die Leitzinsen. Was geschieht mit der umlaufenden Geldmenge?",
+      "answers": [
+        "Sie wird eingefroren",
+        "Sie wächst",
+        "Sie schrumpft",
+        "Sie bleibt unverändert"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Sinkende Zinsen führen zu einer Erweiterung, steigende zu einer Verringerung der umlaufenden Geldmenge."
+    },
+    {
+      "id": "2.11-Q045",
+      "chapter": "2.11",
+      "section": "2.11.3-b",
+      "topic": "Engpass",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 45,
+      "question": "Eine Geschäftsbank braucht über Nacht dringend Liquidität. Welche ständige Fazilität nutzt sie?",
+      "answers": [
+        "Die Spitzenrefinanzierungsfazilität",
+        "Das endgültige Offenmarktgeschäft",
+        "Die Einlagefazilität",
+        "Die Mindestreserve"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Spitzenrefinanzierungsfazilität baut Liquiditätsengpässe ab, die Einlagefazilität Liquiditätsüberschüsse."
+    },
+    {
+      "id": "2.11-Q046",
+      "chapter": "2.11",
+      "section": "2.11.3-b",
+      "topic": "Laufzeit",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 46,
+      "question": "Welche Laufzeit haben die Geschäfte der ständigen Fazilitäten?",
+      "answers": [
+        "Drei Monate",
+        "Eine Woche",
+        "Ein Jahr",
+        "Über Nacht"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die ständigen Fazilitäten laufen von einem Tag auf den nächsten – daher „Overnight-Money“."
+    },
+    {
+      "id": "2.11-Q047",
+      "chapter": "2.11",
+      "section": "2.11.3-b",
+      "topic": "Leitzins seit",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 47,
+      "question": "Seit wann legt die EZB die Leitzinsen fest?",
+      "answers": [
+        "Seit Januar 1999",
+        "Seit März 2016",
+        "Seit November 2014",
+        "Seit Juli 1990"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Seit Januar 1999 bestimmt die Europäische Zentralbank die Leitzinsen."
+    },
+    {
+      "id": "2.11-Q048",
+      "chapter": "2.11",
+      "section": "2.11.5-a",
+      "topic": "Annuität",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 48,
+      "question": "Was bleibt bei einem Annuitätendarlehen während der Sollzinsbindung gleich?",
+      "answers": [
+        "Die Restschuld",
+        "Die Rate aus Zins und Tilgung",
+        "Der Zinsanteil der Rate",
+        "Der Tilgungsanteil der Rate"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Annuität bleibt gleich. Innerhalb der Rate sinkt der Zinsanteil und steigt der Tilgungsanteil."
+    },
+    {
+      "id": "2.11-Q049",
+      "chapter": "2.11",
+      "section": "2.11.5-a",
+      "topic": "Verlauf",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 49,
+      "question": "Wie verändern sich Zins- und Tilgungsanteil im Lauf eines Annuitätendarlehens?",
+      "answers": [
+        "Beide Anteile sinken gleichmäßig",
+        "Der Zinsanteil steigt, der Tilgungsanteil sinkt",
+        "Der Zinsanteil sinkt, der Tilgungsanteil steigt",
+        "Beide Anteile bleiben gleich"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Zinsen werden auf die sinkende Restschuld berechnet. Was an Zinsen gespart wird, fließt zusätzlich in die Tilgung."
+    },
+    {
+      "id": "2.11-Q050",
+      "chapter": "2.11",
+      "section": "2.11.5-a",
+      "topic": "Restschuld",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 50,
+      "question": "Darlehen 100.000 €, 2 % Zins, 3 % anfängliche Tilgung, jährliche Zahlung. Wie hoch ist die Restschuld nach dem zweiten Jahr?",
+      "answers": [
+        "93.880 €",
+        "93.940 €",
+        "95.000 €",
+        "94.000 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Jahr 1: 2.000 € Zinsen, 3.000 € Tilgung, Rest 97.000 €. Jahr 2: 1.940 € Zinsen, 3.060 € Tilgung, Rest 93.940 €."
+    },
+    {
+      "id": "2.11-Q051",
+      "chapter": "2.11",
+      "section": "2.11.5-a",
+      "topic": "Tilgung Jahr 2",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 51,
+      "question": "Darlehen 200.000 €, 3 % Zins, 2 % anfängliche Tilgung, jährliche Zahlung. Wie hoch ist die Tilgung im zweiten Jahr?",
+      "answers": [
+        "4.000 €",
+        "5.880 €",
+        "4.120 €",
+        "4.240 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Annuität 10.000 €. Jahr 1: 6.000 € Zinsen, 4.000 € Tilgung, Rest 196.000 €. Jahr 2: 5.880 € Zinsen, also 4.120 € Tilgung."
+    },
+    {
+      "id": "2.11-Q052",
+      "chapter": "2.11",
+      "section": "2.11.5-b",
+      "topic": "Monatsrate",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 52,
+      "question": "Darlehen 200.000 €, 3 % Zins, 2 % Tilgung. Wie hoch ist die monatliche Rate?",
+      "answers": [
+        "833,33 €",
+        "500,00 €",
+        "1.000,00 €",
+        "666,67 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "200.000 € × (3 % + 2 %) = 10.000 € im Jahr, geteilt durch 12 = 833,33 € im Monat."
+    },
+    {
+      "id": "2.11-Q053",
+      "chapter": "2.11",
+      "section": "2.11.5-b",
+      "topic": "Tilgungssatz",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 53,
+      "question": "Darlehen 150.000 €, 4 % Zins, Annuität 9.000 € im Jahr. Wie hoch ist der anfängliche Tilgungssatz?",
+      "answers": [
+        "2 %",
+        "6 %",
+        "4 %",
+        "3 %"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Zinsen: 150.000 € × 4 % = 6.000 €. Tilgung: 9.000 € − 6.000 € = 3.000 €. 3.000 € ÷ 150.000 € = 2 %."
+    },
+    {
+      "id": "2.11-Q054",
+      "chapter": "2.11",
+      "section": "2.11.5-b",
+      "topic": "Rechenweg",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 54,
+      "question": "Wie berechnet man die Jahresannuität bei gegebenem Zins- und Tilgungssatz?",
+      "answers": [
+        "Darlehen × Zinssatz × Tilgungssatz",
+        "Darlehen × (Zinssatz + Tilgungssatz)",
+        "Darlehen × (Zinssatz − Tilgungssatz)",
+        "Darlehen ÷ (Zinssatz + Tilgungssatz)"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Zins- und Tilgungssatz werden addiert und mit dem Darlehensbetrag multipliziert."
+    },
+    {
+      "id": "2.11-Q055",
+      "chapter": "2.11",
+      "section": "2.11.5-b",
+      "topic": "Monatlich gegeben",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 55,
+      "question": "Darlehen 240.000 €, 3 % Zins, monatliche Rate 1.000 €. Wie hoch ist der anfängliche Tilgungssatz?",
+      "answers": [
+        "5 %",
+        "3 %",
+        "2 %",
+        "1 %"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Jahresannuität: 1.000 € × 12 = 12.000 €. Zinsen: 240.000 € × 3 % = 7.200 €. Tilgung: 4.800 € ÷ 240.000 € = 2 %."
+    },
+    {
+      "id": "2.11-Q056",
+      "chapter": "2.11",
+      "section": "2.11.5-c",
+      "topic": "Tilgung und Laufzeit",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 56,
+      "question": "Was bewirkt eine höhere Tilgung bei sonst gleichen Bedingungen?",
+      "answers": [
+        "Eine längere Laufzeit und geringere Rate",
+        "Einen niedrigeren Sollzins",
+        "Kürzere Laufzeit, geringere Gesamtkosten",
+        "Eine niedrigere Rate bei gleicher Laufzeit"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Je höher die Tilgung, desto kürzer die Laufzeit. Weil weniger Zinsen anfallen, sinken die Gesamtkosten – die Rate ist allerdings höher."
+    },
+    {
+      "id": "2.11-Q057",
+      "chapter": "2.11",
+      "section": "2.11.5-c",
+      "topic": "Niedrigzins",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 57,
+      "question": "Was ist Kreditnehmern in einer Niedrigzinsphase zu raten?",
+      "answers": [
+        "Die Tilgung möglichst hoch anzusetzen",
+        "Auf eine Zinsbindung zu verzichten",
+        "Nur die Zinsen zu zahlen",
+        "Die Tilgung möglichst niedrig zu halten"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "In einer Niedrigzinsphase empfiehlt es sich, die prozentuale Tilgung so hoch wie möglich zu wählen, um viel Kredit günstig zurückzuzahlen."
+    },
+    {
+      "id": "2.11-Q058",
+      "chapter": "2.11",
+      "section": "2.11.5-c",
+      "topic": "Zinsfestlegung",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 58,
+      "question": "Wonach legt die Bank die Höhe des Darlehenszinses fest?",
+      "answers": [
+        "Darlehenshöhe und Laufzeit",
+        "Aktueller Marktzins",
+        "Kreditwürdigkeit des Kunden",
+        "Alter der Bankfiliale"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Den Zins bestimmt die Bank u. a. nach Darlehenshöhe, Laufzeit, Kreditwürdigkeit und aktuellem Marktzins."
+    },
+    {
+      "id": "2.11-Q059",
+      "chapter": "2.11",
+      "section": "2.11.5-c",
+      "topic": "Zins und Laufzeit",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 59,
+      "question": "Zwei Darlehen mit 2 % Anfangstilgung: A zu 1 % Zins, B zu 4 % Zins. Welches ist bei unveränderter Rate schneller getilgt?",
+      "answers": [
+        "Beide gleich schnell – die Tilgung ist gleich",
+        "Das lässt sich nicht sagen",
+        "A – niedrige Zinsen verkürzen die Laufzeit",
+        "B – die Tilgung wächst schneller"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Bei gleichem Tilgungssatz wird das höher verzinste Darlehen schneller getilgt: Die Rate ist höher, und die jährlich ersparten Zinsen erhöhen die Tilgung stärker."
+    }
+  ]
+}

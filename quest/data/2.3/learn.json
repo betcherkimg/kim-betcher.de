@@ -27,6 +27,16 @@
           "text": "Das **Bestandsverzeichnis** unterliegt nicht dem öffentlichen Glauben."
         }
       ],
+      "laws": [
+        {
+          "ref": "§ 12 GBO",
+          "text": "Einsicht in das Grundbuch für jeden, der ein berechtigtes Interesse darlegt."
+        },
+        {
+          "ref": "§ 892 BGB",
+          "text": "Öffentlicher Glaube: Der Inhalt des Grundbuchs gilt zugunsten des Erwerbers als richtig."
+        }
+      ],
       "memory": "Grundbuch = Rechte und Rang. Bestandsverzeichnis = Grundstücksdaten, aber kein öffentlicher Glaube.",
       "examTrap": "„Öffentlicher Glaube“ bedeutet nicht, dass ausnahmslos jede Angabe im Grundbuchblatt garantiert richtig ist."
     },
@@ -40,6 +50,10 @@
         {
           "type": "text",
           "text": "Zum Grundbuch gehören **Grundbuchblatt** und **Grundakte**. In der Grundakte werden die Grundlagen der Eintragungen gesammelt, etwa Kaufverträge, Grundschuldbestellungen, Verträge zu Rechten in Abteilung II oder Vorrangseinräumungen."
+        },
+        {
+          "type": "text",
+          "text": "Zuständig ist das **Grundbuchamt, in dessen Bezirk das Grundstück liegt** – nicht das am Wohnsitz des Eigentümers. Die Grundbuchämter sind in der Regel bei den Amtsgerichten angesiedelt."
         },
         {
           "type": "table",
@@ -67,7 +81,14 @@
           "text": "Im Übrigen werden Lasten, Beschränkungen und Grundpfandrechte in den besonderen Grundbuchblättern nach demselben Grundschema behandelt."
         }
       ],
-      "memory": "Die Grundakte erklärt **warum** etwas eingetragen wurde; das Grundbuchblatt zeigt **was** eingetragen ist."
+      "laws": [
+        {
+          "ref": "§ 1 GBO",
+          "text": "Grundbuchämter sind für die in ihrem Bezirk liegenden Grundstücke zuständig."
+        }
+      ],
+      "memory": "Die Grundakte erklärt **warum** etwas eingetragen wurde; das Grundbuchblatt zeigt **was** eingetragen ist.",
+      "examTrap": "Die Urkunden liegen in der Grundakte, der öffentliche Glaube hängt am Grundbuchblatt. Und zuständig ist das Amt am Ort des Grundstücks, nicht am Wohnsitz des Eigentümers."
     },
     {
       "id": "2.3.1-c",
@@ -95,12 +116,23 @@
           "type": "list",
           "items": [
             "Die Teilungserklärung bestimmt Gegenstand und Inhalt des Sondereigentums.",
-            "Sie regelt außerdem Rechte und Pflichten der Gemeinschaft, Nutzung, Lasten/Kosten, Veräußerung und Verwaltung.",
+            "Rechte und Pflichten der Eigentümer untereinander – Nutzung, Lasten/Kosten, Veräußerung, Verwaltung – regelt die **Gemeinschaftsordnung**. Sie ist meist Teil der Teilungserklärung, aber nicht dasselbe.",
             "Teilungserklärung und Aufteilungsplan werden für die Einrichtung der Wohnungs-/Teileigentumsgrundbücher benötigt und verbleiben bei der Grundakte."
           ]
         }
       ],
-      "memory": "Sondereigentum gehört „innen“ allein; tragende/äußere und gemeinschaftliche Teile bleiben Gemeinschaftseigentum."
+      "laws": [
+        {
+          "ref": "§ 1 WEG",
+          "text": "Wohnungseigentum = Sondereigentum an einer Wohnung, Teileigentum = an nicht zu Wohnzwecken dienenden Räumen, jeweils mit Miteigentumsanteil."
+        },
+        {
+          "ref": "§ 8 WEG",
+          "text": "Teilung durch den Eigentümer per Teilungserklärung."
+        }
+      ],
+      "memory": "Sondereigentum gehört „innen“ allein; tragende/äußere und gemeinschaftliche Teile bleiben Gemeinschaftseigentum.",
+      "examTrap": "Sondereigentum gibt es nie ohne Miteigentumsanteil. Und das Zusammenleben regelt die Gemeinschaftsordnung – nicht die Teilungserklärung selbst."
     },
     {
       "id": "2.3.1-d",
@@ -116,12 +148,30 @@
         {
           "type": "list",
           "items": [
-            "Das Erbbaurecht entsteht durch Einigung und Eintragung in **Abteilung II des Grundstücksgrundbuchs**.",
+            "Das Erbbaurecht entsteht durch Einigung und Eintragung in **Abteilung II des Grundstücksgrundbuchs** – zwingend an **erster Rangstelle**.",
             "Für das Erbbaurecht wird ein eigenes **Erbbaugrundbuch** angelegt; dort steht der Erbbauberechtigte in Abteilung I.",
             "Bei einer Beleihung wird der Grundstücksanteil nicht in die Wertermittlung des Erbbaurechts einbezogen.",
             "Die Darlehenslaufzeit sollte vor dem Ende des Erbbaurechts liegen; wertmindernde Vertragsregelungen sind zu prüfen.",
-            "Der Grundstückseigentümer muss Belastung und Veräußerung des Erbbaurechts zustimmen."
+            "Ist es – wie üblich – als Inhalt des Erbbaurechts vereinbart, muss der Grundstückseigentümer der Belastung und der Veräußerung des Erbbaurechts zustimmen."
           ]
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 1 ErbbauRG",
+          "text": "Veräußerliches und vererbliches Recht, auf fremdem Grundstück ein Bauwerk zu haben."
+        },
+        {
+          "ref": "§ 5 ErbbauRG",
+          "text": "Zustimmung des Grundstückseigentümers zu Veräußerung und Belastung kann als Inhalt vereinbart werden."
+        },
+        {
+          "ref": "§ 10 ErbbauRG",
+          "text": "Nur zur ausschließlich ersten Rangstelle."
+        },
+        {
+          "ref": "§ 14 ErbbauRG",
+          "text": "Für das Erbbaurecht wird ein Erbbaugrundbuch angelegt."
         }
       ],
       "memory": "Erbbaurecht = eigenes grundstücksgleiches Recht; Grundstück bleibt beim Eigentümer.",
@@ -154,14 +204,10 @@
         {
           "type": "text",
           "text": "Die Angaben im Bestandsverzeichnis stammen im Wesentlichen aus dem Kataster/Liegenschaftsregister. Grundstücksveränderungen können erst nach Vermessung und Ergänzung der Katasterunterlagen eingetragen werden."
-        },
-        {
-          "type": "note",
-          "title": "Prüfungsfalle",
-          "text": "Das Bestandsverzeichnis enthält viele konkrete Grundstücksdaten – gerade diese Angaben sind aber **nicht** vom öffentlichen Glauben gedeckt."
         }
       ],
-      "memory": "Deckblatt identifiziert das Grundbuch, Bestandsverzeichnis beschreibt das Grundstück."
+      "memory": "Deckblatt identifiziert das Grundbuch, Bestandsverzeichnis beschreibt das Grundstück.",
+      "examTrap": "Im Bestandsverzeichnis stehen die konkretesten Daten – gerade Größe, Lage und Wirtschaftsart sind aber **nicht** vom öffentlichen Glauben gedeckt."
     },
     {
       "id": "2.3.2-b",
@@ -194,7 +240,22 @@
           "text": "In Abteilung I kann etwa **Auflassung**, **Zuschlag** oder **Erbfolge/Erbschein** als Grundlage erscheinen."
         }
       ],
-      "memory": "Abteilung I beantwortet: **Wer gehört es? In welchem Verhältnis? Warum wurde eingetragen?**"
+      "laws": [
+        {
+          "ref": "§ 747 BGB",
+          "text": "Jeder Miteigentümer verfügt über seinen Anteil; über den Gegenstand im Ganzen nur alle gemeinsam."
+        },
+        {
+          "ref": "§ 2040 BGB",
+          "text": "Miterben verfügen über Nachlassgegenstände nur gemeinschaftlich."
+        },
+        {
+          "ref": "§ 47 GBO",
+          "text": "Mehrere Berechtigte werden mit Anteilen oder Gemeinschaftsverhältnis eingetragen."
+        }
+      ],
+      "memory": "Abteilung I beantwortet: **Wer gehört es? In welchem Verhältnis? Warum wurde eingetragen?**",
+      "examTrap": "Bruchteil: Über den eigenen Anteil kann jeder allein verfügen. Gesamthand: nur alle gemeinsam. Für eine Grundschuld am ganzen Objekt müssen in beiden Fällen alle unterschreiben."
     },
     {
       "id": "2.3.2-c",
@@ -224,7 +285,8 @@
           ]
         }
       ],
-      "memory": "Abteilung II = alles, was Nutzung/Verfügung belastet oder beschränkt – **keine Grundpfandrechte**."
+      "memory": "Abteilung II = alles, was Nutzung/Verfügung belastet oder beschränkt – **keine Grundpfandrechte**.",
+      "examTrap": "Grundpfandrechte stehen nie in Abteilung II – auch wenn sie das Grundstück „belasten“. Die Auflassungsvormerkung steht dagegen in Abteilung II, nicht in Abteilung I."
     },
     {
       "id": "2.3.2-d",
@@ -243,12 +305,26 @@
         },
         {
           "type": "text",
-          "text": "Ein **Widerspruch** zerstört den öffentlichen Glauben hinsichtlich der betroffenen Eintragung. Je nach Inhalt kann eine Darlehenssicherung bis zur Löschung unmöglich sein."
+          "text": "Auch **künftige oder bedingte Ansprüche** können durch eine Vormerkung gesichert werden."
+        },
+        {
+          "type": "text",
+          "text": "Ein **Widerspruch** zerstört den öffentlichen Glauben hinsichtlich der betroffenen Eintragung. Je nach Inhalt kann eine Darlehenssicherung bis zur Löschung unmöglich sein. Eingetragen wird er dort, wo das betroffene Recht steht – richtet er sich gegen ein Grundpfandrecht, also in **Abteilung III**."
         },
         {
           "type": "note",
           "title": "Verfügungsbeschränkungen",
           "text": "Einträge wie Zwangsversteigerungs-/Zwangsverwaltungsvermerk oder bestimmte Verbote können eine Beleihung ausschließen. Bei manchen anderen Vermerken ist eine Beleihung mit Zustimmung des Berechtigten möglich."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 883 BGB",
+          "text": "Vormerkung sichert den Anspruch – auch einen künftigen oder bedingten; spätere Verfügungen sind insoweit unwirksam."
+        },
+        {
+          "ref": "§ 899 BGB",
+          "text": "Widerspruch gegen die Richtigkeit des Grundbuchs."
         }
       ],
       "memory": "Vormerkung schützt einen Anspruch; Widerspruch greift den öffentlichen Glauben an.",
@@ -275,9 +351,28 @@
         {
           "type": "text",
           "text": "Ob und in welchem Rang ein Recht akzeptiert werden kann, hängt von seiner konkreten Ausgestaltung und der Beleihung ab. Bei wertrelevanten Einträgen ist die Eintragungsbewilligung bzw. der zugrunde liegende Vertrag zu prüfen."
+        },
+        {
+          "type": "text",
+          "text": "Kann ein **Altenteil** ausnahmsweise nicht im Rang hinter die Grundschuld zurücktreten, wird es **kapitalisiert** – nach Alter des Berechtigten und Jahreswert – und als **Vorlast** bewertet."
         }
       ],
-      "memory": "Reallast = wiederkehrende Leistung. Vorkaufsrecht = Eintritt in bereits geschlossenen Kaufvertrag."
+      "laws": [
+        {
+          "ref": "§ 1105 BGB",
+          "text": "Reallast: wiederkehrende Leistungen aus dem Grundstück."
+        },
+        {
+          "ref": "§ 1094 BGB",
+          "text": "Dingliches Vorkaufsrecht."
+        },
+        {
+          "ref": "§ 464 BGB",
+          "text": "Mit der Ausübung kommt der Kauf zu den Bedingungen zustande, die mit dem Dritten vereinbart sind."
+        }
+      ],
+      "memory": "Reallast = wiederkehrende Leistung. Vorkaufsrecht = Eintritt in bereits geschlossenen Kaufvertrag.",
+      "examTrap": "Das Vorkaufsrecht greift erst, wenn ein Kaufvertrag mit einem Dritten geschlossen ist – es ist kein Recht, zum Wunschpreis zu kaufen."
     },
     {
       "id": "2.3.2-f",
@@ -298,7 +393,7 @@
               "Recht zugunsten des jeweiligen Eigentümers eines anderen Grundstücks, z. B. Wegerecht"
             ],
             [
-              "Beschränkt persönliche Dienstbarkeit",
+              "Beschränkte persönliche Dienstbarkeit",
               "Recht zugunsten einer bestimmten Person; grundsätzlich nicht übertragbar/vererblich"
             ],
             [
@@ -318,9 +413,37 @@
         {
           "type": "text",
           "text": "Die Beleihungswirkung ist nicht bei jedem Recht gleich. Ein typisches Wege- oder Leitungsrecht kann oft im Vorrang bestehen bleiben; Wohnrecht oder Nießbrauch können die Verwertbarkeit deutlich einschränken und müssen häufig rangmäßig behandelt oder kapitalisiert werden."
+        },
+        {
+          "type": "text",
+          "text": "Ein **Nießbrauch** schränkt die Nutzung durch den Eigentümer stark ein und soll den Grundschulden deshalb nicht im Rang vorgehen."
+        },
+        {
+          "type": "note",
+          "title": "Sonderfall Bergschadenverzicht",
+          "text": "Mit einem eingetragenen **Bergschadenverzicht** verzichtet der Eigentümer auf Ersatz für Bergschäden. Das Skript stuft ein solches Objekt als grundsätzlich **beleihungsunfähig** ein."
         }
       ],
-      "memory": "Nicht der Name allein entscheidet über die Beleihung – entscheidend sind Inhalt, Rang und Auswirkung auf die Verwertbarkeit."
+      "laws": [
+        {
+          "ref": "§ 1018 BGB",
+          "text": "Grunddienstbarkeit zugunsten des jeweiligen Eigentümers eines anderen Grundstücks."
+        },
+        {
+          "ref": "§ 1030 BGB",
+          "text": "Nießbrauch: Recht, die Nutzungen der Sache zu ziehen."
+        },
+        {
+          "ref": "§§ 1090, 1093 BGB",
+          "text": "Beschränkte persönliche Dienstbarkeit; Wohnungsrecht."
+        },
+        {
+          "ref": "§ 31 WEG",
+          "text": "Dauerwohnrecht und Dauernutzungsrecht."
+        }
+      ],
+      "memory": "Nicht der Name allein entscheidet über die Beleihung – entscheidend sind Inhalt, Rang und Auswirkung auf die Verwertbarkeit.",
+      "examTrap": "Grunddienstbarkeit = zugunsten des jeweiligen Eigentümers eines anderen Grundstücks. Beschränkte persönliche Dienstbarkeit = zugunsten einer bestimmten Person, nicht übertragbar und nicht vererblich. Nur das Dauerwohnrecht ist vererblich und veräußerlich."
     },
     {
       "id": "2.3.2-g",
@@ -341,11 +464,30 @@
           "type": "list",
           "items": [
             "Ein Recht kann als **Briefrecht** oder **Buchrecht** ausgestaltet sein; erkennbar ist das am Eintragungstext.",
-            "In den Veränderungsspalten werden z. B. Rangänderungen, Abtretungen oder Änderungen zum Brief vermerkt."
+            "In den Veränderungsspalten werden z. B. Rangänderungen, Abtretungen sowie ein nachträglicher **Briefausschluss** oder eine nachträgliche **Brieferteilung** vermerkt."
           ]
         }
       ],
-      "memory": "Abteilung III = Grundpfandrechte."
+      "laws": [
+        {
+          "ref": "§ 1113 BGB",
+          "text": "Hypothek."
+        },
+        {
+          "ref": "§ 1191 BGB",
+          "text": "Grundschuld."
+        },
+        {
+          "ref": "§ 1199 BGB",
+          "text": "Rentenschuld."
+        },
+        {
+          "ref": "§ 1147 BGB",
+          "text": "Befriedigung des Gläubigers aus dem Grundstück im Wege der Zwangsvollstreckung."
+        }
+      ],
+      "memory": "Abteilung III = Grundpfandrechte.",
+      "examTrap": "Wohnrecht, Nießbrauch und Reallast sind keine Grundpfandrechte – sie stehen in Abteilung II, auch wenn die Reallast Geldleistungen sichert."
     },
     {
       "id": "2.3.2-h",
@@ -382,6 +524,28 @@
         {
           "type": "text",
           "text": "Die Grundschuld ist gerade deshalb flexibel, weil sie vom Bestand einer konkreten Forderung losgelöst ist. Erst die schuldrechtliche **Zweckbestimmung/Sicherungsvereinbarung** verbindet sie mit den zu sichernden Ansprüchen."
+        },
+        {
+          "type": "text",
+          "text": "Die Hypothek steht dem Gläubiger erst zu, wenn auch die Forderung entstanden ist – also nach **Eintragung und Auszahlung** des Darlehens."
+        },
+        {
+          "type": "text",
+          "text": "Für die Beleihung heißt das: Bei einer voll ausgezahlten, teilweise getilgten **Hypothek** zählt als Vorlast die **aktuelle Restschuld** (gesetzlicher Löschungsanspruch). Eine **Grundschuld** bleibt dagegen in voller Höhe bestehen und kann mit Zustimmung des Eigentümers ein neues Darlehen sichern (**Neuvalutierung**)."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 1113 BGB",
+          "text": "Hypothek: Belastung zur Befriedigung wegen einer bestimmten Forderung."
+        },
+        {
+          "ref": "§ 1191 BGB",
+          "text": "Grundschuld: Zahlung einer Geldsumme aus dem Grundstück – ohne Forderung."
+        },
+        {
+          "ref": "§ 1179a BGB",
+          "text": "Löschungsanspruch nachrangiger Gläubiger."
         }
       ],
       "memory": "Hypothek = akzessorisch. Grundschuld = abstrakt.",
@@ -424,7 +588,14 @@
           "text": "Sind mehrere Grundstücke in einem Grundbuchblatt und unterschiedlich belastet, muss die Rangfolge für jedes Grundstück gesondert bestimmt werden."
         }
       ],
-      "memory": "Gleiche Abteilung = Ort/Nummer. Verschiedene Abteilungen = Zeit/Datum."
+      "laws": [
+        {
+          "ref": "§ 879 BGB",
+          "text": "Rangverhältnis: in derselben Abteilung nach der Reihenfolge der Eintragungen, zwischen den Abteilungen nach dem Tag der Eintragung; gleicher Tag = gleicher Rang."
+        }
+      ],
+      "memory": "Gleiche Abteilung = Ort/Nummer. Verschiedene Abteilungen = Zeit/Datum.",
+      "examTrap": "„Abteilung III geht vor Abteilung II“ gibt es nicht. Zwischen den Abteilungen zählt nur das Datum – gleicher Tag heißt Gleichrang."
     },
     {
       "id": "2.3.3-b",
@@ -436,6 +607,10 @@
         {
           "type": "text",
           "text": "Die gesetzlich/grundbuchmäßig entstandene Rangfolge kann durch Vereinbarung geändert werden. Der **Negativbetroffene**, also der zurücktretende Gläubiger, muss die Rangänderung bewilligen; ein Beteiligter stellt den Antrag."
+        },
+        {
+          "type": "text",
+          "text": "Für die Eintragung einer Rangänderung werden die **Vorrangseinräumungserklärung**, der **Rangänderungsantrag** und – bei Briefrechten – die **Grundpfandrechtsbriefe** benötigt."
         },
         {
           "type": "text",
@@ -458,7 +633,18 @@
           "text": "Ein eingetragener Rangvorbehalt ist bei der Beleihung als Vorlast zu berücksichtigen."
         }
       ],
-      "memory": "Rangrücktritt verschiebt bestehende Rechte; Rangvorbehalt reserviert Platz für ein späteres Recht."
+      "laws": [
+        {
+          "ref": "§ 880 BGB",
+          "text": "Rangänderung."
+        },
+        {
+          "ref": "§ 881 BGB",
+          "text": "Rangvorbehalt."
+        }
+      ],
+      "memory": "Rangrücktritt verschiebt bestehende Rechte; Rangvorbehalt reserviert Platz für ein späteres Recht.",
+      "examTrap": "Bewilligen muss, wer Rang verliert – nicht, wer gewinnt. Und ein noch ungenutzter Rangvorbehalt zählt bei der Beleihung trotzdem als Vorlast."
     },
     {
       "id": "2.3.4-a",
@@ -484,7 +670,7 @@
         },
         {
           "type": "text",
-          "text": "Änderungen werden im Grundbuch kenntlich gemacht und zusätzlich in den vorgesehenen Veränderungs-/Löschungsspalten dokumentiert. In digital geführten Grundbüchern erscheinen früher „gerötete“ Stellen schwarz."
+          "text": "Änderungen werden im Grundbuch kenntlich gemacht und zusätzlich in den vorgesehenen Veränderungs-/Löschungsspalten dokumentiert. In Papiergrundbüchern werden geänderte oder gelöschte Stellen **rot unter- bzw. durchgestrichen** („gerötet“); in digital geführten Grundbüchern erscheinen sie schwarz."
         },
         {
           "type": "note",
@@ -492,7 +678,22 @@
           "text": "Eintragungen laufen regelmäßig über den Rechtspfleger; er entscheidet selbständig und ist an das Gesetz gebunden."
         }
       ],
-      "memory": "Eintragungsgrundlage formgerecht – Antrag an das Grundbuchamt formlos."
+      "laws": [
+        {
+          "ref": "§ 13 GBO",
+          "text": "Eintragung nur auf Antrag."
+        },
+        {
+          "ref": "§ 19 GBO",
+          "text": "Bewilligung dessen, dessen Recht betroffen ist."
+        },
+        {
+          "ref": "§ 29 GBO",
+          "text": "Nachweis durch öffentliche oder öffentlich beglaubigte Urkunden."
+        }
+      ],
+      "memory": "Eintragungsgrundlage formgerecht – Antrag an das Grundbuchamt formlos.",
+      "examTrap": "Formlos ist nur der Antrag. Die Bewilligung des Betroffenen muss öffentlich beglaubigt oder beurkundet sein."
     },
     {
       "id": "2.3.5-a",
@@ -532,7 +733,21 @@
         },
         {
           "type": "text",
-          "text": "Daneben können gesetzliche Vorkaufsrechte etwa zugunsten von **Miterben** oder unter bestimmten Voraussetzungen zugunsten von **Mietern** bestehen, ohne im Grundbuch eingetragen zu sein."
+          "text": "Daneben können gesetzliche Vorkaufsrechte etwa zugunsten von **Miterben** oder zugunsten von **Mietern** bestehen, ohne im Grundbuch eingetragen zu sein. Das Mietervorkaufsrecht greift, wenn an vermieteten Wohnräumen **nach der Überlassung** Wohnungseigentum begründet wurde oder werden soll und die Wohnung dann verkauft wird."
+        }
+      ],
+      "laws": [
+        {
+          "ref": "§ 24 BauGB",
+          "text": "Allgemeines Vorkaufsrecht der Gemeinde."
+        },
+        {
+          "ref": "§ 577 BGB",
+          "text": "Vorkaufsrecht des Mieters bei Umwandlung in Wohnungseigentum."
+        },
+        {
+          "ref": "§ 2034 BGB",
+          "text": "Vorkaufsrecht der Miterben."
         }
       ],
       "memory": "Grundbuch geprüft heißt nicht: Grundstück vollständig lastenfrei.",

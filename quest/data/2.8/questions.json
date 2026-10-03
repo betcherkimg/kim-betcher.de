@@ -1,0 +1,1487 @@
+{
+  "chapter": "2.8",
+  "questions": [
+    {
+      "id": "2.8-Q001",
+      "chapter": "2.8",
+      "section": "2.8.1-a",
+      "topic": "Schutzgut",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 1,
+      "question": "Wen schützt die Datenschutz-Grundverordnung?",
+      "answers": [
+        "Natürliche und juristische Personen gleichermaßen",
+        "Behörden und ihre Akten",
+        "Natürliche Personen",
+        "Unternehmen und ihre Geschäftsgeheimnisse"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die DSGVO schützt natürliche Personen bei der Verarbeitung ihrer personenbezogenen Daten. Unternehmensdaten als solche fallen nicht darunter."
+    },
+    {
+      "id": "2.8-Q002",
+      "chapter": "2.8",
+      "section": "2.8.1-a",
+      "topic": "Marktortprinzip",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 2,
+      "question": "Ein Kreditportal mit Sitz außerhalb der EU bietet seine Dienste gezielt Kunden in Deutschland an. Gilt die DSGVO?",
+      "answers": [
+        "Nein, maßgeblich ist der Sitz des Unternehmens",
+        "Nein, solange die Server außerhalb der EU stehen",
+        "Ja, aber erst ab einer Niederlassung in der EU",
+        "Ja, entscheidend ist das Angebot in der EU"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Nach dem Marktortprinzip gilt die DSGVO für alle, die Waren oder Dienstleistungen in der EU anbieten – unabhängig vom Sitz."
+    },
+    {
+      "id": "2.8-Q003",
+      "chapter": "2.8",
+      "section": "2.8.1-a",
+      "topic": "Papierakten",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 3,
+      "question": "Ein Vermittler führt seine Kundenakten nur auf Papier, alphabetisch geordnet im Schrank. Fällt das unter die DSGVO?",
+      "answers": [
+        "Nein, die DSGVO gilt nur für EDV",
+        "Ja, aber nur bei mehr als 20 Akten",
+        "Nein, solange nichts gescannt wird",
+        "Ja, auch strukturierte Ablagen sind erfasst"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die DSGVO erfasst automatisierte Verarbeitungen und manuelle Verarbeitungen in einem strukturierten Ablagesystem – etwa Darlehens- oder Personalakten."
+    },
+    {
+      "id": "2.8-Q004",
+      "chapter": "2.8",
+      "section": "2.8.1-a",
+      "topic": "One-Stop-Shop",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 4,
+      "question": "Was bedeutet der One-Stop-Shop für Betroffene?",
+      "answers": [
+        "Sie können Daten bei nur einer Firma speichern lassen",
+        "Sie müssen im Sitzland des Unternehmens klagen",
+        "Sie erhalten alle Auskünfte von einer EU-Zentralstelle",
+        "Sie wenden sich an die Behörde im Heimatland"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Betroffene haben eine Anlaufstelle im eigenen Land – auch wenn das Unternehmen im Ausland sitzt."
+    },
+    {
+      "id": "2.8-Q005",
+      "chapter": "2.8",
+      "section": "2.8.1-b",
+      "topic": "Begriff",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 5,
+      "question": "Was sind personenbezogene Daten?",
+      "answers": [
+        "Angaben, die den Namen der Person enthalten",
+        "Angaben, die eine Person selbst ausdrücklich als privat und vertraulich einstuft",
+        "Angaben über eine identifizierte oder identifizierbare Person",
+        "Angaben, die in einer Datenbank gespeichert sind"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Personenbezogen sind alle Informationen, die sich auf eine identifizierte oder identifizierbare natürliche Person beziehen – auch ohne Namen."
+    },
+    {
+      "id": "2.8-Q006",
+      "chapter": "2.8",
+      "section": "2.8.1-b",
+      "topic": "Identifizierbarkeit",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 6,
+      "question": "In einer Liste stehen kein Name, aber Kundennummer, Geburtsdatum und Postleitzahl. Sind das personenbezogene Daten?",
+      "answers": [
+        "Ja, aber nur das Geburtsdatum",
+        "Ja, in Kombination identifizierbar",
+        "Nein, Kundennummern sind reine Geschäftsdaten",
+        "Nein, ohne Namen fehlt der Personenbezug"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Identifizierbar wird eine Person oft erst durch die Kombination mehrerer Angaben. Auch Kundennummern sind personenbezogen."
+    },
+    {
+      "id": "2.8-Q007",
+      "chapter": "2.8",
+      "section": "2.8.1-b",
+      "topic": "Besondere Kategorien",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 7,
+      "question": "Welche Daten gehören zu den besonderen Kategorien nach Art. 9 DSGVO?",
+      "answers": [
+        "Höhe des Einkommens",
+        "Religiöse Überzeugungen",
+        "Gesundheitsdaten",
+        "Gewerkschaftszugehörigkeit"
+      ],
+      "correct": [
+        1,
+        2,
+        3
+      ],
+      "explanation": "Besondere Kategorien sind u. a. Gesundheit, Religion, Gewerkschaftszugehörigkeit, politische Meinung, ethnische Herkunft. Das Einkommen gehört nicht dazu."
+    },
+    {
+      "id": "2.8-Q008",
+      "chapter": "2.8",
+      "section": "2.8.1-b",
+      "topic": "Finanzdaten",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 8,
+      "question": "Ein Vermittler erhebt für die Finanzierung Gehalt und Kontostand des Kunden. Wie sind diese Daten einzuordnen?",
+      "answers": [
+        "Nicht personenbezogen, da Geschäftsdaten",
+        "Personenbezogen, aber keine besondere Kategorie",
+        "Besondere Kategorie nach Art. 9 DSGVO",
+        "Personenbezogen erst nach Vertragsschluss"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Finanzdaten sind personenbezogen und vertraulich. Die besonderen Kategorien des Art. 9 umfassen sie aber nicht."
+    },
+    {
+      "id": "2.8-Q009",
+      "chapter": "2.8",
+      "section": "2.8.1-b",
+      "topic": "Selbstauskunft",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 9,
+      "question": "In der Selbstauskunft gibt die Kundin an, wegen einer chronischen Erkrankung nur in Teilzeit zu arbeiten. Was ist daran besonders geschützt?",
+      "answers": [
+        "Die Angabe zur Erkrankung",
+        "Keine der Angaben",
+        "Die Angabe zur Arbeitszeit",
+        "Beide Angaben"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Gesundheitsdaten sind eine besondere Kategorie. Die Arbeitszeit ist ein gewöhnliches personenbezogenes Datum."
+    },
+    {
+      "id": "2.8-Q010",
+      "chapter": "2.8",
+      "section": "2.8.1-c",
+      "topic": "Grundprinzip",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 10,
+      "question": "Welches Prinzip gilt für die Verarbeitung personenbezogener Daten?",
+      "answers": [
+        "Freie Verarbeitung bei Anzeige",
+        "Verbot mit Erlaubnisvorbehalt",
+        "Erlaubnis mit Verbotsvorbehalt",
+        "Verbot ohne Ausnahme"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Verarbeitung ist grundsätzlich verboten und nur erlaubt, wenn eine Rechtsgrundlage vorliegt."
+    },
+    {
+      "id": "2.8-Q011",
+      "chapter": "2.8",
+      "section": "2.8.1-c",
+      "topic": "Vertragsdaten",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 11,
+      "question": "Ein Interessent bittet um ein Finanzierungsangebot. Der Vermittler notiert Name, Anschrift und Telefonnummer. Braucht er dafür eine Einwilligung?",
+      "answers": [
+        "Ja, jede Erhebung braucht eine Einwilligung",
+        "Nein, weil Kontaktdaten nicht geschützt sind",
+        "Nein, die Daten dienen der Vertragsanbahnung",
+        "Ja, sobald er die Daten elektronisch speichert"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Daten, die zur Anbahnung oder Erfüllung des Vertrags erforderlich sind, dürfen ohne gesonderte Einwilligung verarbeitet werden."
+    },
+    {
+      "id": "2.8-Q012",
+      "chapter": "2.8",
+      "section": "2.8.1-c",
+      "topic": "Zusatzdaten",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 12,
+      "question": "Der Vermittler möchte zusätzlich die Religionszugehörigkeit und Familienfotos des Kunden speichern. Was gilt?",
+      "answers": [
+        "Das ist auch mit Einwilligung verboten",
+        "Dafür braucht er eine Einwilligung",
+        "Dafür genügt sein berechtigtes Interesse",
+        "Das deckt die Vertragsanbahnung ab"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Alles, was über die für den Vertrag nötigen Daten hinausgeht, braucht eine Einwilligung – bei besonderen Kategorien eine ausdrückliche."
+    },
+    {
+      "id": "2.8-Q013",
+      "chapter": "2.8",
+      "section": "2.8.1-c",
+      "topic": "Rechtliche Verpflichtung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 13,
+      "question": "Der Arbeitgeber übermittelt die Lohndaten eines Mitarbeiters an das Finanzamt. Auf welcher Grundlage?",
+      "answers": [
+        "Auf der Einwilligung des Mitarbeiters",
+        "Auf einer Betriebsvereinbarung",
+        "Auf seinem berechtigten Interesse",
+        "Auf einer gesetzlichen Verpflichtung"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die Übermittlung ist steuerrechtlich vorgeschrieben. Eine Einwilligung des Mitarbeiters ist dafür nicht nötig."
+    },
+    {
+      "id": "2.8-Q014",
+      "chapter": "2.8",
+      "section": "2.8.1-c",
+      "topic": "Rechtsgrundlagen",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 14,
+      "question": "Welche Rechtsgrundlagen nennt Art. 6 DSGVO?",
+      "answers": [
+        "Einwilligung",
+        "Vertragserfüllung",
+        "Berechtigtes Interesse",
+        "Übliche Geschäftspraxis"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Art. 6 nennt u. a. Einwilligung, Vertrag, rechtliche Verpflichtung und berechtigtes Interesse. „Das machen alle so“ ist keine Rechtsgrundlage."
+    },
+    {
+      "id": "2.8-Q015",
+      "chapter": "2.8",
+      "section": "2.8.1-d",
+      "topic": "Datenminimierung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 15,
+      "question": "Was verlangt der Grundsatz der Datenminimierung?",
+      "answers": [
+        "Daten nur mit Einwilligung zu erheben",
+        "Daten nur verschlüsselt zu speichern",
+        "Nur so viele Daten wie nötig",
+        "Daten so kurz wie möglich zu speichern"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Datenminimierung heißt: so wenig personenbezogene Daten wie möglich – „keine Daten, kein Missbrauch“."
+    },
+    {
+      "id": "2.8-Q016",
+      "chapter": "2.8",
+      "section": "2.8.1-d",
+      "topic": "Privacy by Default",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 16,
+      "question": "Ein Online-Formular ist so eingerichtet, dass alle freiwilligen Werbeoptionen zunächst abgeschaltet sind. Welchem Grundsatz entspricht das?",
+      "answers": [
+        "Auftragskontrolle",
+        "Recht auf Datenübertragbarkeit",
+        "Datenschutzfreundliche Voreinstellungen",
+        "One-Stop-Shop"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Privacy by Default: Die Standardeinstellung bietet den größtmöglichen Datenschutz, ohne dass der Nutzer etwas tun muss."
+    },
+    {
+      "id": "2.8-Q017",
+      "chapter": "2.8",
+      "section": "2.8.1-d",
+      "topic": "Privacy by Design",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 17,
+      "question": "Was bedeutet „Privacy by Design“?",
+      "answers": [
+        "Der Kunde gestaltet seine Datenschutzeinstellungen selbst",
+        "Datenschutz ist in die Technik eingebaut",
+        "Die Datenschutzerklärung wird grafisch ansprechend gestaltet",
+        "Der Datenschutz wird nach der Einführung nachgerüstet"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Datenschutz durch Technikgestaltung: Die IT berücksichtigt den Datenschutz von Anfang an – etwa durch Pseudonymisierung und Löschroutinen."
+    },
+    {
+      "id": "2.8-Q018",
+      "chapter": "2.8",
+      "section": "2.8.1-d",
+      "topic": "Kein Vertrag",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 18,
+      "question": "Ein Interessent lässt sich ein Angebot erstellen, entscheidet sich aber dagegen. Was geschieht mit seinen Daten?",
+      "answers": [
+        "Sie sind zu löschen",
+        "Sie dürfen für spätere Werbung bleiben",
+        "Sie sind zehn Jahre aufzubewahren",
+        "Sie gehen an den Darlehensgeber"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Daten dienten nur der Angebotserstellung. Kommt kein Vertrag zustande, entfällt der Zweck – sie sind zu löschen."
+    },
+    {
+      "id": "2.8-Q019",
+      "chapter": "2.8",
+      "section": "2.8.1-e",
+      "topic": "Verantwortung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 19,
+      "question": "Wer trägt im Unternehmen die Hauptverantwortung für die Einhaltung der DSGVO?",
+      "answers": [
+        "Die Geschäftsführung",
+        "Der jeweilige Sachbearbeiter",
+        "Die IT-Abteilung",
+        "Der Datenschutzbeauftragte"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Geschäftsführung trägt und behält die Verantwortung. Der Datenschutzbeauftragte berät und überwacht."
+    },
+    {
+      "id": "2.8-Q020",
+      "chapter": "2.8",
+      "section": "2.8.1-e",
+      "topic": "Benennungspflicht",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 20,
+      "question": "Ab wie vielen Personen, die ständig personenbezogene Daten automatisiert verarbeiten, ist in Deutschland ein Datenschutzbeauftragter zu benennen?",
+      "answers": [
+        "Ab 5 Personen",
+        "Ab 10 Personen",
+        "Ab in der Regel 20 Personen",
+        "Ab 50 Personen"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "§ 38 BDSG: in der Regel mindestens 20 Personen. Das BWB-Skript nennt noch die frühere Schwelle von 10."
+    },
+    {
+      "id": "2.8-Q021",
+      "chapter": "2.8",
+      "section": "2.8.1-e",
+      "topic": "Unabhängig von der Größe",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 21,
+      "question": "Ein Büro mit drei Mitarbeitern führt Verarbeitungen durch, die eine Datenschutz-Folgenabschätzung erfordern. Braucht es einen Datenschutzbeauftragten?",
+      "answers": [
+        "Nein, es liegt unter der Schwelle",
+        "Ja, aber erst ab dem fünften Mitarbeiter",
+        "Nein, es genügt die Folgenabschätzung",
+        "Ja, unabhängig von der Mitarbeiterzahl"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Erfordert eine Verarbeitung eine Datenschutz-Folgenabschätzung, ist ein Datenschutzbeauftragter zu benennen – gleich wie groß das Unternehmen ist."
+    },
+    {
+      "id": "2.8-Q022",
+      "chapter": "2.8",
+      "section": "2.8.1-e",
+      "topic": "Aufgaben",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 22,
+      "question": "Was gehört zu den Aufgaben des Datenschutzbeauftragten?",
+      "answers": [
+        "Überwachung der Einhaltung der DSGVO",
+        "Schulung der Mitarbeiter",
+        "Verhängung von Bußgeldern",
+        "Genehmigung jeder Datenverarbeitung"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Der DSB schult, berät und überwacht und ist Anlaufstelle für Betroffene. Er genehmigt nichts und verhängt keine Bußgelder."
+    },
+    {
+      "id": "2.8-Q023",
+      "chapter": "2.8",
+      "section": "2.8.1-e",
+      "topic": "Mitarbeiterhaftung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 23,
+      "question": "Eine Mitarbeiterin gibt vorsätzlich Kundendaten an einen Bekannten weiter. Kann sie persönlich belangt werden?",
+      "answers": [
+        "Ja, aber nur arbeitsrechtlich",
+        "Nein, es haftet stets das Unternehmen",
+        "Ja – bis hin zu Bußgeld, Strafe und Kündigung",
+        "Nein, verantwortlich ist der Datenschutzbeauftragte"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Bei Vorsatz oder grober Fahrlässigkeit können auch Mitarbeiter zur Verantwortung gezogen werden – strafrechtlich, per Bußgeld, per Schadensersatz und arbeitsrechtlich."
+    },
+    {
+      "id": "2.8-Q024",
+      "chapter": "2.8",
+      "section": "2.8.1-f",
+      "topic": "Bußgeld",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 24,
+      "question": "Wie hoch kann das Bußgeld bei schweren Verstößen gegen die DSGVO ausfallen?",
+      "answers": [
+        "Bis 50.000 € je betroffener Person",
+        "Bis 1 Mio. € oder 1 % des Jahresgewinns",
+        "Bis 20 Mio. € oder 4 % des weltweiten Jahresumsatzes",
+        "Bis 300.000 € je Verstoß"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Art. 83 DSGVO: bis zu 20 Millionen Euro oder 4 % des weltweiten Vorjahresumsatzes – der höhere Betrag ist maßgeblich."
+    },
+    {
+      "id": "2.8-Q025",
+      "chapter": "2.8",
+      "section": "2.8.1-f",
+      "topic": "Höherer Betrag",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 25,
+      "question": "Ein Konzern mit 2 Mrd. € Jahresumsatz begeht einen schweren Datenschutzverstoß. Welche Obergrenze gilt für das Bußgeld?",
+      "answers": [
+        "20 Mio. € – der feste Höchstbetrag",
+        "8 Mio. € – 0,4 % des Umsatzes",
+        "100 Mio. € – 5 % des Umsatzes",
+        "80 Mio. € – 4 % des Umsatzes"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Maßgeblich ist der höhere Betrag. 4 % von 2 Mrd. € sind 80 Mio. € und liegen über 20 Mio. €."
+    },
+    {
+      "id": "2.8-Q026",
+      "chapter": "2.8",
+      "section": "2.8.1-f",
+      "topic": "Weitere Folgen",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 26,
+      "question": "Welche Folgen hat eine unzulässige Datenverarbeitung neben dem Bußgeld?",
+      "answers": [
+        "Betroffene können Schadensersatz verlangen",
+        "Die Daten sind unverzüglich zu löschen",
+        "Die Verträge mit den Kunden werden nichtig",
+        "Die Gewerbeerlaubnis erlischt automatisch"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Unzulässig gespeicherte Daten sind zu löschen; Betroffenen steht Schadensersatz nach Art. 82 DSGVO zu."
+    },
+    {
+      "id": "2.8-Q027",
+      "chapter": "2.8",
+      "section": "2.8.2-a",
+      "topic": "Voreinstellung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 27,
+      "question": "Auf einem Online-Formular ist das Kästchen „Ja, ich will den Newsletter“ bereits angekreuzt. Liegt eine wirksame Einwilligung vor, wenn der Kunde es so absendet?",
+      "answers": [
+        "Ja, er hätte das Häkchen entfernen können",
+        "Ja, wenn die Datenschutzerklärung verlinkt ist",
+        "Nein, die Einwilligung muss aktiv erklärt werden",
+        "Nein, Newsletter sind generell unzulässig"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Eine Einwilligung verlangt eine aktive Handlung. Voreingestellte Häkchen genügen nicht."
+    },
+    {
+      "id": "2.8-Q028",
+      "chapter": "2.8",
+      "section": "2.8.2-a",
+      "topic": "Widerruf",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 28,
+      "question": "Worauf muss in jeder Einwilligungserklärung hingewiesen werden?",
+      "answers": [
+        "Auf die jederzeitige Widerrufbarkeit",
+        "Auf die Zustimmung der Aufsichtsbehörde",
+        "Auf die Mindestlaufzeit der Einwilligung",
+        "Auf die Kosten eines Widerrufs"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die betroffene Person kann ihre Einwilligung jederzeit widerrufen. Darauf ist vor der Abgabe hinzuweisen."
+    },
+    {
+      "id": "2.8-Q029",
+      "chapter": "2.8",
+      "section": "2.8.2-a",
+      "topic": "Trennung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 29,
+      "question": "Ein Formular fasst zusammen: „Ich willige in die Verarbeitung aller meiner Daten zu allen Zwecken ein.“ Was ist daran falsch?",
+      "answers": [
+        "Zweck und Datenkategorien sind nicht getrennt benannt",
+        "Einwilligungen dürfen nur mündlich erfolgen",
+        "Für Vertragsdaten fehlt die zweite Unterschrift",
+        "Einwilligungen müssen notariell beurkundet sein"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Einwilligung muss den Zweck nennen und nach Datenkategorien trennen – notwendige Vertragsdaten sind von freiwilligen Angaben zu unterscheiden."
+    },
+    {
+      "id": "2.8-Q030",
+      "chapter": "2.8",
+      "section": "2.8.2-a",
+      "topic": "Double-Opt-in",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 30,
+      "question": "Wozu dient das Double-Opt-in-Verfahren bei der Newsletter-Anmeldung?",
+      "answers": [
+        "Die Informationspflichten zu ersetzen",
+        "Die Einwilligung nachweisen zu können",
+        "Die Einwilligung unwiderruflich zu machen",
+        "Zwei Newsletter gleichzeitig zu bestellen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Der Verantwortliche muss die Einwilligung nachweisen. Die getrennte, aktive Bestätigung durch den Kunden liefert diesen Nachweis."
+    },
+    {
+      "id": "2.8-Q031",
+      "chapter": "2.8",
+      "section": "2.8.2-a",
+      "topic": "Alte Einwilligungen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 31,
+      "question": "Ein Vermittler hat Einwilligungen von 2015, in denen weder der Zweck noch ein Widerrufshinweis steht. Was ist zu empfehlen?",
+      "answers": [
+        "Den Hinweis per Rundschreiben nachreichen",
+        "Unverändert weiterverwenden",
+        "Die Kunden vorsorglich löschen",
+        "Neu einholen und dokumentieren"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Alte Einwilligungen gelten grundsätzlich fort. Fehlen Zweck oder Widerrufshinweis, sollten sie neu eingeholt und dokumentiert werden."
+    },
+    {
+      "id": "2.8-Q032",
+      "chapter": "2.8",
+      "section": "2.8.2-b",
+      "topic": "Zeitpunkt",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 32,
+      "question": "Wann muss der Vermittler den Interessenten über die Datenverarbeitung informieren?",
+      "answers": [
+        "Innerhalb von 72 Stunden",
+        "Bei der Erhebung der Daten",
+        "Bei Abschluss des Darlehensvertrags",
+        "Auf Nachfrage des Interessenten"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Informationspflichten sind zum Zeitpunkt der Erhebung zu erfüllen – schon gegenüber dem Interessenten."
+    },
+    {
+      "id": "2.8-Q033",
+      "chapter": "2.8",
+      "section": "2.8.2-b",
+      "topic": "Inhalt",
+      "type": "multi",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 33,
+      "question": "Welche Angaben gehören in die Datenschutzhinweise?",
+      "answers": [
+        "Beschwerderecht bei der Aufsichtsbehörde",
+        "Provision des Vermittlers",
+        "Zweck und Rechtsgrundlage der Verarbeitung",
+        "Speicherdauer"
+      ],
+      "correct": [
+        0,
+        2,
+        3
+      ],
+      "explanation": "Mitzuteilen sind u. a. Verantwortlicher, Zweck, Rechtsgrundlage, Empfänger, Speicherdauer und die Rechte des Betroffenen."
+    },
+    {
+      "id": "2.8-Q034",
+      "chapter": "2.8",
+      "section": "2.8.2-b",
+      "topic": "Fremde Quelle",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 34,
+      "question": "Der Vermittler erhält Daten über den Kunden nicht von ihm selbst, sondern von einer Auskunftei. Was muss er zusätzlich angeben?",
+      "answers": [
+        "Die Quelle der Daten",
+        "Die Kosten der Auskunft",
+        "Nichts Zusätzliches",
+        "Den Scorewert der Auskunftei"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Werden Daten nicht bei der betroffenen Person erhoben, ist ihr auch die Quelle mitzuteilen."
+    },
+    {
+      "id": "2.8-Q035",
+      "chapter": "2.8",
+      "section": "2.8.2-b",
+      "topic": "Website",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 35,
+      "question": "Was muss die geschäftliche Website eines Vermittlers enthalten?",
+      "answers": [
+        "Nur ein Impressum – Datenschutz gilt offline",
+        "Eine Datenschutzerklärung und ein Impressum",
+        "Das Verarbeitungsverzeichnis",
+        "Die Einwilligungen aller Kunden"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Betreiber geschäftlicher Websites brauchen eine Datenschutzerklärung – u. a. zu Cookies und Tracking – und ein Impressum."
+    },
+    {
+      "id": "2.8-Q036",
+      "chapter": "2.8",
+      "section": "2.8.2-c",
+      "topic": "Auskunft",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 36,
+      "question": "Eine frühere Kundin will wissen, welche Daten der Vermittler über sie gespeichert hat. Welches Recht macht sie geltend?",
+      "answers": [
+        "Das Recht auf Datenübertragbarkeit",
+        "Das Widerspruchsrecht",
+        "Das Recht auf Einschränkung",
+        "Das Auskunftsrecht"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Jede Person kann Auskunft darüber verlangen, welche Daten über sie gespeichert sind und zu welchem Zweck."
+    },
+    {
+      "id": "2.8-Q037",
+      "chapter": "2.8",
+      "section": "2.8.2-c",
+      "topic": "Berichtigung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 37,
+      "question": "In der Kundenakte steht ein falsches Geburtsdatum. Was kann der Kunde verlangen?",
+      "answers": [
+        "Die umgehende Berichtigung",
+        "Schadensersatz in Höhe eines Monatsgehalts",
+        "Die Löschung der gesamten Akte",
+        "Die Sperrung für zehn Jahre"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Falsch erfasste Daten sind umgehend zu berichtigen."
+    },
+    {
+      "id": "2.8-Q038",
+      "chapter": "2.8",
+      "section": "2.8.2-c",
+      "topic": "Löschung und Aufbewahrung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 38,
+      "question": "Ein Kunde verlangt ein Jahr nach Vertragsende die Löschung aller Daten. Darunter sind steuerrelevante Unterlagen. Was gilt?",
+      "answers": [
+        "Aufbewahrungspflichtiges bleibt bis Fristende",
+        "Nichts darf gelöscht werden, solange der Kunde lebt",
+        "Alles ist sofort zu löschen",
+        "Der Kunde muss die Löschung bezahlen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Solange eine gesetzliche Aufbewahrungspflicht besteht, geht sie dem Löschanspruch vor. Alles Übrige ist zu löschen."
+    },
+    {
+      "id": "2.8-Q039",
+      "chapter": "2.8",
+      "section": "2.8.2-c",
+      "topic": "Vergessenwerden",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 39,
+      "question": "Ein Unternehmen hat Kundendaten an Partner weitergegeben und muss sie nun löschen. Was verlangt das „Recht auf Vergessenwerden“ zusätzlich?",
+      "answers": [
+        "Den Kunden um Geduld zu bitten",
+        "Die Empfänger über den Löschanspruch zu informieren",
+        "Die Daten bei der Aufsichtsbehörde zu hinterlegen",
+        "Die Partner auf Schadensersatz zu verklagen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Wer Daten weitergegeben oder veröffentlicht hat, muss auch die anderen Stellen informieren, damit sie dort gelöscht werden."
+    },
+    {
+      "id": "2.8-Q040",
+      "chapter": "2.8",
+      "section": "2.8.2-c",
+      "topic": "Datenübertragbarkeit",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 40,
+      "question": "Ein Kunde wechselt den Anbieter und möchte seine Daten mitnehmen. Was kann er verlangen?",
+      "answers": [
+        "Die Originalakten in Papierform",
+        "Den Zugang zur Datenbank des alten Anbieters",
+        "Die Daten in einem gängigen, übertragbaren Format",
+        "Die Löschung beim neuen Anbieter"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Das Recht auf Datenübertragbarkeit gibt Anspruch auf die eigenen Daten in einem üblichen Format – auf Wunsch direkt an den neuen Anbieter."
+    },
+    {
+      "id": "2.8-Q041",
+      "chapter": "2.8",
+      "section": "2.8.2-c",
+      "topic": "Widerspruch",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 41,
+      "question": "Ein Kunde möchte keine Werbepost mehr erhalten, die der Vermittler auf sein berechtigtes Interesse stützt. Welches Recht nutzt er?",
+      "answers": [
+        "Das Auskunftsrecht",
+        "Das Recht auf Datenübertragbarkeit",
+        "Das Widerspruchsrecht",
+        "Das Berichtigungsrecht"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Gegen Verarbeitung aus berechtigtem Interesse – insbesondere Direktwerbung – kann der Betroffene Widerspruch einlegen."
+    },
+    {
+      "id": "2.8-Q042",
+      "chapter": "2.8",
+      "section": "2.8.2-d",
+      "topic": "Verzeichnis",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 42,
+      "question": "Was dokumentiert das Verzeichnis der Verarbeitungstätigkeiten?",
+      "answers": [
+        "Zweck, Rechtsgrundlage, Empfänger und Löschfristen",
+        "Die Passwörter und Zugangsdaten der Mitarbeiter",
+        "Die Umsätze, die mit den Kundendaten erzielt werden",
+        "Die Einwilligungserklärungen der einzelnen Kunden im Wortlaut"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Verzeichnis hält fest, welche Daten zu welchem Zweck auf welcher Grundlage verarbeitet werden, wer sie erhält und wann sie gelöscht werden."
+    },
+    {
+      "id": "2.8-Q043",
+      "chapter": "2.8",
+      "section": "2.8.2-d",
+      "topic": "Folgenabschätzung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 43,
+      "question": "Wann verlangt die DSGVO eine Datenschutz-Folgenabschätzung?",
+      "answers": [
+        "Bei jeder Erhebung von Kontaktdaten",
+        "Nach jeder gemeldeten Datenpanne im Betrieb",
+        "Bei mehr als 20 Beschäftigten",
+        "Bei hohem Risiko für die Betroffenen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die DSFA ist nötig, wenn die Verarbeitung die Rechte und Freiheiten der Betroffenen voraussichtlich stark gefährdet."
+    },
+    {
+      "id": "2.8-Q044",
+      "chapter": "2.8",
+      "section": "2.8.2-d",
+      "topic": "Schulung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 44,
+      "question": "Der Vermittler hat seine zwei Mitarbeiter mündlich auf die Vertraulichkeit hingewiesen. Was fehlt?",
+      "answers": [
+        "Die Genehmigung der Aufsichtsbehörde",
+        "Die Dokumentation der Schulung",
+        "Die Zustimmung der Kunden",
+        "Die notarielle Beurkundung"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Mitarbeiter sind auf die Vertraulichkeit zu verpflichten und zu schulen – und das ist zu dokumentieren."
+    },
+    {
+      "id": "2.8-Q045",
+      "chapter": "2.8",
+      "section": "2.8.2-e",
+      "topic": "AV-Vertrag",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 45,
+      "question": "Ein Vermittler lässt seine Kundendatenbank von einem externen IT-Dienstleister hosten. Was muss er mit ihm schließen?",
+      "answers": [
+        "Einen Darlehensvermittlungsvertrag",
+        "Nichts – der Dienstleister haftet selbst",
+        "Eine Geheimhaltungsvereinbarung genügt",
+        "Einen Auftragsverarbeitungsvertrag"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Wer einen Externen mit der Verarbeitung personenbezogener Daten beauftragt, braucht einen Auftragsverarbeitungsvertrag."
+    },
+    {
+      "id": "2.8-Q046",
+      "chapter": "2.8",
+      "section": "2.8.2-e",
+      "topic": "Weisung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 46,
+      "question": "Wie darf ein Auftragsverarbeiter die ihm überlassenen Daten verwenden?",
+      "answers": [
+        "Auch für Werbung eigener Produkte",
+        "Nur nach Weisung des Auftraggebers",
+        "Auch für eigene Auswertungen",
+        "Nach eigenem Ermessen, solange nichts verloren geht"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Der Auftragsverarbeiter verarbeitet die Daten ausschließlich nach Weisung. Verantwortlich bleibt der Auftraggeber."
+    },
+    {
+      "id": "2.8-Q047",
+      "chapter": "2.8",
+      "section": "2.8.2-e",
+      "topic": "Drittland",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 47,
+      "question": "Der Vermittler nutzt eine Cloud, deren Server in Indien stehen. Was braucht er für die Übermittlung der Kundendaten?",
+      "answers": [
+        "Die Genehmigung des Gewerbeamts",
+        "Nur die Zustimmung seiner Mitarbeiter",
+        "Eine besondere Grundlage",
+        "Nichts, der Anbieter hat eine deutsche Website"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Übermittlung in ein Drittland braucht eine besondere Grundlage: Angemessenheitsbeschluss der EU-Kommission oder Standardvertragsklauseln."
+    },
+    {
+      "id": "2.8-Q048",
+      "chapter": "2.8",
+      "section": "2.8.2-e",
+      "topic": "Webagentur",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 48,
+      "question": "Eine Webagentur betreut das Kontaktformular des Vermittlers und kann die eingegebenen Kundendaten einsehen. Was folgt daraus?",
+      "answers": [
+        "Sie braucht eine Erlaubnis nach § 34i GewO",
+        "Auch mit ihr ist ein AV-Vertrag nötig",
+        "Nichts – sie erstellt nur die Website",
+        "Sie muss die Daten selbst löschen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Hat ein Dienstleister Zugriff auf personenbezogene Daten der Kunden, ist eine Vereinbarung über die Auftragsverarbeitung zu schließen."
+    },
+    {
+      "id": "2.8-Q049",
+      "chapter": "2.8",
+      "section": "2.8.2-f",
+      "topic": "Mitarbeiterfoto",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 49,
+      "question": "Ein Vermittlerbüro will das Foto einer Mitarbeiterin auf seiner Website zeigen. Was ist erforderlich?",
+      "answers": [
+        "Nichts – der Arbeitsvertrag deckt das",
+        "Ihre Einwilligung",
+        "Die Zustimmung des Betriebsrats genügt",
+        "Eine Meldung an die Aufsichtsbehörde"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Das Foto auf der Website ist für das Arbeitsverhältnis nicht erforderlich. Es braucht die Einwilligung der Mitarbeiterin."
+    },
+    {
+      "id": "2.8-Q050",
+      "chapter": "2.8",
+      "section": "2.8.2-f",
+      "topic": "Freiwilligkeit",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 50,
+      "question": "Warum ist die Einwilligung im Arbeitsverhältnis nur ausnahmsweise wirksam?",
+      "answers": [
+        "Weil Arbeitnehmer keine Verträge mit dem Arbeitgeber schließen dürfen",
+        "Die Freiwilligkeit ist oft zweifelhaft",
+        "Weil Mitarbeiterdaten nicht unter die DSGVO fallen",
+        "Weil der Betriebsrat jede Einwilligung ersetzt"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Eine Einwilligung muss freiwillig sein. Im Arbeitsverhältnis ist das vor allem dann der Fall, wenn der Mitarbeiter einen Vorteil erhält."
+    },
+    {
+      "id": "2.8-Q051",
+      "chapter": "2.8",
+      "section": "2.8.2-f",
+      "topic": "Private Nutzung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 51,
+      "question": "Ein Arbeitgeber erlaubt die private Internetnutzung am Dienst-PC. Was sollte er dazu regeln?",
+      "answers": [
+        "Umfang, Kontrollen und Löschung beim Ausscheiden",
+        "Nichts – erlaubt ist erlaubt",
+        "Die Weitergabe der Verläufe an Kunden",
+        "Ein Verbot privater Passwörter"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Bei erlaubter Privatnutzung sollten Umfang und Kontrollrechte vereinbart werden – auch, wie private Dateien beim Ausscheiden gelöscht werden."
+    },
+    {
+      "id": "2.8-Q052",
+      "chapter": "2.8",
+      "section": "2.8.2-g",
+      "topic": "Meldefrist",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 52,
+      "question": "Binnen welcher Frist ist eine meldepflichtige Datenpanne der Aufsichtsbehörde zu melden?",
+      "answers": [
+        "Binnen 14 Tagen",
+        "Binnen 24 Stunden",
+        "Möglichst binnen 72 Stunden",
+        "Binnen eines Monats"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Art. 33 DSGVO: unverzüglich und möglichst binnen 72 Stunden nach Bekanntwerden."
+    },
+    {
+      "id": "2.8-Q053",
+      "chapter": "2.8",
+      "section": "2.8.2-g",
+      "topic": "Falscher Empfänger",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 53,
+      "question": "Eine Mitarbeiterin schickt die Selbstauskunft eines Kunden versehentlich per E-Mail an einen anderen Kunden. Wie ist das einzuordnen?",
+      "answers": [
+        "Als Datenschutzverletzung",
+        "Als Versehen ohne datenschutzrechtliche Bedeutung",
+        "Als unzulässige Werbung nach dem UWG",
+        "Als Fall für die Bundesnetzagentur"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Der Versand an falsche Adressen ist ein typisches Beispiel einer Datenpanne. Bei Risiko für den Betroffenen ist sie binnen 72 Stunden zu melden."
+    },
+    {
+      "id": "2.8-Q054",
+      "chapter": "2.8",
+      "section": "2.8.2-g",
+      "topic": "Benachrichtigung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 54,
+      "question": "Wann müssen neben der Aufsichtsbehörde auch die betroffenen Personen über eine Datenpanne informiert werden?",
+      "answers": [
+        "Bei jeder Datenpanne",
+        "Nur auf Anordnung eines Gerichts",
+        "Bei voraussichtlich hohem Risiko für sie",
+        "Nur wenn sie nachfragen"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Betroffenen sind unverzüglich zu benachrichtigen, wenn die Verletzung voraussichtlich ein hohes Risiko für ihre Rechte und Freiheiten bedeutet."
+    },
+    {
+      "id": "2.8-Q055",
+      "chapter": "2.8",
+      "section": "2.8.2-g",
+      "topic": "Ausnahme",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 55,
+      "question": "Ein verschlüsselter, passwortgeschützter Laptop wird gestohlen; ein Zugriff auf die Daten ist praktisch ausgeschlossen. Muss gemeldet werden?",
+      "answers": [
+        "Ja, jeder Verlust ist binnen 24 Stunden zu melden",
+        "Nicht zwingend – es fehlt das Risiko",
+        "Ja, und zwar an die Bundesnetzagentur",
+        "Nein, Diebstahl ist keine Datenpanne"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Ausgenommen sind Verletzungen, die voraussichtlich kein Risiko für die Rechte und Freiheiten der Betroffenen bedeuten. Im Zweifel empfiehlt sich die Meldung."
+    },
+    {
+      "id": "2.8-Q056",
+      "chapter": "2.8",
+      "section": "2.8.2-h",
+      "topic": "Grundregel",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 56,
+      "question": "Wann sind personenbezogene Daten zu löschen?",
+      "answers": [
+        "Nach genau drei Jahren, unabhängig von Zweck und Fristen",
+        "Erst wenn der Kunde es ausdrücklich verlangt",
+        "Sobald der Vertrag unterschrieben ist",
+        "Wenn Zweck und Aufbewahrungspflicht entfallen sind"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Entfällt die Zweckbindung und besteht keine gesetzliche Aufbewahrungspflicht mehr, sind die Daten zu löschen oder zu vernichten."
+    },
+    {
+      "id": "2.8-Q057",
+      "chapter": "2.8",
+      "section": "2.8.2-h",
+      "topic": "Geschäftsbriefe",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 57,
+      "question": "Wie lange sind Geschäftsbriefe aufzubewahren?",
+      "answers": [
+        "10 Jahre",
+        "6 Monate",
+        "6 Jahre",
+        "3 Jahre"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Geschäftsbriefe: 6 Jahre. Steuerrelevante Unterlagen: 10 Jahre. Bewerbungsunterlagen: 6 Monate."
+    },
+    {
+      "id": "2.8-Q058",
+      "chapter": "2.8",
+      "section": "2.8.2-h",
+      "topic": "Bewerbung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 58,
+      "question": "Ein Vermittlerbüro hat eine Stelle besetzt. Wie lange dürfen die Unterlagen der abgelehnten Bewerber noch aufbewahrt werden?",
+      "answers": [
+        "10 Jahre",
+        "6 Jahre",
+        "Unbegrenzt, für spätere Stellen",
+        "6 Monate"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Für Bewerbungsunterlagen abgelehnter Bewerber nennt das Lernskript 6 Monate. Danach sind sie zu löschen."
+    },
+    {
+      "id": "2.8-Q059",
+      "chapter": "2.8",
+      "section": "2.8.2-h",
+      "topic": "Papier",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 59,
+      "question": "Wie sind ausgediente Papierunterlagen mit Kundendaten zu entsorgen?",
+      "answers": [
+        "Sie kommen ins Altpapier",
+        "Sie gehen zurück an den Kunden",
+        "Sie sind zu schreddern",
+        "Sie sind zu scannen und dann aufzubewahren"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Papierunterlagen mit personenbezogenen Daten sind zu vernichten – also zu schreddern."
+    },
+    {
+      "id": "2.8-Q060",
+      "chapter": "2.8",
+      "section": "2.8.3-a",
+      "topic": "Zutritt",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 60,
+      "question": "Welche Kontrolle sorgt dafür, dass Unbefugte den Serverraum gar nicht erst betreten können?",
+      "answers": [
+        "Die Eingabekontrolle",
+        "Die Zugangskontrolle",
+        "Die Zugriffskontrolle",
+        "Die Zutrittskontrolle"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Zutritt betrifft den physischen Weg zur Anlage, Zugang die Nutzung des Systems, Zugriff die einzelnen Daten."
+    },
+    {
+      "id": "2.8-Q061",
+      "chapter": "2.8",
+      "section": "2.8.3-a",
+      "topic": "Zugriff",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 61,
+      "question": "Die Sachbearbeiterin für Versicherungen kann im System die Darlehensakten nicht öffnen. Welche Kontrolle ist das?",
+      "answers": [
+        "Die Zugriffskontrolle",
+        "Die Verfügbarkeitskontrolle",
+        "Die Zutrittskontrolle",
+        "Die Weitergabekontrolle"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Zugriffskontrolle: Jeder Nutzer sieht und bearbeitet nur die Daten, für die er berechtigt ist."
+    },
+    {
+      "id": "2.8-Q062",
+      "chapter": "2.8",
+      "section": "2.8.3-a",
+      "topic": "Eingabe",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 62,
+      "question": "Im System lässt sich nachvollziehen, wer wann eine Kundenadresse geändert hat. Welche Kontrolle ist das?",
+      "answers": [
+        "Die Zugangskontrolle",
+        "Die Auftragskontrolle",
+        "Die Trennungskontrolle",
+        "Die Eingabekontrolle"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Eingabekontrolle: Es lässt sich nachträglich feststellen, von wem Daten eingegeben, verändert oder entfernt wurden."
+    },
+    {
+      "id": "2.8-Q063",
+      "chapter": "2.8",
+      "section": "2.8.3-a",
+      "topic": "Verfügbarkeit",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 63,
+      "question": "Ein Büro sichert seine Daten täglich doppelt an zwei verschiedenen Standorten. Welchem Schutzziel dient das?",
+      "answers": [
+        "Datenminimierung",
+        "Verfügbarkeit und Belastbarkeit",
+        "Zweckbindung",
+        "Vertraulichkeit"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die doppelte Sicherung schützt vor Verlust und erlaubt die Wiederherstellung – Verfügbarkeit und Belastbarkeit."
+    },
+    {
+      "id": "2.8-Q064",
+      "chapter": "2.8",
+      "section": "2.8.3-a",
+      "topic": "E-Mail",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 64,
+      "question": "Der Vermittler will die Gehaltsnachweise eines Kunden per E-Mail an die Bank senden. Was verlangt das Lernskript?",
+      "answers": [
+        "Eine Kopie an die Aufsichtsbehörde",
+        "Nichts – E-Mails sind von Haus aus sicher",
+        "Den Versand außerhalb der Geschäftszeiten",
+        "Schutzmaßnahmen wie eine Verschlüsselung"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die ungeschützte Übermittlung personenbezogener Daten per E-Mail ist nach dem Lernskript unzulässig; nötig sind Maßnahmen wie Verschlüsselung."
+    },
+    {
+      "id": "2.8-Q065",
+      "chapter": "2.8",
+      "section": "2.8.3-b",
+      "topic": "Datenschutz",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 65,
+      "question": "Was schützt der Datenschutz – im Unterschied zu Informationsschutz und IT-Sicherheit?",
+      "answers": [
+        "Die Reputation der Geschäftsführung",
+        "Natürliche Personen und ihre Daten",
+        "Hardware und Software",
+        "Alle Informationen des Unternehmens"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Datenschutz schützt Menschen, Informationsschutz alle Unternehmensinformationen, IT-Sicherheit Hardware, Software und Daten."
+    },
+    {
+      "id": "2.8-Q066",
+      "chapter": "2.8",
+      "section": "2.8.3-b",
+      "topic": "Werbeeinwilligung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 66,
+      "question": "Ein Vermittler holt eine Einwilligung für Werbeanrufe ein. Welche Regeln muss sie erfüllen?",
+      "answers": [
+        "Die der DSGVO und die des UWG",
+        "Nur die des UWG",
+        "Nur die der DSGVO",
+        "Nur die der Gewerbeordnung"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Für die Werbeeinwilligung gelten die datenschutzrechtlichen Anforderungen und zusätzlich die wettbewerbsrechtlichen des UWG."
+    },
+    {
+      "id": "2.8-Q067",
+      "chapter": "2.8",
+      "section": "2.8.3-b",
+      "topic": "Verschwiegenheit",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 67,
+      "question": "Ein Vermittler beendet seine Tätigkeit für ein Unternehmen. Was gilt für die Kundendaten, die er dort kennengelernt hat?",
+      "answers": [
+        "Er darf sie nach einem Jahr verwenden",
+        "Er muss sie dem neuen Arbeitgeber übergeben",
+        "Er darf sie für eigene Zwecke nutzen",
+        "Die Vertraulichkeit besteht fort"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die Pflicht zur Vertraulichkeit gilt auch außerhalb und nach dem Ende des Vertrags- oder Arbeitsverhältnisses."
+    }
+  ]
+}

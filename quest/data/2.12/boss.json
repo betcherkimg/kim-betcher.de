@@ -1,0 +1,467 @@
+{
+  "chapter": "2.12",
+  "boss": {
+    "name": "Schatzmeister Münzkrake",
+    "title": "Herr der Abgaben",
+    "image": "assets/bosses/schatzmeister-muenzkrake.webp",
+    "bust": "assets/bosses/schatzmeister-muenzkrake-bust.webp",
+    "accent": "#C276AF",
+    "taunts": {
+      "intro": "Acht Arme, acht Abgaben. Von jedem Haus hole ich mir meinen Teil – es sei denn, du kennst die Regeln.",
+      "hit": [
+        "Ein Arm lässt los.",
+        "Richtig abgesetzt. Ärgerlich.",
+        "Du kennst deine Werbungskosten …"
+      ],
+      "miss": [
+        "Nachzahlung!",
+        "Dieser Posten gehört mir.",
+        "Münzkrake greift zu."
+      ],
+      "timeout": [
+        "Frist versäumt – Säumniszuschlag.",
+        "Zu spät erklärt."
+      ],
+      "final": "Letzter Bescheid. Sofort abziehen oder abschreiben?",
+      "low": "Meine Schatzkammer … sie leert sich …",
+      "defeat": "Bescheid aufgehoben. Behalte deine Münzen.",
+      "victory": "Steuerbescheid bestandskräftig. Zurück ins Lernskript."
+    }
+  },
+  "questions": [
+    {
+      "id": "2.12-B001",
+      "chapter": "2.12",
+      "section": "2.12.1-b",
+      "topic": [
+        "Grunderwerbsteuer",
+        "Grundsteuer"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Welche Steuer fällt einmalig beim Kauf an, welche jedes Jahr – und wer bestimmt jeweils den Satz?",
+      "answers": [
+        "Beide: Bund",
+        "Grundsteuer: Land – Grunderwerbsteuer: Gemeinde",
+        "Grunderwerbsteuer: Land – Grundsteuer: Gemeinde",
+        "Beide: Gemeinde"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Grunderwerbsteuer fällt einmal beim Erwerb an, ihr Satz ist Ländersache. Die Grundsteuer wird jährlich erhoben, den Hebesatz beschließt die Gemeinde."
+    },
+    {
+      "id": "2.12-B002",
+      "chapter": "2.12",
+      "section": "2.12.1-f",
+      "topic": [
+        "AfA",
+        "Bemessungsgrundlage"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Kaufpreis 250.000 €, Grunderwerbsteuer 12.500 €, Notar Kauf 2.500 €, Makler 10.000 €, Grundstücksanteil 20 %. Jahres-AfA bei 2 %?",
+      "answers": [
+        "5.000 €",
+        "4.000 €",
+        "4.400 €",
+        "5.500 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Anschaffungskosten 275.000 €, davon 80 % Gebäude = 220.000 €. 2 % davon sind 4.400 €."
+    },
+    {
+      "id": "2.12-B003",
+      "chapter": "2.12",
+      "section": "2.12.1-g",
+      "topic": [
+        "AfA-Satz",
+        "Neubau"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Vermietetes Wohngebäude, 2024 fertiggestellt, Gebäudekosten 300.000 €. Wie hoch ist die lineare Jahres-AfA?",
+      "answers": [
+        "6.000 €",
+        "7.500 €",
+        "9.000 €",
+        "15.000 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Für Wohngebäude mit Fertigstellung ab 2023 beträgt die lineare AfA 3 %: 300.000 € × 3 % = 9.000 €."
+    },
+    {
+      "id": "2.12-B004",
+      "chapter": "2.12",
+      "section": "2.12.1-g",
+      "topic": [
+        "AfA",
+        "Zeitanteilig"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Jahres-AfA 4.800 €. Der Käufer erwirbt die Mietwohnung zum 1. Oktober. Wie viel AfA setzt er im ersten Jahr an?",
+      "answers": [
+        "400 €",
+        "4.800 €",
+        "3.600 €",
+        "1.200 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Im Jahr der Anschaffung gibt es die AfA zeitanteilig: Oktober bis Dezember sind 3/12 von 4.800 € = 1.200 €."
+    },
+    {
+      "id": "2.12-B005",
+      "chapter": "2.12",
+      "section": "2.12.1-e",
+      "topic": [
+        "Anschaffungsnah",
+        "15-%-Grenze"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Gebäudeanteil 160.000 €. Im zweiten Jahr nach dem Kauf: neue Heizung und Fenster für 20.000 € netto. Steuerliche Behandlung?",
+      "answers": [
+        "Erhaltungsaufwand – sofort abziehbar",
+        "Nicht abziehbar",
+        "Zur Hälfte sofort abziehbar",
+        "Herstellungskosten – über die AfA"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Grenze liegt bei 15 % von 160.000 € = 24.000 €. 20.000 € bleiben darunter – es bleibt bei sofort abziehbarem Erhaltungsaufwand."
+    },
+    {
+      "id": "2.12-B006",
+      "chapter": "2.12",
+      "section": "2.12.1-d",
+      "topic": [
+        "Notarkosten",
+        "Zuordnung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Notarkosten: 2.500 € für den Kaufvertrag, 1.000 € für die Grundschuld. Wie werden sie beim Vermieter behandelt?",
+      "answers": [
+        "Kaufvertrag: über die AfA – Grundschuld: sofort",
+        "Beides über die AfA",
+        "Kaufvertrag: sofort – Grundschuld: über die AfA",
+        "Beides sofort abziehbar"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Kosten des Kaufvertrags sind Anschaffungsnebenkosten und wirken anteilig über die AfA. Kosten der Grundschuld sind Finanzierungskosten und sofort abziehbar."
+    },
+    {
+      "id": "2.12-B007",
+      "chapter": "2.12",
+      "section": "2.12.1-d",
+      "topic": [
+        "Disagio",
+        "Verteilung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Darlehen mit 10 Jahren Zinsbindung und 8 % Disagio. Wie viel davon ist im ersten Jahr sofort abziehbar?",
+      "answers": [
+        "8 % – alles sofort",
+        "0 % – alles wird verteilt",
+        "5 % – der Rest wird verteilt",
+        "4 % – die Hälfte"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Ein Disagio ist bis 5 % sofort abziehbar, wenn die Zinsbindung mindestens fünf Jahre beträgt. Der übersteigende Teil wird auf die Laufzeit verteilt."
+    },
+    {
+      "id": "2.12-B008",
+      "chapter": "2.12",
+      "section": "2.12.1-h",
+      "topic": [
+        "Veräußerung",
+        "Zehnjahresfrist"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Kaufvertrag der Mietwohnung am 01.03.2015, Verkaufsvertrag am 02.03.2025, Gewinn 30.000 €. Steuerpflichtig?",
+      "answers": [
+        "Nein, weil vermietet",
+        "Ja, in voller Höhe",
+        "Ja, zur Hälfte",
+        "Nein, Frist abgelaufen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Zwischen den beiden Kaufverträgen liegen mehr als zehn Jahre. Der Gewinn ist nicht mehr steuerpflichtig."
+    },
+    {
+      "id": "2.12-B009",
+      "chapter": "2.12",
+      "section": "2.12.1-h",
+      "topic": [
+        "Veräußerung",
+        "AfA"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Mietwohnung: Kauf 150.000 €, Verkauf nach acht Jahren für 180.000 €, geltend gemachte AfA 20.000 €. Steuerpflichtiger Gewinn?",
+      "answers": [
+        "30.000 €",
+        "50.000 €",
+        "10.000 €",
+        "0 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die AfA mindert die Anschaffungskosten auf 130.000 €. 180.000 € − 130.000 € = 50.000 € Veräußerungsgewinn."
+    },
+    {
+      "id": "2.12-B010",
+      "chapter": "2.12",
+      "section": "2.12.1-h",
+      "topic": [
+        "Veräußerung",
+        "Selbstnutzung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Wohnung 2019 gekauft, bis 2022 vermietet, seit Anfang 2023 selbst bewohnt, Verkauf Ende 2025 mit Gewinn. Steuerpflichtig?",
+      "answers": [
+        "Nein – weil der Gewinn privat ist",
+        "Ja – wegen der früheren Vermietung",
+        "Ja – die zehn Jahre laufen noch",
+        "Nein – zuletzt selbst genutzt"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die Ausnahme greift auch, wenn die Immobilie im Jahr des Verkaufs und in den beiden vorangegangenen Jahren zu eigenen Wohnzwecken genutzt wurde."
+    },
+    {
+      "id": "2.12-B011",
+      "chapter": "2.12",
+      "section": "2.12.1-i",
+      "topic": [
+        "§ 35a",
+        "Kombination"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Selbstnutzer: Gärtner 3.000 €, Maler-Arbeitskosten 5.000 €, alles überwiesen. Wie hoch ist die Steuerermäßigung insgesamt?",
+      "answers": [
+        "1.800 €",
+        "1.600 €",
+        "8.000 €",
+        "1.200 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Gärtner: 20 % von 3.000 € = 600 € (Dienstleistung). Maler: 20 % von 5.000 € = 1.000 € (Handwerker, unter 1.200 €). Zusammen 1.600 €."
+    },
+    {
+      "id": "2.12-B012",
+      "chapter": "2.12",
+      "section": "2.12.1-i",
+      "topic": [
+        "§ 35a",
+        "Arbeitskosten"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Handwerkerrechnung 3.000 €: davon 1.800 € Material, 1.200 € Arbeitskosten. Überwiesen. Steuerermäßigung?",
+      "answers": [
+        "240 €",
+        "1.200 €",
+        "360 €",
+        "600 €"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Begünstigt sind nur die Arbeitskosten: 20 % von 1.200 € = 240 €."
+    },
+    {
+      "id": "2.12-B013",
+      "chapter": "2.12",
+      "section": "2.12.1-j",
+      "topic": [
+        "Steuervorteil",
+        "Rechenweg"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Steuer laut Tabelle ohne Immobilie: 15.000 €. Mit 6.000 € negativen Einkünften aus Vermietung: 12.900 €. Wie hoch ist der Steuervorteil?",
+      "answers": [
+        "3.900 €",
+        "12.900 €",
+        "6.000 €",
+        "2.100 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Der Steuervorteil ist die Differenz der beiden Steuerbeträge: 15.000 € − 12.900 € = 2.100 €."
+    },
+    {
+      "id": "2.12-B014",
+      "chapter": "2.12",
+      "section": "2.12.1-c",
+      "topic": [
+        "Nebenkosten",
+        "Werbungskosten"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Vermieter zahlt im Jahr: 1.500 € umgelegte Betriebskosten (vom Mieter voll erstattet), 600 € Hausverwaltung, 900 € Reparaturen. Was mindert seine Einkünfte im Ergebnis?",
+      "answers": [
+        "3.000 € – alle Kosten",
+        "0 € – der Mieter zahlt alles",
+        "600 € – nur die Verwaltung",
+        "1.500 € – Verwaltung, Reparatur"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die umgelegten Betriebskosten gleichen sich mit der Umlage aus. Verwaltung und Instandhaltung trägt der Vermieter: 600 € + 900 € = 1.500 €."
+    },
+    {
+      "id": "2.12-B015",
+      "chapter": "2.12",
+      "section": "2.12.2-a",
+      "topic": [
+        "Einkunftsarten",
+        "Zuordnung"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein selbstständiger Handelsvertreter besitzt eine vermietete Wohnung und ein Sparkonto. Welche Einkunftsarten erzielt er?",
+      "answers": [
+        "Kapitalvermögen",
+        "Vermietung und Verpachtung",
+        "Gewerbebetrieb",
+        "Nichtselbstständige Arbeit"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Der Handelsvertreter ist Gewerbetreibender. Hinzu kommen Mieteinnahmen und Zinsen. Arbeitnehmer ist er nicht."
+    },
+    {
+      "id": "2.12-B016",
+      "chapter": "2.12",
+      "section": "2.12.2-b",
+      "topic": [
+        "Schema",
+        "Reihenfolge"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Bringe in die richtige Reihenfolge: (1) Einkommen (2) Gesamtbetrag der Einkünfte (3) zu versteuerndes Einkommen.",
+      "answers": [
+        "2 – 1 – 3",
+        "1 – 2 – 3",
+        "3 – 2 – 1",
+        "2 – 3 – 1"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Gesamtbetrag der Einkünfte, dann nach Sonderausgaben das Einkommen, dann nach Freibeträgen das zu versteuernde Einkommen."
+    },
+    {
+      "id": "2.12-B017",
+      "chapter": "2.12",
+      "section": "2.12.2-d",
+      "topic": [
+        "Abzug vom Einkommen",
+        "Abzug von der Steuer"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Zwei Entlastungen von je 1.000 €: A als Werbungskosten, B als Steuerermäßigung nach § 35a. Persönlicher Steuersatz 30 %. Was spart mehr?",
+      "answers": [
+        "A: 1.000 € statt 300 €",
+        "Beide gleich: 300 €",
+        "B: 1.000 € statt 300 €",
+        "Beide gleich: 1.000 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Werbungskosten mindern das Einkommen – die Ersparnis ist der Steuersatz darauf, hier rund 300 €. § 35a mindert die Steuer direkt um 1.000 €."
+    },
+    {
+      "id": "2.12-B018",
+      "chapter": "2.12",
+      "section": "2.12.2-e",
+      "topic": [
+        "Steuerklassen",
+        "Wahl"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Ein Ehepaar verdient etwa gleich viel. Welche Kombination passt – und was ändert die Wahl an der Jahressteuer?",
+      "answers": [
+        "III/V – die Jahressteuer sinkt",
+        "I/I – die Jahressteuer steigt",
+        "IV/IV – an der Jahressteuer nichts",
+        "IV/IV – die Jahressteuer sinkt"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Bei ähnlichem Verdienst passt IV/IV. Die Steuerklasse steuert nur den monatlichen Abzug; die Jahressteuer ergibt die Veranlagung."
+    }
+  ]
+}

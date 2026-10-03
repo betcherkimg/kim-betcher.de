@@ -1,0 +1,910 @@
+{
+  "chapter": "2.6",
+  "questions": [
+    {
+      "id": "2.6-Q001",
+      "chapter": "2.6",
+      "section": "2.6.1-a",
+      "topic": "Schutzbedarf",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 1,
+      "question": "Warum braucht der Verbraucher nach dem Leitbild des Verbraucherschutzes besonderen Schutz?",
+      "answers": [
+        "Weil er Verträge grundsätzlich nicht allein schließen darf",
+        "Weil Preise im Handel staatlich festgelegt sind",
+        "Weil er dem Anbieter strukturell unterlegen ist",
+        "Weil Anbieter für jeden Verlust des Kunden haften"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Verbraucher haben gegenüber Anbietern weniger Fachkenntnis, Information, Ressourcen und Erfahrung. Dieses Ungleichgewicht soll der Verbraucherschutz ausgleichen."
+    },
+    {
+      "id": "2.6-Q002",
+      "chapter": "2.6",
+      "section": "2.6.1-a",
+      "topic": "Direkt und indirekt",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 2,
+      "question": "Welche Einrichtung gehört zum indirekten Verbraucherschutz?",
+      "answers": [
+        "Die Beschwerde beim Ombudsmann der Bank",
+        "Das Widerrufsrecht des Darlehensnehmers",
+        "Die Kontrolle von AGB-Klauseln im Einzelvertrag",
+        "Die Aufsicht der BaFin über Kreditinstitute"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Indirekt schützt die Aufsicht über die Anbieter – durch BaFin und Gewerbeaufsicht. Widerruf, AGB-Kontrolle und Schlichtung macht der einzelne Verbraucher selbst geltend."
+    },
+    {
+      "id": "2.6-Q003",
+      "chapter": "2.6",
+      "section": "2.6.1-a",
+      "topic": "Zeitpunkt des Schutzes",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 3,
+      "question": "Worin unterscheiden sich Widerrufsrecht und Bedenkzeit?",
+      "answers": [
+        "Der Widerruf gilt für Banken, die Bedenkzeit für Kunden",
+        "Der Widerruf wirkt nach Vertragsschluss, die Bedenkzeit davor",
+        "Der Widerruf ist freiwillig vereinbart, die Bedenkzeit gesetzlich",
+        "Der Widerruf braucht einen Grund, die Bedenkzeit nicht"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Beide schützen vor übereilten Verträgen: das Widerrufsrecht durch Lösung vom geschlossenen Vertrag, die Bedenkzeit durch Zeit vor dem Abschluss."
+    },
+    {
+      "id": "2.6-Q004",
+      "chapter": "2.6",
+      "section": "2.6.1-b",
+      "topic": "Einbeziehung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 4,
+      "question": "Wann werden AGB Bestandteil eines Vertrags mit einem Verbraucher?",
+      "answers": [
+        "Wenn der Anbieter sie nach Vertragsschluss zusendet",
+        "Bei Hinweis, Kenntnisnahme und Einverständnis",
+        "Immer – AGB gelten kraft Gesetzes",
+        "Sobald sie im Geschäftsraum des Anbieters aushängen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "AGB werden nur einbezogen, wenn der Verwender bei Vertragsschluss deutlich auf sie hinweist, der Kunde sie zur Kenntnis nehmen kann und mit ihrer Geltung einverstanden ist."
+    },
+    {
+      "id": "2.6-Q005",
+      "chapter": "2.6",
+      "section": "2.6.1-b",
+      "topic": "Nachträgliche AGB",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 5,
+      "question": "Ein Kunde unterschreibt einen Vertrag. Erst eine Woche später erhält er per Post die AGB, von denen vorher keine Rede war. Gelten sie?",
+      "answers": [
+        "Ja, weil er den Vertrag unterschrieben hat",
+        "Ja, wenn er nicht binnen 14 Tagen widerspricht",
+        "Nein, weil AGB eine notarielle Beurkundung brauchen",
+        "Nein, es fehlte der Hinweis bei Vertragsschluss"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Hinweis und Möglichkeit der Kenntnisnahme müssen bei Vertragsschluss vorliegen. Nachgeschobene AGB werden nicht Vertragsbestandteil."
+    },
+    {
+      "id": "2.6-Q006",
+      "chapter": "2.6",
+      "section": "2.6.1-b",
+      "topic": "Individualabrede",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 6,
+      "question": "In den AGB steht eine Bearbeitungsfrist von vier Wochen. Kunde und Anbieter haben ausdrücklich zwei Wochen ausgehandelt. Was gilt?",
+      "answers": [
+        "Keine Frist – die Regelungen heben sich auf",
+        "Vier Wochen – AGB gehen mündlichen Absprachen vor",
+        "Drei Wochen als Mittelwert beider Regelungen",
+        "Zwei Wochen – die individuelle Abrede geht vor"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Individuell ausgehandelte Regelungen haben Vorrang vor Allgemeinen Geschäftsbedingungen (§ 305b BGB)."
+    },
+    {
+      "id": "2.6-Q007",
+      "chapter": "2.6",
+      "section": "2.6.1-b",
+      "topic": "Unangemessene Klausel",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 7,
+      "question": "Eine AGB-Klausel schließt jede Haftung des Anbieters aus, auch für grobes Verschulden. Welche Folge hat das?",
+      "answers": [
+        "Die Klausel ist unwirksam, der Vertrag bleibt",
+        "Der gesamte Vertrag ist nichtig",
+        "Die Klausel gilt, bis ein Gericht sie aufhebt",
+        "Die Klausel gilt, weil der Kunde unterschrieben hat"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Klauseln, die den Vertragspartner unangemessen benachteiligen, sind unwirksam. Der Vertrag bleibt im Übrigen wirksam; an die Stelle der Klausel tritt das Gesetz."
+    },
+    {
+      "id": "2.6-Q008",
+      "chapter": "2.6",
+      "section": "2.6.1-b",
+      "topic": "Zweck",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 8,
+      "question": "Wozu dienen Allgemeine Geschäftsbedingungen?",
+      "answers": [
+        "Den Vertrag mit jedem Kunden einzeln und frei auszuhandeln",
+        "Die Schriftform des Vertrags zu ersetzen",
+        "Gesetzliche Vorschriften außer Kraft zu setzen",
+        "Massenverträge zu standardisieren und zu vereinfachen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "AGB sind vorformulierte Klauseln, die Vertragsschluss und Abwicklung bei einer Vielzahl von Verträgen vereinheitlichen."
+    },
+    {
+      "id": "2.6-Q009",
+      "chapter": "2.6",
+      "section": "2.6.1-c",
+      "topic": "AGG und ABB",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 9,
+      "question": "Welche Regelwerke muss eine Bausparkasse ihrem Geschäftsbetrieb zugrunde legen?",
+      "answers": [
+        "Allgemeine Geschäftsbedingungen und eine von der BaFin genehmigte Geschäftsordnung",
+        "Allgemeine Geschäftsgrundsätze und Allgemeine Bedingungen für Bausparverträge",
+        "Ein Beratungsprotokoll und das ESIS-Merkblatt",
+        "Die Satzung des Verbands und eine Tarifordnung"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Das Bausparkassengesetz verlangt Allgemeine Geschäftsgrundsätze (AGG) und Allgemeine Bedingungen für Bausparverträge (ABB)."
+    },
+    {
+      "id": "2.6-Q010",
+      "chapter": "2.6",
+      "section": "2.6.1-c",
+      "topic": "Zuordnung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 10,
+      "question": "Ein Bausparer will wissen, nach welchen Regeln die Reihenfolge der Zuteilung ermittelt wird. Wo ist das geregelt?",
+      "answers": [
+        "In den Allgemeinen Bedingungen für Bausparverträge",
+        "In den Allgemeinen Geschäftsgrundsätzen",
+        "In der Preisangabenverordnung",
+        "Im ESIS-Merkblatt zum Bauspardarlehen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Voraussetzungen und Reihenfolge der Zuteilung sowie die Beleihungswertermittlung betreffen den Geschäftsbetrieb der Bausparkasse und stehen in den AGG."
+    },
+    {
+      "id": "2.6-Q011",
+      "chapter": "2.6",
+      "section": "2.6.1-c",
+      "topic": "Inhalt der ABB",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 11,
+      "question": "Was regeln die Allgemeinen Bedingungen für Bausparverträge?",
+      "answers": [
+        "Die Eigenmittel- und Liquiditätsausstattung der Bausparkasse",
+        "Die Vergütung der Außendienstmitarbeiter",
+        "Die Berechnung des Beleihungswerts",
+        "Verzinsung der Einlagen und Darlehensbedingungen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die ABB enthalten die vertragsspezifischen Regelungen: Verzinsung der Bauspareinlagen, Bedingungen des Bauspardarlehens, Höhe und Fälligkeit der Leistungen des Bausparers."
+    },
+    {
+      "id": "2.6-Q012",
+      "chapter": "2.6",
+      "section": "2.6.1-d",
+      "topic": "Schutzzweck",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 12,
+      "question": "Wen schützt das Gesetz gegen den unlauteren Wettbewerb?",
+      "answers": [
+        "Mitbewerber – Verbraucher schützt allein das BGB",
+        "Kreditinstitute und ihre Einleger",
+        "Verbraucher – Unternehmen schützt das Kartellrecht",
+        "Verbraucher, Mitbewerber, sonstige Marktteilnehmer und die Allgemeinheit"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Das UWG schützt Mitbewerber, Verbraucher und sonstige Marktteilnehmer und zugleich das Interesse der Allgemeinheit an unverfälschtem Wettbewerb."
+    },
+    {
+      "id": "2.6-Q013",
+      "chapter": "2.6",
+      "section": "2.6.1-d",
+      "topic": "Vergleichende Werbung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 13,
+      "question": "Ein Vermittler vergleicht in einer Anzeige seinen Zinssatz mit dem eines namentlich genannten Mitbewerbers – wahr, sachlich und nachprüfbar. Zulässig?",
+      "answers": [
+        "Nein, Preisvergleiche sind Banken vorbehalten",
+        "Ja, sofern der Mitbewerber vorher zustimmt",
+        "Ja, unter diesen Voraussetzungen ist das erlaubt",
+        "Nein, Mitbewerber dürfen in der Werbung nicht genannt werden"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Vergleichende Werbung ist grundsätzlich zulässig, wenn der Vergleich objektiv, sachlich, wahr und nachprüfbar ist und nicht herabsetzt."
+    },
+    {
+      "id": "2.6-Q014",
+      "chapter": "2.6",
+      "section": "2.6.1-d",
+      "topic": "Irreführung durch Unterlassen",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 14,
+      "question": "Eine Anzeige nennt einen sehr niedrigen Zins, verschweigt aber eine hohe Pflichtgebühr. Welche Fallgruppe des UWG liegt vor?",
+      "answers": [
+        "Gezielte Behinderung von Mitbewerbern",
+        "Unzumutbare Belästigung",
+        "Irreführung durch Unterlassen",
+        "Aggressive geschäftliche Handlung"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Wer dem Verbraucher wesentliche Informationen vorenthält und so seine Entscheidung beeinflusst, führt durch Unterlassen irre (§ 5a UWG)."
+    },
+    {
+      "id": "2.6-Q015",
+      "chapter": "2.6",
+      "section": "2.6.1-d",
+      "topic": "Folgen",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 15,
+      "question": "Welche Folgen drohen einem Unternehmen, das wettbewerbswidrig handelt?",
+      "answers": [
+        "Nichtigkeit seiner AGB",
+        "Entzug der Rechtsfähigkeit",
+        "Herausgabe des erzielten Gewinns",
+        "Klage auf Unterlassung"
+      ],
+      "correct": [
+        2,
+        3
+      ],
+      "explanation": "Ein Unternehmen kann auf Unterlassung der wettbewerbswidrigen Handlung und auf Herausgabe des durch unlauteren Wettbewerb erzielten Gewinns verklagt werden."
+    },
+    {
+      "id": "2.6-Q016",
+      "chapter": "2.6",
+      "section": "2.6.1-e",
+      "topic": "Ewiges Widerrufsrecht",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 16,
+      "question": "Bei welchem Darlehen kann der Verbraucher nach bisherigem Recht zeitlich unbegrenzt widerrufen, wenn die Widerrufsinformation fehlerhaft ist?",
+      "answers": [
+        "Bei beiden Arten von Verbraucherdarlehen",
+        "Beim Immobiliar-Verbraucherdarlehen",
+        "Beim Allgemein-Verbraucherdarlehen",
+        "Bei keinem Verbraucherdarlehen"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Das „ewige Widerrufsrecht“ besteht nur beim Allgemein-Verbraucherdarlehen. Beim Immobiliar-Verbraucherdarlehen endet es spätestens 12 Monate und 14 Tage nach Vertragsschluss. Ab 20.11.2026 gilt diese Grenze für alle."
+    },
+    {
+      "id": "2.6-Q017",
+      "chapter": "2.6",
+      "section": "2.6.1-e",
+      "topic": "Persönlicher Anwendungsbereich",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 17,
+      "question": "Ein eingetragener Verein nimmt ein Darlehen für sein Vereinsheim auf und will es nach zehn Tagen widerrufen. Steht ihm das Verbraucher-Widerrufsrecht zu?",
+      "answers": [
+        "Ja, innerhalb der 14 Tage",
+        "Nein, weil die Frist für Vereine sieben Tage beträgt",
+        "Nein, es gilt nur für natürliche Personen",
+        "Ja, Vereine handeln nicht gewerblich"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Verbraucher kann nur eine natürliche Person sein. Juristische Personen wie eingetragene Vereine haben das Verbraucher-Widerrufsrecht nicht."
+    },
+    {
+      "id": "2.6-Q018",
+      "chapter": "2.6",
+      "section": "2.6.1-e",
+      "topic": "Korrigierte Information",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 18,
+      "question": "Die Bank bemerkt einen Fehler in der Widerrufsinformation eines Ratenkredits und reicht eine korrekte nach. Wie lange kann der Kunde danach noch widerrufen?",
+      "answers": [
+        "14 Tage",
+        "Zwölf Monate und 14 Tage",
+        "Einen Monat",
+        "Unbegrenzt"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Wird die Widerrufsinformation nachträglich korrigiert, läuft ab dann eine Frist von einem Monat – bei beiden Arten des Verbraucherdarlehens."
+    },
+    {
+      "id": "2.6-Q019",
+      "chapter": "2.6",
+      "section": "2.6.1-f",
+      "topic": "Zweck",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 19,
+      "question": "Wozu dient die Angabe des effektiven Jahreszinses?",
+      "answers": [
+        "Den Gewinn der Bank offenzulegen",
+        "Die Kreditwürdigkeit des Kunden auszuweisen",
+        "Die Zinsbindung für den Kunden zu verlängern",
+        "Angebote verschiedener Anbieter vergleichbar zu machen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Der Effektivzins bündelt alle zwingenden Kosten in einem Prozentwert. So kann der Verbraucher gleichartige Angebote vergleichen."
+    },
+    {
+      "id": "2.6-Q020",
+      "chapter": "2.6",
+      "section": "2.6.1-f",
+      "topic": "Sollzins und Effektivzins",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 20,
+      "question": "Zwei Angebote haben denselben Sollzins. Bei Bank A fällt zusätzlich eine Pflichtversicherung an. Was folgt daraus?",
+      "answers": [
+        "Beide effektiven Jahreszinsen sind gleich",
+        "Der Sollzins von Bank A ist höher",
+        "Der effektive Jahreszins von Bank A ist höher",
+        "Der Effektivzins lässt sich ohne die Laufzeit nicht bestimmen"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Versicherungen, die Voraussetzung für das Darlehen sind, fließen in den Effektivzins ein. Bei gleichem Sollzins ist Angebot A damit effektiv teurer."
+    },
+    {
+      "id": "2.6-Q021",
+      "chapter": "2.6",
+      "section": "2.6.1-f",
+      "topic": "Bezugsgröße",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S+P",
+      "storyOrder": 21,
+      "question": "Wie wird der effektive Jahreszins ausgedrückt?",
+      "answers": [
+        "Als jährlicher Prozentsatz des Nettodarlehensbetrags",
+        "Als Eurobetrag über die gesamte Laufzeit",
+        "Als Aufschlag auf den Basiszinssatz",
+        "Als monatlicher Prozentsatz der Restschuld"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die PAngV verlangt die Angabe als jährlichen Prozentsatz, bezogen auf den Nettodarlehensbetrag."
+    },
+    {
+      "id": "2.6-Q022",
+      "chapter": "2.6",
+      "section": "2.6.1-f",
+      "topic": "Einbezogene Kosten",
+      "type": "multi",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 22,
+      "question": "Welche Kosten fließen in den effektiven Jahreszins ein?",
+      "answers": [
+        "Kosten für die Eintragung der Grundschuld ins Grundbuch",
+        "Notarkosten für die Grundschuldbestellung",
+        "Vermittlungsprovision",
+        "Kosten einer erforderlichen Immobilienbewertung"
+      ],
+      "correct": [
+        0,
+        2,
+        3
+      ],
+      "explanation": "Provision, erforderliche Bewertung und Grundbuchkosten der Sicherheit zählen mit. Notarkosten bleiben außen vor."
+    },
+    {
+      "id": "2.6-Q023",
+      "chapter": "2.6",
+      "section": "2.6.1-f",
+      "topic": "Nicht einbezogene Kosten",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 23,
+      "question": "Ein Kunde gerät mit zwei Raten in Verzug und zahlt Mahngebühren. Wurden diese Kosten im effektiven Jahreszins berücksichtigt?",
+      "answers": [
+        "Nein, weil Mahngebühren unzulässig sind",
+        "Ja, bis zu drei Mahnungen pro Jahr",
+        "Nein, Verzugskosten bleiben außen vor",
+        "Ja, als pauschaler Risikoaufschlag"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Kosten bei Nichterfüllung – Mahngebühren, Verzugszinsen – bleiben unberücksichtigt. Der Effektivzins nimmt an, dass beide Seiten ihre Pflichten pünktlich erfüllen."
+    },
+    {
+      "id": "2.6-Q024",
+      "chapter": "2.6",
+      "section": "2.6.1-f",
+      "topic": "Freiwillige Versicherung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 24,
+      "question": "Der Kunde schließt freiwillig eine Restschuldversicherung ab. Die Bank hätte das Darlehen auch ohne sie zu denselben Bedingungen vergeben. Gehört die Prämie in den Effektivzins?",
+      "answers": [
+        "Nein, Versicherungen zählen nie mit",
+        "Ja, jede im Zusammenhang abgeschlossene Versicherung zählt mit",
+        "Ja, zur Hälfte",
+        "Nein, freiwillige Zusatzleistungen bleiben außen vor"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Einbezogen werden nur Versicherungen, die Voraussetzung für das Darlehen oder seine Konditionen sind. Freiwillige bleiben unberücksichtigt."
+    },
+    {
+      "id": "2.6-Q025",
+      "chapter": "2.6",
+      "section": "2.6.1-f",
+      "topic": "Grundbuchkosten",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S+P",
+      "storyOrder": 25,
+      "question": "Welche Grundbuchgebühr bleibt beim effektiven Jahreszins unberücksichtigt?",
+      "answers": [
+        "Die Gebühr für die Eigentumsumschreibung",
+        "Beide – Grundbuchgebühren zählen nie mit",
+        "Keine – Grundbuchgebühren zählen alle mit",
+        "Die Gebühr für die Eintragung der Grundschuld"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die Eintragung der Sicherheit gehört zum Kredit und zählt mit. Die Eigentumsumschreibung fiele auch beim Barkauf an und bleibt außen vor."
+    },
+    {
+      "id": "2.6-Q026",
+      "chapter": "2.6",
+      "section": "2.6.1-g",
+      "topic": "Auftrag",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 26,
+      "question": "In wessen Interesse wird die BaFin tätig?",
+      "answers": [
+        "Im Interesse des einzelnen Beschwerdeführers, der sich an sie wendet",
+        "Im Interesse der Anteilseigner der Banken",
+        "Im öffentlichen Interesse, zum Schutz aller Verbraucher",
+        "Im Interesse der beaufsichtigten Institute"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die BaFin ist dem kollektiven Verbraucherschutz verpflichtet. Individuelle Interessen verfolgen Ombudsleute, Schlichtungsstellen, Verbraucherzentralen und Gerichte."
+    },
+    {
+      "id": "2.6-Q027",
+      "chapter": "2.6",
+      "section": "2.6.1-g",
+      "topic": "Rechtsform",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 27,
+      "question": "Welche Rechtsform hat die BaFin, und wer beaufsichtigt sie?",
+      "answers": [
+        "Eingetragener Verein der Kreditwirtschaft ohne Aufsicht",
+        "Anstalt des öffentlichen Rechts unter Aufsicht des Bundesfinanzministeriums",
+        "Bundesgericht unter Aufsicht des Justizministeriums",
+        "Abteilung der Deutschen Bundesbank unter Aufsicht der EZB"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die BaFin ist eine selbstständige Anstalt des öffentlichen Rechts. Sie unterliegt der Rechts- und Fachaufsicht des Bundesministeriums der Finanzen."
+    },
+    {
+      "id": "2.6-Q028",
+      "chapter": "2.6",
+      "section": "2.6.1-g",
+      "topic": "Finanzierung",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 28,
+      "question": "Wie finanziert sich die BaFin?",
+      "answers": [
+        "Aus Gebühren und Umlagen der beaufsichtigten Unternehmen",
+        "Aus Steuermitteln, die der Bundeshaushalt jährlich zuweist",
+        "Aus Bußgeldern und Zwangsgeldern",
+        "Aus Beiträgen der Verbraucher"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die BaFin finanziert sich aus Gebühren und Umlagen der Institute und Unternehmen, die sie beaufsichtigt."
+    },
+    {
+      "id": "2.6-Q029",
+      "chapter": "2.6",
+      "section": "2.6.1-g",
+      "topic": "Einzelfall",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 29,
+      "question": "Ein Kunde verlangt von der BaFin, sie solle seine Bank zur Rückzahlung einer falsch berechneten Gebühr von 300 € verurteilen. Was kann er erwarten?",
+      "answers": [
+        "Die sofortige Schließung der Bank",
+        "Die Erstattung der 300 € aus Mitteln der BaFin",
+        "Keine Entscheidung seines Einzelfalls",
+        "Ein bindendes Urteil der BaFin gegen die Bank"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die BaFin schützt die Verbraucher in ihrer Gesamtheit. Den Streit im Einzelfall entscheiden Ombudsleute, Schlichtungsstellen und notfalls Gerichte."
+    },
+    {
+      "id": "2.6-Q030",
+      "chapter": "2.6",
+      "section": "2.6.1-h",
+      "topic": "Zuständigkeit",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 30,
+      "question": "Wer richtet die Gewerbeaufsicht ein?",
+      "answers": [
+        "Die Europäische Union",
+        "Der Bund",
+        "Die Industrie- und Handelskammern",
+        "Jedes Bundesland"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die Gewerbeaufsicht ist Sache der Länder. Deshalb können ihre Aufgaben von Land zu Land abweichen."
+    },
+    {
+      "id": "2.6-Q031",
+      "chapter": "2.6",
+      "section": "2.6.1-h",
+      "topic": "Aufgaben",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 31,
+      "question": "Welche Aufgabe nennt das Lernskript für die Gewerbeaufsicht?",
+      "answers": [
+        "Festlegung der Eigenmittel von Kreditinstituten",
+        "Schlichtung zwischen Bank und Kunde",
+        "Erteilung von Erlaubnissen, etwa nach § 34c GewO",
+        "Abschluss von Tarifverträgen im Gewerbe"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Zu den Aufgaben der Gewerbeaufsicht gehören Genehmigungen wie die Erlaubnis nach § 34c GewO, dazu Arbeits-, Umwelt- und Produktsicherheit."
+    },
+    {
+      "id": "2.6-Q032",
+      "chapter": "2.6",
+      "section": "2.6.1-h",
+      "topic": "Abgrenzung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 32,
+      "question": "Wodurch unterscheidet sich die Gewerbeaufsicht von der BaFin?",
+      "answers": [
+        "Sie wird von den Unternehmen selbst getragen",
+        "Sie ist Landessache und überwacht Gewerbebetriebe allgemein",
+        "Sie ist Bundessache und überwacht die Banken",
+        "Sie entscheidet Streitfälle zwischen Kunde und Anbieter"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die BaFin ist die Finanzaufsicht des Bundes. Die Gewerbeaufsicht der Länder achtet auf Gewerbeordnung, Arbeits-, Umwelt- und Verbraucherschutz."
+    },
+    {
+      "id": "2.6-Q033",
+      "chapter": "2.6",
+      "section": "2.6.2-a",
+      "topic": "Zweck",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 33,
+      "question": "Wozu dienen Schlichtungsstellen?",
+      "answers": [
+        "Der Rechtsberatung von Verbrauchern vor Vertragsschluss",
+        "Der außergerichtlichen Beilegung von Streitigkeiten",
+        "Der Aufsicht über die Zahlungsfähigkeit der Institute",
+        "Der Prüfung von AGB vor ihrer Verwendung"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Schlichtungsstellen sollen Verbraucherstreitigkeiten leicht zugänglich, kostengünstig und schnell beilegen – ohne Gericht."
+    },
+    {
+      "id": "2.6-Q034",
+      "chapter": "2.6",
+      "section": "2.6.2-a",
+      "topic": "Gerichtsweg",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 34,
+      "question": "Die Schlichtung endet ohne Einigung. Was kann der Verbraucher tun?",
+      "answers": [
+        "Nichts mehr – die Schlichtung ist abschließend",
+        "Klage vor dem ordentlichen Gericht erheben",
+        "Die BaFin um ein Urteil bitten",
+        "Ein zweites Schlichtungsverfahren erzwingen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Kommt keine Einigung zustande, steht dem Verbraucher weiter der Weg zu den ordentlichen Gerichten offen."
+    },
+    {
+      "id": "2.6-Q035",
+      "chapter": "2.6",
+      "section": "2.6.2-a",
+      "topic": "Bindung",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 35,
+      "question": "Der Ombudsmann der privaten Banken entscheidet bei geringem Streitwert zugunsten des Kunden. Wen bindet der Spruch?",
+      "answers": [
+        "Die Bank",
+        "Niemanden",
+        "Bank und Kunde",
+        "Den Kunden"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Bis zu einer bestimmten Streitsumme ist die Entscheidung des Ombudsmanns für die Bank bindend. Der Kunde bleibt frei, das Gericht anzurufen."
+    },
+    {
+      "id": "2.6-Q036",
+      "chapter": "2.6",
+      "section": "2.6.2-a",
+      "topic": "Ausschluss",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 36,
+      "question": "In welchem Fall greift die Schlichtungsstelle nicht ein?",
+      "answers": [
+        "Wenn es um eine Darlehensablösung geht",
+        "Wenn es um strittige Bankentgelte geht",
+        "Wenn der Kunde keinen Anwalt hat",
+        "Wenn sich bereits ein Gericht mit der Sache befasst"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die Schlichter werden nicht tätig, wenn ein Gericht mit der Beschwerde befasst ist oder war – oder wenn Zeugen gehört werden müssten."
+    },
+    {
+      "id": "2.6-Q037",
+      "chapter": "2.6",
+      "section": "2.6.2-b",
+      "topic": "Zuständige Stelle",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 37,
+      "question": "Wonach richtet sich, welche Schlichtungsstelle für ein Institut zuständig ist?",
+      "answers": [
+        "Nach der Höhe des Streitwerts",
+        "Nach dem Verband, dem das Institut angehört",
+        "Nach der Wahl der BaFin",
+        "Nach dem Bundesland, in dem der Kunde seinen Wohnsitz hat"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Schlichtungsstellen sind bei den Verbänden angesiedelt. Welchem Verband ein Institut angehört, steht in den Vertragsunterlagen."
+    },
+    {
+      "id": "2.6-Q038",
+      "chapter": "2.6",
+      "section": "2.6.2-b",
+      "topic": "Frist",
+      "type": "single",
+      "difficulty": 1,
+      "taxonomyLevel": 1,
+      "examRelevance": "S",
+      "storyOrder": 38,
+      "question": "Wie lange hat das Unternehmen Zeit, zu einem zulässigen Schlichtungsantrag Stellung zu nehmen?",
+      "answers": [
+        "Drei Monate",
+        "Sieben Tage",
+        "14 Tage",
+        "Einen Monat"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Die Geschäftsstelle fordert das Unternehmen auf, innerhalb eines Monats Stellung zu nehmen. Dieselbe Frist hat danach der Kunde für seine Äußerung."
+    },
+    {
+      "id": "2.6-Q039",
+      "chapter": "2.6",
+      "section": "2.6.2-b",
+      "topic": "Abhilfe",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 39,
+      "question": "Die Bank erklärt in ihrer Stellungnahme, sie werde dem Anliegen des Kunden entsprechen. Wie geht das Verfahren weiter?",
+      "answers": [
+        "Die Sache geht an das Gericht",
+        "Es ist damit beendet",
+        "Der Kunde muss binnen eines Monats zustimmen",
+        "Der Schlichter muss trotzdem entscheiden"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Entspricht das Unternehmen dem Anliegen, teilt die Geschäftsstelle mit, dass das Schlichtungsverfahren beendet ist."
+    },
+    {
+      "id": "2.6-Q040",
+      "chapter": "2.6",
+      "section": "2.6.2-b",
+      "topic": "Beweise",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 40,
+      "question": "Der Kunde will im Schlichtungsverfahren zwei Zeugen für ein Beratungsgespräch benennen. Was gilt?",
+      "answers": [
+        "Zeugen sind zulässig, wenn die Bank zustimmt",
+        "Der Schlichter hört keine Zeugen",
+        "Der Schlichter lädt die Zeugen zur Verhandlung",
+        "Die Zeugen geben ihre Aussage bei der BaFin ab"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Eine Beweisaufnahme gibt es nur, soweit der Beweis durch Vorlage von Unterlagen erbracht werden kann. Wo Zeugen nötig sind, ist die Schlichtung nicht das richtige Verfahren."
+    },
+    {
+      "id": "2.6-Q041",
+      "chapter": "2.6",
+      "section": "2.6.2-b",
+      "topic": "Rolle der BaFin",
+      "type": "single",
+      "difficulty": 2,
+      "taxonomyLevel": 2,
+      "examRelevance": "S",
+      "storyOrder": 41,
+      "question": "Wie ist die BaFin im Verhältnis zu den Schlichtungsstellen einzuordnen?",
+      "answers": [
+        "Sie ist Ordnungsbehörde, keine klassische Schlichtungsstelle",
+        "Sie ist die oberste Schlichtungsstelle für Banken",
+        "Sie ist der Dachverband der Ombudsleute",
+        "Sie ist Berufungsinstanz gegen Schlichtungssprüche"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Die BaFin ist eine Ordnungsbehörde. Ihre Hauptaufgabe ist die Aufsicht über Institute, Versicherer und Wertpapierhandel."
+    }
+  ]
+}

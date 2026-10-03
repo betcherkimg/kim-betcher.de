@@ -1,0 +1,323 @@
+{
+  "chapter": "2.10",
+  "boss": {
+    "name": "Gesandte Sternenpfad",
+    "title": "Wanderin der freien Wege",
+    "image": "assets/bosses/gesandte-sternenpfad.webp",
+    "bust": "assets/bosses/gesandte-sternenpfad-bust.webp",
+    "accent": "#8ECEF6",
+    "taunts": {
+      "intro": "Zwölf Sterne, vier freie Wege. Zeig mir, dass du weißt, welcher Weg wohin führt.",
+      "hit": [
+        "Du kennst den Weg.",
+        "Ein Stern weist dir die Richtung.",
+        "Die Grenze öffnet sich."
+      ],
+      "miss": [
+        "Falscher Weg – hier ist die Grenze zu.",
+        "Verirrt im Binnenmarkt.",
+        "Sternenpfad schickt dich zurück."
+      ],
+      "timeout": [
+        "Zu lange an der Grenze gewartet.",
+        "Der Weg hat sich geschlossen."
+      ],
+      "final": "Letzter Wegweiser. Niederlassen oder nur durchreisen?",
+      "low": "Meine Sterne … sie verblassen …",
+      "defeat": "Alle Wege stehen dir offen. Gute Reise.",
+      "victory": "An der Grenze gestrandet. Zurück ins Lernskript."
+    }
+  },
+  "questions": [
+    {
+      "id": "2.10-B001",
+      "chapter": "2.10",
+      "section": "2.10-c",
+      "topic": [
+        "Dienstleistung",
+        "Niederlassung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Vermittler A eröffnet ein Büro in Salzburg. Vermittler B fährt einmal im Monat von Passau zu Kunden nach Salzburg. Welche Freiheit nutzt wer?",
+      "answers": [
+        "A: Dienstleistung – B: Niederlassung",
+        "Beide: Dienstleistung",
+        "Beide: Niederlassung",
+        "A: Niederlassung – B: Dienstleistung"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "A siedelt sich dauerhaft an – Niederlassungsfreiheit. B bleibt in Deutschland ansässig und wird vorübergehend tätig – Dienstleistungsfreiheit."
+    },
+    {
+      "id": "2.10-B002",
+      "chapter": "2.10",
+      "section": "2.10-a",
+      "topic": [
+        "Vier Freiheiten",
+        "Zuordnung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ordne zu: (1) Maschinen nach Polen liefern, (2) Geld in Spanien anlegen, (3) als Angestellter in Dänemark arbeiten.",
+      "answers": [
+        "(1) Kapital – (2) Waren – (3) Personen",
+        "(1) Dienstleistung – (2) Kapital – (3) Waren",
+        "(1) Waren – (2) Kapital – (3) Personen",
+        "(1) Waren – (2) Personen – (3) Kapital"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Warenlieferung: Warenverkehrsfreiheit. Geldanlage: Kapitalverkehrsfreiheit. Arbeit im Ausland: Personenverkehrsfreiheit."
+    },
+    {
+      "id": "2.10-B003",
+      "chapter": "2.10",
+      "section": "2.10-b",
+      "topic": [
+        "Niederlassung",
+        "Inländergleichbehandlung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Staat verlangt von EU-Vermittlern dieselbe Sachkundeprüfung wie von eigenen Bürgern. Zulässig?",
+      "answers": [
+        "Nein, die Niederlassungsfreiheit verbietet Prüfungen",
+        "Ja, es gelten die gleichen Regeln wie für Inländer",
+        "Ja, aber nur für Nicht-EU-Bürger",
+        "Nein, es zählt nur das Recht des Heimatstaats"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Niederlassung erfolgt zu den Bestimmungen, die der Aufnahmestaat für seine eigenen Staatsbürger festgelegt hat."
+    },
+    {
+      "id": "2.10-B004",
+      "chapter": "2.10",
+      "section": "2.10-e",
+      "topic": [
+        "Diskriminierungsverbot",
+        "Inländergleichbehandlung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Mitgliedstaat verlangt von EU-Ausländern das Doppelte der Zulassungsgebühr, die Inländer zahlen. Wogegen verstößt das?",
+      "answers": [
+        "Gegen die Kapitalverkehrsfreiheit",
+        "Gegen nichts",
+        "Gegen das Diskriminierungsverbot",
+        "Gegen die Zollunion"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Niemand darf wegen seiner Staatsangehörigkeit benachteiligt werden. Für EU-Ausländer müssen dieselben Bedingungen gelten wie für Inländer."
+    },
+    {
+      "id": "2.10-B005",
+      "chapter": "2.10",
+      "section": "2.10-b",
+      "topic": [
+        "Öffentliche Gewalt",
+        "Ausnahme"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Wer kann sich nicht auf Niederlassungs- und Dienstleistungsfreiheit berufen?",
+      "answers": [
+        "Wer als Makler arbeitet",
+        "Wer Kunden berät",
+        "Wer hoheitlich handelt",
+        "Wer Finanzprodukte vermittelt"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Tätigkeiten, die mit der Ausübung öffentlicher Gewalt verbunden sind, sind nach Art. 51 AEUV ausgenommen."
+    },
+    {
+      "id": "2.10-B006",
+      "chapter": "2.10",
+      "section": "2.10-d",
+      "topic": [
+        "Jahreszahlen",
+        "Zuordnung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ordne die Jahre zu: Zollunion vollendet – Kapitalverkehr liberalisiert – Selbstständige überall tätig.",
+      "answers": [
+        "1968 – 1990 – 1992",
+        "1990 – 1968 – 1992",
+        "1968 – 1992 – 2009",
+        "1957 – 1968 – 1990"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Zölle fielen bis 1968, der Kapitalverkehr wurde zum 1. Juli 1990 liberalisiert, die Niederlassungsfreiheit für Selbstständige kam mit dem Binnenmarkt 1992."
+    },
+    {
+      "id": "2.10-B007",
+      "chapter": "2.10",
+      "section": "2.10-c",
+      "topic": [
+        "Dienstleistungsrichtlinie",
+        "Fakten"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Was trifft auf die Dienstleistungsrichtlinie zu?",
+      "answers": [
+        "Sie wurde überall fristgerecht umgesetzt",
+        "Sie regelt die Erlaubnis nach § 34i GewO",
+        "Angenommen 2006, Umsetzungsfrist Ende 2009",
+        "Sie führt einheitliche Ansprechpartner ein"
+      ],
+      "correct": [
+        2,
+        3
+      ],
+      "explanation": "Die Richtlinie von 2006 war bis 28.12.2009 umzusetzen und setzt u. a. auf einheitliche Ansprechpartner. Die Umsetzung verzögerte sich mehrfach; § 34i GewO beruht auf der Wohnimmobilienkreditrichtlinie."
+    },
+    {
+      "id": "2.10-B008",
+      "chapter": "2.10",
+      "section": "2.10-e",
+      "topic": [
+        "Richtlinien",
+        "Zuordnung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Welche Richtlinie führte die Sachkunde-Erlaubnis für Vermittler von Immobiliardarlehen ein?",
+      "answers": [
+        "Die Verbraucherkreditrichtlinie",
+        "Die Wohnimmobilienkreditrichtlinie",
+        "Die Zahlungsdiensterichtlinie",
+        "Die Dienstleistungsrichtlinie"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Die Wohnimmobilienkreditrichtlinie – in Deutschland wirksam seit 21.03.2016 – brachte die auf geprüfter Sachkunde beruhende Berufserlaubnis."
+    },
+    {
+      "id": "2.10-B009",
+      "chapter": "2.10",
+      "section": "2.10-e",
+      "topic": [
+        "Europäischer Pass",
+        "Anzeige"
+      ],
+      "type": "multi",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Eine Vermittlerin mit § 34i-Erlaubnis will ein Zweigbüro in Luxemburg eröffnen. Was gilt?",
+      "answers": [
+        "Sie verliert ihre deutsche Erlaubnis",
+        "Sie nutzt die Niederlassungsfreiheit",
+        "Sie braucht in Deutschland eine neue Erlaubnis",
+        "Sie muss das vorher ihrer Behörde anzeigen"
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "explanation": "Das Zweigbüro ist eine dauerhafte Niederlassung. Mit der Heimatzulassung darf sie nach vorheriger Anzeige bei der zuständigen Behörde im Ausland tätig werden."
+    },
+    {
+      "id": "2.10-B010",
+      "chapter": "2.10",
+      "section": "2.10-d",
+      "topic": [
+        "Kapitalverkehr",
+        "Warenverkehr"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Deutscher Käufer, Ferienhaus in Portugal, Darlehen einer Bank aus Österreich, Küche aus Italien geliefert. Welche Freiheiten wirken bei Darlehen und Küche?",
+      "answers": [
+        "Darlehen: Waren – Küche: Kapital",
+        "Beides: Dienstleistung",
+        "Beides: Personen",
+        "Darlehen: Kapital – Küche: Waren"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Der grenzüberschreitende Geldfluss fällt unter die Kapitalverkehrsfreiheit, die Lieferung der Küche unter die Warenverkehrsfreiheit."
+    },
+    {
+      "id": "2.10-B011",
+      "chapter": "2.10",
+      "section": "2.10-b",
+      "topic": [
+        "Arbeitnehmer",
+        "Selbstständige"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Seit wann dürfen Arbeitnehmer, seit wann Selbstständige in jedem Mitgliedstaat tätig sein?",
+      "answers": [
+        "Arbeitnehmer 1992 – Selbstständige 1957",
+        "Arbeitnehmer 1957 – Selbstständige 1992",
+        "Beide seit 1992",
+        "Beide seit 1957"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Arbeitnehmer haben das Recht seit 1957. Selbstständige dürfen seit der Errichtung des Binnenmarkts 1992 in jedem Land tätig werden."
+    },
+    {
+      "id": "2.10-B012",
+      "chapter": "2.10",
+      "section": "2.10-e",
+      "topic": [
+        "Parlament",
+        "Rolle"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Mitgliedstaat setzt eine Richtlinie jahrelang nicht um. Welche Rolle spielt das Europäische Parlament?",
+      "answers": [
+        "Es drängt auf die ordnungsgemäße Umsetzung",
+        "Es hat dabei keine Rolle",
+        "Es hebt die Richtlinie auf",
+        "Es setzt die Richtlinie selbst in dem Staat um"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Das Parlament verfolgt die Umsetzung genau und übt Druck auf die Mitgliedstaaten aus, ihren Verpflichtungen nachzukommen."
+    }
+  ]
+}

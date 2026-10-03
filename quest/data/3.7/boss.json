@@ -1,0 +1,406 @@
+{
+  "chapter": "3.7",
+  "boss": {
+    "name": "Morvane",
+    "title": "Richter der Tragfähigkeit",
+    "image": "assets/bosses/morvane.webp",
+    "bust": "assets/bosses/morvane-bust.webp",
+    "accent": "#af83bd",
+    "taunts": {
+      "intro": "Mein Geflecht reicht unter jedes Haus. Ich spüre, was ein Haushalt trägt – und wo er bricht. Tritt vor, ich wäge dich.",
+      "hit": [
+        "Das Geflecht reißt an einer Stelle.",
+        "Gut gewogen. Meine Sporen weichen.",
+        "Dieses Urteil trägt."
+      ],
+      "miss": [
+        "Zu leicht befunden.",
+        "Dein Haushalt trägt das nicht.",
+        "Mein Myzel wächst über deinen Fehler."
+      ],
+      "timeout": [
+        "Wer zögert, wird überwuchert.",
+        "Das Urteil fällt ohne dich."
+      ],
+      "final": "Die letzte Waage. Ein Haushalt, eine Rate, ein Urteil – trägt es oder nicht?",
+      "low": "Mein Geflecht … es trocknet aus …",
+      "defeat": "Du hast gewogen und richtig geurteilt. Die Tragfähigkeit gehört dir.",
+      "victory": "Nicht tragfähig. Zurück ins Lernskript, bis dein Wissen Wurzeln schlägt."
+    }
+  },
+  "questions": [
+    {
+      "id": "3.7-B001",
+      "chapter": "3.7",
+      "section": "3.7.1-a",
+      "topic": [
+        "Bonität vor Sicherheit"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Haus 500.000 € wert, Darlehen 200.000 €, Einkommen reicht nicht für die Rate. Darf die Bank allein wegen des Werts zusagen?",
+      "answers": [
+        "Ja, mit Zinsaufschlag",
+        "Ja, mit Grundschuld",
+        "Nein, Bonität geht vor Sicherheit",
+        "Ja, bei Beleihungsauslauf unter 60 %"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Die Prüfung darf sich nicht hauptsächlich auf den Wert der Immobilie stützen (§ 505b Abs. 2 BGB)."
+    },
+    {
+      "id": "3.7-B002",
+      "chapter": "3.7",
+      "section": "3.7.2-a",
+      "topic": [
+        "Minderjährige",
+        "Haftung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Eine 16-Jährige nimmt mit Zustimmung der Eltern und Genehmigung des Familiengerichts einen Kredit auf. Wer haftet?",
+      "answers": [
+        "Die Eltern",
+        "Das Gericht",
+        "Die 16-Jährige",
+        "Niemand bis zum 18. Geburtstag"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Schuldner ist der Minderjährige selbst – auch wenn der gesetzliche Vertreter zustimmt."
+    },
+    {
+      "id": "3.7-B003",
+      "chapter": "3.7",
+      "section": "3.7.2-b",
+      "topic": [
+        "Gütertrennung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S",
+      "question": "Ein Ehemann mit Gütertrennung will allein finanzieren. Was braucht die Bank?",
+      "answers": [
+        "Die Mitunterschrift der Ehefrau",
+        "Eine Gerichtsgenehmigung",
+        "Den Gütertrennungsvertrag",
+        "Einen Handelsregisterauszug"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Mit dem Ehevertrag ist die Gütertrennung belegt. Dann kann jeder einzeln Kredit aufnehmen, wenn das Institut einverstanden ist."
+    },
+    {
+      "id": "3.7-B004",
+      "chapter": "3.7",
+      "section": "3.7.3-a",
+      "topic": [
+        "Negativmerkmal"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Die Auskunft zeigt eine fruchtlose Pfändung vor einem Jahr. Die Haushaltsrechnung ist positiv. Regelfolge?",
+      "answers": [
+        "Zusage mit Auflage",
+        "Ablehnung",
+        "Zusage bei 2 % Tilgung",
+        "Zusage ohne Auflage"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Negativmerkmale wie die fruchtlose Pfändung führen in der Regel zur Ablehnung – unabhängig vom Rechenergebnis."
+    },
+    {
+      "id": "3.7-B005",
+      "chapter": "3.7",
+      "section": "3.7.3-b",
+      "topic": [
+        "Laufzeit",
+        "Ruhestand"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Kunde 60 Jahre, Laufzeit 15 Jahre, Rate heute tragbar, Rente deutlich niedriger. Was gilt?",
+      "answers": [
+        "Es zählt nur das heutige Gehalt",
+        "Der Ruhestand ist mitzuprüfen",
+        "Es zählt nur der Objektwert",
+        "Darlehen ab 60 sind unzulässig"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Geprüft wird über die gesamte Laufzeit. Ein geringeres Einkommen im Ruhestand ist zu berücksichtigen."
+    },
+    {
+      "id": "3.7-B006",
+      "chapter": "3.7",
+      "section": "3.7.3-c",
+      "topic": [
+        "§ 505d BGB",
+        "Zins"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Bank prüft fehlerhaft, Sollzins 4 % für 10 Jahre gebunden. Der 10-jährige Pfandbriefzins lag bei 2,5 %. Welcher Zins gilt?",
+      "answers": [
+        "6,5 %",
+        "4 %",
+        "2,5 %",
+        "0 %"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Der gebundene Sollzins ermäßigt sich auf den marktüblichen Pfandbriefzins mit der Laufzeit der Zinsbindung."
+    },
+    {
+      "id": "3.7-B007",
+      "chapter": "3.7",
+      "section": "3.7.3-c",
+      "topic": [
+        "§ 505d BGB",
+        "Kündigung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Die Bank hat gegen die Prüfpflicht verstoßen. Der Kunde will nach fünf von 15 Jahren Zinsbindung raus. Geht das?",
+      "answers": [
+        "Ja, gegen Entschädigung",
+        "Ja, fristlos und ohne Entschädigung",
+        "Nein, erst nach 10 Jahren",
+        "Nein, nur die Bank darf kündigen"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Bei einem Verstoß kann der Kunde jederzeit fristlos kündigen. Eine Vorfälligkeitsentschädigung fällt nicht an."
+    },
+    {
+      "id": "3.7-B008",
+      "chapter": "3.7",
+      "section": "3.7.3-c",
+      "topic": [
+        "§ 499 BGB"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Der Kunde hat Gehaltsabrechnungen gefälscht. Die Bank bemerkt es später. Darf sie deshalb kündigen?",
+      "answers": [
+        "Nur mit Zustimmung des Kunden",
+        "Nein, niemals wegen der Prüfung",
+        "Ja, hier entfällt sein Schutz",
+        "Nur nach Ablauf der Zinsbindung"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Der Kündigungsausschluss gilt nicht, wenn der Kunde Informationen wissentlich vorenthalten oder gefälscht hat."
+    },
+    {
+      "id": "3.7-B009",
+      "chapter": "3.7",
+      "section": "3.7.3-d",
+      "topic": [
+        "Mietertrag"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Kaltmiete 1.000 €, Warmmiete 1.250 €, Abzug für Bewirtschaftung 25 %. Anrechenbarer Mietertrag?",
+      "answers": [
+        "937,50 €",
+        "750 €",
+        "1.000 €",
+        "1.250 €"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Ausgangsgröße ist die Kaltmiete: 1.000 € − 25 % = 750 €."
+    },
+    {
+      "id": "3.7-B010",
+      "chapter": "3.7",
+      "section": "3.7.3-d",
+      "topic": [
+        "Anrechenbares Einkommen"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Gehalt netto 2.400 €, Überstunden 300 €, Spesen 150 €, dauerhafte Witwenrente 400 €. Anrechenbares Einkommen?",
+      "answers": [
+        "2.400 €",
+        "3.100 €",
+        "2.800 €",
+        "3.250 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Gehalt und dauerhafte Rente zählen: 2.400 € + 400 € = 2.800 €. Überstunden und Spesen bleiben außen vor."
+    },
+    {
+      "id": "3.7-B011",
+      "chapter": "3.7",
+      "section": "3.7.4-a",
+      "topic": [
+        "Nachweis"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Der Kunde nennt 500 € Nebeneinkommen im Monat, kann aber keinen Beleg vorlegen. Wie viel wird angesetzt?",
+      "answers": [
+        "500 €",
+        "250 €",
+        "375 €",
+        "0 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Einkommen, das nicht nachgewiesen werden kann, darf nicht einkalkuliert werden."
+    },
+    {
+      "id": "3.7-B012",
+      "chapter": "3.7",
+      "section": "3.7.5-b",
+      "topic": [
+        "Haushaltsrechnung"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Einnahmen 3.500 €, Ausgaben mit neuer Rate 1.700 €, Mindestwert des Kreditgebers 1.650 €. Urteil?",
+      "answers": [
+        "Tragfähig, 150 € über dem Mindestwert",
+        "Tragfähig, 1.800 € über dem Mindestwert",
+        "Nicht tragfähig, 150 € fehlen",
+        "Nicht tragfähig, 1.650 € fehlen"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "3.500 € − 1.700 € = 1.800 € frei. Das liegt 150 € über dem Mindestwert von 1.650 €."
+    },
+    {
+      "id": "3.7-B013",
+      "chapter": "3.7",
+      "section": "3.7.5-b",
+      "topic": [
+        "Methode A"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Mindestwerte: Hauptverdiener 700 €, Ehegatte 240 €, je Kind 200 €, 2,50 € je m². Ehepaar, drei Kinder, 140 m². Existenzminimum?",
+      "answers": [
+        "1.540 €",
+        "1.690 €",
+        "1.890 €",
+        "2.090 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "700 € + 240 € + 3 × 200 € + 140 × 2,50 € (350 €) = 1.890 €."
+    },
+    {
+      "id": "3.7-B014",
+      "chapter": "3.7",
+      "section": "3.7.5-b",
+      "topic": [
+        "Methode B"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Regel: 40 % vom Netto, mindestens 1.400 € plus 240 € je Kind. Netto 5.000 €, zwei Kinder. Existenzminimum?",
+      "answers": [
+        "1.880 €",
+        "3.880 €",
+        "2.000 €",
+        "1.400 €"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "40 % von 5.000 € sind 2.000 €. Der Mindestwert beträgt 1.400 € + 480 € = 1.880 €. Der höhere Wert gilt."
+    },
+    {
+      "id": "3.7-B015",
+      "chapter": "3.7",
+      "section": "3.7.5-b",
+      "topic": [
+        "Haushaltsrechnung",
+        "Rate"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Einnahmen 4.000 €, Ausgaben ohne neue Rate 600 €, Mindestwert 1.900 €. Wie hoch darf die neue Rate höchstens sein?",
+      "answers": [
+        "2.100 €",
+        "3.400 €",
+        "1.900 €",
+        "1.500 €"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "4.000 € − 600 € − 1.900 € = 1.500 €. So viel ist frei für die Finanzierung."
+    },
+    {
+      "id": "3.7-B016",
+      "chapter": "3.7",
+      "section": "3.7.5-c",
+      "topic": [
+        "K.-o.-Kriterium"
+      ],
+      "type": "single",
+      "difficulty": 3,
+      "taxonomyLevel": 3,
+      "examRelevance": "S+P",
+      "question": "Das abzulösende Darlehen zeigt mehrere Rücklastschriften. Der freie Betrag liegt 600 € über dem Mindestwert. Urteil?",
+      "answers": [
+        "Kreditwürdig wegen Überschuss",
+        "Kreditunwürdig trotz Überschuss",
+        "Kreditwürdig mit Ratenpause",
+        "Kreditwürdig bei Auslauf über 80 %"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Zahlungsrückstände und Rücklastschriften bei abzulösenden Darlehen sind ein K.-o.-Kriterium, unabhängig vom Rechenergebnis."
+    }
+  ]
+}

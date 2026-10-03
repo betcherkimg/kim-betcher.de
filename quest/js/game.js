@@ -30,7 +30,7 @@ export const POTIONS = {
  * Lootchance nach Schwierigkeit. Nur richtige Antworten würfeln Loot.
  * Schwierigkeit 1: gelegentlich kleiner Trank.
  * Schwierigkeit 2: kleine/mittlere Tränke.
- * Schwierigkeit 3: alle Tränke; Lebensfunke sehr selten (1 %).
+ * Schwierigkeit 3: großer Trank (1,5 %); Lebensfunke sehr selten (0,3 %).
  */
 export function rollQuestionReward(question, rng = Math.random, luck = 1) {
   // Tränke sind bewusst selten – die normale Quelle ist der Shop (Quest-Coins).
@@ -90,7 +90,7 @@ export const BATTLE_ITEMS = {
            text: '+10 Sekunden für die aktuelle Frage' },
   pause: { id: 'pause', key: 'F2', label: 'Pauser',       icon: '⏸️', price: 60,  modes: ['boss'],
            text: 'Hält den Timer an – in Ruhe antworten' },
-  heart: { id: 'heart', key: 'F3', label: 'Herz',         icon: '❤️', price: 120, modes: ['story', 'versus', 'boss', 'carousel'],
+  heart: { id: 'heart', key: 'F3', label: 'Herz',         icon: '❤️', price: 120, modes: ['story', 'versus', 'carousel'],   // nicht im Boss: bei 4 aus 6 entscheiden 3 Fehler den Kampf, ein Leben mehr ändert nichts
            text: 'Ein verlorenes Leben zurück' },
   skip:  { id: 'skip',  key: 'F4', label: 'Überspringer', icon: '⏭️', price: 250, modes: ['story', 'versus', 'boss', 'carousel'],
            text: 'Frage überspringen – ohne Leben zu verlieren' },
@@ -155,8 +155,6 @@ export function coinsForWin(modeId, stars, firstWin) {
 export const BOSS_CRIT_SECONDS = 11;   // bei 15 s: Antwort innerhalb von 4 s
 /** Fokus-Item: Zeit der aktuellen Frage verlängern; jeden Tag gibt es einen Fokus geschenkt */
 export const BOSS_FOCUS_SECONDS = 10;
-/** Kostenlose Fokus-Einsätze pro Tag (Grundwert, Normalo: 2). Nicht stapelbar – Ungenutztes verfällt. */
-export const DAILY_FOCUS_GIFT = 1;
 /** Siegtruhe nach gewonnenem Bossfight: Sterne → garantierter Trank */
 /** Siegtruhe: Coins kommen über COIN_REWARDS; mit etwas Glück liegt zusätzlich ein Trank darin */
 export const BOSS_CHEST_POTION_CHANCE = { 3: 0.15, 2: 0.08, 1: 0.04 };
@@ -173,11 +171,11 @@ export const BOSS_TAUNTS = {
 };
 
 /**
- * TESTPHASE: Alle Spielmodi bleiben direkt anwählbar.
- * Für den Echtbetrieb auf false setzen. Dann gilt:
- * Story -> Versus -> Boss.
+ * TESTPHASE (true): Alle Spielmodi bleiben direkt anwählbar.
+ * Für den Echtbetrieb auf false setzen. Dann gilt die Reihenfolge
+ * Story -> Versus -> Boss (Versus erst nach Story-Sieg, Boss erst nach Versus-Sieg).
  */
-export const TEST_UNLOCK_ALL_MODES = true;
+export const TEST_UNLOCK_ALL_MODES = false;
 
 /* ---------- Zufall ---------- */
 
@@ -354,8 +352,9 @@ export class Run {
 
   get stars() {
     if (!this.won) return 0;
-    // Sterne nach Fehlern, nicht nach Leben – sonst ließen sich Sterne mit Herzen zurückkaufen
-    const lost = Math.min(this.mistakes, this.mode.lives);
+    // Sterne nach Fehlern, nicht nach Leben – sonst ließen sich Sterne mit Herzen zurückkaufen.
+    // Übersprungene Fragen kosten ebenfalls einen Stern (kein Leben): „makellos“ heißt alles selbst beantwortet.
+    const lost = Math.min(this.mistakes + this.skipped, this.mode.lives);
     return Math.max(1, 3 - lost);
   }
 
@@ -424,6 +423,8 @@ export class Countdown {
     this.stop();
     this.frozen = false;
     this.frozenLeft = 0;
+    this.frozenElapsed = 0;
+    this.lastElapsed = 0;
     this.running = true;
     const t0 = performance.now();
     this.startedAt = t0;
@@ -442,6 +443,7 @@ export class Countdown {
   freeze() {
     if (!this.running) return false;
     this.frozenLeft = this.secondsLeft();
+    this.frozenElapsed = this.elapsed();
     this.stop();
     this.frozen = true;
     return true;
@@ -460,9 +462,35 @@ export class Countdown {
     return Math.max(0, (this.total - (performance.now() - this.startedAt)) / 1000);
   }
 
+  /**
+   * Verstrichene Sekunden seit Beginn der Frage. Fokus verlängert nur die Restzeit, nicht diese Uhr –
+   * deshalb hängen Punkte-Zeitbonus, „Kritisch“ und „Schnellzieher“ an diesem Wert.
+   */
+  elapsed() {
+    if (this.frozen) return this.frozenElapsed || 0;
+    if (!this.running) return this.lastElapsed || 0;
+    return Math.max(0, (performance.now() - this.startedAt) / 1000);
+  }
+
   stop() {
+    if (this.running) this.lastElapsed = Math.max(0, (performance.now() - this.startedAt) / 1000);
     this.running = false;
     if (this.raf) cancelAnimationFrame(this.raf);
     this.raf = 0;
   }
+}
+
+/** Boss-Porträts werden erst nach einem Versus-Sieg sichtbar, auch bei freigegebenen Test-Modi. */
+export function isBossPortraitRevealed(progress, available = true) {
+  return available && isModeUnlocked('boss', progress, false);
+}
+
+/** Normale Reihenfolge; einmal gewonnene bzw. dadurch freigeschaltete Modi bleiben wiederholbar. */
+export function isModeUnlocked(mode, progress, unlockAll = TEST_UNLOCK_ALL_MODES) {
+  if (['learn', 'story', 'carousel'].includes(mode)) return true;
+  if (!['versus', 'boss'].includes(mode)) return false;
+  if (unlockAll || progress?.levelCompleted || progress?.coinFirst?.includes('level')) return true;
+  const won = key => progress?.[`${key}Wins`] > 0 || !!progress?.coinFirst?.includes(key);
+  if (mode === 'versus') return won('story') || won('versus') || won('boss');
+  return won('versus') || won('boss');
 }
