@@ -819,6 +819,11 @@ td { border-bottom-color: var(--line); }
 .dropdown-panel { display: grid; gap: 2px; padding: 8px; }
 .dropdown-panel .check-row { padding: 7px 6px; border-radius: 8px; }
 .dropdown-panel .check-row:hover { background: var(--surface); }
+.dropdown-panel .check-row.script-topic-custom {
+  background: var(--accent-wash); border: 1px solid var(--accent);
+  padding: 10px 12px; margin-bottom: 6px;
+}
+.dropdown-panel .script-topic-custom span { color: var(--accent); font-weight: 600; }
 
 @media (max-width: 760px) {
   .topbar { height: 64px; }
@@ -1461,10 +1466,10 @@ td { border-bottom-color: var(--line); }
                   <summary id="callTopicsSummary">Kein Thema gewählt</summary>
                   <div class="dropdown-panel" id="callTopicsPanel"></div>
                 </details>
-                <small>Mehrfachauswahl möglich – daraus entsteht der Abschnitt „Worum es geht“ im Anruf-Skript.</small></div>
+                <small>Mehrfachauswahl möglich – die Themen erscheinen im Skript in der Reihenfolge deiner Auswahl.</small></div>
               <div class="field" id="callChildField" hidden><label for="callChild">Kind / Kinder</label><select id="callChild"><option value="kinder">Mehrere Kinder</option><option value="sohn">Sohn</option><option value="tochter">Tochter</option></select></div>
               <div class="field" id="callParentField" hidden><label for="callParent">Vertrag des Elternteils</label><select id="callParent"><option value="vater">Vater</option><option value="mutter">Mutter</option></select></div>
-              <div class="field full">
+              <div class="field full" id="callScriptSuggestionsField" hidden>
                 <label for="callScriptSuggestion">Skriptvorschläge</label>
                 <div class="actions start"><select id="callScriptSuggestion" aria-label="Skriptvorschlag"></select><button class="btn ghost" type="button" id="callApplyScriptSuggestion">Vorschlag übernehmen</button></div>
                 <small>Eine Vorlage übernehmen und anschließend nach Bedarf anpassen.</small>
@@ -3515,7 +3520,8 @@ td { border-bottom-color: var(--line); }
     }
   };
 
-  const TOPIC_KEYS = Object.keys(CALL_TOPICS).filter(key => !["sohn", "tochter"].includes(key));
+  const TOPIC_KEYS = ["eigenes_skript", ...Object.keys(CALL_TOPICS).filter(key => !["sohn", "tochter", "eigenes_skript"].includes(key))];
+  let callTopicOrder = [];
   const API_TOPIC_KEYS = new Set(["zuteilung", "mindestguthaben", "kinder", "sohn", "tochter", "besparung", "foerderung", "treuepraemie", "riester", "neuterminierung"]);
   const CALL_SCRIPT_PREFIX = "[SmartADM-Skript v1]\n";
   const CALL_BRIEFING_MAX = 2000;
@@ -3596,11 +3602,6 @@ td { border-bottom-color: var(--line); }
 
   function scriptHtml(c) {
     const data = callScriptData(c);
-    const topics = data.topics
-      .filter(key => CALL_TOPICS[key]?.text)
-      .map(key => `<p class="script-line">${esc(fillBoss(CALL_TOPICS[key].text).replaceAll("{elternteil}", data.parent === "mutter" ? "Ihrer Mutter" : "Ihres Vaters"))}</p>`)
-      .join("");
-
     const greeting = `Hallo ${customerSalutation(c)} ${customerLastName(c)}, `
       + `mein Name ist ${state.userName || "…"} und ich bin ${SCRIPT.assistantRole} `
       + `von Herrn ${SCRIPT.bossLastName}, ${SCRIPT.bossRole}.`;
@@ -3608,22 +3609,27 @@ td { border-bottom-color: var(--line); }
     const values = {anrede:customerSalutation(c), kunde:customerLastName(c), mitarbeiter:state.userName || "…", terminfrage:appointmentQuestion(c)};
     const custom = data.topics.includes("eigenes_skript") && data.customScript
       ? data.customScript.replace(/\{(anrede|kunde|mitarbeiter|terminfrage)\}/g, (_, key) => values[key]) : "";
+    const scripts = data.topics
+      .filter(key => key === "eigenes_skript" ? custom : CALL_TOPICS[key]?.text)
+      .map((key, index) => {
+        const title = key === "eigenes_skript" ? "Dein Gesprächsskript"
+          : `${index === 0 ? "Hauptthema" : "Zusatzthema"}: ${CALL_TOPICS[key].label}`;
+        const text = key === "eigenes_skript" ? custom
+          : fillBoss(CALL_TOPICS[key].text).replaceAll("{elternteil}", data.parent === "mutter" ? "Ihrer Mutter" : "Ihres Vaters");
+        return `<div class="script-block" data-script-topic="${esc(key)}"><b>${esc(title)}</b><p class="script-line" style="white-space:pre-wrap">${esc(text)}</p></div>`;
+      }).join("");
 
     return `<div class="script-box">
       <button class="btn primary" type="button" data-script-booking>${ICONS.calendar}Termin buchen</button>
 
-      ${custom ? `<div class="script-block"><b>Dein Gesprächsskript</b><p class="script-line" style="white-space:pre-wrap">${esc(custom)}</p></div>
-        ${data.customScript.includes("{terminfrage}") ? "" : `<div class="script-block"><b>Termin vorschlagen</b><p class="script-line">${esc(appointmentQuestion(c))}</p></div>`}` : `<div class="script-block">
+      ${custom && data.topics[0] === "eigenes_skript" ? "" : `<div class="script-block">
         <b>Begrüßung</b>
         <p class="script-line">${esc(greeting)}</p>
-      </div>
+      </div>`}
 
-      <div class="script-block">
-        <b>Worum es geht</b>
-        ${topics || `<p class="script-line">Noch kein Thema hinterlegt – bitte beim Boss nachfragen.</p>`}
-      </div>
+      ${scripts || `<div class="script-block"><b>Worum es geht</b><p class="script-line">Noch kein Thema hinterlegt – bitte beim Boss nachfragen.</p></div>`}
 
-      <div class="script-block">
+      ${custom && data.customScript.includes("{terminfrage}") ? "" : `<div class="script-block">
         <b>Termin vorschlagen</b>
         <p class="script-line">${esc(appointmentQuestion(c))}</p>
       </div>`}
@@ -4088,14 +4094,22 @@ td { border-bottom-color: var(--line); }
 
   function renderCallTopicOptions() {
     $("callTopicsPanel").innerHTML = TOPIC_KEYS.map(key =>
-      `<label class="check-row"><input type="checkbox" data-topic="${key}"> ${esc(CALL_TOPICS[key].label)}</label>`).join("");
+      `<label class="check-row${key === "eigenes_skript" ? " script-topic-custom" : ""}"><input type="checkbox" data-topic="${key}">
+        ${key === "eigenes_skript" ? `<span>${esc(CALL_TOPICS[key].label)}<small>Eigene Formulierung oder eine bearbeitbare Vorlage verwenden.</small></span>` : esc(CALL_TOPICS[key].label)}</label>`).join("");
     $("callScriptSuggestion").innerHTML = SCRIPT_SUGGESTIONS.map((suggestion, index) =>
       `<option value="${index}">${esc(suggestion.label)}</option>`).join("");
   }
 
   const selectedTopics = () =>
-    $$("#callTopicsPanel [data-topic]").filter(box => box.checked)
-      .map(box => box.dataset.topic === "kinder" ? $("callChild").value : box.dataset.topic);
+    callTopicOrder.map(key => key === "kinder" ? $("callChild").value : key);
+
+  function trackTopicSelection(key, checked) {
+    if (checked) {
+      if (!callTopicOrder.includes(key)) callTopicOrder.push(key);
+    } else {
+      callTopicOrder = callTopicOrder.filter(topic => topic !== key);
+    }
+  }
 
   function readCallScriptForm() {
     const topics = selectedTopics();
@@ -4119,6 +4133,7 @@ td { border-bottom-color: var(--line); }
     $("callChildField").hidden = !chosen.some(key => ["kinder", "sohn", "tochter"].includes(key));
     $("callParentField").hidden = !chosen.includes("elternteil");
     $("callCustomScriptField").hidden = !chosen.includes("eigenes_skript");
+    $("callScriptSuggestionsField").hidden = !chosen.includes("eigenes_skript");
     if (chosen.includes("eigenes_skript") && !$("callCustomScript").value.trim()) {
       $("callCustomScript").value = scriptTemplate(SCRIPT_SUGGESTIONS[0].subject);
     }
@@ -4127,14 +4142,20 @@ td { border-bottom-color: var(--line); }
 
   function setCallTopics(keys) {
     const wanted = new Set(asArray(keys));
+    callTopicOrder = [...new Set(asArray(keys)
+      .map(key => ["sohn", "tochter"].includes(key) ? "kinder" : key)
+      .filter(key => TOPIC_KEYS.includes(key)))];
     $("callChild").value = wanted.has("kinder") || (wanted.has("sohn") && wanted.has("tochter")) ? "kinder"
       : wanted.has("sohn") ? "sohn" : wanted.has("tochter") ? "tochter" : "kinder";
-    $$("#callTopicsPanel [data-topic]").forEach(box => (box.checked = box.dataset.topic === "kinder"
-      ? ["kinder", "sohn", "tochter"].some(key => wanted.has(key)) : wanted.has(box.dataset.topic)));
+    $$("#callTopicsPanel [data-topic]").forEach(box => (box.checked = callTopicOrder.includes(box.dataset.topic)));
     updateTopicsSummary();
   }
 
-  $("callTopicsPanel").addEventListener("change", updateTopicsSummary);
+  $("callTopicsPanel").addEventListener("change", event => {
+    const box = event.target.closest("[data-topic]");
+    if (box) trackTopicSelection(box.dataset.topic, box.checked);
+    updateTopicsSummary();
+  });
   $("callChild").addEventListener("change", updateTopicsSummary);
   $("callParent").addEventListener("change", updateScriptLength);
   ["callCustomScript", "callBriefing"].forEach(id => $(id).addEventListener("input", updateScriptLength));
@@ -4142,6 +4163,7 @@ td { border-bottom-color: var(--line); }
     const suggestion = SCRIPT_SUGGESTIONS[Number($("callScriptSuggestion").value)];
     $("callCustomScript").value = scriptTemplate(suggestion.subject);
     document.querySelector('#callTopicsPanel [data-topic="eigenes_skript"]').checked = true;
+    trackTopicSelection("eigenes_skript", true);
     updateTopicsSummary();
     $("callCustomScript").focus();
   });
