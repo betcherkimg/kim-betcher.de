@@ -4752,13 +4752,24 @@ function abMailEntwurf(){
   // Gleiche Anredelogik wie im Mail-Generator
   var text = (person ? mailAnrede(person) : "Hallo " + abAktiv) + ",\n\n";
 
-  if(d.vonAdm.length){
-    text += "diese Kunden gebe ich dir mit:\n";
-    d.vonAdm.forEach(function(k){
-      if(k.kunde || k.notiz) text += "- " + k.kunde + (k.notiz ? ": " + k.notiz : "") + "\n";
+  if(d.sonstiges && d.sonstiges.trim()) text += "Sonstiges: " + d.sonstiges.trim() + "\n\n";
+
+  [
+    {feld:"vonBma", titel:"Hier sind die Kunden aus deinem System:"},
+    {feld:"vonAdm", titel:"Hier sind die Kunden aus meinem System:"}
+  ].forEach(function(gruppe){
+    var kunden = d[gruppe.feld].filter(function(k){
+      return !k.fertig && k.zust !== "wechsel" && ((k.kunde || "").trim() || (k.notiz || "").trim());
+    });
+    if(!kunden.length) return;
+
+    text += gruppe.titel + "\n";
+    kunden.forEach(function(k){
+      var zustaendig = k.zust === "bma" ? " - gehst du an" : (k.zust === "adm" ? " - gehe ich an" : "");
+      text += "- " + k.kunde + zustaendig + (k.notiz ? ": " + k.notiz : "") + "\n";
     });
     text += "\n";
-  }
+  });
 
   AB_BLOECKE.forEach(function(b){
     if(d.bloecke[b.id]) text += b.titel + ":\n" + d.bloecke[b.id] + "\n\n";
