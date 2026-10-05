@@ -1446,6 +1446,7 @@
     align-items:center;
     justify-content:space-between;
     gap:12px;
+    min-height:32px;
   }
 
   .ab-liste h3{
@@ -4586,10 +4587,10 @@ document.addEventListener("click", function(e){
   if(neu && neu.closest("#seite-abstimmung")){
     abEinlesen();
     var neuFeld = neu.getAttribute("data-neu");
-    abSatz(abAktiv)[neuFeld].push({kunde:"", bsnr:"", notiz:"", zust:"", fertig:false, offen:true});
-    if(abSatz(abAktiv)[neuFeld].length > AB_LISTE_SICHTBAR) AB_LISTE_OFFEN[neuFeld] = true;
+    abSatz(abAktiv)[neuFeld].unshift({kunde:"", bsnr:"", notiz:"", zust:"", fertig:false, offen:true});
     abZeichnen();
     sichern();
+    document.querySelector('.ab-zeile[data-feld="' + neuFeld + '"] .ab-kunde').focus();
     return;
   }
 
