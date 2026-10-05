@@ -1495,7 +1495,7 @@ td { border-bottom-color: var(--line); }
                 <small>{anrede}, {kunde}, {mitarbeiter} und {terminfrage} werden beim Anruf passend eingesetzt. Mit {themen} kannst du die gewählten Themen als vollständige Sätze in deinen eigenen Text einfügen.</small>
                 <label>So klingt es beim Anruf</label><p class="script-line script-preview-text" id="callScriptRendered" aria-live="polite"></p>
               </div>
-              <div class="field full"><label for="callBriefing">Hinweis für das Gespräch</label><textarea id="callBriefing" rows="2" maxlength="50" aria-describedby="callBriefingCount" placeholder="z. B. Unterlagen zum Vertrag mitbringen"></textarea><small id="callBriefingCount" aria-live="polite">0/50</small></div>
+              <div class="field full"><label for="callBriefing">Hinweis für das Gespräch</label><textarea id="callBriefing" rows="2" maxlength="150" aria-describedby="callBriefingCount" placeholder="z. B. Unterlagen zum Vertrag mitbringen"></textarea><small id="callBriefingCount" aria-live="polite">0/150</small></div>
               <small class="full" id="callScriptLength" aria-live="polite"></small>
             </div>
             <div class="actions">
@@ -4161,7 +4161,7 @@ td { border-bottom-color: var(--line); }
     setText("callScriptLength", remaining >= 0
       ? `Noch ${remaining} Zeichen für Hinweis und Skript.`
       : `Hinweis und Skript bitte um ${-remaining} Zeichen kürzen.`);
-    setText("callBriefingCount", `${$("callBriefing").value.length}/50`);
+    setText("callBriefingCount", `${$("callBriefing").value.length}/150`);
   }
 
   function updateScriptPreviews() {
@@ -4324,9 +4324,9 @@ td { border-bottom-color: var(--line); }
     if (script.topics.length > MAX_CALL_TOPICS) {
       return alert("Bitte höchstens drei Themen auswählen.");
     }
-    if ($("callBriefing").value.length > 50) {
+    if ($("callBriefing").value.length > 150) {
       $("callBriefing").focus();
-      return alert("Bitte den Hinweis auf höchstens 50 Zeichen kürzen.");
+      return alert("Bitte den Hinweis auf höchstens 150 Zeichen kürzen.");
     }
     if ((script.topics.includes("eigenes_skript") || callScriptManual) && !script.customScript) {
       $("callCustomScript").focus();
