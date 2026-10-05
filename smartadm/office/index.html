@@ -3593,7 +3593,7 @@ td { border-bottom-color: var(--line); }
   function topicSentences(subjects) {
     const parts = subjects.filter(Boolean);
     if (!parts.length) return "";
-    const first = `${bossName()} möchte mit Ihnen über ${parts.slice(0, 2).join(" und über ")} sprechen.`;
+    const first = `${bossName()} möchte mit Ihnen über ${parts.slice(0, 2).join(" sowie über ")} sprechen.`;
     return [first, ...parts.slice(2).map(subject => `Außerdem möchte er über ${subject} sprechen.`)].join(" ");
   }
 
@@ -3617,13 +3617,13 @@ td { border-bottom-color: var(--line); }
       const included = new Set((data.mergedTopics?.length ? data.mergedTopics : standard)
         .map(key => topicSubject(key, data.mergedTopics?.length ? data.mergedParent : data.parent)));
       const existing = match[0].replace(/^Herr Betcher möchte mit Ihnen (?:gerne )?über /, "")
-        .replace(/ sprechen\.\s*Außerdem möchte er über /g, " und über ")
-        .replace(/ sprechen\.$/, "").split(/ und über |, über /);
-      const ownSubject = existing.filter(subject => !included.has(subject.trim())).join(" und über ").trim();
+        .replace(/ sprechen\.\s*Außerdem möchte er über /g, " sowie über ")
+        .replace(/ sprechen\.$/, "").split(/ (?:und|sowie) über |, über /);
+      const ownSubject = existing.filter(subject => !included.has(subject.trim())).join(" sowie über ").trim();
       const merged = data.topics.map(key => key === "eigenes_skript" ? ownSubject : topicSubject(key, data.parent)).filter(Boolean);
       if (ownSubject && !data.topics.includes("eigenes_skript")) {
         if (merged.length < MAX_CALL_TOPICS) merged.push(ownSubject);
-        else merged[merged.length - 1] += ` und über ${ownSubject}`;
+        else merged[merged.length - 1] += ` sowie über ${ownSubject}`;
       }
       return custom.replace(sentence, topicSentences(merged) ||
         `${bossName()} möchte mit Ihnen über Ihren Vertrag und Ihre Wünsche sprechen.`);
