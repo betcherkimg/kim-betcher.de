@@ -1462,7 +1462,19 @@ td { border-bottom-color: var(--line); }
                   <div class="dropdown-panel" id="callTopicsPanel"></div>
                 </details>
                 <small>Mehrfachauswahl möglich – daraus entsteht der Abschnitt „Worum es geht“ im Anruf-Skript.</small></div>
+              <div class="field" id="callChildField" hidden><label for="callChild">Kind / Kinder</label><select id="callChild"><option value="kinder">Mehrere Kinder</option><option value="sohn">Sohn</option><option value="tochter">Tochter</option></select></div>
+              <div class="field" id="callParentField" hidden><label for="callParent">Vertrag des Elternteils</label><select id="callParent"><option value="vater">Vater</option><option value="mutter">Mutter</option></select></div>
+              <div class="field full">
+                <label for="callScriptSuggestion">Skriptvorschläge</label>
+                <div class="actions start"><select id="callScriptSuggestion" aria-label="Skriptvorschlag"></select><button class="btn ghost" type="button" id="callApplyScriptSuggestion">Vorschlag übernehmen</button></div>
+                <small>Eine Vorlage übernehmen und anschließend nach Bedarf anpassen.</small>
+              </div>
+              <div class="field full" id="callCustomScriptField" hidden>
+                <label for="callCustomScript">Eigenes Skript schreiben</label><textarea id="callCustomScript" rows="8" maxlength="1500"></textarea>
+                <small>{anrede}, {kunde}, {mitarbeiter} und {terminfrage} werden beim Anruf passend eingesetzt. Die Terminfrage berücksichtigt die hinterlegte Filiale.</small>
+              </div>
               <div class="field full"><label for="callBriefing">Hinweis für das Gespräch</label><textarea id="callBriefing" rows="3" maxlength="2000" placeholder="z. B. Bausparvertrag läuft aus – Termin zur Anschlussfinanzierung anbieten"></textarea></div>
+              <small class="full" id="callScriptLength" aria-live="polite"></small>
             </div>
             <div class="actions">
               <button class="btn ghost" type="button" id="callCancelBtn" hidden>Abbrechen</button>
@@ -3425,7 +3437,7 @@ td { border-bottom-color: var(--line); }
   });
 
   /* ================= Anruf-Skript =================
-   * Alles, was am Skript geändert wird, steht in diesen drei Konstanten.
+   * Themen, Vorlagen und Filialtage werden zentral hier gepflegt.
    * {boss} wird überall durch „Herr Betcher“ ersetzt.
    */
 
@@ -3448,15 +3460,15 @@ td { border-bottom-color: var(--line); }
     },
     kinder: {
       label: "Verträge der Kinder",
-      text: "{boss} möchte sich mit Ihnen gerne die Verträge Ihrer Kinder anschauen."
+      text: "{boss} möchte sich mit Ihnen gerne die Bausparverträge Ihrer Kinder anschauen."
     },
     sohn: {
       label: "Vertrag des Sohnes",
-      text: "{boss} möchte sich mit Ihnen gerne die Verträge Ihres Sohnes anschauen."
+      text: "{boss} möchte sich mit Ihnen gerne den Bausparvertrag Ihres Sohnes anschauen."
     },
     tochter: {
       label: "Vertrag der Tochter",
-      text: "{boss} möchte sich mit Ihnen gerne die Verträge Ihrer Tochter anschauen."
+      text: "{boss} möchte sich mit Ihnen gerne den Bausparvertrag Ihrer Tochter anschauen."
     },
     besparung: {
       label: "Besparungsqualität",
@@ -3470,6 +3482,29 @@ td { border-bottom-color: var(--line); }
       label: "Treueprämie",
       text: "{boss} möchte mit Ihnen über das Thema Treueprämie sprechen, da das als nächstes in Ihrem Vertrag ansteht."
     },
+    ueberzahlter_vertrag: {
+      label: "Überzahlter Vertrag – Treueprämie",
+      text: "{boss} möchte mit Ihnen über Ihren überzahlten Bausparvertrag sprechen und prüfen, wie Sie einen möglichen Verlust Ihrer Treueprämie vermeiden können."
+    },
+    zuzug: {
+      label: "Zuzug – erstes Kennenlernen",
+      text: "Sie sind neu im Betreuungsgebiet von {boss} und waren bisher noch nicht bei ihm. Er möchte Sie gerne persönlich kennenlernen und mit Ihnen über Ihre Wünsche und Ihren Vertrag sprechen."
+    },
+    bausparen: {
+      label: "Bausparen allgemein",
+      text: "{boss} möchte mit Ihnen allgemein über Bausparen sprechen und besprechen, welche Möglichkeiten zu Ihren Wohnwünschen und Plänen passen."
+    },
+    darlehen_ohne_bsv: {
+      label: "Darlehensnehmer ohne BSV – Zinssicherung",
+      text: "{boss} möchte mit Ihnen über die Zinssicherung Ihrer Finanzierung sprechen. Da Sie bislang keinen Bausparvertrag dafür haben, möchte er Ihnen die Möglichkeiten für Ihre spätere Anschlussfinanzierung erläutern."
+    },
+    elternteil: {
+      label: "Vertrag eines Elternteils",
+      text: "{boss} möchte mit Ihnen über den Bausparvertrag {elternteil} sprechen."
+    },
+    eigenes_skript: {
+      label: "Eigenes Skript schreiben"
+    },
     riester: {
       label: "Riester",
       text: "{boss} möchte mit Ihnen über Ihren Riester-Vertrag sprechen."
@@ -3480,7 +3515,53 @@ td { border-bottom-color: var(--line); }
     }
   };
 
-  const TOPIC_KEYS = Object.keys(CALL_TOPICS);
+  const TOPIC_KEYS = Object.keys(CALL_TOPICS).filter(key => !["sohn", "tochter"].includes(key));
+  const API_TOPIC_KEYS = new Set(["zuteilung", "mindestguthaben", "kinder", "sohn", "tochter", "besparung", "foerderung", "treuepraemie", "riester", "neuterminierung"]);
+  const CALL_SCRIPT_PREFIX = "[SmartADM-Skript v1]\n";
+  const CALL_BRIEFING_MAX = 2000;
+  const SCRIPT_SUGGESTIONS = [
+    {label:"Allgemeine Vorlage", subject:"Ihren Vertrag und Ihre Wünsche"},
+    {label:"Vertragscheck", subject:"den aktuellen Stand Ihres Bausparvertrages und Ihre nächsten Schritte"},
+    {label:"Anschlussfinanzierung", subject:"Ihre Anschlussfinanzierung und Möglichkeiten zur Zinssicherung"},
+    {label:"Modernisierung", subject:"Ihre Modernisierungspläne und passende Finanzierungsmöglichkeiten"},
+    {label:"Wohneigentum", subject:"Ihren Wunsch nach Wohneigentum und die nächsten Schritte dorthin"},
+    {label:"Fördermöglichkeiten", subject:"mögliche Förderungen und ob diese für Sie infrage kommen"}
+  ];
+
+  const scriptTemplate = subject => `Hallo {anrede} {kunde}, mein Name ist {mitarbeiter}. Ich bin die Assistentin von Herrn Betcher, Ihrem Bezirksleiter der Bausparkasse Schwäbisch Hall. Herr Betcher möchte mit Ihnen über ${subject} sprechen.\n\n{terminfrage}`;
+
+  // Zusätzliche Themen und eigene Skripte werden versioniert im bestehenden
+  // Hinweisfeld gespeichert. Der Worker erhält weiterhin nur bekannte Themenkeys.
+  function callScriptData(c) {
+    const fallback = {topics:asArray(c.topics), briefing:c.briefing || "", customScript:"", parent:"vater"};
+    if (!fallback.briefing.startsWith(CALL_SCRIPT_PREFIX)) return fallback;
+    try {
+      const data = JSON.parse(fallback.briefing.slice(CALL_SCRIPT_PREFIX.length));
+      if (data.version !== 1 || !Array.isArray(data.topics) || typeof data.briefing !== "string" || typeof data.customScript !== "string") return fallback;
+      return {topics:data.topics.filter(key => CALL_TOPICS[key]), briefing:data.briefing,
+        customScript:data.customScript, parent:data.parent === "mutter" ? "mutter" : "vater"};
+    } catch { return fallback; }
+  }
+
+  const callBriefing = c => callScriptData(c).briefing;
+
+  function encodeCallScript(data) {
+    const extended = data.topics.some(key => !API_TOPIC_KEYS.has(key));
+    return extended ? CALL_SCRIPT_PREFIX + JSON.stringify({version:1, ...data}) : data.briefing;
+  }
+
+  function appointmentQuestion(c) {
+    const branch = state.branches.find(b => String(b.id) === String(c.branch_id));
+    if (c.teams || isVideoCall(branch)) {
+      return `Der Termin kann per ${branch?.name || "Microsoft Teams"} stattfinden. Wie passt es Ihnen besser: eher vormittags oder nachmittags? Einen passenden Termin schauen wir gemeinsam im Buchungskalender nach.`;
+    }
+    const place = [c.branch_name, branch?.name, branch?.note].filter(Boolean).join(" ").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    if (/\bebnat\b/.test(place)) return "Herr Betcher ist montags und mittwochs in Ebnat. Welcher der beiden Tage passt Ihnen besser, und eher vormittags oder nachmittags?";
+    if (/\boberkochen\b/.test(place)) return "Herr Betcher ist dienstags und donnerstags in Oberkochen. Welcher der beiden Tage passt Ihnen besser, und eher vormittags oder nachmittags?";
+    if (/\b(huttlingen|huettlingen)\b/.test(place)) return "Herr Betcher ist freitags in Hüttlingen. Passt Ihnen Freitag eher vormittags oder nachmittags?";
+    if (/\baalen\b/.test(place)) return "Termine in Aalen vereinbart Herr Betcher nach Absprache. An welchem Tag und zu welcher Tageszeit passt es Ihnen am besten?";
+    return "Wie passt es Ihnen besser: eher vormittags oder nachmittags? Einen passenden Termin schauen wir gemeinsam im Buchungskalender nach.";
+  }
 
   const SCRIPT_FAQ = [
     ["Worum geht es denn genau?",
@@ -3514,19 +3595,25 @@ td { border-bottom-color: var(--line); }
   const customerSalutation = c => (c.salutation === "Frau" ? "Frau" : "Herr");
 
   function scriptHtml(c) {
-    const topics = (c.topics || [])
-      .filter(key => CALL_TOPICS[key])
-      .map(key => `<p class="script-line">${esc(fillBoss(CALL_TOPICS[key].text))}</p>`)
+    const data = callScriptData(c);
+    const topics = data.topics
+      .filter(key => CALL_TOPICS[key]?.text)
+      .map(key => `<p class="script-line">${esc(fillBoss(CALL_TOPICS[key].text).replaceAll("{elternteil}", data.parent === "mutter" ? "Ihrer Mutter" : "Ihres Vaters"))}</p>`)
       .join("");
 
     const greeting = `Hallo ${customerSalutation(c)} ${customerLastName(c)}, `
       + `mein Name ist ${state.userName || "…"} und ich bin ${SCRIPT.assistantRole} `
-      + `von ${SCRIPT.bossFullName}, ${SCRIPT.bossRole}.`;
+      + `von Herrn ${SCRIPT.bossLastName}, ${SCRIPT.bossRole}.`;
+
+    const values = {anrede:customerSalutation(c), kunde:customerLastName(c), mitarbeiter:state.userName || "…", terminfrage:appointmentQuestion(c)};
+    const custom = data.topics.includes("eigenes_skript") && data.customScript
+      ? data.customScript.replace(/\{(anrede|kunde|mitarbeiter|terminfrage)\}/g, (_, key) => values[key]) : "";
 
     return `<div class="script-box">
       <button class="btn primary" type="button" data-script-booking>${ICONS.calendar}Termin buchen</button>
 
-      <div class="script-block">
+      ${custom ? `<div class="script-block"><b>Dein Gesprächsskript</b><p class="script-line" style="white-space:pre-wrap">${esc(custom)}</p></div>
+        ${data.customScript.includes("{terminfrage}") ? "" : `<div class="script-block"><b>Termin vorschlagen</b><p class="script-line">${esc(appointmentQuestion(c))}</p></div>`}` : `<div class="script-block">
         <b>Begrüßung</b>
         <p class="script-line">${esc(greeting)}</p>
       </div>
@@ -3536,9 +3623,14 @@ td { border-bottom-color: var(--line); }
         ${topics || `<p class="script-line">Noch kein Thema hinterlegt – bitte beim Boss nachfragen.</p>`}
       </div>
 
-      ${c.briefing ? `<div class="script-block">
+      <div class="script-block">
+        <b>Termin vorschlagen</b>
+        <p class="script-line">${esc(appointmentQuestion(c))}</p>
+      </div>`}
+
+      ${data.briefing ? `<div class="script-block">
         <b>Hinweis vom Boss</b>
-        <p class="script-line">${esc(c.briefing)}</p>
+        <p class="script-line">${esc(data.briefing)}</p>
       </div>` : ""}
 
       <div class="script-block">
@@ -3661,7 +3753,7 @@ td { border-bottom-color: var(--line); }
           ${c.held_at ? `<div><dt>Gehalten seit</dt><dd>${esc(fmtDateTime(c.held_at))}</dd></div>` : ""}
           <div><dt>Telefon</dt><dd class="phone-list">${phoneLinks(c)}</dd></div>
         </dl>
-        ${c.briefing ? `<div class="cc-text"><b>Hinweis</b>${esc(c.briefing)}</div>` : ""}
+        ${callBriefing(c) ? `<div class="cc-text"><b>Hinweis</b>${esc(callBriefing(c))}</div>` : ""}
         ${c.protocol ? `<div class="cc-text"><b>Protokoll</b>${esc(c.protocol)}</div>` : ""}
         ${holdEditorHtml(c, "held")}
       </div>` : ""}
@@ -3686,7 +3778,7 @@ td { border-bottom-color: var(--line); }
     return `<div class="call-card${open ? " is-open" : ""}" data-call="${c.id}">
       ${callSummaryHtml(c, false, open)}
       ${open ? `<div class="cc-body">
-        ${c.briefing ? `<div class="cc-text"><b>Hinweis</b>${esc(c.briefing)}</div>` : ""}
+        ${callBriefing(c) ? `<div class="cc-text"><b>Hinweis</b>${esc(callBriefing(c))}</div>` : ""}
         <div class="phone-stack">${phones}${script}</div>
         ${scriptOpen ? scriptHtml(c) : ""}
         <p class="call-help">✕ = Nummer falsch. Sind alle Nummern falsch, geht der Kontakt als R_TA_fK zurück.</p>
@@ -3854,7 +3946,7 @@ td { border-bottom-color: var(--line); }
 
   // Themen als Chips – so sieht der Boss sofort, wo für das Skript noch etwas fehlt.
   function topicChips(c) {
-    const topics = asArray(c.topics).filter(key => CALL_TOPICS[key]);
+    const topics = callScriptData(c).topics.filter(key => CALL_TOPICS[key]);
     if (topics.length) {
       return topics.map(key => `<span class="chip from">${esc(CALL_TOPICS[key].label)}</span>`).join("");
     }
@@ -3908,7 +4000,7 @@ td { border-bottom-color: var(--line); }
         <small>${esc(attempts)}</small>
         ${isHeld(c) && scope === "open" ? `<div class="call-note hold"><b>Zu klären:</b> ${esc(c.hold_note)}</div>` : ""}
         ${c.protocol ? `<div class="call-note"><b>Protokoll:</b> ${esc(c.protocol)}</div>` : ""}
-        ${c.briefing ? `<div class="call-note"><b>Hinweis:</b> ${esc(c.briefing)}</div>` : ""}
+        ${callBriefing(c) ? `<div class="call-note"><b>Hinweis:</b> ${esc(callBriefing(c))}</div>` : ""}
         ${scope === "returned" && c.status === "R_TA_fK" ? `<div class="phone-fix">
           <label for="fix-${c.id}">Neue Nummer(n) – eine pro Zeile</label>
           <textarea id="fix-${c.id}" data-phone-fix="${c.id}" rows="2" placeholder="z. B. 07361 123456">${esc(state.phoneFixDrafts[c.id] ?? "")}</textarea>
@@ -3997,28 +4089,67 @@ td { border-bottom-color: var(--line); }
   function renderCallTopicOptions() {
     $("callTopicsPanel").innerHTML = TOPIC_KEYS.map(key =>
       `<label class="check-row"><input type="checkbox" data-topic="${key}"> ${esc(CALL_TOPICS[key].label)}</label>`).join("");
+    $("callScriptSuggestion").innerHTML = SCRIPT_SUGGESTIONS.map((suggestion, index) =>
+      `<option value="${index}">${esc(suggestion.label)}</option>`).join("");
   }
 
   const selectedTopics = () =>
-    $$("#callTopicsPanel [data-topic]").filter(box => box.checked).map(box => box.dataset.topic);
+    $$("#callTopicsPanel [data-topic]").filter(box => box.checked)
+      .map(box => box.dataset.topic === "kinder" ? $("callChild").value : box.dataset.topic);
+
+  function readCallScriptForm() {
+    const topics = selectedTopics();
+    return {topics, briefing:$("callBriefing").value.trim(),
+      customScript:topics.includes("eigenes_skript") ? $("callCustomScript").value.trim() : "",
+      parent:topics.includes("elternteil") ? $("callParent").value : "vater"};
+  }
+
+  function updateScriptLength() {
+    const remaining = CALL_BRIEFING_MAX - encodeCallScript(readCallScriptForm()).length;
+    setText("callScriptLength", remaining >= 0
+      ? `Noch ${remaining} Zeichen für Hinweis und Skript.`
+      : `Hinweis und Skript bitte um ${-remaining} Zeichen kürzen.`);
+  }
 
   function updateTopicsSummary() {
     const chosen = selectedTopics();
     setText("callTopicsSummary", chosen.length
       ? chosen.map(key => CALL_TOPICS[key].label).join(", ")
       : "Kein Thema gewählt");
+    $("callChildField").hidden = !chosen.some(key => ["kinder", "sohn", "tochter"].includes(key));
+    $("callParentField").hidden = !chosen.includes("elternteil");
+    $("callCustomScriptField").hidden = !chosen.includes("eigenes_skript");
+    if (chosen.includes("eigenes_skript") && !$("callCustomScript").value.trim()) {
+      $("callCustomScript").value = scriptTemplate(SCRIPT_SUGGESTIONS[0].subject);
+    }
+    updateScriptLength();
   }
 
   function setCallTopics(keys) {
     const wanted = new Set(asArray(keys));
-    $$("#callTopicsPanel [data-topic]").forEach(box => (box.checked = wanted.has(box.dataset.topic)));
+    $("callChild").value = wanted.has("kinder") || (wanted.has("sohn") && wanted.has("tochter")) ? "kinder"
+      : wanted.has("sohn") ? "sohn" : wanted.has("tochter") ? "tochter" : "kinder";
+    $$("#callTopicsPanel [data-topic]").forEach(box => (box.checked = box.dataset.topic === "kinder"
+      ? ["kinder", "sohn", "tochter"].some(key => wanted.has(key)) : wanted.has(box.dataset.topic)));
     updateTopicsSummary();
   }
 
   $("callTopicsPanel").addEventListener("change", updateTopicsSummary);
+  $("callChild").addEventListener("change", updateTopicsSummary);
+  $("callParent").addEventListener("change", updateScriptLength);
+  ["callCustomScript", "callBriefing"].forEach(id => $(id).addEventListener("input", updateScriptLength));
+  $("callApplyScriptSuggestion").addEventListener("click", () => {
+    const suggestion = SCRIPT_SUGGESTIONS[Number($("callScriptSuggestion").value)];
+    $("callCustomScript").value = scriptTemplate(suggestion.subject);
+    document.querySelector('#callTopicsPanel [data-topic="eigenes_skript"]').checked = true;
+    updateTopicsSummary();
+    $("callCustomScript").focus();
+  });
 
   function resetCallForm() {
-    ["callEditId", "callLastName", "callFirstName", "callPhones", "callBriefing"].forEach(id => ($(id).value = ""));
+    ["callEditId", "callLastName", "callFirstName", "callPhones", "callBriefing", "callCustomScript"].forEach(id => ($(id).value = ""));
+    $("callParent").value = "vater";
+    $("callScriptSuggestion").value = "0";
     renderCallPlaceSelect("");
     $("callSalutation").value = "Herr";
     setCallTopics([]);
@@ -4041,8 +4172,12 @@ td { border-bottom-color: var(--line); }
     $("callPhones").value = c.phones.join("\n");
     renderCallPlaceSelect(c.teams ? "teams" : c.branch_id ? String(c.branch_id) : "");
     $("callSalutation").value = c.salutation === "Frau" ? "Frau" : "Herr";
-    setCallTopics(c.topics);
-    $("callBriefing").value = c.briefing || "";
+    const script = callScriptData(c);
+    $("callBriefing").value = script.briefing;
+    $("callCustomScript").value = script.customScript;
+    $("callParent").value = script.parent;
+    $("callScriptSuggestion").value = "0";
+    setCallTopics(script.topics);
     setText("callFormTitle", `Kontakt bearbeiten: ${c.customer_name}`);
     setText("callSaveBtn", "Änderungen speichern");
     $("callCancelBtn").hidden = false;
@@ -4060,14 +4195,23 @@ td { border-bottom-color: var(--line); }
       return alert("Bitte Nachname und Vorname eingeben.");
     }
     const id = $("callEditId").value;
+    const script = readCallScriptForm();
+    if (script.topics.includes("eigenes_skript") && !script.customScript) {
+      $("callCustomScript").focus();
+      return alert("Bitte ein eigenes Skript eintragen oder eine Vorlage übernehmen.");
+    }
+    const briefing = encodeCallScript(script);
+    if (briefing.length > CALL_BRIEFING_MAX) {
+      return alert(`Hinweis und Skript sind zusammen zu lang. Bitte um ${briefing.length - CALL_BRIEFING_MAX} Zeichen kürzen.`);
+    }
     const payload = {
       assigned_to: $("callEmployeeSelect").value,
       customer_name: joinName($("callLastName").value, $("callFirstName").value),
       salutation: $("callSalutation").value,
       phones: $("callPhones").value,
       place: $("callPlace").value,
-      topics: selectedTopics(),
-      briefing: $("callBriefing").value.trim()
+      topics: script.topics.filter(key => API_TOPIC_KEYS.has(key)),
+      briefing
     };
 
     withBusy(event.submitter, async () => {
