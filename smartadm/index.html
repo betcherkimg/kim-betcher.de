@@ -719,6 +719,9 @@
   }
 
   .kennzahl-zeile b{font-weight:600;white-space:nowrap;}
+  .kennzahl-link{width:100%;background:none;border-right:0;border-bottom:0;border-left:0;color:inherit;font-family:inherit;text-align:left;cursor:pointer;}
+  .kennzahl-link:hover{background:var(--ground);}
+  .kennzahl-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px;}
 
   .kennzahl-leer{
     margin:0;
@@ -1097,11 +1100,17 @@
   }
 
   .aw-wv-zeile{
+    padding:0;
+  }
+
+  .aw-wv-kopfzeile{
     display:flex;
     align-items:center;
-    gap:11px;
-    padding:11px 14px;
   }
+
+  .aw-wv-kopfzeile>.aw-haken{margin-left:14px;}
+  .aw-wv-kopf{flex:1;min-width:0;}
+  .aw-wv-kopf>.ab-chev{flex:none;}
 
   .aw-wv-zeile.faellig{border-color:var(--gelb);background:var(--gelb-wash);}
 
@@ -6835,7 +6844,9 @@ var WIDGET_ARTEN = {
       var faellig = offen.filter(function(t){ return t.wv <= heute; }).length;
       var liste = "";
       offen.slice(0,3).forEach(function(t){
-        liste += '<div class="kennzahl-zeile"><span>' + esc(t.kunde) + '</span><b>' + esc(datumKurz(t.wv)) + '</b></div>';
+        liste += '<button type="button" class="kennzahl-zeile kennzahl-link" data-typ="termin" data-index="' + TERMINE.indexOf(t) + '"'
+               + ' aria-label="Wiedervorlage von ' + esc(t.kunde || "Ohne Namen") + ' ansehen">'
+               + '<span>' + esc(t.kunde || "Ohne Namen") + '</span><b>' + esc(datumKurz(t.wv)) + '</b></button>';
       });
       if(!liste) liste = '<p class="kennzahl-leer">Keine Wiedervorlagen offen</p>';
       return {inhalt:'<div class="kennzahl">' + offen.length + '</div>'
@@ -7315,14 +7326,22 @@ function awWvZeile(t){
   var heute = heuteIso();
   var faellig = t.wv <= heute;
   var tage = Math.round((new Date(t.wv) - new Date(heute)) / 86400000);
+  var kennung = "wv-" + awSchluessel(t);
+  var offen = !!awOffen[kennung];
 
   return '<div class="aw-zeile aw-wv-zeile' + (faellig ? " faellig" : "") + '">'
-       +   '<button class="aw-haken" data-aw-fertig="' + esc(awSchluessel(t)) + '"'
+       +   '<div class="aw-wv-kopfzeile">'
+       +   '<button type="button" class="aw-haken" data-aw-fertig="' + esc(awSchluessel(t)) + '"'
        +     ' aria-label="Wiedervorlage abhaken">'
        +     '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">'
        +       '<path d="m3.5 8.5 3 3 6-6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
        +     '</svg>'
        +   '</button>'
+       +   '<button type="button" class="aw-kopf aw-wv-kopf" data-aw-klapp="' + esc(kennung) + '" aria-expanded="' + offen + '">'
+       +     '<svg class="ab-chev" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true" '
+       +       'style="transform:rotate(' + (offen ? 90 : 0) + 'deg)">'
+       +       '<path d="M6 3.5 10.5 8 6 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'
+       +     '</svg>'
        +   '<span class="aw-haupt">'
        +     '<span class="aw-name">' + esc(t.kunde || "Ohne Namen") + '</span>'
        +     '<span class="aw-meta">' + esc(datumKurz(t.wv))
@@ -7333,6 +7352,15 @@ function awWvZeile(t){
        +     (faellig ? (tage === 0 ? "heute" : Math.abs(tage) + " Tage \u00fcberf\u00e4llig")
                       : "in " + tage + " Tagen")
        +   '</span>'
+       +   '</button>'
+       +   '</div>'
+       +   (offen
+            ? '<div class="aw-detail">'
+              + '<p class="aw-wv">Wiedervorlage: ' + esc(datumKurz(t.wv)) + '</p>'
+              + '<p class="protokoll' + (t.protokoll ? '' : ' leer') + '">'
+              + (t.protokoll ? esc(t.protokoll) : "Kein Protokoll hinterlegt") + '</p>'
+              + '</div>'
+            : '')
        + '</div>';
 }
 
