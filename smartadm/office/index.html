@@ -1455,7 +1455,7 @@ td { border-bottom-color: var(--line); }
                 <div><label for="callFirstName">Vorname</label><input id="callFirstName" type="text" maxlength="55" required autocomplete="off" placeholder="Max"></div>
               </div>
               <div class="field"><label for="callPhones">Telefonnummer(n)</label><textarea id="callPhones" rows="2" required placeholder="Eine Nummer pro Zeile"></textarea></div>
-              <div class="field"><label for="callPlace">Termin bei</label><select id="callPlace"></select><small>Filiale oder Teams – Filialen pflegst du unter „Terminvereinbarung“.</small></div>
+              <div class="field"><label for="callPlace">Termin bei</label><select id="callPlace"></select><small>Filialen und Videocalls mit Bookings-Link pflegst du unter „Terminvereinbarung“.</small></div>
               <div class="field full"><label for="callTopicsSummary">Thema fürs Skript</label>
                 <details class="dropdown" id="callTopics">
                   <summary id="callTopicsSummary">Kein Thema gewählt</summary>
@@ -1521,7 +1521,7 @@ td { border-bottom-color: var(--line); }
           </div>
           <dialog id="bookingPicker" class="picker" aria-labelledby="bookingPickerTitle">
             <div class="picker-head">
-              <strong id="bookingPickerTitle">Filiale wählen</strong>
+              <strong id="bookingPickerTitle">Filiale oder Videocall wählen</strong>
               <button class="picker-close" type="button" data-picker-close aria-label="Schließen">✕</button>
             </div>
             <div id="bookingPickerList" class="picker-list"></div>
@@ -1559,10 +1559,36 @@ td { border-bottom-color: var(--line); }
           <div id="branchAdminList" class="employee-list"><div class="notice">Filialen werden geladen …</div></div>
         </div>
 
+        <div class="card section-card" data-role="boss">
+          <div class="card-head">
+            <h2 id="videoCallFormTitle">Videocall anlegen</h2>
+            <p>Videocall mit seinem Bookings-Link hinterlegen, damit Mitarbeiter auch Online-Termine buchen können.</p>
+          </div>
+          <form id="videoCallForm">
+            <input type="hidden" id="videoCallEditId">
+            <div class="form-grid">
+              <div class="field"><label for="videoCallName">Name</label><input id="videoCallName" type="text" maxlength="120" required placeholder="z. B. Microsoft Teams"></div>
+              <div class="field full"><label for="videoCallUrl">Bookings-Link</label><input id="videoCallUrl" type="url" required placeholder="https://outlook.office365.com/owa/calendar/…"></div>
+            </div>
+            <div class="actions">
+              <button class="btn ghost" type="button" id="videoCallCancelBtn" hidden>Abbrechen</button>
+              <button class="btn primary" type="submit" id="videoCallSaveBtn">Videocall speichern</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card section-card" data-role="boss">
+          <div class="card-head">
+            <h2>Deine Videocalls</h2>
+            <p>Diese Videocalls stehen Mitarbeitern ebenfalls bei der Terminvereinbarung zur Verfügung.</p>
+          </div>
+          <div id="videoCallAdminList" class="employee-list"><div class="notice">Videocalls werden geladen …</div></div>
+        </div>
+
         <div class="card section-card" data-role="employee">
           <div class="card-head">
             <h2>Termin buchen</h2>
-            <p>Filiale antippen – der Buchungskalender öffnet sich direkt.</p>
+            <p>Filiale oder Videocall antippen – der Buchungskalender öffnet sich direkt.</p>
           </div>
           <div id="branchTiles" class="branch-grid"><div class="notice">Filialen werden geladen …</div></div>
         </div>
@@ -1672,7 +1698,7 @@ td { border-bottom-color: var(--line); }
     lohn: ["Lohn & Abrechnung", "Vergütung und Monatsabrechnung"],
     nachweise: ["Monatsarchiv", "Abgeschlossene Monate und Abrechnungen"],
     organisation: ["Aufgaben", "Offene und erledigte Aufgaben"],
-    termine: ["Terminvereinbarung", "Filialen und Buchungslinks"],
+    termine: ["Terminvereinbarung", "Filialen, Videocalls und Buchungslinks"],
     telefon: ["Telefonliste", "Kontakte anrufen und Ergebnisse zurückmelden"],
     einstellungen: ["Einstellungen", "Ziele und zentrale Datenhaltung"]
   };
@@ -3349,7 +3375,12 @@ td { border-bottom-color: var(--line); }
     });
   });
 
-  /* --- Termin buchen: Filialauswahl --- */
+  /* --- Termin buchen: Filialen und Videocalls --- */
+
+  // Der bestehende Buchungsort-Endpunkt speichert Name, Hinweis und Link.
+  // Videocalls nutzen den Hinweis als Kategorie, ohne eine API-Migration zu benötigen.
+  const VIDEO_CALL_NOTE = "Videocall";
+  const isVideoCall = branch => branch?.note === VIDEO_CALL_NOTE;
 
   function renderBookingPicker() {
     const list = state.branches.filter(b => b.booking_url);
@@ -3360,7 +3391,7 @@ td { border-bottom-color: var(--line); }
             <span><b>${esc(b.name)}</b>${b.note ? `<small>${esc(b.note)}</small>` : ""}</span>
             ${CHEVRON}
           </a>`).join("")
-      : '<div class="notice">Noch keine Filialen hinterlegt – bitte beim Boss melden.</div>';
+      : '<div class="notice">Noch keine Filialen oder Videocalls hinterlegt – bitte beim Boss melden.</div>';
   }
 
   function openBookingPicker() {
@@ -3541,7 +3572,7 @@ td { border-bottom-color: var(--line); }
   function placeLabel(c) {
     if (c.teams) return "Microsoft Teams";
     if (c.branch_name) return c.branch_name;
-    return c.branch_id ? "Filiale gelöscht" : "Terminort offen";
+    return c.branch_id ? "Buchungsort gelöscht" : "Terminort offen";
   }
 
   function attemptDots(n) {
@@ -3555,11 +3586,16 @@ td { border-bottom-color: var(--line); }
       : `<a href="${esc(telHref(p))}">${esc(p)}</a>`)
     .join(", ");
 
-  function renderCallPlaceSelect() {
+  function renderCallPlaceSelect(current = $("callPlace").value) {
     const select = $("callPlace");
-    const current = select.value;
-    select.innerHTML = '<option value="">Noch offen</option><option value="teams">Microsoft Teams</option>'
-      + state.branches.map(b => `<option value="${b.id}">${esc(b.name)}</option>`).join("");
+    const branches = state.branches.filter(b => !isVideoCall(b));
+    const videoCalls = state.branches.filter(isVideoCall);
+    const options = list => list.map(b => `<option value="${esc(b.id)}">${esc(b.name)}</option>`).join("");
+    // Alte Teams-Kontakte bleiben bearbeitbar. Neue Kontakte nutzen den hinterlegten Videocall.
+    select.innerHTML = '<option value="">Noch offen</option>'
+      + (!videoCalls.length || current === "teams" ? '<option value="teams">Microsoft Teams (ohne Bookings-Link)</option>' : "")
+      + (branches.length ? `<optgroup label="Filialen">${options(branches)}</optgroup>` : "")
+      + (videoCalls.length ? `<optgroup label="Videocalls">${options(videoCalls)}</optgroup>` : "");
     select.value = [...select.options].some(o => o.value === current) ? current : "";
   }
 
@@ -3983,7 +4019,7 @@ td { border-bottom-color: var(--line); }
 
   function resetCallForm() {
     ["callEditId", "callLastName", "callFirstName", "callPhones", "callBriefing"].forEach(id => ($(id).value = ""));
-    $("callPlace").value = "";
+    renderCallPlaceSelect("");
     $("callSalutation").value = "Herr";
     setCallTopics([]);
     $("callTopics").open = false;
@@ -4003,7 +4039,7 @@ td { border-bottom-color: var(--line); }
     $("callLastName").value = last.trim();
     $("callFirstName").value = rest.join(",").trim();
     $("callPhones").value = c.phones.join("\n");
-    $("callPlace").value = c.teams ? "teams" : c.branch_id ? String(c.branch_id) : "";
+    renderCallPlaceSelect(c.teams ? "teams" : c.branch_id ? String(c.branch_id) : "");
     $("callSalutation").value = c.salutation === "Frau" ? "Frau" : "Herr";
     setCallTopics(c.topics);
     $("callBriefing").value = c.briefing || "";
@@ -4156,7 +4192,7 @@ td { border-bottom-color: var(--line); }
     });
   });
 
-  /* ================= Filialen & Terminbuchung ================= */
+  /* ================= Filialen, Videocalls & Terminbuchung ================= */
 
   function branchHost(url) {
     try { return new URL(url).host; } catch { return ""; }
@@ -4168,8 +4204,8 @@ td { border-bottom-color: var(--line); }
     const count = list.length;
 
     $$("[data-branch-summary]").forEach(el => (el.textContent = count
-      ? `${count} ${count === 1 ? "Filiale" : "Filialen"} – direkt online buchen`
-      : "Noch keine Filialen hinterlegt."));
+      ? `${count} ${count === 1 ? "Buchungsort" : "Buchungsorte"} – direkt online buchen`
+      : "Noch keine Filialen oder Videocalls hinterlegt."));
 
     // Mitarbeiter: klickbare Kacheln
     $("branchTiles").innerHTML = count
@@ -4182,10 +4218,15 @@ td { border-bottom-color: var(--line); }
             </span>
             <span class="branch-go">Buchen →</span>
           </a>`).join("")
-      : '<div class="notice">Es sind noch keine Filialen hinterlegt. Bitte beim Boss melden.</div>';
+      : '<div class="notice">Es sind noch keine Filialen oder Videocalls hinterlegt. Bitte beim Boss melden.</div>';
 
     // Boss: Verwaltung
-    $("branchAdminList").innerHTML = count
+    $("branchAdminList").innerHTML = branchAdminHtml(list.filter(b => !isVideoCall(b)), "Filialen");
+    $("videoCallAdminList").innerHTML = branchAdminHtml(list.filter(isVideoCall), "Videocalls");
+  }
+
+  function branchAdminHtml(list, label) {
+    return list.length
       ? list.map(b => `
           <div class="employee-row branch-row">
             <div>
@@ -4198,7 +4239,7 @@ td { border-bottom-color: var(--line); }
               <button class="btn danger" type="button" data-branch-delete="${b.id}">Löschen</button>
             </div>
           </div>`).join("")
-      : '<div class="notice">Noch keine Filialen angelegt.</div>';
+      : `<div class="notice">Noch keine ${label} angelegt.</div>`;
   }
 
   async function loadBranches() {
@@ -4207,77 +4248,86 @@ td { border-bottom-color: var(--line); }
       renderBranches();
     } catch (error) {
       console.error(error);
-      const text = `<div class="notice warn">Filialen konnten nicht geladen werden: ${esc(error.message)}</div>`;
+      const text = `<div class="notice warn">Buchungsorte konnten nicht geladen werden: ${esc(error.message)}</div>`;
       $("branchTiles").innerHTML = text;
       $("branchAdminList").innerHTML = text;
-      $$("[data-branch-summary]").forEach(el => (el.textContent = "Filialen nicht verfügbar."));
+      $("videoCallAdminList").innerHTML = text;
+      $$("[data-branch-summary]").forEach(el => (el.textContent = "Buchungsorte nicht verfügbar."));
     }
   }
 
-  function resetBranchForm() {
-    ["branchEditId", "branchName", "branchNote", "branchUrl"].forEach(id => ($(id).value = ""));
-    setText("branchFormTitle", "Filiale anlegen");
-    setText("branchSaveBtn", "Filiale speichern");
-    $("branchCancelBtn").hidden = true;
+  function resetBranchForm(prefix = "branch") {
+    ["EditId", "Name", "Url"].forEach(field => ($(prefix + field).value = ""));
+    if (prefix === "branch") $("branchNote").value = "";
+    const label = prefix === "branch" ? "Filiale" : "Videocall";
+    setText(prefix + "FormTitle", `${label} anlegen`);
+    setText(prefix + "SaveBtn", `${label} speichern`);
+    $(prefix + "CancelBtn").hidden = true;
   }
 
   function editBranch(id) {
     const branch = state.branches.find(b => String(b.id) === String(id));
     if (!branch) return;
-    $("branchEditId").value = branch.id;
-    $("branchName").value = branch.name;
-    $("branchNote").value = branch.note || "";
-    $("branchUrl").value = branch.booking_url;
-    setText("branchFormTitle", `Filiale bearbeiten: ${branch.name}`);
-    setText("branchSaveBtn", "Änderungen speichern");
-    $("branchCancelBtn").hidden = false;
-    $("branchName").focus();
-    $("branchForm").scrollIntoView({ behavior: "smooth", block: "center" });
+    const prefix = isVideoCall(branch) ? "videoCall" : "branch";
+    const label = isVideoCall(branch) ? "Videocall" : "Filiale";
+    $(prefix + "EditId").value = branch.id;
+    $(prefix + "Name").value = branch.name;
+    if (prefix === "branch") $("branchNote").value = branch.note || "";
+    $(prefix + "Url").value = branch.booking_url;
+    setText(prefix + "FormTitle", `${label} bearbeiten: ${branch.name}`);
+    setText(prefix + "SaveBtn", "Änderungen speichern");
+    $(prefix + "CancelBtn").hidden = false;
+    $(prefix + "Name").focus();
+    $(prefix + "Form").scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
-  $("branchCancelBtn").addEventListener("click", resetBranchForm);
+  ["branch", "videoCall"].forEach(prefix => {
+    $(prefix + "CancelBtn").addEventListener("click", () => resetBranchForm(prefix));
 
-  $("branchForm").addEventListener("submit", event => {
-    event.preventDefault();
-    const id = $("branchEditId").value;
-    const payload = {
-      name: $("branchName").value.trim(),
-      note: $("branchNote").value.trim(),
-      booking_url: $("branchUrl").value.trim()
-    };
+    $(prefix + "Form").addEventListener("submit", event => {
+      event.preventDefault();
+      const id = $(prefix + "EditId").value;
+      const payload = {
+        name: $(prefix + "Name").value.trim(),
+        note: prefix === "videoCall" ? VIDEO_CALL_NOTE : $("branchNote").value.trim(),
+        booking_url: $(prefix + "Url").value.trim()
+      };
 
-    withBusy(event.submitter, async () => {
-      try {
-        await (id
-          ? api(`/admin/branches/${id}`, "PUT", payload)
-          : api("/admin/branches", "POST", payload));
-        resetBranchForm();
-        await loadBranches();
-      } catch (error) {
-        alert("Filiale konnte nicht gespeichert werden: " + error.message);
-      }
+      withBusy(event.submitter, async () => {
+        try {
+          await (id
+            ? api(`/admin/branches/${id}`, "PUT", payload)
+            : api("/admin/branches", "POST", payload));
+          resetBranchForm(prefix);
+          await loadBranches();
+        } catch (error) {
+          alert((prefix === "branch" ? "Filiale" : "Videocall") + " konnte nicht gespeichert werden: " + error.message);
+        }
+      });
     });
   });
 
-  $("branchAdminList").addEventListener("click", event => {
+  ["branchAdminList", "videoCallAdminList"].forEach(id => $(id).addEventListener("click", event => {
     const edit = event.target.closest("[data-branch-edit]");
     if (edit) return editBranch(edit.dataset.branchEdit);
 
     const del = event.target.closest("[data-branch-delete]");
     if (!del) return;
     const branch = state.branches.find(b => String(b.id) === del.dataset.branchDelete);
-    if (!confirm(`Filiale „${branch?.name || ""}“ wirklich löschen?`)) return;
+    const prefix = isVideoCall(branch) ? "videoCall" : "branch";
+    const label = prefix === "branch" ? "Filiale" : "Videocall";
+    if (!confirm(`${label} „${branch?.name || ""}“ wirklich löschen?`)) return;
 
     withBusy(del, async () => {
       try {
         await api(`/admin/branches/${del.dataset.branchDelete}`, "DELETE");
-        if ($("branchEditId").value === del.dataset.branchDelete) resetBranchForm();
+        if ($(prefix + "EditId").value === del.dataset.branchDelete) resetBranchForm(prefix);
         await loadBranches();
       } catch (error) {
-        alert("Filiale konnte nicht gelöscht werden: " + error.message);
+        alert(label + " konnte nicht gelöscht werden: " + error.message);
       }
     });
-  });
+  }));
 
   /* ================= Einstellungen ================= */
 
