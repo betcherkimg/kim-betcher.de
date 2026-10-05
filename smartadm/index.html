@@ -4751,6 +4751,7 @@ function abMailEntwurf(){
 
   // Gleiche Anredelogik wie im Mail-Generator
   var text = (person ? mailAnrede(person) : "Hallo " + abAktiv) + ",\n\n";
+  text += "vielen Dank für deine Zeit. Hier ist eine Zusammenfassung unserer Adressabstimmung:\n\n";
 
   if(d.sonstiges && d.sonstiges.trim()) text += "Sonstiges: " + d.sonstiges.trim() + "\n\n";
 
