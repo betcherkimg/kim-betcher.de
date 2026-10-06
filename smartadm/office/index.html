@@ -717,13 +717,13 @@ td { border-bottom-color: var(--line); }
 }
 .picker[open] { display: flex; flex-direction: column; }
 .picker::backdrop { background: rgba(29,39,51,.35); }
-.picker-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px 10px; }
+.picker-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--line); flex-shrink: 0; background: var(--surface); }
 .picker-head strong { font-size: 16px; font-weight: 600; }
 .picker-close {
-  width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line);
-  background: var(--surface); color: var(--ink-soft); padding: 0; font-size: 13px;
+  flex-shrink: 0; border-radius: 999px; border: 1px solid #A5342C;
+  background: #F7E9E7; color: #A5342C; padding: 8px 11px; font-size: 13px;
 }
-.picker-close:hover { background: var(--ground); color: var(--ink); }
+.picker-close:hover { background: #A5342C; color: #fff; }
 .picker-list { display: grid; gap: 6px; padding: 0 10px 12px; overflow-y: auto; }
 .picker-item {
   display: flex; align-items: center; gap: 12px; padding: 12px;
@@ -1557,7 +1557,7 @@ td { border-bottom-color: var(--line); }
           <dialog id="bookingPicker" class="picker" aria-labelledby="bookingPickerTitle">
             <div class="picker-head">
               <strong id="bookingPickerTitle">Filiale oder Videocall wählen</strong>
-              <button class="picker-close" type="button" data-picker-close aria-label="Schließen">✕</button>
+              <button class="picker-close" type="button" data-picker-close aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
             </div>
             <div id="bookingPickerList" class="picker-list"></div>
           </dialog>
@@ -3441,8 +3441,7 @@ td { border-bottom-color: var(--line); }
 
   $("bookingPicker").addEventListener("click", event => {
     const dialog = $("bookingPicker");
-    // Link antippen, ✕ oder Klick neben das Fenster → schließen (Link öffnet trotzdem)
-    if (event.target.closest("[data-picker-close]") || event.target === dialog) dialog.close?.() ?? dialog.removeAttribute("open");
+    if (event.target.closest("[data-picker-close]")) dialog.close?.() ?? dialog.removeAttribute("open");
   });
 
   $("requestNumbersBtn").addEventListener("click", event => {
