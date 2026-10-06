@@ -76,60 +76,80 @@
 
   .kopf-links{display:flex;align-items:center;gap:10px;min-width:0;}
 
-  .speicher-knopf{
-    width:40px;
-    height:40px;
-    border-radius:12px;
+  /* Cloudspeicher: nur sichtbar, wenn etwas zu tun ist */
+  .cloud-stand{
     border:1px solid var(--line);
     background:var(--surface);
     color:var(--ink-soft);
+    border-radius:999px;
+    padding:7px 13px;
+    font-size:12.5px;
+    font-weight:500;
+    white-space:nowrap;
+    flex:none;
+    cursor:default;
+  }
+  .cloud-stand[hidden]{display:none;}
+  .cloud-stand .kurz{display:none;}
+  @media (max-width:560px){
+    .cloud-stand{padding:6px 9px;font-size:12px;}
+    .cloud-stand[data-art="speichert"]{display:none;}
+    .cloud-stand .lang{display:none;}
+    .cloud-stand .kurz{display:inline;}
+  }
+  .cloud-stand[data-art="offline"]{background:var(--gelb-wash);border-color:transparent;color:var(--gelb);cursor:pointer;}
+  .cloud-stand[data-art="konflikt"],
+  .cloud-stand[data-art="fehler"]{background:var(--rot-wash);border-color:transparent;color:var(--rot);cursor:pointer;}
+
+  .clerk-user{display:flex;align-items:center;flex:none;min-width:32px;min-height:32px;}
+
+  /* Anmeldung: Clerk-Maske mit dem Logo darueber */
+  .login{
+    position:fixed;
+    inset:0;
+    z-index:90;
+    background:var(--ground);
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:0;
-    position:relative;
-    flex:none;
-    transition:background .15s ease,color .15s ease,border-color .15s ease,transform .05s ease;
+    padding:24px;
+    overflow-y:auto;
   }
-
-  .speicher-knopf:hover{background:var(--ground);color:var(--ink);}
-  .speicher-knopf:active{transform:translateY(1px);}
-  .speicher-knopf svg{display:block;}
-
-  .speicher-knopf::after{
-    content:"";
-    position:absolute;
-    right:6px;
-    bottom:6px;
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:currentColor;
-    box-shadow:0 0 0 2px var(--surface);
+  .login[hidden]{display:none;}
+  .login-rahmen{
+    width:min(440px,100%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+    margin:auto;
   }
+  .login-marke{width:min(300px,78vw);}
+  #login-clerk{width:100%;display:flex;justify-content:center;}
+  #login-clerk:empty{display:none;}
+  #login-clerk .cl-rootBox,
+  #login-clerk .cl-cardBox{width:100%;}
+  #login-clerk .cl-card{border:0 !important;border-radius:16px !important;box-shadow:var(--shadow) !important;}
+  .login-hinweis{margin:0;text-align:center;font-size:14.5px;line-height:1.5;color:var(--ink-soft);}
+  .login-hinweis:empty{display:none;}
+  .login-knoepfe{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+  .login-knoepfe .btn[hidden]{display:none;}
+  .start-option[hidden]{display:none;}
 
-  .speicher-knopf.gespeichert{
-    background:var(--gruen-wash);
-    border-color:rgba(31,122,82,.22);
-    color:var(--gruen);
-  }
+  /* Konflikt zwischen zwei Geraeten */
+  .konflikt-tabelle{width:100%;border-collapse:collapse;margin:0 0 6px;font-size:13.5px;table-layout:fixed;}
+  .konflikt-tabelle th,
+  .konflikt-tabelle td{text-align:left;vertical-align:top;padding:8px 8px;border-bottom:1px solid var(--line);word-break:break-word;}
+  .konflikt-tabelle tr:first-child th,
+  .konflikt-tabelle tr:first-child td{font-size:12px;font-weight:600;color:var(--ink-faint);padding-top:0;}
+  .konflikt-tabelle th{width:26%;font-weight:500;color:var(--ink-soft);}
+  .konflikt-zaehler{margin:0 0 10px;font-size:12.5px;color:var(--ink-faint);}
+  .konflikt-zaehler:empty{display:none;}
+  .konflikt-wahl{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  @media (max-width:480px){ .konflikt-wahl{grid-template-columns:1fr;} }
 
-  .speicher-knopf.gespeichert:hover{background:#D7EDE1;}
-
-  .speicher-knopf.ungespeichert{
-    background:var(--rot-wash);
-    border-color:rgba(165,52,44,.22);
-    color:var(--rot);
-  }
-
-  .speicher-knopf.ungespeichert:hover{background:#F3DEDB;}
-
-  .speicher-knopf.schreibt svg{animation:speicher-wippen 1s ease-in-out infinite;}
-
-  @keyframes speicher-wippen{
-    0%,100%{transform:translateY(0);}
-    50%{transform:translateY(-1px);}
-  }
+  .btn-text-rot{background:none;border:none;color:var(--rot);font-size:13.5px;padding:8px 4px;justify-self:start;}
+  .btn-text-rot:hover{text-decoration:underline;}
 
   .seitentitel{
     display:none;
@@ -230,95 +250,9 @@
 
   /* Auf schmalen Geraeten nur das Bild, damit die Kopfzeile nicht bricht */
   @media (max-width:560px){
-    .konto-name{display:none;}
-    .konto-btn{padding:4px 8px 4px 4px;max-width:none;}
     .wordmark .schriftzug{height:17px;}
     .wordmark .marke{height:24px;}
   }
-
-  .konto{position:relative;z-index:41;}
-
-  .konto-btn{
-    display:flex;
-    align-items:center;
-    gap:9px;
-    background:transparent;
-    border:1px solid var(--line);
-    border-radius:999px;
-    padding:4px 12px 4px 4px;
-    color:var(--ink-soft);
-    font-size:13.5px;
-    max-width:52vw;
-    transition:background .15s ease;
-  }
-
-  .konto-btn:hover{background:var(--ground);color:var(--ink);}
-
-  .konto-name{
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    font-weight:500;
-  }
-
-  .konto-bild{
-    width:30px;
-    height:30px;
-    border-radius:50%;
-    background:var(--accent-wash);
-    color:var(--accent);
-    font-size:12px;
-    font-weight:600;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex:none;
-    overflow:hidden;
-  }
-
-  .konto-bild img{width:100%;height:100%;object-fit:cover;}
-
-  .menu{
-    position:absolute;
-    top:calc(100% + 8px);
-    right:0;
-    min-width:200px;
-    background:var(--surface);
-    border-radius:14px;
-    box-shadow:var(--shadow-hoch);
-    padding:6px;
-    z-index:42;
-  }
-
-  .menu[hidden]{display:none;}
-
-  .menu button,
-  .menu .menu-link{
-    display:block;
-    width:100%;
-    text-align:left;
-    background:none;
-    border:none;
-    border-radius:10px;
-    padding:10px 12px;
-    font-size:14.5px;
-    color:var(--ink);
-    text-decoration:none;
-    font-family:inherit;
-  }
-
-  .menu button:hover,
-  .menu .menu-link:hover{background:var(--ground);}
-
-  .menu .menu-rot{
-    color:var(--rot);
-    border-top:1px solid var(--line);
-    border-radius:0 0 10px 10px;
-    margin-top:4px;
-    padding-top:12px;
-  }
-
-  .menu .menu-rot:hover{background:var(--rot-wash);}
 
   /* Mobile Navigation: ersetzt unterhalb der Desktop-Breite die Seitenleiste */
   .mobil-nav{position:relative;z-index:41;}
@@ -2363,30 +2297,6 @@
   .btn-rot{background:var(--rot);border-color:var(--rot);}
   .btn-rot:hover{background:#8E2A23;}
 
-  .datei-balken{
-    background:var(--gelb-wash);
-    color:var(--gelb);
-    padding:10px var(--pad);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:14px;
-    font-size:13.5px;
-    flex-wrap:wrap;
-  }
-
-  .datei-balken[hidden]{display:none;}
-
-  .datei-balken button{
-    background:var(--gelb);
-    color:#fff;
-    border:none;
-    border-radius:999px;
-    padding:6px 16px;
-    font-weight:500;
-    font-size:13.5px;
-  }
-
   .speicher-stand{
     background:var(--ground);
     border-radius:12px;
@@ -2940,17 +2850,18 @@
 
 </style>
 <link rel="stylesheet" href="date-inputs.css">
-<link rel="stylesheet" href="cloud.css">
 </head>
-<body class="cloud-auth-pending">
-<div class="cloud-login-overlay" id="cloud-login-overlay">
-  <div class="cloud-login-card">
-    <span class="brand-logo cloud-login-logo" role="img" aria-label="SmartADM 5">
-      <img class="brand-icon" src="brand-icon.png" alt="">
-      <img class="brand-wordmark" src="brand-wordmark.png" alt="SmartADM 5">
-    </span>
-    <div id="clerkSignIn"></div>
-    <p class="cloud-login-error" id="cloud-login-error" hidden>Die Anmeldung konnte nicht geladen werden.</p>
+<body>
+
+<div class="login" id="login" data-zustand="pruefen">
+  <div class="login-rahmen">
+    <span class="brand-logo login-marke" role="img" aria-label="SmartADM 5"><img class="brand-icon" src="brand-icon.png" alt=""><img class="brand-wordmark" src="brand-wordmark.png" alt=""></span>
+    <div id="login-clerk"></div>
+    <p class="login-hinweis" id="login-hinweis" role="status"></p>
+    <div class="login-knoepfe">
+      <button class="btn" id="login-nochmal" hidden>Erneut versuchen</button>
+      <button class="btn btn-quiet" id="login-abmelden" hidden>Abmelden</button>
+    </div>
   </div>
 </div>
 
@@ -2959,10 +2870,34 @@
     <div class="start-brand"><span class="brand-logo start-marke" role="img" aria-label="SmartADM 5"><img class="brand-icon" src="brand-icon.png" alt=""><img class="brand-wordmark" src="brand-wordmark.png" alt=""></span></div>
     <h1>Willkommen bei SmartADM</h1>
     <p class="start-text" id="start-text">
-      Bevor es losgeht: Hast du schon einen Datensatz, oder legen wir einen neuen an?
+      Dein Cloudspeicher ist noch leer. Womit m&ouml;chtest du starten?
     </p>
 
     <div class="start-wahl" id="start-wahl">
+      <button class="start-option" id="start-import">
+        <span class="start-symbol">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 7.5A1.5 1.5 0 0 1 5.5 6h3.8l1.7 2h7.5A1.5 1.5 0 0 1 20 9.5v8A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5v-10Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="start-beschriftung">
+          <strong>JSON-Datei importieren</strong>
+          <span>Deine bisherige Speicherdatei in die Cloud &uuml;bernehmen</span>
+        </span>
+      </button>
+
+      <button class="start-option" id="start-alt" hidden>
+        <span class="start-symbol">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 4v10m0 0-3.5-3.5M12 14l3.5-3.5M5 18.5h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="start-beschriftung">
+          <strong>Daten aus diesem Browser &uuml;bernehmen</strong>
+          <span>Den Stand, der hier bisher gespeichert war</span>
+        </span>
+      </button>
+
       <button class="start-option" id="start-neu">
         <span class="start-symbol">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -2974,22 +2909,10 @@
           <span>Profil anlegen und mit leeren Listen starten</span>
         </span>
       </button>
-
-      <button class="start-option" id="start-laden">
-        <span class="start-symbol">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M4 7.5A1.5 1.5 0 0 1 5.5 6h3.8l1.7 2h7.5A1.5 1.5 0 0 1 20 9.5v8A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5v-10Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-          </svg>
-        </span>
-        <span class="start-beschriftung">
-          <strong>Datensatz &ouml;ffnen</strong>
-          <span>Vorhandene Datei von der Festplatte laden</span>
-        </span>
-      </button>
     </div>
 
     <p class="start-fuss" id="start-fuss">
-      Die Daten bleiben auf deinem Ger&auml;t. Es wird nichts &uuml;bertragen.
+      Gespeichert wird in deinem Cloudspeicher &ndash; auf Handy und PC derselbe Stand.
     </p>
   </div>
 </div>
@@ -3028,15 +2951,7 @@
   </div>
 
   <div class="kopf-rechts">
-  <button class="speicher-knopf gespeichert legacy-cloud-hidden" id="speicher-knopf"
-          title="Im Browser gespeichert – jetzt speichern"
-          aria-label="Im Browser gespeichert – jetzt speichern">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M5 4.75h11.5l2.75 2.75v11A1.5 1.5 0 0 1 17.75 20h-11.5A1.5 1.5 0 0 1 4.75 18.5V6.25A1.5 1.5 0 0 1 6.25 4.75Z" stroke="currentColor" stroke-width="1.8"/>
-      <path d="M8 4.75v5h7v-5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-      <rect x="8" y="13" width="8" height="5" rx="1.2" stroke="currentColor" stroke-width="1.8"/>
-    </svg>
-  </button>
+  <button class="cloud-stand" id="cloud-stand" type="button" hidden></button>
 
   <button class="schloss" id="schloss" aria-pressed="false"
           title="Provisions-Rechner verbergen" aria-label="Provisions-Rechner verbergen">
@@ -3050,25 +2965,7 @@
     </svg>
   </button>
 
-  <div class="konto legacy-cloud-hidden">
-    <button class="konto-btn" id="konto-btn" aria-haspopup="true" aria-expanded="false">
-      <span class="konto-bild" id="konto-bild">MM</span>
-      <span class="konto-name" id="konto-name">Max Mustermann</span>
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <path d="M4 6.5 8 10.5 12 6.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
-    <div class="menu" id="konto-menu" hidden>
-      <button id="menu-profil">Profil bearbeiten</button>
-      <button id="menu-speicher">Datenspeicher</button>
-      <a class="menu-link" href="https://kim-betcher.de/smartadm/umzug.html" target="_blank" rel="noopener noreferrer">Umzugsservice</a>
-      <a class="menu-link" href="https://kim-betcher.de/smartadm/wasistneu.html" target="_blank" rel="noopener noreferrer">Was ist neu?</a>
-      <button id="abmelden" class="menu-rot">Abmelden</button>
-    </div>
-  </div>
-
-  <button class="cloud-storage-link" id="cloud-storage-btn" type="button">Datenspeicher</button>
-  <div class="clerk-user-host" id="userMenuHost" aria-label="Benutzerkonto"></div>
+  <div class="clerk-user" id="clerk-user"></div>
 
   <div class="mobil-nav">
     <button class="mobil-nav-btn" id="mobil-nav-btn" aria-haspopup="true" aria-expanded="false" aria-label="Navigation öffnen">
@@ -3094,11 +2991,6 @@
     <div class="zahl"><b id="z-bma">0</b><span>Bankmitarbeiter</span></div>
   </div>
 </section>
-</div>
-
-<div class="datei-balken" id="datei-balken" hidden>
-  <span>Die Speicherdatei muss nach dem Browserstart einmal best&auml;tigt werden.</span>
-  <button id="datei-freigeben">Verbinden</button>
 </div>
 
 <main class="wrap" id="seite-dashboard">
@@ -3418,6 +3310,24 @@
   </div></div>
 </div>
 
+<!-- Konflikt zwischen zwei Geraeten -->
+<div class="veil" id="veil-konflikt" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="konflikt-titel"><div class="sheet-inhalt">
+    <div class="grip"></div>
+    <div class="sheet-head">
+      <h3 id="konflikt-titel">Auf zwei Ger&auml;ten ge&auml;ndert</h3>
+      <button class="x" data-close="veil-konflikt" aria-label="Schlie&szlig;en">Sp&auml;ter <span aria-hidden="true">&times;</span></button>
+    </div>
+    <p class="sheet-sub">Dieser Eintrag wurde auf zwei Ger&auml;ten unterschiedlich ge&auml;ndert. Welche Fassung soll gelten?</p>
+    <p class="konflikt-zaehler" id="konflikt-zaehler"></p>
+    <table class="konflikt-tabelle" id="konflikt-tabelle"></table>
+    <div class="sheet-foot konflikt-wahl">
+      <button class="btn" id="konflikt-mein">Dieses Ger&auml;t</button>
+      <button class="btn btn-quiet" id="konflikt-deren">Anderes Ger&auml;t</button>
+    </div>
+  </div></div>
+</div>
+
 <!-- Datenspeicher -->
 <div class="veil" id="veil-speicher" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="speicher-title"><div class="sheet-inhalt">
@@ -3426,22 +3336,20 @@
       <h3 id="speicher-title">Datenspeicher</h3>
       <button class="x" data-close="veil-speicher" aria-label="Schlie&szlig;en">Schließen <span aria-hidden="true">&times;</span></button>
     </div>
-    <p class="sheet-sub">Wo die Daten dieser App abgelegt werden.</p>
+    <p class="sheet-sub">Deine Daten liegen in der Cloud und sind auf Handy und PC gleich.</p>
 
     <p class="speicher-stand" id="speicher-stand">&nbsp;</p>
 
     <div class="speicher-knoepfe">
-      <button class="btn legacy-cloud-hidden" id="datei-waehlen">Neue Speicherdatei anlegen</button>
-      <button class="btn btn-quiet legacy-cloud-hidden" id="datei-oeffnen">Vorhandene Datei &ouml;ffnen</button>
-      <button class="btn" id="cloud-import" type="button">Bestehende JSON-Datei importieren</button>
-      <input id="cloud-import-file" type="file" accept="application/json,.json" hidden>
+      <button class="btn" id="datei-import">JSON-Datei importieren</button>
       <button class="btn btn-quiet" id="datei-sicherung">Sicherung herunterladen</button>
+      <button class="btn-text-rot" id="daten-loeschen">Alle Daten l&ouml;schen &hellip;</button>
     </div>
+    <input type="file" id="datei-eingabe" accept=".json,application/json" hidden>
 
-    <p class="hint">Die Speicherdatei liegt auf deiner Festplatte und wird bei jeder
-    &Auml;nderung automatisch aktualisiert. Mit <b>Strg&nbsp;+&nbsp;S</b> schreibst du
-    jederzeit sofort. Die Datei l&auml;sst sich sichern, kopieren oder in einen
-    Cloud-Ordner legen.</p>
+    <p class="hint">Gespeichert wird automatisch bei jeder &Auml;nderung. Ohne Netz arbeitest du
+    weiter &ndash; die &Auml;nderungen werden nachgereicht, sobald wieder Verbindung besteht.
+    Beim Import werden nur Eintr&auml;ge erg&auml;nzt, die noch fehlen.</p>
 
     <div class="sheet-foot">
       <button class="btn btn-quiet" data-close="veil-speicher">Schlie&szlig;en</button>
@@ -3930,9 +3838,6 @@
   </div></div>
 </div>
 
-<script defer crossorigin="anonymous" src="https://clerk.kim-betcher.de/npm/@clerk/ui@1/dist/ui.browser.js"></script>
-<script defer crossorigin="anonymous" data-clerk-publishable-key="pk_live_Y2xlcmsua2ltLWJldGNoZXIuZGUk" src="https://clerk.kim-betcher.de/npm/@clerk/clerk-js@6/dist/clerk.browser.js"></script>
-<script defer src="cloud.js"></script>
 <script src="date-inputs.js"></script>
 <script>
 
@@ -4385,38 +4290,10 @@ function rolleGeaendert(){
   document.getElementById(id).addEventListener("change", rolleGeaendert);
 });
 
-/* ---------- Kontomenue ---------- */
-
-var kontoBtn = document.getElementById("konto-btn");
-var kontoMenu = document.getElementById("konto-menu");
-
-kontoBtn.addEventListener("click", function(e){
-  e.stopPropagation();
-  var zu = kontoMenu.hidden;
-  kontoMenu.hidden = !zu;
-  kontoBtn.setAttribute("aria-expanded", zu ? "true" : "false");
-  var mobil = document.getElementById("mobil-menu");
-  var mobilBtn = document.getElementById("mobil-nav-btn");
-  if(zu && mobil){ mobil.hidden = true; mobilBtn.setAttribute("aria-expanded","false"); }
-});
-
-document.addEventListener("click", function(){
-  if(!kontoMenu.hidden){
-    kontoMenu.hidden = true;
-    kontoBtn.setAttribute("aria-expanded", "false");
-  }
-});
-
-document.getElementById("menu-profil").addEventListener("click", function(){
-  profilInsFormular();
-  oeffnen("veil-profil");
-});
-
 /* ---------- Profilbild ---------- */
 
 var bildDatei = document.getElementById("bild-datei");
 var bildVorschau = document.getElementById("bild-vorschau");
-var kontoBild = document.getElementById("konto-bild");
 
 document.getElementById("bild-waehlen").addEventListener("click", function(){
   bildDatei.click();
@@ -4842,8 +4719,7 @@ function abDruckDokument(){
     html += '<div class="notiz"><h3>' + esc(b.titel) + '</h3><p>' + abDruckText(d.bloecke[b.id] || '–') + '</p></div>';
   });
 
-  html += '</div></section><footer class="fuss"><span>SmartADM · Adressabstimmung</span><span>' + esc(abAktiv || '') + '</span></footer></main>
-</body></html>';
+  html += '</div></section><footer class="fuss"><span>SmartADM · Adressabstimmung</span><span>' + esc(abAktiv || '') + '</span></footer></main></body></html>';
   return html;
 }
 
@@ -4946,12 +4822,17 @@ var SPEICHER = (function(){
   };
 })();
 
+// Stand vor der Cloud-Umstellung. Wird nicht mehr beschrieben und bleibt als Altbestand liegen.
 var ABLAGE = "smartadm.v1";
 
+// Jede Aenderung geht an den Cloudspeicher (cloud.js). Der haelt zusaetzlich eine Kopie
+// auf dem Geraet vor, damit auch ohne Netz weitergearbeitet werden kann.
 function sichern(){
-  speicherVormerken();
-  if(typeof dateiSchreiben === "function") dateiSchreiben();
-  SPEICHER.schreiben(ABLAGE, JSON.stringify({
+  if(window.SmartCloud) window.SmartCloud.geaendert();
+}
+
+function datenAlsObjekt(){
+  return JSON.parse(JSON.stringify({
     profil: PROFIL,
     banken: BANKEN,
     bma: BMA,
@@ -4964,27 +4845,44 @@ function sichern(){
   }));
 }
 
-function laden(){
-  var roh = SPEICHER.lesen(ABLAGE);
-  if(!roh) return false;
-  try{
-    var d = JSON.parse(roh);
-    if(d.profil) PROFIL = d.profil;
-    if(d.banken) BANKEN = d.banken;
-    if(d.bma) BMA = d.bma;
-    if(d.termine) TERMINE = d.termine;
-    if(d.abstimmung) ABSTIMMUNG = d.abstimmung;
-    if(d.provisionen) PROVISIONEN = d.provisionen;
-    if(d.provArchiv) PROV_ARCHIV = d.provArchiv;
-    if(typeof d.provSteuer === "number") PROV_STEUER = d.provSteuer;
-    if(Array.isArray(d.auswertung)) AUSWERTUNG = d.auswertung;
-    terminArtErgaenzen();
-    LISTEN.bank.daten = BANKEN;
-    LISTEN.bma.daten = BMA;
-    return true;
-  }catch(e){
-    return false;
-  }
+function datenAlsText(){
+  return JSON.stringify(datenAlsObjekt(), null, 2);
+}
+
+// Ersetzt den gesamten Bestand. Fehlende Bereiche werden geleert.
+function datenUebernehmen(d){
+  d = d || {};
+  var liste = function(x){ return Array.isArray(x) ? x : []; };
+  PROFIL = Object.assign({}, PROFIL_LEER, d.profil || {});
+  BANKEN = liste(d.banken);
+  BMA = liste(d.bma);
+  TERMINE = liste(d.termine);
+  ABSTIMMUNG = d.abstimmung && typeof d.abstimmung === "object" && !Array.isArray(d.abstimmung) ? d.abstimmung : {};
+  PROVISIONEN = liste(d.provisionen);
+  PROV_ARCHIV = liste(d.provArchiv);
+  PROV_STEUER = typeof d.provSteuer === "number" ? d.provSteuer : 0;
+  AUSWERTUNG = liste(d.auswertung);
+  terminArtErgaenzen();
+  LISTEN.bank.daten = BANKEN;
+  LISTEN.bma.daten = BMA;
+  return true;
+}
+
+// Banken und Provisionseintraege brauchen eine feste Kennung, damit der Abgleich
+// zwischen den Geraeten denselben Eintrag wiedererkennt.
+function kennungenErgaenzen(){
+  var stempel = Date.now().toString(36);
+  BANKEN.forEach(function(b, i){ if(!b.id) b.id = "b-" + stempel + "-" + i; });
+  PROVISIONEN.forEach(function(p, i){ if(!p.id) p.id = "p-" + stempel + "-" + i; });
+}
+
+// Nach einem Abgleich alles neu aufbauen
+function allesZeichnen(){
+  termineSortieren();
+  awSortieren();
+  profilAnzeigen();
+  zeichnen();
+  awZeichnen();
 }
 
 function neueKennung(praefix){
@@ -4993,10 +4891,12 @@ function neueKennung(praefix){
 
 /* ---------- Profil ---------- */
 
-var PROFIL = {
-  anrede:"Herr", funktion:"Bezirksleiter", vorname:"Max", nachname:"Mustermann",
+var PROFIL_LEER = {
+  anrede:"Herr", funktion:"Bezirksleiter", vorname:"", nachname:"",
   strasse:"", plz:"", ort:"", mobil:"", mail:"", vo:"", gebiet:"", bild:""
 };
+
+var PROFIL = Object.assign({}, PROFIL_LEER);
 
 var PROFIL_FELDER = {
   "p-anrede":"anrede", "p-titel":"funktion", "p-vorname":"vorname", "p-nachname":"nachname",
@@ -5010,18 +4910,17 @@ function profilName(){
 }
 
 function profilAnzeigen(){
-  document.getElementById("konto-name").textContent = profilName();
-  var kuerzel = initialen(profilName());
-  var kopf = document.getElementById("konto-bild");
   var gross = document.getElementById("bild-vorschau");
+  gross.textContent = "";
 
-  if(PROFIL.bild){
-    var tag = '<img src="' + PROFIL.bild + '" alt="">';
-    kopf.innerHTML = tag;
-    gross.innerHTML = tag;
+  // Nur echte Bilddaten anzeigen – der Wert kommt aus dem Cloudspeicher
+  if(/^data:image\/[a-z0-9.+-]+;base64,[A-Za-z0-9+\/=]+$/i.test(PROFIL.bild || "")){
+    var bild = document.createElement("img");
+    bild.src = PROFIL.bild;
+    bild.alt = "";
+    gross.appendChild(bild);
   }else{
-    kopf.textContent = kuerzel;
-    gross.textContent = kuerzel;
+    gross.textContent = initialen(profilName());
   }
 }
 
@@ -5039,7 +4938,6 @@ document.getElementById("profil-speichern").addEventListener("click", function()
   profilAnzeigen();
   kopfAktualisieren();
   sichern();
-  if(typeof startFertig === "function") startFertig();
   schliessen("veil-profil");
 });
 
@@ -6472,6 +6370,9 @@ document.getElementById("prov-speichern").addEventListener("click", function(){
     maengel("pv-betrag", "Bitte einen Betrag eintragen."); return;
   }
 
+  // Die Kennung bleibt beim Bearbeiten erhalten
+  e.id = (provBearbeite !== null && PROVISIONEN[provBearbeite].id) || neueKennung("p");
+
   if(provBearbeite !== null) PROVISIONEN[provBearbeite] = e;
   else PROVISIONEN.push(e);
 
@@ -6541,350 +6442,16 @@ document.getElementById("prov-archiv-btn").addEventListener("click", function(){
   oeffnen("veil-prov-archiv");
 });
 
-/* ---------- Speicherdatei auf der Festplatte ---------- */
+/* ---------- Sicherung ---------- */
 
 // Edge und Chrome koennen direkt in eine Datei schreiben. Der Zugriffsschluessel
 // dafuer liegt in einer kleinen Browserdatenbank, damit er Neustarts uebersteht.
-var DATEI = {
-  moeglich: typeof window.showSaveFilePicker === "function",
-  griff: null,
-  name: "",
-  uhr: null,
-  laeuft: false,
-  erneut: false
-};
-
-var SPEICHER_STATUS = {
-  unsauber: false,
-  schreibt: false,
-  fehler: ""
-};
-
-function speicherKnopfAktualisieren(){
-  var knopf = document.getElementById("speicher-knopf");
-  if(!knopf) return;
-
-  var klasse = "speicher-knopf ";
-  var titel = "";
-
-  if(SPEICHER_STATUS.fehler){
-    klasse += "ungespeichert";
-    titel = SPEICHER_STATUS.fehler + " – jetzt speichern";
-  }else if(SPEICHER_STATUS.unsauber || SPEICHER_STATUS.schreibt || DATEI.uhr || DATEI.laeuft){
-    klasse += "ungespeichert";
-    if(SPEICHER_STATUS.schreibt || DATEI.laeuft) klasse += " schreibt";
-    titel = (SPEICHER_STATUS.schreibt || DATEI.laeuft)
-      ? "Speichern läuft – jetzt speichern"
-      : "Noch nicht gespeichert – jetzt speichern";
-  }else{
-    klasse += "gespeichert";
-    titel = DATEI.griff
-      ? ("Gespeichert in " + DATEI.name + " – jetzt speichern")
-      : "Im Browser gespeichert – jetzt speichern";
-  }
-
-  knopf.className = klasse;
-  knopf.title = titel;
-  knopf.setAttribute("aria-label", titel);
-}
-
-function speicherVormerken(){
-  SPEICHER_STATUS.fehler = "";
-  if(DATEI.griff){
-    SPEICHER_STATUS.unsauber = true;
-    SPEICHER_STATUS.schreibt = true;
-  }else{
-    SPEICHER_STATUS.unsauber = false;
-    SPEICHER_STATUS.schreibt = false;
-  }
-  speicherKnopfAktualisieren();
-}
-
-function speicherErfolg(){
-  SPEICHER_STATUS.unsauber = false;
-  SPEICHER_STATUS.schreibt = false;
-  SPEICHER_STATUS.fehler = "";
-  speicherKnopfAktualisieren();
-}
-
-function speicherFehler(meldung){
-  SPEICHER_STATUS.unsauber = true;
-  SPEICHER_STATUS.schreibt = false;
-  SPEICHER_STATUS.fehler = meldung || "Schreiben fehlgeschlagen";
-  speicherKnopfAktualisieren();
-}
-
-function dbOeffnen(){
-  return new Promise(function(fertig, fehler){
-    var a = indexedDB.open("smartadm", 1);
-    a.onupgradeneeded = function(){ a.result.createObjectStore("griffe"); };
-    a.onsuccess = function(){ fertig(a.result); };
-    a.onerror = function(){ fehler(a.error); };
-  });
-}
-
-function griffAblegen(griff){
-  return dbOeffnen().then(function(db){
-    return new Promise(function(fertig){
-      var t = db.transaction("griffe", "readwrite");
-      t.objectStore("griffe").put(griff, "datei");
-      t.oncomplete = function(){ fertig(); };
-      t.onerror = function(){ fertig(); };
-    });
-  }).catch(function(){});
-}
-
-function griffHolen(){
-  return dbOeffnen().then(function(db){
-    return new Promise(function(fertig){
-      var t = db.transaction("griffe", "readonly");
-      var a = t.objectStore("griffe").get("datei");
-      a.onsuccess = function(){ fertig(a.result || null); };
-      a.onerror = function(){ fertig(null); };
-    });
-  }).catch(function(){ return null; });
-}
-
-function griffVergessen(){
-  return dbOeffnen().then(function(db){
-    return new Promise(function(fertig){
-      var t = db.transaction("griffe", "readwrite");
-      t.objectStore("griffe").delete("datei");
-      t.oncomplete = function(){ fertig(); };
-      t.onerror = function(){ fertig(); };
-    });
-  }).catch(function(){});
-}
-
-function datenAlsText(){
-  return JSON.stringify({
-    profil: PROFIL,
-    banken: BANKEN,
-    bma: BMA,
-    termine: TERMINE,
-    abstimmung: ABSTIMMUNG,
-    provisionen: PROVISIONEN,
-    provArchiv: PROV_ARCHIV,
-    provSteuer: PROV_STEUER,
-    auswertung: AUSWERTUNG
-  }, null, 2);
-}
-
-function datenUebernehmen(d){
-  if(!d) return false;
-  if(d.profil) PROFIL = d.profil;
-  if(d.banken) BANKEN = d.banken;
-  if(d.bma) BMA = d.bma;
-  if(d.termine) TERMINE = d.termine;
-  if(d.abstimmung) ABSTIMMUNG = d.abstimmung;
-  if(d.provisionen) PROVISIONEN = d.provisionen;
-  if(d.provArchiv) PROV_ARCHIV = d.provArchiv;
-  if(typeof d.provSteuer === "number") PROV_STEUER = d.provSteuer;
-  if(Array.isArray(d.auswertung)) AUSWERTUNG = d.auswertung;
-  terminArtErgaenzen();
-  LISTEN.bank.daten = BANKEN;
-  LISTEN.bma.daten = BMA;
-  return true;
-}
-
-// Schreiben wird gebuendelt, damit nicht bei jedem Tastendruck die Platte laeuft
-function dateiSchreiben(){
-  if(!DATEI.griff) return;
-
-  SPEICHER_STATUS.schreibt = true;
-  speicherKnopfAktualisieren();
-
-  clearTimeout(DATEI.uhr);
-  DATEI.uhr = setTimeout(function(){
-    if(DATEI.laeuft){ DATEI.erneut = true; return; }
-    DATEI.laeuft = true;
-    DATEI.uhr = null;
-
-    // Den Stand sofort festhalten, sonst schreibt ein spaeter Aufruf
-    // moeglicherweise einen inzwischen geleerten Datenbestand
-    var inhalt = datenAlsText();
-
-    DATEI.griff.createWritable()
-      .then(function(strom){
-        return strom.write(inhalt).then(function(){ return strom.close(); });
-      })
-      .then(function(){
-        speicherErfolg();
-        dateiStandAnzeigen();
-      })
-      .catch(function(){
-        speicherFehler("Schreiben fehlgeschlagen");
-        dateiStandAnzeigen("Schreiben fehlgeschlagen");
-      })
-      .then(function(){
-        DATEI.laeuft = false;
-        if(DATEI.erneut){ DATEI.erneut = false; dateiSchreiben(); }
-      });
-  }, 700);
-}
-
-// Strg+S schreibt ohne Wartezeit
-function sofortSpeichern(){
-  clearTimeout(DATEI.uhr);
-  DATEI.uhr = null;
-
-  var inhalt = datenAlsText();
-  SPEICHER.schreiben(ABLAGE, inhalt);
-
-  if(!DATEI.griff){
-    speicherErfolg();
-    melden(SPEICHER.dauerhaft()
-      ? "Im Browser gespeichert"
-      : "Speicher gesperrt \u2013 bitte eine Sicherung herunterladen");
-    return;
-  }
-
-  SPEICHER_STATUS.unsauber = true;
-  SPEICHER_STATUS.schreibt = true;
-  SPEICHER_STATUS.fehler = "";
-  speicherKnopfAktualisieren();
-
-  DATEI.griff.createWritable()
-    .then(function(strom){
-      return strom.write(inhalt).then(function(){ return strom.close(); });
-    })
-    .then(function(){
-      speicherErfolg();
-      dateiStandAnzeigen();
-      melden("Gespeichert in " + DATEI.name);
-    })
-    .catch(function(){
-      speicherFehler("Schreiben fehlgeschlagen");
-      dateiStandAnzeigen("Schreiben fehlgeschlagen");
-      melden("Konnte nicht in die Datei schreiben");
-    });
-}
-
+// Strg+S gleicht sofort mit der Cloud ab
 document.addEventListener("keydown", function(e){
   if(!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== "s") return;
   e.preventDefault();
-  sofortSpeichern();
+  if(window.SmartCloud) window.SmartCloud.jetzt();
 });
-
-// Beim Wegklicken oder Schliessen nicht auf die Buendelung warten
-function offenesSchreiben(){
-  if(!DATEI.uhr) return Promise.resolve();
-
-  clearTimeout(DATEI.uhr);
-  DATEI.uhr = null;
-
-  var inhalt = datenAlsText();
-  SPEICHER.schreiben(ABLAGE, inhalt);
-
-  if(!DATEI.griff){
-    speicherErfolg();
-    return Promise.resolve();
-  }
-
-  SPEICHER_STATUS.schreibt = true;
-  speicherKnopfAktualisieren();
-
-  return DATEI.griff.createWritable()
-    .then(function(strom){
-      return strom.write(inhalt).then(function(){ return strom.close(); });
-    })
-    .then(function(){
-      speicherErfolg();
-    })
-    .catch(function(){});
-}
-
-document.addEventListener("visibilitychange", function(){
-  if(document.visibilityState === "hidden") offenesSchreiben();
-});
-
-window.addEventListener("blur", offenesSchreiben);
-window.addEventListener("pagehide", offenesSchreiben);
-
-window.addEventListener("beforeunload", function(e){
-  if(!(SPEICHER_STATUS.unsauber || SPEICHER_STATUS.fehler || DATEI.uhr || DATEI.laeuft)) return;
-  e.preventDefault();
-  e.returnValue = "";
-});
-
-function dateiLesen(griff){
-  return griff.getFile()
-    .then(function(f){ return f.text(); })
-    .then(function(text){
-      if(!text.trim()) return false;
-      return datenUebernehmen(JSON.parse(text));
-    })
-    .catch(function(){ return false; });
-}
-
-function rechtePruefen(griff, nachfragen){
-  var art = {mode:"readwrite"};
-  return griff.queryPermission(art).then(function(stand){
-    if(stand === "granted") return true;
-    if(!nachfragen) return false;
-    return griff.requestPermission(art).then(function(s){ return s === "granted"; });
-  }).catch(function(){ return false; });
-}
-
-// Datei auswaehlen und ab sofort dorthin schreiben
-function dateiWaehlen(){
-  if(!DATEI.moeglich){
-    melden("Dieser Browser kann nicht in Dateien schreiben.");
-    return Promise.resolve(false);
-  }
-
-  return window.showSaveFilePicker({
-    suggestedName: "smartadm-daten.json",
-    types: [{description:"SmartADM-Daten", accept:{"application/json":[".json"]}}]
-  }).then(function(griff){
-    DATEI.griff = griff;
-    DATEI.name = griff.name;
-    return griffAblegen(griff).then(function(){
-      dateiSchreiben();
-      dateiStandAnzeigen();
-      melden("Daten werden jetzt in " + griff.name + " gespeichert");
-      return true;
-    });
-  }).catch(function(){ return false; });
-}
-
-// Bestehende Datei oeffnen und deren Stand uebernehmen
-function dateiOeffnen(){
-  if(!DATEI.moeglich){
-    melden("Dieser Browser kann keine Dateien direkt \u00f6ffnen.");
-    return Promise.resolve(false);
-  }
-
-  return window.showOpenFilePicker({
-    types: [{description:"SmartADM-Daten", accept:{"application/json":[".json"]}}],
-    multiple: false
-  }).then(function(liste){
-    var griff = liste[0];
-    return rechtePruefen(griff, true).then(function(ok){
-      if(!ok){ melden("Zugriff wurde nicht erlaubt."); return false; }
-      return dateiLesen(griff).then(function(geklappt){
-        DATEI.griff = griff;
-        DATEI.name = griff.name;
-        return griffAblegen(griff).then(function(){
-          if(geklappt){
-            termineSortieren();
-            awAbgleichen();
-            profilAnzeigen();
-            zeichnen();
-            awZeichnen();
-            sichern();
-            melden("Daten aus " + griff.name + " geladen");
-          }else{
-            dateiSchreiben();
-            melden("Datei war leer \u2013 aktueller Stand wurde hineingeschrieben");
-          }
-          dateiStandAnzeigen();
-          return true;
-        });
-      });
-    });
-  }).catch(function(){ return false; });
-}
 
 // Sicherungskopie zum Herunterladen
 function dateiSicherung(){
@@ -6898,78 +6465,6 @@ function dateiSicherung(){
   melden("Sicherung heruntergeladen");
 }
 
-function dateiStandAnzeigen(meldung){
-  var feld = document.getElementById("speicher-stand");
-  if(!feld) return;
-
-  if(meldung){
-    feld.textContent = meldung;
-    feld.className = "speicher-stand warn";
-    speicherKnopfAktualisieren();
-    return;
-  }
-
-  if(DATEI.griff){
-    feld.textContent = "Gespeichert in " + DATEI.name;
-    feld.className = "speicher-stand aktiv";
-  }else if(!DATEI.moeglich){
-    feld.textContent = "Dieser Browser unterst\u00fctzt keine Speicherdatei. "
-                     + "Gespeichert wird im Browser dieses Ger\u00e4ts.";
-    feld.className = "speicher-stand";
-  }else{
-    feld.textContent = "Noch keine Datei gew\u00e4hlt \u2013 gespeichert wird im Browser dieses Ger\u00e4ts.";
-    feld.className = "speicher-stand";
-  }
-
-  speicherKnopfAktualisieren();
-}
-
-// Beim Start: bekannte Datei suchen und, wenn erlaubt, daraus laden
-function dateiStarten(){
-  if(!DATEI.moeglich) return Promise.resolve(false);
-
-  return griffHolen().then(function(griff){
-    if(!griff) return false;
-    DATEI.griff = griff;
-    DATEI.name = griff.name;
-
-    return rechtePruefen(griff, false).then(function(ok){
-      if(!ok){
-        // Der Browser verlangt nach einem Neustart eine Bestaetigung per Klick
-        document.getElementById("datei-balken").hidden = false;
-        return false;
-      }
-      return dateiLesen(griff);
-    });
-  }).catch(function(){ return false; });
-}
-
-document.getElementById("datei-freigeben").addEventListener("click", function(){
-  if(!DATEI.griff) return;
-  rechtePruefen(DATEI.griff, true).then(function(ok){
-    if(!ok){ melden("Zugriff wurde nicht erlaubt."); return; }
-    return dateiLesen(DATEI.griff).then(function(){
-      document.getElementById("datei-balken").hidden = true;
-      termineSortieren();
-      awAbgleichen();
-      profilAnzeigen();
-      zeichnen();
-      awZeichnen();
-      dateiStandAnzeigen();
-      melden("Speicherdatei verbunden");
-    });
-  });
-});
-
-document.getElementById("speicher-knopf").addEventListener("click", sofortSpeichern);
-
-document.getElementById("menu-speicher").addEventListener("click", function(){
-  dateiStandAnzeigen();
-  oeffnen("veil-speicher");
-});
-
-document.getElementById("datei-waehlen").addEventListener("click", dateiWaehlen);
-document.getElementById("datei-oeffnen").addEventListener("click", dateiOeffnen);
 document.getElementById("datei-sicherung").addEventListener("click", dateiSicherung);
 
 /* ---------- Widgets auf dem Dashboard ---------- */
@@ -7887,7 +7382,6 @@ mobilNavBtn.addEventListener("click", function(e){
   var auf = mobilMenu.hidden;
   mobilMenu.hidden = !auf;
   mobilNavBtn.setAttribute("aria-expanded", auf ? "true" : "false");
-  if(auf){ kontoMenu.hidden = true; kontoBtn.setAttribute("aria-expanded","false"); }
 });
 document.addEventListener("click", function(e){
   if(!mobilMenu.hidden && !mobilMenu.contains(e.target) && e.target !== mobilNavBtn){
@@ -7940,7 +7434,7 @@ document.getElementById("open-termin").addEventListener("click", function(){
   oeffnen("veil-termin");
 });
 
-var FENSTER = ["veil-prov-steuer","veil-widget","veil-speicher","veil-profil","veil-bank","veil-bma","veil-termin","veil-detail","veil-frage","veil-prov","veil-prov-archiv"];
+var FENSTER = ["veil-konflikt","veil-prov-steuer","veil-widget","veil-speicher","veil-profil","veil-bank","veil-bma","veil-termin","veil-detail","veil-frage","veil-prov","veil-prov-archiv"];
 
 document.querySelectorAll("[data-close]").forEach(function(el){
   el.addEventListener("click", function(){ schliessen(el.getAttribute("data-close")); });
@@ -7953,137 +7447,93 @@ document.addEventListener("keydown", function(e){
   });
 });
 
-/* ---------- Abmelden ---------- */
+/* ---------- Bruecke zum Cloudspeicher ---------- */
 
-function abmeldenAusfuehren(){
-  // Zuerst den vollstaendigen Stand festhalten und wegschreiben,
-  // erst danach den Arbeitsspeicher leeren
-  clearTimeout(DATEI.uhr);
-  DATEI.uhr = null;
-
-  var inhalt = datenAlsText();
-  var griff = DATEI.griff;
-
-  var geschrieben = griff
-    ? griff.createWritable()
-        .then(function(strom){
-          return strom.write(inhalt).then(function(){ return strom.close(); });
-        })
-        .catch(function(){})
-    : Promise.resolve();
-
-  geschrieben.then(function(){
-    DATEI.griff = null;
-    DATEI.name = "";
-    griffVergessen();
-
-    PROFIL = {anrede:"Herr", funktion:"Bezirksleiter", vorname:"", nachname:"",
-              strasse:"", plz:"", ort:"", mobil:"", mail:"", vo:"", gebiet:"", bild:""};
-    BANKEN = [];
-    BMA = [];
-    TERMINE = [];
-    ABSTIMMUNG = {};
-    PROVISIONEN = [];
-    PROV_ARCHIV = [];
-    PROV_STEUER = 0;
-    abAktiv = "";
-    LISTEN.bank.daten = BANKEN;
-    LISTEN.bma.daten = BMA;
-
-    try{
-      window.localStorage.removeItem(ABLAGE);
-      window.localStorage.removeItem(START_ABLAGE);
-    }catch(e){}
-
-    seiteZeigen("dashboard");
-    profilAnzeigen();
-    kopfAktualisieren();
-    zeichnen();
-    abBmaFuellen();
-    abZeichnen();
-    dateiStandAnzeigen();
-    startZeigen();
-  });
-}
-
-document.getElementById("abmelden").addEventListener("click", function(){
-  schliessen("veil-profil");
-  kontoMenu.hidden = true;
-  kontoBtn.setAttribute("aria-expanded", "false");
-
-  var text = DATEI.griff
-    ? "Die Sitzung wird beendet. Deine Daten werden vorher in " + DATEI.name
-      + " gesichert und lassen sich darüber wieder öffnen."
-    : "Die Sitzung wird beendet. Es ist keine Speicherdatei verbunden – "
-      + "lade vorher eine Sicherung herunter, sonst sind die Daten weg.";
-
-  frage(text, "Abmelden", abmeldenAusfuehren);
+// Zeitpunkt der letzten Eingabe: waehrend getippt wird, tauscht der Abgleich nichts aus
+var letzteEingabe = 0;
+["input", "keydown"].forEach(function(art){
+  document.addEventListener(art, function(){ letzteEingabe = Date.now(); }, true);
 });
 
-/* ---------- Erster Start ---------- */
+window.SmartApp = {
+  // Diese Werte gelten als „nichts eingetragen“ und werden nicht gespeichert
+  standard: {
+    profil: {anrede: PROFIL_LEER.anrede, funktion: PROFIL_LEER.funktion},
+    provSteuer: 0,
+    jeder: {abstimmung: abLeererSatz()}
+  },
 
-var START_ABLAGE = "smartadm.eingerichtet";
+  lesen: datenAlsObjekt,
 
-function eingerichtet(){
-  return SPEICHER.lesen(START_ABLAGE) === "ja";
-}
+  // Stand aus der Cloud anzeigen
+  schreiben: function(d){
+    datenUebernehmen(d);
+    allesZeichnen();
+  },
 
-function startFertig(){
-  SPEICHER.schreiben(START_ABLAGE, "ja");
-  document.getElementById("start").hidden = true;
-  document.body.style.overflow = "";
-}
-
-function startZeigen(){
-  document.getElementById("start").hidden = false;
-  document.body.style.overflow = "hidden";
-}
-
-document.getElementById("start-neu").addEventListener("click", function(){
-  var weiter = DATEI.moeglich
-    ? dateiWaehlen()
-    : Promise.resolve(false);
-
-  weiter.then(function(){
-    startFertig();
-    profilInsFormular();
-    oeffnen("veil-profil");
-    melden("Bitte trage zuerst dein Profil ein");
-  });
-});
-
-document.getElementById("start-laden").addEventListener("click", function(){
-  dateiOeffnen().then(function(geklappt){
-    if(!geklappt) return;
-    startFertig();
+  // Importierte Daten uebernehmen und in die Cloud geben
+  uebernehmen: function(d){
+    datenUebernehmen(d);
+    kennungenErgaenzen();
     termineSortieren();
     awAbgleichen();
-    profilAnzeigen();
-    kopfAktualisieren();
-    zeichnen();
-    awZeichnen();
-  });
-});
+    allesZeichnen();
+    sichern();
+  },
+
+  // Eine Datei so aufbereiten, wie die App sie selbst speichern wuerde (Kennungen,
+  // Terminarten, Auswertung) – ohne den angezeigten Bestand zu veraendern.
+  normalisieren: function(d){
+    var vorher = datenAlsObjekt();
+    datenUebernehmen(d);
+    kennungenErgaenzen();
+    termineSortieren();
+    awAbgleichen();
+    var ergebnis = datenAlsObjekt();
+    datenUebernehmen(vorher);
+    return ergebnis;
+  },
+
+  leeren: function(){
+    FENSTER.forEach(function(id){ document.getElementById(id).hidden = true; });
+    dialogHintergrundAktualisieren();
+    datenUebernehmen({});
+    abAktiv = "";
+    bearbeite = {bank:null, bma:null, termin:null};
+    seiteZeigen("dashboard");
+    allesZeichnen();
+  },
+
+  beschaeftigt: function(){
+    return FENSTER.some(function(id){ return !document.getElementById(id).hidden; })
+        || Date.now() - letzteEingabe < 4000;
+  },
+
+  // Daten aus der Zeit vor der Cloud, falls dieser Browser noch welche hat
+  altbestand: function(){
+    try{
+      var d = JSON.parse(SPEICHER.lesen(ABLAGE) || "null");
+      if(!d || typeof d !== "object") return null;
+      var menge = ["banken","bma","termine","provisionen","provArchiv","auswertung"]
+        .reduce(function(n, feld){ return n + (Array.isArray(d[feld]) ? d[feld].length : 0); }, 0);
+      return menge ? d : null;
+    }catch(e){ return null; }
+  },
+
+  profilOeffnen: function(){
+    profilInsFormular();
+    oeffnen("veil-profil");
+  },
+
+  melden: melden,
+  frage: frage,
+  oeffnen: oeffnen,
+  schliessen: schliessen
+};
 
 /* ---------- Start ---------- */
 
-laden();
-
-// Eine verbundene Speicherdatei hat Vorrang vor dem Browserspeicher
-dateiStarten().then(function(geladen){
-  if(geladen){
-    termineSortieren();
-    awAbgleichen();
-    profilAnzeigen();
-    kopfAktualisieren();
-    zeichnen();
-    awZeichnen();
-  }
-  dateiStandAnzeigen();
-
-  // Beim allerersten Aufruf zuerst fragen, statt stumm ins Werkzeug zu starten
-  if(!eingerichtet() && !geladen) startZeigen();
-});
+// Die Daten kommen nach der Anmeldung aus dem Cloudspeicher (cloud.js)
 
 termineSortieren();
 profilAnzeigen();
@@ -8098,14 +7548,15 @@ tarifZeichnen();
 rolleGeaendert();
 zeichnen();
 
-speicherKnopfAktualisieren();
-
-if(!SPEICHER.dauerhaft()){
-  console.warn("SmartADM: Der Browserspeicher ist gesperrt. "
-             + "Eingaben bleiben nur bis zum Neuladen erhalten.");
-}
 
 </script>
+
+<script defer crossorigin="anonymous"
+  src="https://clerk.kim-betcher.de/npm/@clerk/ui@1/dist/ui.browser.js"></script>
+<script defer crossorigin="anonymous"
+  data-clerk-publishable-key="pk_live_Y2xlcmsua2ltLWJldGNoZXIuZGUk"
+  src="https://clerk.kim-betcher.de/npm/@clerk/clerk-js@6/dist/clerk.browser.js"></script>
+<script src="cloud.js?v=1"></script>
 
 </body>
 </html>
