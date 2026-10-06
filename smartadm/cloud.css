@@ -1,0 +1,35 @@
+.legacy-cloud-hidden{display:none!important}
+.cloud-auth-pending > *:not(.cloud-login-overlay):not(script){visibility:hidden}
+.cloud-login-overlay{
+  position:fixed;inset:0;z-index:100000;display:grid;place-items:center;
+  padding:24px;background:linear-gradient(145deg,#eef4fb,#f8fafc 55%,#edf2f7)
+}
+body.cloud-signed-in .cloud-login-overlay{display:none}
+.cloud-login-card{
+  width:min(440px,100%);background:#fff;border:1px solid rgba(13,65,127,.12);
+  border-radius:24px;padding:28px;box-shadow:0 24px 60px rgba(20,42,74,.14)
+}
+.cloud-login-logo{display:flex!important;justify-content:center;align-items:center;gap:10px;margin:2px auto 24px}
+.cloud-login-logo .brand-icon{width:44px;height:44px;object-fit:contain}
+.cloud-login-logo .brand-wordmark{max-width:220px;height:auto}
+.cloud-login-error{margin:16px 0 0;color:#a53b31;text-align:center}
+.cloud-storage-link{
+  appearance:none;border:1px solid rgba(13,65,127,.16);background:#fff;color:#17324d;
+  font:inherit;font-size:13px;font-weight:600;padding:8px 11px;border-radius:10px;cursor:pointer
+}
+.cloud-storage-link:hover{background:#f4f7fb}
+.clerk-user-host{display:flex;align-items:center;min-width:34px;min-height:34px}
+.cloud-sync-note{font-size:12px;color:#657485;margin-top:10px}
+.cloud-sync-note.ok{color:#26734d}.cloud-sync-note.warn{color:#9a5a13}.cloud-sync-note.error{color:#a53b31}
+.cloud-conflict{
+  position:fixed;inset:0;z-index:100001;background:rgba(13,25,39,.45);display:grid;place-items:center;padding:20px
+}
+.cloud-conflict[hidden]{display:none}
+.cloud-conflict-card{width:min(520px,100%);background:#fff;border-radius:20px;padding:24px;box-shadow:0 24px 70px rgba(0,0,0,.22)}
+.cloud-conflict-card h3{margin:0 0 10px}.cloud-conflict-card p{margin:0 0 18px;line-height:1.5;color:#536273}
+.cloud-conflict-actions{display:flex;gap:10px;flex-wrap:wrap}
+@media(max-width:720px){
+  .cloud-storage-link{font-size:0;padding:8px;width:36px;height:36px}
+  .cloud-storage-link::after{content:"☁";font-size:18px}
+  .cloud-login-card{padding:20px;border-radius:18px}
+}
