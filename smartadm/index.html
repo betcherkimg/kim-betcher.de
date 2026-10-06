@@ -4958,6 +4958,7 @@ function laden(){
     if(d.provArchiv) PROV_ARCHIV = d.provArchiv;
     if(typeof d.provSteuer === "number") PROV_STEUER = d.provSteuer;
     if(Array.isArray(d.auswertung)) AUSWERTUNG = d.auswertung;
+    terminArtErgaenzen();
     LISTEN.bank.daten = BANKEN;
     LISTEN.bma.daten = BMA;
     return true;
@@ -5270,9 +5271,19 @@ function terminGespraechText(t){
   return terminGespraechPersonen(t).map(terminGespraechPersonText).join("; ");
 }
 
+function terminArt(t){
+  return t && t.terminart ? t.terminart : "allein";
+}
+
+function terminArtErgaenzen(){
+  [TERMINE, AUSWERTUNG].forEach(function(liste){
+    liste.forEach(function(t){ if(!t.terminart) t.terminart = "allein"; });
+  });
+}
+
 function terminArtText(t){
-  if(t.terminart === "allein") return "Allein (ohne BMA)";
-  if(t.terminart === "gemeinsam") return "Gemeinsam mit " + (t.bma || "dem BMA");
+  if(terminArt(t) === "allein") return "Allein (ohne BMA)";
+  if(terminArt(t) === "gemeinsam") return "Gemeinsam mit " + (t.bma || "dem BMA");
   return "";
 }
 
@@ -5397,8 +5408,8 @@ function terminFormularFuellen(t){
   terminGespraechZaehler = 0;
   if(t) terminGespraechPersonen(t).forEach(terminGespraechPersonHinzufuegen);
   terminGespraechAuswahlFuellen();
-  document.getElementById("t-allein").checked = !t || t.terminart === "allein";
-  document.getElementById("t-gemeinsam").checked = !!t && t.terminart === "gemeinsam";
+  document.getElementById("t-allein").checked = terminArt(t) === "allein";
+  document.getElementById("t-gemeinsam").checked = terminArt(t) === "gemeinsam";
   document.getElementById("t-wv").value    = t ? (t.wv || "") : "";
   document.getElementById("t-bma").value   = t ? (t.bma || "") : "";
   document.getElementById("t-protokoll").value = t ? (t.protokoll || "") : "";
@@ -6713,6 +6724,7 @@ function datenUebernehmen(d){
   if(d.provArchiv) PROV_ARCHIV = d.provArchiv;
   if(typeof d.provSteuer === "number") PROV_STEUER = d.provSteuer;
   if(Array.isArray(d.auswertung)) AUSWERTUNG = d.auswertung;
+  terminArtErgaenzen();
   LISTEN.bank.daten = BANKEN;
   LISTEN.bma.daten = BMA;
   return true;
@@ -7380,13 +7392,13 @@ function awUebernehmen(t){
     if(awSchluessel(AUSWERTUNG[i]) === s){
       var fertig = AUSWERTUNG[i].wvFertig;
       AUSWERTUNG[i] = {datum:t.datum, kunde:t.kunde, ort:t.ort, ortTyp:t.ortTyp,
-                       bma:t.bma, personen:terminPersonen(t), terminart:t.terminart || "", gespraechPersonen:terminGespraechPersonen(t), wv:t.wv, status:t.status, protokoll:t.protokoll,
+                       bma:t.bma, personen:terminPersonen(t), terminart:terminArt(t), gespraechPersonen:terminGespraechPersonen(t), wv:t.wv, status:t.status, protokoll:t.protokoll,
                        wvFertig: fertig};
       return;
     }
   }
   AUSWERTUNG.push({datum:t.datum, kunde:t.kunde, ort:t.ort, ortTyp:t.ortTyp,
-                   bma:t.bma, personen:terminPersonen(t), terminart:t.terminart || "", gespraechPersonen:terminGespraechPersonen(t), wv:t.wv, status:t.status, protokoll:t.protokoll,
+                   bma:t.bma, personen:terminPersonen(t), terminart:terminArt(t), gespraechPersonen:terminGespraechPersonen(t), wv:t.wv, status:t.status, protokoll:t.protokoll,
                    wvFertig:false});
   awSortieren();
 }
