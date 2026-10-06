@@ -2329,7 +2329,7 @@
     background:rgba(29,39,51,.42);
     backdrop-filter:blur(3px);
     -webkit-backdrop-filter:blur(3px);
-    z-index:40;
+    z-index:100;
     display:flex;
     align-items:flex-end;
     justify-content:center;
@@ -2342,10 +2342,25 @@
     width:100%;
     max-width:520px;
     max-height:92vh;
-    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
     border-radius:22px 22px 0 0;
+  }
+
+  .sheet-inhalt{
+    min-height:0;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    scrollbar-width:thin;
+    scrollbar-color:var(--line) transparent;
     padding:22px var(--pad) calc(22px + env(safe-area-inset-bottom));
   }
+
+  .sheet-inhalt::-webkit-scrollbar{width:7px;}
+  .sheet-inhalt::-webkit-scrollbar-track{background:transparent;margin:18px 0;}
+  .sheet-inhalt::-webkit-scrollbar-thumb{background:var(--line);border:2px solid transparent;background-clip:padding-box;border-radius:999px;}
+  body.dialog-offen .leiste,body.dialog-offen .kopf{filter:grayscale(1);pointer-events:none;}
 
   .sheet-schmal{max-width:420px;}
 
@@ -2516,7 +2531,7 @@
     left:50%;
     bottom:calc(22px + env(safe-area-inset-bottom));
     transform:translateX(-50%);
-    z-index:60;
+    z-index:120;
     background:var(--ink);
     color:#fff;
     font-size:14px;
@@ -2537,7 +2552,7 @@
     margin:-6px auto 14px;
   }
 
-  .sheet-head{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .sheet-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;}
 
   .sheet-head h3{
     margin:0;
@@ -2549,21 +2564,30 @@
   .sheet-sub{margin:3px 0 20px;font-size:13.5px;color:var(--ink-soft);}
 
   .x{
-    background:var(--ground);
-    border:none;
-    color:var(--ink-soft);
-    font-size:20px;
+    background:var(--rot-wash);
+    border:1px solid var(--rot);
+    color:var(--rot);
+    font-size:13.5px;
+    font-weight:600;
     line-height:1;
-    width:32px;
-    height:32px;
-    border-radius:50%;
+    min-height:32px;
+    padding:7px 11px;
+    border-radius:999px;
     flex:none;
     display:flex;
     align-items:center;
     justify-content:center;
+    gap:6px;
   }
 
-  .x:hover{color:var(--ink);background:var(--line);}
+  .x:hover{color:#fff;background:var(--rot);}
+  .x span{font-size:20px;font-weight:400;}
+  .termin-person{padding:14px;border:1px solid var(--line);border-radius:14px;margin-bottom:12px;}
+  .termin-person-kopf{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
+  .termin-person-kopf strong{font-size:13.5px;color:var(--ink-soft);}
+  .termin-person .field:last-child{margin-bottom:0;}
+  #t-person-add{margin-bottom:20px;}
+  .termin-zusatz{font-size:13px;line-height:1.5;color:var(--ink-soft);white-space:pre-wrap;}
 
   .field{margin-bottom:16px;}
 
@@ -2906,6 +2930,7 @@
   .filiale-zwei[hidden], .filiale-plus[hidden]{display:none !important;}
 
 </style>
+<link rel="stylesheet" href="date-inputs.css">
 </head>
 <body>
 
@@ -3337,11 +3362,11 @@
 
 <!-- Persoenlicher Steuersatz -->
 <div class="veil" id="veil-prov-steuer" hidden>
-  <div class="sheet sheet-schmal" role="dialog" aria-modal="true" aria-labelledby="prov-steuer-title">
+  <div class="sheet sheet-schmal" role="dialog" aria-modal="true" aria-labelledby="prov-steuer-title"><div class="sheet-inhalt">
     <div class="grip"></div>
     <div class="sheet-head">
       <h3 id="prov-steuer-title">Pers&ouml;nlicher Steuersatz</h3>
-      <button class="x" data-close="veil-prov-steuer" aria-label="Schlie&szlig;en">&times;</button>
+      <button class="x" data-close="veil-prov-steuer" aria-label="Schlie&szlig;en">Schließen <span aria-hidden="true">&times;</span></button>
     </div>
     <p class="sheet-sub">Der Steuersatz wird auf das Ergebnis nach Abzug der Betriebsausgaben angewendet.</p>
     <div class="field">
@@ -3352,32 +3377,32 @@
       <button class="btn btn-quiet" data-close="veil-prov-steuer">Abbrechen</button>
       <button class="btn" id="prov-steuer-speichern">Speichern</button>
     </div>
-  </div>
+  </div></div>
 </div>
 
 <!-- Widget waehlen -->
 <div class="veil" id="veil-widget" hidden>
-  <div class="sheet sheet-schmal" role="dialog" aria-modal="true" aria-labelledby="widget-title">
+  <div class="sheet sheet-schmal" role="dialog" aria-modal="true" aria-labelledby="widget-title"><div class="sheet-inhalt">
     <div class="grip"></div>
     <div class="sheet-head">
       <h3 id="widget-title">Widget hinzuf&uuml;gen</h3>
-      <button class="x" data-close="veil-widget" aria-label="Schlie&szlig;en">&times;</button>
+      <button class="x" data-close="veil-widget" aria-label="Schlie&szlig;en">Schließen <span aria-hidden="true">&times;</span></button>
     </div>
     <p class="sheet-sub">Holt ein Modul als Kurz&uuml;bersicht auf das Dashboard.</p>
     <div class="widget-wahl" id="widget-wahl"></div>
     <div class="sheet-foot">
       <button class="btn btn-quiet" data-close="veil-widget">Schlie&szlig;en</button>
     </div>
-  </div>
+  </div></div>
 </div>
 
 <!-- Datenspeicher -->
 <div class="veil" id="veil-speicher" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="speicher-title">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="speicher-title"><div class="sheet-inhalt">
     <div class="grip"></div>
     <div class="sheet-head">
       <h3 id="speicher-title">Datenspeicher</h3>
-      <button class="x" data-close="veil-speicher" aria-label="Schlie&szlig;en">&times;</button>
+      <button class="x" data-close="veil-speicher" aria-label="Schlie&szlig;en">Schließen <span aria-hidden="true">&times;</span></button>
     </div>
     <p class="sheet-sub">Wo die Daten dieser App abgelegt werden.</p>
 
@@ -3397,16 +3422,16 @@
     <div class="sheet-foot">
       <button class="btn btn-quiet" data-close="veil-speicher">Schlie&szlig;en</button>
     </div>
-  </div>
+  </div></div>
 </div>
 
 <!-- Profil -->
 <div class="veil" id="veil-profil" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="profil-title">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="profil-title"><div class="sheet-inhalt">
     <div class="grip"></div>
     <div class="sheet-head">
       <h3 id="profil-title">Profil bearbeiten</h3>
-      <button class="x" data-close="veil-profil" aria-label="Schlie&szlig;en">&times;</button>
+      <button class="x" data-close="veil-profil" aria-label="Schlie&szlig;en">Schließen <span aria-hidden="true">&times;</span></button>
     </div>
     <p class="sheet-sub">Diese Daten stehen sp&auml;ter in Mails, Protokollen und Exporten.</p>
 
@@ -3495,16 +3520,16 @@
     </div>
 
 
-  </div>
+  </div></div>
 </div>
 
 <!-- Bank anlegen -->
 <div class="veil" id="veil-bank" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="bank-title">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="bank-title"><div class="sheet-inhalt">
     <div class="grip"></div>
     <div class="sheet-head">
       <h3 id="bank-title">Bank anlegen</h3>
-      <button class="x" data-close="veil-bank" aria-label="Schlie&szlig;en">&times;</button>
+      <button class="x" data-close="veil-bank" aria-label="Schlie&szlig;en">Schließen <span aria-hidden="true">&times;</span></button>
     </div>
     <p class="sheet-sub">Banken sind die Grundlage &ndash; Bankmitarbeiter werden ihnen zugeordnet.</p>
     <p class="pflicht-hinweis">Felder mit <span class="pflicht"></span> sind erforderlich.</p>
@@ -3538,16 +3563,16 @@
       <button class="btn btn-quiet" data-close="veil-bank">Abbrechen</button>
       <button class="btn" id="bank-speichern">Anlegen</button>
     </div>
-  </div>
+  </div></div>
 </div>
 
 <!-- Bankmitarbeiter anlegen -->
 <div class="veil" id="veil-bma" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="bma-title">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="bma-title"><div class="sheet-inhalt">
     <div class="grip"></div>
     <div class="sheet-head">
       <h3 id="bma-title">Bankmitarbeiter anlegen</h3>
-      <button class="x" data-close="veil-bma" aria-label="Schlie&szlig;en">&times;</button>
+      <button class="x" data-close="veil-bma" aria-label="Schlie&szlig;en">Schließen <span aria-hidden="true">&times;</span></button>
     </div>
     <p class="sheet-sub">Anrede und Geschlecht steuern sp&auml;ter die Formulierung im Mail-Generator.</p>
     <p class="pflicht-hinweis">Felder mit <span class="pflicht"></span> sind erforderlich.</p>
@@ -3636,16 +3661,16 @@
       <button class="btn btn-quiet" data-close="veil-bma">Abbrechen</button>
       <button class="btn" id="bma-speichern">Anlegen</button>
     </div>
-  </div>
+  </div></div>
 </div>
 
 <!-- Termin erfassen -->
 <div class="veil" id="veil-termin" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="termin-title">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="termin-title"><div class="sheet-inhalt">
     <div class="grip"></div>
     <div class="sheet-head">
       <h3 id="termin-title">Termin erfassen</h3>
-      <button class="x" data-close="veil-termin" aria-label="Schlie&szlig;en">&times;</button>
+      <button class="x" data-close="veil-termin" aria-label="Schlie&szlig;en">Schließen <span aria-hidden="true">&times;</span></button>
     </div>
     <p class="sheet-sub">Grundlage f&uuml;r Wiedervorlagen, Mail-Generator und Auswertung.</p>
     <p class="pflicht-hinweis">Felder mit <span class="pflicht"></span> sind erforderlich.</p>
@@ -3671,6 +3696,9 @@
         <input id="t-vorname" type="text" placeholder="Anna" autocomplete="off">
       </div>
     </div>
+
+    <div id="t-personen"></div>
+    <button class="btn btn-quiet" type="button" id="t-person-add">+ weitere Person hinzufügen</button>
 
     <div class="field">
       <label for="t-ort" class="pflicht">Ort der Beratung</label>
@@ -3699,9 +3727,18 @@
     </div>
 
     <div class="field">
-      <label for="t-wv">Wiedervorlage oder Folgetermin</label>
+      <label id="t-terminart-label" class="pflicht">Termin mit dem Bankmitarbeiter</label>
+      <div class="choice" role="group" aria-labelledby="t-terminart-label">
+        <input type="radio" name="terminart" id="t-allein" value="allein" checked><label for="t-allein">allein</label>
+        <input type="radio" name="terminart" id="t-gemeinsam" value="gemeinsam"><label for="t-gemeinsam">gemeinsam</label>
+      </div>
+      <p class="hint">„Gemeinsam“ bedeutet, dass der ausgewählte Bankmitarbeiter beim Termin dabei war.</p>
+    </div>
+
+    <div class="field" id="feld-t-wv" hidden>
+      <label for="t-wv" id="t-wv-label">Wiedervorlage</label>
       <input id="t-wv" type="date">
-      <p class="hint">Leer lassen, wenn nichts ansteht.</p>
+      <p class="hint">Datum für die ausgewählte Wiedervorlage oder den Folgetermin.</p>
     </div>
 
     <div class="field">
@@ -3713,16 +3750,16 @@
       <button class="btn btn-quiet" data-close="veil-termin">Abbrechen</button>
       <button class="btn" id="termin-speichern">Erfassen</button>
     </div>
-  </div>
+  </div></div>
 </div>
 
 <!-- Eintrag erfassen -->
 <div class="veil" id="veil-prov" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="prov-title">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="prov-title"><div class="sheet-inhalt">
     <div class="grip"></div>
     <div class="sheet-head">
       <h3 id="prov-title">Eintrag erfassen</h3>
-      <button class="x" data-close="veil-prov" aria-label="Schlie&szlig;en">&times;</button>
+      <button class="x" data-close="veil-prov" aria-label="Schlie&szlig;en">Schließen <span aria-hidden="true">&times;</span></button>
     </div>
     <p class="sheet-sub" id="prov-sub">Bewertung, Faktor und Saldo werden berechnet.</p>
 
@@ -3803,27 +3840,27 @@
       <button class="btn btn-quiet" data-close="veil-prov">Abbrechen</button>
       <button class="btn" id="prov-speichern">Erfassen</button>
     </div>
-  </div>
+  </div></div>
 </div>
 
 <!-- Archiv -->
 <div class="veil" id="veil-prov-archiv" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="pa-title">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="pa-title"><div class="sheet-inhalt">
     <div class="grip"></div>
     <div class="sheet-head">
       <h3 id="pa-title">Archiv</h3>
-      <button class="x" data-close="veil-prov-archiv" aria-label="Schlie&szlig;en">&times;</button>
+      <button class="x" data-close="veil-prov-archiv" aria-label="Schlie&szlig;en">Schließen <span aria-hidden="true">&times;</span></button>
     </div>
     <div id="prov-archiv-inhalt"></div>
     <div class="sheet-foot">
       <button class="btn btn-quiet" data-close="veil-prov-archiv">Schlie&szlig;en</button>
     </div>
-  </div>
+  </div></div>
 </div>
 
 <!-- Rueckfrage -->
 <div class="veil" id="veil-frage" hidden>
-  <div class="sheet sheet-schmal" role="dialog" aria-modal="true" aria-labelledby="frage-title">
+  <div class="sheet sheet-schmal" role="dialog" aria-modal="true" aria-labelledby="frage-title"><div class="sheet-inhalt">
     <div class="grip"></div>
     <h3 id="frage-title">Sicher?</h3>
     <p class="frage-text" id="frage-text"></p>
@@ -3831,27 +3868,28 @@
       <button class="btn btn-quiet" id="frage-nein">Abbrechen</button>
       <button class="btn btn-rot" id="frage-ja">L&ouml;schen</button>
     </div>
-  </div>
+  </div></div>
 </div>
 
 <div class="toast" id="toast" hidden></div>
 
 <!-- Detailansicht -->
 <div class="veil" id="veil-detail" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="detail-title"><div class="sheet-inhalt">
     <div class="grip"></div>
     <div class="sheet-head">
       <h3 id="detail-title">Details</h3>
-      <button class="x" data-close="veil-detail" aria-label="Schlie&szlig;en">&times;</button>
+      <button class="x" data-close="veil-detail" aria-label="Schlie&szlig;en">Schließen <span aria-hidden="true">&times;</span></button>
     </div>
     <div id="detail-inhalt"></div>
     <div class="sheet-foot">
       <button class="btn btn-quiet" id="detail-loeschen">L&ouml;schen</button>
       <button class="btn" id="detail-bearbeiten">Bearbeiten</button>
     </div>
-  </div>
+  </div></div>
 </div>
 
+<script src="date-inputs.js"></script>
 <script>
 
 // Rollen: Optik und Filterung. Service wird im Mail-Generator ausgelassen.
@@ -4182,7 +4220,9 @@ function detailTermin(t){
            +   zeile("Datum", datumKurz(t.datum))
            +   zeile("Bankstelle / Ort", t.ort)
            +   zeile("Bankmitarbeiter", t.bma)
-           +   zeile("Wiedervorlage", datumKurz(t.wv))
+           +   zeile("Terminart", terminArtText(t))
+           +   (terminPersonenText(t) ? zeile("Weitere Anwesende", terminPersonenText(t)) : "")
+           +   zeile(t.status === "folgetermin" ? "Folgetermin" : "Wiedervorlage", datumKurz(t.wv))
            + '</ul>'
            + '<p class="protokoll-titel">Protokoll</p>'
            + '<div class="protokoll' + (t.protokoll ? '' : ' leer') + '">'
@@ -4952,6 +4992,7 @@ function melden(text){
 
 function maengel(feldId, text){
   var feld = document.getElementById(feldId);
+  if(feld.classList.contains("date-native")) feld = feld.parentElement.querySelector(".date-display");
   feld.style.borderColor = "var(--rot)";
   feld.focus();
   setTimeout(function(){ feld.style.borderColor = ""; }, 2200);
@@ -5139,9 +5180,69 @@ function nameTeilen(voll){
 function nameFuegen(nachname, vorname){
   nachname = String(nachname || "").trim();
   vorname  = String(vorname  || "").trim();
+  if(!nachname) return vorname;
   if(!vorname) return nachname;
   return nachname + ", " + vorname;
 }
+
+function terminPersonen(t){
+  return (Array.isArray(t.personen) ? t.personen : []).filter(function(p){ return p && typeof p === "object"; })
+    .map(function(p){ return {nachname:String(p.nachname || "").trim(), vorname:String(p.vorname || "").trim(), beziehung:String(p.beziehung || "").trim()}; });
+}
+
+function terminPersonenText(t){
+  return terminPersonen(t).map(function(p){
+    return nameFuegen(p.nachname, p.vorname) + (p.beziehung ? " (" + p.beziehung + ")" : "");
+  }).join("; ");
+}
+
+function terminArtText(t){
+  if(t.terminart === "allein") return "Allein (ohne BMA)";
+  if(t.terminart === "gemeinsam") return "Gemeinsam mit " + (t.bma || "dem BMA");
+  return "";
+}
+
+function terminZusatzHtml(t){
+  var art = terminArtText(t), personen = terminPersonenText(t);
+  if(!art && !personen) return "";
+  return '<p class="termin-zusatz">' + (art ? esc(art) : "")
+    + (art && personen ? '<br>' : '') + (personen ? 'Weitere Anwesende: ' + esc(personen) : '') + '</p>';
+}
+
+var terminPersonZaehler = 0;
+function terminPersonHinzufuegen(p){
+  p = p || {};
+  var id = "t-person-" + (++terminPersonZaehler);
+  var box = document.createElement("div");
+  box.className = "termin-person";
+  box.innerHTML = '<div class="termin-person-kopf"><strong>Weitere Person</strong>'
+    + '<button type="button" class="x" data-person-entfernen aria-label="Weitere Person entfernen">Entfernen <span aria-hidden="true">&times;</span></button></div>'
+    + '<div class="duo"><div class="field"><label for="' + id + '-nachname">Nachname</label>'
+    + '<input id="' + id + '-nachname" data-person-nachname type="text" autocomplete="off" value="' + esc(p.nachname || "") + '"></div>'
+    + '<div class="field"><label for="' + id + '-vorname">Vorname</label>'
+    + '<input id="' + id + '-vorname" data-person-vorname type="text" autocomplete="off" value="' + esc(p.vorname || "") + '"></div></div>'
+    + '<div class="field"><label for="' + id + '-beziehung">Beziehung (optional)</label>'
+    + '<input id="' + id + '-beziehung" data-person-beziehung type="text" placeholder="z. B. Sohn, Mutter" value="' + esc(p.beziehung || "") + '"></div>';
+  document.getElementById("t-personen").appendChild(box);
+  return box;
+}
+
+document.getElementById("t-person-add").addEventListener("click", function(){
+  terminPersonHinzufuegen().querySelector("[data-person-nachname]").focus();
+});
+document.getElementById("t-personen").addEventListener("click", function(e){
+  var entfernen = e.target.closest("[data-person-entfernen]");
+  if(!entfernen) return;
+  entfernen.closest(".termin-person").remove();
+  document.getElementById("t-person-add").focus();
+});
+
+function terminWvFeldPruefen(){
+  var status = document.getElementById("t-status").value;
+  document.getElementById("feld-t-wv").hidden = status !== "wiedervorlage" && status !== "folgetermin";
+  document.getElementById("t-wv-label").textContent = status === "folgetermin" ? "Folgetermin" : "Wiedervorlage";
+}
+document.getElementById("t-status").addEventListener("change", terminWvFeldPruefen);
 
 function terminFormularFuellen(t){
   document.getElementById("t-datum").value = t ? (t.datum || "") : heuteIso();
@@ -5149,10 +5250,16 @@ function terminFormularFuellen(t){
   var name = nameTeilen(t ? t.kunde : "");
   document.getElementById("t-nachname").value = name.nachname;
   document.getElementById("t-vorname").value  = name.vorname;
+  document.getElementById("t-personen").innerHTML = "";
+  terminPersonZaehler = 0;
+  if(t) terminPersonen(t).forEach(terminPersonHinzufuegen);
+  document.getElementById("t-allein").checked = !t || t.terminart === "allein";
+  document.getElementById("t-gemeinsam").checked = !!t && t.terminart === "gemeinsam";
   document.getElementById("t-wv").value    = t ? (t.wv || "") : "";
   document.getElementById("t-bma").value   = t ? (t.bma || "") : "";
   document.getElementById("t-protokoll").value = t ? (t.protokoll || "") : "";
   document.getElementById("t-status").value = t ? t.status : "offen";
+  terminWvFeldPruefen();
 
   var typ = t ? (t.ortTyp || "bank") : "";
   document.getElementById("t-ort").value = typ;
@@ -5188,9 +5295,29 @@ document.getElementById("termin-speichern").addEventListener("click", function()
   if(!vorname){ maengel("t-vorname", "Bitte den Vornamen eintragen."); return; }
 
   var kunde = nameFuegen(nachname, vorname);
+  var personen = [];
+  var unvollstaendig = null;
+  document.querySelectorAll("#t-personen .termin-person").forEach(function(box){
+    var n = box.querySelector("[data-person-nachname]"), v = box.querySelector("[data-person-vorname]");
+    var beziehung = box.querySelector("[data-person-beziehung]").value.trim();
+    if(!n.value.trim() && !v.value.trim() && !beziehung) return;
+    if(!n.value.trim() && !v.value.trim()){ unvollstaendig = unvollstaendig || n; return; }
+    personen.push({nachname:n.value.trim(), vorname:v.value.trim(), beziehung:beziehung});
+  });
+  if(unvollstaendig){ maengel(unvollstaendig.id, "Bitte einen Namen für die weitere Person eintragen."); return; }
+  var auswahl = document.querySelector('input[name="terminart"]:checked');
+  if(!auswahl){ maengel("t-allein", "Bitte allein oder gemeinsam auswählen."); return; }
+  if(auswahl.value === "gemeinsam" && !document.getElementById("t-bma").value){
+    maengel("t-bma", "Bitte den Bankmitarbeiter für den gemeinsamen Termin auswählen."); return;
+  }
+
 
   var datum = document.getElementById("t-datum").value;
   if(!datum){ maengel("t-datum", "Bitte ein Datum w\u00e4hlen."); return; }
+
+  if(!document.getElementById("feld-t-wv").hidden && !document.getElementById("t-wv").checkValidity()){
+    document.getElementById("t-wv").reportValidity(); return;
+  }
 
   var ort = ortAufloesen();
   if(!ort.typ){ maengel("t-ort", "Bitte den Ort der Beratung w\u00e4hlen."); return; }
@@ -5207,7 +5334,9 @@ document.getElementById("termin-speichern").addEventListener("click", function()
     ort: ort.text,
     ortTyp: ort.typ,
     bma: document.getElementById("t-bma").value,
-    wv: document.getElementById("t-wv").value,
+    personen: personen,
+    terminart: auswahl.value,
+    wv: document.getElementById("feld-t-wv").hidden ? "" : document.getElementById("t-wv").value,
     status: document.getElementById("t-status").value,
     protokoll: document.getElementById("t-protokoll").value.trim()
   };
@@ -5461,6 +5590,21 @@ function mailGewaehlt(){
   return MAIL_TREFFER.filter(function(e){ return e.mit; }).map(function(e){ return e.termin; });
 }
 
+function mailKundeHtml(t){
+  var personen = terminPersonenText(t);
+  return esc(t.kunde || "") + (personen ? '<br><small>Weitere Anwesende: ' + esc(personen) + '</small>' : '');
+}
+
+function mailTerminHtml(t){
+  var art = terminArtText(t);
+  return esc(datumKurz(t.datum) + (t.ort ? ", " + t.ort : ""))
+    + (art ? '<br><small>' + esc(art) + '</small>' : '');
+}
+
+function mailFolgedatum(t){
+  return t.wv ? (t.status === "folgetermin" ? "Folgetermin: " : "") + datumKurz(t.wv) : "";
+}
+
 function mailTabelle(liste){
   var html = '<table><tr>'
            + '<th style="width:20%">Kunde</th>'
@@ -5472,10 +5616,10 @@ function mailTabelle(liste){
 
   liste.forEach(function(t){
     html += '<tr>'
-          +   '<td>' + esc(t.kunde) + '</td>'
+          +   '<td>' + mailKundeHtml(t) + '</td>'
           +   '<td>' + esc(statusInfo(t.status).label) + '</td>'
-          +   '<td>' + esc(datumKurz(t.datum) + (t.ort ? ", " + t.ort : "")) + '</td>'
-          +   '<td>' + esc(datumKurz(t.wv)) + '</td>'
+          +   '<td>' + mailTerminHtml(t) + '</td>'
+          +   '<td>' + esc(mailFolgedatum(t)) + '</td>'
           +   '<td>' + esc(t.protokoll || "") + '</td>'
           + '</tr>';
   });
@@ -5513,9 +5657,11 @@ function mailAlsText(){
 
   liste.forEach(function(t, index){
     text += t.kunde + "\n";
+    if(terminPersonenText(t)) text += "Weitere Anwesende: " + terminPersonenText(t) + "\n";
+    if(terminArtText(t)) text += "Terminart: " + terminArtText(t) + "\n";
     text += "Status: " + statusInfo(t.status).label + "\n";
     text += "Termin: " + datumKurz(t.datum) + (t.ort ? " \u00b7 " + t.ort : "") + "\n";
-    if(t.wv) text += "Wiedervorlage: " + datumKurz(t.wv) + "\n";
+    if(t.wv) text += (t.status === "folgetermin" ? "Folgetermin: " : "Wiedervorlage: ") + datumKurz(t.wv) + "\n";
     if(t.protokoll){
       text += "Ansprachegrund:\n" + t.protokoll.trim() + "\n";
     }
@@ -5550,10 +5696,10 @@ function mailAlsHtml(){
 
   liste.forEach(function(t){
     html += '<tr>'
-          + '<td style="' + zellen + '">' + esc(t.kunde || "") + '</td>'
+          + '<td style="' + zellen + '">' + mailKundeHtml(t) + '</td>'
           + '<td style="' + zellen + '">' + esc(statusInfo(t.status).label) + '</td>'
-          + '<td style="' + zellen + '">' + esc(datumKurz(t.datum) + (t.ort ? ", " + t.ort : "")) + '</td>'
-          + '<td style="' + zellen + '">' + esc(datumKurz(t.wv)) + '</td>'
+          + '<td style="' + zellen + '">' + mailTerminHtml(t) + '</td>'
+          + '<td style="' + zellen + '">' + esc(mailFolgedatum(t)) + '</td>'
           + '<td style="' + zellen + ';white-space:pre-wrap">' + esc(t.protokoll || "") + '</td>'
           + '</tr>';
   });
@@ -7089,13 +7235,13 @@ function awUebernehmen(t){
     if(awSchluessel(AUSWERTUNG[i]) === s){
       var fertig = AUSWERTUNG[i].wvFertig;
       AUSWERTUNG[i] = {datum:t.datum, kunde:t.kunde, ort:t.ort, ortTyp:t.ortTyp,
-                       bma:t.bma, wv:t.wv, status:t.status, protokoll:t.protokoll,
+                       bma:t.bma, personen:terminPersonen(t), terminart:t.terminart || "", wv:t.wv, status:t.status, protokoll:t.protokoll,
                        wvFertig: fertig};
       return;
     }
   }
   AUSWERTUNG.push({datum:t.datum, kunde:t.kunde, ort:t.ort, ortTyp:t.ortTyp,
-                   bma:t.bma, wv:t.wv, status:t.status, protokoll:t.protokoll,
+                   bma:t.bma, personen:terminPersonen(t), terminart:t.terminart || "", wv:t.wv, status:t.status, protokoll:t.protokoll,
                    wvFertig:false});
   awSortieren();
 }
@@ -7209,7 +7355,7 @@ function awGefiltert(liste){
     if(status && t.status !== status) return false;
     if(bma && t.bma !== bma) return false;
     if(suche){
-      var text = [t.kunde, t.protokoll, t.bma, t.ort].join(" ").toLowerCase();
+      var text = [t.kunde, t.protokoll, t.bma, t.ort, terminPersonenText(t)].join(" ").toLowerCase();
       if(text.indexOf(suche) === -1) return false;
     }
     return true;
@@ -7296,6 +7442,7 @@ function awTerminZeile(t){
        +   (offen
             ? '<div class="aw-detail">'
               + (t.wv ? '<p class="aw-wv">Wiedervorlage: ' + esc(datumKurz(t.wv)) + '</p>' : '')
+              + terminZusatzHtml(t)
               + '<p class="protokoll' + (t.protokoll ? '' : ' leer') + '">'
               + (t.protokoll ? esc(t.protokoll) : "Kein Protokoll hinterlegt") + '</p>'
               + '</div>'
@@ -7329,6 +7476,7 @@ function awKundenZeile(e){
                        +   '<span class="aw-verlauf-kopf">' + esc(datumKurz(t.datum))
                        +     (t.ort ? ' \u00b7 ' + esc(t.ort) : '')
                        +     ' <span class="pill ' + s.klasse + '">' + s.label + '</span></span>'
+                       +   terminZusatzHtml(t)
                        +   (t.protokoll ? '<span class="aw-verlauf-text">' + esc(t.protokoll) + '</span>' : '')
                        + '</div>';
                 }).join("")
@@ -7372,6 +7520,7 @@ function awWvZeile(t){
        +   (offen
             ? '<div class="aw-detail">'
               + '<p class="aw-wv">Wiedervorlage: ' + esc(datumKurz(t.wv)) + '</p>'
+              + terminZusatzHtml(t)
               + '<p class="protokoll' + (t.protokoll ? '' : ' leer') + '">'
               + (t.protokoll ? esc(t.protokoll) : "Kein Protokoll hinterlegt") + '</p>'
               + '</div>'
@@ -7418,13 +7567,23 @@ document.addEventListener("click", function(e){
   if(el) el.addEventListener("change", awZeichnen);
 });
 
+function dialogHintergrundAktualisieren(){
+  var offen = !!document.querySelector(".veil:not([hidden])");
+  document.body.classList.toggle("dialog-offen", offen);
+  document.body.style.overflow = offen ? "hidden" : "";
+  Array.from(document.body.children).forEach(function(el){
+    if(el.classList.contains("veil") || el.id === "toast" || el.tagName === "SCRIPT") return;
+    el.inert = offen;
+  });
+}
+
 function oeffnen(veilId){
   var v = document.getElementById(veilId);
   v.hidden = false;
-  document.body.style.overflow = "hidden";
+  dialogHintergrundAktualisieren();
 
   // Immer am Anfang des Formulars beginnen
-  var blatt = v.querySelector(".sheet");
+  var blatt = v.querySelector(".sheet-inhalt");
   if(blatt) blatt.scrollTop = 0;
   var erstes = v.querySelector("input[type=text]");
   if(erstes) erstes.focus();
@@ -7432,7 +7591,7 @@ function oeffnen(veilId){
 
 function schliessen(veilId){
   document.getElementById(veilId).hidden = true;
-  document.body.style.overflow = "";
+  dialogHintergrundAktualisieren();
 }
 
 /* ---------- Seitenleiste ---------- */
@@ -7579,15 +7738,10 @@ document.getElementById("open-termin").addEventListener("click", function(){
   oeffnen("veil-termin");
 });
 
-var FENSTER = ["veil-widget","veil-speicher","veil-profil","veil-bank","veil-bma","veil-termin","veil-detail","veil-frage","veil-prov","veil-prov-archiv"];
+var FENSTER = ["veil-prov-steuer","veil-widget","veil-speicher","veil-profil","veil-bank","veil-bma","veil-termin","veil-detail","veil-frage","veil-prov","veil-prov-archiv"];
 
 document.querySelectorAll("[data-close]").forEach(function(el){
   el.addEventListener("click", function(){ schliessen(el.getAttribute("data-close")); });
-});
-
-FENSTER.forEach(function(id){
-  var v = document.getElementById(id);
-  v.addEventListener("click", function(e){ if(e.target === v) schliessen(id); });
 });
 
 document.addEventListener("keydown", function(e){

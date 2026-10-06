@@ -1,0 +1,8 @@
+.date-field{position:relative;display:flex;align-items:center;gap:8px;min-width:0;}
+.date-field .date-display{width:100%;min-width:0;flex:1;}
+.date-field .date-display::placeholder{color:#bcc3ca;opacity:1;font-size:13px;}
+.date-field .date-native{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;border:0!important;opacity:0;pointer-events:none;bottom:0;right:0;}
+.date-calendar{display:flex;align-items:center;justify-content:center;flex:none;width:40px;height:40px;padding:8px;border:1px solid var(--line,#d7dce2);border-radius:12px;background:var(--surface,#fff);color:var(--ink,#102235);cursor:pointer;}
+.date-calendar:hover{background:var(--wash,#f1f3f5);}
+.date-calendar:focus-visible{outline:2px solid var(--blau,#008cff);outline-offset:2px;}
+@media(max-width:480px){.duo:has(.date-field){grid-template-columns:1fr;}}
