@@ -3932,6 +3932,7 @@
 
 <script defer crossorigin="anonymous" src="https://clerk.kim-betcher.de/npm/@clerk/ui@1/dist/ui.browser.js"></script>
 <script defer crossorigin="anonymous" data-clerk-publishable-key="pk_live_Y2xlcmsua2ltLWJldGNoZXIuZGUk" src="https://clerk.kim-betcher.de/npm/@clerk/clerk-js@6/dist/clerk.browser.js"></script>
+<script defer src="cloud.js"></script>
 <script src="date-inputs.js"></script>
 <script>
 
@@ -4841,7 +4842,7 @@ function abDruckDokument(){
     html += '<div class="notiz"><h3>' + esc(b.titel) + '</h3><p>' + abDruckText(d.bloecke[b.id] || '–') + '</p></div>';
   });
 
-  html += '</div></section><footer class="fuss"><span>SmartADM · Adressabstimmung</span><span>' + esc(abAktiv || '') + '</span></footer></main><script src="cloud.js"></script>
+  html += '</div></section><footer class="fuss"><span>SmartADM · Adressabstimmung</span><span>' + esc(abAktiv || '') + '</span></footer></main>
 </body></html>';
   return html;
 }
