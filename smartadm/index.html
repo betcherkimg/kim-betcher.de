@@ -1894,28 +1894,6 @@
     background:#fff;
   }
 
-  .mail-blatt table{
-    border-collapse:collapse;
-    width:100%;
-    font-size:12.5px;
-    margin-top:10px;
-  }
-
-  .mail-blatt th{
-    background:#F2F2F2;
-    border:1px solid #ddd;
-    padding:6px 8px;
-    text-align:left;
-    font-weight:600;
-  }
-
-  .mail-blatt td{
-    border:1px solid #ddd;
-    padding:6px 8px;
-    vertical-align:top;
-    word-break:break-word;
-  }
-
   .mail-knoepfe{
     display:flex;
     gap:10px;
@@ -2815,6 +2793,8 @@
 
   .detail-kopf .avatar{width:52px;height:52px;font-size:16px;}
   .detail-kopf .card-name{font-size:18px;}
+  .termin-detail-kopf{align-items:flex-start;}
+  .termin-detail-kopf .card-name{white-space:normal;overflow-wrap:anywhere;min-width:0;flex:1;}
 
   .sheet-foot{display:flex;gap:10px;margin-top:24px;}
   .sheet-foot .btn{flex:1;padding:13px 18px;}
@@ -3325,7 +3305,7 @@
       <h3>Vorschau</h3>
       <div class="mail-blatt" id="mail-blatt"></div>
       <div class="mail-knoepfe">
-        <button class="btn btn-quiet" id="m-kopieren">Mailtext kopieren</button>
+        <button class="btn btn-quiet" id="m-kopieren">Formatiert kopieren</button>
         <button class="btn" id="m-oeffnen">Mail senden</button>
       </div>
       <p class="mail-hinweis" id="m-hinweis">&nbsp;</p>
@@ -4256,8 +4236,8 @@ function detailBMA(p){
 
 function detailTermin(t){
   var st = statusInfo(t.status);
-  var html = '<div class="detail-kopf">'
-           +   '<span class="card-name">' + esc(t.kunde) + '</span>'
+  var html = '<div class="detail-kopf termin-detail-kopf">'
+           +   '<span class="card-name">' + esc(terminKundenText(t)) + '</span>'
            +   '<span class="t-status ' + st.klasse + '" style="margin-left:auto">' + st.label + '</span>'
            + '</div>'
            + '<ul class="daten">'
@@ -4322,11 +4302,7 @@ function auswahlenFuellen(){
   ortFeldPruefen();
 
   // Bankmitarbeiter im Terminformular
-  html = '<option value="">Bitte w\u00e4hlen</option>';
-  for(i=0;i<BMA.length;i++){
-    html += '<option>' + esc(BMA[i].name) + '</option>';
-  }
-  document.getElementById("t-bma").innerHTML = html;
+  terminBmaAuswahlFuellen();
 
   // Status im Terminformular
   html = "";
@@ -4338,6 +4314,28 @@ function auswahlenFuellen(){
 
 /* ---------- Freies Ortsfeld ---------- */
 
+function terminBmaAuswahlFuellen(){
+  var select = document.getElementById("t-bma"), vorher = select.value;
+  var filialname = document.getElementById("t-bankstelle").value;
+  var bank = document.getElementById("t-ort").value === "bank"
+    ? BANKEN.find(function(b){ return b.name === filialname; }) : null;
+  var sortiert = BMA.slice().sort(function(a,b){ return a.name.localeCompare(b.name, "de"); });
+  function optionen(liste){
+    return liste.map(function(p){ return '<option value="' + esc(p.name) + '">' + esc(p.name) + '</option>'; }).join("");
+  }
+  var html = '<option value="">Bitte wählen</option>';
+  if(bank){
+    var eigene = sortiert.filter(function(p){ return p.bank === bank.id; });
+    var andere = sortiert.filter(function(p){ return p.bank !== bank.id; });
+    if(eigene.length) html += '<optgroup label="' + esc(bank.name) + '">' + optionen(eigene) + '</optgroup>';
+    if(eigene.length && andere.length) html += '<hr>';
+    if(andere.length) html += '<optgroup label="Andere Filialen">' + optionen(andere) + '</optgroup>';
+  }else html += optionen(sortiert);
+  select.innerHTML = html;
+  select.value = vorher;
+}
+document.getElementById("t-bankstelle").addEventListener("change", terminBmaAuswahlFuellen);
+
 function ortFeldPruefen(){
   var wahl = document.getElementById("t-ort").value;
   var istBank = wahl === "bank";
@@ -4345,6 +4343,7 @@ function ortFeldPruefen(){
 
   document.getElementById("feld-bankstelle").hidden = !istBank;
   document.getElementById("feld-ort-frei").hidden = !istFrei;
+  terminBmaAuswahlFuellen();
 
   if(istBank) document.getElementById("t-bankstelle").focus();
   if(istFrei) document.getElementById("t-ort-frei").focus();
@@ -5245,9 +5244,30 @@ function terminPersonenText(t){
   return terminPersonen(t).map(terminPersonText).filter(Boolean).join("; ");
 }
 
+function terminAnwesendeText(t){
+  var personen = terminPersonen(t);
+  if(t.kunde) personen.unshift(nameTeilen(t.kunde));
+  var gruppen = [], familien = Object.create(null);
+  personen.forEach(function(p){
+    var nachname = String(p.nachname || "").trim().replace(/\s+/g, " ");
+    var key = nachname && p.vorname ? nachname.toLocaleLowerCase("de") : "";
+    if(key && familien[key]) familien[key].push(p);
+    else{
+      var gruppe = [p];
+      gruppen.push(gruppe);
+      if(key) familien[key] = gruppe;
+    }
+  });
+  return gruppen.map(function(gruppe){
+    if(gruppe.length === 1) return terminPersonText(gruppe[0]);
+    return gruppe[0].nachname + " " + gruppe.map(function(p){
+      return p.vorname + (p.beziehung ? " (" + p.beziehung + ")" : "");
+    }).join(" & ");
+  }).filter(Boolean).join(" & ");
+}
+
 function terminKundenText(t){
-  var personen = terminPersonen(t).map(terminPersonText).filter(Boolean);
-  return [t.kunde || "Ohne Kundennamen"].concat(personen).join(" & ");
+  return terminAnwesendeText(t) || "Ohne Kundennamen";
 }
 
 function terminGespraechPersonen(t){
@@ -5656,14 +5676,6 @@ function mailEmpfaengerFuellen(){
   if(vorher) sel.value = vorher;
 }
 
-function vorWochen(anzahl){
-  var d = new Date();
-  d.setDate(d.getDate() - anzahl * 7);
-  return d.getFullYear() + "-" +
-         String(d.getMonth() + 1).padStart(2, "0") + "-" +
-         String(d.getDate()).padStart(2, "0");
-}
-
 function mailPerson(){
   var name = document.getElementById("m-bma").value;
   for(var i=0;i<BMA.length;i++) if(BMA[i].name === name) return BMA[i];
@@ -5682,7 +5694,7 @@ document.getElementById("m-laden").addEventListener("click", function(){
   if(!name){ melden("Bitte einen Empf\u00e4nger w\u00e4hlen."); return; }
 
   var ab = document.getElementById("m-ab").value;
-  if(!ab){ ab = vorWochen(2); document.getElementById("m-ab").value = ab; }
+  if(!ab){ ab = mailWochenStart(); document.getElementById("m-ab").value = ab; }
 
   MAIL_TREFFER = TERMINE
     .filter(function(t){ return t.bma === name && t.datum && t.datum >= ab; })
@@ -5720,7 +5732,7 @@ function mailTrefferZeichnen(){
           +     '</svg>'
           +   '</button>'
           +   '<span class="mail-text">'
-          +     '<span class="mail-kunde">' + esc(t.kunde) + '</span>'
+          +     '<span class="mail-kunde">' + esc(terminKundenText(t)) + '</span>'
           +     '<span class="mail-info">' + esc(datumKurz(t.datum))
           +       (t.ort ? " \u00b7 " + esc(t.ort) : "") + '</span>'
           +   '</span>'
@@ -5744,126 +5756,126 @@ function mailGewaehlt(){
   return MAIL_TREFFER.filter(function(e){ return e.mit; }).map(function(e){ return e.termin; });
 }
 
-function mailKundeHtml(t){
-  var personen = terminPersonenText(t);
-  return esc(t.kunde || "") + (personen ? '<br><small>Weitere Anwesende: ' + esc(personen) + '</small>' : '')
-    + (terminGespraechText(t) ? '<br><small>Um wen ging’s? ' + esc(terminGespraechText(t)) + '</small>' : '');
+function mailWochenStart(){
+  var d = new Date();
+  d.setDate(d.getDate() - (d.getDay() + 6) % 7);
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
 }
 
-function mailTerminHtml(t){
-  var art = terminArtText(t);
-  return esc(datumKurz(t.datum) + (t.ort ? ", " + t.ort : ""))
-    + (art ? '<br><small>' + esc(art) + '</small>' : '');
+function mailEinleitung(liste){
+  var start = mailWochenStart(), ende = new Date(start + "T12:00:00");
+  ende.setDate(ende.getDate() + 6);
+  var bis = ende.getFullYear() + "-" + String(ende.getMonth() + 1).padStart(2, "0") + "-" + String(ende.getDate()).padStart(2, "0");
+  var dieseWoche = liste.every(function(t){ return t.datum && t.datum >= start && t.datum <= bis; });
+  return "anbei die aktuelle Zusammenfassung all meiner Termine " + (dieseWoche ? "dieser Woche:" : "im ausgewählten Zeitraum:");
 }
 
-function mailFolgedatum(t){
-  return t.wv ? (t.status === "folgetermin" ? "Folgetermin: " : "") + datumKurz(t.wv) : "";
+function mailGespraechText(t){
+  function rang(p){
+    if(terminGespraechAlle(p.name)) return 0;
+    return !p.name || /^(kinder|sohn|tochter|eltern|vater|mutter|enkel|enkelin)$/i.test(p.name) ? 1 : 2;
+  }
+  return terminGespraechPersonen(t).sort(function(a,b){ return rang(a) - rang(b); })
+    .map(terminGespraechPersonText).join("; ");
 }
 
-function mailTabelle(liste){
-  var html = '<table><tr>'
-           + '<th style="width:20%">Kunde</th>'
-           + '<th style="width:14%">Status</th>'
-           + '<th style="width:18%">Termin</th>'
-           + '<th style="width:13%">Wiedervorlage</th>'
-           + '<th style="width:35%">Ansprachegrund</th>'
-           + '</tr>';
+function mailTerminAngaben(t){
+  var angaben = [];
+  if(terminAnwesendeText(t)) angaben.push({label:"Anwesende", wert:terminAnwesendeText(t), fett:true});
+  if(mailGespraechText(t)) angaben.push({label:"Um wen ging’s", wert:mailGespraechText(t)});
+  if(t.datum) angaben.push({label:"Termin am", wert:datumKurz(t.datum)});
+  if(terminArtText(t)) angaben.push({label:"Terminart", wert:terminArtText(t)});
+  if(t.status){
+    var status = statusInfo(t.status).label;
+    if(t.wv && (t.status === "folgetermin" || t.status === "wiedervorlage")) status += " am " + datumKurz(t.wv);
+    angaben.push({label:"Status", wert:status});
+  }
+  // Older records may have a follow-up date without a follow-up status.
+  if(t.wv && t.status !== "folgetermin" && t.status !== "wiedervorlage") angaben.push({label:"Wiedervorlage", wert:datumKurz(t.wv)});
+  return angaben;
+}
 
-  liste.forEach(function(t){
-    html += '<tr>'
-          +   '<td>' + mailKundeHtml(t) + '</td>'
-          +   '<td>' + esc(statusInfo(t.status).label) + '</td>'
-          +   '<td>' + mailTerminHtml(t) + '</td>'
-          +   '<td>' + esc(mailFolgedatum(t)) + '</td>'
-          +   '<td>' + esc(t.protokoll || "") + '</td>'
-          + '</tr>';
-  });
+function mailTermineHtml(liste){
+  return liste.map(function(t, index){
+    var html = index ? '<hr style="border:0;border-top:1px solid #d7dce2;margin:28px 0;">' : '';
+    html += '<div class="mail-termin-block" style="margin:0;overflow-wrap:anywhere;">';
+    html += mailTerminAngaben(t).map(function(a){
+      return '<p style="margin:0 0 5px;"><em>' + esc(a.label) + ':</em> '
+        + (a.fett ? '<strong>' + esc(a.wert) + '</strong>' : esc(a.wert)) + '</p>';
+    }).join("");
+    if(t.protokoll && t.protokoll.trim()){
+      html += '<p style="margin:20px 0 6px;"><strong>Ansprachegrund</strong></p>'
+        + '<p style="margin:0;">' + esc(t.protokoll.trim()).replace(/\r?\n/g, '<br>') + '</p>';
+    }
+    return html + '</div>';
+  }).join("");
+}
 
-  return html + '</table>';
+function mailSignaturHtml(){
+  var link = 'style="color:#3f8195;text-decoration:underline;"';
+  return '<div class="mail-signatur" style="margin:40px 0 0;line-height:1.55;">'
+    + '<p style="margin:0 0 16px;">Vielen lieben Dank<br>u.<br>mit freundlichen Grüßen</p>'
+    + '<p style="margin:0 0 20px;"><strong>Kim Betcher</strong><br>'
+    + 'Bezirksleiter für <em>Oberkochen, Ebnat &amp; Aalen</em></p>'
+    + '<p style="margin:0 0 20px 16px;"><img src="https://kim-betcher.de/smartadm/mail-phone-icon.png" alt="Telefon" width="16" height="16" style="vertical-align:-2px;margin-right:12px;border:0;">'
+    + '<a style="color:#102235;text-decoration:underline;" href="tel:+4915222686361">+49 152 22686361</a><br>'
+    + '<img src="https://kim-betcher.de/smartadm/mail-email-icon.png" alt="E-Mail" width="16" height="16" style="vertical-align:-2px;margin-right:12px;border:0;">'
+    + '<a ' + link + ' href="mailto:kim.betcher@schwaebisch-hall.de">kim.betcher@schwaebisch-hall.de</a></p>'
+    + '<p style="margin:0 0 20px;">'
+    + '<a ' + link + ' href="https://www.linkedin.com/in/kim-betcher-5a764b397/">LinkedIn Profil</a><br>'
+    + 'Website: <a ' + link + ' href="https://kim-betcher.de">Kim-betcher.de</a></p>'
+    + '<p style="margin:0 0 20px;"><img src="https://kim-betcher.de/smartadm/mail-signature-logo.png" alt="Schwäbisch Hall und Volksbanken Raiffeisenbanken" width="202" height="56" style="display:block;width:202px;max-width:100%;height:auto;border:0;"></p>'
+    + '<p style="margin:0 0 24px;">Für den wichtigsten Ort der Welt – mit den Heimatexperten von Schwäbisch Hall.</p>'
+    + '<p style="margin:0;line-height:1.55;">Handelsvertreter der Bausparkasse Schwäbisch Hall AG<br>'
+    + 'Bausparkasse der Volksbanken und Raiffeisenbanken<br>Crailsheimer Straße 52<br>74523 Schwäbisch Hall<br>'
+    + 'Tel.: +49 791 46-4646<br>Fax: +49 791 46-2628<br>'
+    + '<a ' + link + ' href="https://www.schwaebisch-hall.de">https://www.schwaebisch-hall.de</a></p></div>';
+}
+
+function mailSignaturText(){
+  return "Vielen lieben Dank\nu.\nmit freundlichen Grüßen\n\nKim Betcher\n"
+    + "Bezirksleiter für Oberkochen, Ebnat & Aalen\n📞 +49 152 22686361\n📨 kim.betcher@schwaebisch-hall.de\n"
+    + "LinkedIn Profil: https://www.linkedin.com/in/kim-betcher-5a764b397/\nWebsite: Kim-betcher.de\n\n"
+    + "Für den wichtigsten Ort der Welt – mit den Heimatexperten von Schwäbisch Hall.\n\n"
+    + "Handelsvertreter der Bausparkasse Schwäbisch Hall AG\nBausparkasse der Volksbanken und Raiffeisenbanken\n"
+    + "Crailsheimer Straße 52\n74523 Schwäbisch Hall\nTel.: +49 791 46-4646\nFax: +49 791 46-2628\nhttps://www.schwaebisch-hall.de";
+}
+
+function mailInhaltHtml(){
+  var liste = mailGewaehlt();
+  return '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.55;color:#102235;overflow-wrap:anywhere;">'
+    + '<p style="margin:0 0 24px;">' + esc(mailAnrede(mailPerson())) + ',</p>'
+    + '<p style="margin:0 0 24px;">' + esc(mailEinleitung(liste)) + '</p>'
+    + mailTermineHtml(liste) + mailSignaturHtml() + '</div>';
 }
 
 function mailVorschauZeichnen(){
   var liste = mailGewaehlt();
   var kasten = document.getElementById("mail-vorschau");
-
   if(liste.length === 0){ kasten.hidden = true; return; }
   kasten.hidden = false;
-
   var p = mailPerson();
-  var gruss = PROFIL.vorname ? (PROFIL.vorname + " " + PROFIL.nachname).trim() : "";
-
-  var hinweis = document.getElementById("m-hinweis");
-  hinweis.textContent = p && p.mail
-    ? "\u00d6ffnet eine neue Mail an " + p.mail + " direkt im Mailprogramm."
-    : "F\u00fcr diesen Empf\u00e4nger ist keine E-Mail-Adresse hinterlegt.";
-
-  document.getElementById("mail-blatt").innerHTML =
-      '<p>' + esc(mailAnrede(p)) + ',</p>'
-    + '<p>Status zu unseren <b>laufenden Vorg\u00e4ngen</b>:</p>'
-    + mailTabelle(liste)
-    + '<p style="margin-top:14px">Viele Gr\u00fc\u00dfe<br>' + esc(gruss) + '</p>';
+  document.getElementById("m-hinweis").textContent = p && p.mail
+    ? "Öffnet eine neue Mail an " + p.mail + ". Für Fett- und Kursivschrift sowie das Logo: „Formatiert kopieren“ wählen und in die Mail einfügen."
+    : "Für diesen Empfänger ist keine E-Mail-Adresse hinterlegt. Du kannst die Zusammenfassung formatiert kopieren.";
+  document.getElementById("mail-blatt").innerHTML = mailInhaltHtml();
 }
 
 function mailAlsText(){
   var liste = mailGewaehlt();
-  var p = mailPerson();
-  var text = mailAnrede(p) + ",\n\n"
-           + "Status zu unseren laufenden Vorg\u00e4ngen:\n\n";
-
-  liste.forEach(function(t, index){
-    text += t.kunde + "\n";
-    if(terminPersonenText(t)) text += "Weitere Anwesende: " + terminPersonenText(t) + "\n";
-    if(terminGespraechText(t)) text += "Um wen ging’s? " + terminGespraechText(t) + "\n";
-    if(terminArtText(t)) text += "Terminart: " + terminArtText(t) + "\n";
-    text += "Status: " + statusInfo(t.status).label + "\n";
-    text += "Termin: " + datumKurz(t.datum) + (t.ort ? " \u00b7 " + t.ort : "") + "\n";
-    if(t.wv) text += (t.status === "folgetermin" ? "Folgetermin: " : "Wiedervorlage: ") + datumKurz(t.wv) + "\n";
-    if(t.protokoll){
-      text += "Ansprachegrund:\n" + t.protokoll.trim() + "\n";
-    }
-    if(index < liste.length - 1) text += "\n----------------------------------------\n\n";
+  var teile = liste.map(function(t){
+    var text = mailTerminAngaben(t).map(function(a){ return a.label + ": " + a.wert; }).join("\n");
+    if(t.protokoll && t.protokoll.trim()) text += "\n\nAnsprachegrund\n" + t.protokoll.trim();
+    return text;
   });
-
-  text += "\nViele Gr\u00fc\u00dfe\n" + (PROFIL.vorname + " " + PROFIL.nachname).trim();
-  return text;
+  return mailAnrede(mailPerson()) + ",\n\n" + mailEinleitung(liste) + "\n\n"
+    + teile.join("\n\n──────────────────────────────\n\n") + "\n\n\n" + mailSignaturText();
 }
 
 function mailAlsHtml(){
-  var liste = mailGewaehlt();
-  var p = mailPerson();
-  var gruss = (PROFIL.vorname + " " + PROFIL.nachname).trim();
-  var zellen = "padding:10px 12px;border:1px solid #d7dce2;vertical-align:top;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.45;color:#102235;";
-  var kopf = zellen + "background:#f1f3f5;font-weight:700;";
-  var html = '';
-
-  html += '<!doctype html><html><head><meta charset="utf-8"></head>';
-  html += '<body style="margin:0;padding:24px;background:#ffffff;font-family:Arial,Helvetica,sans-serif;color:#102235;font-size:15px;line-height:1.5">';
-  html += '<div style="max-width:980px;margin:0 auto">';
-  html += '<p style="margin:0 0 20px">' + esc(mailAnrede(p)) + ',</p>';
-  html += '<p style="margin:0 0 16px">Status zu unseren <strong>laufenden Vorgängen</strong>:</p>';
-  html += '<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;table-layout:fixed;margin:0 0 22px">';
-  html += '<tr>'
-       +  '<th style="' + kopf + 'width:18%">Kunde</th>'
-       +  '<th style="' + kopf + 'width:13%">Status</th>'
-       +  '<th style="' + kopf + 'width:18%">Termin</th>'
-       +  '<th style="' + kopf + 'width:13%">Wiedervorlage</th>'
-       +  '<th style="' + kopf + 'width:38%">Ansprachegrund</th>'
-       +  '</tr>';
-
-  liste.forEach(function(t){
-    html += '<tr>'
-          + '<td style="' + zellen + '">' + mailKundeHtml(t) + '</td>'
-          + '<td style="' + zellen + '">' + esc(statusInfo(t.status).label) + '</td>'
-          + '<td style="' + zellen + '">' + mailTerminHtml(t) + '</td>'
-          + '<td style="' + zellen + '">' + esc(mailFolgedatum(t)) + '</td>'
-          + '<td style="' + zellen + ';white-space:pre-wrap">' + esc(t.protokoll || "") + '</td>'
-          + '</tr>';
-  });
-
-  html += '</table>';
-  html += '<p style="margin:0">Viele Grüße<br>' + esc(gruss) + '</p>';
-  html += '</div></body></html>';
-  return html;
+  return '<!doctype html><html lang="de"><head><meta charset="utf-8"></head>'
+    + '<body style="margin:0;padding:24px;background:#fff;">'
+    + '<div style="max-width:760px;margin:0 auto;">' + mailInhaltHtml() + '</div></body></html>';
 }
 
 function mailKlartextFallback(p, betreff){
@@ -5880,7 +5892,7 @@ document.getElementById("m-oeffnen").addEventListener("click", function(){
     return;
   }
 
-  var betreff = "Status unserer laufenden Vorgänge";
+  var betreff = "Zusammenfassung unserer Termine";
 
   // Direkt im Standard-Mailprogramm öffnen. Unter Windows öffnet sich damit
   // Outlook, sofern Outlook als Standard-Mailprogramm eingerichtet ist.
@@ -5893,7 +5905,7 @@ document.getElementById("m-kopieren").addEventListener("click", function(){
   var html = document.getElementById("mail-blatt").innerHTML;
   var text = mailAlsText();
 
-  // Formatiert kopieren, damit die Tabelle in Outlook erhalten bleibt
+  // Formatiert kopieren, damit Hervorhebungen, Abstände und die Signatur erhalten bleiben
   if(navigator.clipboard && window.ClipboardItem){
     navigator.clipboard.write([new ClipboardItem({
       "text/html": new Blob([html], {type:"text/html"}),
