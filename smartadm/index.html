@@ -1891,6 +1891,8 @@
     overflow-x:auto;
     font-size:13.5px;
     line-height:1.55;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
     background:#fff;
   }
 
@@ -3305,7 +3307,6 @@
       <h3>Vorschau</h3>
       <div class="mail-blatt" id="mail-blatt"></div>
       <div class="mail-knoepfe">
-        <button class="btn btn-quiet" id="m-kopieren">Formatiert kopieren</button>
         <button class="btn" id="m-oeffnen">Mail senden</button>
       </div>
       <p class="mail-hinweis" id="m-hinweis">&nbsp;</p>
@@ -5502,6 +5503,7 @@ document.getElementById("termin-speichern").addEventListener("click", function()
 
   var satz = {
     datum: datum,
+    id: bearbeite.termin !== null ? TERMINE[bearbeite.termin].id : terminNeueKennung(),
     kunde: kunde,
     ort: ort.text,
     ortTyp: ort.typ,
@@ -5781,7 +5783,7 @@ function mailGespraechText(t){
 
 function mailTerminAngaben(t){
   var angaben = [];
-  if(terminAnwesendeText(t)) angaben.push({label:"Anwesende", wert:terminAnwesendeText(t), fett:true});
+  if(terminAnwesendeText(t)) angaben.push({label:"Anwesende", wert:terminAnwesendeText(t)});
   if(mailGespraechText(t)) angaben.push({label:"Um wen ging’s", wert:mailGespraechText(t)});
   if(t.datum) angaben.push({label:"Termin am", wert:datumKurz(t.datum)});
   if(terminArtText(t)) angaben.push({label:"Terminart", wert:terminArtText(t)});
@@ -5795,43 +5797,6 @@ function mailTerminAngaben(t){
   return angaben;
 }
 
-function mailTermineHtml(liste){
-  return liste.map(function(t, index){
-    var html = index ? '<hr style="border:0;border-top:1px solid #d7dce2;margin:28px 0;">' : '';
-    html += '<div class="mail-termin-block" style="margin:0;overflow-wrap:anywhere;">';
-    html += mailTerminAngaben(t).map(function(a){
-      return '<p style="margin:0 0 5px;"><em>' + esc(a.label) + ':</em> '
-        + (a.fett ? '<strong>' + esc(a.wert) + '</strong>' : esc(a.wert)) + '</p>';
-    }).join("");
-    if(t.protokoll && t.protokoll.trim()){
-      html += '<p style="margin:20px 0 6px;"><strong>Ansprachegrund</strong></p>'
-        + '<p style="margin:0;">' + esc(t.protokoll.trim()).replace(/\r?\n/g, '<br>') + '</p>';
-    }
-    return html + '</div>';
-  }).join("");
-}
-
-function mailSignaturHtml(){
-  var link = 'style="color:#3f8195;text-decoration:underline;"';
-  return '<div class="mail-signatur" style="margin:40px 0 0;line-height:1.55;">'
-    + '<p style="margin:0 0 16px;">Vielen lieben Dank<br>u.<br>mit freundlichen Grüßen</p>'
-    + '<p style="margin:0 0 20px;"><strong>Kim Betcher</strong><br>'
-    + 'Bezirksleiter für <em>Oberkochen, Ebnat &amp; Aalen</em></p>'
-    + '<p style="margin:0 0 20px 16px;"><img src="https://kim-betcher.de/smartadm/mail-phone-icon.png" alt="Telefon" width="16" height="16" style="vertical-align:-2px;margin-right:12px;border:0;">'
-    + '<a style="color:#102235;text-decoration:underline;" href="tel:+4915222686361">+49 152 22686361</a><br>'
-    + '<img src="https://kim-betcher.de/smartadm/mail-email-icon.png" alt="E-Mail" width="16" height="16" style="vertical-align:-2px;margin-right:12px;border:0;">'
-    + '<a ' + link + ' href="mailto:kim.betcher@schwaebisch-hall.de">kim.betcher@schwaebisch-hall.de</a></p>'
-    + '<p style="margin:0 0 20px;">'
-    + '<a ' + link + ' href="https://www.linkedin.com/in/kim-betcher-5a764b397/">LinkedIn Profil</a><br>'
-    + 'Website: <a ' + link + ' href="https://kim-betcher.de">Kim-betcher.de</a></p>'
-    + '<p style="margin:0 0 20px;"><img src="https://kim-betcher.de/smartadm/mail-signature-logo.png" alt="Schwäbisch Hall und Volksbanken Raiffeisenbanken" width="202" height="56" style="display:block;width:202px;max-width:100%;height:auto;border:0;"></p>'
-    + '<p style="margin:0 0 24px;">Für den wichtigsten Ort der Welt – mit den Heimatexperten von Schwäbisch Hall.</p>'
-    + '<p style="margin:0;line-height:1.55;">Handelsvertreter der Bausparkasse Schwäbisch Hall AG<br>'
-    + 'Bausparkasse der Volksbanken und Raiffeisenbanken<br>Crailsheimer Straße 52<br>74523 Schwäbisch Hall<br>'
-    + 'Tel.: +49 791 46-4646<br>Fax: +49 791 46-2628<br>'
-    + '<a ' + link + ' href="https://www.schwaebisch-hall.de">https://www.schwaebisch-hall.de</a></p></div>';
-}
-
 function mailSignaturText(){
   return "Vielen lieben Dank\nu.\nmit freundlichen Grüßen\n\nKim Betcher\n"
     + "Bezirksleiter für Oberkochen, Ebnat & Aalen\n📞 +49 152 22686361\n📨 kim.betcher@schwaebisch-hall.de\n"
@@ -5841,14 +5806,6 @@ function mailSignaturText(){
     + "Crailsheimer Straße 52\n74523 Schwäbisch Hall\nTel.: +49 791 46-4646\nFax: +49 791 46-2628\nhttps://www.schwaebisch-hall.de";
 }
 
-function mailInhaltHtml(){
-  var liste = mailGewaehlt();
-  return '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.55;color:#102235;overflow-wrap:anywhere;">'
-    + '<p style="margin:0 0 24px;">' + esc(mailAnrede(mailPerson())) + ',</p>'
-    + '<p style="margin:0 0 24px;">' + esc(mailEinleitung(liste)) + '</p>'
-    + mailTermineHtml(liste) + mailSignaturHtml() + '</div>';
-}
-
 function mailVorschauZeichnen(){
   var liste = mailGewaehlt();
   var kasten = document.getElementById("mail-vorschau");
@@ -5856,9 +5813,9 @@ function mailVorschauZeichnen(){
   kasten.hidden = false;
   var p = mailPerson();
   document.getElementById("m-hinweis").textContent = p && p.mail
-    ? "Öffnet eine neue Mail an " + p.mail + ". Für Fett- und Kursivschrift sowie das Logo: „Formatiert kopieren“ wählen und in die Mail einfügen."
-    : "Für diesen Empfänger ist keine E-Mail-Adresse hinterlegt. Du kannst die Zusammenfassung formatiert kopieren.";
-  document.getElementById("mail-blatt").innerHTML = mailInhaltHtml();
+    ? "Öffnet eine neue Mail an " + p.mail + ". Leerzeilen und Trennlinien werden übernommen."
+    : "Für diesen Empfänger ist keine E-Mail-Adresse hinterlegt. Du kannst den Text aus der Vorschau markieren und kopieren.";
+  document.getElementById("mail-blatt").textContent = mailAlsText();
 }
 
 function mailAlsText(){
@@ -5868,14 +5825,11 @@ function mailAlsText(){
     if(t.protokoll && t.protokoll.trim()) text += "\n\nAnsprachegrund\n" + t.protokoll.trim();
     return text;
   });
+  var trenner = "────────────────────────";
+  var termine = teile.length ? trenner + "\n\n" + teile.join("\n\n" + trenner + "\n\n")
+    + "\n\n" + trenner + "\n\n" : "";
   return mailAnrede(mailPerson()) + ",\n\n" + mailEinleitung(liste) + "\n\n"
-    + teile.join("\n\n──────────────────────────────\n\n") + "\n\n\n" + mailSignaturText();
-}
-
-function mailAlsHtml(){
-  return '<!doctype html><html lang="de"><head><meta charset="utf-8"></head>'
-    + '<body style="margin:0;padding:24px;background:#fff;">'
-    + '<div style="max-width:760px;margin:0 auto;">' + mailInhaltHtml() + '</div></body></html>';
+    + termine + mailSignaturText();
 }
 
 function mailKlartextFallback(p, betreff){
@@ -5900,35 +5854,6 @@ document.getElementById("m-oeffnen").addEventListener("click", function(){
   // bewusst sauber gegliederte Textfassung verwendet.
   mailKlartextFallback(p, betreff);
 });
-
-document.getElementById("m-kopieren").addEventListener("click", function(){
-  var html = document.getElementById("mail-blatt").innerHTML;
-  var text = mailAlsText();
-
-  // Formatiert kopieren, damit Hervorhebungen, Abstände und die Signatur erhalten bleiben
-  if(navigator.clipboard && window.ClipboardItem){
-    navigator.clipboard.write([new ClipboardItem({
-      "text/html": new Blob([html], {type:"text/html"}),
-      "text/plain": new Blob([text], {type:"text/plain"})
-    })]).then(function(){ melden("Mailtext kopiert"); },
-              function(){ mailNotkopie(text); });
-    return;
-  }
-
-  mailNotkopie(text);
-});
-
-function mailNotkopie(text){
-  var feld = document.createElement("textarea");
-  feld.value = text;
-  feld.style.position = "fixed";
-  feld.style.opacity = "0";
-  document.body.appendChild(feld);
-  feld.select();
-  try{ document.execCommand("copy"); melden("Mailtext kopiert"); }
-  catch(e){ melden("Kopieren nicht m\u00f6glich \u2013 bitte von Hand markieren."); }
-  document.body.removeChild(feld);
-}
 
 /* ---------- Tariftool ---------- */
 
@@ -7392,9 +7317,47 @@ var AUSWERTUNG = [];
 var awReiter = "termine";
 var awOffen = {};
 
-function awSchluessel(t){
+function awAlterSchluessel(t){
   var name = String(t.kunde || "").toLowerCase().replace(/[^a-z0-9äöüß]/g, "");
   return (t.datum || "") + "|" + name;
+}
+
+function terminNeueKennung(){
+  return "termin-" + (window.crypto && window.crypto.randomUUID
+    ? window.crypto.randomUUID() : Date.now().toString(36) + "-" + Math.random().toString(36).slice(2));
+}
+
+function awSchluessel(t){
+  return t.id || awAlterSchluessel(t);
+}
+
+// Alte Speicherstände einmalig mit ihrem Archiveintrag verbinden.
+// Danach bleibt die Kennung auch bei Namens- und Datumsänderungen erhalten.
+function awKennungenErgaenzen(){
+  var verwendet = new Set(), verbunden = new Set();
+  function verbinden(t, archiv){
+    if(!t.id) t.id = archiv.id || terminNeueKennung();
+    archiv.id = t.id;
+    verwendet.add(archiv);
+    verbunden.add(t);
+  }
+  TERMINE.forEach(function(t){
+    var archiv = AUSWERTUNG.find(function(a){ return t.id && a.id === t.id && !verwendet.has(a); });
+    if(archiv) verbinden(t, archiv);
+  });
+  // Bei mehreren Gesprächen am selben Tag erst die passenden Protokolle zuordnen.
+  [true, false].forEach(function(protokollVergleichen){
+    TERMINE.forEach(function(t){
+      if(verbunden.has(t)) return;
+      var archiv = AUSWERTUNG.find(function(a){
+        return !verwendet.has(a) && (!t.id || !a.id) && awAlterSchluessel(a) === awAlterSchluessel(t)
+          && (!protokollVergleichen || a.protokoll === t.protokoll);
+      });
+      if(archiv) verbinden(t, archiv);
+    });
+  });
+  TERMINE.forEach(function(t){ if(!t.id) t.id = terminNeueKennung(); });
+  AUSWERTUNG.forEach(function(t){ if(!t.id) t.id = terminNeueKennung(); });
 }
 
 // Einen Termin in die Sammlung aufnehmen oder dort auffrischen
@@ -7403,13 +7366,14 @@ function awUebernehmen(t){
   for(var i = 0; i < AUSWERTUNG.length; i++){
     if(awSchluessel(AUSWERTUNG[i]) === s){
       var fertig = AUSWERTUNG[i].wvFertig;
-      AUSWERTUNG[i] = {datum:t.datum, kunde:t.kunde, ort:t.ort, ortTyp:t.ortTyp,
+      AUSWERTUNG[i] = {id:t.id, datum:t.datum, kunde:t.kunde, ort:t.ort, ortTyp:t.ortTyp,
                        bma:t.bma, personen:terminPersonen(t), terminart:terminArt(t), gespraechPersonen:terminGespraechPersonen(t), wv:t.wv, status:t.status, protokoll:t.protokoll,
                        wvFertig: fertig};
+      awSortieren();
       return;
     }
   }
-  AUSWERTUNG.push({datum:t.datum, kunde:t.kunde, ort:t.ort, ortTyp:t.ortTyp,
+  AUSWERTUNG.push({id:t.id, datum:t.datum, kunde:t.kunde, ort:t.ort, ortTyp:t.ortTyp,
                    bma:t.bma, personen:terminPersonen(t), terminart:terminArt(t), gespraechPersonen:terminGespraechPersonen(t), wv:t.wv, status:t.status, protokoll:t.protokoll,
                    wvFertig:false});
   awSortieren();
@@ -7426,26 +7390,74 @@ function awSortieren(){
 
 // Alles aus dem laufenden Protokoll in die Sammlung spiegeln
 function awAbgleichen(){
+  awKennungenErgaenzen();
   TERMINE.forEach(awUebernehmen);
 }
 
 /* ---------- Kennzahlen ---------- */
 
+function awNameNormalisieren(name){
+  return String(name || "").normalize("NFC").toLocaleLowerCase("de-DE").trim().replace(/\s+/g, " ");
+}
+
 function awKunden(){
-  var karte = {};
+  var karte = new Map(), namen = new Map();
+  function person(nachname, vorname){
+    var name = nameFuegen(nachname, vorname);
+    if(!name) return null;
+    return {name:name, nachname:nachname, vorname:vorname,
+      key:JSON.stringify([awNameNormalisieren(nachname), awNameNormalisieren(vorname)])};
+  }
+  function namenMerken(p){
+    if(!p) return;
+    var n = p;
+    [p.name, [n.vorname, n.nachname].filter(Boolean).join(" "),
+      [n.nachname, n.vorname].filter(Boolean).join(" ")].forEach(function(alias){
+      var key = awNameNormalisieren(alias);
+      // Mehrdeutige Namen bleiben getrennt.
+      if(namen.has(key) && (!namen.get(key) || namen.get(key).key !== p.key)) namen.set(key, null);
+      else if(!namen.has(key)) namen.set(key, p);
+    });
+  }
+  function bekanntePersonen(t){
+    var n = nameTeilen(t.kunde || "");
+    return [person(n.nachname, n.vorname)].concat(terminPersonen(t).map(function(p){
+      return person(p.nachname, p.vorname);
+    })).filter(Boolean);
+  }
   AUSWERTUNG.forEach(function(t){
-    if(!t.kunde) return;
-    var s = t.kunde.toLowerCase().replace(/[^a-z0-9äöüß]/g, "");
-    if(!karte[s]){
-      karte[s] = {name:t.kunde, termine:[], bma:[], orte:[]};
-    }
-    karte[s].termine.push(t);
-    if(t.bma && karte[s].bma.indexOf(t.bma) === -1) karte[s].bma.push(t.bma);
-    if(t.ort && karte[s].orte.indexOf(t.ort) === -1) karte[s].orte.push(t.ort);
+    bekanntePersonen(t).forEach(namenMerken);
+    terminGespraechPersonen(t).forEach(function(p){
+      if(p.name.indexOf(",") === -1) return;
+      var n = nameTeilen(p.name);
+      namenMerken(person(n.nachname, n.vorname));
+    });
+  });
+  var kategorien = new Set(["alle anwesenden", "kinder", "kind", "sohn", "söhne", "tochter", "töchter",
+    "eltern", "vater", "mutter", "elternteile", "beide elternteile", "enkel", "enkelin", "enkelkinder",
+    "partner", "partnerin", "ehemann", "ehefrau"]);
+  AUSWERTUNG.forEach(function(t){
+    var personen = bekanntePersonen(t);
+    terminGespraechPersonen(t).forEach(function(p){
+      var name = p.name.trim(), key = awNameNormalisieren(name);
+      if(!name || kategorien.has(key)) return;
+      var n = nameTeilen(name);
+      personen.push(namen.get(key) || (name.indexOf(",") !== -1
+        ? person(n.nachname, n.vorname) : {name:name, key:"name:" + key}));
+    });
+    var gesehen = new Set();
+    personen.forEach(function(p){
+      if(gesehen.has(p.key)) return;
+      gesehen.add(p.key);
+      if(!karte.has(p.key)) karte.set(p.key, {key:p.key, name:p.name, termine:[], bma:[], orte:[]});
+      var e = karte.get(p.key);
+      e.termine.push(t);
+      if(t.bma && e.bma.indexOf(t.bma) === -1) e.bma.push(t.bma);
+      if(t.ort && e.orte.indexOf(t.ort) === -1) e.orte.push(t.ort);
+    });
   });
 
-  return Object.keys(karte).map(function(k){
-    var e = karte[k];
+  return Array.from(karte.values()).map(function(e){
     var daten = e.termine.map(function(t){ return t.datum; }).filter(Boolean).sort();
     e.erster = daten[0] || "";
     e.letzter = daten[daten.length - 1] || "";
@@ -7620,7 +7632,7 @@ function awTerminZeile(t){
 }
 
 function awKundenZeile(e){
-  var kennung = "k-" + e.name.toLowerCase().replace(/[^a-z0-9äöüß]/g, "");
+  var kennung = "k-" + e.key;
   var offen = !!awOffen[kennung];
 
   return '<div class="aw-zeile">'
@@ -7645,6 +7657,7 @@ function awKundenZeile(e){
                        +   '<span class="aw-verlauf-kopf">' + esc(datumKurz(t.datum))
                        +     (t.ort ? ' \u00b7 ' + esc(t.ort) : '')
                        +     ' <span class="pill ' + s.klasse + '">' + s.label + '</span></span>'
+                       +   '<p class="termin-zusatz">Anwesende: ' + esc(terminKundenText(t)) + '</p>'
                        +   terminZusatzHtml(t)
                        +   (t.protokoll ? '<span class="aw-verlauf-text">' + esc(t.protokoll) + '</span>' : '')
                        + '</div>';
