@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="de" class="scroll-smooth scroll-pt-28">
+<html lang="de" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kim Betcher | Vom Dach in die Bank</title>
-    <meta name="description" content="Bezirksleiter Bausparkasse Schwäbisch Hall für Oberkochen, Ebnat & Aalen. Der Technical Controller für Ihre Finanzierung.">
+    <meta name="description" content="Bezirksleiter der Bausparkasse Schwäbisch Hall für Aalen, Ebnat, Hüttlingen und Oberkochen. Gelernter Zimmerer: Ich plane Ihre Finanzierung und verstehe Ihr Haus.">
     
     <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Kim Betcher | Vom Dach in die Bank">
-    <meta property="og:description" content="Bezirksleiter Bausparkasse Schwäbisch Hall für Oberkochen, Ebnat & Aalen. Der Technical Controller für Ihre Finanzierung.">
+    <meta property="og:description" content="Bezirksleiter der Bausparkasse Schwäbisch Hall für Aalen, Ebnat, Hüttlingen und Oberkochen. Gelernter Zimmerer: Ich plane Ihre Finanzierung und verstehe Ihr Haus.">
     <meta property="og:image" content="ressources/finanzprofi.jpg">
     <meta property="og:url" content="https://kimbetcher.github.io/">
     <meta property="og:locale" content="de_DE">
@@ -20,329 +20,378 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@0.468.0"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; }
-        .bg-bsh-red { background-color: #dc2626; }
-        .bg-bsh-yellow { background-color: #facc15; }
-        .text-bsh-red { color: #dc2626; }
-        .hover\:bg-bsh-red:hover { background-color: #b91c1c; }
+        :root {
+            --schiefer: #222B33;      /* Dachschiefer: dunkle Flächen */
+            --schiefer-tief: #171D23;
+            --tinte: #161B20;         /* Text */
+            --leise: #5B6670;         /* Nebentext */
+            --nebel: #F2F3F1;         /* ruhige Fläche */
+            --linie: #D8DBD7;
+            --gelb: #FFD200;          /* Schwäbisch-Hall-Gelb */
+            --rot: #D5001C;           /* Ziegelrot: nur für die Handlung */
+            --rot-tief: #A80016;
+        }
 
-        /* === SCROLL REVEAL (JS fügt .reveal-ready hinzu — ohne JS bleibt alles sichtbar) === */
-        .reveal-ready {
-            opacity: 0;
-            transform: translateY(24px);
-            transition: opacity 0.65s ease-out, transform 0.65s ease-out;
-        }
-        .reveal-ready.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        body { font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif; }
+
+        /* Von den Unterseiten (Impressum, Datenschutz, Private Einblicke) weiter genutzt */
+        .bg-bsh-red { background-color: #D5001C; }
+        .bg-bsh-yellow { background-color: #FFD200; }
+        .text-bsh-red { color: #D5001C; }
+        .hover\:bg-bsh-red:hover { background-color: #A80016; }
+        .reveal-ready { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease-out, transform 0.65s ease-out; }
+        .reveal-ready.visible { opacity: 1; transform: translateY(0); }
         .reveal-delay-1 { transition-delay: 0.12s; }
         .reveal-delay-2 { transition-delay: 0.24s; }
-
-        /* === TYPEWRITER (Desktop hover) === */
-        @media (min-width: 768px) {
-            .typewriter h3 { overflow: hidden; white-space: nowrap; margin: 0 auto; width: 0; }
-            .group:hover .typewriter h3 { animation: typing 2.5s steps(35, end) forwards; }
-        }
-        @media (max-width: 767px) {
-            .typewriter { position: relative !important; opacity: 1 !important; visibility: visible !important; margin-top: 1.5rem; }
-            .typewriter h3 { width: 100%; white-space: normal; text-align: center; opacity: 1; font-size: 1.5rem; line-height: 1.2; font-weight: 800; color: #dc2626; }
-            .normal-content { opacity: 1 !important; visibility: visible !important; position: relative !important; }
-        }
-        @keyframes typing { from { width: 0 } to { width: 100% } }
-
-        /* === CARD LIFT (verfeinert) === */
-        .card-lift {
-            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .card-lift:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 40px -12px rgba(0,0,0,0.12), 0 8px 20px -8px rgba(0,0,0,0.08);
-        }
-
-        /* === CONTACT CARD GLOW === */
-        .contact-card { position: relative; overflow: hidden; transition: all 0.3s ease; }
-        .contact-card::before {
-            content: ''; position: absolute; inset: 0;
-            background: radial-gradient(circle at center, currentColor, transparent 70%);
-            opacity: 0; transition: opacity 0.3s ease;
-        }
-        .contact-card:hover::before { opacity: 0.04; }
-
-        /* Modal */
+        .card-lift { transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+        .card-lift:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -12px rgba(0,0,0,0.12), 0 8px 20px -8px rgba(0,0,0,0.08); }
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ============ Startseite ============ */
+        .kb { color: var(--tinte); background: #fff; font-size: 17px; line-height: 1.55; }
+        .kb *, .kb *::before, .kb *::after { box-sizing: border-box; }
+        .kb h1, .kb h2, .kb h3, .kb p, .kb ol, .kb ul, .kb table { margin: 0; padding: 0; }
+        .kb ol, .kb ul { list-style: none; }
+        .kb a { color: inherit; text-decoration: none; }
+        .kb img { display: block; max-width: 100%; }
+        .kb-wrap { width: min(1180px, 100% - 48px); margin-inline: auto; }
+        .kb-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+        .kb a:focus-visible, .kb button:focus-visible { outline: 3px solid var(--gelb); outline-offset: 3px; }
+
+        .kb-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: .55em;
+            padding: .85em 1.5em; border: 2px solid transparent; border-radius: 4px;
+            font: inherit; font-weight: 650; font-size: 1rem; line-height: 1.2; white-space: nowrap; cursor: pointer;
+            transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+        }
+        .kb-btn svg { width: 1.15em; height: 1.15em; flex: none; }
+        .kb .kb-btn-rot { background: var(--rot); color: #fff; }
+        .kb .kb-btn-rot:hover { background: var(--rot-tief); }
+        .kb .kb-btn-hell { border-color: rgba(255,255,255,.4); color: #fff; }
+        .kb .kb-btn-hell:hover { background: #fff; border-color: #fff; color: var(--schiefer); }
+
+        /* --- Kopf --- */
+        .kb-nav {
+            position: absolute; inset: 0 0 auto 0; z-index: 30;
+            display: flex; align-items: center; justify-content: space-between; gap: 24px;
+            padding: 22px clamp(20px, 4vw, 56px); color: #fff;
+        }
+        .kb-brand { display: flex; align-items: center; gap: 12px; font-weight: 750; font-size: 1.15rem; }
+        .kb-brand-mark { width: 40px; height: 40px; padding: 5px; border-radius: 4px; background: var(--rot); display: grid; place-items: center; }
+        .kb-links { display: flex; align-items: center; gap: clamp(18px, 2.6vw, 36px); font-weight: 550; font-size: .98rem; }
+        .kb-links a { padding: 4px 0; border-bottom: 2px solid transparent; }
+        .kb-links a:hover { border-bottom-color: var(--gelb); }
+        .kb-menu-btn { display: none; width: 44px; height: 44px; place-items: center; border: 0; border-radius: 4px; background: rgba(23,29,35,.55); color: #fff; cursor: pointer; }
+        .kb-mobile { position: absolute; top: 100%; left: 0; right: 0; display: grid; padding: 4px 20px 18px; background: var(--schiefer-tief); }
+        .kb-mobile.hidden { display: none; }
+        .kb-mobile a { padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,.12); font-weight: 550; }
+        .kb-mobile a:last-child { border-bottom: 0; color: var(--gelb); }
+        @media (max-width: 860px) {
+            .kb-links { display: none; }
+            .kb-menu-btn { display: grid; }
+        }
+        @media (min-width: 861px) { .kb-mobile { display: none; } }
+
+        /* --- Der erste Bildschirm: Dach | First | Bank --- */
+        .kb-hero {
+            position: relative; display: grid; overflow: hidden;
+            grid-template-columns: 1fr 6px 1fr; grid-template-rows: minmax(0, 1fr) auto;
+            min-height: max(100svh, 620px); background: var(--schiefer-tief);
+        }
+        .kb-half { position: relative; overflow: hidden; min-height: 0; }
+        .kb-half img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+        .kb-dach img { object-position: 50% 55%; filter: saturate(.8) contrast(1.05); }
+        .kb-bank img { object-position: 50% 16%; }
+        .kb-half::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
+        .kb-dach::after { background: linear-gradient(180deg, rgba(23,29,35,.66) 0%, rgba(23,29,35,.42) 34%, rgba(23,29,35,.86) 100%); }
+        .kb-bank::after { background: linear-gradient(180deg, rgba(23,29,35,.5) 0%, rgba(23,29,35,0) 24%, rgba(23,29,35,0) 46%, rgba(23,29,35,.9) 100%); }
+        .kb-first { background: var(--gelb); transform-origin: top; }
+        .kb-half-text { position: absolute; z-index: 2; bottom: clamp(28px, 7.5vh, 76px); color: #fff; }
+        .kb-dach .kb-half-text { right: clamp(16px, 2.4vw, 40px); text-align: right; }
+        .kb-bank .kb-half-text { left: clamp(16px, 2.4vw, 40px); }
+        .kb-wort {
+            display: block; white-space: nowrap;
+            font-size: clamp(2.5rem, 5.6vw, 7rem); font-weight: 800; font-stretch: 112%;
+            line-height: .95; letter-spacing: -.02em;
+        }
+        .kb-rolle { margin-top: .9em !important; font-size: clamp(.95rem, 1.25vw, 1.2rem); font-weight: 500; }
+        .kb-hero-fuss {
+            grid-column: 1 / -1; display: flex; align-items: center; gap: clamp(16px, 3vw, 48px);
+            padding: 20px clamp(20px, 4vw, 56px); background: #fff;
+        }
+        .kb-claim { flex: 1; font-size: clamp(1.05rem, 1.5vw, 1.35rem); font-weight: 650; line-height: 1.3; }
+        .kb-gebiet { color: var(--leise); font-size: .98rem; }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .kb-dach img { animation: kb-bild 1.4s cubic-bezier(.2,.7,.2,1) both; }
+            .kb-bank img { animation: kb-bild 1.4s cubic-bezier(.2,.7,.2,1) both; }
+            .kb-first { animation: kb-first .7s cubic-bezier(.2,.7,.2,1) .15s both; }
+            .kb-dach .kb-half-text { animation: kb-von-links .8s cubic-bezier(.2,.7,.2,1) .35s both; }
+            .kb-bank .kb-half-text { animation: kb-von-rechts .8s cubic-bezier(.2,.7,.2,1) .55s both; }
+        }
+        @keyframes kb-bild { from { transform: scale(1.07); } to { transform: scale(1); } }
+        @keyframes kb-first { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+        @keyframes kb-von-links { from { opacity: 0; transform: translateX(-36px); } to { opacity: 1; transform: none; } }
+        @keyframes kb-von-rechts { from { opacity: 0; transform: translateX(36px); } to { opacity: 1; transform: none; } }
+
+        @media (max-width: 760px) {
+            .kb-hero { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) 6px minmax(0, 1.2fr) auto; }
+            .kb-half { min-height: 34svh; }
+            .kb-first { transform-origin: left; }
+            .kb-dach .kb-half-text, .kb-bank .kb-half-text { left: 20px; right: 20px; text-align: left; bottom: 22px; }
+            .kb-wort { font-size: clamp(2.3rem, 12vw, 3.8rem); }
+            .kb-hero-fuss { flex-direction: column; align-items: stretch; gap: 12px; padding: 20px; }
+            .kb-hero-fuss .kb-btn { width: 100%; }
+            @keyframes kb-first { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+        }
+
+        /* --- Abschnitte --- */
+        .kb-sec { padding: clamp(64px, 9vw, 124px) 0; }
+        .kb-h2 { font-size: clamp(1.9rem, 3.5vw, 3rem); font-weight: 800; font-stretch: 108%; line-height: 1.07; letter-spacing: -.015em; text-wrap: balance; }
+        .kb-lead { margin-top: 1.1em !important; max-width: 58ch; font-size: clamp(1.05rem, 1.35vw, 1.22rem); color: var(--leise); }
+        .kb-h3 { font-size: 1.3rem; font-weight: 750; line-height: 1.2; }
+
+        /* Mehrwert */
+        .kb-usp { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(40px, 6vw, 96px); align-items: start; }
+        .kb-punkte { display: grid; gap: 26px; margin-top: 44px !important; }
+        .kb-punkte li { padding-left: 22px; border-left: 4px solid var(--gelb); }
+        .kb-punkte p { margin-top: 6px; color: var(--leise); }
+        .kb-vergleich { width: 100%; border-collapse: collapse; }
+        .kb-vergleich caption { text-align: left; padding-bottom: 22px; font-size: 1.3rem; font-weight: 750; }
+        .kb-vergleich th { width: 50%; padding: 0 20px 14px 0; border-bottom: 3px solid var(--tinte); text-align: left; vertical-align: bottom; font-weight: 650; font-size: .95rem; color: var(--leise); }
+        .kb-vergleich th + th { padding-left: 20px; color: var(--tinte); }
+        .kb-vergleich td { padding: 20px 20px 20px 0; border-bottom: 1px solid var(--linie); vertical-align: top; color: var(--leise); }
+        .kb-vergleich td + td { padding-left: 20px; background: var(--nebel); color: var(--tinte); font-weight: 650; }
+        .kb-vergleich tr:last-child td { border-bottom: 0; }
+
+        /* Weg */
+        .kb-weg-sec { background: var(--nebel); }
+        .kb-weg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: clamp(40px, 5vw, 64px) !important; border-top: 3px solid var(--tinte); }
+        .kb-weg li { position: relative; padding: 38px clamp(20px, 3vw, 44px) 0 0; }
+        .kb-weg li::before { content: ""; position: absolute; top: -10px; left: 0; width: 36px; height: 17px; background: var(--rot); }
+        .kb-weg p { margin-top: 10px; color: var(--leise); }
+
+        /* Werte */
+        .kb-stein { position: relative; overflow: hidden; background: var(--gelb); }
+        .kb-stein-text { max-width: 720px; }
+        .kb-zitat { margin-top: 1em !important; max-width: 34ch; font-size: clamp(1.15rem, 1.7vw, 1.5rem); font-weight: 500; line-height: 1.35; }
+        .kb-werte { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; margin-top: 44px !important; padding-top: 22px !important; border-top: 3px solid var(--tinte); }
+        .kb-werte strong { display: block; font-weight: 750; font-size: 1.08rem; line-height: 1.25; }
+        .kb-werte span { display: block; margin-top: 4px; font-size: .98rem; }
+        .kb-fuchs { position: absolute; bottom: 0; right: max(16px, calc((100vw - 1180px) / 2 - 20px)); height: min(92%, 520px); width: auto; max-width: none !important; pointer-events: none; }
+
+        /* Kontakt */
+        .kb-kontakt { background: var(--schiefer); color: #fff; }
+        .kb-kontakt-raster { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: clamp(40px, 6vw, 96px); align-items: center; }
+        .kb-kontakt .kb-lead { color: rgba(255,255,255,.78); }
+        .kb-wege { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px !important; }
+        .kb-karte { width: 232px; padding: 18px 18px 16px; border-radius: 4px; background: #fff; color: var(--tinte); text-align: center; }
+        .kb-karte img { width: 100%; height: auto; }
+        .kb-karte p { margin-top: 12px; font-weight: 650; font-size: .98rem; line-height: 1.3; }
+        .kb-karte span { display: block; margin-top: 2px; font-weight: 400; font-size: .88rem; color: var(--leise); }
+
+        /* Fuß */
+        .kb-fuss { padding: 44px 0; background: var(--schiefer-tief); color: rgba(255,255,255,.66); font-size: .93rem; }
+        .kb-fuss-raster { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 28px; }
+        .kb-fuss strong { display: block; color: #fff; font-size: 1.05rem; font-weight: 750; }
+        .kb-sh { display: inline-block; margin-bottom: 18px; padding: 8px 10px; border-radius: 3px; background: #fff; }
+        .kb-sh img { height: 34px; width: auto; }
+        .kb-fuss-links { display: flex; flex-wrap: wrap; gap: 8px 26px; }
+        .kb-fuss a:hover { color: #fff; }
+        .kb-sozial { display: flex; gap: 16px; margin-top: 16px; }
+        .kb-sozial svg { width: 20px; height: 20px; }
+
+        @media (max-width: 900px) {
+            .kb-usp { grid-template-columns: 1fr; }
+            .kb-kontakt-raster { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 760px) {
+            .kb { font-size: 16px; }
+            .kb-weg { grid-template-columns: 1fr; border-top: 0; border-left: 3px solid var(--tinte); }
+            .kb-weg li { padding: 0 0 34px 28px; }
+            .kb-weg li:last-child { padding-bottom: 0; }
+            .kb-weg li::before { top: 4px; left: -11px; width: 19px; height: 12px; }
+            .kb-werte { grid-template-columns: 1fr; gap: 18px; }
+            .kb-fuchs { position: static; display: block; height: 260px; margin: 28px auto -64px; }
+            .kb-wege .kb-btn { width: 100%; }
+            .kb-karte { width: 100%; max-width: 260px; }
+        }
+        @media (min-width: 761px) and (max-width: 1100px) {
+            .kb-stein-text { max-width: 58%; }
+            .kb-fuchs { height: min(80%, 420px); right: 8px; }
+        }
     </style>
 </head>
 <body class="text-slate-900 antialiased selection:bg-yellow-200 bg-white relative">
 
-    <!-- Social Media Buttons (Rechts Unten) - JETZT ALS FESTE SVGs -->
-    <div class="fixed bottom-6 right-6 z-[100] hidden md:flex flex-col space-y-3">
-        <a href="https://www.instagram.com/kimbetcher/" target="_blank" rel="noopener noreferrer" 
-           class="bg-white text-pink-600 p-3 rounded-full shadow-xl border-2 border-pink-100 hover:bg-pink-50 hover:scale-110 hover:border-pink-300 transition-all duration-300 flex items-center justify-center group"
-           title="Instagram">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 group-hover:rotate-12 transition-transform">
-                <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
-            </svg>
-        </a>
-        <a href="https://www.linkedin.com/in/kim-betcher-5a764b397/" target="_blank" rel="noopener noreferrer"
-           class="bg-white text-blue-700 p-3 rounded-full shadow-xl border-2 border-blue-100 hover:bg-blue-50 hover:scale-110 hover:border-blue-300 transition-all duration-300 flex items-center justify-center group"
-           title="LinkedIn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 group-hover:rotate-12 transition-transform">
-                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                <rect width="4" height="12" x="2" y="9"></rect>
-                <circle cx="4" cy="4" r="2"></circle>
-            </svg>
-        </a>
-    </div>
-
     <!-- Inhalt Container für SPA Navigation -->
     <div id="swappable-content">
-        
-        <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm mt-0">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-[60]">
-                <div class="flex justify-between h-20 items-center">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-10 h-10 bg-bsh-red rounded-lg flex items-center justify-center text-white font-bold text-xl overflow-hidden p-1">
-                           <img src="ressources/Logo.png" alt="Logo" class="w-full h-auto object-contain">
-                        </div>
-                        <span class="font-bold text-xl tracking-tight">KIM BETCHER</span>
-                    </div>
-                    <div class="hidden md:flex space-x-8 items-center">
-                        <a href="index.html#story" class="text-slate-600 hover:text-bsh-red font-medium transition">Meine Story</a>
-                        <a href="index.html#usp" class="text-slate-600 hover:text-bsh-red font-medium transition">Mein USP</a>
-                        <a href="index.html#ziele" class="text-slate-600 hover:text-bsh-red font-medium transition">Ziele</a>
-                        <a href="index.html#kontakt" class="px-5 py-2.5 bg-bsh-red hover:bg-red-700 text-white font-medium rounded-full transition shadow-md">Kontakt aufnehmen</a>
-                    </div>
-                    <div class="md:hidden flex items-center">
-                        <button onclick="toggleMenu()" class="text-slate-600 hover:text-bsh-red"><i data-lucide="menu" id="menu-icon" class="w-7 h-7"></i></button>
-                    </div>
-                </div>
-            </div>
-            <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 absolute w-full shadow-xl relative z-[60]">
-                <div class="px-4 pt-2 pb-6 space-y-2">
-                    <a href="index.html#story" onclick="toggleMenu()" class="block px-3 py-3 text-slate-600 hover:bg-red-50 hover:text-bsh-red rounded-lg">Meine Story</a>
-                    <a href="index.html#usp" onclick="toggleMenu()" class="block px-3 py-3 text-slate-600 hover:bg-red-50 hover:text-bsh-red rounded-lg">Mein USP</a>
-                    <a href="index.html#ziele" onclick="toggleMenu()" class="block px-3 py-3 text-slate-600 hover:bg-red-50 hover:text-bsh-red rounded-lg">Ziele</a>
-                    <a href="index.html#kontakt" onclick="toggleMenu()" class="block px-3 py-3 text-bsh-red font-bold">Kontakt</a>
-                </div>
-            </div>
-        </nav>
+      <div class="kb">
 
-        <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-            <div class="absolute top-0 right-0 w-1/3 h-full bg-yellow-50 -skew-x-12 translate-x-20 z-0 opacity-60 pointer-events-none"></div>
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="grid md:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <!-- STATUS BADGE -->
-                        <div class="inline-flex items-center space-x-2 bg-green-50 text-green-700 px-4 py-1.5 rounded-full text-sm font-bold mb-6 border border-green-100">
-                            <span class="relative flex h-2 w-2">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-600"></span>
-                            </span>
-                            <span>Ihr Ansprechpartner vor Ort</span>
-                        </div>
-                        
-                        <h1 class="text-5xl md:text-6xl font-extrabold text-slate-900 leading-tight mb-6">Vom Dach <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-yellow-500">in die Bank.</span></h1>
-                        <p class="text-xl text-slate-600 mb-8 max-w-lg leading-relaxed">Ich plane nicht nur Ihre Finanzierung – ich verstehe Ihr Haus. Ihr Bezirksleiter für Oberkochen, Ebnat & Aalen.</p>
-                        
-                        <div class="flex flex-col sm:flex-row gap-4">
-                            <a href="#kontakt" class="px-8 py-4 bg-bsh-red hover:bg-red-700 text-white font-bold rounded-lg text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center">Jetzt Termin vereinbaren <i data-lucide="arrow-right" class="ml-2 w-5 h-5"></i></a>
-                        </div>
+        <header class="kb-nav">
+            <a class="kb-brand" href="index.html">
+                <span class="kb-brand-mark"><img src="ressources/Logo.png" alt=""></span>
+                <span>Kim Betcher</span>
+            </a>
+            <nav class="kb-links" aria-label="Hauptnavigation">
+                <a href="index.html#usp">Mein Mehrwert</a>
+                <a href="index.html#story">Mein Weg</a>
+                <a href="index.html#ziele">Meine Werte</a>
+                <a href="index.html#kontakt">Kontakt</a>
+            </nav>
+            <button class="kb-menu-btn" onclick="toggleMenu()" aria-label="Menü öffnen"><i data-lucide="menu" id="menu-icon"></i></button>
+            <div id="mobile-menu" class="kb-mobile hidden">
+                <a href="index.html#usp" onclick="toggleMenu()">Mein Mehrwert</a>
+                <a href="index.html#story" onclick="toggleMenu()">Mein Weg</a>
+                <a href="index.html#ziele" onclick="toggleMenu()">Meine Werte</a>
+                <a href="index.html#kontakt" onclick="toggleMenu()">Kontakt</a>
+            </div>
+        </header>
+
+        <!-- Erster Bildschirm: das, was im Kundentermin offen ist -->
+        <section class="kb-hero">
+            <h1 class="kb-sr">Vom Dach in die Bank.</h1>
+            <div class="kb-half kb-dach">
+                <img src="ressources/zimmerer-projektleiter.jpg" alt="Dachstuhl eines Neubaus während der Zimmererarbeiten">
+                <div class="kb-half-text">
+                    <span class="kb-wort" aria-hidden="true">Vom Dach</span>
+                    <p class="kb-rolle">Gelernter Zimmerer und Projektleiter</p>
+                </div>
+            </div>
+            <div class="kb-first" aria-hidden="true"></div>
+            <div class="kb-half kb-bank">
+                <img src="ressources/finanzprofi.jpg" alt="Kim Betcher">
+                <div class="kb-half-text">
+                    <span class="kb-wort" aria-hidden="true">in die Bank.</span>
+                    <p class="kb-rolle">Bezirksleiter der Bausparkasse Schwäbisch Hall</p>
+                </div>
+            </div>
+            <div class="kb-hero-fuss">
+                <p class="kb-claim">Ich plane nicht nur Ihre Finanzierung. Ich verstehe Ihr Haus.</p>
+                <p class="kb-gebiet">Für Aalen, Ebnat, Hüttlingen und Oberkochen</p>
+                <a href="index.html#kontakt" class="kb-btn kb-btn-rot">Termin vereinbaren</a>
+            </div>
+        </section>
+
+        <!-- Mehrwert -->
+        <section id="usp" class="kb-sec">
+            <div class="kb-wrap kb-usp">
+                <div>
+                    <h2 class="kb-h2">Die Bank prüft das Geld. Ich prüfe die Substanz.</h2>
+                    <p class="kb-lead">Ich nenne das den Technical Controller: Finanzstrategie, gepaart mit ehrlichem Handwerkswissen.</p>
+                    <ul class="kb-punkte">
+                        <li>
+                            <h3 class="kb-h3">Echter Realitäts-Check</h3>
+                            <p>Wenn ich eine Modernisierung empfehle, dann weil ich als Zimmerer sehe, dass Ihr Dach in 5 Jahren fällig ist.</p>
+                        </li>
+                        <li>
+                            <h3 class="kb-h3">Projektleiter-Mindset</h3>
+                            <p>Ich kann Baupläne lesen, Gewerke koordinieren und Kosten realistisch einschätzen.</p>
+                        </li>
+                    </ul>
+                </div>
+                <table class="kb-vergleich">
+                    <caption>Der Unterschied in der Beratung</caption>
+                    <thead>
+                        <tr><th scope="col">Klassische Finanzberatung</th><th scope="col">Kim Betcher</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Prüft Bonität und Zinsen</td><td>Prüft zusätzlich die Bausubstanz</td></tr>
+                        <tr><td>Verkauft Finanzprodukte</td><td>Begleitet Sie beim „Heimat schaffen“</td></tr>
+                        <tr><td>Produktvermittler</td><td>Unternehmer und Partner</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Weg -->
+        <section id="story" class="kb-sec kb-weg-sec">
+            <div class="kb-wrap">
+                <h2 class="kb-h2">Mein Weg</h2>
+                <p class="kb-lead">Vom Geruch frischen Holzes zur Strategie des Vermögensaufbaus. Ein ungewöhnlicher Weg, der zu Ihrem Vorteil wird.</p>
+                <ol class="kb-weg">
+                    <li>
+                        <h3 class="kb-h3">Die Wurzeln</h3>
+                        <p>Aufgewachsen im väterlichen Betrieb. Von der Pike auf gelernt. Als Vorarbeiter und Projektleiter habe ich Verantwortung übernommen.</p>
+                    </li>
+                    <li>
+                        <h3 class="kb-h3">Der Wendepunkt</h3>
+                        <p>Ich wollte nicht mehr nur ausführen, sondern gestalten. Banken verstehen Zahlen, Handwerker den Bau. Wer übersetzt?</p>
+                    </li>
+                    <li>
+                        <h3 class="kb-h3">Die Mission</h3>
+                        <p>Seit 2026 Ihr Bezirksleiter bei der Bausparkasse Schwäbisch Hall. Finanzstrategie gepaart mit ehrlichem Handwerkswissen.</p>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Werte -->
+        <section id="ziele" class="kb-sec kb-stein">
+            <div class="kb-wrap">
+                <div class="kb-stein-text">
+                    <h2 class="kb-h2">Auf diese Steine können Sie bauen.</h2>
+                    <p class="kb-zitat">„Ich bin nicht hier für das schnelle Geschäft. Ich baue ein Unternehmen auf, das Bestand hat.“</p>
+                    <ul class="kb-werte">
+                        <li><strong>Langfristige Partnerschaft</strong><span>In der Region verwurzelt.</span></li>
+                        <li><strong>Familiäre Werte</strong><span>Gemeinsam mit meiner Frau.</span></li>
+                        <li><strong>Finanzielle Freiheit</strong><span>Durch ehrliche Arbeit.</span></li>
+                    </ul>
+                </div>
+            </div>
+            <img class="kb-fuchs" src="ressources/fuchsneu.png" alt="Der Bausparfuchs">
+        </section>
+
+        <!-- Kontakt -->
+        <section id="kontakt" class="kb-sec kb-kontakt">
+            <div class="kb-wrap kb-kontakt-raster">
+                <div>
+                    <h2 class="kb-h2">Lassen Sie uns Ihre Zukunft bauen.</h2>
+                    <p class="kb-lead">Ihr Ansprechpartner für Aalen, Ebnat, Hüttlingen und Oberkochen. Vereinbaren Sie jetzt einen Termin.</p>
+                    <div class="kb-wege">
+                        <button onclick="openBookingModal()" class="kb-btn kb-btn-rot"><i data-lucide="calendar"></i>Termin buchen</button>
+                        <a href="tel:+4915222686361" class="kb-btn kb-btn-hell"><i data-lucide="phone"></i>+49 152 22686361</a>
+                        <a href="#" onclick="window.location.href='mailto:'+'kim.betcher'+'@'+'schwaebisch-hall.de';return false;" class="kb-btn kb-btn-hell"><i data-lucide="mail"></i>E-Mail schreiben</a>
                     </div>
-                    <div class="relative h-[500px] w-full bg-slate-100 rounded-2xl overflow-hidden shadow-2xl group border-4 border-white">
-                        <div class="absolute inset-0 flex">
-                            <div class="w-1/2 bg-slate-800 relative overflow-hidden border-r border-slate-700">
-                                <img src="ressources/zimmerer-projektleiter.jpg" alt="Handwerker Zimmerer" class="object-cover w-full h-full opacity-90 transition duration-700 group-hover:scale-105">
-                                <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent p-6 pt-20">
-                                    <div class="flex items-center text-white mb-1"><i data-lucide="hard-hat" class="mr-2 w-5 h-5 text-bsh-yellow"></i><span class="font-bold uppercase tracking-wider text-xs">Der Ursprung</span></div>
-                                    <h3 class="text-white font-bold text-lg leading-tight">Zimmerer &<br>Projektleiter</h3>
-                                </div>
-                            </div>
-                            <div class="w-1/2 bg-white relative overflow-hidden">
-                                <img src="ressources/finanzprofi.jpg" alt="Kim Betcher Finanzprofi" class="object-cover w-full h-full transition duration-700 group-hover:scale-105" style="object-position: center top;">
-                                <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-bsh-red via-bsh-red/80 to-transparent p-6 pt-20">
-                                    <div class="flex items-center text-white mb-1"><i data-lucide="calculator" class="mr-2 w-5 h-5"></i><span class="font-bold uppercase tracking-wider text-xs">Die Zukunft</span></div>
-                                    <h3 class="text-white font-bold text-lg leading-tight">Bezirksleiter<br>BSH</h3>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-xl z-20 border-4 border-yellow-400 w-20 h-20 flex items-center justify-center">
-                            <img src="ressources/Logo.png" alt="BSH Steine" class="w-14 h-auto">
-                        </div>
-                    </div>
+                </div>
+                <div class="kb-karte">
+                    <img src="ressources/QR.png" alt="QR-Code zur digitalen Visitenkarte">
+                    <p>Digitale Visitenkarte<span>Scannen und Kontakt speichern</span></p>
                 </div>
             </div>
         </section>
 
-        <section id="story" class="py-20 bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16">
-                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Meine Geschichte</h2>
-                    <div class="w-20 h-1.5 bg-bsh-yellow mx-auto rounded-full"></div>
-                    <p class="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">Vom Geruch frischen Holzes zur Strategie des Vermögensaufbaus. Ein ungewöhnlicher Weg, der zu Ihrem Vorteil wird.</p>
-                </div>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <div data-reveal class="bg-slate-50 p-8 rounded-2xl border border-slate-100 card-lift relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition"><i data-lucide="hammer" class="w-24 h-24"></i></div>
-                        <div class="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center text-white font-bold mb-6">01</div>
-                        <h3 class="text-xl font-bold mb-3">Die Wurzeln</h3>
-                        <p class="text-slate-600 leading-relaxed">Aufgewachsen im väterlichen Betrieb. Von der Pike auf gelernt. Als Vorarbeiter und Projektleiter habe ich Verantwortung übernommen.</p>
-                    </div>
-                    <div data-reveal class="bg-yellow-50 p-8 rounded-2xl border border-yellow-100 card-lift relative overflow-hidden group reveal-delay-1">
-                        <div class="absolute top-0 right-0 p-4 opacity-10 text-yellow-600 group-hover:opacity-20 transition"><i data-lucide="trending-up" class="w-24 h-24"></i></div>
-                        <div class="w-12 h-12 bg-bsh-yellow rounded-full flex items-center justify-center text-white font-bold mb-6">02</div>
-                        <h3 class="text-xl font-bold mb-3">Der Wendepunkt</h3>
-                        <p class="text-slate-700 leading-relaxed">Ich wollte nicht mehr nur ausführen, sondern <strong>gestalten</strong>. Banken verstehen Zahlen, Handwerker den Bau. Wer übersetzt?</p>
-                    </div>
-                    <div data-reveal class="bg-red-50 p-8 rounded-2xl border border-red-100 card-lift relative overflow-hidden group reveal-delay-2">
-                        <div class="absolute top-0 right-0 p-4 opacity-10 text-red-600 group-hover:opacity-20 transition"><i data-lucide="briefcase" class="w-24 h-24"></i></div>
-                        <div class="w-12 h-12 bg-bsh-red rounded-full flex items-center justify-center text-white font-bold mb-6">03</div>
-                        <h3 class="text-xl font-bold mb-3">Die Mission</h3>
-                        <p class="text-slate-700 leading-relaxed">Ab 2026 Ihr <strong>Bezirksleiter</strong> bei der Bausparkasse Schwäbisch Hall. Finanzstrategie gepaart mit ehrlichem Handwerkswissen.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="usp" class="py-20 bg-slate-900 text-white relative overflow-hidden">
-            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#fbbf24 1px, transparent 1px); background-size: 30px 30px;"></div>
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="flex flex-col md:flex-row gap-16 items-center">
-                    <div class="md:w-1/2">
-                        <div class="inline-block px-4 py-1 border border-yellow-500 text-yellow-400 rounded-full text-sm font-bold mb-6">MEIN ALLEINSTELLUNGSMERKMAL</div>
-                        <h2 class="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">Der Technical Controller</h2>
-                        <p class="text-xl text-slate-300 mb-8 leading-relaxed">"Die Bank prüft das Geld. Ich prüfe die Substanz."</p>
-                        <div class="space-y-6">
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0 w-12 h-12 bg-bsh-red rounded-lg flex items-center justify-center mt-1"><i data-lucide="check-circle" class="text-white w-6 h-6"></i></div>
-                                <div class="ml-4"><h4 class="text-xl font-bold text-white">Echter Realitäts-Check</h4><p class="text-slate-400 mt-1">Wenn ich eine Modernisierung empfehle, dann weil ich als Zimmerer sehe, dass Ihr Dach in 5 Jahren fällig ist.</p></div>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0 w-12 h-12 bg-bsh-yellow rounded-lg flex items-center justify-center mt-1"><i data-lucide="check-circle" class="text-white w-6 h-6"></i></div>
-                                <div class="ml-4"><h4 class="text-xl font-bold text-white">Projektleiter-Mindset</h4><p class="text-slate-400 mt-1">Ich kann Baupläne lesen, Gewerke koordinieren und Kosten realistisch einschätzen.</p></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div data-reveal class="md:w-1/2 bg-white text-slate-900 p-8 rounded-2xl shadow-2xl transition duration-300 hover:scale-105 border-b-4 border-bsh-yellow">
-                        <h3 class="text-2xl font-bold mb-6 border-b pb-4">Vergleich: Beratung</h3>
-                        <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Klassische Finanzberatung</div>
-                            <div class="text-sm font-semibold text-red-600 uppercase tracking-wider">Kim Betcher</div>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="grid grid-cols-2 gap-4 items-center py-3 border-b border-slate-100">
-                                <div class="text-slate-600 text-sm">Prüft Bonität & Zinsen</div>
-                                <div class="font-bold text-sm flex items-center"><i data-lucide="check-circle" class="text-red-500 w-4 h-4 mr-2"></i> + Prüft Bausubstanz</div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4 items-center py-3 border-b border-slate-100">
-                                <div class="text-slate-600 text-sm">Verkauft Finanzprodukte</div>
-                                <div class="font-bold text-sm flex items-center"><i data-lucide="check-circle" class="text-red-500 w-4 h-4 mr-2"></i> Begleitet "Heimat schaffen"</div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4 items-center py-3">
-                                <div class="text-slate-600 text-sm">Produktvermittler</div>
-                                <div class="font-bold text-sm flex items-center"><i data-lucide="check-circle" class="text-red-500 w-4 h-4 mr-2"></i> Unternehmer & Partner</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="ziele" class="py-20 bg-slate-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16">
-                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Meine Vision</h2>
-                    <div class="w-20 h-1.5 bg-bsh-red mx-auto rounded-full"></div>
-                </div>
-                <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg relative overflow-hidden group cursor-pointer transition-all duration-500 hover:shadow-2xl active:shadow-inner active:scale-[0.98]">
-                     
-                     <!-- NEUER FUCHS: Minimal kleiner und etwas weiter nach unten -->
-                     <img src="ressources/fuchsneu.png" alt="Bausparfuchs" class="absolute -right-4 bottom-0 md:bottom-4 w-60 md:w-72 z-10 pointer-events-none drop-shadow-2xl transition-transform duration-500 ease-in-out group-hover:scale-110 group-hover:-translate-y-4 group-hover:-translate-x-4">
-                    
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-bl-full -mr-8 -mt-8 z-0"></div>
-                    
-                    <!-- Text-Container: Rechter Abstand vergrößert (md:pr-72), damit der große Fuchs nicht verdeckt -->
-                    <div class="relative z-10 pr-0 md:pr-72 pb-4 text-center md:text-left h-auto md:min-h-[250px] flex flex-col justify-center">
-                        <div class="normal-content transition-opacity duration-500 group-hover:opacity-0 group-hover:invisible relative flex flex-col justify-center w-full z-20">
-                            <p class="text-xl text-slate-800 italic mb-6">"Ich bin nicht hier für das schnelle Geschäft. Ich baue ein Unternehmen auf, das Bestand hat."</p>
-                            <div class="grid md:grid-cols-3 gap-6 text-left">
-                                <div class="flex flex-col items-center md:items-start text-center md:text-left"><i data-lucide="trending-up" class="text-bsh-red w-8 h-8 mb-2"></i><span class="font-bold">Langfristige Partnerschaft</span><span class="text-sm text-slate-500">In der Region verwurzelt.</span></div>
-                                <div class="flex flex-col items-center md:items-start text-center md:text-left"><i data-lucide="users" class="text-bsh-red w-8 h-8 mb-2"></i><span class="font-bold">Familiäre Werte</span><span class="text-sm text-slate-500">Gemeinsam mit meiner Frau.</span></div>
-                                 <div class="flex flex-col items-center md:items-start text-center md:text-left"><i data-lucide="shield-check" class="text-bsh-red w-8 h-8 mb-2"></i><span class="font-bold">Finanzielle Freiheit</span><span class="text-sm text-slate-500">Durch ehrliche Arbeit.</span></div>
-                            </div>
-                        </div>
-                        <div class="typewriter opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-500 absolute inset-0 flex items-center justify-center md:justify-start px-2 md:px-0 z-30 pointer-events-none">
-                            <h3 class="text-2xl md:text-4xl font-extrabold text-bsh-red leading-tight drop-shadow-sm text-center md:text-left md:bg-transparent p-4 md:p-0 rounded-xl md:shadow-none">Auf diese Steine können Sie bauen</h3>
-                        </div>
-                    </div>
-                </div>
-        </section>
-
-        <section id="kontakt" class="py-20 bg-white">
-            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 class="text-4xl font-extrabold text-slate-900 mb-6">Lassen Sie uns Ihre Zukunft bauen.</h2>
-                <p class="text-xl text-slate-600 mb-10">Ihr Ansprechpartner für <strong>Oberkochen, Ebnat & Aalen</strong>.<br class="hidden md:block" />Vereinbaren Sie jetzt einen Termin.</p>
-                <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                    <!-- EMAIL BUTTON -->
-                    <a href="#" onclick="window.location.href='mailto:'+'kim.betcher'+'@'+'schwaebisch-hall.de';return false;" class="contact-card group flex items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-slate-100 hover:border-red-600 hover:shadow-lg transition cursor-pointer text-red-600">
-                        <i data-lucide="mail" class="w-6 h-6 text-slate-400 group-hover:text-red-600 transition mr-2"></i>
-                        <span class="font-bold text-slate-900">Email schreiben</span>
-                    </a>
-                    
-                    <!-- TERMIN BUCHEN BUTTON -->
-                    <button onclick="openBookingModal()" class="contact-card group flex items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-slate-100 hover:border-blue-600 hover:shadow-lg transition cursor-pointer w-full text-blue-600">
-                        <i data-lucide="calendar" class="w-6 h-6 text-slate-400 group-hover:text-blue-600 transition mr-2"></i>
-                        <span class="font-bold text-slate-900">Termin buchen</span>
-                    </button>
-
-                    <!-- PHONE BUTTON -->
-                    <a href="tel:+4915222686361" class="contact-card group flex items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-slate-100 hover:border-yellow-500 hover:shadow-lg transition cursor-pointer text-yellow-500">
-                        <i data-lucide="phone" class="w-6 h-6 text-slate-400 group-hover:text-yellow-500 transition mr-2"></i>
-                        <span class="font-bold text-slate-900">+49 152 22686361</span>
-                    </a>
-                </div>
-
-                <!-- QR CODE SECTION -->
-                <div class="mt-12 flex flex-col items-center">
-                    <span class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Digitale Visitenkarte</span>
-                    <div class="bg-white p-3 rounded-2xl shadow-lg border border-slate-100 hover:scale-105 transition duration-300">
-                        <img src="ressources/QR.png" alt="Digitale Visitenkarte QR Code" class="w-32 h-32 md:w-40 md:h-40 object-contain">
-                    </div>
-                </div>
-
-                <div class="mt-12 flex items-center justify-center space-x-2 text-slate-500"><i data-lucide="map-pin" class="w-4 h-4"></i><span>Unterwegs für Sie in Oberkochen, Ebnat und Aalen.</span></div>
-            </div>
-        </section>
-
-        <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0">
-                    <div class="bg-white/90 p-2 rounded mb-6 inline-block"><img src="ressources/sh2.png" alt="Schwäbisch Hall" class="h-8 md:h-10"></div>
-                    <span class="font-bold text-white text-lg tracking-tight block">KIM BETCHER</span>
-                    <p class="text-sm mt-1">Selbstständiger Handelsvertreter der Bausparkasse Schwäbisch Hall AG</p>
-                    <div class="flex space-x-4 mt-4">
-                        <a href="https://www.linkedin.com/in/kim-betcher-5a764b397/" target="_blank" class="text-slate-400 hover:text-bsh-yellow transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect width="4" height="12" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+        <footer class="kb-fuss">
+            <div class="kb-wrap kb-fuss-raster">
+                <div>
+                    <span class="kb-sh"><img src="ressources/sh2.png" alt="Schwäbisch Hall"></span>
+                    <strong>Kim Betcher</strong>
+                    <p>Selbstständiger Handelsvertreter der Bausparkasse Schwäbisch Hall AG</p>
+                    <div class="kb-sozial">
+                        <a href="https://www.linkedin.com/in/kim-betcher-5a764b397/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect width="4" height="12" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg>
                         </a>
-                        <a href="https://www.instagram.com/kimbetcher/" target="_blank" class="text-slate-400 hover:text-bsh-red transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+                        <a href="https://www.instagram.com/kimbetcher/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
                         </a>
                     </div>
                 </div>
-                <div class="flex space-x-6 text-sm items-center mt-4 md:mt-0">
-                    <a href="impressum.html" class="hover:text-white transition">Impressum</a>
-                    <a href="datenschutz.html" class="hover:text-white transition">Datenschutz</a>
-                    <a href="private-einblicke.html" class="hover:text-white transition">Private Einblicke</a>
+                <div class="kb-fuss-links">
+                    <a href="impressum.html">Impressum</a>
+                    <a href="datenschutz.html">Datenschutz</a>
+                    <a href="private-einblicke.html">Private Einblicke</a>
                 </div>
             </div>
         </footer>
+
+      </div>
     </div>
 
     <!-- BUCHUNG MODAL (Interaktiver Fragebogen) -->
@@ -442,7 +491,7 @@
             const container = document.getElementById('modal-content');
             container.innerHTML = `
                 <div class="text-center mb-6 fade-in">
-                    <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-50 rounded-full text-blue-600 mb-4">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full text-slate-900 mb-4">
                         <i data-lucide="calendar-days" class="w-8 h-8"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-slate-900">Worum geht es bei Ihrem Termin?</h3>
@@ -450,12 +499,12 @@
                 </div>
                 <div class="grid grid-cols-1 gap-3 fade-in">
                     ${Object.keys(bookingFlow).map(topic => `
-                        <button onclick="startFlow('${topic}')" class="flex items-center p-4 rounded-xl border-2 border-slate-100 hover:border-blue-500 hover:bg-blue-50 transition group text-left">
-                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-400 group-hover:text-blue-600 shadow-sm mr-4 transition">
+                        <button onclick="startFlow('${topic}')" class="flex items-center p-4 rounded-xl border-2 border-slate-100 hover:border-slate-900 hover:bg-slate-50 transition group text-left">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-400 group-hover:text-slate-900 shadow-sm mr-4 transition">
                                 <i data-lucide="${bookingFlow[topic].icon}" class="w-5 h-5"></i>
                             </div>
-                            <span class="font-bold text-slate-700 group-hover:text-blue-700 text-lg">${topic}</span>
-                            <i data-lucide="chevron-right" class="w-5 h-5 ml-auto text-slate-300 group-hover:text-blue-400"></i>
+                            <span class="font-bold text-slate-700 group-hover:text-slate-900 text-lg">${topic}</span>
+                            <i data-lucide="chevron-right" class="w-5 h-5 ml-auto text-slate-300 group-hover:text-slate-900"></i>
                         </button>
                     `).join('')}
                 </div>
@@ -483,16 +532,16 @@
                         <button onclick="${currentStep === 0 ? 'resetModal()' : 'prevStep()'}" class="text-sm text-slate-400 hover:text-slate-600 flex items-center">
                             <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Zurück
                         </button>
-                        <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">SCHRITT ${currentStep + 1} / ${topicData.questions.length}</span>
+                        <span class="text-xs font-bold text-slate-900 bg-slate-100 px-2 py-1 rounded">SCHRITT ${currentStep + 1} / ${topicData.questions.length}</span>
                     </div>
                     <h3 class="text-xl font-bold text-slate-900 mb-2">${questionData.q}</h3>
                     <div class="w-full bg-slate-100 rounded-full h-1.5 mt-4">
-                        <div class="bg-blue-600 h-1.5 rounded-full transition-all duration-300" style="width: ${progress}%"></div>
+                        <div class="bg-bsh-red h-1.5 rounded-full transition-all duration-300" style="width: ${progress}%"></div>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 gap-3 fade-in">
                     ${questionData.options.map(option => `
-                        <button onclick="handleAnswer('${option}')" class="p-4 rounded-xl border-2 border-slate-100 hover:border-blue-500 hover:bg-blue-50 transition text-left font-medium text-slate-700 hover:text-blue-700">
+                        <button onclick="handleAnswer('${option}')" class="p-4 rounded-xl border-2 border-slate-100 hover:border-slate-900 hover:bg-slate-50 transition text-left font-medium text-slate-700 hover:text-slate-900">
                             ${option}
                         </button>
                     `).join('')}
@@ -523,14 +572,14 @@
             const container = document.getElementById('modal-content');
             container.innerHTML = `
                 <div class="text-center py-8 fade-in">
-                    <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full text-green-600 mb-6 animate-bounce">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full text-green-600 mb-6">
                         <i data-lucide="check" class="w-10 h-10"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-slate-900 mb-2">Fast geschafft!</h3>
                     <p class="text-slate-600 mb-8">
                         Vielen Dank für die Informationen. Klicken Sie unten, um die Anfrage zu senden. Ich antworte Ihnen umgehend mit meinem Buchungslink.
                     </p>
-                    <button onclick="sendFinalMail()" class="block w-full py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition shadow-lg hover:shadow-green-200 flex items-center justify-center">
+                    <button onclick="sendFinalMail()" class="block w-full py-4 bg-bsh-red hover:bg-red-800 text-white font-bold rounded-xl transition flex items-center justify-center">
                         <i data-lucide="send" class="w-5 h-5 mr-2"></i> Anfrage absenden
                     </button>
                 </div>
@@ -614,4 +663,10 @@
                 });
             } catch (err) {
                 console.error("Navigation failed", err);
-                window.lo
+                window.location.href = url;
+            }
+        }
+        window.addEventListener('popstate', () => loadPage(window.location.href));
+    </script>
+</body>
+</html>
