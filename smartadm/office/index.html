@@ -1770,6 +1770,7 @@ td { border-bottom-color: var(--line); }
     callDrafts: {},           // noch nicht gespeicherte Notizen je Kontakt (bleiben auf dem Gerät erhalten)
     finalDial: new Set(),     // Kontakte, bei denen der letzte Versuch gerade läuft
     callErrors: {},           // Hinweis je Kontakt, wenn ein Versuch nicht gespeichert werden konnte
+    noteUnsaved: new Set(),   // Kontakte, deren Notiz noch nicht beim Server angekommen ist
     holdDrafts: {},           // ungespeicherte Halten-Notizen je Kontakt
     holdEditing: new Set(),   // offene Halten-Notizfelder (normale Kontakte)
     callExpanded: new Set(),  // aufgeklappte Kontaktkarten
@@ -1917,7 +1918,7 @@ td { border-bottom-color: var(--line); }
     }
 
     const data = await res.json().catch(() => null);
-    if (!res.ok) throw new Error(data?.error || `API-Fehler ${res.status}`);
+    if (!res.ok) throw Object.assign(new Error(data?.error || `API-Fehler ${res.status}`), { status: res.status });
     return data;
   }
 
@@ -2745,7 +2746,8 @@ td { border-bottom-color: var(--line); }
     };
   }
 
-  // Brutto der letzten 12 Monate inkl. Abrechnungsmonat
+  // Brutto der letzten 12 Monate inkl. Abrechnungsmonat. Abgeschlossene Monate zählen mit
+  // ihrem abgerechneten Brutto, offene mit dem aktuellen Stand – wie im Worker.
   function rollingYear(entries, absences, month) {
     const [y, m] = month.split("-").map(Number);
     const from = isoMonth(new Date(y, m - 12, 1));
@@ -2763,8 +2765,13 @@ td { border-bottom-color: var(--line); }
       months[key] ??= { mins: 0, appts: 0, absence: 0 };
       months[key].absence += a.paidAmountCents;
     });
-    const values = Object.values(months).map(v =>
-      Math.round((v.mins * HOURLY_RATE_CENTS) / 60) + v.appts * COMMISSION_RATE_CENTS + v.absence);
+    const cents = Object.fromEntries(Object.entries(months).map(([key, v]) =>
+      [key, Math.round((v.mins * HOURLY_RATE_CENTS) / 60) + v.appts * COMMISSION_RATE_CENTS + v.absence]));
+    state.closings.forEach(row => {
+      const key = row.payroll_month;
+      if (key >= from && key < month) cents[key] = Math.round(Number(row.gross || 0) * 100);
+    });
+    const values = Object.values(cents);
     return {
       from,
       to: month,
@@ -3174,6 +3181,7 @@ td { border-bottom-color: var(--line); }
       setStatus("closingStatus", "Monatsarchiv konnte nicht geladen werden: " + error.message, true);
     }
     renderClosings();
+    renderPayrollPreview(); // die 12-Monats-Betrachtung nutzt die abgeschlossenen Monate
   }
 
   function renderClosings() {
@@ -3816,6 +3824,7 @@ td { border-bottom-color: var(--line); }
     const open = new Map(state.calls.map(c => [String(c.id), c]));
     Object.keys(state.callDrafts).forEach(id => { if (!open.has(id)) delete state.callDrafts[id]; });
     Object.keys(state.callErrors).forEach(id => { if (!open.has(id)) delete state.callErrors[id]; });
+    state.noteUnsaved.forEach(id => { if (!open.has(id)) state.noteUnsaved.delete(id); });
     state.finalDial.forEach(id => { if (!open.has(id) || !isLastAttempt(open.get(id))) state.finalDial.delete(id); });
     saveCallStore();
   }
@@ -3825,6 +3834,7 @@ td { border-bottom-color: var(--line); }
   function setNoteDraft(id, text) {
     state.callDrafts[id] = text;
     saveCallStore();
+    scheduleNoteSave(String(id));
   }
 
   // Die Notiz ist gespeichert: Entwurf verwerfen, sofern seitdem nichts dazugekommen ist.
@@ -3833,7 +3843,53 @@ td { border-bottom-color: var(--line); }
     if ((state.callDrafts[call.id] ?? sent).trim() !== sent) return;
     delete state.callDrafts[call.id];
     saveCallStore();
+    setNoteState(String(call.id), true);
   }
+
+  /* Notiz automatisch speichern, kurz nachdem nicht mehr getippt wird. Klappt das nicht
+     (keine Verbindung), bleibt sie auf dem Gerät und geht mit der nächsten Aktion mit. */
+  const NOTE_SAVE_DELAY_MS = 900;
+  const NOTE_HINT = {
+    saved: "Wird automatisch gespeichert.",
+    unsaved: "Noch nicht gespeichert – geht mit dem nächsten Anruf oder der Rückgabe mit."
+  };
+  const noteTimers = new Map();
+  const noteHint = id => (state.noteUnsaved.has(String(id)) ? NOTE_HINT.unsaved : NOTE_HINT.saved);
+
+  function setNoteState(id, saved) {
+    saved ? state.noteUnsaved.delete(id) : state.noteUnsaved.add(id);
+    setText(`note-hint-${id}`, noteHint(id));
+  }
+
+  function scheduleNoteSave(id) {
+    clearTimeout(noteTimers.get(id));
+    noteTimers.set(id, setTimeout(() => saveNote(id), NOTE_SAVE_DELAY_MS));
+  }
+
+  function cancelNoteSave(id) {
+    clearTimeout(noteTimers.get(id));
+    noteTimers.delete(id);
+  }
+
+  async function saveNote(id, keepalive = false) {
+    cancelNoteSave(id);
+    const call = findCall(id);
+    if (!call) return;
+    const note = noteDraft(call).trim();
+    if (note === (call.protocol ?? "")) return setNoteState(id, true);
+    try {
+      await api(`/calls/${id}/note`, "PUT", { protocol: note }, { keepalive });
+      noteSaved(call, note);
+    } catch (error) {
+      console.warn("Notiz noch nicht gespeichert:", error.message);
+      setNoteState(id, false);
+    }
+  }
+
+  // App geht in den Hintergrund (z. B. Anruf startet): offene Notizen sofort sichern.
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) [...noteTimers.keys()].forEach(id => saveNote(id, true));
+  });
 
   function employeeCallSummary() {
     const held = state.calls.filter(isHeld).length;
@@ -3932,7 +3988,7 @@ td { border-bottom-color: var(--line); }
           <label for="protocol-${c.id}">Notiz</label>
           <textarea id="protocol-${c.id}" data-protocol="${c.id}" rows="2" maxlength="2000"
             placeholder="z. B. Mailbox, erreichbar ab 17 Uhr">${esc(noteDraft(c))}</textarea>
-          <small>Wird mit dem nächsten Anruf oder der Rückgabe gespeichert.</small>
+          <small id="note-hint-${c.id}">${noteHint(c.id)}</small>
         </div>
         <div class="cc-actions">
           <button class="btn good" type="button" data-call-action="R_TA_mT">Mit Termin</button>
@@ -4006,6 +4062,7 @@ td { border-bottom-color: var(--line); }
     delete state.callErrors[id];
 
     const note = noteDraft(call).trim();
+    cancelNoteSave(id);
     const request = api(`/calls/${id}/attempt`, "POST", { protocol: note }, { keepalive: true })
       .then(() => noteSaved(call, note))
       .catch(error => {
@@ -4087,6 +4144,7 @@ td { border-bottom-color: var(--line); }
 
     withBusy($("returnSubmit"), async () => {
       setStatus("returnStatus", "Wird gespeichert …");
+      cancelNoteSave(id);
       try {
         await pendingAttempts.get(id); // ein eben gezählter Versuch muss zuerst ankommen
         await send(note);
