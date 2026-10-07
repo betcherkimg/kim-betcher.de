@@ -172,7 +172,6 @@ body[data-office-role="boss"] [data-role="employee"] { display: none !important;
 .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
 
 .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.two-col { display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; }
 .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
 .quick-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .narrow { max-width: 820px; }
@@ -311,17 +310,10 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   display: grid; gap: 12px; padding: 16px;
   border: 1px solid var(--line); border-radius: 14px; background: #fff;
 }
-.call-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-.call-name { font-size: 17px; font-weight: 850; }
-.call-brief { padding: 11px 13px; white-space: pre-wrap; }
 .call-btn { font-variant-numeric: tabular-nums; }
 .phone-group { display: inline-flex; gap: 6px; }
 .phone-flag { padding: 11px 13px; font-weight: 800; }
-.call-btn.is-bad {
-  background: #f1f4f7; color: #97a6b4; box-shadow: none; cursor: default; text-decoration: line-through;
-}
 .call-help { margin: -4px 0 0; color: var(--muted); font-size: 11px; }
-.call-row s { color: var(--danger); }
 .dots { display: inline-flex; gap: 4px; padding-top: 6px; flex: 0 0 auto; }
 .dots i { width: 9px; height: 9px; border-radius: 50%; background: #e1e8ef; }
 .dots i.on { background: var(--blue2); }
@@ -343,20 +335,6 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
 /* Telefonliste: Halten / Zu klären */
 .call-group-title { margin: 4px 0 -2px; font-size: 13px; font-weight: 850; color: var(--ink); display: flex; align-items: center; gap: 8px; }
 .call-group-title .chip { margin: 0; }
-.hold-list { display: grid; gap: 8px; }
-.hold-card {
-  border: 1px solid #efd29c; border-left: 5px solid #e0a232; border-radius: 12px; background: #fffaf0;
-}
-.hold-summary {
-  display: flex; justify-content: space-between; align-items: center; gap: 12px;
-  width: 100%; padding: 12px 14px; border: 0; background: none; text-align: left; font: inherit; color: inherit; cursor: pointer;
-}
-.hold-summary strong { display: block; font-size: 15px; }
-.hold-summary q { display: block; margin-top: 3px; color: #805d1d; font-size: 13px; line-height: 1.4; white-space: pre-wrap; word-break: break-word; }
-.hold-toggle { flex: 0 0 auto; font-size: 12px; font-weight: 800; color: #94600f; white-space: nowrap; }
-.hold-body { display: grid; gap: 10px; padding: 0 14px 14px; }
-.hold-body .call-note { margin-top: 0; }
-.hold-body .phone-list a { color: var(--blue); font-weight: 700; text-decoration: none; }
 .hold-editor { display: grid; gap: 8px; padding: 12px; border-radius: 10px; background: #fffaf0; border: 1px dashed #e0a232; }
 .hold-editor label { font-size: 12px; font-weight: 800; }
 .call-note.hold { background: #fffaf0; border-color: #efd29c; color: #805d1d; }
@@ -391,7 +369,6 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
 /* ================= Responsive ================= */
 @media (max-width: 1100px) {
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
-  .two-col { grid-template-columns: 1fr; }
 }
 @media (max-width: 900px) {
   .payroll-profile { grid-template-columns: 1fr; }
@@ -417,9 +394,6 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   .task-item, .call-row { display: block; }
   .card-head.split { flex-direction: column; }
   .call-row .row-actions { justify-content: flex-start; margin-top: 10px; }
-  .call-card .btn-row > .btn { flex: 1 1 auto; }
-  .call-card .btn-row > .phone-group { display: flex; flex: 1 1 100%; }
-  .phone-group .call-btn { flex: 1 1 auto; }
   .task-actions { justify-content: flex-start; margin-top: 10px; }
 
   #entryRows td:last-child {
@@ -606,7 +580,6 @@ td { border-bottom-color: var(--line); }
 .call-note { background: var(--ground); border: 0; color: var(--ink-soft); border-radius: 10px; }
 .call-note b { font-weight: 600; }
 .call-note.hold { background: var(--gelb-wash); color: var(--gelb); }
-.call-row s { color: var(--rot); }
 .dots i { background: var(--line); width: 7px; height: 7px; }
 .dots i.on { background: var(--accent); }
 .dots.full i.on { background: var(--rot); }
@@ -658,7 +631,6 @@ td { border-bottom-color: var(--line); }
 .phone-stack { display: flex; flex-wrap: wrap; gap: 8px; }
 .phone-group { display: inline-flex; gap: 6px; }
 .call-btn { font-variant-numeric: tabular-nums; }
-.call-btn.is-bad { background: var(--ground); color: var(--ink-faint); border-color: transparent; }
 .phone-flag { padding: 9px 13px; font-weight: 600; }
 .call-help { margin: -4px 0 0; color: var(--ink-faint); font-size: 11.5px; }
 .cc-body .field textarea { min-height: 64px; }
@@ -744,6 +716,30 @@ td { border-bottom-color: var(--line); }
 .task-item.completed, .call-row.is-reviewed { opacity: 1; }
 .task-item.completed .task-main, .call-row.is-reviewed .call-row-main { opacity: .55; }
 
+/* Falsche Nummern: rot, damit sie sofort auffallen */
+.phone-bad { color: var(--rot); font-weight: 600; white-space: nowrap; }
+.call-btn.is-bad { background: var(--rot-wash); color: var(--rot); border-color: transparent; cursor: default; text-decoration: none; }
+.phone-tag { font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.acall-note {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+  margin-top: 6px; font-size: 13px; line-height: 1.4; color: var(--ink-soft); word-break: break-word;
+}
+
+/* Rückgabe mit Pflichtnotiz */
+.return-dialog { width: min(460px, calc(100vw - 24px)); max-height: min(88vh, 640px); }
+.return-dialog form { display: flex; flex-direction: column; min-height: 0; }
+.return-body { display: grid; gap: 12px; padding: 14px 16px 16px; overflow-y: auto; }
+.return-body p { margin: 0; font-size: 14px; line-height: 1.45; color: var(--ink-soft); }
+.return-body .chip-row, .return-body .actions, .return-body .status-text { margin: 0; }
+.return-body .status-text:empty { display: none; }
+
+/* Kurze Bestätigung, die von selbst verschwindet */
+.toast {
+  position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  z-index: 60; max-width: calc(100vw - 32px); padding: 10px 18px; border-radius: 999px;
+  background: var(--ink); color: #fff; font-size: 14px; box-shadow: 0 8px 30px rgba(29,39,51,.25);
+}
+
 /* Nachname / Vorname */
 .name-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .name-pair > div { display: grid; gap: 6px; }
@@ -793,7 +789,6 @@ td { border-bottom-color: var(--line); }
   font-size: 14.5px; line-height: 1.5; word-break: break-word;
 }
 .script-line + .script-line { margin-top: 6px; }
-.script-line .var { font-weight: 600; }
 .script-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-radius: 12px; background: var(--accent-wash); }
 .script-tools > div { flex: 1 1 160px; min-width: 0; }
 .script-tools strong { display: block; color: var(--accent); }
@@ -967,8 +962,7 @@ td { border-bottom-color: var(--line); }
                 <div class="field"><label for="break">Pause in Minuten</label><input id="break" type="number" min="0" step="5" value="0"></div>
                 <div class="field"><label for="start">Beginn</label><input id="start" type="time" step="300" required></div>
                 <div class="field"><label for="end">Ende</label><input id="end" type="time" step="300" required></div>
-                <div class="field"><label for="appointments">Termine</label><input id="appointments" type="number" min="0" step="1" value="0"></div>
-                <div class="field"><label for="eligible">davon provisionsfähig</label><input id="eligible" type="number" min="0" step="1" value="0"></div>
+                <div class="field"><label for="appointments">Gesetzte Termine</label><input id="appointments" type="number" min="0" step="1" value="0" inputmode="numeric"><small>Jeder gesetzte Termin zählt automatisch für die Vergütung.</small></div>
               </div>
               <div class="actions">
                 <button type="button" class="btn ghost" id="resetBtn">Abbrechen</button>
@@ -997,10 +991,10 @@ td { border-bottom-color: var(--line); }
           </div>
           <div class="card kpi">
             <div class="kpi-top">
-              <div><div class="kpi-label">Provisionsfähig</div><div class="kpi-value" id="kpiEligible">0</div></div>
-              <div class="kpi-icon">✓</div>
+              <div><div class="kpi-label">Arbeitstage</div><div class="kpi-value" id="kpiDays">0</div></div>
+              <div class="kpi-icon"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></div>
             </div>
-            <div class="kpi-foot"><span>im laufenden Monat</span><span id="eligibleShare">–</span></div>
+            <div class="kpi-foot"><span>im laufenden Monat</span></div>
           </div>
           <div class="card kpi">
             <div class="kpi-top">
@@ -1012,22 +1006,6 @@ td { border-bottom-color: var(--line); }
           </div>
         </div>
 
-          <div class="card section-card">
-            <div class="card-head">
-              <h2>Monatsübersicht</h2>
-              <p>Aktueller Stand ohne Kundendaten.</p>
-            </div>
-            <div class="quick-grid">
-              <div class="quick"><span>Netto-Arbeitszeit</span><b id="qHours">0:00 h</b></div>
-              <div class="quick"><span>Arbeitstage</span><b id="qDays">0</b></div>
-              <div class="quick"><span>Termine gesamt</span><b id="qAppointments">0</b></div>
-              <div class="quick"><span>Provisionsfähig</span><b id="qEligible">0</b></div>
-            </div>
-            <div class="notice" style="margin-top:14px">
-              Kundendaten nur in der Telefonliste pflegen und dort knapp halten – keine Vertrags-, Konto- oder Gesundheitsdaten notieren.
-            </div>
-          </div>
-
         <div class="card section-card">
           <div class="card-head">
             <h2>Einträge im laufenden Monat</h2>
@@ -1035,7 +1013,7 @@ td { border-bottom-color: var(--line); }
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Datum</th><th>Beginn</th><th>Ende</th><th>Pause</th><th>Netto</th><th>Termine</th><th>Provisionsfähig</th><th></th></tr></thead>
+              <thead><tr><th>Datum</th><th>Beginn</th><th>Ende</th><th>Pause</th><th>Netto</th><th>Termine</th><th></th></tr></thead>
               <tbody id="entryRows"></tbody>
             </table>
           </div>
@@ -1085,8 +1063,8 @@ td { border-bottom-color: var(--line); }
             <div class="kpi-foot"><span>ausgewählter Mitarbeiter</span><span data-selected-month></span></div>
           </div>
           <div class="card kpi">
-            <div class="kpi-top"><div><div class="kpi-label">Lohnzettel</div><div class="kpi-value" id="bossPayrollReady">–</div></div><div class="kpi-icon">€</div></div>
-            <div class="kpi-foot"><span>Monatsdaten</span><span>PDF</span></div>
+            <div class="kpi-top"><div><div class="kpi-label">Brutto</div><div class="kpi-value" id="bossGross">–</div></div><div class="kpi-icon">€</div></div>
+            <div class="kpi-foot"><span>ausgewählter Mitarbeiter</span><span data-selected-month></span></div>
           </div>
         </div>
 
@@ -1185,7 +1163,7 @@ td { border-bottom-color: var(--line); }
           <div class="card kpi"><div class="kpi-label">Netto-Arbeitszeit</div><div class="kpi-value" id="bossEmpHours">0:00 h</div><div class="kpi-foot"><span>im gewählten Monat</span></div></div>
           <div class="card kpi"><div class="kpi-label">Arbeitstage</div><div class="kpi-value" id="bossEmpDays">0</div><div class="kpi-foot"><span>erfasste Tage</span></div></div>
           <div class="card kpi"><div class="kpi-label">Termine</div><div class="kpi-value" id="bossEmpAppointments">0</div><div class="kpi-foot"><span>gesamt</span></div></div>
-          <div class="card kpi"><div class="kpi-label">Provisionsfähig</div><div class="kpi-value" id="bossEmpEligible">0</div><div class="kpi-foot"><span>im gewählten Monat</span></div></div>
+          <div class="card kpi"><div class="kpi-label">Brutto</div><div class="kpi-value" id="bossEmpGross">–</div><div class="kpi-foot"><span>Stunden + Termine</span></div></div>
         </div>
 
         <div class="card section-card">
@@ -1195,7 +1173,7 @@ td { border-bottom-color: var(--line); }
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Datum</th><th>Beginn</th><th>Ende</th><th>Pause</th><th>Netto</th><th>Termine</th><th>Provisionsfähig</th></tr></thead>
+              <thead><tr><th>Datum</th><th>Beginn</th><th>Ende</th><th>Pause</th><th>Netto</th><th>Termine</th></tr></thead>
               <tbody id="bossEntryRows"></tbody>
             </table>
           </div>
@@ -1207,14 +1185,14 @@ td { border-bottom-color: var(--line); }
         <div class="card section-card">
           <div class="card-head">
             <h2>Lohn &amp; Abrechnung</h2>
-            <p>Vergütung automatisch aus Arbeitszeit und provisionsfähigen Terminen berechnen.</p>
+            <p>Arbeitsstunden × 13,90 € + gesetzte Termine × 5,00 €. Es zählen alle Einträge des gewählten Monats.</p>
           </div>
 
           <div class="form-grid">
             <div class="field"><label>Mitarbeiter</label><select data-employee-select></select></div>
             <div class="field"><label for="payrollMonth">Abrechnungsmonat</label><input id="payrollMonth" type="month"></div>
             <div class="field"><label>Stundenlohn</label><input value="13,90 € / Stunde" disabled></div>
-            <div class="field"><label>Provision</label><input value="5,00 € / provisionsfähigem Termin" disabled></div>
+            <div class="field"><label>Provision</label><input value="5,00 € / gesetztem Termin" disabled></div>
             <div class="field"><label for="payrollPaymentDate">Zahlungsdatum</label><input id="payrollPaymentDate" type="date"></div>
             <div class="field full"><label for="payrollNote">Notiz</label><input id="payrollNote" type="text" maxlength="180" placeholder="Optionaler interner Hinweis"></div>
           </div>
@@ -1259,7 +1237,7 @@ td { border-bottom-color: var(--line); }
           </div>
 
           <div class="actions start">
-            <button class="btn ghost" id="savePayrollProfile" type="button">Abgabenprofil speichern</button>
+            <button class="btn ghost" id="savePayrollProfile" type="button" hidden>Erneut speichern</button>
             <span id="payrollSaveStatus" class="status-text" style="margin:0">Änderungen werden automatisch gespeichert.</span>
           </div>
 
@@ -1271,8 +1249,8 @@ td { border-bottom-color: var(--line); }
               <div class="quick"><span>Krankheitstage</span><b id="payrollSickDays">0</b></div>
             </div>
             <div class="payroll-summary">
-              <div class="quick"><span>Grundlohn</span><b id="payrollTimePay">0,00 €</b></div>
-              <div class="quick"><span>Provision</span><b id="payrollCommission">0,00 €</b></div>
+              <div class="quick"><span id="payrollTimePayLabel">Grundlohn</span><b id="payrollTimePay">0,00 €</b></div>
+              <div class="quick"><span id="payrollCommissionLabel">Provision</span><b id="payrollCommission">0,00 €</b></div>
               <div class="quick"><span>Entgeltfortzahlung</span><b id="payrollAbsencePay">0,00 €</b></div>
               <div class="quick emphasis"><span>Brutto</span><b id="payrollGross">0,00 €</b></div>
               <div class="quick emphasis"><span>Auszahlung</span><b id="payrollNet">0,00 €</b></div>
@@ -1367,7 +1345,7 @@ td { border-bottom-color: var(--line); }
           </div>
           <div class="table-wrap">
             <table class="nowrap">
-              <thead><tr><th>Monat</th><th>Arbeitszeit</th><th>Provisionsfähig</th><th>Brutto</th><th>Auszahlung</th><th>Abgeschlossen</th><th></th></tr></thead>
+              <thead><tr><th>Monat</th><th>Arbeitszeit</th><th>Vergütete Termine</th><th>Brutto</th><th>Auszahlung</th><th>Abgeschlossen</th><th></th></tr></thead>
               <tbody id="closingRows"></tbody>
             </table>
           </div>
@@ -1456,6 +1434,14 @@ td { border-bottom-color: var(--line); }
 
         <!-- Boss -->
         <div class="card section-card" data-role="boss">
+          <div class="field">
+            <label for="callSearch">Kunde suchen</label>
+            <input id="callSearch" type="search" maxlength="80" autocomplete="off" placeholder="Name eingeben, z. B. Mustermann">
+            <small id="callSearchResult" aria-live="polite"></small>
+          </div>
+        </div>
+
+        <div class="card section-card" data-role="boss">
           <div class="card-head">
             <h2 id="callFormTitle">Kontakt einstellen</h2>
             <p>Kunde, Nummern und Terminort hinterlegen – plus ein kurzer Hinweis, worum es im Gespräch geht.</p>
@@ -1509,7 +1495,7 @@ td { border-bottom-color: var(--line); }
         <div class="card section-card" data-role="boss">
           <div class="card-head">
             <h2>Rückläufer</h2>
-            <p>R_TA_mT mit Termin · R_TA_oT ohne Termin · R_TA_fK falsche Kontaktdaten · R_TA_kK landet im Kein-Kontakt-Archiv</p>
+            <p>R_TA_mT mit Termin · R_TA_oT ohne Termin · R_TA_fK falsche Kontaktdaten · R_TA_kK landet im Kein-Kontakt-Archiv. Jede Rückgabe kommt mit Notiz.</p>
           </div>
           <div id="callReturnedList" class="employee-list"><div class="notice">Wird geladen …</div></div>
         </div>
@@ -1546,7 +1532,7 @@ td { border-bottom-color: var(--line); }
           <div class="card-head split">
             <div>
               <h2>Telefonliste</h2>
-              <p>Kontakt antippen für Nummern und Aktionen. Nach 5 Versuchen geht er zurück.</p>
+              <p>Kontakt antippen und Nummer anrufen – jeder Anruf zählt automatisch als Versuch. Danach das Ergebnis wählen.</p>
             </div>
             <div class="head-btns">
               <button class="btn primary" type="button" id="bookingPickerBtn">
@@ -1560,6 +1546,25 @@ td { border-bottom-color: var(--line); }
               <button class="picker-close" type="button" data-picker-close aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
             </div>
             <div id="bookingPickerList" class="picker-list"></div>
+          </dialog>
+          <dialog id="returnDialog" class="picker return-dialog" aria-labelledby="returnTitle">
+            <form id="returnForm" novalidate>
+              <div class="picker-head"><strong id="returnTitle">Kontakt zurückgeben</strong></div>
+              <div class="return-body">
+                <p id="returnInfo"></p>
+                <div class="field">
+                  <label for="returnNote">Notiz für den Boss (Pflicht)</label>
+                  <textarea id="returnNote" rows="3" maxlength="2000"></textarea>
+                  <small>Kurz halten – keine Vertrags-, Konto- oder Gesundheitsdaten notieren.</small>
+                </div>
+                <div class="chip-row" id="returnChips"></div>
+                <div id="returnStatus" class="status-text" aria-live="polite"></div>
+                <div class="actions">
+                  <button class="btn ghost" type="button" id="returnCancel">Abbrechen</button>
+                  <button class="btn primary" type="submit" id="returnSubmit">Zurückgeben</button>
+                </div>
+              </div>
+            </form>
           </dialog>
           <div id="callList" class="call-groups"><div class="notice">Kontakte werden geladen …</div></div>
         </div>
@@ -1672,6 +1677,8 @@ td { border-bottom-color: var(--line); }
   </main>
 </div>
 
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
   integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
   crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -1759,16 +1766,18 @@ td { border-bottom-color: var(--line); }
     profiles: {},            // Boss: Abgabenprofile je Mitarbeiter
     tasks: [],
     branches: [],
-    calls: [],                                         // Mitarbeiter: eigene offene Kontakte
-    callDrafts: {},                                    // ungespeicherte Protokolle je Kontakt
-    holdDrafts: {},                                    // ungespeicherte Halten-Notizen je Kontakt
-    holdEditing: new Set(),                            // offene Halten-Notizfelder (normale Kontakte)
-    callExpanded: new Set(),                           // aufgeklappte Kontaktkarten
-    scriptExpanded: new Set(),                         // aufgeklappte Anruf-Skripte
-    userName: "",                                      // Vorname des angemeldeten Nutzers (fürs Skript)
-    kkReviewed: new Set(),
-    adminExpanded: new Set(),                          // aufgeklappte Boss-Kontaktzeilen
-    phoneFixDrafts: {},                                // Boss: neue Nummern für R_TA_fK-Rückläufer                             // Boss: „Im Archiv lassen“ (nur diese Sitzung)
+    calls: [],                // Mitarbeiter: eigene offene Kontakte
+    callDrafts: {},           // noch nicht gespeicherte Notizen je Kontakt (bleiben auf dem Gerät erhalten)
+    finalDial: new Set(),     // Kontakte, bei denen der letzte Versuch gerade läuft
+    callErrors: {},           // Hinweis je Kontakt, wenn ein Versuch nicht gespeichert werden konnte
+    holdDrafts: {},           // ungespeicherte Halten-Notizen je Kontakt
+    holdEditing: new Set(),   // offene Halten-Notizfelder (normale Kontakte)
+    callExpanded: new Set(),  // aufgeklappte Kontaktkarten
+    scriptExpanded: new Set(),// aufgeklappte Anruf-Skripte
+    userName: "",             // Vorname des angemeldeten Nutzers (fürs Skript)
+    kkReviewed: new Set(),    // Boss: „Im Archiv lassen“ (nur diese Sitzung)
+    adminExpanded: new Set(), // aufgeklappte Boss-Kontaktzeilen
+    phoneFixDrafts: {},       // Boss: neue Nummern für R_TA_fK-Rückläufer
     adminCalls: { open: [], returned: [], archived: [], kk: [] },
     closings: [],
     employer: {},
@@ -1844,7 +1853,6 @@ td { border-bottom-color: var(--line); }
     return {
       mins: sum("minutes"),
       appts: sum("appointments"),
-      eligible: sum("eligible"),
       days: new Set(list.map(e => e.date)).size
     };
   }
@@ -1869,17 +1877,44 @@ td { border-bottom-color: var(--line); }
     try { return await fn(); } finally { if (button) button.disabled = false; }
   }
 
+  // Kurze Erfolgsmeldung ohne zusätzlichen Klick. Fehler bleiben bewusst als Dialog stehen.
+  let toastTimer = null;
+  function toast(text) {
+    const el = $("toast");
+    el.textContent = text;
+    el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => (el.hidden = true), 3500);
+  }
+
+  function openDialog(dialog) {
+    if (typeof dialog.showModal === "function") dialog.showModal();
+    else dialog.setAttribute("open", "");
+  }
+
+  function closeDialog(dialog) {
+    if (typeof dialog.close === "function") dialog.close();
+    else dialog.removeAttribute("open");
+  }
+
   /* ================= API ================= */
 
-  async function api(path, method = "GET", body) {
+  // keepalive: die Anfrage läuft auch zu Ende, wenn die App gleich in den Hintergrund geht (Anruf startet).
+  async function api(path, method = "GET", body, { keepalive = false } = {}) {
     const token = await window.Clerk?.session?.getToken();
-    if (!token) throw new Error("Keine aktive Anmeldung.");
+    if (!token) throw new Error("Keine aktive Anmeldung. Bitte neu anmelden.");
 
-    const res = await fetch(API + path, {
-      method,
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: body === undefined ? undefined : JSON.stringify(body)
-    });
+    let res;
+    try {
+      res = await fetch(API + path, {
+        method,
+        keepalive,
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: body === undefined ? undefined : JSON.stringify(body)
+      });
+    } catch {
+      throw new Error("Keine Verbindung zum Server. Bitte Internetverbindung prüfen.");
+    }
 
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error(data?.error || `API-Fehler ${res.status}`);
@@ -1897,8 +1932,7 @@ td { border-bottom-color: var(--line); }
     end: row.end_time,
     break: Number(row.break_minutes || 0),
     minutes: Number(row.work_minutes || 0),
-    appointments: Number(row.appointments || 0),
-    eligible: Number(row.commissionable_appointments || 0)
+    appointments: Number(row.appointments || 0)
   });
   const toEntries = rows => asArray(rows).map(toEntry);
   const toAbsence = row => ({
@@ -1953,18 +1987,17 @@ td { border-bottom-color: var(--line); }
   function renderEmployeeDashboard() {
     const { goalHours, goalAppointments, cutAppointments } = state.settings;
     const month = inMonth(state.entries, isoMonth());
-    const { mins, appts, eligible, days } = summarize(month);
+    const { mins, appts, days } = summarize(month);
     const hours = mins / 60;
 
     const values = {
-      kpiHours: fmtMinutes(mins), qHours: fmtMinutes(mins), qDays: days,
-      kpiAppointments: appts, qAppointments: appts,
-      kpiEligible: eligible, qEligible: eligible,
+      kpiHours: fmtMinutes(mins),
+      kpiAppointments: appts,
+      kpiDays: days,
       kpiCut: `${appts} / ${cutAppointments}`,
       hoursText: `${decimal(hours)} von ${goalHours} Stunden erbracht`,
       appointmentsText: `${appts} von ${goalAppointments} Zielterminen`,
       cutText: `${cutAppointments} Termine = Monats-Cut`,
-      eligibleShare: appts ? `${Math.round((eligible / appts) * 100)}%` : "–",
       heroMeta: `${decimal(hours)} von ${goalHours} Stunden`,
       heroStatus: appts >= cutAppointments ? "Cut erreicht"
         : hours >= goalHours && appts >= goalAppointments ? "Ziel erreicht" : "Läuft"
@@ -1982,7 +2015,7 @@ td { border-bottom-color: var(--line); }
   }
 
   function entryRowsHtml(list, withActions, emptyText) {
-    const cols = withActions ? 8 : 7;
+    const cols = withActions ? 7 : 6;
     if (!list.length) return `<tr><td class="empty" colspan="${cols}">${esc(emptyText)}</td></tr>`;
 
     return [...list].sort(byNewest).map(e => {
@@ -1999,7 +2032,6 @@ td { border-bottom-color: var(--line); }
         <td>${e.break} min</td>
         <td><b>${fmtMinutes(e.minutes)}</b></td>
         <td>${e.appointments}</td>
-        <td>${e.eligible}</td>
         ${actions}
       </tr>`;
     }).join("");
@@ -2034,7 +2066,7 @@ td { border-bottom-color: var(--line); }
     }
   }
 
-  const FORM_FIELDS = ["date", "start", "end", "break", "appointments", "eligible"];
+  const FORM_FIELDS = ["date", "start", "end", "break", "appointments"];
 
   function resetForm() {
     const save = $("saveBtn");
@@ -2043,7 +2075,7 @@ td { border-bottom-color: var(--line); }
     $("editId").value = "";
     $("start").value = "";
     $("end").value = "";
-    ["break", "appointments", "eligible"].forEach(id => ($(id).value = 0));
+    ["break", "appointments"].forEach(id => ($(id).value = 0));
     $("date").value = isoDate();
     applyDateLimits();
   }
@@ -2130,19 +2162,27 @@ td { border-bottom-color: var(--line); }
     const start = $("start").value;
     const end = $("end").value;
     const breakMinutes = Number($("break").value || 0);
-    const minutes = minutesBetween(start, end, breakMinutes);
-    if (minutes <= 0) return alert("Bitte prüfe Beginn, Ende und Pause.");
-
     const appointments = Number($("appointments").value || 0);
-    const eligible = Number($("eligible").value || 0);
-    if (eligible > appointments) {
-      return alert("Provisionsfähige Termine können nicht höher als die Gesamtzahl der Termine sein.");
-    }
+    const wholeNumber = n => Number.isInteger(n) && n >= 0;
+    if (!wholeNumber(breakMinutes)) return alert("Bitte die Pause in ganzen Minuten eingeben.");
+    if (!wholeNumber(appointments)) return alert("Bitte die Termine als ganze Zahl eingeben.");
+    if (end <= start) return alert("Das Ende muss nach dem Beginn liegen.");
+
+    const minutes = minutesBetween(start, end, breakMinutes);
+    if (minutes <= 0) return alert("Die Pause ist so lang wie die Arbeitszeit. Bitte Beginn, Ende und Pause prüfen.");
 
     const existing = state.entries.find(e => e.id === $("editId").value);
+    const overlap = state.entries.find(e => e !== existing && e.date === date && start < e.end && e.start < end);
+    if (overlap) {
+      return alert(`Am ${fmtDate(date)} gibt es bereits einen Eintrag von ${overlap.start} bis ${overlap.end} Uhr. Bitte die Zeiten prüfen.`);
+    }
+    if (minutes > CONTRACT_WEEKLY_HOURS * 60 &&
+        !confirm(`Du trägst ${fmtMinutes(minutes)} an einem Stück ein. Stimmt das?`)) return;
+
+    // Jeder gesetzte Termin wird vergütet. Der Worker speichert den Wert weiterhin in beiden Feldern.
     const payload = {
       work_date: date, start_time: start, end_time: end, break_minutes: breakMinutes,
-      appointments, commissionable_appointments: eligible
+      appointments, commissionable_appointments: appointments
     };
 
     setFormBusy(true, existing ? "Wird gespeichert …" : "Wird angelegt …");
@@ -2266,17 +2306,15 @@ td { border-bottom-color: var(--line); }
   }
 
   function renderEmployeeData() {
-    const month = $("bossMonth").value || isoMonth();
+    const month = payrollMonth();
     const list = inMonth(state.employeeEntries, month);
-    const { mins, appts, eligible, days } = summarize(list);
+    const { mins, appts, days } = summarize(list);
 
     setText("bossEmpHours", fmtMinutes(mins));
     setText("bossEmpDays", days);
     setText("bossEmpAppointments", appts);
-    setText("bossEmpEligible", eligible);
     setText("bossTotalHours", fmtMinutes(mins));
     setText("bossTotalAppointments", appts);
-    setText("bossPayrollReady", state.selectedUserId ? "bereit" : "–");
     $$("[data-selected-month]").forEach(el => (el.textContent = fmtMonth(month)));
 
     $("bossEntryRows").innerHTML = state.selectedUserId
@@ -2307,7 +2345,13 @@ td { border-bottom-color: var(--line); }
     await selectEmployee(keep || state.employees[0]?.clerk_user_id || null);
   }
 
-  $("bossMonth").addEventListener("change", renderEmployeeData);
+  // Ein Monat für Mitarbeiterdaten und Lohn – beide Seiten zeigen immer denselben Zeitraum.
+  ["bossMonth", "payrollMonth"].forEach(id => $(id).addEventListener("change", event => {
+    const month = event.target.value || isoMonth();
+    $("bossMonth").value = month;
+    $("payrollMonth").value = month;
+    renderEmployeeData();
+  }));
 
   /* ================= Boss: Stammdaten ================= */
 
@@ -2501,7 +2545,7 @@ td { border-bottom-color: var(--line); }
   }
 
   function renderAbsenceData() {
-    const month = $("bossMonth").value || isoMonth();
+    const month = payrollMonth();
     const year = month.slice(0, 4);
     const employment = selectedEmployment();
     const stats = calculateVacationStats(state.employeeEntries, state.employeeAbsences, employment, month);
@@ -2641,9 +2685,10 @@ td { border-bottom-color: var(--line); }
   const contributionGroup = p => `${p.employerKv ? "6" : "0"}${p.employeeRv ? "1" : "5"}00`;
 
   function calculatePayroll(list, profile, month, employment = {}, absences = []) {
-    const { mins, appts, eligible, days } = summarize(list);
+    // Arbeitsstunden × Stundenlohn + alle gesetzten Termine × Terminvergütung
+    const { mins, appts, days } = summarize(list);
     const timePay = Math.round((mins * HOURLY_RATE_CENTS) / 60);
-    const commission = eligible * COMMISSION_RATE_CENTS;
+    const commission = appts * COMMISSION_RATE_CENTS;
     const absenceMoney = type => absences.filter(a => a.type === type).reduce((sum, a) => sum + a.paidAmountCents, 0);
     const vacationPay = absenceMoney("vacation");
     const sickPay = absenceMoney("sick");
@@ -2688,7 +2733,8 @@ td { border-bottom-color: var(--line); }
     };
 
     return {
-      mins, appts, eligible, days,
+      // „eligible" = vergütete Termine; der Name bleibt, weil gespeicherte Monatsabschlüsse ihn verwenden.
+      mins, appts, eligible: appts, days,
       goalMinutes: Math.round(Number(state.settings.goalHours || 24) * 60),
       paidMinutes, overtimeMinutes: 0,
       vacationDays: count("vacation"), sickDays: count("sick"),
@@ -2707,18 +2753,18 @@ td { border-bottom-color: var(--line); }
     entries.forEach(e => {
       const key = e.date.slice(0, 7);
       if (key < from || key > month) return;
-      months[key] ??= { mins: 0, eligible: 0 };
+      months[key] ??= { mins: 0, appts: 0, absence: 0 };
       months[key].mins += e.minutes;
-      months[key].eligible += e.eligible;
+      months[key].appts += e.appointments;
     });
     absences.forEach(a => {
       const key = a.date.slice(0, 7);
       if (key < from || key > month) return;
-      months[key] ??= { mins: 0, eligible: 0, absence: 0 };
-      months[key].absence = (months[key].absence || 0) + a.paidAmountCents;
+      months[key] ??= { mins: 0, appts: 0, absence: 0 };
+      months[key].absence += a.paidAmountCents;
     });
     const values = Object.values(months).map(v =>
-      Math.round((v.mins * HOURLY_RATE_CENTS) / 60) + v.eligible * COMMISSION_RATE_CENTS + Number(v.absence || 0));
+      Math.round((v.mins * HOURLY_RATE_CENTS) / 60) + v.appts * COMMISSION_RATE_CENTS + v.absence);
     return {
       from,
       to: month,
@@ -2910,7 +2956,12 @@ td { border-bottom-color: var(--line); }
   function renderPayrollPreview() {
     const p = currentPayroll();
     const vacation = calculateVacationStats(state.employeeEntries, state.employeeAbsences, selectedEmployment(), payrollMonth());
+    const gross = state.selectedUserId ? euro(p.gross) : "–";
     const values = {
+      bossGross: gross,
+      bossEmpGross: gross,
+      payrollTimePayLabel: `Grundlohn · ${decimal(p.mins / 60, 2)} Std. × ${euro(HOURLY_RATE_CENTS / 100)}`,
+      payrollCommissionLabel: `Provision · ${p.appts} ${p.appts === 1 ? "Termin" : "Termine"} × ${euro(COMMISSION_RATE_CENTS / 100)}`,
       payrollHours: fmtMinutes(p.mins),
       payrollDays: p.days,
       payrollVacation: `${p.vacationDays} / ${Number(vacation.remaining).toLocaleString("de-DE", { maximumFractionDigits: 2 })}`,
@@ -2994,10 +3045,12 @@ td { border-bottom-color: var(--line); }
         renderPayrollPreview();
       }
       setStatus("payrollSaveStatus", "Gespeichert ✓");
+      $("savePayrollProfile").hidden = true;
       return true;
     } catch (error) {
       console.error(error);
       setStatus("payrollSaveStatus", "Speichern fehlgeschlagen – bitte erneut versuchen.", true);
+      $("savePayrollProfile").hidden = false;
       if (notify) alert("Abgabenprofil konnte nicht gespeichert werden: " + error.message);
       return false;
     }
@@ -3025,8 +3078,6 @@ td { border-bottom-color: var(--line); }
     profileSaveTimer = null;
     saveProfile({ notify: true });
   });
-
-  $("payrollMonth").addEventListener("change", renderPayrollPreview);
 
   $("useCurrentGrossBtn").addEventListener("click", () => {
     $("contribReportedGross").value = Number(currentPayroll().gross || 0).toFixed(2);
@@ -3088,7 +3139,7 @@ td { border-bottom-color: var(--line); }
         .sort((a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start))
         .map(e => ({
           work_date: e.date, start_time: e.start, end_time: e.end, break_minutes: e.break,
-          work_minutes: e.minutes, appointments: e.appointments, eligible: e.eligible
+          work_minutes: e.minutes, appointments: e.appointments
         })),
       absences: inMonthAbsences(state.employeeAbsences, month)
         .sort((a, b) => a.date.localeCompare(b.date))
@@ -3404,7 +3455,7 @@ td { border-bottom-color: var(--line); }
         });
         ["requestTitle", "requestDescription", "requestDueDate"].forEach(id => ($(id).value = ""));
         $("requestPriority").value = "normal";
-        alert("An den Boss gesendet ✓");
+        toast("An den Boss gesendet ✓");
       } catch (error) {
         alert("Senden fehlgeschlagen: " + error.message);
       }
@@ -3432,16 +3483,13 @@ td { border-bottom-color: var(--line); }
 
   function openBookingPicker() {
     renderBookingPicker();
-    const dialog = $("bookingPicker");
-    if (typeof dialog.showModal === "function") dialog.showModal();
-    else dialog.setAttribute("open", "");
+    openDialog($("bookingPicker"));
   }
 
   $("bookingPickerBtn").addEventListener("click", openBookingPicker);
 
   $("bookingPicker").addEventListener("click", event => {
-    const dialog = $("bookingPicker");
-    if (event.target.closest("[data-picker-close]")) dialog.close?.() ?? dialog.removeAttribute("open");
+    if (event.target.closest("[data-picker-close]")) closeDialog($("bookingPicker"));
   });
 
   $("requestNumbersBtn").addEventListener("click", event => {
@@ -3452,7 +3500,7 @@ td { border-bottom-color: var(--line); }
     withBusy(event.currentTarget, async () => {
       try {
         await sendTaskToBoss(TASK_TEMPLATES.numbers());
-        alert("Anfrage gesendet ✓ Du findest sie unter „Aufgaben“.");
+        toast("Anfrage gesendet ✓ Du findest sie unter „Aufgaben“.");
       } catch (error) {
         alert("Senden fehlgeschlagen: " + error.message);
       }
@@ -3509,8 +3557,6 @@ td { border-bottom-color: var(--line); }
     {label:"Wohneigentum", subject:"Ihren Wunsch nach Wohneigentum und die nächsten Schritte dorthin"},
     {label:"Fördermöglichkeiten", subject:"mögliche Förderungen und Ihre Förderberechtigung"}
   ];
-
-  const scriptTemplate = subject => `Hallo {anrede} {kunde}, mein Name ist {mitarbeiter}. Ich bin die Assistentin von Herrn Betcher, Ihrem Bezirksleiter der Bausparkasse Schwäbisch Hall. Herr Betcher möchte mit Ihnen über ${subject} sprechen.\n\n{terminfrage}`;
 
   // Zusätzliche Themen und eigene Skripte werden versioniert im bestehenden
   // Hinweisfeld gespeichert. Der Worker erhält weiterhin nur bekannte Themenkeys.
@@ -3600,6 +3646,7 @@ td { border-bottom-color: var(--line); }
 
   const conversationOpening = () => `Hallo {anrede} {kunde}, mein Name ist {mitarbeiter}. Ich bin ${SCRIPT.assistantRole} von Herrn ${SCRIPT.bossLastName}, ${SCRIPT.bossRole}.`;
   const fullScriptTemplate = sentences => `${conversationOpening()} ${sentences}\n\n{terminfrage}`;
+  const scriptTemplate = subject => fullScriptTemplate(`${bossName()} möchte mit Ihnen über ${subject} sprechen.`);
 
   function conversationTemplate(data) {
     const standard = data.topics.filter(key => CALL_TOPICS[key]?.subject);
@@ -3705,10 +3752,12 @@ td { border-bottom-color: var(--line); }
     return `<span class="dots ${n >= CALL_MAX_ATTEMPTS ? "full" : ""}" title="${n} von ${CALL_MAX_ATTEMPTS} Versuchen">${dots}</span>`;
   }
 
-  const phoneLinks = c => c.phones
+  // Falsche Nummern stehen rot und durchgestrichen da. Gute Nummern sind nur beim Boss direkt
+  // anwählbar – Mitarbeiter rufen über die Kontaktkarte an, damit der Versuch gezählt wird.
+  const phoneList = (c, link = true) => c.phones
     .map(p => c.bad_phones.includes(p)
-      ? `<s title="als falsch markiert">${esc(p)}</s>`
-      : `<a href="${esc(telHref(p))}">${esc(p)}</a>`)
+      ? `<span class="phone-bad" title="als falsch markiert"><s>${esc(p)}</s> falsch</span>`
+      : link ? `<a href="${esc(telHref(p))}">${esc(p)}</a>` : esc(p))
     .join(", ");
 
   function renderCallPlaceSelect(current = $("callPlace").value) {
@@ -3734,6 +3783,57 @@ td { border-bottom-color: var(--line); }
   /* --- Mitarbeiter --- */
 
   const isHeld = c => c.hold_note !== null && c.hold_note !== undefined;
+  const findCall = id => state.calls.find(c => String(c.id) === String(id));
+  const goodPhones = c => c.phones.filter(p => !c.bad_phones.includes(p));
+
+  // Beim letzten Versuch wird erst mit dem Ergebnis gespeichert, weil er den Kontakt abschließt.
+  const isLastAttempt = c => c.attempts >= CALL_MAX_ATTEMPTS - 1;
+  const shownAttempts = c => c.attempts + (state.finalDial.has(String(c.id)) ? 1 : 0);
+
+  /* Notizen und der laufende letzte Versuch bleiben auf dem Gerät erhalten, bis sie gespeichert
+     sind – auch wenn die App während eines Telefonats neu lädt. */
+  const callStoreKey = () => `smartadm.office.calls.v1:${state.bootstrappedFor || "none"}`;
+
+  function restoreCallStore() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(callStoreKey()) || "{}");
+      state.callDrafts = saved.notes && typeof saved.notes === "object" ? saved.notes : {};
+      state.finalDial = new Set(asArray(saved.finalDial).map(String));
+    } catch {
+      state.callDrafts = {};
+      state.finalDial = new Set();
+    }
+  }
+
+  function saveCallStore() {
+    try {
+      localStorage.setItem(callStoreKey(), JSON.stringify({ notes: state.callDrafts, finalDial: [...state.finalDial] }));
+    } catch {}
+  }
+
+  // Nach jedem Laden: nichts aufbewahren, was zu keinem offenen Kontakt mehr gehört.
+  function pruneCallStore() {
+    const open = new Map(state.calls.map(c => [String(c.id), c]));
+    Object.keys(state.callDrafts).forEach(id => { if (!open.has(id)) delete state.callDrafts[id]; });
+    Object.keys(state.callErrors).forEach(id => { if (!open.has(id)) delete state.callErrors[id]; });
+    state.finalDial.forEach(id => { if (!open.has(id) || !isLastAttempt(open.get(id))) state.finalDial.delete(id); });
+    saveCallStore();
+  }
+
+  const noteDraft = c => state.callDrafts[c.id] ?? c.protocol ?? "";
+
+  function setNoteDraft(id, text) {
+    state.callDrafts[id] = text;
+    saveCallStore();
+  }
+
+  // Die Notiz ist gespeichert: Entwurf verwerfen, sofern seitdem nichts dazugekommen ist.
+  function noteSaved(call, sent) {
+    call.protocol = sent;
+    if ((state.callDrafts[call.id] ?? sent).trim() !== sent) return;
+    delete state.callDrafts[call.id];
+    saveCallStore();
+  }
 
   function employeeCallSummary() {
     const held = state.calls.filter(isHeld).length;
@@ -3761,15 +3861,20 @@ td { border-bottom-color: var(--line); }
 
   const CHEVRON = '<svg class="i chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
 
+  const attemptText = c => {
+    const last = c.attempt_log.at(-1);
+    const running = state.finalDial.has(String(c.id));
+    return `Versuch ${shownAttempts(c)}/${CALL_MAX_ATTEMPTS}${running ? " · läuft" : last ? ` · zuletzt ${fmtDateTime(last)}` : ""}`;
+  };
+
   // Kopfzeile jeder Kontaktkarte – immer sichtbar, Tippen klappt auf/zu.
   function callSummaryHtml(c, held, open) {
-    const last = c.attempt_log.at(-1);
     const sub = held
       ? `<span class="cc-note">${esc(c.hold_note)}</span>`
-      : `<span class="cc-sub">Versuch ${c.attempts}/${CALL_MAX_ATTEMPTS}${last ? ` · zuletzt ${esc(fmtDateTime(last))}` : ""} · ${esc(placeLabel(c))}</span>`;
+      : `<span class="cc-sub">${esc(attemptText(c))} · ${esc(placeLabel(c))}</span>`;
     return `<button class="cc-head" type="button" data-call-toggle aria-expanded="${open}">
       <span class="cc-main"><span class="cc-name">${esc(c.customer_name)}</span>${sub}</span>
-      ${held ? "" : attemptDots(c.attempts)}
+      ${held ? "" : attemptDots(shownAttempts(c))}
       ${CHEVRON}
     </button>`;
   }
@@ -3777,6 +3882,7 @@ td { border-bottom-color: var(--line); }
   function heldCardHtml(c) {
     const open = state.callExpanded.has(String(c.id));
     const last = c.attempt_log.at(-1);
+    const note = noteDraft(c);
     return `<div class="call-card is-held${open ? " is-open" : ""}" data-call="${c.id}">
       ${callSummaryHtml(c, true, open)}
       ${open ? `<div class="cc-body">
@@ -3784,29 +3890,35 @@ td { border-bottom-color: var(--line); }
           <div><dt>Termin</dt><dd>${esc(placeLabel(c))}</dd></div>
           <div><dt>Versuche</dt><dd>${c.attempts} von ${CALL_MAX_ATTEMPTS}${last ? ` · zuletzt ${esc(fmtDateTime(last))}` : ""}</dd></div>
           ${c.held_at ? `<div><dt>Gehalten seit</dt><dd>${esc(fmtDateTime(c.held_at))}</dd></div>` : ""}
-          <div><dt>Telefon</dt><dd class="phone-list">${phoneLinks(c)}</dd></div>
+          <div><dt>Telefon</dt><dd class="phone-list">${phoneList(c, false)}</dd></div>
         </dl>
         ${callBriefing(c) ? `<div class="cc-text"><b>Hinweis</b>${esc(callBriefing(c))}</div>` : ""}
-        ${c.protocol ? `<div class="cc-text"><b>Protokoll</b>${esc(c.protocol)}</div>` : ""}
+        ${note ? `<div class="cc-text"><b>Notiz</b>${esc(note)}</div>` : ""}
         ${holdEditorHtml(c, "held")}
       </div>` : ""}
     </div>`;
   }
 
   function callCardHtml(c) {
-    const open = state.callExpanded.has(String(c.id));
-    const draft = state.callDrafts[c.id] ?? c.protocol ?? "";
+    const id = String(c.id);
+    const open = state.callExpanded.has(id);
+    const running = state.finalDial.has(id);
     const phones = c.phones.map((p, i) => c.bad_phones.includes(p)
       ? `<span class="phone-group">
-           <span class="btn call-btn is-bad">${ICONS.phone}${esc(p)}</span>
-           <button class="btn ghost phone-flag" type="button" data-phone-flag="${i}" title="Doch richtig" aria-label="Nummer doch richtig">↺</button>
+           <span class="btn call-btn is-bad"><s>${esc(p)}</s><span class="phone-tag">falsch</span></span>
+           <button class="btn ghost phone-flag" type="button" data-phone-flag="${i}">Doch richtig</button>
          </span>`
       : `<span class="phone-group">
-           <a class="btn primary call-btn" href="${esc(telHref(p))}">${ICONS.phone}${esc(p)}</a>
-           <button class="btn ghost phone-flag" type="button" data-phone-flag="${i}" title="Nummer falsch" aria-label="Nummer als falsch markieren">✕</button>
+           <a class="btn primary call-btn" href="${esc(telHref(p))}" data-call-dial>${ICONS.phone}${esc(p)}</a>
+           <button class="btn ghost phone-flag" type="button" data-phone-flag="${i}" title="Nur diese Nummer als falsch markieren">Falsch</button>
          </span>`).join("");
-    const scriptOpen = state.scriptExpanded.has(String(c.id));
+    const scriptOpen = state.scriptExpanded.has(id);
     const script = `<button class="btn ghost" type="button" data-script-toggle aria-expanded="${scriptOpen}">${ICONS.script}Skript</button>`;
+    const help = running
+      ? "Letzter Versuch läuft. Niemanden erreicht? Dann „Nicht erreicht“ wählen."
+      : isLastAttempt(c)
+        ? "Der nächste Anruf ist der letzte Versuch."
+        : "Jeder Anruf zählt automatisch als Versuch.";
 
     return `<div class="call-card${open ? " is-open" : ""}" data-call="${c.id}">
       ${callSummaryHtml(c, false, open)}
@@ -3814,19 +3926,21 @@ td { border-bottom-color: var(--line); }
         ${callBriefing(c) ? `<div class="cc-text"><b>Hinweis</b>${esc(callBriefing(c))}</div>` : ""}
         <div class="phone-stack">${phones}${script}</div>
         ${scriptOpen ? scriptHtml(c) : ""}
-        <p class="call-help">✕ = Nummer falsch. Sind alle Nummern falsch, geht der Kontakt als R_TA_fK zurück.</p>
+        <p class="call-help">${help} „Falsch“ markiert nur diese eine Nummer – der Kontakt bleibt bei dir, solange eine andere funktioniert.</p>
+        ${state.callErrors[id] ? `<div class="notice warn">${esc(state.callErrors[id])}</div>` : ""}
         <div class="field">
-          <label for="protocol-${c.id}">Protokoll</label>
+          <label for="protocol-${c.id}">Notiz</label>
           <textarea id="protocol-${c.id}" data-protocol="${c.id}" rows="2" maxlength="2000"
-            placeholder="Kurz notieren: Mailbox, Rückruf gewünscht, Termin am …">${esc(draft)}</textarea>
+            placeholder="z. B. Mailbox, erreichbar ab 17 Uhr">${esc(noteDraft(c))}</textarea>
+          <small>Wird mit dem nächsten Anruf oder der Rückgabe gespeichert.</small>
         </div>
         <div class="cc-actions">
-          <button class="btn ghost" type="button" data-call-action="attempt">Nicht erreicht +1</button>
           <button class="btn good" type="button" data-call-action="R_TA_mT">Mit Termin</button>
           <button class="btn ghost" type="button" data-call-action="R_TA_oT">Ohne Termin</button>
+          ${running ? '<button class="btn ghost" type="button" data-call-action="R_TA_kK">Nicht erreicht</button>' : ""}
           <button class="btn quiet" type="button" data-hold-action="open">Halten</button>
         </div>
-        ${state.holdEditing.has(String(c.id)) ? holdEditorHtml(c, "open") : ""}
+        ${state.holdEditing.has(id) ? holdEditorHtml(c, "open") : ""}
       </div>` : ""}
     </div>`;
   }
@@ -3842,21 +3956,153 @@ td { border-bottom-color: var(--line); }
       ? `${held.length ? `<div class="call-group-title">Anrufen <span class="count">${open.length}</span></div>` : ""}
          <div class="call-list">${open.map(callCardHtml).join("")}</div>`
       : `<div class="notice">Keine offenen Kontakte${held.length ? " zum Anrufen" : ""}. ✓</div>`;
-    $("callList").innerHTML = heldHtml + openHtml;
+
+    // Neu zeichnen, ohne dass ein gerade benutztes Notizfeld den Cursor verliert.
+    const host = $("callList");
+    const active = host.contains(document.activeElement) && document.activeElement.id ? document.activeElement : null;
+    const caret = active && "selectionStart" in active ? [active.selectionStart, active.selectionEnd] : null;
+    host.innerHTML = heldHtml + openHtml;
+    const again = active && $(active.id);
+    if (again) {
+      again.focus({ preventScroll: true });
+      if (caret) again.setSelectionRange(...caret);
+    }
     updateCallSummary();
   }
 
   $("callList").addEventListener("input", event => {
     const field = event.target.closest("[data-protocol]");
-    if (field) state.callDrafts[field.dataset.protocol] = field.value;
+    if (field) setNoteDraft(field.dataset.protocol, field.value);
     const note = event.target.closest("[data-hold-note]");
     if (note) state.holdDrafts[note.dataset.holdNote] = note.value;
+  });
+
+  /* --- Anrufen zählt den Versuch --- */
+
+  const DIAL_GROUP_MS = 5 * 60 * 1000;  // mehrere Nummern direkt nacheinander = ein Versuch
+  const pendingAttempts = new Map();    // Kontakt → laufende Speicherung des Versuchs
+
+  function lastAttemptTime(c) {
+    const last = c.attempt_log.at(-1);
+    const time = last ? parseTimestamp(last).getTime() : NaN;
+    return Number.isFinite(time) ? time : 0;
+  }
+
+  // Wird beim Tippen auf eine Nummer aufgerufen. Der Anruf selbst startet über den tel:-Link.
+  function countAttempt(call) {
+    const id = String(call.id);
+    if (pendingAttempts.has(id) || Math.abs(Date.now() - lastAttemptTime(call)) < DIAL_GROUP_MS) return;
+
+    if (isLastAttempt(call)) {
+      state.finalDial.add(id);
+      saveCallStore();
+      return;
+    }
+
+    // Sofort anzeigen, im Hintergrund speichern
+    const stamp = new Date().toISOString();
+    call.attempts += 1;
+    call.attempt_log.push(stamp);
+    delete state.callErrors[id];
+
+    const note = noteDraft(call).trim();
+    const request = api(`/calls/${id}/attempt`, "POST", { protocol: note }, { keepalive: true })
+      .then(() => noteSaved(call, note))
+      .catch(error => {
+        console.error(error);
+        call.attempts -= 1;
+        call.attempt_log = call.attempt_log.filter(t => t !== stamp);
+        state.callErrors[id] = `Dieser Versuch wurde nicht gezählt: ${error.message}`;
+        renderOwnCalls();
+      })
+      .finally(() => pendingAttempts.delete(id));
+    pendingAttempts.set(id, request);
+  }
+
+  /* --- Rückgabe an den Boss: immer mit Notiz --- */
+
+  const RETURN_NOTE_MIN = 3;
+  const RETURN_KINDS = {
+    R_TA_mT: { title: "Mit Termin zurückgeben", info: "Der Termin steht, der Kontakt geht an den Boss zurück.",
+               placeholder: "z. B. Termin am 14.10. um 15 Uhr in Oberkochen", suggestions: [] },
+    R_TA_oT: { title: "Ohne Termin zurückgeben", info: "Kein Termin zustande gekommen, der Kontakt geht an den Boss zurück.",
+               placeholder: "z. B. kein Interesse, meldet sich selbst",
+               suggestions: ["Kein Interesse", "Meldet sich selbst", "Wünscht Rückruf vom Boss"] },
+    R_TA_kK: { title: "Nicht erreicht – zurückgeben", info: `${CALL_MAX_ATTEMPTS} Versuche ohne Kontakt, der Kontakt geht ins Kein-Kontakt-Archiv.`,
+               placeholder: "z. B. immer nur Mailbox",
+               suggestions: ["Immer nur Mailbox", "Niemand nimmt ab", "Besetzt oder weggedrückt"] },
+    R_TA_fK: { title: "Alle Nummern falsch – zurückgeben", info: "Keine Nummer funktioniert, der Kontakt geht zur Korrektur an den Boss zurück.",
+               placeholder: "z. B. Nummer nicht vergeben",
+               suggestions: ["Nummer nicht vergeben", "Falscher Anschluss"] }
+  };
+
+  let returnRequest = null; // { id, send } solange der Dialog offen ist
+
+  function openReturnDialog(call, status, send) {
+    const kind = RETURN_KINDS[status];
+    returnRequest = { id: String(call.id), send };
+    setText("returnTitle", kind.title);
+    setText("returnInfo", `„${call.customer_name}“ – ${kind.info}`);
+    $("returnNote").value = noteDraft(call);
+    $("returnNote").placeholder = kind.placeholder;
+    $("returnChips").innerHTML = kind.suggestions
+      .map(text => `<button class="chip-btn" type="button" data-return-suggestion>${esc(text)}</button>`).join("");
+    $("returnChips").hidden = !kind.suggestions.length;
+    setStatus("returnStatus", "");
+    openDialog($("returnDialog"));
+    $("returnNote").focus();
+  }
+
+  $("returnNote").addEventListener("input", () => {
+    if (returnRequest) setNoteDraft(returnRequest.id, $("returnNote").value);
+  });
+
+  $("returnChips").addEventListener("click", event => {
+    const chip = event.target.closest("[data-return-suggestion]");
+    if (!chip) return;
+    const note = $("returnNote");
+    const current = note.value.trim();
+    note.value = current ? `${current}${/[.!?]$/.test(current) ? "" : "."} ${chip.textContent}` : chip.textContent;
+    note.dispatchEvent(new Event("input"));
+    note.focus();
+  });
+
+  $("returnCancel").addEventListener("click", () => closeDialog($("returnDialog")));
+
+  // Abbrechen, Esc oder erfolgreiche Rückgabe: die Karte zeigt wieder den aktuellen Notizstand.
+  $("returnDialog").addEventListener("close", () => {
+    returnRequest = null;
+    renderOwnCalls();
+  });
+
+  $("returnForm").addEventListener("submit", event => {
+    event.preventDefault();
+    if (!returnRequest) return;
+    const { id, send } = returnRequest;
+    const note = $("returnNote").value.trim();
+    if (note.length < RETURN_NOTE_MIN) {
+      setStatus("returnStatus", "Bitte kurz notieren, warum der Kontakt zurückgeht.", true);
+      return $("returnNote").focus();
+    }
+
+    withBusy($("returnSubmit"), async () => {
+      setStatus("returnStatus", "Wird gespeichert …");
+      try {
+        await pendingAttempts.get(id); // ein eben gezählter Versuch muss zuerst ankommen
+        await send(note);
+      } catch (error) {
+        return setStatus("returnStatus", "Speichern fehlgeschlagen: " + error.message, true);
+      }
+      closeDialog($("returnDialog"));
+      await loadCalls();
+      toast(findCall(id) ? "Gespeichert – der Kontakt ist noch offen." : "Kontakt zurückgegeben ✓");
+    });
   });
 
   function handleHoldAction(button) {
     const card = button.closest("[data-call]");
     const id = card.dataset.call;
-    const call = state.calls.find(c => String(c.id) === id);
+    const call = findCall(id);
     const action = button.dataset.holdAction;
 
     if (action === "open") {
@@ -3879,9 +4125,6 @@ td { border-bottom-color: var(--line); }
             alert("Bitte kurz notieren, was noch zu klären ist.");
             return;
           }
-          // Ungespeichertes Protokoll der Karte nicht verlieren
-          const protocol = card.querySelector("[data-protocol]");
-          if (protocol) state.callDrafts[id] = protocol.value;
           await api(`/calls/${id}/hold`, "POST", { note });
           state.holdEditing.delete(id);
           state.callExpanded.delete(id); // gehaltene Karte startet kompakt
@@ -3898,16 +4141,24 @@ td { border-bottom-color: var(--line); }
   }
 
   $("callList").addEventListener("click", event => {
-    const toggle = event.target.closest("[data-call-toggle]");
-    if (toggle) {
-      const id = toggle.closest("[data-call]").dataset.call;
+    const card = event.target.closest("[data-call]");
+    if (!card) return;
+    const id = card.dataset.call;
+    const call = findCall(id);
+    if (!call) return;
+
+    if (event.target.closest("[data-call-dial]")) {
+      countAttempt(call);
+      // Erst nach dem Start des Anrufs neu zeichnen, sonst verliert der Link sein Ziel.
+      return void setTimeout(renderOwnCalls, 0);
+    }
+
+    if (event.target.closest("[data-call-toggle]")) {
       state.callExpanded.has(id) ? state.callExpanded.delete(id) : state.callExpanded.add(id);
       return renderOwnCalls();
     }
 
-    const script = event.target.closest("[data-script-toggle]");
-    if (script) {
-      const id = script.closest("[data-call]").dataset.call;
+    if (event.target.closest("[data-script-toggle]")) {
       state.scriptExpanded.has(id) ? state.scriptExpanded.delete(id) : state.scriptExpanded.add(id);
       return renderOwnCalls();
     }
@@ -3918,64 +4169,48 @@ td { border-bottom-color: var(--line); }
     if (hold) return handleHoldAction(hold);
 
     const flag = event.target.closest("[data-phone-flag]");
-    if (flag) return toggleWrongPhone(flag);
+    if (flag) return toggleWrongPhone(call, flag);
 
     const button = event.target.closest("[data-call-action]");
     if (!button) return;
-
-    const card = button.closest("[data-call]");
-    const id = card.dataset.call;
-    const call = state.calls.find(c => String(c.id) === id);
-    const action = button.dataset.callAction;
-    const protocol = card.querySelector("[data-protocol]").value.trim();
-
-    let question = null;
-    if (action === "attempt") {
-      if (call.attempts + 1 >= CALL_MAX_ATTEMPTS) {
-        question = `Das ist der ${CALL_MAX_ATTEMPTS}. Versuch. „${call.customer_name}“ geht danach als R_TA_kK zurück. Fortfahren?`;
-      }
-    } else {
-      question = `„${call.customer_name}“ als ${CALL_STATUS[action].label} abschließen?`;
-    }
-    if (question && !confirm(question)) return;
-
-    withBusy(button, async () => {
-      try {
-        await (action === "attempt"
-          ? api(`/calls/${id}/attempt`, "POST", { protocol })
-          : api(`/calls/${id}/close`, "POST", { result: action, protocol }));
-        delete state.callDrafts[id];
-        await loadCalls();
-      } catch (error) {
-        alert("Speichern fehlgeschlagen: " + error.message);
-      }
-    });
+    const result = button.dataset.callAction;
+    // „Nicht erreicht“ ist der letzte Versuch: der Worker zählt ihn und gibt den Kontakt als R_TA_kK zurück.
+    openReturnDialog(call, result, result === "R_TA_kK"
+      ? note => api(`/calls/${id}/attempt`, "POST", { protocol: note })
+      : note => api(`/calls/${id}/close`, "POST", { result, protocol: note }));
   });
 
-  function toggleWrongPhone(button) {
-    const card = button.closest("[data-call]");
-    const id = card.dataset.call;
-    const call = state.calls.find(c => String(c.id) === id);
+  // Eine einzelne Nummer als falsch markieren. Erst wenn keine Nummer mehr übrig ist,
+  // geht der Kontakt zurück – dann wie jede Rückgabe mit Notiz.
+  function toggleWrongPhone(call, button) {
+    const id = String(call.id);
     const phone = call.phones[Number(button.dataset.phoneFlag)];
     const wrong = !call.bad_phones.includes(phone);
-    const lastGood = wrong && call.phones.filter(p => !call.bad_phones.includes(p)).length === 1;
+    const send = note => api(`/calls/${id}/phone`, "POST", { phone, wrong, protocol: note });
 
-    if (lastGood && !confirm(`Damit sind alle Nummern falsch. „${call.customer_name}“ geht als R_TA_fK zurück. Fortfahren?`)) return;
+    if (wrong && goodPhones(call).length === 1) return openReturnDialog(call, "R_TA_fK", send);
 
-    const protocol = card.querySelector("[data-protocol]").value.trim();
+    const note = noteDraft(call).trim();
     withBusy(button, async () => {
       try {
-        const result = await api(`/calls/${id}/phone`, "POST", { phone, wrong, protocol });
-        if (result.status !== "open") delete state.callDrafts[id];
-        await loadCalls();
+        await send(note);
+        noteSaved(call, note);
       } catch (error) {
         alert("Markierung fehlgeschlagen: " + error.message);
-        await loadCalls();
       }
+      await loadCalls();
     });
   }
 
   /* --- Boss --- */
+
+  /* Namenssuche: bewusst nur der Name, ohne Filter. „max muster“ findet „Mustermann, Max“. */
+  const normalizeName = text => String(text || "").toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ß/g, "ss").replace(/[\s,]+/g, " ").trim();
+
+  const ADMIN_SCOPES = [
+    ["returned", "Rückläufer"], ["open", "In Bearbeitung"], ["kk", "Kein-Kontakt-Archiv"], ["archived", "Erledigt"]
+  ];
 
   // Themen als Chips – so sieht der Boss sofort, wo für das Skript noch etwas fehlt.
   function topicChips(c) {
@@ -4009,9 +4244,11 @@ td { border-bottom-color: var(--line); }
           <span class="acall-meta">
             ${scope === "open" ? "" : status ? `<span class="chip ${status.cls}">${status.label}</span>` : ""}
             ${isHeld(c) ? '<span class="chip warn">Zu klären</span>' : ""}
+            ${c.bad_phones.length ? `<span class="chip high">${c.bad_phones.length} Nr. falsch</span>` : ""}
             ${topicChips(c)}
             <span class="acall-who">${esc(c.display_name || c.email || "Mitarbeiter")}</span>
           </span>
+          ${scope === "returned" && c.protocol && !open ? `<span class="acall-note">${esc(c.protocol)}</span>` : ""}
         </span>
         ${CHEVRON}
       </button>
@@ -4022,7 +4259,8 @@ td { border-bottom-color: var(--line); }
           title="Löschen" aria-label="Löschen">${ICONS.trash}</button>
       </div>
       ${open ? `<div class="acall-body">
-        <small>${phoneLinks(c)} · Termin: ${esc(placeLabel(c))}</small>
+        ${c.protocol ? `<div class="call-note"><b>Notiz:</b> ${esc(c.protocol)}</div>` : ""}
+        <small>${phoneList(c)} · Termin: ${esc(placeLabel(c))}</small>
         <div class="task-meta">
           ${scope === "open" ? attemptDots(c.attempts) : ""}
           <span class="chip">${c.attempts} / ${CALL_MAX_ATTEMPTS} Versuche</span>
@@ -4032,7 +4270,6 @@ td { border-bottom-color: var(--line); }
         </div>
         <small>${esc(attempts)}</small>
         ${isHeld(c) && scope === "open" ? `<div class="call-note hold"><b>Zu klären:</b> ${esc(c.hold_note)}</div>` : ""}
-        ${c.protocol ? `<div class="call-note"><b>Protokoll:</b> ${esc(c.protocol)}</div>` : ""}
         ${callBriefing(c) ? `<div class="call-note"><b>Hinweis:</b> ${esc(callBriefing(c))}</div>` : ""}
         ${scope === "returned" && c.status === "R_TA_fK" ? `<div class="phone-fix">
           <label for="fix-${c.id}">Neue Nummer(n) – eine pro Zeile</label>
@@ -4061,9 +4298,9 @@ td { border-bottom-color: var(--line); }
           ${reviewed ? '<span class="chip">Bleibt im Archiv</span>' : ""}
         </div>
         <div class="task-meta">${topicChips(c)}</div>
-        <small>${phoneLinks(c)}</small>
+        <small>${phoneList(c)}</small>
         ${earlier.length ? `<small>Frühere Archivierungen: ${earlier.map(r => esc(fmtDateTime(r.archived_at))).join(", ")}</small>` : ""}
-        <div class="call-note"><b>Letztes Protokoll:</b> ${c.protocol ? esc(c.protocol) : "–"}</div>
+        <div class="call-note"><b>Notiz:</b> ${c.protocol ? esc(c.protocol) : "–"}</div>
       </div>
       <div class="row-actions">
         ${btn("release", `${esc(firstName(c))} wieder freigeben`, "primary")}
@@ -4077,24 +4314,33 @@ td { border-bottom-color: var(--line); }
   const firstName = c => String(c.display_name || c.email || "Mitarbeiter").split(/[\s@]/)[0] || "Mitarbeiter";
 
   function renderAdminCalls() {
-    const { open, returned, archived } = state.adminCalls;
-    // Nur echte Archiveinträge – schützt davor, dass ein Worker ohne kk-Scope
-    // hier offene Kontakte zurückgibt und das gesamte Rendering kippt.
-    const kk = asArray(state.adminCalls.kk).filter(c => c.kk_archived_at);
-    $("callKkList").innerHTML = kk.length
-      ? kk.map(kkRowHtml).join("")
-      : '<div class="notice">Kein-Kontakt-Archiv ist leer.</div>';
-    $("kkReleaseOldestBtn").disabled = !kk.length;
-    setText("kkReleaseOldestBtn", kk.length && kk.length < 5 ? `${kk.length} älteste erneut freigeben` : "5 älteste erneut freigeben");
-    const list = (items, scope, empty) => items.length
-      ? items.map(c => adminCallHtml(c, scope)).join("")
-      : `<div class="notice">${empty}</div>`;
+    const query = normalizeName($("callSearch").value);
+    const tokens = query ? query.split(" ") : [];
+    const found = items => (tokens.length
+      ? items.filter(c => tokens.every(token => normalizeName(c.customer_name).includes(token)))
+      : items);
+    const hits = Object.fromEntries(ADMIN_SCOPES.map(([scope]) => [scope, found(state.adminCalls[scope])]));
+    const list = (scope, row, empty) => hits[scope].length
+      ? hits[scope].map(row).join("")
+      : `<div class="notice">${tokens.length ? "Kein Treffer." : empty}</div>`;
 
-    $("callReturnedList").innerHTML = list(returned, "returned", "Keine neuen Rückläufer.");
-    $("callOpenList").innerHTML = list(open, "open", "Keine offenen Kontakte.");
-    $("callArchiveList").innerHTML = list(archived, "archived", "Noch nichts erledigt.");
+    $("callReturnedList").innerHTML = list("returned", c => adminCallHtml(c, "returned"), "Keine neuen Rückläufer.");
+    $("callOpenList").innerHTML = list("open", c => adminCallHtml(c, "open"), "Keine offenen Kontakte.");
+    $("callKkList").innerHTML = list("kk", kkRowHtml, "Kein-Kontakt-Archiv ist leer.");
+    $("callArchiveList").innerHTML = list("archived", c => adminCallHtml(c, "archived"), "Noch nichts erledigt.");
+
+    const kk = state.adminCalls.kk.length;
+    $("kkReleaseOldestBtn").disabled = !kk;
+    setText("kkReleaseOldestBtn", kk && kk < 5 ? `${kk} älteste erneut freigeben` : "5 älteste erneut freigeben");
+
+    const parts = ADMIN_SCOPES.filter(([scope]) => hits[scope].length).map(([scope, label]) => `${hits[scope].length} × ${label}`);
+    setText("callSearchResult", !tokens.length
+      ? "Durchsucht Rückläufer, In Bearbeitung, Kein-Kontakt-Archiv und die letzten 100 erledigten Kontakte."
+      : parts.length ? `Gefunden: ${parts.join(" · ")}` : "Kein Kontakt mit diesem Namen vorhanden.");
     updateCallSummary();
   }
+
+  $("callSearch").addEventListener("input", renderAdminCalls);
 
   async function loadCalls() {
     try {
@@ -4102,17 +4348,21 @@ td { border-bottom-color: var(--line); }
         const [open, returned, archived, kk] = await Promise.all(
           ["open", "returned", "archived", "kk"].map(scope => api(`/admin/calls?scope=${scope}`)));
         state.adminCalls = {
-          open: asArray(open), returned: asArray(returned), archived: asArray(archived), kk: asArray(kk)
+          open: asArray(open), returned: asArray(returned), archived: asArray(archived),
+          // Nur echte Archiveinträge – schützt davor, dass ein Worker ohne kk-Scope offene Kontakte liefert.
+          kk: asArray(kk).filter(c => c.kk_archived_at)
         };
         renderAdminCalls();
       } else if (state.role === "employee") {
+        await Promise.all(pendingAttempts.values()); // eben gezählte Versuche erst ankommen lassen
         state.calls = asArray(await api("/calls"));
+        pruneCallStore();
         renderOwnCalls();
       }
     } catch (error) {
       console.error(error);
       const text = `<div class="notice warn">Telefonliste konnte nicht geladen werden: ${esc(error.message)}</div>`;
-      ["callList", "callOpenList", "callReturnedList", "callKkList"].forEach(id => ($(id).innerHTML = text));
+      ["callList", "callOpenList", "callReturnedList", "callKkList", "callArchiveList"].forEach(id => ($(id).innerHTML = text));
       $$("[data-call-summary]").forEach(el => (el.textContent = "Telefonliste nicht verfügbar."));
     }
   }
@@ -4282,8 +4532,7 @@ td { border-bottom-color: var(--line); }
   }
 
   function editCall(id) {
-    const { open, returned, archived, kk = [] } = state.adminCalls;
-    const c = [...open, ...returned, ...archived, ...kk].find(x => String(x.id) === String(id));
+    const c = ADMIN_SCOPES.flatMap(([scope]) => state.adminCalls[scope]).find(x => String(x.id) === String(id));
     if (!c) return;
     $("callEditId").value = c.id;
     $("callEmployeeSelect").value = c.assigned_to;
@@ -4346,6 +4595,12 @@ td { border-bottom-color: var(--line); }
       topics: script.topics.filter(key => API_TOPIC_KEYS.has(key)),
       briefing
     };
+
+    if (!id) {
+      const name = normalizeName(payload.customer_name);
+      const twin = ADMIN_SCOPES.find(([scope]) => state.adminCalls[scope].some(c => normalizeName(c.customer_name) === name));
+      if (twin && !confirm(`„${payload.customer_name}“ gibt es bereits unter „${twin[1]}“. Trotzdem neu anlegen?`)) return;
+    }
 
     withBusy(event.submitter, async () => {
       try {
@@ -4433,7 +4688,7 @@ td { border-bottom-color: var(--line); }
     if (!button) return;
     const id = button.dataset.id;
     const act = button.dataset.kk;
-    const c = (state.adminCalls.kk || []).find(x => String(x.id) === id);
+    const c = state.adminCalls.kk.find(x => String(x.id) === id);
     if (!c) return;
 
     if (act === "keep") {
@@ -4455,14 +4710,14 @@ td { border-bottom-color: var(--line); }
   });
 
   $("kkReleaseOldestBtn").addEventListener("click", event => {
-    const n = Math.min(5, (state.adminCalls.kk || []).length);
+    const n = Math.min(5, state.adminCalls.kk.length);
     if (!n || !confirm(`Die ${n} ältesten Kontakte aus dem Kein-Kontakt-Archiv wieder zum Anrufen freigeben?`)) return;
     withBusy(event.currentTarget, async () => {
       try {
         const result = await api("/admin/calls/kk/release-oldest", "POST", { count: 5 });
         state.kkReviewed.clear();
         await loadCalls();
-        alert(`${result?.released ?? n} Kontakt(e) wieder freigegeben ✓`);
+        toast(`${result?.released ?? n} Kontakt(e) wieder freigegeben ✓`);
       } catch (error) {
         alert("Freigabe fehlgeschlagen: " + error.message);
       }
@@ -4726,6 +4981,11 @@ td { border-bottom-color: var(--line); }
   `;
 
   const orDash = v => (v === null || v === undefined || v === "" ? "–" : v);
+  // Vergütete Termine der Abrechnung. Monatsabschlüsse aus der Zeit vor der Umstellung
+  // (nur „provisionsfähige" Termine) behalten ihren gespeicherten Wert und ihre Spalte.
+  const paidAppointments = p => Number(p.eligible ?? p.appts ?? 0);
+  const hasLegacyEligible = rows =>
+    rows.some(e => e.eligible != null && Number(e.eligible) !== Number(e.appointments || 0));
   const minus = v => `− ${euro(v)}`;
   const kvRow = (label, value) => `<tr><td>${esc(label)}</td><td>${esc(value)}</td></tr>`;
   const moneyTr = (label, value, cls = "") =>
@@ -4787,7 +5047,7 @@ td { border-bottom-color: var(--line); }
     ].filter(Boolean);
     const earnings = [
       ["1000", "Grundlohn / Stundenvergütung", `${decimal(p.mins / 60, 2)} Std.`, euro(HOURLY_RATE_CENTS / 100), euro(p.timePay)],
-      ["2000", "Terminprovision", `${p.eligible} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.commission)],
+      ["2000", "Terminprovision", `${paidAppointments(p)} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.commission)],
       ["2100", "Zielbonus", "–", "–", euro(p.targetBonus || 0)],
       p.vacationPay ? ["3000", "Urlaubsentgelt", `${p.vacationDays} Tag(e)`, "", euro(p.vacationPay)] : null,
       p.sickPay ? ["3010", "Krankheitsentgelt", `${p.sickDays} Tag(e)`, "", euro(p.sickPay)] : null,
@@ -4851,7 +5111,7 @@ td { border-bottom-color: var(--line); }
           ${moneyTr("Sollstunden", fmtMinutes(p.goalMinutes || 0))}
           ${moneyTr("Ist-Stunden", fmtMinutes(p.mins))}
           ${moneyTr("Bezahlte Freistellung", fmtMinutes(p.paidMinutes || 0))}
-          ${moneyTr("Überstunden", "0:00 h · nicht vorgesehen")}
+          ${moneyTr("Überstunden", "nicht vorgesehen")}
         </tbody></table></td>
         <td><div class="pd-sec-title">Abwesenheit & Urlaub</div><table class="pd-grid"><tbody>
           ${moneyTr("Urlaub im Monat", `${p.vacationDays || 0} Tag(e)`) }
@@ -4875,10 +5135,12 @@ td { border-bottom-color: var(--line); }
     const rows = doc.entries || [];
     const absences = doc.absences || [];
     const sum = key => rows.reduce((a, e) => a + Number(e[key] || 0), 0);
+    const legacy = hasLegacyEligible(rows);
+    const numTd = value => `<td class="num">${value}</td>`;
     const workTable = rows.length
-      ? `<table class="pd-grid zebra"><thead><tr><th>Datum</th><th>Tag</th><th class="num">Beginn</th><th class="num">Ende</th><th class="num">Pause</th><th class="num">Arbeitszeit</th><th class="num">Termine</th><th class="num">davon prov.</th></tr></thead>
-          <tbody>${rows.map(e => `<tr><td>${esc(fmtDate(e.work_date))}</td><td>${esc(fmtWeekday(e.work_date))}</td><td class="num">${esc(e.start_time)}</td><td class="num">${esc(e.end_time)}</td><td class="num">${Number(e.break_minutes || 0)} min</td><td class="num">${fmtMinutes(e.work_minutes)}</td><td class="num">${Number(e.appointments || 0)}</td><td class="num">${Number(e.eligible || 0)}</td></tr>`).join("")}</tbody>
-          <tfoot><tr><td colspan="4">Summe · ${new Set(rows.map(e => e.work_date)).size} Arbeitstage</td><td class="num">${sum("break_minutes")} min</td><td class="num">${fmtMinutes(sum("work_minutes"))}</td><td class="num">${sum("appointments")}</td><td class="num">${sum("eligible")}</td></tr></tfoot></table>`
+      ? `<table class="pd-grid zebra"><thead><tr><th>Datum</th><th>Tag</th><th class="num">Beginn</th><th class="num">Ende</th><th class="num">Pause</th><th class="num">Arbeitszeit</th><th class="num">Termine</th>${legacy ? '<th class="num">davon prov.</th>' : ""}</tr></thead>
+          <tbody>${rows.map(e => `<tr><td>${esc(fmtDate(e.work_date))}</td><td>${esc(fmtWeekday(e.work_date))}</td><td class="num">${esc(e.start_time)}</td><td class="num">${esc(e.end_time)}</td><td class="num">${Number(e.break_minutes || 0)} min</td><td class="num">${fmtMinutes(e.work_minutes)}</td>${numTd(Number(e.appointments || 0))}${legacy ? numTd(Number(e.eligible || 0)) : ""}</tr>`).join("")}</tbody>
+          <tfoot><tr><td colspan="4">Summe · ${new Set(rows.map(e => e.work_date)).size} Arbeitstage</td><td class="num">${sum("break_minutes")} min</td><td class="num">${fmtMinutes(sum("work_minutes"))}</td>${numTd(sum("appointments"))}${legacy ? numTd(sum("eligible")) : ""}</tr></tfoot></table>`
       : `<div class="pd-note">Keine Arbeitszeiteinträge für diesen Monat.</div>`;
     const absenceTable = absences.length
       ? `<table class="pd-grid zebra"><thead><tr><th>Datum</th><th>Art</th><th class="num">Bezahlte Zeit</th><th class="num">Entgelt</th><th>Notiz</th></tr></thead>
@@ -5011,15 +5273,15 @@ td { border-bottom-color: var(--line); }
     const e = doc.employer || {};
     let y = T + 4;
     if (e.name) {
-      k.cell(e.name, L, y, 100, { size: 10, bold: true, pad: 0 });
-      k.cell(e.street || "", L, y + 4.2, 100, { pad: 0 });
-      k.cell(e.zip_city || "", L, y + 8, 100, { pad: 0 });
-      if (e.company_number) k.cell(`Betriebsnummer ${e.company_number}`, L, y + 11.8, 100, { size: 7, color: VP.soft, pad: 0 });
+      k.cell(e.name, L, y, 84, { size: 10, bold: true, pad: 0 });
+      k.cell(e.street || "", L, y + 4.2, 84, { pad: 0 });
+      k.cell(e.zip_city || "", L, y + 8, 84, { pad: 0 });
+      if (e.company_number) k.cell(`Betriebsnummer ${e.company_number}`, L, y + 11.8, 84, { size: 7, color: VP.soft, pad: 0 });
     } else {
-      k.cell("Arbeitgeber", L, y, 100, { size: 10, bold: true, pad: 0 });
-      k.cell("Arbeitgeberdaten fehlen", L, y + 4.2, 100, { color: VP.soft, pad: 0 });
+      k.cell("Arbeitgeber", L, y, 84, { size: 10, bold: true, pad: 0 });
+      k.cell("Arbeitgeberdaten fehlen", L, y + 4.2, 84, { color: VP.soft, pad: 0 });
     }
-    k.cell(title, R - 80, y + 0.6, 80, { size: 13, bold: true, color: VP.head, align: "right", pad: 0 });
+    k.cell(title, R - 100, y + 0.6, 100, { size: 13, bold: true, color: VP.head, align: "right", pad: 0 });
     k.cell(doc.monthLabel, R - 80, y + 5.4, 80, { size: 10, bold: true, align: "right", pad: 0 });
     k.cell(`Erstellt am ${doc.created}`, R - 80, y + 9, 80, { size: 7, color: VP.soft, align: "right", pad: 0 });
     let fy = y + 11;
@@ -5209,7 +5471,7 @@ td { border-bottom-color: var(--line); }
 
     const earnings = [
       ["1000", "Grundlohn / Stundenvergütung", `${decimal(p.mins / 60, 2)} Std.`, euro(HOURLY_RATE_CENTS / 100), euro(p.timePay)],
-      ["2000", "Terminprovision", `${p.eligible} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.commission)],
+      ["2000", "Terminprovision", `${paidAppointments(p)} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.commission)],
       ["2100", "Zielbonus", "–", "–", euro(p.targetBonus || 0)],
       p.vacationPay ? ["3000", "Urlaubsentgelt", `${p.vacationDays} Tag(e)`, "", euro(p.vacationPay)] : null,
       p.sickPay ? ["3010", "Krankheitsentgelt", `${p.sickDays} Tag(e)`, "", euro(p.sickPay)] : null,
@@ -5253,7 +5515,7 @@ td { border-bottom-color: var(--line); }
     const twoCols = [{ w: 64 }, { w: 36, align: "right" }];
     const workRows = [
       ["Sollstunden", fmtMinutes(p.goalMinutes || 0)], ["Ist-Stunden", fmtMinutes(p.mins)],
-      ["Bezahlte Freistellung", fmtMinutes(p.paidMinutes || 0)], ["Überstunden", "0:00 h · nicht vorgesehen"]
+      ["Bezahlte Freistellung", fmtMinutes(p.paidMinutes || 0)], ["Überstunden", "nicht vorgesehen"]
     ];
     const absenceRows = [
       ["Urlaub im Monat", `${p.vacationDays || 0} Tag(e)`],
@@ -5292,11 +5554,16 @@ td { border-bottom-color: var(--line); }
     let y = pageTop();
     y = vSectionTitle(k, y, "Arbeitszeit");
     if (rows.length) {
+      const legacy = hasLegacyEligible(rows);
+      const right = w => ({ w, align: "right" });
+      const extra = value => (legacy ? [String(value)] : []);
       y = vTable(k, y, {
-        cols: [{ w: 14 }, { w: 9 }, { w: 11, align: "right" }, { w: 11, align: "right" }, { w: 12, align: "right" }, { w: 15, align: "right" }, { w: 13, align: "right" }, { w: 15, align: "right" }],
-        head: ["Datum", "Tag", "Beginn", "Ende", "Pause", "Arbeitszeit", "Termine", "davon prov."],
-        rows: rows.map(e => [fmtDate(e.work_date), fmtWeekday(e.work_date), e.start_time, e.end_time, `${Number(e.break_minutes || 0)} min`, fmtMinutes(e.work_minutes), String(Number(e.appointments || 0)), String(Number(e.eligible || 0))]),
-        foot: [`Summe · ${new Set(rows.map(e => e.work_date)).size} Arbeitstage`, "", "", "", `${sum("break_minutes")} min`, fmtMinutes(sum("work_minutes")), String(sum("appointments")), String(sum("eligible"))],
+        cols: legacy
+          ? [{ w: 14 }, { w: 9 }, right(11), right(11), right(12), right(15), right(13), right(15)]
+          : [{ w: 16 }, { w: 10 }, right(12), right(12), right(14), right(18), right(18)],
+        head: ["Datum", "Tag", "Beginn", "Ende", "Pause", "Arbeitszeit", "Termine", ...(legacy ? ["davon prov."] : [])],
+        rows: rows.map(e => [fmtDate(e.work_date), fmtWeekday(e.work_date), e.start_time, e.end_time, `${Number(e.break_minutes || 0)} min`, fmtMinutes(e.work_minutes), String(Number(e.appointments || 0)), ...extra(Number(e.eligible || 0))]),
+        foot: [`Summe · ${new Set(rows.map(e => e.work_date)).size} Arbeitstage`, "", "", "", `${sum("break_minutes")} min`, fmtMinutes(sum("work_minutes")), String(sum("appointments")), ...extra(sum("eligible"))],
         rowH: 5.2, zebra: true,
         onPageBreak: () => { k.pdf.addPage(); return vSectionTitle(k, pageTop(), "Arbeitszeit"); }
       });
@@ -5666,6 +5933,7 @@ td { border-bottom-color: var(--line); }
       await autoClosePreviousMonth();
       if (state.selectedUserId) await loadClosings(state.selectedUserId);
     } else {
+      restoreCallStore();
       await loadOwnEntries(); // rendert das Dashboard mit den zentralen Zielwerten
     }
     await Promise.all([loadTasks(), loadBranches(), loadCalls()]);
