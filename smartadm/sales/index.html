@@ -2066,6 +2066,20 @@
   .prov-steuer-chip:hover{border-color:#C5CDD5;color:var(--ink);background:var(--ground);}
   .prov-steuer-chip strong{font-size:12.5px;color:var(--accent);font-weight:650;}
 
+  .prov-fix-liste{display:grid;gap:8px;margin-bottom:10px;}
+  .prov-fix-zeile{display:grid;grid-template-columns:minmax(0,1fr) 120px 34px;gap:8px;align-items:center;}
+  .prov-fix-zeile input{
+    width:100%;min-width:0;font:inherit;font-size:14.5px;padding:10px 12px;border:1px solid var(--line);
+    border-radius:10px;background:var(--ground);color:var(--ink);
+  }
+  .prov-fix-zeile input:focus{outline:none;background:var(--surface);border-color:var(--accent);}
+  .prov-fix-zeile input.betrag{text-align:right;}
+  .prov-fix-weg{width:34px;height:34px;border-radius:50%;border:0;background:transparent;color:var(--ink-faint);font-size:18px;line-height:1;padding:0;}
+  .prov-fix-weg:hover{background:var(--rot-wash);color:var(--rot);}
+  .prov-fix-add{margin-bottom:12px;}
+  .prov-fix-summe{display:flex;justify-content:space-between;padding:10px 2px 0;border-top:1px solid var(--line);font-size:14px;color:var(--ink-soft);}
+  .prov-fix-summe b{color:var(--ink);font-weight:600;}
+
   .prov-sonstiges{
     display:flex;justify-content:flex-end;align-items:center;
     margin-top:16px;
@@ -3215,6 +3229,7 @@
         <p id="prov-monat">&nbsp;</p>
       </div>
       <div class="head-tools">
+        <button class="prov-steuer-chip" id="prov-fix-oeffnen" type="button" title="Feste monatliche Ausgaben vor Steuer">Feste Ausgaben <strong id="prov-fix-anzeige">0,00 €</strong></button>
         <button class="prov-steuer-chip" id="prov-steuer-oeffnen" type="button" title="Persönlichen Steuersatz ändern">Steuersatz <strong id="prov-steuer-anzeige">0 %</strong></button>
         <button class="btn btn-quiet" id="prov-archiv-btn">Archiv</button>
         <button class="btn" id="prov-neu">Eintrag erfassen</button>
@@ -3248,6 +3263,25 @@
     <div class="sheet-foot">
       <button class="btn btn-quiet" data-close="veil-prov-steuer">Abbrechen</button>
       <button class="btn" id="prov-steuer-speichern">Speichern</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- Feste monatliche Ausgaben -->
+<div class="veil" id="veil-prov-fix" hidden>
+  <div class="sheet sheet-schmal" role="dialog" aria-modal="true" aria-labelledby="prov-fix-title"><div class="sheet-inhalt">
+    <div class="grip"></div>
+    <div class="sheet-head">
+      <h3 id="prov-fix-title">Feste monatliche Ausgaben</h3>
+      <button class="x" data-close="veil-prov-fix" aria-label="Schlie&szlig;en">Schließen <span aria-hidden="true">&times;</span></button>
+    </div>
+    <p class="sheet-sub">Werden jeden Monat automatisch vor Steuer abgezogen &ndash; du musst sie nicht mehr einzeln erfassen.</p>
+    <div class="prov-fix-liste" id="prov-fix-liste"></div>
+    <button class="zeile-add prov-fix-add" id="prov-fix-plus" type="button"><span class="plus">+</span><span class="add-label">Ausgabe hinzuf&uuml;gen</span></button>
+    <div class="prov-fix-summe"><span>Summe je Monat</span><b id="prov-fix-summe">0,00 €</b></div>
+    <div class="sheet-foot">
+      <button class="btn btn-quiet" data-close="veil-prov-fix">Abbrechen</button>
+      <button class="btn" id="prov-fix-speichern">Speichern</button>
     </div>
   </div></div>
 </div>
@@ -4808,6 +4842,7 @@ function datenAlsObjekt(){
     provisionen: PROVISIONEN,
     provArchiv: PROV_ARCHIV,
     provSteuer: PROV_STEUER,
+    provFix: PROV_FIX,
     auswertung: AUSWERTUNG
   }));
   // Ob ein Kunde aufgeklappt ist, gilt nur auf diesem Gerät und wird nicht gespeichert.
@@ -4835,6 +4870,7 @@ function datenUebernehmen(d){
   PROVISIONEN = liste(d.provisionen);
   PROV_ARCHIV = liste(d.provArchiv);
   PROV_STEUER = typeof d.provSteuer === "number" ? d.provSteuer : 0;
+  PROV_FIX = liste(d.provFix).filter(function(f){ return f && typeof f === "object"; });
   AUSWERTUNG = liste(d.auswertung);
   terminArtErgaenzen();
   LISTEN.bank.daten = BANKEN;
@@ -5902,6 +5938,7 @@ document.getElementById("t-nur-unterschiede").addEventListener("click", function
 var PROVISIONEN = [];
 var PROV_ARCHIV = [];
 var PROV_STEUER = 0;
+var PROV_FIX = [];   // feste monatliche Ausgaben vor Steuer: {id, name, betrag}
 var provBearbeite = null;
 var provOffen = {};
 
@@ -6007,8 +6044,13 @@ var PROV_ARTEN = {
 
 /* ---------- Ergebnis ---------- */
 
+function provFixSumme(){
+  return PROV_FIX.reduce(function(sum, f){ return sum + Math.abs(Number(f.betrag) || 0); }, 0);
+}
+
 function provErgebnis(liste, steuersatz){
   var einnahmen = 0, ausgabenVor = 0, ausgabenNach = 0, auszahlung = 0, saldo = 0;
+  var fest = provFixSumme();
 
   liste.forEach(function(e){
     var r = provRechnen(e);
@@ -6023,12 +6065,12 @@ function provErgebnis(liste, steuersatz){
     saldo += r.saldo;
   });
 
-  var vorSteuern = einnahmen - ausgabenVor;
+  var vorSteuern = einnahmen - ausgabenVor - fest;
   var steuer = vorSteuern > 0 ? vorSteuern * (steuersatz / 100) : 0;
 
   return {einnahmen:einnahmen,
-          ausgaben:ausgabenVor + ausgabenNach,
-          ausgabenVor:ausgabenVor, ausgabenNach:ausgabenNach,
+          ausgaben:ausgabenVor + ausgabenNach + fest,
+          ausgabenVor:ausgabenVor, ausgabenNach:ausgabenNach, fest:fest,
           auszahlung:auszahlung, saldo:saldo,
           vorSteuern:vorSteuern, steuer:steuer,
           nachSteuern:vorSteuern - steuer - ausgabenNach};
@@ -6110,6 +6152,9 @@ function provZeichnen(){
 
   var karte = posten("Brutto-Einnahmen", g.einnahmen);
 
+  if(g.fest){
+    karte += posten("Feste Ausgaben", -g.fest, "abzug");
+  }
   if(g.ausgabenVor){
     karte += posten("Betriebsausgaben", -g.ausgabenVor, "abzug");
   }
@@ -6128,6 +6173,7 @@ function provZeichnen(){
     {text:"Brutto-Einnahmen", wert:g.einnahmen}
   ];
 
+  if(g.fest) zeilen.push({text:"Feste Ausgaben (monatlich)", wert:-g.fest, abzug:true});
   if(g.ausgabenVor) zeilen.push({text:"Betriebsausgaben", wert:-g.ausgabenVor, abzug:true});
 
   zeilen.push({text:"Ergebnis vor Steuern", wert:g.vorSteuern, zwischen:true});
@@ -6165,6 +6211,8 @@ function provZeichnen(){
   if(steuerEingabe) steuerEingabe.value = PROV_STEUER ? String(PROV_STEUER).replace(".", ",") : "";
   var steuerAnzeige = document.getElementById("prov-steuer-anzeige");
   if(steuerAnzeige) steuerAnzeige.textContent = PROV_STEUER.toLocaleString("de-DE", {maximumFractionDigits:2}) + " %";
+  var fixAnzeige = document.getElementById("prov-fix-anzeige");
+  if(fixAnzeige) fixAnzeige.textContent = euro(provFixSumme());
 }
 
 /* ---------- Bedienung ---------- */
@@ -6205,6 +6253,65 @@ document.getElementById("prov-steuer-oeffnen").addEventListener("click", functio
   document.getElementById("pv-steuer").value = PROV_STEUER ? String(PROV_STEUER).replace(".", ",") : "";
   oeffnen("veil-prov-steuer");
   setTimeout(function(){ document.getElementById("pv-steuer").focus(); }, 0);
+});
+
+/* ---------- Feste monatliche Ausgaben ---------- */
+
+function provFixZeileHtml(f){
+  return '<div class="prov-fix-zeile" data-fix-id="' + esc(f.id) + '">'
+       +   '<input type="text" class="name" maxlength="80" placeholder="z.\u00a0B. Krankenkasse" aria-label="Bezeichnung" value="' + esc(f.name || "") + '">'
+       +   '<input type="text" class="betrag" inputmode="decimal" placeholder="0,00" aria-label="Betrag je Monat" value="' + esc(f.betrag ? zahlSchreiben(f.betrag) : "") + '">'
+       +   '<button class="prov-fix-weg" type="button" data-fix-weg aria-label="Ausgabe entfernen">&times;</button>'
+       + '</div>';
+}
+
+function provFixLesen(){
+  var liste = [];
+  document.querySelectorAll("#prov-fix-liste .prov-fix-zeile").forEach(function(z){
+    var name = z.querySelector(".name").value.trim();
+    var betrag = Math.abs(zahlLesen(z.querySelector(".betrag").value));
+    if(name || betrag) liste.push({id:z.getAttribute("data-fix-id"), name:name, betrag:betrag});
+  });
+  return liste;
+}
+
+function provFixSummeZeigen(){
+  var summe = provFixLesen().reduce(function(a, f){ return a + f.betrag; }, 0);
+  document.getElementById("prov-fix-summe").textContent = euro(summe);
+}
+
+function provFixZeileNeu(){
+  document.getElementById("prov-fix-liste").insertAdjacentHTML("beforeend", provFixZeileHtml({id:neueKennung("f"), name:"", betrag:0}));
+  var zeilen = document.querySelectorAll("#prov-fix-liste .prov-fix-zeile");
+  zeilen[zeilen.length - 1].querySelector(".name").focus();
+}
+
+document.getElementById("prov-fix-oeffnen").addEventListener("click", function(){
+  document.getElementById("prov-fix-liste").innerHTML = PROV_FIX.map(provFixZeileHtml).join("");
+  if(!PROV_FIX.length) document.getElementById("prov-fix-liste").innerHTML = provFixZeileHtml({id:neueKennung("f"), name:"", betrag:0});
+  provFixSummeZeigen();
+  oeffnen("veil-prov-fix");
+});
+document.getElementById("prov-fix-plus").addEventListener("click", provFixZeileNeu);
+document.getElementById("prov-fix-liste").addEventListener("input", provFixSummeZeigen);
+document.getElementById("prov-fix-liste").addEventListener("click", function(e){
+  var weg = e.target.closest("[data-fix-weg]");
+  if(!weg) return;
+  weg.closest(".prov-fix-zeile").remove();
+  provFixSummeZeigen();
+});
+document.getElementById("prov-fix-speichern").addEventListener("click", function(){
+  var liste = provFixLesen();
+  for(var i = 0; i < liste.length; i++){
+    if(!liste[i].name){ melden("Bitte jeder Ausgabe eine Bezeichnung geben."); return; }
+    if(!liste[i].betrag){ melden("Bitte bei \u201e" + liste[i].name + "\u201c einen Betrag eintragen."); return; }
+  }
+  PROV_FIX = liste;
+  sichern();
+  provZeichnen();
+  if(typeof widgetsZeichnen === "function") widgetsZeichnen();
+  schliessen("veil-prov-fix");
+  melden("Feste Ausgaben gespeichert");
 });
 
 function provSteuerSpeichern(){
@@ -6371,7 +6478,7 @@ function provKundenlisteFuellen(){
 /* ---------- Monatsabschluss und Archiv ---------- */
 
 document.getElementById("prov-abschliessen").addEventListener("click", function(){
-  if(PROVISIONEN.length === 0){ melden("Es ist nichts zu archivieren."); return; }
+  if(PROVISIONEN.length === 0 && !PROV_FIX.length){ melden("Es ist nichts zu archivieren."); return; }
 
   var d = new Date();
   var monat = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
@@ -6383,6 +6490,7 @@ document.getElementById("prov-abschliessen").addEventListener("click", function(
     PROV_ARCHIV.unshift({
       monat: monat,
       eintraege: PROVISIONEN.slice(),
+      festeAusgaben: PROV_FIX.slice(),
       steuersatz: PROV_STEUER,
       netto: g.nachSteuern
     });
@@ -7444,6 +7552,7 @@ window.SmartApp = {
   standard: {
     profil: {anrede: PROFIL_LEER.anrede, funktion: PROFIL_LEER.funktion},
     provSteuer: 0,
+    provFix: [],
     jeder: {abstimmung: abLeererSatz()}
   },
 

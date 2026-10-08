@@ -29,7 +29,7 @@
   };
   const SELBST_SORTIERT = ["termine", "auswertung"];   // diese Listen ordnet die App nach Datum
   const KARTEN = ["profil", "abstimmung"];  // Objekte: je Feld bzw. je Name ein Eintrag
-  const WERTE = ["provSteuer"];             // Einzelwerte im Bereich „einstellung“
+  const WERTE = ["provSteuer", "provFix"];  // Einzelwerte im Bereich „einstellung“
 
   // Reihenfolge beim Hochladen: Auswertung vor Terminen, damit ein anderes Gerät
   // nie einen Termin ohne seinen Auswertungseintrag sieht.
@@ -37,7 +37,7 @@
 
   const leeresDokument = () => ({
     profil: {}, banken: [], bma: [], termine: [], abstimmung: {},
-    provisionen: [], provArchiv: [], provSteuer: 0, auswertung: []
+    provisionen: [], provArchiv: [], provSteuer: 0, provFix: [], auswertung: []
   });
 
   // JSON mit sortierten Schlüsseln – gleiche Inhalte ergeben immer denselben Text
