@@ -176,6 +176,13 @@ body[data-office-role="boss"] [data-role="employee"] { display: none !important;
 .form-dialog::backdrop { background: rgba(29,39,51,.45); }
 .form-dialog-body { overflow-y: auto; padding: 14px 18px 18px; overscroll-behavior: contain; }
 .form-dialog-hint { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
+.search-tools { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 1.4fr); gap: 10px; align-items: end; }
+.search-tools .field { margin: 0; }
+.sort-pair { display: flex; gap: 6px; }
+.sort-pair select { flex: 1; min-width: 0; }
+.sort-dir { flex: none; white-space: nowrap; padding-left: 12px; padding-right: 12px; }
+.search-result { display: block; margin-top: 8px; color: var(--muted); }
+@media (max-width: 720px) { .search-tools { grid-template-columns: 1fr 1fr; } .search-tools .field:first-child { grid-column: 1 / -1; } }
 .schedule-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
 .schedule-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 700; color: var(--muted); }
 @media (max-width: 560px) { .schedule-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -1490,11 +1497,29 @@ td { border-bottom-color: var(--line); }
         </button>
 
         <div class="card section-card" data-role="boss">
-          <div class="field">
-            <label for="callSearch">Kunde suchen</label>
-            <input id="callSearch" type="search" maxlength="80" autocomplete="off" placeholder="Name eingeben, z. B. Mustermann">
-            <small id="callSearchResult" aria-live="polite"></small>
+          <div class="search-tools">
+            <div class="field">
+              <label for="callSearch">Kunde suchen</label>
+              <input id="callSearch" type="search" maxlength="80" autocomplete="off" placeholder="Name eingeben, z. B. Mustermann">
+            </div>
+            <div class="field">
+              <label for="callFilter">Filter</label>
+              <select id="callFilter"></select>
+            </div>
+            <div class="field">
+              <label for="callSort">Sortieren</label>
+              <div class="sort-pair">
+                <select id="callSort">
+                  <option value="">Eingang</option>
+                  <option value="last">Nachname</option>
+                  <option value="first">Vorname</option>
+                  <option value="employee">Mitarbeiter</option>
+                </select>
+                <button class="btn ghost sort-dir" type="button" id="callSortDir" data-dir="asc" aria-label="Aufsteigend – tippen für absteigend" disabled>A–Z ↑</button>
+              </div>
+            </div>
           </div>
+          <small class="search-result" id="callSearchResult" aria-live="polite"></small>
         </div>
 
         <div class="card section-card" data-role="boss">
@@ -1573,7 +1598,7 @@ td { border-bottom-color: var(--line); }
               <div class="form-grid">
                 <div class="field"><label>Mitarbeiter</label><select id="callEmployeeSelect" data-employee-select data-independent required></select></div>
                 <div class="field"><label for="callSalutation">Anrede</label>
-                  <select id="callSalutation"><option value="Herr">Herr</option><option value="Frau">Frau</option></select>
+                  <select id="callSalutation" required><option value="" disabled selected>Bitte wählen</option><option value="Herr">Herr</option><option value="Frau">Frau</option></select>
                   <small>Steht so in der Begrüßung des Skripts.</small></div>
                 <div class="field name-pair">
                   <div><label for="callLastName">Nachname</label><input id="callLastName" type="text" maxlength="60" required autocomplete="off" placeholder="Mustermann"></div>
@@ -2309,6 +2334,8 @@ td { border-bottom-color: var(--line); }
       const keep = select.hasAttribute("data-independent") ? select.value : state.selectedUserId;
       select.innerHTML = options;
       select.value = findEmployee(keep) ? keep : "";
+      // Kontakt einstellen: standardmäßig der erste Mitarbeiter
+      if (select.id === "callEmployeeSelect" && !select.value && state.employees[0]) select.value = state.employees[0].clerk_user_id;
     });
   }
 
@@ -4555,13 +4582,86 @@ td { border-bottom-color: var(--line); }
   const searchTokens = id => { const q = normalizeName($(id).value); return q ? q.split(" ") : []; };
   const matchesName = (c, tokens) => tokens.every(token => normalizeName(c.customer_name).includes(token));
 
+  // Filter: „Zu klären“ (gehaltene Kontakte) oder ein Skript-Thema
+  const FILTER_TOPICS = TOPIC_KEYS.map(key => [key, key === "eigenes_skript" ? "Eigenes Skript" : CALL_TOPICS[key].label]);
+  const CALL_VIEW_KEY = "smartadm.office.callView.v1";
+
+  function renderCallFilterOptions() {
+    $("callFilter").innerHTML = `<option value="">Alle</option><option value="held">Zu klären</option>
+      <optgroup label="Skript">${FILTER_TOPICS.map(([key, label]) => `<option value="topic:${key}">${esc(label)}</option>`).join("")}
+      <option value="topic:none">Thema fehlt</option></optgroup>`;
+  }
+
+  function matchesFilter(c, filter) {
+    if (!filter) return true;
+    if (filter === "held") return isHeld(c);
+    const topics = callScriptData(c).topics.filter(key => CALL_TOPICS[key]);
+    const key = filter.slice(6);
+    if (key === "none") return !topics.length;
+    if (key === "kinder") return topics.some(t => ["kinder", "sohn", "tochter"].includes(t));
+    return topics.includes(key);
+  }
+
+  const nameParts = c => {
+    const [last, ...rest] = String(c.customer_name || "").split(",");
+    return { last: last.trim(), first: rest.join(",").trim() };
+  };
+  const employeeOf = c => c.display_name || c.email || "";
+  const compareDe = (a, b) => String(a).localeCompare(String(b), "de", { sensitivity: "base" });
+
+  function sortCalls(items) {
+    const field = $("callSort").value;
+    if (!field) return items;
+    const dir = $("callSortDir").dataset.dir === "desc" ? -1 : 1;
+    const keys = {
+      last: c => [nameParts(c).last, nameParts(c).first],
+      first: c => [nameParts(c).first, nameParts(c).last],
+      employee: c => [employeeOf(c), nameParts(c).last, nameParts(c).first]
+    }[field];
+    return [...items].sort((a, b) => {
+      const ka = keys(a), kb = keys(b);
+      for (let i = 0; i < ka.length; i++) {
+        const diff = compareDe(ka[i], kb[i]);
+        if (diff) return i === 0 ? diff * dir : diff;
+      }
+      return 0;
+    });
+  }
+
+  function updateSortDir() {
+    const desc = $("callSortDir").dataset.dir === "desc";
+    $("callSortDir").disabled = !$("callSort").value;
+    $("callSortDir").textContent = desc ? "Z–A ↓" : "A–Z ↑";
+    $("callSortDir").setAttribute("aria-label", desc ? "Absteigend – tippen für aufsteigend" : "Aufsteigend – tippen für absteigend");
+  }
+
+  function saveCallView() {
+    try {
+      localStorage.setItem(CALL_VIEW_KEY, JSON.stringify({ filter: $("callFilter").value, sort: $("callSort").value, dir: $("callSortDir").dataset.dir }));
+    } catch { /* ohne Speicher gilt die Auswahl nur bis zum Neuladen */ }
+  }
+
+  function restoreCallView() {
+    renderCallFilterOptions();
+    try {
+      const view = JSON.parse(localStorage.getItem(CALL_VIEW_KEY) || "{}");
+      $("callFilter").value = view.filter || "";
+      if ($("callFilter").value !== (view.filter || "")) $("callFilter").value = "";
+      $("callSort").value = ["last", "first", "employee"].includes(view.sort) ? view.sort : "";
+      $("callSortDir").dataset.dir = view.dir === "desc" ? "desc" : "asc";
+    } catch { /* Standardansicht */ }
+    updateSortDir();
+  }
+
   function renderAdminCalls() {
     const tokens = searchTokens("callSearch");
-    const found = items => (tokens.length ? items.filter(c => matchesName(c, tokens)) : items);
+    const filter = $("callFilter").value;
+    const found = items => sortCalls(items.filter(c => (!tokens.length || matchesName(c, tokens)) && matchesFilter(c, filter)));
+    const narrowed = tokens.length || filter;
     const hits = Object.fromEntries(ADMIN_SCOPES.map(([scope]) => [scope, found(state.adminCalls[scope])]));
     const list = (scope, row, empty) => hits[scope].length
       ? hits[scope].map(row).join("")
-      : `<div class="notice">${tokens.length ? "Kein Treffer." : empty}</div>`;
+      : `<div class="notice">${narrowed ? "Kein Treffer." : empty}</div>`;
 
     $("callReturnedList").innerHTML = list("returned", c => adminCallHtml(c, "returned"), "Keine neuen Rückläufer.");
     $("callOpenList").innerHTML = list("open", c => adminCallHtml(c, "open"), "Keine offenen Kontakte.");
@@ -4579,13 +4679,20 @@ td { border-bottom-color: var(--line); }
     setText("kkReleaseOldestBtn", kk && kk < 5 ? `${kk} älteste erneut freigeben` : "5 älteste erneut freigeben");
 
     const parts = ADMIN_SCOPES.filter(([scope]) => hits[scope].length).map(([scope, label]) => `${hits[scope].length} × ${label}`);
-    setText("callSearchResult", !tokens.length
+    setText("callSearchResult", !narrowed
       ? "Durchsucht Rückläufer, In Bearbeitung, Kein-Kontakt-Archiv und Kundenarchiv."
-      : parts.length ? `Gefunden: ${parts.join(" · ")}` : "Kein Kontakt mit diesem Namen vorhanden.");
+      : parts.length ? `Gefunden: ${parts.join(" · ")}`
+      : tokens.length && !filter ? "Kein Kontakt mit diesem Namen vorhanden." : "Kein Kontakt passt zu Suche und Filter.");
     updateCallSummary();
   }
 
   $("callSearch").addEventListener("input", renderAdminCalls);
+  restoreCallView();
+  ["callFilter", "callSort"].forEach(id => $(id).addEventListener("change", () => { updateSortDir(); saveCallView(); renderAdminCalls(); }));
+  $("callSortDir").addEventListener("click", () => {
+    $("callSortDir").dataset.dir = $("callSortDir").dataset.dir === "desc" ? "asc" : "desc";
+    updateSortDir(); saveCallView(); renderAdminCalls();
+  });
   $("archiveSearch").addEventListener("input", renderAdminCalls);
 
   async function loadCalls() {
@@ -4771,7 +4878,7 @@ td { border-bottom-color: var(--line); }
     $("callParent").value = "vater";
     $("callScriptSuggestion").value = "0";
     renderCallPlaceSelect("");
-    $("callSalutation").value = "Herr";
+    $("callSalutation").value = "";
     setCallTopics([]);
     $("callTopics").open = false;
     setText("callFormTitle", "Kontakt einstellen");
@@ -4794,6 +4901,7 @@ td { border-bottom-color: var(--line); }
 
   $("callAddBtn").addEventListener("click", () => {
     resetCallForm();
+    if (!$("callEmployeeSelect").value && state.employees[0]) $("callEmployeeSelect").value = state.employees[0].clerk_user_id;
     showCallForm(true);
     $("callLastName").focus({ preventScroll: true });
   });
@@ -4809,7 +4917,7 @@ td { border-bottom-color: var(--line); }
     $("callFirstName").value = rest.join(",").trim();
     $("callPhones").value = c.phones.join("\n");
     renderCallPlaceSelect(c.teams ? "teams" : c.branch_id ? String(c.branch_id) : "");
-    $("callSalutation").value = c.salutation === "Frau" ? "Frau" : "Herr";
+    $("callSalutation").value = c.salutation === "Frau" ? "Frau" : c.salutation === "Herr" ? "Herr" : "";
     const script = callScriptData(c);
     $("callBriefing").value = script.briefing;
     $("callCustomScript").value = script.customScript;
@@ -4834,6 +4942,10 @@ td { border-bottom-color: var(--line); }
 
   $("callForm").addEventListener("submit", event => {
     event.preventDefault();
+    if (!$("callSalutation").value) {
+      $("callSalutation").focus();
+      return alert("Bitte die Anrede wählen.");
+    }
     if (!cleanNamePart($("callLastName").value) || !cleanNamePart($("callFirstName").value)) {
       return alert("Bitte Nachname und Vorname eingeben.");
     }
