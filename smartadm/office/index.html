@@ -981,6 +981,22 @@ td { border-bottom-color: var(--line); }
 .widget-griff:active { cursor: grabbing; }
 .widget-griff svg { pointer-events: none; }
 .widget-weg { font-size: 18px; line-height: 1; }
+.widget-pfeil {
+  width: 28px; height: 28px; border-radius: 50%; border: none; background: transparent; color: var(--ink-faint);
+  display: flex; align-items: center; justify-content: center; flex: none; padding: 0; cursor: pointer;
+}
+.widget-pfeil:hover, .widget-pfeil[aria-expanded="true"] { background: var(--ground); color: var(--ink); }
+.widget-kontext {
+  position: absolute; right: 34px; top: 34px; width: 240px; max-width: calc(100vw - 64px); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 30px rgba(29,39,51,.13); padding: 6px; z-index: 12;
+}
+.wk-label { display: block; font-size: 11.5px; font-weight: 600; color: var(--ink-soft); padding: 6px 8px 4px; }
+.wk-option {
+  display: block; width: 100%; border: 0; background: none; border-radius: 8px; padding: 9px 8px; text-align: left;
+  font-family: inherit; font-size: 13.5px; color: var(--ink); cursor: pointer;
+}
+.wk-option:hover { background: var(--ground); }
+.wk-option.aktiv { background: var(--accent-wash); color: var(--accent); font-weight: 600; }
 .widget-weg:hover { background: var(--rot-wash); color: var(--rot); }
 .widget-inhalt { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
 .widget-datensaetze { display: flex; flex-direction: column; gap: 7px; height: 100%; }
@@ -1056,9 +1072,9 @@ td { border-bottom-color: var(--line); }
     <div class="logo" role="img" aria-label="SmartADM 5 Office"></div>
     <nav class="nav">
       <button class="active" data-role="employee" data-page="dashboard">
-        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11.2 12 4l8.5 7.2"/><path d="M5.5 10.2V20h13v-9.8"/><path d="M9.2 20v-5.7h5.6V20"/></svg>Dashboard</button>
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg>Dashboard</button>
       <button data-role="boss" data-page="boss-dashboard">
-        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V9.5L12 4l8 5.5V20"/><path d="M8 20v-6h8v6"/></svg>Dashboard</button>
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg>Dashboard</button>
       <hr class="nav-sep" data-role="shared">
       <button data-role="shared" data-page="telefon">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/></svg><span data-boss-label="Kontakte">Telefonliste</span></button>
@@ -2275,6 +2291,11 @@ td { border-bottom-color: var(--line); }
     const saved = JSON.parse(localStorage.getItem(WIDGET_STORE) || "null");
     if (Array.isArray(saved)) widgets = saved.filter(k => WIDGET_KEYS.includes(k)).slice(0, WIDGET_MAX);
   } catch { /* Standard-Widgets */ }
+  const ASSIST_FILTER_STORE = "smartadm.office.widgets.assistFilter.v1";
+  let assistFilter = "";
+  try { assistFilter = localStorage.getItem(ASSIST_FILTER_STORE) || ""; } catch { /* alle */ }
+  let widgetMenu = "";
+  const WIDGET_CHEVRON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const saveWidgets = () => { try { localStorage.setItem(WIDGET_STORE, JSON.stringify(widgets)); } catch { /* nur für diese Sitzung */ } };
 
   const WIDGET_ICONS = {
@@ -2332,15 +2353,16 @@ td { border-bottom-color: var(--line); }
     },
     mitarbeiter: {
       title: "Mitarbeiter", page: "lohn", text: "Termine, Arbeitsstunden und Brutto im laufenden Monat",
+      menu: () => ({ label: "Mitarbeiter auswählen", current: state.selectedUserId,
+        options: state.employees.map(u => [u.clerk_user_id, employeeName(u)]) }),
+      choose: value => selectEmployee(value),
       render() {
         const month = payrollMonth();
         if (!state.employees.length) return { sub: fmtMonth(month), body: widgetEmpty("Noch keine Mitarbeiter angemeldet.") };
-        const options = state.employees.map(u => `<option value="${esc(u.clerk_user_id)}"${u.clerk_user_id === state.selectedUserId ? " selected" : ""}>${esc(employeeName(u))}</option>`).join("");
         const p = state.selectedUserId ? currentPayroll() : { gross: 0, appts: 0, mins: 0, days: 0 };
         return {
-          sub: fmtMonth(month),
-          body: `<div class="field widget-auswahl"><select data-widget-employee aria-label="Mitarbeiter auswählen">${options}</select></div>
-            <div class="kennzahl" data-widget-gross>${esc(euro(p.gross))}</div>
+          sub: `${employeeName(findEmployee(state.selectedUserId))} · ${fmtMonth(month)}`,
+          body: `<div class="kennzahl" data-widget-gross>${esc(euro(p.gross))}</div>
             <p class="kennzahl-text">Brutto bisher im ${esc(fmtMonth(month))}</p>
             <div class="kennzahl-zeile"><span>Termine</span><b data-widget-appts>${p.appts}</b></div>
             <div class="kennzahl-zeile"><span>Arbeitsstunden</span><b data-widget-hours>${esc(fmtMinutes(p.mins))}</b></div>
@@ -2358,10 +2380,14 @@ td { border-bottom-color: var(--line); }
     },
     aufgabenAssistenz: {
       title: "Aufgaben Assistenz", page: "organisation", text: "Offene Aufgaben deiner Mitarbeiter",
+      menu: () => ({ label: "Aufgaben zeigen von", current: assistFilter,
+        options: [["", "Allen Mitarbeitern"], ...state.employees.map(u => [u.clerk_user_id, employeeName(u)])] }),
+      choose: value => { assistFilter = value; try { localStorage.setItem(ASSIST_FILTER_STORE, value); } catch { /* nur Sitzung */ } },
       render() {
-        const list = openTasks(false);
+        const list = openTasks(false).filter(t => !assistFilter || t.assigned_to === assistFilter);
+        const who = assistFilter ? employeeName(findEmployee(assistFilter)) : "";
         const rows = list.slice(0, 3).map(t => { const [st, cls] = taskStatus(t); return widgetRow('data-widget-task', t.title, st, cls, taskMeta(t)); }).join("");
-        return { sub: `${list.length} offen`, body: (rows || widgetEmpty("Keine offenen Aufgaben. ✓")) + widgetAdd("task", "Aufgabe erstellen") };
+        return { sub: [who, `${list.length} offen`].filter(Boolean).join(" · "), body: (rows || widgetEmpty("Keine offenen Aufgaben. ✓")) + widgetAdd("task", "Aufgabe erstellen") };
       }
     }
   };
@@ -2380,8 +2406,14 @@ td { border-bottom-color: var(--line); }
             <span class="widget-symbol">${widgetIcon(key)}</span>
             <span class="widget-titel"><strong>${esc(w.title)}</strong><span>${esc(d.sub)}</span></span>
           </button>
+          ${w.menu ? `<button class="widget-pfeil" type="button" data-widget-menu="${key}" aria-label="${esc(w.menu().label)}" aria-expanded="${widgetMenu === key}" title="${esc(w.menu().label)}">${WIDGET_CHEVRON}</button>` : ""}
           <span class="widget-griff" data-widget-griff="${key}" draggable="true" title="Widget verschieben" aria-label="Widget verschieben">${GRIP}</span>
           <button class="widget-weg" type="button" data-widget-weg="${key}" aria-label="Widget entfernen">&times;</button>
+          ${w.menu && widgetMenu === key ? (() => {
+            const m = w.menu();
+            return `<div class="widget-kontext" role="menu"><span class="wk-label">${esc(m.label)}</span>${m.options.map(([value, label]) =>
+              `<button class="wk-option${value === (m.current || "") ? " aktiv" : ""}" type="button" role="menuitemradio" aria-checked="${value === (m.current || "")}" data-widget-choose="${key}" data-value="${esc(value)}">${esc(label)}</button>`).join("")}</div>`;
+          })() : ""}
         </div>
         <div class="widget-inhalt"><div class="widget-datensaetze">${d.body}</div></div>
       </section>`;
@@ -2408,6 +2440,15 @@ td { border-bottom-color: var(--line); }
         </button>`).join("") || '<p class="widget-leer">Alle Widgets sind bereits auf dem Dashboard.</p>';
       return openDialog($("widgetDialog"));
     }
+    const toggle = event.target.closest("[data-widget-menu]");
+    if (toggle) { widgetMenu = widgetMenu === toggle.dataset.widgetMenu ? "" : toggle.dataset.widgetMenu; return renderDashboardWidgets(); }
+    const choice = event.target.closest("[data-widget-choose]");
+    if (choice) {
+      widgetMenu = "";
+      const w = WIDGETS[choice.dataset.widgetChoose];
+      Promise.resolve(w.choose(choice.dataset.value)).finally(renderDashboardWidgets);
+      return renderDashboardWidgets();
+    }
     const remove = event.target.closest("[data-widget-weg]");
     if (remove) {
       const key = remove.dataset.widgetWeg;
@@ -2422,9 +2463,8 @@ td { border-bottom-color: var(--line); }
     if (call) return editCall(call.dataset.widgetCall);
     if (event.target.closest("[data-widget-task]")) return showPage("organisation");
   });
-  $("widgetRaster").addEventListener("change", event => {
-    const select = event.target.closest("[data-widget-employee]");
-    if (select) selectEmployee(select.value);
+  document.addEventListener("click", event => {
+    if (widgetMenu && !event.target.closest(".widget-kontext, [data-widget-menu]")) { widgetMenu = ""; renderDashboardWidgets(); }
   });
   $("widgetWahl").addEventListener("click", event => {
     const option = event.target.closest("[data-widget-neu]");
