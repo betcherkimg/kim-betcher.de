@@ -698,6 +698,22 @@ td { border-bottom-color: var(--line); }
 .acall-body .call-note { margin: 0; }
 .acall-body .phone-fix { margin-top: 0; }
 
+.whats-new-preview { margin: 0 0 8px; padding-left: 18px; display: grid; gap: 6px; font-size: 13.5px; color: var(--ink-soft); }
+.whats-new-preview b { color: var(--ink); font-weight: 600; }
+
+/* Neue Nummern: Filialauswahl */
+.numbers-dialog { width: min(400px, calc(100vw - 32px)); }
+.numbers-body { display: grid; gap: 10px; padding: 12px 14px 16px; overflow-y: auto; }
+.numbers-list { display: grid; gap: 6px; }
+.numbers-row {
+  display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; background: var(--ground);
+  cursor: pointer; font-weight: 500;
+}
+.numbers-row:hover { background: var(--accent-wash); }
+.numbers-row input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; margin: 0; }
+.numbers-all { background: transparent; border: 1.5px dashed #D3DAE0; font-weight: 600; }
+.numbers-body .btn { width: 100%; justify-content: center; margin-top: 4px; }
+
 /* Filialauswahl (Termin buchen) */
 .head-btns { display: flex; flex-wrap: wrap; gap: 8px; flex: 0 0 auto; }
 .picker {
@@ -1679,6 +1695,17 @@ td { border-bottom-color: var(--line); }
             </div>
             <div id="bookingPickerList" class="picker-list"></div>
           </dialog>
+          <dialog id="numbersDialog" class="picker numbers-dialog" aria-labelledby="numbersTitle" closedby="none">
+            <div class="picker-head">
+              <strong id="numbersTitle">Neue Nummern – für welche Filiale?</strong>
+              <button class="picker-close" type="button" id="numbersClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
+            </div>
+            <div class="numbers-body">
+              <label class="numbers-row numbers-all"><input type="checkbox" id="numbersAll"><span>Alle auswählen</span></label>
+              <div id="numbersList" class="numbers-list"></div>
+              <button class="btn primary" type="button" id="numbersSend" disabled>Nummern anfordern</button>
+            </div>
+          </dialog>
           <dialog id="noteDialog" class="note-dialog" aria-labelledby="noteTitle" closedby="none">
             <form id="noteForm" novalidate>
               <strong id="noteTitle">Infos?</strong>
@@ -1889,6 +1916,18 @@ td { border-bottom-color: var(--line); }
 
       <!-- ===== Boss: Einstellungen ===== -->
       <section class="page" id="einstellungen" data-role="boss">
+        <div class="card section-card">
+          <div class="card-head split">
+            <div>
+              <h2>„Was ist neu?“ für Mitarbeiter</h2>
+              <p>Das sehen deine Mitarbeiter einmalig beim nächsten Öffnen. Per Knopfdruck bekommen sie zusätzlich eine Push-Nachricht.</p>
+            </div>
+            <button class="btn primary" type="button" id="announceBtn">Push an alle Mitarbeiter</button>
+          </div>
+          <ul class="whats-new-preview" id="whatsNewPreview"></ul>
+          <small class="status-text" id="announceStatus"></small>
+        </div>
+
         <div class="card section-card">
           <div class="card-head">
             <h2>Arbeitgeber</h2>
@@ -4009,6 +4048,7 @@ td { border-bottom-color: var(--line); }
 
   document.querySelectorAll("[data-task-template]").forEach(chip =>
     chip.addEventListener("click", () => {
+      if (chip.dataset.taskTemplate === "numbers") return openNumbersDialog();
       const t = TASK_TEMPLATES[chip.dataset.taskTemplate]();
       $("requestTitle").value = t.title;
       $("requestDescription").value = t.description;
@@ -4074,20 +4114,57 @@ td { border-bottom-color: var(--line); }
     if (event.target.closest("[data-picker-close]")) closeDialog($("bookingPicker"));
   });
 
-  $("requestNumbersBtn").addEventListener("click", event => {
-    const open = state.tasks.find(t => isInbox(t) && t.status === "open" && t.title === TASK_TEMPLATES.numbers().title);
-    if (open) return alert("Du hast bereits neue Nummern angefordert – der Boss kümmert sich darum.");
-    if (!confirm("Den Boss um neue Nummern für die Telefonliste bitten?")) return;
+  // Neue Nummern: im Fenster wählen, für welche Filialen (Videocalls gehören nicht dazu)
+  const numberBranches = () => state.branches.filter(b => !isVideoCall(b));
+  const numbersChecked = () => $$("#numbersList input:checked").map(i => i.value);
 
+  function numbersSync() {
+    const all = $$("#numbersList input"), checked = numbersChecked();
+    $("numbersAll").checked = all.length > 0 && checked.length === all.length;
+    $("numbersAll").indeterminate = checked.length > 0 && checked.length < all.length;
+    $("numbersSend").disabled = all.length > 0 && !checked.length;
+  }
+
+  function openNumbersDialog() {
+    const open = state.tasks.find(t => isInbox(t) && t.status === "open" &&
+      (t.title === TASK_TEMPLATES.numbers().title || t.title.startsWith("Neue Telefonnummern für")));
+    if (open) return alert("Du hast bereits neue Nummern angefordert – der Boss kümmert sich darum.");
+    const list = numberBranches();
+    $("numbersList").innerHTML = list.length
+      ? list.map(b => `<label class="numbers-row"><input type="checkbox" value="${esc(b.name)}"><span>${esc(b.name)}</span></label>`).join("")
+      : '<div class="notice">Es sind noch keine Filialen hinterlegt – die Anfrage geht ohne Filiale an den Boss.</div>';
+    $("numbersAll").closest("label").hidden = !list.length;
+    $("numbersAll").checked = false;
+    numbersSync();
+    openDialog($("numbersDialog"));
+  }
+
+  $("numbersDialog").addEventListener("cancel", event => event.preventDefault());
+  $("numbersClose").addEventListener("click", () => closeDialog($("numbersDialog")));
+  $("numbersAll").addEventListener("change", () => {
+    $$("#numbersList input").forEach(i => (i.checked = $("numbersAll").checked));
+    numbersSync();
+  });
+  $("numbersList").addEventListener("change", numbersSync);
+
+  $("numbersSend").addEventListener("click", event => {
+    const chosen = numbersChecked();
+    const all = chosen.length && chosen.length === numberBranches().length;
+    const task = TASK_TEMPLATES.numbers();
+    // Aufgabe beim Boss: „Neue Telefonnummern für Filiale 1, Filiale 2 gewünscht“ bzw. „… für alle Filialen …“
+    if (chosen.length) task.title = `Neue Telefonnummern für ${all ? "alle Filialen" : chosen.join(", ")} gewünscht`;
     withBusy(event.currentTarget, async () => {
       try {
-        await sendTaskToBoss(TASK_TEMPLATES.numbers());
+        await sendTaskToBoss(task);
+        closeDialog($("numbersDialog"));
         toast("Anfrage gesendet ✓ Du findest sie unter „Aufgaben“.");
       } catch (error) {
         alert("Senden fehlgeschlagen: " + error.message);
       }
     });
   });
+
+  $("requestNumbersBtn").addEventListener("click", openNumbersDialog);
 
   /* ================= Anruf-Skript =================
    * Themen, Vorlagen und Filialtage werden zentral hier gepflegt.
@@ -6814,8 +6891,12 @@ td { border-bottom-color: var(--line); }
    * einfach version ändern und die Punkte ersetzen.
    */
   const WHATS_NEW = {
-    version: "2026-10-08",
+    version: "2026-10-08b",
     items: [
+      ["Neue Nummern anfordern", "Es öffnet sich ein Fenster: Filialen ankreuzen oder oben „Alle auswählen“ – der Boss sieht direkt, wofür du Nummern brauchst."],
+      ["Terminfrage passt zu den Filialtagen", "Im Skript steht jetzt, an welchen Tagen und zu welcher Tageszeit Herr Betcher in der Filiale ist, z. B. „dienstags vormittags und donnerstags ganztags“."],
+      ["Menü mit drei Balken", "Auf dem Handy findest du alle Seiten oben rechts im Menü. Ein Tipp auf das Logo bringt dich zurück zum Dashboard."],
+      ["Neue Reihenfolge", "In der Seitenleiste steht die Telefonliste jetzt direkt unter dem Dashboard."],
       ["Anrufen zählt automatisch", "Tippen auf die Nummer zählt den Versuch – „Nicht erreicht +1“ gibt es nicht mehr. Zwei Nummern direkt nacheinander zählen als ein Versuch."],
       ["Wischen", "Kontakt nach links wischen = Halten, nach rechts wischen = ohne Termin."],
       ["Kurzes Fenster bei jeder Rückgabe", "Bei „Mit Termin“, „Ohne Termin“, „Halten“ und „Nicht erreicht“ kurz notieren, worum es geht, und mit dem Haken bestätigen. Das Kreuz bricht ab."],
@@ -6843,6 +6924,36 @@ td { border-bottom-color: var(--line); }
     try { localStorage.setItem(whatsNewKey(), WHATS_NEW.version); } catch {}
   });
   $("whatsNewOk").addEventListener("click", () => closeDialog($("whatsNew")));
+
+  // Boss: Vorschau + einmaliger Push „Neue Version!“ an alle Mitarbeiter
+  const ANNOUNCE_STORE = "smartadm.office.announced";
+  function renderAnnounce() {
+    $("whatsNewPreview").innerHTML = WHATS_NEW.items.map(([title, text]) => `<li><b>${esc(title)}</b> – ${esc(text)}</li>`).join("");
+    let sentAt = "";
+    try { sentAt = JSON.parse(localStorage.getItem(ANNOUNCE_STORE) || "{}")[WHATS_NEW.version] || ""; } catch { /* nichts gemerkt */ }
+    $("announceBtn").disabled = Boolean(sentAt);
+    $("announceBtn").textContent = sentAt ? "Push gesendet ✓" : "Push an alle Mitarbeiter";
+    setText("announceStatus", sentAt ? `Für diese Version am ${fmtDateTime(sentAt)} gesendet.` : "Text der Nachricht: „Neue Version! Schaue dir jetzt an, was neu ist.“");
+  }
+  renderAnnounce();
+  $("announceBtn").addEventListener("click", event => {
+    if (!confirm("Push „Neue Version! Schaue dir jetzt an, was neu ist.“ jetzt an alle Mitarbeiter senden?")) return;
+    withBusy(event.currentTarget, async () => {
+      try {
+        const result = await api("/admin/push/announce", "POST", { version: WHATS_NEW.version });
+        try {
+          const store = JSON.parse(localStorage.getItem(ANNOUNCE_STORE) || "{}");
+          store[WHATS_NEW.version] = new Date().toISOString();
+          localStorage.setItem(ANNOUNCE_STORE, JSON.stringify(store));
+        } catch { /* nur Anzeige */ }
+        toast(result?.employees ? `Push gesendet an ${result.employees} ${result.employees === 1 ? "Mitarbeiter" : "Mitarbeiter"} ✓` : "Gesendet – aber noch kein Mitarbeiter hat Benachrichtigungen aktiviert.");
+      } catch (error) {
+        alert(error.status === 404 || error.status === 405
+          ? "Dafür braucht es den neuen Worker. Bitte erst den Worker in Cloudflare einspielen."
+          : "Push konnte nicht gesendet werden: " + error.message);
+      }
+    }).then(renderAnnounce);
+  });
 
   /* ================= Start & Anmeldung ================= */
 
