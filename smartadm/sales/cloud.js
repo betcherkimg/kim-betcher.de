@@ -528,7 +528,7 @@
      ===================================================================== */
 
   const API = "https://smartadm-office-api.betcherkimg.workers.dev";
-  const APP_URL = "/smartadm/";
+  const APP_URL = "/smartadm/sales/";
   const ABLAGE = "smartadm.cloud.v1.";
   const TAKT_MS = 20000;                    // so oft wird nach Änderungen anderer Geräte geschaut
 

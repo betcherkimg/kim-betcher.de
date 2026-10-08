@@ -907,6 +907,134 @@ td { border-bottom-color: var(--line); }
   .cc-facts div { grid-template-columns: 92px 1fr; }
   .name-pair { grid-template-columns: 1fr; }
 }
+
+/* ===== Seitenleiste: gleiche Maße wie SmartADM 5 Sales ===== */
+.app { grid-template-columns: 272px 1fr; }
+.sidebar { padding: 16px 12px; }
+.sidebar .logo { width: 232px; max-width: 100%; margin: 7px auto 22px; }
+.nav button, .nav .nav-link {
+  display: flex; align-items: center; gap: 11px; min-height: 0; padding: 10px 11px;
+  border: 0; border-radius: 10px; background: none; font-family: inherit; font-size: 14.5px; font-weight: 400;
+  color: var(--ink-soft); text-align: left; text-decoration: none; box-shadow: none; line-height: normal;
+}
+.nav { padding-top: 0; }
+.nav button:hover, .nav .nav-link:hover { background: var(--ground); color: var(--ink); }
+.nav button.active { background: var(--accent-wash); color: var(--accent); font-weight: 600; box-shadow: none; }
+.nav svg.i { width: 19px; height: 19px; stroke-width: 1.6; }
+.nav-sep { margin: 10px 11px; }
+.mobile-head .logo { width: 155px; max-width: 46vw; }
+.logo-home { border: 0; padding: 0; background-color: transparent; cursor: pointer; }
+@media (max-width: 430px) { .mobile-head .logo { width: 132px; } }
+
+/* ===== Mobil: Menü mit drei Balken (wie SmartADM 5 Sales) ===== */
+.mobile-nav { position: relative; display: none; }
+.mobile-nav-btn {
+  width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 12px; background: transparent;
+  color: var(--ink-soft); display: flex; align-items: center; justify-content: center; padding: 0;
+}
+.mobile-nav-btn:hover { background: var(--ground); color: var(--ink); }
+.mobile-menu {
+  position: absolute; top: calc(100% + 8px); right: 0; width: min(310px, calc(100vw - 24px));
+  max-height: calc(100vh - 96px); overflow: auto; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 16px; box-shadow: 0 8px 30px rgba(29,39,51,.13); padding: 7px; z-index: 60;
+}
+.mobile-menu[hidden] { display: none; }
+.mobile-menu .mm-item {
+  display: flex; align-items: center; gap: 11px; width: 100%; background: none; border: none; border-radius: 10px;
+  padding: 11px; text-align: left; font-family: inherit; font-size: 14.5px; color: var(--ink-soft); text-decoration: none;
+}
+.mobile-menu .mm-item:hover { background: var(--ground); color: var(--ink); }
+.mobile-menu .mm-item[aria-current="page"] { background: var(--accent-wash); color: var(--accent); font-weight: 600; }
+.mobile-menu .mm-item svg.i { width: 19px; height: 19px; stroke-width: 1.6; }
+.mobile-menu .mm-sep { height: 1px; background: var(--line); margin: 7px 10px; border: 0; }
+@media (max-width: 760px) { .mobile-nav { display: block; } }
+
+/* ===== Dashboard-Widgets (Optik wie SmartADM 5 Sales) ===== */
+.widget-raster { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 720px) { .widget-raster { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.widget {
+  background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); padding: 16px;
+  display: flex; flex-direction: column; height: 360px; min-height: 360px; position: relative;
+  transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+}
+.widget.drag-ziel { box-shadow: 0 0 0 2px var(--accent), 0 8px 30px rgba(29,39,51,.13); }
+.widget.zieht { opacity: .55; transform: scale(.985); }
+.widget-kopf { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; position: relative; }
+.widget-marke {
+  display: flex; align-items: center; gap: 11px; flex: 1; min-width: 0; background: none; border: none;
+  padding: 2px; margin: -2px; border-radius: 10px; text-align: left; color: inherit; font-family: inherit; transition: opacity .12s ease;
+}
+.widget-marke:hover { opacity: .7; }
+.widget-symbol {
+  width: 36px; height: 36px; border-radius: 10px; background: var(--accent-wash); color: var(--accent);
+  display: flex; align-items: center; justify-content: center; flex: none;
+}
+.widget-titel { min-width: 0; }
+.widget-titel strong { display: block; font-size: 15.5px; font-weight: 600; letter-spacing: -0.015em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.widget-titel span { display: block; font-size: 12.5px; color: var(--ink-soft); }
+.widget-weg, .widget-griff {
+  width: 28px; height: 28px; border-radius: 50%; border: none; background: transparent; color: var(--ink-faint);
+  display: flex; align-items: center; justify-content: center; flex: none; padding: 0;
+}
+.widget-griff:hover { background: var(--ground); color: var(--ink); }
+.widget-griff { cursor: grab; touch-action: none; }
+.widget-griff:active { cursor: grabbing; }
+.widget-griff svg { pointer-events: none; }
+.widget-weg { font-size: 18px; line-height: 1; }
+.widget-weg:hover { background: var(--rot-wash); color: var(--rot); }
+.widget-inhalt { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+.widget-datensaetze { display: flex; flex-direction: column; gap: 7px; height: 100%; }
+.widget-datensatz {
+  display: block; width: 100%; height: 58px; min-height: 58px; border: 1px solid var(--line); background: var(--ground); border-radius: 11px;
+  padding: 8px 10px; text-align: left; color: inherit; font-family: inherit; min-width: 0; box-shadow: none; cursor: pointer;
+}
+.widget-datensatz:hover { border-color: #C4CDD5; background: var(--surface); }
+.wd-kopf { display: flex; align-items: center; gap: 8px; min-width: 0; margin-bottom: 3px; }
+.wd-name { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
+.wd-status { font-size: 10.5px; font-weight: 650; border-radius: 999px; padding: 2px 7px; white-space: nowrap; flex: none; color: var(--accent); background: var(--accent-wash); }
+.wd-status.good { color: var(--gruen); background: var(--gruen-wash); }
+.wd-status.warn { color: var(--gelb); background: var(--gelb-wash); }
+.wd-status.high { color: var(--rot); background: var(--rot-wash); }
+.wd-status.data { color: var(--lila); background: var(--lila-wash); }
+.wd-status.info { color: var(--hell); background: var(--hell-wash); }
+.wd-meta { display: block; font-size: 11.5px; line-height: 1.35; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.widget-add {
+  width: 100%; height: 58px; min-height: 58px; margin-top: auto; flex: none; background: transparent; border: 1.5px dashed #D3DAE0;
+  border-radius: 11px; color: var(--ink-soft); padding: 8px 10px; display: flex; align-items: center; gap: 12px; text-align: left;
+  font-family: inherit; cursor: pointer; transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+.widget-add:hover { border-color: var(--accent); background: var(--surface); color: var(--ink); }
+.widget-add .plus, .widget-neu .plus {
+  border-radius: 50%; background: var(--ground); color: var(--accent); font-weight: 500; line-height: 1;
+  display: flex; align-items: center; justify-content: center; flex: none;
+}
+.widget-add .plus { width: 36px; height: 36px; font-size: 19px; }
+.widget-add .add-label { font-size: 14px; font-weight: 500; }
+.widget-neu {
+  background: transparent; border: 1.5px dashed #CFD6DD; border-radius: 16px; height: 360px; min-height: 360px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--ink-soft);
+  font-family: inherit; font-size: 14.5px; font-weight: 500; cursor: pointer; transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+.widget-neu:hover { border-color: var(--accent); background: var(--surface); color: var(--ink); }
+.widget-neu:hover .plus { background: var(--accent-wash); }
+.widget-neu .plus { width: 44px; height: 44px; font-size: 22px; }
+.widget-leer { margin: 4px 0 0; font-size: 13px; color: var(--ink-faint); }
+.widget-auswahl { margin-bottom: 12px; }
+.widget-auswahl select { width: 100%; }
+.kennzahl { font-size: 29px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.1; }
+.kennzahl-text { margin: 2px 0 14px; font-size: 13px; color: var(--ink-soft); }
+.kennzahl-zeile { display: flex; justify-content: space-between; gap: 14px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 13.5px; }
+.kennzahl-zeile span { color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kennzahl-zeile b { font-weight: 600; white-space: nowrap; }
+.widget-wahl { display: grid; gap: 8px; }
+.widget-option {
+  display: flex; align-items: center; gap: 12px; background: var(--ground); border: 1.5px solid transparent; border-radius: 12px;
+  padding: 12px 14px; width: 100%; text-align: left; color: inherit; font-family: inherit; cursor: pointer; transition: border-color .15s ease, background .15s ease;
+}
+.widget-option:hover { border-color: var(--accent); background: var(--surface); }
+.widget-option strong { display: block; font-size: 14.5px; font-weight: 600; }
+.widget-option > span > span { display: block; font-size: 12.5px; color: var(--ink-soft); }
+.widget-dialog { width: min(460px, calc(100vw - 24px)); }
 </style>
 <link rel="stylesheet" href="../date-inputs.css">
 </head>
@@ -948,6 +1076,8 @@ td { border-bottom-color: var(--line); }
       <button data-role="boss" data-page="nachweise">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.8h9l3 3V20H6z"/><path d="M15 3.8V7h3M8.7 11h6.6M8.7 14.3h6.6M8.7 17.6h4.5"/></svg>Monatsarchiv</button>
       <hr class="nav-sep" data-role="boss">
+      <a class="nav-link" data-role="boss" href="/smartadm/sales/" data-app-switch>
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5M4 19h16"/><path d="M7 16.5c3.5-2 6-6.5 7.5-10"/><path d="M14.5 6.5H18V10"/></svg><span>Sales</span></a>
       <button class="nav-bottom" data-role="boss" data-page="einstellungen">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.1-1.1l2-1.5-2-3.4-2.4 1a7 7 0 0 0-1.9-1.1L14.3 3h-4.6l-.3 2.9A7 7 0 0 0 7.5 7l-2.4-1-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.1l-2 1.5 2 3.4 2.4-1a7 7 0 0 0 1.9 1.1l.3 2.9h4.6l.3-2.9a7 7 0 0 0 1.9-1.1l2.4 1 2-3.4-2-1.5c.1-.3.1-.7.1-1.1Z"/></svg>Einstellungen</button>
     </nav>
@@ -955,14 +1085,12 @@ td { border-bottom-color: var(--line); }
 
   <main class="main">
     <header class="topbar">
-      <div class="mobile-head"><div class="logo" role="img" aria-label="SmartADM 5 Office"></div></div>
+      <div class="mobile-head"><button class="logo logo-home" id="mobileHomeLogo" type="button" aria-label="Zum Dashboard"></button></div>
       <div class="top-title">
         <strong id="pageTitle">Dashboard</strong>
         <span id="pageSub">Überblick über den laufenden Monat</span>
       </div>
       <div class="top-actions">
-        <button class="pill" id="mobileHomeBtn" type="button" title="Dashboard" aria-label="Dashboard">
-          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11.2 12 4l8.5 7.2"/><path d="M5.5 10.2V20h13v-9.8"/></svg></button>
         <button class="pill" id="installAppBtn" type="button" title="SmartADM 5 Office als App installieren">
           <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M5 19h14"/></svg>
           <span class="label-full">Als App installieren</span><span class="label-mobile">App</span>
@@ -970,6 +1098,12 @@ td { border-bottom-color: var(--line); }
         <div class="pill" id="monthPill"></div>
         <span class="user-name" id="currentUserName"></span>
         <div id="userMenuHost"></div>
+        <div class="mobile-nav">
+          <button class="mobile-nav-btn" id="mobileNavBtn" type="button" aria-label="Menü" aria-expanded="false" aria-controls="mobileMenu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+          <div class="mobile-menu" id="mobileMenu" hidden></div>
+        </div>
       </div>
     </header>
 
@@ -1103,51 +1237,7 @@ td { border-bottom-color: var(--line); }
           </div>
         </div>
 
-        <div class="card shortcut">
-          <div><strong>Kontakte</strong><span data-call-summary>Kontakte werden geladen …</span></div>
-          <div class="btn-row">
-            <button class="btn primary" type="button" data-jump-page="telefon">Kontakte</button>
-            <button class="btn ghost" type="button" data-jump-page="kundenarchiv">Kundenarchiv</button>
-          </div>
-        </div>
-
-        <div class="card shortcut">
-          <div><strong>Aufgaben &amp; Monatsarchiv</strong><span data-task-summary>Aufgaben werden geladen …</span></div>
-          <div class="btn-row">
-            <button class="btn ghost" type="button" data-jump-page="organisation">Aufgaben</button>
-            <button class="btn ghost" type="button" data-jump-page="nachweise">Monatsarchiv</button>
-            <button class="btn ghost" type="button" data-jump-page="termine">Filialen</button>
-          </div>
-        </div>
-
-        <div class="grid-4">
-          <div class="card kpi">
-            <div class="kpi-top"><div><div class="kpi-label">Mitarbeiter</div><div class="kpi-value" id="bossEmployeeCount">0</div></div><div class="kpi-icon">◎</div></div>
-            <div class="kpi-foot"><span>im Office registriert</span></div>
-          </div>
-          <div class="card kpi">
-            <div class="kpi-top"><div><div class="kpi-label">Arbeitszeit</div><div class="kpi-value" id="bossTotalHours">0:00 h</div></div><div class="kpi-icon">◷</div></div>
-            <div class="kpi-foot"><span>ausgewählter Mitarbeiter</span><span data-selected-month></span></div>
-          </div>
-          <div class="card kpi">
-            <div class="kpi-top"><div><div class="kpi-label">Termine</div><div class="kpi-value" id="bossTotalAppointments">0</div></div><div class="kpi-icon">◎</div></div>
-            <div class="kpi-foot"><span>ausgewählter Mitarbeiter</span><span data-selected-month></span></div>
-          </div>
-          <div class="card kpi">
-            <div class="kpi-top"><div><div class="kpi-label">Brutto</div><div class="kpi-value" id="bossGross">–</div></div><div class="kpi-icon">€</div></div>
-            <div class="kpi-foot"><span>ausgewählter Mitarbeiter</span><span data-selected-month></span></div>
-          </div>
-        </div>
-
-        <div class="card section-card">
-          <div class="card-head">
-            <h2>Mitarbeiter im Überblick</h2>
-            <p>Alle Accounts, die sich im Office angemeldet haben.</p>
-          </div>
-          <div class="employee-list" id="bossEmployeeList">
-            <div class="notice">Mitarbeiterdaten werden geladen …</div>
-          </div>
-        </div>
+        <div class="widget-raster" id="widgetRaster"></div>
       </section>
 
       <!-- ===== Boss: Mitarbeiterdaten ===== -->
@@ -1588,6 +1678,18 @@ td { border-bottom-color: var(--line); }
           <div id="callList" class="call-groups"><div class="notice">Kontakte werden geladen …</div></div>
         </div>
       </section>
+
+      <!-- Boss: Widget hinzufügen -->
+      <dialog id="widgetDialog" class="form-dialog widget-dialog" data-role="boss" aria-labelledby="widgetDialogTitle" closedby="none">
+        <div class="picker-head">
+          <strong id="widgetDialogTitle">Widget hinzufügen</strong>
+          <button class="picker-close" type="button" id="widgetDialogClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
+        </div>
+        <div class="form-dialog-body">
+          <p class="form-dialog-hint">Holt einen Bereich als Kurzübersicht auf das Dashboard.</p>
+          <div class="widget-wahl" id="widgetWahl"></div>
+        </div>
+      </dialog>
 
       <!-- Boss: Aufgabe an Mitarbeiter (Fenster) -->
       <dialog id="taskDialog" class="form-dialog" data-role="boss" aria-labelledby="taskDialogTitle" closedby="none">
@@ -2102,6 +2204,9 @@ td { border-bottom-color: var(--line); }
   function showPage(pageId) {
     if (!$(pageId)) return;
     $$(".nav button").forEach(b => b.classList.toggle("active", b.dataset.page === pageId));
+    $$("#mobileMenu [data-page]").forEach(b => (b.dataset.page === pageId ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
+    closeMobileMenu();
+    if (pageId === "boss-dashboard") renderDashboardWidgets();
     $$(".page").forEach(p => p.classList.toggle("active", p.id === pageId));
     const [title, sub] = (state.role === "boss" && BOSS_PAGE_TITLES[pageId]) || PAGE_TITLES[pageId] || [];
     if (title) { setText("pageTitle", title); setText("pageSub", sub); }
@@ -2129,7 +2234,255 @@ td { border-bottom-color: var(--line); }
     if (target) showPage(target.dataset.page || target.dataset.jumpPage);
   });
 
-  $("mobileHomeBtn").addEventListener("click", () => showPage(homePage()));
+  // Mobil: Menü mit drei Balken – dieselben Punkte wie die Seitenleiste (je nach Rolle)
+  function buildMobileMenu() {
+    $("mobileMenu").innerHTML = $$(".nav > *").filter(el => {
+      const role = el.dataset.role;
+      return !role || role === "shared" || role === state.role;
+    }).map(el => {
+      if (el.tagName === "HR") return '<hr class="mm-sep">';
+      const label = el.querySelector("span")?.textContent || el.textContent.trim();
+      const icon = el.querySelector("svg")?.outerHTML || "";
+      return el.tagName === "A"
+        ? `<a class="mm-item" href="${esc(el.getAttribute("href"))}">${icon}<span>${esc(label)}</span></a>`
+        : `<button class="mm-item" type="button" data-page="${esc(el.dataset.page)}"${el.classList.contains("active") ? ' aria-current="page"' : ""}>${icon}<span>${esc(label)}</span></button>`;
+    }).join("");
+  }
+  $("mobileHomeLogo").addEventListener("click", () => showPage(homePage()));
+  function closeMobileMenu() {
+    if ($("mobileMenu").hidden) return;
+    $("mobileMenu").hidden = true;
+    $("mobileNavBtn").setAttribute("aria-expanded", "false");
+  }
+  $("mobileNavBtn").addEventListener("click", event => {
+    event.stopPropagation();
+    const open = $("mobileMenu").hidden;
+    if (open) buildMobileMenu();
+    $("mobileMenu").hidden = !open;
+    $("mobileNavBtn").setAttribute("aria-expanded", String(open));
+  });
+  document.addEventListener("click", event => {
+    if (!event.target.closest(".mobile-nav")) closeMobileMenu();
+  });
+
+  /* ================= Boss-Dashboard: Widgets (wie SmartADM 5 Sales) ================= */
+
+  const WIDGET_STORE = "smartadm.office.widgets.v1";
+  const WIDGET_MAX = 4;
+  const WIDGET_KEYS = ["kontakte", "mitarbeiter", "aufgabenBoss", "aufgabenAssistenz"];
+  let widgets = [...WIDGET_KEYS];
+  try {
+    const saved = JSON.parse(localStorage.getItem(WIDGET_STORE) || "null");
+    if (Array.isArray(saved)) widgets = saved.filter(k => WIDGET_KEYS.includes(k)).slice(0, WIDGET_MAX);
+  } catch { /* Standard-Widgets */ }
+  const saveWidgets = () => { try { localStorage.setItem(WIDGET_STORE, JSON.stringify(widgets)); } catch { /* nur für diese Sitzung */ } };
+
+  const WIDGET_ICONS = {
+    kontakte: '<path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/>',
+    mitarbeiter: '<circle cx="9" cy="8" r="3"/><path d="M3.8 19c.6-3.5 2.3-5.2 5.2-5.2s4.6 1.7 5.2 5.2"/><circle cx="17" cy="9" r="2.3"/><path d="M15.6 14.2c2.8-.6 4.6.9 5 3.8"/>',
+    aufgabenBoss: '<path d="m5.2 12 4.2 4.2L18.8 6.8"/>',
+    aufgabenAssistenz: '<rect x="4.5" y="4" width="15" height="17" rx="2.5"/><path d="M9 4h6v3H9zM8.5 12l2 2 4-4M8.5 17h7"/>'
+  };
+  const widgetRow = (attrs, name, status, cls, meta) =>
+    `<button class="widget-datensatz" type="button" ${attrs}>
+      <span class="wd-kopf"><span class="wd-name">${esc(name)}</span>${status ? `<span class="wd-status ${cls || ""}">${esc(status)}</span>` : ""}</span>
+      <span class="wd-meta">${esc(meta || "–")}</span>
+    </button>`;
+  const widgetAdd = (action, label) =>
+    `<button class="widget-add" type="button" data-widget-add="${action}"><span class="plus">+</span><span class="add-label">${label}</span></button>`;
+  const widgetEmpty = text => `<p class="widget-leer">${esc(text)}</p>`;
+
+  function callWidgetStatus(c, scope) {
+    if (scope === "open") return isHeld(c) ? ["Zu klären", "warn"] : ["In Bearbeitung", "info"];
+    const status = CALL_STATUS[c.status];
+    return status ? [status.label, status.cls] : ["", ""];
+  }
+
+  function taskMeta(task) {
+    const who = isInbox(task)
+      ? `Von: ${task.created_by === "system" ? "Office" : task.creator_name || task.creator_email || "Mitarbeiter"}`
+      : `An: ${task.display_name || task.email || employeeName(findEmployee(task.assigned_to))}`;
+    return [who, task.due_date ? `Fällig ${fmtDate(task.due_date)}` : `Erstellt ${fmtDate(String(task.created_at || "").slice(0, 10))}`].join(" · ");
+  }
+  const taskStatus = task => {
+    if (task.due_date && task.due_date < isoDate()) return ["überfällig", "high"];
+    return task.priority === "high" ? ["Hoch", "high"] : task.priority === "low" ? ["Niedrig", "good"] : ["", ""];
+  };
+  const openTasks = inbox => state.tasks.filter(t => t.status === "open" && isInbox(t) === inbox)
+    .sort((a, b) => (b.priority === "high") - (a.priority === "high") || String(a.due_date || "9").localeCompare(String(b.due_date || "9")));
+
+  const WIDGETS = {
+    kontakte: {
+      title: "Kontakte", page: "telefon", text: "Die drei zuletzt eingestellten Kontakte",
+      render() {
+        const all = ["open", "returned", "kk", "archived"].flatMap(scope => (state.adminCalls[scope] || []).map(c => [c, scope]));
+        const latest = all.sort((a, b) => Number(b[0].id) - Number(a[0].id)).slice(0, 3);
+        const rows = latest.map(([c, scope]) => {
+          const [status, cls] = callWidgetStatus(c, scope);
+          const topics = callScriptData(c).topics.filter(k => CALL_TOPICS[k]).map(k => CALL_TOPICS[k].label);
+          return widgetRow(`data-widget-call="${esc(c.id)}"`, c.customer_name, status, cls,
+            [c.display_name || employeeName(findEmployee(c.assigned_to)), topics[0]].filter(Boolean).join(" · "));
+        }).join("");
+        const open = (state.adminCalls.open || []).length, back = (state.adminCalls.returned || []).length;
+        return {
+          sub: state.callsLoaded ? `${open} in Bearbeitung · ${back} ${back === 1 ? "Rückläufer" : "Rückläufer"}` : "Wird geladen …",
+          body: (rows || widgetEmpty(state.callsLoaded ? "Noch keine Kontakte eingestellt." : "Kontakte werden geladen …")) + widgetAdd("call", "Kontakt einstellen")
+        };
+      }
+    },
+    mitarbeiter: {
+      title: "Mitarbeiter", page: "lohn", text: "Termine, Arbeitsstunden und Brutto im laufenden Monat",
+      render() {
+        const month = payrollMonth();
+        if (!state.employees.length) return { sub: fmtMonth(month), body: widgetEmpty("Noch keine Mitarbeiter angemeldet.") };
+        const options = state.employees.map(u => `<option value="${esc(u.clerk_user_id)}"${u.clerk_user_id === state.selectedUserId ? " selected" : ""}>${esc(employeeName(u))}</option>`).join("");
+        const p = state.selectedUserId ? currentPayroll() : { gross: 0, appts: 0, mins: 0, days: 0 };
+        return {
+          sub: fmtMonth(month),
+          body: `<div class="field widget-auswahl"><select data-widget-employee aria-label="Mitarbeiter auswählen">${options}</select></div>
+            <div class="kennzahl" data-widget-gross>${esc(euro(p.gross))}</div>
+            <p class="kennzahl-text">Brutto bisher im ${esc(fmtMonth(month))}</p>
+            <div class="kennzahl-zeile"><span>Termine</span><b data-widget-appts>${p.appts}</b></div>
+            <div class="kennzahl-zeile"><span>Arbeitsstunden</span><b data-widget-hours>${esc(fmtMinutes(p.mins))}</b></div>
+            <div class="kennzahl-zeile"><span>Arbeitstage</span><b>${p.days}</b></div>`
+        };
+      }
+    },
+    aufgabenBoss: {
+      title: "Meine Aufgaben", page: "organisation", text: "Deine offenen Aufgaben – von Mitarbeitern und vom Office",
+      render() {
+        const list = openTasks(true);
+        const rows = list.slice(0, 4).map(t => { const [st, cls] = taskStatus(t); return widgetRow('data-widget-task', t.title, st, cls, taskMeta(t)); }).join("");
+        return { sub: `${list.length} offen`, body: rows || widgetEmpty("Keine offenen Aufgaben. ✓") };
+      }
+    },
+    aufgabenAssistenz: {
+      title: "Aufgaben Assistenz", page: "organisation", text: "Offene Aufgaben deiner Mitarbeiter",
+      render() {
+        const list = openTasks(false);
+        const rows = list.slice(0, 3).map(t => { const [st, cls] = taskStatus(t); return widgetRow('data-widget-task', t.title, st, cls, taskMeta(t)); }).join("");
+        return { sub: `${list.length} offen`, body: (rows || widgetEmpty("Keine offenen Aufgaben. ✓")) + widgetAdd("task", "Aufgabe erstellen") };
+      }
+    }
+  };
+
+  const GRIP = '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="5" cy="4" r="1"/><circle cx="11" cy="4" r="1"/><circle cx="5" cy="8" r="1"/><circle cx="11" cy="8" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="11" cy="12" r="1"/></svg>';
+  const widgetIcon = key => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:18px;height:18px">${WIDGET_ICONS[key]}</svg>`;
+
+  function renderDashboardWidgets() {
+    const host = $("widgetRaster");
+    if (!host || state.role !== "boss") return;
+    host.innerHTML = widgets.map(key => {
+      const w = WIDGETS[key], d = w.render();
+      return `<section class="widget" data-widget="${key}">
+        <div class="widget-kopf">
+          <button class="widget-marke" type="button" data-jump-page="${w.page}">
+            <span class="widget-symbol">${widgetIcon(key)}</span>
+            <span class="widget-titel"><strong>${esc(w.title)}</strong><span>${esc(d.sub)}</span></span>
+          </button>
+          <span class="widget-griff" data-widget-griff="${key}" draggable="true" title="Widget verschieben" aria-label="Widget verschieben">${GRIP}</span>
+          <button class="widget-weg" type="button" data-widget-weg="${key}" aria-label="Widget entfernen">&times;</button>
+        </div>
+        <div class="widget-inhalt"><div class="widget-datensaetze">${d.body}</div></div>
+      </section>`;
+    }).join("") + (widgets.length < WIDGET_MAX
+      ? '<button class="widget-neu" type="button" id="widgetNeu"><span class="plus">+</span><span class="add-label">Widget hinzufügen</span></button>' : "");
+  }
+
+  function swapWidgets(from, to) {
+    const a = widgets.indexOf(from), b = widgets.indexOf(to);
+    if (a < 0 || b < 0 || a === b) return renderDashboardWidgets();
+    [widgets[a], widgets[b]] = [widgets[b], widgets[a]];
+    saveWidgets(); renderDashboardWidgets();
+  }
+
+  $("widgetDialog").addEventListener("cancel", event => event.preventDefault());
+  $("widgetDialogClose").addEventListener("click", () => closeDialog($("widgetDialog")));
+
+  $("widgetRaster").addEventListener("click", event => {
+    if (event.target.closest("#widgetNeu")) {
+      $("widgetWahl").innerHTML = WIDGET_KEYS.filter(k => !widgets.includes(k)).map(k => `
+        <button class="widget-option" type="button" data-widget-neu="${k}">
+          <span class="widget-symbol">${widgetIcon(k)}</span>
+          <span><strong>${esc(WIDGETS[k].title)}</strong><span>${esc(WIDGETS[k].text)}</span></span>
+        </button>`).join("") || '<p class="widget-leer">Alle Widgets sind bereits auf dem Dashboard.</p>';
+      return openDialog($("widgetDialog"));
+    }
+    const remove = event.target.closest("[data-widget-weg]");
+    if (remove) {
+      const key = remove.dataset.widgetWeg;
+      if (!confirm(`Widget „${WIDGETS[key].title}“ vom Dashboard entfernen?`)) return;
+      widgets = widgets.filter(k => k !== key);
+      saveWidgets(); renderDashboardWidgets(); toast("Widget entfernt.");
+      return;
+    }
+    const add = event.target.closest("[data-widget-add]");
+    if (add) return $(add.dataset.widgetAdd === "call" ? "callAddBtn" : "taskAddBtn").click();
+    const call = event.target.closest("[data-widget-call]");
+    if (call) return editCall(call.dataset.widgetCall);
+    if (event.target.closest("[data-widget-task]")) return showPage("organisation");
+  });
+  $("widgetRaster").addEventListener("change", event => {
+    const select = event.target.closest("[data-widget-employee]");
+    if (select) selectEmployee(select.value);
+  });
+  $("widgetWahl").addEventListener("click", event => {
+    const option = event.target.closest("[data-widget-neu]");
+    if (!option) return;
+    if (!widgets.includes(option.dataset.widgetNeu) && widgets.length < WIDGET_MAX) widgets.push(option.dataset.widgetNeu);
+    saveWidgets(); renderDashboardWidgets(); closeDialog($("widgetDialog"));
+    toast(`${WIDGETS[option.dataset.widgetNeu].title} hinzugefügt.`);
+  });
+
+  // Verschieben: Maus per Drag & Drop, Touch per Pointer
+  let widgetDrag = "";
+  $("widgetRaster").addEventListener("dragstart", event => {
+    const grip = event.target.closest?.("[data-widget-griff]");
+    if (!grip) return;
+    widgetDrag = grip.dataset.widgetGriff;
+    grip.closest(".widget").classList.add("zieht");
+    if (event.dataTransfer) { event.dataTransfer.effectAllowed = "move"; event.dataTransfer.setData("text/plain", widgetDrag); }
+  });
+  $("widgetRaster").addEventListener("dragover", event => {
+    const box = event.target.closest?.(".widget[data-widget]");
+    if (!box || !widgetDrag) return;
+    event.preventDefault();
+    $$(".widget.drag-ziel").forEach(x => x.classList.remove("drag-ziel"));
+    if (box.dataset.widget !== widgetDrag) box.classList.add("drag-ziel");
+  });
+  $("widgetRaster").addEventListener("drop", event => {
+    const box = event.target.closest?.(".widget[data-widget]");
+    if (!box || !widgetDrag) return;
+    event.preventDefault();
+    const from = widgetDrag; widgetDrag = "";
+    swapWidgets(from, box.dataset.widget);
+  });
+  $("widgetRaster").addEventListener("dragend", () => {
+    widgetDrag = "";
+    $$(".widget.zieht, .widget.drag-ziel").forEach(x => x.classList.remove("zieht", "drag-ziel"));
+  });
+  let widgetPointer = null;
+  $("widgetRaster").addEventListener("pointerdown", event => {
+    const grip = event.target.closest?.("[data-widget-griff]");
+    if (!grip || event.pointerType === "mouse") return;
+    widgetPointer = { id: grip.dataset.widgetGriff, target: "", pointerId: event.pointerId };
+    try { grip.setPointerCapture(event.pointerId); } catch { /* ältere Browser */ }
+    grip.closest(".widget").classList.add("zieht");
+    event.preventDefault();
+  });
+  document.addEventListener("pointermove", event => {
+    if (!widgetPointer || widgetPointer.pointerId !== event.pointerId) return;
+    const box = document.elementFromPoint(event.clientX, event.clientY)?.closest(".widget[data-widget]");
+    $$(".widget.drag-ziel").forEach(x => x.classList.remove("drag-ziel"));
+    widgetPointer.target = box ? box.dataset.widget : "";
+    if (box && widgetPointer.target !== widgetPointer.id) box.classList.add("drag-ziel");
+  });
+  document.addEventListener("pointerup", event => {
+    if (!widgetPointer || widgetPointer.pointerId !== event.pointerId) return;
+    const { id, target } = widgetPointer; widgetPointer = null;
+    target && target !== id ? swapWidgets(id, target) : renderDashboardWidgets();
+  });
+  document.addEventListener("pointercancel", () => { if (widgetPointer) { widgetPointer = null; renderDashboardWidgets(); } });
 
   /* ================= Mitarbeiter: Erfassung ================= */
 
@@ -2383,6 +2736,7 @@ td { border-bottom-color: var(--line); }
 
   function renderEmployeeList() {
     const host = $("bossEmployeeList");
+    if (!host) return;
     host.innerHTML = state.employees.length
       ? state.employees.map(u => `
           <div class="employee-row">
@@ -2395,7 +2749,7 @@ td { border-bottom-color: var(--line); }
       : '<div class="notice">Noch keine Mitarbeiter-Accounts gefunden. Mitarbeiter erscheinen hier nach ihrer ersten Anmeldung.</div>';
   }
 
-  $("bossEmployeeList").addEventListener("click", async event => {
+  $("bossEmployeeList")?.addEventListener("click", async event => {
     const button = event.target.closest("[data-open-employee]");
     if (!button) return;
     showPage("mitarbeiter");
@@ -2485,6 +2839,7 @@ td { border-bottom-color: var(--line); }
 
     renderAbsenceData();
     renderPayrollPreview();
+    renderDashboardWidgets();
   }
 
   async function loadBossData() {
@@ -2495,7 +2850,7 @@ td { border-bottom-color: var(--line); }
     } catch (error) {
       console.error(error);
       state.employees = [];
-      $("bossEmployeeList").innerHTML =
+      if ($("bossEmployeeList")) $("bossEmployeeList").innerHTML =
         `<div class="notice warn">Mitarbeiterliste konnte nicht geladen werden: ${esc(error.message)}</div>`;
     }
 
@@ -3513,6 +3868,7 @@ td { border-bottom-color: var(--line); }
       overdue ? `${overdue} überfällig` : ""
     ].filter(Boolean).join(", ");
     $$("[data-task-summary]").forEach(el => (el.textContent = summary));
+    renderDashboardWidgets();
   }
 
   let tasksLoadedAt = 0;
@@ -4770,6 +5126,7 @@ td { border-bottom-color: var(--line); }
       : parts.length ? `Gefunden: ${parts.join(" · ")}`
       : hasQuery(query) && !filter ? "Kein Kontakt mit diesem Namen vorhanden." : "Kein Kontakt passt zu Suche und Filter.");
     updateCallSummary();
+    renderDashboardWidgets();
   }
 
   ["callSearchLast", "callSearchFirst", "archiveSearchLast", "archiveSearchFirst"].forEach(id => $(id).addEventListener("input", renderAdminCalls));
