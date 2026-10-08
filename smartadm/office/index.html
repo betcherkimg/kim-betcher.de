@@ -743,6 +743,15 @@ td { border-bottom-color: var(--line); }
 .acall-phones { display: block; margin-top: 5px; font-size: 13px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
 .archive-list { margin-top: 12px; }
 
+/* „Was ist neu?“ – erscheint einmal nach einem Update */
+.whats-new { max-height: min(86vh, 640px); }
+.whats-new-body { display: grid; gap: 12px; padding: 20px 18px 16px; max-height: inherit; overflow-y: auto; }
+#whatsNewTitle { font-size: 20px; font-weight: 600; letter-spacing: -.02em; }
+#whatsNewList { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+#whatsNewList li { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; background: var(--ground); font-size: 14px; line-height: 1.45; color: var(--ink-soft); }
+#whatsNewList b { color: var(--ink); font-weight: 600; }
+#whatsNewOk { width: 100%; }
+
 /* Kurze Bestätigung, die von selbst verschwindet */
 .toast {
   position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
@@ -1694,6 +1703,14 @@ td { border-bottom-color: var(--line); }
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<dialog id="whatsNew" class="note-dialog whats-new" aria-labelledby="whatsNewTitle">
+  <div class="whats-new-body">
+    <strong id="whatsNewTitle">Was ist neu?</strong>
+    <ul id="whatsNewList"></ul>
+    <button class="btn primary" type="button" id="whatsNewOk">Alles klar</button>
+  </div>
+</dialog>
 
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
   integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
@@ -6045,6 +6062,41 @@ td { border-bottom-color: var(--line); }
     }
   });
 
+  /* ================= Was ist neu? =================
+   * Mitarbeiter sehen die Liste einmal pro Version und Gerät. Für das nächste Update
+   * einfach version ändern und die Punkte ersetzen.
+   */
+  const WHATS_NEW = {
+    version: "2026-10-08",
+    items: [
+      ["Anrufen zählt automatisch", "Tippen auf die Nummer zählt den Versuch – „Nicht erreicht +1“ gibt es nicht mehr. Zwei Nummern direkt nacheinander zählen als ein Versuch."],
+      ["Wischen", "Kontakt nach links wischen = Halten, nach rechts wischen = ohne Termin."],
+      ["Kurzes Fenster bei jeder Rückgabe", "Bei „Mit Termin“, „Ohne Termin“, „Halten“ und „Nicht erreicht“ kurz notieren, worum es geht, und mit dem Haken bestätigen. Das Kreuz bricht ab."],
+      ["5. Versuch", "Nach dem fünften Anruf erscheint „Nicht erreicht“ – erst damit geht der Kontakt zurück."],
+      ["Falsche Nummern", "„Falsch“ markiert nur diese eine Nummer, der Kontakt bleibt bei dir. Funktioniert keine Nummer mehr, geht er automatisch zurück – ohne Notiz."],
+      ["Notiz speichert sich selbst", "Was du im Kontakt unter „Notiz“ schreibst, wird automatisch gespeichert."],
+      ["Zeiterfassung", "Nur noch „Gesetzte Termine“ eintragen – jeder Termin zählt. „Davon provisionsfähig“ ist weg."],
+      ["Übersichtlicher", "Kontakte sind beim Öffnen zugeklappt."]
+    ]
+  };
+
+  const whatsNewKey = () => `smartadm.office.whatsnew:${state.bootstrappedFor || "none"}`;
+
+  function showWhatsNew() {
+    if (state.role !== "employee") return;
+    try {
+      if (localStorage.getItem(whatsNewKey()) === WHATS_NEW.version) return;
+    } catch {}
+    $("whatsNewList").innerHTML = WHATS_NEW.items
+      .map(([title, text]) => `<li><b>${esc(title)}</b>${esc(text)}</li>`).join("");
+    openDialog($("whatsNew"));
+  }
+
+  $("whatsNew").addEventListener("close", () => {
+    try { localStorage.setItem(whatsNewKey(), WHATS_NEW.version); } catch {}
+  });
+  $("whatsNewOk").addEventListener("click", () => closeDialog($("whatsNew")));
+
   /* ================= Start & Anmeldung ================= */
 
   async function resolveRole() {
@@ -6090,6 +6142,7 @@ td { border-bottom-color: var(--line); }
     }
     await Promise.all([loadTasks(), loadBranches(), loadCalls()]);
     initPush();
+    showWhatsNew();
   }
 
   const displayName = user =>
