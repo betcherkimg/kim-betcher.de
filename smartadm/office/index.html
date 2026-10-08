@@ -1473,7 +1473,7 @@ td { border-bottom-color: var(--line); }
                 <div><label for="callLastName">Nachname</label><input id="callLastName" type="text" maxlength="60" required autocomplete="off" placeholder="Mustermann"></div>
                 <div><label for="callFirstName">Vorname</label><input id="callFirstName" type="text" maxlength="55" required autocomplete="off" placeholder="Max"></div>
               </div>
-              <div class="field"><label for="callPhones">Telefonnummer(n)</label><textarea id="callPhones" rows="2" required placeholder="Eine Nummer pro Zeile"></textarea></div>
+              <div class="field"><label for="callPhones">Telefonnummer(n)</label><textarea id="callPhones" rows="2" required placeholder="Bis zu 2 Nummern, eine pro Zeile"></textarea></div>
               <div class="field"><label for="callPlace">Termin bei</label><select id="callPlace"></select><small>Filialen und Videocalls mit Bookings-Link pflegst du unter „Filialen“.</small></div>
               <div class="field full"><label for="callTopicsSummary">Thema fürs Skript</label>
                 <details class="dropdown" id="callTopics">
@@ -3312,7 +3312,7 @@ td { border-bottom-color: var(--line); }
 
     const person = boss
       ? inbox
-        ? `<span class="chip from">Von: ${esc(task.creator_name || task.creator_email || "Mitarbeiter")}</span>`
+        ? `<span class="chip from">Von: ${esc(task.created_by === "system" ? "Office (automatisch)" : task.creator_name || task.creator_email || "Mitarbeiter")}</span>`
         : `<span class="chip">An: ${esc(task.display_name || task.email || employeeName(findEmployee(task.assigned_to)))}</span>`
       : inbox ? '<span class="chip from">An: Boss</span>' : "";
 
@@ -3801,7 +3801,7 @@ td { border-bottom-color: var(--line); }
     .map(p => c.bad_phones.includes(p)
       ? `<span class="phone-bad" title="als falsch markiert"><s>${esc(p)}</s> falsch</span>`
       : link ? `<a href="${esc(telHref(p))}">${esc(p)}</a>` : esc(p))
-    .join(", ");
+    .join(" · ");
 
   function renderCallPlaceSelect(current = $("callPlace").value) {
     const select = $("callPlace");
@@ -4360,7 +4360,7 @@ td { border-bottom-color: var(--line); }
             ${topicChips(c)}
             <span class="acall-who">${esc(c.display_name || c.email || "Mitarbeiter")}</span>
           </span>
-          <span class="acall-phones">${phoneList(c, false)}</span>
+          ${open ? "" : `<span class="acall-phones">${phoneList(c, false)}</span>`}
           ${scope === "returned" && c.protocol && !open ? `<span class="acall-note">${esc(c.protocol)}</span>` : ""}
         </span>
         ${CHEVRON}
@@ -4385,7 +4385,7 @@ td { border-bottom-color: var(--line); }
         ${isHeld(c) && scope === "open" ? `<div class="call-note hold"><b>Zu klären:</b> ${esc(c.hold_note)}</div>` : ""}
         ${callBriefing(c) ? `<div class="call-note"><b>Hinweis:</b> ${esc(callBriefing(c))}</div>` : ""}
         ${scope === "returned" && c.status === "R_TA_fK" ? `<div class="phone-fix">
-          <label for="fix-${c.id}">Neue Nummer(n) – eine pro Zeile</label>
+          <label for="fix-${c.id}">Neue Nummer(n) – höchstens 2, eine pro Zeile</label>
           <textarea id="fix-${c.id}" data-phone-fix="${c.id}" rows="2" placeholder="z. B. 07361 123456">${esc(state.phoneFixDrafts[c.id] ?? "")}</textarea>
           <button class="btn primary" type="button" data-call-admin="phones" data-id="${c.id}">Nummer speichern &amp; erneut zuweisen</button>
         </div>` : ""}
@@ -4413,7 +4413,7 @@ td { border-bottom-color: var(--line); }
             ${reviewed ? '<span class="chip">Bleibt im Archiv</span>' : ""}
             <span class="acall-who">Archiviert ${esc(fmtDateTime(c.kk_archived_at))} · ${esc(c.display_name || c.email || "Mitarbeiter")}</span>
           </span>
-          <span class="acall-phones">${phoneList(c, false)}</span>
+          ${open ? "" : `<span class="acall-phones">${phoneList(c, false)}</span>`}
         </span>
         ${CHEVRON}
       </button>
@@ -4697,6 +4697,9 @@ td { border-bottom-color: var(--line); }
 
   $("callCancelBtn").addEventListener("click", resetCallForm);
 
+  const MAX_PHONES = 2;
+  const phoneCount = text => String(text || "").split(/[\n,;]+/).filter(p => (p.match(/\d/g) || []).length >= 4).length;
+
   const cleanNamePart = v => String(v || "").replace(/,/g, " ").replace(/\s+/g, " ").trim();
   const joinName = (last, first) => `${cleanNamePart(last)}, ${cleanNamePart(first)}`;
 
@@ -4704,6 +4707,10 @@ td { border-bottom-color: var(--line); }
     event.preventDefault();
     if (!cleanNamePart($("callLastName").value) || !cleanNamePart($("callFirstName").value)) {
       return alert("Bitte Nachname und Vorname eingeben.");
+    }
+    if (phoneCount($("callPhones").value) > MAX_PHONES) {
+      $("callPhones").focus();
+      return alert("Bitte höchstens 2 Telefonnummern eintragen.");
     }
     const id = $("callEditId").value;
     const script = readCallScriptForm();
@@ -4796,6 +4803,7 @@ td { border-bottom-color: var(--line); }
     const id = button.dataset.id;
     const phones = $(`fix-${id}`).value.trim();
     if (!phones) return alert("Bitte mindestens eine neue Nummer eintragen.");
+    if (phoneCount(phones) > MAX_PHONES) return alert("Bitte höchstens 2 Telefonnummern eintragen.");
     const c = state.adminCalls.returned.find(x => String(x.id) === id);
     if (!confirm(`„${c?.customer_name || ""}“ mit der neuen Nummer wieder an ${c?.display_name || "den Mitarbeiter"} geben? Die Versuche starten bei 0.`)) return;
     withBusy(button, async () => {
