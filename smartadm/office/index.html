@@ -152,6 +152,33 @@ body[data-office-role="boss"] [data-role="employee"] { display: none !important;
 /* ================= Bausteine ================= */
 .card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); }
 .section-card { padding: 18px; }
+/* „+ Kontakt einstellen“ – gleiche Optik wie „Termin erfassen“ in SmartADM 5 */
+.add-row {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px;
+  background: transparent; border: 1.5px dashed #cfd9e3; border-radius: 12px;
+  color: #5d6875; font: inherit; text-align: left; cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+.add-row:hover { border-color: var(--brand); background: #fff; color: var(--ink); }
+.add-row .plus {
+  width: 30px; height: 30px; border-radius: 50%; background: #fff; color: var(--brand);
+  font-size: 17px; font-weight: 500; line-height: 1; display: flex; align-items: center; justify-content: center;
+  flex: none; transition: background .15s ease;
+}
+.add-row:hover .plus { background: var(--nav-active-bg); }
+.add-row .add-label { font-weight: 500; font-size: 14.5px; }
+.form-dialog {
+  width: min(760px, calc(100vw - 24px)); max-height: calc(100dvh - 24px);
+  padding: 0; border: 0; border-radius: 16px; background: #fff; color: var(--ink);
+  box-shadow: 0 8px 30px rgba(29,39,51,.18); overflow: hidden;
+}
+.form-dialog[open] { display: flex; flex-direction: column; }
+.form-dialog::backdrop { background: rgba(29,39,51,.45); }
+.form-dialog-body { overflow-y: auto; padding: 14px 18px 18px; overscroll-behavior: contain; }
+.form-dialog-hint { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
+.schedule-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.schedule-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 700; color: var(--muted); }
+@media (max-width: 560px) { .schedule-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .card-head { margin-bottom: 17px; }
 .card-head h2 { margin: 0; font-size: 18px; }
 .card-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
@@ -1458,63 +1485,16 @@ td { border-bottom-color: var(--line); }
       <section class="page" id="telefon" data-role="shared">
 
         <!-- Boss -->
+        <button class="add-row" type="button" id="callAddBtn" data-role="boss" aria-haspopup="dialog">
+          <span class="plus" aria-hidden="true">+</span><span class="add-label">Kontakt einstellen</span>
+        </button>
+
         <div class="card section-card" data-role="boss">
           <div class="field">
             <label for="callSearch">Kunde suchen</label>
             <input id="callSearch" type="search" maxlength="80" autocomplete="off" placeholder="Name eingeben, z. B. Mustermann">
             <small id="callSearchResult" aria-live="polite"></small>
           </div>
-        </div>
-
-        <div class="card section-card" data-role="boss">
-          <div class="card-head">
-            <h2 id="callFormTitle">Kontakt einstellen</h2>
-            <p>Kunde, Nummern und Terminort hinterlegen – plus ein kurzer Hinweis, worum es im Gespräch geht.</p>
-          </div>
-          <form id="callForm">
-            <input type="hidden" id="callEditId">
-            <div class="form-grid">
-              <div class="field"><label>Mitarbeiter</label><select id="callEmployeeSelect" data-employee-select data-independent required></select></div>
-              <div class="field"><label for="callSalutation">Anrede</label>
-                <select id="callSalutation"><option value="Herr">Herr</option><option value="Frau">Frau</option></select>
-                <small>Steht so in der Begrüßung des Skripts.</small></div>
-              <div class="field name-pair">
-                <div><label for="callLastName">Nachname</label><input id="callLastName" type="text" maxlength="60" required autocomplete="off" placeholder="Mustermann"></div>
-                <div><label for="callFirstName">Vorname</label><input id="callFirstName" type="text" maxlength="55" required autocomplete="off" placeholder="Max"></div>
-              </div>
-              <div class="field"><label for="callPhones">Telefonnummer(n)</label><textarea id="callPhones" rows="2" required placeholder="Bis zu 2 Nummern, eine pro Zeile"></textarea></div>
-              <div class="field"><label for="callPlace">Termin bei</label><select id="callPlace"></select><small>Filialen und Videocalls mit Bookings-Link pflegst du unter „Filialen“.</small></div>
-              <div class="field full"><label for="callTopicsSummary">Thema fürs Skript</label>
-                <details class="dropdown" id="callTopics">
-                  <summary id="callTopicsSummary">Kein Thema gewählt</summary>
-                  <div class="dropdown-panel" id="callTopicsPanel"></div>
-                </details>
-                <small id="callTopicsHint" aria-live="polite">Bis zu drei Themen in deiner Auswahlreihenfolge. Die ersten beiden werden verbunden, das dritte beginnt mit „Außerdem möchte er …“.</small></div>
-              <div class="field" id="callChildField" hidden><label for="callChild">Kind / Kinder</label><select id="callChild"><option value="kinder">Mehrere Kinder</option><option value="sohn">Sohn</option><option value="tochter">Tochter</option></select></div>
-              <div class="field" id="callParentField" hidden><label for="callParent">Vertrag des Elternteils</label><select id="callParent"><option value="vater">Vater</option><option value="mutter">Mutter</option></select></div>
-              <div class="full script-tools">
-                <div><strong>Gesprächsskript</strong><small>Alle Themen als zusammenhängenden Text ansehen und bearbeiten.</small></div>
-                <button class="btn ghost" type="button" id="callViewScript">Skript ansehen</button>
-              </div>
-              <div class="field full" id="callScriptSuggestionsField" hidden>
-                <label for="callScriptSuggestion">Skriptvorschläge</label>
-                <div class="actions start script-suggestion-actions"><select id="callScriptSuggestion" aria-label="Skriptvorschlag"></select><button class="btn ghost" type="button" id="callApplyScriptSuggestion">Vorschlag übernehmen</button></div>
-                <small>Die Vorschläge enthalten bereits deine gewählten Themen.</small>
-                <p class="script-line script-preview-text" id="callSuggestionPreview" aria-live="polite"></p>
-              </div>
-              <div class="field full" id="callCustomScriptField" hidden>
-                <label for="callCustomScript">Gesprächsskript – ansehen und bearbeiten</label><textarea id="callCustomScript" rows="8" maxlength="1500"></textarea>
-                <small>{anrede}, {kunde}, {mitarbeiter} und {terminfrage} werden beim Anruf passend eingesetzt. Mit {themen} kannst du die gewählten Themen als vollständige Sätze in deinen eigenen Text einfügen.</small>
-                <label>So klingt es beim Anruf</label><p class="script-line script-preview-text" id="callScriptRendered" aria-live="polite"></p>
-              </div>
-              <div class="field full"><label for="callBriefing">Hinweis für das Gespräch</label><textarea id="callBriefing" rows="2" maxlength="150" aria-describedby="callBriefingCount" placeholder="z. B. Unterlagen zum Vertrag mitbringen"></textarea><small id="callBriefingCount" aria-live="polite">0/150</small></div>
-              <small class="full" id="callScriptLength" aria-live="polite"></small>
-            </div>
-            <div class="actions">
-              <button class="btn ghost" type="button" id="callCancelBtn" hidden>Abbrechen</button>
-              <button class="btn primary" type="submit" id="callSaveBtn">Kontakt speichern</button>
-            </div>
-          </form>
         </div>
 
         <div class="card section-card" data-role="boss">
@@ -1580,6 +1560,60 @@ td { border-bottom-color: var(--line); }
         </div>
       </section>
 
+      <!-- Boss: Kontakt einstellen / bearbeiten (Fenster, schließt nur über „Schließen“) -->
+      <dialog id="callDialog" class="form-dialog" data-role="boss" aria-labelledby="callFormTitle" closedby="none">
+        <div class="picker-head">
+          <strong id="callFormTitle">Kontakt einstellen</strong>
+          <button class="picker-close" type="button" id="callDialogClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
+        </div>
+        <div class="form-dialog-body">
+          <p class="form-dialog-hint">Kunde, Nummern und Terminort hinterlegen – plus ein kurzer Hinweis, worum es im Gespräch geht.</p>
+            <form id="callForm">
+              <input type="hidden" id="callEditId">
+              <div class="form-grid">
+                <div class="field"><label>Mitarbeiter</label><select id="callEmployeeSelect" data-employee-select data-independent required></select></div>
+                <div class="field"><label for="callSalutation">Anrede</label>
+                  <select id="callSalutation"><option value="Herr">Herr</option><option value="Frau">Frau</option></select>
+                  <small>Steht so in der Begrüßung des Skripts.</small></div>
+                <div class="field name-pair">
+                  <div><label for="callLastName">Nachname</label><input id="callLastName" type="text" maxlength="60" required autocomplete="off" placeholder="Mustermann"></div>
+                  <div><label for="callFirstName">Vorname</label><input id="callFirstName" type="text" maxlength="55" required autocomplete="off" placeholder="Max"></div>
+                </div>
+                <div class="field"><label for="callPhones">Telefonnummer(n)</label><textarea id="callPhones" rows="2" required placeholder="Bis zu 2 Nummern, eine pro Zeile"></textarea></div>
+                <div class="field"><label for="callPlace">Termin bei</label><select id="callPlace"></select><small>Filialen und Videocalls mit Bookings-Link pflegst du unter „Filialen“.</small></div>
+                <div class="field full"><label for="callTopicsSummary">Thema fürs Skript</label>
+                  <details class="dropdown" id="callTopics">
+                    <summary id="callTopicsSummary">Kein Thema gewählt</summary>
+                    <div class="dropdown-panel" id="callTopicsPanel"></div>
+                  </details>
+                  <small id="callTopicsHint" aria-live="polite">Bis zu drei Themen in deiner Auswahlreihenfolge. Die ersten beiden werden verbunden, das dritte beginnt mit „Außerdem möchte er …“.</small></div>
+                <div class="field" id="callChildField" hidden><label for="callChild">Kind / Kinder</label><select id="callChild"><option value="kinder">Mehrere Kinder</option><option value="sohn">Sohn</option><option value="tochter">Tochter</option></select></div>
+                <div class="field" id="callParentField" hidden><label for="callParent">Vertrag des Elternteils</label><select id="callParent"><option value="vater">Vater</option><option value="mutter">Mutter</option></select></div>
+                <div class="full script-tools">
+                  <div><strong>Gesprächsskript</strong><small>Alle Themen als zusammenhängenden Text ansehen und bearbeiten.</small></div>
+                  <button class="btn ghost" type="button" id="callViewScript">Skript ansehen</button>
+                </div>
+                <div class="field full" id="callScriptSuggestionsField" hidden>
+                  <label for="callScriptSuggestion">Skriptvorschläge</label>
+                  <div class="actions start script-suggestion-actions"><select id="callScriptSuggestion" aria-label="Skriptvorschlag"></select><button class="btn ghost" type="button" id="callApplyScriptSuggestion">Vorschlag übernehmen</button></div>
+                  <small>Die Vorschläge enthalten bereits deine gewählten Themen.</small>
+                  <p class="script-line script-preview-text" id="callSuggestionPreview" aria-live="polite"></p>
+                </div>
+                <div class="field full" id="callCustomScriptField" hidden>
+                  <label for="callCustomScript">Gesprächsskript – ansehen und bearbeiten</label><textarea id="callCustomScript" rows="8" maxlength="1500"></textarea>
+                  <small>{anrede}, {kunde}, {mitarbeiter} und {terminfrage} werden beim Anruf passend eingesetzt. Mit {themen} kannst du die gewählten Themen als vollständige Sätze in deinen eigenen Text einfügen. Löschst du {terminfrage}, entfällt die Terminfrage – z. B. wenn nur Kontaktdaten von Angehörigen gebraucht werden.</small>
+                  <label>So klingt es beim Anruf</label><p class="script-line script-preview-text" id="callScriptRendered" aria-live="polite"></p>
+                </div>
+                <div class="field full"><label for="callBriefing">Hinweis für das Gespräch</label><textarea id="callBriefing" rows="2" maxlength="150" aria-describedby="callBriefingCount" placeholder="z. B. Unterlagen zum Vertrag mitbringen"></textarea><small id="callBriefingCount" aria-live="polite">0/150</small></div>
+                <small class="full" id="callScriptLength" aria-live="polite"></small>
+              </div>
+              <div class="actions">
+                <button class="btn primary" type="submit" id="callSaveBtn">Kontakt speichern</button>
+              </div>
+            </form>
+        </div>
+      </dialog>
+
       <!-- ===== Boss: Kundenarchiv ===== -->
       <section class="page" id="kundenarchiv" data-role="boss">
         <div class="card section-card">
@@ -1608,6 +1642,15 @@ td { border-bottom-color: var(--line); }
               <div class="field"><label for="branchName">Filiale</label><input id="branchName" type="text" maxlength="120" required placeholder="z. B. VR-Bank Oberkochen"></div>
               <div class="field"><label for="branchNote">Hinweis (optional)</label><input id="branchNote" type="text" maxlength="200" placeholder="z. B. Adresse oder Ansprechpartner"></div>
               <div class="field full"><label for="branchUrl">Bookings-Link</label><input id="branchUrl" type="url" required placeholder="https://outlook.office365.com/owa/calendar/…"></div>
+              <div class="field full"><label>Wann bist du dort?</label>
+                <div class="schedule-grid" id="branchSchedule">
+                  <label>Montag<select data-day="mo"><option value="">–</option><option value="vm">Vormittag</option><option value="nm">Nachmittag</option><option value="gt">Ganztags</option></select></label>
+                  <label>Dienstag<select data-day="di"><option value="">–</option><option value="vm">Vormittag</option><option value="nm">Nachmittag</option><option value="gt">Ganztags</option></select></label>
+                  <label>Mittwoch<select data-day="mi"><option value="">–</option><option value="vm">Vormittag</option><option value="nm">Nachmittag</option><option value="gt">Ganztags</option></select></label>
+                  <label>Donnerstag<select data-day="do"><option value="">–</option><option value="vm">Vormittag</option><option value="nm">Nachmittag</option><option value="gt">Ganztags</option></select></label>
+                  <label>Freitag<select data-day="fr"><option value="">–</option><option value="vm">Vormittag</option><option value="nm">Nachmittag</option><option value="gt">Ganztags</option></select></label>
+                </div>
+                <small>Daraus entsteht im Gesprächsskript die Terminfrage, z. B. „Herr Betcher ist montags vormittags und mittwochs in der VR-Bank Ebnat.“</small></div>
             </div>
             <div class="actions">
               <button class="btn ghost" type="button" id="branchCancelBtn" hidden>Abbrechen</button>
@@ -3648,11 +3691,65 @@ td { border-bottom-color: var(--line); }
     return CALL_SCRIPT_PREFIX + JSON.stringify(saved);
   }
 
+  // Anwesenheit je Filiale (Mo–Fr): vm = vormittags, nm = nachmittags, gt = ganztags
+  const SCHEDULE_DAYS = [["mo", "montags", "Montag", "Mo"], ["di", "dienstags", "Dienstag", "Di"],
+    ["mi", "mittwochs", "Mittwoch", "Mi"], ["do", "donnerstags", "Donnerstag", "Do"], ["fr", "freitags", "Freitag", "Fr"]];
+  const SCHEDULE_TIMES = { vm: ["vormittags", "Vormittag", "vorm."], nm: ["nachmittags", "Nachmittag", "nachm."], gt: ["ganztags", "", "ganzt."] };
+
+  function branchSchedule(branch) {
+    let raw = branch?.schedule;
+    if (typeof raw === "string") { try { raw = JSON.parse(raw); } catch { raw = null; } }
+    const out = {};
+    if (raw && typeof raw === "object") SCHEDULE_DAYS.forEach(([day]) => { if (SCHEDULE_TIMES[raw[day]]) out[day] = raw[day]; });
+    return out;
+  }
+
+  const scheduleShort = branch => SCHEDULE_DAYS.filter(([day]) => branchSchedule(branch)[day])
+    .map(([day, , , short]) => `${short} ${SCHEDULE_TIMES[branchSchedule(branch)[day]][2]}`).join(" · ");
+
+  const joinAnd = parts => parts.length > 1 ? `${parts.slice(0, -1).join(", ")} und ${parts.at(-1)}` : (parts[0] || "");
+
+  function scheduleQuestion(branch) {
+    const plan = branchSchedule(branch);
+    const days = SCHEDULE_DAYS.filter(([day]) => plan[day]);
+    if (!days.length) return "";
+    const allDay = days.every(([day]) => plan[day] === "gt");
+    // Gleiche Tageszeiten zusammenfassen: „montags und mittwochs vormittags“
+    const groups = [];
+    days.forEach(([day, adverb]) => {
+      const time = plan[day];
+      const last = groups.at(-1);
+      if (last && last.time === time) last.days.push(adverb);
+      else groups.push({ time, days: [adverb] });
+    });
+    const phrases = groups.map(g => {
+      const word = g.time === "gt" && allDay ? "" : ` ${SCHEDULE_TIMES[g.time][0]}`;
+      return `${joinAnd(g.days)}${word}`;
+    });
+    // „montags und dienstags vormittags sowie mittwochs nachmittags“ statt doppeltem „und“
+    const when = groups.some(g => g.days.length > 1) && phrases.length > 1
+      ? `${phrases.slice(0, -1).join(", ")} sowie ${phrases.at(-1)}` : joinAnd(phrases);
+    const name = String(branch.name || "").trim();
+    const where = /bank|kasse/i.test(name) ? `in der ${name}` : `in ${name}`;
+    const intro = `${bossName()} ist ${when} ${where}.`;
+    const anyDay = days.some(([day]) => plan[day] === "gt");
+    if (days.length === 1) {
+      const [[day, , dayName]] = days;
+      return plan[day] === "gt"
+        ? `${intro} Passt Ihnen ${dayName} eher vormittags oder nachmittags?`
+        : `${intro} Passt Ihnen ein Termin am ${dayName}${SCHEDULE_TIMES[plan[day]][1].toLowerCase()}?`;
+    }
+    const which = days.length === 2 ? "Welcher der beiden Tage passt Ihnen besser" : "Welcher Tag passt Ihnen am besten";
+    return `${intro} ${which}${anyDay ? ", und eher vormittags oder nachmittags?" : "?"}`;
+  }
+
   function appointmentQuestion(c) {
     const branch = state.branches.find(b => String(b.id) === String(c.branch_id));
     if (c.teams || isVideoCall(branch)) {
       return `Der Termin kann per ${branch?.name || "Microsoft Teams"} stattfinden. Wie passt es Ihnen besser: eher vormittags oder nachmittags? Einen passenden Termin schauen wir gemeinsam im Buchungskalender nach.`;
     }
+    const planned = branch ? scheduleQuestion(branch) : "";
+    if (planned) return planned;
     const place = [c.branch_name, branch?.name, branch?.note].filter(Boolean).join(" ").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     if (/\bebnat\b/.test(place)) return "Herr Betcher ist montags und mittwochs in Ebnat. Welcher der beiden Tage passt Ihnen besser, und eher vormittags oder nachmittags?";
     if (/\boberkochen\b/.test(place)) return "Herr Betcher ist dienstags und donnerstags in Oberkochen. Welcher der beiden Tage passt Ihnen besser, und eher vormittags oder nachmittags?";
@@ -3753,9 +3850,8 @@ td { border-bottom-color: var(--line); }
     const values = {anrede:customerSalutation(c), kunde:customerLastName(c) || "[Nachname]", mitarbeiter:assistant,
       terminfrage:appointmentQuestion(c), themen:topicSentences(data.topics.filter(key => key !== "eigenes_skript")
         .map(key => topicSubject(key, data.parent)))};
-    let text = template.replace(/\{(anrede|kunde|mitarbeiter|terminfrage|themen)\}/g, (_, key) => values[key]);
-    if (!template.includes("{terminfrage}") && !text.includes(values.terminfrage)) text += `\n\n${values.terminfrage}`;
-    return text;
+    // Wer {terminfrage} aus dem Skript löscht, bekommt bewusst keine Terminfrage.
+    return template.replace(/\{(anrede|kunde|mitarbeiter|terminfrage|themen)\}/g, (_, key) => values[key]);
   }
 
   function scriptHtml(c) {
@@ -4680,13 +4776,31 @@ td { border-bottom-color: var(--line); }
     $("callTopics").open = false;
     setText("callFormTitle", "Kontakt einstellen");
     setText("callSaveBtn", "Kontakt speichern");
-    $("callCancelBtn").hidden = true;
   }
+
+  function showCallForm(open) {
+    const dialog = $("callDialog");
+    if (open) { if (!dialog.open) openDialog(dialog); dialog.querySelector(".form-dialog-body").scrollTop = 0; }
+    else if (dialog.open) closeDialog(dialog);
+  }
+  $("callDialogClose").addEventListener("click", () => closeCallForm());
+  // Nur „Schließen“ beendet das Fenster – kein Esc, kein Danebenklicken
+  $("callDialog").addEventListener("cancel", event => event.preventDefault());
+
+  function closeCallForm() {
+    resetCallForm();
+    showCallForm(false);
+  }
+
+  $("callAddBtn").addEventListener("click", () => {
+    resetCallForm();
+    showCallForm(true);
+    $("callLastName").focus({ preventScroll: true });
+  });
 
   function editCall(id) {
     const c = ADMIN_SCOPES.flatMap(([scope]) => state.adminCalls[scope]).find(x => String(x.id) === String(id));
     if (!c) return;
-    if (!$("telefon").classList.contains("active")) showPage("telefon"); // Bearbeiten aus dem Kundenarchiv
     $("callEditId").value = c.id;
     $("callEmployeeSelect").value = c.assigned_to;
     // „Nachname, Vorname“ – ältere Einträge ohne Komma landen komplett im Nachnamen
@@ -4708,11 +4822,9 @@ td { border-bottom-color: var(--line); }
     setCallTopics(script.topics);
     setText("callFormTitle", `Kontakt bearbeiten: ${c.customer_name}`);
     setText("callSaveBtn", "Änderungen speichern");
-    $("callCancelBtn").hidden = false;
-    $("callForm").scrollIntoView({ behavior: "smooth", block: "start" });
+    showCallForm(true);
   }
 
-  $("callCancelBtn").addEventListener("click", resetCallForm);
 
   const MAX_PHONES = 2;
   const phoneCount = text => String(text || "").split(/[\n,;]+/).filter(p => (p.match(/\d/g) || []).length >= 4).length;
@@ -4766,8 +4878,9 @@ td { border-bottom-color: var(--line); }
       try {
         await (id ? api(`/admin/calls/${id}`, "PUT", payload) : api("/admin/calls", "POST", payload));
         const keepEmployee = payload.assigned_to;
-        resetCallForm();
-        $("callEmployeeSelect").value = keepEmployee; // mehrere Kontakte hintereinander einstellen
+        closeCallForm();
+        $("callEmployeeSelect").value = keepEmployee; // nächster Kontakt startet mit demselben Mitarbeiter
+        toast(id ? "Änderungen gespeichert." : "Kontakt gespeichert.");
         await loadCalls();
       } catch (error) {
         alert("Kontakt konnte nicht gespeichert werden: " + error.message);
@@ -4803,7 +4916,7 @@ td { border-bottom-color: var(--line); }
       withBusy(button, async () => {
         try {
           await api(action.path(button.dataset.id), action.method);
-          if (act === "delete" && $("callEditId").value === button.dataset.id) resetCallForm();
+          if (act === "delete" && $("callEditId").value === button.dataset.id) closeCallForm();
           await loadCalls();
         } catch (error) {
           alert("Aktion fehlgeschlagen: " + error.message);
@@ -4915,6 +5028,7 @@ td { border-bottom-color: var(--line); }
             <span class="branch-text">
               <strong>${esc(b.name)}</strong>
               ${b.note ? `<small>${esc(b.note)}</small>` : ""}
+              ${scheduleShort(b) ? `<small>${esc(scheduleShort(b))}</small>` : ""}
             </span>
             <span class="branch-go">Buchen →</span>
           </a>`).join("")
@@ -4932,6 +5046,7 @@ td { border-bottom-color: var(--line); }
             <div>
               <strong>${esc(b.name)}</strong>
               <small>${b.note ? `${esc(b.note)} · ` : ""}${esc(branchHost(b.booking_url))}</small>
+              ${!isVideoCall(b) ? `<small>${scheduleShort(b) ? esc(scheduleShort(b)) : "Keine Anwesenheitstage hinterlegt"}</small>` : ""}
             </div>
             <div class="row-actions">
               <a class="btn ghost" href="${esc(b.booking_url)}" target="_blank" rel="noopener noreferrer" style="text-decoration:none">Öffnen</a>
@@ -4958,7 +5073,10 @@ td { border-bottom-color: var(--line); }
 
   function resetBranchForm(prefix = "branch") {
     ["EditId", "Name", "Url"].forEach(field => ($(prefix + field).value = ""));
-    if (prefix === "branch") $("branchNote").value = "";
+    if (prefix === "branch") {
+      $("branchNote").value = "";
+      $$("#branchSchedule select").forEach(sel => (sel.value = ""));
+    }
     const label = prefix === "branch" ? "Filiale" : "Videocall";
     setText(prefix + "FormTitle", `${label} anlegen`);
     setText(prefix + "SaveBtn", `${label} speichern`);
@@ -4972,7 +5090,11 @@ td { border-bottom-color: var(--line); }
     const label = isVideoCall(branch) ? "Videocall" : "Filiale";
     $(prefix + "EditId").value = branch.id;
     $(prefix + "Name").value = branch.name;
-    if (prefix === "branch") $("branchNote").value = branch.note || "";
+    if (prefix === "branch") {
+      $("branchNote").value = branch.note || "";
+      const plan = branchSchedule(branch);
+      $$("#branchSchedule select").forEach(sel => (sel.value = plan[sel.dataset.day] || ""));
+    }
     $(prefix + "Url").value = branch.booking_url;
     setText(prefix + "FormTitle", `${label} bearbeiten: ${branch.name}`);
     setText(prefix + "SaveBtn", "Änderungen speichern");
@@ -4992,6 +5114,12 @@ td { border-bottom-color: var(--line); }
         note: prefix === "videoCall" ? VIDEO_CALL_NOTE : $("branchNote").value.trim(),
         booking_url: $(prefix + "Url").value.trim()
       };
+      if (prefix === "branch") {
+        payload.schedule = {};
+        $$("#branchSchedule select").forEach(sel => { if (sel.value) payload.schedule[sel.dataset.day] = sel.value; });
+      } else {
+        payload.schedule = {};
+      }
 
       withBusy(event.submitter, async () => {
         try {
