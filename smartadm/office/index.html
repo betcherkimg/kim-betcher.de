@@ -176,13 +176,20 @@ body[data-office-role="boss"] [data-role="employee"] { display: none !important;
 .form-dialog::backdrop { background: rgba(29,39,51,.45); }
 .form-dialog-body { overflow-y: auto; padding: 14px 18px 18px; overscroll-behavior: contain; }
 .form-dialog-hint { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
-.search-tools { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 1.4fr); gap: 10px; align-items: end; }
+.search-tools { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1.4fr); gap: 10px; align-items: end; }
+.archive-tools + .search-result { margin-bottom: 12px; }
 .search-tools .field { margin: 0; }
 .sort-pair { display: flex; gap: 6px; }
 .sort-pair select { flex: 1; min-width: 0; }
 .sort-dir { flex: none; white-space: nowrap; padding-left: 12px; padding-right: 12px; }
 .search-result { display: block; margin-top: 8px; color: var(--muted); }
-@media (max-width: 720px) { .search-tools { grid-template-columns: 1fr 1fr; } .search-tools .field:first-child { grid-column: 1 / -1; } }
+@media (max-width: 720px) { .search-tools { grid-template-columns: 1fr 1fr; } }
+.type-switch { display: inline-flex; gap: 4px; padding: 4px; margin-bottom: 12px; border-radius: 999px; background: #f3f5f6; }
+.type-switch label { cursor: pointer; }
+.type-switch input { position: absolute; opacity: 0; pointer-events: none; }
+.type-switch span { display: block; padding: 8px 18px; border-radius: 999px; font-weight: 600; font-size: 14px; color: var(--muted); }
+.type-switch input:checked + span { background: #fff; color: var(--brand); box-shadow: 0 1px 3px rgba(29,39,51,.15); }
+.type-switch input:focus-visible + span { outline: 2px solid var(--brand); outline-offset: 2px; }
 .schedule-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
 .schedule-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 700; color: var(--muted); }
 @media (max-width: 560px) { .schedule-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -482,7 +489,10 @@ svg.i { stroke-width: 1.7; }
 
 /* Rahmen */
 .sidebar { background: var(--surface); border-right: 1px solid var(--line); }
-.nav { border-top: 0; gap: 2px; }
+@media (min-width: 761px) { .sidebar { display: flex; flex-direction: column; } }
+.nav { border-top: 0; gap: 2px; display: flex; flex-direction: column; flex: 1; min-height: 0; overflow-y: auto; }
+.nav-sep { border: 0; border-top: 1px solid var(--line); margin: 10px 6px; flex: none; }
+.nav .nav-bottom { margin-top: auto; }
 .nav button { min-height: 42px; border-radius: 10px; font-weight: 500; color: var(--ink-soft); }
 .nav button:hover { background: var(--ground); color: var(--ink); }
 .nav button.active { background: var(--accent-wash); color: var(--accent); font-weight: 600; box-shadow: none; }
@@ -921,21 +931,24 @@ td { border-bottom-color: var(--line); }
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11.2 12 4l8.5 7.2"/><path d="M5.5 10.2V20h13v-9.8"/><path d="M9.2 20v-5.7h5.6V20"/></svg>Dashboard</button>
       <button data-role="boss" data-page="boss-dashboard">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V9.5L12 4l8 5.5V20"/><path d="M8 20v-6h8v6"/></svg>Dashboard</button>
+      <hr class="nav-sep" data-role="shared">
+      <button data-role="shared" data-page="telefon">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/></svg><span data-boss-label="Kontakte">Telefonliste</span></button>
+      <button data-role="boss" data-page="kundenarchiv">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="4.5" rx="1"/><path d="M5 9v10h14V9"/><path d="M10 13h4"/></svg>Kundenarchiv</button>
+      <button data-role="shared" data-page="organisation">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5.2 12 4.2 4.2L18.8 6.8"/></svg>Aufgaben</button>
+      <button data-role="shared" data-page="termine">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/><path d="m9.5 15 1.8 1.8 3.4-3.6"/></svg><span data-boss-label="Filialen">Terminvereinbarung</span></button>
+      <hr class="nav-sep" data-role="boss">
       <button data-role="boss" data-page="mitarbeiter">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.8 19c.6-3.5 2.3-5.2 5.2-5.2s4.6 1.7 5.2 5.2"/><circle cx="17" cy="9" r="2.3"/><path d="M15.6 14.2c2.8-.6 4.6.9 5 3.8"/></svg>Mitarbeiter</button>
       <button data-role="boss" data-page="lohn">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.8 5.6a5.6 5.6 0 1 0 0 12.8"/><path d="M5.2 10h8.2M5.2 14h7.2"/></svg>Lohn &amp; Abrechnung</button>
       <button data-role="boss" data-page="nachweise">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.8h9l3 3V20H6z"/><path d="M15 3.8V7h3M8.7 11h6.6M8.7 14.3h6.6M8.7 17.6h4.5"/></svg>Monatsarchiv</button>
-      <button data-role="shared" data-page="organisation">
-        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5.2 12 4.2 4.2L18.8 6.8"/></svg>Aufgaben</button>
-      <button data-role="shared" data-page="telefon">
-        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/></svg><span data-boss-label="Kontakte">Telefonliste</span></button>
-      <button data-role="boss" data-page="kundenarchiv">
-        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="4.5" rx="1"/><path d="M5 9v10h14V9"/><path d="M10 13h4"/></svg>Kundenarchiv</button>
-      <button data-role="shared" data-page="termine">
-        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/><path d="m9.5 15 1.8 1.8 3.4-3.6"/></svg><span data-boss-label="Filialen">Terminvereinbarung</span></button>
-      <button data-role="boss" data-page="einstellungen">
+      <hr class="nav-sep" data-role="boss">
+      <button class="nav-bottom" data-role="boss" data-page="einstellungen">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.1-1.1l2-1.5-2-3.4-2.4 1a7 7 0 0 0-1.9-1.1L14.3 3h-4.6l-.3 2.9A7 7 0 0 0 7.5 7l-2.4-1-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.1l-2 1.5 2 3.4 2.4-1a7 7 0 0 0 1.9 1.1l.3 2.9h4.6l.3-2.9a7 7 0 0 0 1.9-1.1l2.4 1 2-3.4-2-1.5c.1-.3.1-.7.1-1.1Z"/></svg>Einstellungen</button>
     </nav>
   </aside>
@@ -1414,6 +1427,10 @@ td { border-bottom-color: var(--line); }
       <!-- ===== Beide: Aufgaben ===== -->
       <section class="page" id="organisation" data-role="shared">
 
+        <button class="add-row" type="button" id="taskAddBtn" data-role="boss" aria-haspopup="dialog">
+          <span class="plus" aria-hidden="true">+</span><span class="add-label">Aufgabe erstellen</span>
+        </button>
+
         <!-- Boss: Posteingang von Mitarbeitern -->
         <div class="card section-card" data-role="boss">
           <div class="card-head">
@@ -1423,23 +1440,6 @@ td { border-bottom-color: var(--line); }
           <div id="taskInboxList" class="task-list"><div class="notice">Aufgaben werden geladen …</div></div>
         </div>
 
-        <div class="card section-card" data-role="boss">
-          <div class="card-head">
-            <h2>Aufgabe an Mitarbeiter</h2>
-            <p>Aufgaben werden einem Mitarbeiter zugewiesen und bleiben bis zur Erledigung offen.</p>
-          </div>
-          <form id="taskForm">
-            <div class="form-grid">
-              <div class="field"><label>Mitarbeiter</label><select id="taskEmployeeSelect" data-employee-select data-independent required></select></div>
-              <div class="field"><label for="taskPriority">Priorität</label>
-                <select id="taskPriority"><option value="normal">Normal</option><option value="high">Hoch</option><option value="low">Niedrig</option></select></div>
-              <div class="field full"><label for="taskTitle">Aufgabe</label><input id="taskTitle" type="text" maxlength="160" required placeholder="z. B. Rückrufliste für Freitag vorbereiten"></div>
-              <div class="field full"><label for="taskDescription">Beschreibung</label><input id="taskDescription" type="text" maxlength="2000" placeholder="Optionaler Hinweis"></div>
-              <div class="field"><label for="taskDueDate">Fällig bis</label><input id="taskDueDate" type="date"></div>
-            </div>
-            <div class="actions"><button class="btn primary" type="submit">Aufgabe erstellen</button></div>
-          </form>
-        </div>
 
         <div class="card section-card">
           <div class="card-head">
@@ -1499,8 +1499,12 @@ td { border-bottom-color: var(--line); }
         <div class="card section-card" data-role="boss">
           <div class="search-tools">
             <div class="field">
-              <label for="callSearch">Kunde suchen</label>
-              <input id="callSearch" type="search" maxlength="80" autocomplete="off" placeholder="Name eingeben, z. B. Mustermann">
+              <label for="callSearchLast">Nachname</label>
+              <input id="callSearchLast" type="search" maxlength="60" autocomplete="off" placeholder="z. B. Mu">
+            </div>
+            <div class="field">
+              <label for="callSearchFirst">Vorname</label>
+              <input id="callSearchFirst" type="search" maxlength="55" autocomplete="off" placeholder="z. B. Ma">
             </div>
             <div class="field">
               <label for="callFilter">Filter</label>
@@ -1585,6 +1589,63 @@ td { border-bottom-color: var(--line); }
         </div>
       </section>
 
+      <!-- Boss: Aufgabe an Mitarbeiter (Fenster) -->
+      <dialog id="taskDialog" class="form-dialog" data-role="boss" aria-labelledby="taskDialogTitle" closedby="none">
+        <div class="picker-head">
+          <strong id="taskDialogTitle">Aufgabe erstellen</strong>
+          <button class="picker-close" type="button" id="taskDialogClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
+        </div>
+        <div class="form-dialog-body">
+          <p class="form-dialog-hint">Aufgaben werden einem Mitarbeiter zugewiesen und bleiben bis zur Erledigung offen.</p>
+          <form id="taskForm">
+            <div class="form-grid">
+              <div class="field"><label>Mitarbeiter</label><select id="taskEmployeeSelect" data-employee-select data-independent required></select></div>
+              <div class="field"><label for="taskPriority">Priorität</label>
+                <select id="taskPriority"><option value="normal">Normal</option><option value="high">Hoch</option><option value="low">Niedrig</option></select></div>
+              <div class="field full"><label for="taskTitle">Aufgabe</label><input id="taskTitle" type="text" maxlength="160" required placeholder="z. B. Rückrufliste für Freitag vorbereiten"></div>
+              <div class="field full"><label for="taskDescription">Beschreibung</label><input id="taskDescription" type="text" maxlength="2000" placeholder="Optionaler Hinweis"></div>
+              <div class="field"><label for="taskDueDate">Fällig bis</label><input id="taskDueDate" type="date"></div>
+            </div>
+            <div class="actions"><button class="btn primary" type="submit">Aufgabe erstellen</button></div>
+          </form>
+        </div>
+      </dialog>
+
+      <!-- Boss: Filiale / Videocall anlegen oder bearbeiten (Fenster) -->
+      <dialog id="branchDialog" class="form-dialog" data-role="boss" aria-labelledby="branchFormTitle" closedby="none">
+        <div class="picker-head">
+          <strong id="branchFormTitle">Filiale / Videocall anlegen</strong>
+          <button class="picker-close" type="button" id="branchDialogClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
+        </div>
+        <div class="form-dialog-body">
+          <form id="branchForm">
+            <input type="hidden" id="branchEditId">
+            <div class="type-switch" role="radiogroup" aria-label="Art">
+              <label><input type="radio" name="branchType" value="branch" checked><span>Filiale</span></label>
+              <label><input type="radio" name="branchType" value="video"><span>Videocall</span></label>
+            </div>
+            <p class="form-dialog-hint" id="branchHint"></p>
+            <div class="form-grid">
+              <div class="field"><label for="branchName" id="branchNameLabel">Filiale</label><input id="branchName" type="text" maxlength="120" required></div>
+              <div class="field" id="branchNoteField"><label for="branchNote">Hinweis (optional)</label><input id="branchNote" type="text" maxlength="200" placeholder="z. B. Adresse oder Ansprechpartner"></div>
+              <div class="field full"><label for="branchUrl">Bookings-Link</label><input id="branchUrl" type="url" required placeholder="https://outlook.office365.com/owa/calendar/…"></div>
+              <div class="field full" id="branchScheduleField"><label>Wann bist du dort?</label>
+                <div class="schedule-grid" id="branchSchedule">
+                  <label>Montag<select data-day="mo"><option value="">–</option><option value="vm">Vormittag</option><option value="nm">Nachmittag</option><option value="gt">Ganztags</option></select></label>
+                  <label>Dienstag<select data-day="di"><option value="">–</option><option value="vm">Vormittag</option><option value="nm">Nachmittag</option><option value="gt">Ganztags</option></select></label>
+                  <label>Mittwoch<select data-day="mi"><option value="">–</option><option value="vm">Vormittag</option><option value="nm">Nachmittag</option><option value="gt">Ganztags</option></select></label>
+                  <label>Donnerstag<select data-day="do"><option value="">–</option><option value="vm">Vormittag</option><option value="nm">Nachmittag</option><option value="gt">Ganztags</option></select></label>
+                  <label>Freitag<select data-day="fr"><option value="">–</option><option value="vm">Vormittag</option><option value="nm">Nachmittag</option><option value="gt">Ganztags</option></select></label>
+                </div>
+                <small>Daraus entsteht im Gesprächsskript die Terminfrage, z. B. „Herr Betcher ist montags vormittags und mittwochs in der VR-Bank Ebnat.“</small></div>
+            </div>
+            <div class="actions">
+              <button class="btn primary" type="submit" id="branchSaveBtn">Filiale speichern</button>
+            </div>
+          </form>
+        </div>
+      </dialog>
+
       <!-- Boss: Kontakt einstellen / bearbeiten (Fenster, schließt nur über „Schließen“) -->
       <dialog id="callDialog" class="form-dialog" data-role="boss" aria-labelledby="callFormTitle" closedby="none">
         <div class="picker-head">
@@ -1646,43 +1707,42 @@ td { border-bottom-color: var(--line); }
             <h2>Kundenarchiv</h2>
             <p>Erledigte Kontakte, neueste zuerst. „Erneut zuweisen“ gibt einen Kontakt zurück in die Telefonliste.</p>
           </div>
-          <div class="field">
-            <label for="archiveSearch">Kunde suchen</label>
-            <input id="archiveSearch" type="search" maxlength="80" autocomplete="off" placeholder="Name eingeben, z. B. Mustermann">
+          <div class="search-tools archive-tools">
+            <div class="field">
+              <label for="archiveSearchLast">Nachname</label>
+              <input id="archiveSearchLast" type="search" maxlength="60" autocomplete="off" placeholder="z. B. Mu">
+            </div>
+            <div class="field">
+              <label for="archiveSearchFirst">Vorname</label>
+              <input id="archiveSearchFirst" type="search" maxlength="55" autocomplete="off" placeholder="z. B. Ma">
+            </div>
+            <div class="field">
+              <label for="archiveFilter">Filter</label>
+              <select id="archiveFilter"></select>
+            </div>
+            <div class="field">
+              <label for="archiveSort">Sortieren</label>
+              <div class="sort-pair">
+                <select id="archiveSort">
+                  <option value="">Neueste zuerst</option>
+                  <option value="last">Nachname</option>
+                  <option value="first">Vorname</option>
+                  <option value="employee">Mitarbeiter</option>
+                </select>
+                <button class="btn ghost sort-dir" type="button" id="archiveSortDir" data-dir="asc" aria-label="Aufsteigend – tippen für absteigend" disabled>A–Z ↑</button>
+              </div>
+            </div>
           </div>
+          <small class="search-result" id="archiveSearchResult" aria-live="polite"></small>
           <div id="callArchiveList" class="employee-list archive-list"><div class="notice">Wird geladen …</div></div>
         </div>
       </section>
 
       <!-- ===== Beide: Terminvereinbarung ===== -->
       <section class="page" id="termine" data-role="shared">
-        <div class="card section-card" data-role="boss">
-          <div class="card-head">
-            <h2 id="branchFormTitle">Filiale anlegen</h2>
-            <p>Filiale mit ihrem Bookings-Link hinterlegen. Mitarbeiter buchen darüber mit einem Klick.</p>
-          </div>
-          <form id="branchForm">
-            <input type="hidden" id="branchEditId">
-            <div class="form-grid">
-              <div class="field"><label for="branchName">Filiale</label><input id="branchName" type="text" maxlength="120" required placeholder="z. B. VR-Bank Oberkochen"></div>
-              <div class="field"><label for="branchNote">Hinweis (optional)</label><input id="branchNote" type="text" maxlength="200" placeholder="z. B. Adresse oder Ansprechpartner"></div>
-              <div class="field full"><label for="branchUrl">Bookings-Link</label><input id="branchUrl" type="url" required placeholder="https://outlook.office365.com/owa/calendar/…"></div>
-              <div class="field full"><label>Wann bist du dort?</label>
-                <div class="schedule-grid" id="branchSchedule">
-                  <label>Montag<select data-day="mo"><option value="">–</option><option value="vm">Vormittag</option><option value="nm">Nachmittag</option><option value="gt">Ganztags</option></select></label>
-                  <label>Dienstag<select data-day="di"><option value="">–</option><option value="vm">Vormittag</option><option value="nm">Nachmittag</option><option value="gt">Ganztags</option></select></label>
-                  <label>Mittwoch<select data-day="mi"><option value="">–</option><option value="vm">Vormittag</option><option value="nm">Nachmittag</option><option value="gt">Ganztags</option></select></label>
-                  <label>Donnerstag<select data-day="do"><option value="">–</option><option value="vm">Vormittag</option><option value="nm">Nachmittag</option><option value="gt">Ganztags</option></select></label>
-                  <label>Freitag<select data-day="fr"><option value="">–</option><option value="vm">Vormittag</option><option value="nm">Nachmittag</option><option value="gt">Ganztags</option></select></label>
-                </div>
-                <small>Daraus entsteht im Gesprächsskript die Terminfrage, z. B. „Herr Betcher ist montags vormittags und mittwochs in der VR-Bank Ebnat.“</small></div>
-            </div>
-            <div class="actions">
-              <button class="btn ghost" type="button" id="branchCancelBtn" hidden>Abbrechen</button>
-              <button class="btn primary" type="submit" id="branchSaveBtn">Filiale speichern</button>
-            </div>
-          </form>
-        </div>
+        <button class="add-row" type="button" id="branchAddBtn" data-role="boss" aria-haspopup="dialog">
+          <span class="plus" aria-hidden="true">+</span><span class="add-label">Filiale / Videocall anlegen</span>
+        </button>
 
         <div class="card section-card" data-role="boss">
           <div class="card-head">
@@ -1690,24 +1750,6 @@ td { border-bottom-color: var(--line); }
             <p>Diese Filialen sehen deine Mitarbeiter unter „Terminvereinbarung“.</p>
           </div>
           <div id="branchAdminList" class="employee-list"><div class="notice">Filialen werden geladen …</div></div>
-        </div>
-
-        <div class="card section-card" data-role="boss">
-          <div class="card-head">
-            <h2 id="videoCallFormTitle">Videocall anlegen</h2>
-            <p>Videocall mit seinem Bookings-Link hinterlegen, damit Mitarbeiter auch Online-Termine buchen können.</p>
-          </div>
-          <form id="videoCallForm">
-            <input type="hidden" id="videoCallEditId">
-            <div class="form-grid">
-              <div class="field"><label for="videoCallName">Name</label><input id="videoCallName" type="text" maxlength="120" required placeholder="z. B. Microsoft Teams"></div>
-              <div class="field full"><label for="videoCallUrl">Bookings-Link</label><input id="videoCallUrl" type="url" required placeholder="https://outlook.office365.com/owa/calendar/…"></div>
-            </div>
-            <div class="actions">
-              <button class="btn ghost" type="button" id="videoCallCancelBtn" hidden>Abbrechen</button>
-              <button class="btn primary" type="submit" id="videoCallSaveBtn">Videocall speichern</button>
-            </div>
-          </form>
         </div>
 
         <div class="card section-card" data-role="boss">
@@ -2335,7 +2377,7 @@ td { border-bottom-color: var(--line); }
       select.innerHTML = options;
       select.value = findEmployee(keep) ? keep : "";
       // Kontakt einstellen: standardmäßig der erste Mitarbeiter
-      if (select.id === "callEmployeeSelect" && !select.value && state.employees[0]) select.value = state.employees[0].clerk_user_id;
+      if (["callEmployeeSelect", "taskEmployeeSelect"].includes(select.id) && !select.value && state.employees[0]) select.value = state.employees[0].clerk_user_id;
     });
   }
 
@@ -3515,6 +3557,18 @@ td { border-bottom-color: var(--line); }
       });
     }));
 
+  // Fenster schließen nur über „Schließen ×“ – kein Esc, kein Danebenklicken
+  const formDialog = (id, closeId, onClose) => {
+    $(id).addEventListener("cancel", event => event.preventDefault());
+    $(closeId).addEventListener("click", () => { closeDialog($(id)); onClose?.(); });
+  };
+  formDialog("taskDialog", "taskDialogClose");
+  $("taskAddBtn").addEventListener("click", () => {
+    if (!$("taskEmployeeSelect").value && state.employees[0]) $("taskEmployeeSelect").value = state.employees[0].clerk_user_id;
+    openDialog($("taskDialog"));
+    $("taskTitle").focus();
+  });
+
   $("taskForm").addEventListener("submit", event => {
     event.preventDefault();
     withBusy(event.submitter, async () => {
@@ -3528,6 +3582,8 @@ td { border-bottom-color: var(--line); }
         });
         ["taskTitle", "taskDescription", "taskDueDate"].forEach(id => ($(id).value = ""));
         $("taskPriority").value = "normal";
+        closeDialog($("taskDialog"));
+        toast("Aufgabe erstellt.");
         await loadTasks();
       } catch (error) {
         alert("Aufgabe konnte nicht erstellt werden: " + error.message);
@@ -4579,22 +4635,38 @@ td { border-bottom-color: var(--line); }
 
   const firstName = c => String(c.display_name || c.email || "Mitarbeiter").split(/[\s@]/)[0] || "Mitarbeiter";
 
-  const searchTokens = id => { const q = normalizeName($(id).value); return q ? q.split(" ") : []; };
-  const matchesName = (c, tokens) => tokens.every(token => normalizeName(c.customer_name).includes(token));
+  // Suche nach Namensanfang: „ai“ findet „Aigner“, aber nicht „Baier“.
+  // Doppelnamen zählen je Teil („Lü“ findet „Müller-Lüdenscheidt“, „B“ findet „von Berg“).
+  const nameQuery = prefix => ({ last: normalizeName($(prefix + "Last").value), first: normalizeName($(prefix + "First").value) });
+  const hasQuery = q => Boolean(q.last || q.first);
+  const startsName = (text, q) => {
+    if (!q) return true;
+    const name = normalizeName(text);
+    return name.startsWith(q) || name.split(/[\s-]+/).some(part => part.startsWith(q));
+  };
+  const matchesName = (c, q) => {
+    const [last, ...rest] = String(c.customer_name || "").split(",");
+    return startsName(last, q.last) && startsName(rest.join(" "), q.first);
+  };
 
   // Filter: „Zu klären“ (gehaltene Kontakte) oder ein Skript-Thema
   const FILTER_TOPICS = TOPIC_KEYS.map(key => [key, key === "eigenes_skript" ? "Eigenes Skript" : CALL_TOPICS[key].label]);
   const CALL_VIEW_KEY = "smartadm.office.callView.v1";
 
-  function renderCallFilterOptions() {
-    $("callFilter").innerHTML = `<option value="">Alle</option><option value="held">Zu klären</option>
-      <optgroup label="Skript">${FILTER_TOPICS.map(([key, label]) => `<option value="topic:${key}">${esc(label)}</option>`).join("")}
+  const topicOptions = () => `<optgroup label="Skript">${FILTER_TOPICS.map(([key, label]) => `<option value="topic:${key}">${esc(label)}</option>`).join("")}
       <option value="topic:none">Thema fehlt</option></optgroup>`;
+
+  function renderCallFilterOptions() {
+    $("callFilter").innerHTML = `<option value="">Alle</option><option value="held">Zu klären</option>${topicOptions()}`;
+    $("archiveFilter").innerHTML = `<option value="">Alle</option>
+      <optgroup label="Ergebnis">${["R_TA_mT", "R_TA_oT", "R_TA_fK", "R_TA_kK"].filter(code => CALL_STATUS[code])
+        .map(code => `<option value="status:${code}">${esc(CALL_STATUS[code].label)}</option>`).join("")}</optgroup>${topicOptions()}`;
   }
 
   function matchesFilter(c, filter) {
     if (!filter) return true;
     if (filter === "held") return isHeld(c);
+    if (filter.startsWith("status:")) return c.status === filter.slice(7);
     const topics = callScriptData(c).topics.filter(key => CALL_TOPICS[key]);
     const key = filter.slice(6);
     if (key === "none") return !topics.length;
@@ -4609,10 +4681,10 @@ td { border-bottom-color: var(--line); }
   const employeeOf = c => c.display_name || c.email || "";
   const compareDe = (a, b) => String(a).localeCompare(String(b), "de", { sensitivity: "base" });
 
-  function sortCalls(items) {
-    const field = $("callSort").value;
+  function sortCalls(items, prefix = "call") {
+    const field = $(prefix + "Sort").value;
     if (!field) return items;
-    const dir = $("callSortDir").dataset.dir === "desc" ? -1 : 1;
+    const dir = $(prefix + "SortDir").dataset.dir === "desc" ? -1 : 1;
     const keys = {
       last: c => [nameParts(c).last, nameParts(c).first],
       first: c => [nameParts(c).first, nameParts(c).last],
@@ -4628,36 +4700,44 @@ td { border-bottom-color: var(--line); }
     });
   }
 
-  function updateSortDir() {
-    const desc = $("callSortDir").dataset.dir === "desc";
-    $("callSortDir").disabled = !$("callSort").value;
-    $("callSortDir").textContent = desc ? "Z–A ↓" : "A–Z ↑";
-    $("callSortDir").setAttribute("aria-label", desc ? "Absteigend – tippen für aufsteigend" : "Aufsteigend – tippen für absteigend");
+  const VIEW_PREFIXES = ["call", "archive"];
+
+  function updateSortDir(prefix) {
+    const button = $(prefix + "SortDir");
+    const desc = button.dataset.dir === "desc";
+    button.disabled = !$(prefix + "Sort").value;
+    button.textContent = desc ? "Z–A ↓" : "A–Z ↑";
+    button.setAttribute("aria-label", desc ? "Absteigend – tippen für aufsteigend" : "Aufsteigend – tippen für absteigend");
   }
 
   function saveCallView() {
     try {
-      localStorage.setItem(CALL_VIEW_KEY, JSON.stringify({ filter: $("callFilter").value, sort: $("callSort").value, dir: $("callSortDir").dataset.dir }));
+      const view = {};
+      VIEW_PREFIXES.forEach(prefix => (view[prefix] = { filter: $(prefix + "Filter").value, sort: $(prefix + "Sort").value, dir: $(prefix + "SortDir").dataset.dir }));
+      localStorage.setItem(CALL_VIEW_KEY, JSON.stringify(view));
     } catch { /* ohne Speicher gilt die Auswahl nur bis zum Neuladen */ }
   }
 
   function restoreCallView() {
     renderCallFilterOptions();
-    try {
-      const view = JSON.parse(localStorage.getItem(CALL_VIEW_KEY) || "{}");
-      $("callFilter").value = view.filter || "";
-      if ($("callFilter").value !== (view.filter || "")) $("callFilter").value = "";
-      $("callSort").value = ["last", "first", "employee"].includes(view.sort) ? view.sort : "";
-      $("callSortDir").dataset.dir = view.dir === "desc" ? "desc" : "asc";
-    } catch { /* Standardansicht */ }
-    updateSortDir();
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(CALL_VIEW_KEY) || "{}"); } catch { /* Standardansicht */ }
+    if (saved && "filter" in saved) saved = { call: saved }; // frühere Speicherform
+    VIEW_PREFIXES.forEach(prefix => {
+      const view = saved?.[prefix] || {};
+      $(prefix + "Filter").value = view.filter || "";
+      if ($(prefix + "Filter").value !== (view.filter || "")) $(prefix + "Filter").value = "";
+      $(prefix + "Sort").value = ["last", "first", "employee"].includes(view.sort) ? view.sort : "";
+      $(prefix + "SortDir").dataset.dir = view.dir === "desc" ? "desc" : "asc";
+      updateSortDir(prefix);
+    });
   }
 
   function renderAdminCalls() {
-    const tokens = searchTokens("callSearch");
+    const query = nameQuery("callSearch");
     const filter = $("callFilter").value;
-    const found = items => sortCalls(items.filter(c => (!tokens.length || matchesName(c, tokens)) && matchesFilter(c, filter)));
-    const narrowed = tokens.length || filter;
+    const found = items => sortCalls(items.filter(c => matchesName(c, query) && matchesFilter(c, filter)));
+    const narrowed = hasQuery(query) || filter;
     const hits = Object.fromEntries(ADMIN_SCOPES.map(([scope]) => [scope, found(state.adminCalls[scope])]));
     const list = (scope, row, empty) => hits[scope].length
       ? hits[scope].map(row).join("")
@@ -4668,11 +4748,17 @@ td { border-bottom-color: var(--line); }
     $("callKkList").innerHTML = list("kk", kkRowHtml, "Kein-Kontakt-Archiv ist leer.");
 
     // Kundenarchiv (eigene Seite) mit eigener Suche
-    const archiveTokens = searchTokens("archiveSearch");
-    const archived = state.adminCalls.archived.filter(c => matchesName(c, archiveTokens));
+    const archiveQuery = nameQuery("archiveSearch");
+    const archiveFilter = $("archiveFilter").value;
+    const archiveNarrowed = hasQuery(archiveQuery) || archiveFilter;
+    const archived = sortCalls(state.adminCalls.archived.filter(c => matchesName(c, archiveQuery) && matchesFilter(c, archiveFilter)), "archive");
+    const archiveTotal = state.adminCalls.archived.length;
+    setText("archiveSearchResult", archiveNarrowed
+      ? `${archived.length} von ${archiveTotal} ${archiveTotal === 1 ? "Kontakt" : "Kontakten"}`
+      : `${archiveTotal} ${archiveTotal === 1 ? "erledigter Kontakt" : "erledigte Kontakte"}`);
     $("callArchiveList").innerHTML = archived.length
       ? archived.map(c => adminCallHtml(c, "archived")).join("")
-      : `<div class="notice">${archiveTokens.length ? "Kein Treffer." : "Noch keine erledigten Kontakte."}</div>`;
+      : `<div class="notice">${archiveNarrowed ? "Kein Treffer." : "Noch keine erledigten Kontakte."}</div>`;
 
     const kk = state.adminCalls.kk.length;
     $("kkReleaseOldestBtn").disabled = !kk;
@@ -4682,18 +4768,19 @@ td { border-bottom-color: var(--line); }
     setText("callSearchResult", !narrowed
       ? "Durchsucht Rückläufer, In Bearbeitung, Kein-Kontakt-Archiv und Kundenarchiv."
       : parts.length ? `Gefunden: ${parts.join(" · ")}`
-      : tokens.length && !filter ? "Kein Kontakt mit diesem Namen vorhanden." : "Kein Kontakt passt zu Suche und Filter.");
+      : hasQuery(query) && !filter ? "Kein Kontakt mit diesem Namen vorhanden." : "Kein Kontakt passt zu Suche und Filter.");
     updateCallSummary();
   }
 
-  $("callSearch").addEventListener("input", renderAdminCalls);
+  ["callSearchLast", "callSearchFirst", "archiveSearchLast", "archiveSearchFirst"].forEach(id => $(id).addEventListener("input", renderAdminCalls));
   restoreCallView();
-  ["callFilter", "callSort"].forEach(id => $(id).addEventListener("change", () => { updateSortDir(); saveCallView(); renderAdminCalls(); }));
-  $("callSortDir").addEventListener("click", () => {
-    $("callSortDir").dataset.dir = $("callSortDir").dataset.dir === "desc" ? "asc" : "desc";
-    updateSortDir(); saveCallView(); renderAdminCalls();
+  VIEW_PREFIXES.forEach(prefix => {
+    [prefix + "Filter", prefix + "Sort"].forEach(id => $(id).addEventListener("change", () => { updateSortDir(prefix); saveCallView(); renderAdminCalls(); }));
+    $(prefix + "SortDir").addEventListener("click", () => {
+      $(prefix + "SortDir").dataset.dir = $(prefix + "SortDir").dataset.dir === "desc" ? "asc" : "desc";
+      updateSortDir(prefix); saveCallView(); renderAdminCalls();
+    });
   });
-  $("archiveSearch").addEventListener("input", renderAdminCalls);
 
   async function loadCalls() {
     try {
@@ -5183,67 +5270,91 @@ td { border-bottom-color: var(--line); }
     }
   }
 
-  function resetBranchForm(prefix = "branch") {
-    ["EditId", "Name", "Url"].forEach(field => ($(prefix + field).value = ""));
-    if (prefix === "branch") {
-      $("branchNote").value = "";
-      $$("#branchSchedule select").forEach(sel => (sel.value = ""));
-    }
-    const label = prefix === "branch" ? "Filiale" : "Videocall";
-    setText(prefix + "FormTitle", `${label} anlegen`);
-    setText(prefix + "SaveBtn", `${label} speichern`);
-    $(prefix + "CancelBtn").hidden = true;
+  const branchKind = () => (document.querySelector('input[name="branchType"]:checked')?.value === "video" ? "video" : "branch");
+
+  function applyBranchKind() {
+    const video = branchKind() === "video";
+    $("branchNoteField").hidden = video;
+    $("branchScheduleField").hidden = video;
+    setText("branchNameLabel", video ? "Name" : "Filiale");
+    $("branchName").placeholder = video ? "z. B. Microsoft Teams" : "z. B. VR-Bank Oberkochen";
+    setText("branchHint", video
+      ? "Videocall mit seinem Bookings-Link hinterlegen, damit Mitarbeiter auch Online-Termine buchen können."
+      : "Filiale mit ihrem Bookings-Link hinterlegen. Mitarbeiter buchen darüber mit einem Klick.");
+    if (!$("branchEditId").value) setText("branchSaveBtn", video ? "Videocall speichern" : "Filiale speichern");
   }
+
+  const setBranchKind = kind => {
+    document.querySelector(`input[name="branchType"][value="${kind}"]`).checked = true;
+    applyBranchKind();
+  };
+
+  function resetBranchForm() {
+    ["branchEditId", "branchName", "branchNote", "branchUrl"].forEach(id => ($(id).value = ""));
+    $$("#branchSchedule select").forEach(sel => (sel.value = ""));
+    setText("branchFormTitle", "Filiale / Videocall anlegen");
+    setBranchKind("branch");
+  }
+
+  function closeBranchDialog() {
+    closeDialog($("branchDialog"));
+    resetBranchForm();
+  }
+
+  formDialog("branchDialog", "branchDialogClose", resetBranchForm);
+  $$('input[name="branchType"]').forEach(radio => radio.addEventListener("change", applyBranchKind));
+  $("branchAddBtn").addEventListener("click", () => {
+    resetBranchForm();
+    openDialog($("branchDialog"));
+    $("branchName").focus();
+  });
 
   function editBranch(id) {
     const branch = state.branches.find(b => String(b.id) === String(id));
     if (!branch) return;
-    const prefix = isVideoCall(branch) ? "videoCall" : "branch";
-    const label = isVideoCall(branch) ? "Videocall" : "Filiale";
-    $(prefix + "EditId").value = branch.id;
-    $(prefix + "Name").value = branch.name;
-    if (prefix === "branch") {
+    const video = isVideoCall(branch);
+    resetBranchForm();
+    $("branchEditId").value = branch.id;
+    $("branchName").value = branch.name;
+    $("branchUrl").value = branch.booking_url;
+    if (!video) {
       $("branchNote").value = branch.note || "";
       const plan = branchSchedule(branch);
       $$("#branchSchedule select").forEach(sel => (sel.value = plan[sel.dataset.day] || ""));
     }
-    $(prefix + "Url").value = branch.booking_url;
-    setText(prefix + "FormTitle", `${label} bearbeiten: ${branch.name}`);
-    setText(prefix + "SaveBtn", "Änderungen speichern");
-    $(prefix + "CancelBtn").hidden = false;
-    $(prefix + "Name").focus();
-    $(prefix + "Form").scrollIntoView({ behavior: "smooth", block: "center" });
+    setBranchKind(video ? "video" : "branch");
+    setText("branchFormTitle", `${video ? "Videocall" : "Filiale"} bearbeiten: ${branch.name}`);
+    setText("branchSaveBtn", "Änderungen speichern");
+    openDialog($("branchDialog"));
+    $("branchName").focus();
   }
 
-  ["branch", "videoCall"].forEach(prefix => {
-    $(prefix + "CancelBtn").addEventListener("click", () => resetBranchForm(prefix));
+  $("branchForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const id = $("branchEditId").value;
+    const video = branchKind() === "video";
+    const label = video ? "Videocall" : "Filiale";
+    const schedule = {};
+    if (!video) $$("#branchSchedule select").forEach(sel => { if (sel.value) schedule[sel.dataset.day] = sel.value; });
+    const note = $("branchNote").value.trim();
+    const payload = {
+      name: $("branchName").value.trim(),
+      note: video ? VIDEO_CALL_NOTE : (note === VIDEO_CALL_NOTE ? "" : note),
+      booking_url: $("branchUrl").value.trim(),
+      schedule
+    };
 
-    $(prefix + "Form").addEventListener("submit", event => {
-      event.preventDefault();
-      const id = $(prefix + "EditId").value;
-      const payload = {
-        name: $(prefix + "Name").value.trim(),
-        note: prefix === "videoCall" ? VIDEO_CALL_NOTE : $("branchNote").value.trim(),
-        booking_url: $(prefix + "Url").value.trim()
-      };
-      if (prefix === "branch") {
-        payload.schedule = {};
-        $$("#branchSchedule select").forEach(sel => { if (sel.value) payload.schedule[sel.dataset.day] = sel.value; });
-      } else {
-        payload.schedule = {};
+    withBusy(event.submitter, async () => {
+      try {
+        await (id
+          ? api(`/admin/branches/${id}`, "PUT", payload)
+          : api("/admin/branches", "POST", payload));
+        closeBranchDialog();
+        toast(`${label} gespeichert.`);
+        await loadBranches();
+      } catch (error) {
+        alert(label + " konnte nicht gespeichert werden: " + error.message);
       }
-
-      withBusy(event.submitter, async () => {
-        try {
-          await (id
-            ? api(`/admin/branches/${id}`, "PUT", payload)
-            : api("/admin/branches", "POST", payload));
-          resetBranchForm(prefix);
-          await loadBranches();
-        } catch (error) {
-          alert((prefix === "branch" ? "Filiale" : "Videocall") + " konnte nicht gespeichert werden: " + error.message);
-        }
-      });
     });
   });
 
@@ -5254,14 +5365,13 @@ td { border-bottom-color: var(--line); }
     const del = event.target.closest("[data-branch-delete]");
     if (!del) return;
     const branch = state.branches.find(b => String(b.id) === del.dataset.branchDelete);
-    const prefix = isVideoCall(branch) ? "videoCall" : "branch";
-    const label = prefix === "branch" ? "Filiale" : "Videocall";
+    const label = isVideoCall(branch) ? "Videocall" : "Filiale";
     if (!confirm(`${label} „${branch?.name || ""}“ wirklich löschen?`)) return;
 
     withBusy(del, async () => {
       try {
         await api(`/admin/branches/${del.dataset.branchDelete}`, "DELETE");
-        if ($(prefix + "EditId").value === del.dataset.branchDelete) resetBranchForm(prefix);
+        if ($("branchEditId").value === del.dataset.branchDelete) closeBranchDialog();
         await loadBranches();
       } catch (error) {
         alert(label + " konnte nicht gelöscht werden: " + error.message);
