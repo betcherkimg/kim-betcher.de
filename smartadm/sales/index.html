@@ -2427,6 +2427,27 @@
   }
 
   .toast[hidden]{display:none;}
+  .toast-aktion{
+    margin-left:14px;background:none;border:0;padding:0;color:#7FB8FF;font:inherit;font-weight:600;cursor:pointer;
+  }
+  .toast-aktion:hover{text-decoration:underline;}
+  .aw-erledigt-schalter{
+    display:block;margin:14px auto 0;background:none;border:0;color:var(--ink-soft);font:inherit;font-size:13px;
+    padding:6px 10px;border-radius:999px;cursor:pointer;
+  }
+  .aw-erledigt-schalter:hover{background:var(--ground);color:var(--ink);}
+  .aw-erledigt-liste{margin-top:8px;}
+  .aw-erledigt-zeile{
+    display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;
+    background:var(--ground);margin-top:6px;
+  }
+  .aw-erledigt-zeile .aw-haupt{flex:1;min-width:0;opacity:.75;}
+  .aw-erledigt-zeile .aw-name{text-decoration:line-through;}
+  .aw-zurueck{
+    flex:none;border:1px solid var(--line);background:var(--surface);color:var(--accent);border-radius:999px;
+    padding:6px 12px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;
+  }
+  .aw-zurueck:hover{border-color:var(--accent);}
 
   .grip{
     width:38px;
@@ -4956,12 +4977,20 @@ document.getElementById("profil-speichern").addEventListener("click", function()
 // Kurzer Hinweis am unteren Rand
 var toastUhr = null;
 
-function melden(text){
+function melden(text, aktion){
   var t = document.getElementById("toast");
   t.textContent = text;
+  if(aktion){
+    var k = document.createElement("button");
+    k.type = "button";
+    k.className = "toast-aktion";
+    k.textContent = aktion.label;
+    k.addEventListener("click", function(){ t.hidden = true; clearTimeout(toastUhr); aktion.fn(); });
+    t.appendChild(k);
+  }
   t.hidden = false;
   clearTimeout(toastUhr);
-  toastUhr = setTimeout(function(){ t.hidden = true; }, 3200);
+  toastUhr = setTimeout(function(){ t.hidden = true; }, aktion ? 8000 : 3200);
 }
 
 function maengel(feldId, text){
@@ -7192,9 +7221,15 @@ function awZeichnen(){
     var heute = heuteIso();
     var faellig = wv.filter(function(t){ return t.wv <= heute; }).length;
     treffer.textContent = wv.length + " offen" + (faellig ? " \u00b7 " + faellig + " davon f\u00e4llig" : "");
-    ziel.innerHTML = wv.length
+    var erledigt = awGefiltert(awWvErledigt());
+    ziel.innerHTML = (wv.length
       ? '<div class="zeilen">' + wv.map(awWvZeile).join("") + '</div>'
-      : '<p class="leer-hinweis">Keine offenen Wiedervorlagen</p>';
+      : '<p class="leer-hinweis">Keine offenen Wiedervorlagen</p>')
+      + (erledigt.length
+          ? '<button type="button" class="aw-erledigt-schalter" data-aw-erledigt-zeigen>'
+            + (awErledigtZeigen ? "Abgehakte ausblenden" : "Abgehakte anzeigen (" + erledigt.length + ")") + '</button>'
+            + (awErledigtZeigen ? '<div class="aw-erledigt-liste">' + erledigt.slice(0, 50).map(awWvErledigtZeile).join("") + '</div>' : '')
+          : '');
   }
 }
 
@@ -7262,6 +7297,36 @@ function awKundenZeile(e){
               + '</div>'
             : '')
        + '</div>';
+}
+
+var awErledigtZeigen = false;
+
+// Abgehakte Wiedervorlagen, zuletzt abgehakte zuerst – lassen sich wieder öffnen
+function awWvErledigt(){
+  return AUSWERTUNG.filter(function(t){ return t.wv && t.wvFertig; })
+    .sort(function(a, b){ return String(b.wvFertigAm || b.wv || "").localeCompare(String(a.wvFertigAm || a.wv || "")); });
+}
+
+function awWvErledigtZeile(t){
+  return '<div class="aw-erledigt-zeile">'
+       +   '<span class="aw-haupt">'
+       +     '<span class="aw-name">' + esc(terminKundenText(t)) + '</span>'
+       +     '<span class="aw-meta">Wiedervorlage ' + esc(datumKurz(t.wv))
+       +       (t.wvFertigAm ? ' · abgehakt ' + esc(datumKurz(t.wvFertigAm.slice(0, 10))) : '') + '</span>'
+       +   '</span>'
+       +   '<button type="button" class="aw-zurueck" data-aw-zurueck="' + esc(awSchluessel(t)) + '">Wieder öffnen</button>'
+       + '</div>';
+}
+
+function awWvSetzen(schluessel, fertig){
+  AUSWERTUNG.forEach(function(t){
+    if(awSchluessel(t) !== schluessel) return;
+    if(fertig){ t.wvFertig = true; t.wvFertigAm = new Date().toISOString(); }
+    else { delete t.wvFertig; delete t.wvFertigAm; }
+  });
+  sichern();
+  awZeichnen();
+  widgetsZeichnen();
 }
 
 function awWvZeile(t){
@@ -7332,11 +7397,24 @@ document.addEventListener("click", function(e){
   var haken = e.target.closest("[data-aw-fertig]");
   if(haken){
     var s = haken.getAttribute("data-aw-fertig");
-    AUSWERTUNG.forEach(function(t){ if(awSchluessel(t) === s) t.wvFertig = true; });
-    sichern();
+    awWvSetzen(s, true);
+    melden("Wiedervorlage abgehakt", {label:"Rückgängig", fn:function(){
+      awWvSetzen(s, false);
+      melden("Wiedervorlage wieder offen");
+    }});
+    return;
+  }
+
+  if(e.target.closest("[data-aw-erledigt-zeigen]")){
+    awErledigtZeigen = !awErledigtZeigen;
     awZeichnen();
-    widgetsZeichnen();
-    melden("Wiedervorlage abgehakt");
+    return;
+  }
+
+  var zurueck = e.target.closest("[data-aw-zurueck]");
+  if(zurueck){
+    awWvSetzen(zurueck.getAttribute("data-aw-zurueck"), false);
+    melden("Wiedervorlage wieder offen");
   }
 });
 
