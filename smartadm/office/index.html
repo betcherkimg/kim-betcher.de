@@ -712,6 +712,34 @@ td { border-bottom-color: var(--line); }
 .whats-new-preview { margin: 0 0 8px; padding-left: 18px; display: grid; gap: 6px; font-size: 13.5px; color: var(--ink-soft); }
 .whats-new-preview b { color: var(--ink); font-weight: 600; }
 
+.done-toggle {
+  display: block; margin: 0 auto; background: none; border: 0; color: var(--ink-soft); font: inherit; font-size: 13px;
+  padding: 6px 12px; border-radius: 999px; cursor: pointer;
+}
+.done-toggle:hover { background: var(--ground); color: var(--ink); }
+#taskArchiveList { margin-top: 10px; }
+
+/* Notiz / Kontaktdaten an den Boss */
+.boss-note-dialog { width: min(440px, calc(100vw - 32px)); }
+.boss-note-body { display: grid; gap: 12px; padding: 12px 14px 16px; overflow-y: auto; }
+.boss-note-who { font-weight: 600; }
+.boss-note-body .type-switch { justify-self: start; margin: 0; }
+.boss-note-body textarea, .boss-note-row input {
+  width: 100%; font: inherit; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--ground); color: var(--ink);
+}
+.boss-note-body textarea:focus, .boss-note-row input:focus { outline: none; background: var(--surface); border-color: var(--accent); }
+.boss-note-rows { display: grid; gap: 8px; }
+.boss-note-rows:empty { display: none; }
+.boss-note-row { display: grid; grid-template-columns: 74px minmax(0, 1fr) 34px; gap: 8px; align-items: center; }
+.boss-note-row span { font-size: 12.5px; font-weight: 600; color: var(--ink-soft); }
+.boss-note-add { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.boss-note-add .add-row { padding: 9px 10px; gap: 8px; }
+.boss-note-add .add-row .plus { width: 26px; height: 26px; font-size: 16px; }
+.boss-note-add .add-row .add-label { font-size: 13.5px; }
+.boss-note-body .btn.primary { width: 100%; justify-content: center; }
+.note-row-weg { width: 34px; height: 34px; border-radius: 50%; border: 0; background: transparent; color: var(--ink-faint); font-size: 18px; padding: 0; cursor: pointer; }
+.note-row-weg:hover { background: var(--rot-wash); color: var(--rot); }
+
 /* Neue Nummern: Filialauswahl */
 .numbers-dialog { width: min(400px, calc(100vw - 32px)); }
 .numbers-body { display: grid; gap: 10px; padding: 12px 14px 16px; overflow-y: auto; }
@@ -1108,7 +1136,7 @@ td { border-bottom-color: var(--line); }
       <button data-role="boss" data-page="kundenarchiv">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="4.5" rx="1"/><path d="M5 9v10h14V9"/><path d="M10 13h4"/></svg>Kundenarchiv</button>
       <button data-role="shared" data-page="organisation">
-        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5.2 12 4.2 4.2L18.8 6.8"/></svg>Aufgaben</button>
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5.2 12 4.2 4.2L18.8 6.8"/></svg>Aufgaben &amp; Notizen</button>
       <button data-role="shared" data-page="termine">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/><path d="m9.5 15 1.8 1.8 3.4-3.6"/></svg><span data-boss-label="Filialen">Terminvereinbarung</span></button>
       <hr class="nav-sep" data-role="boss">
@@ -1574,6 +1602,15 @@ td { border-bottom-color: var(--line); }
           <div id="taskInboxList" class="task-list"><div class="notice">Aufgaben werden geladen …</div></div>
         </div>
 
+        <!-- Boss: Notizen und neue Kontaktdaten zu Kunden -->
+        <div class="card section-card" data-role="boss">
+          <div class="card-head">
+            <h2>Notizen zu Kunden</h2>
+            <p>Was deine Mitarbeiter dir über „+ Notiz“ zu einem Kunden schicken – Hinweise und neue Kontaktdaten.</p>
+          </div>
+          <div id="taskNoteList" class="task-list"><div class="notice">Notizen werden geladen …</div></div>
+        </div>
+
 
         <div class="card section-card">
           <div class="card-head">
@@ -1616,9 +1653,10 @@ td { border-bottom-color: var(--line); }
         <div class="card section-card">
           <div class="card-head">
             <h2>Erledigte Aufgaben</h2>
-            <p>Erledigte Aufgaben bleiben nachvollziehbar erhalten.</p>
+            <p>Werden 30 Tage nach dem Erledigen automatisch gelöscht.</p>
           </div>
-          <div id="taskArchiveList" class="task-list"></div>
+          <button class="done-toggle" type="button" id="taskArchiveToggle" aria-expanded="false" aria-controls="taskArchiveList">Erledigte anzeigen</button>
+          <div id="taskArchiveList" class="task-list" hidden></div>
         </div>
       </section>
 
@@ -1706,6 +1744,30 @@ td { border-bottom-color: var(--line); }
               <button class="picker-close" type="button" data-picker-close aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
             </div>
             <div id="bookingPickerList" class="picker-list"></div>
+          </dialog>
+          <dialog id="bossNoteDialog" class="picker boss-note-dialog" aria-labelledby="bossNoteTitle" closedby="none">
+            <div class="picker-head">
+              <strong id="bossNoteTitle">Notiz an den Boss</strong>
+              <button class="picker-close" type="button" id="bossNoteClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
+            </div>
+            <div class="boss-note-body">
+              <span class="boss-note-who" id="bossNoteWho"></span>
+              <div class="type-switch" role="radiogroup" aria-label="Art">
+                <label><input type="radio" name="bossNoteKind" value="note" checked><span>Notiz</span></label>
+                <label><input type="radio" name="bossNoteKind" value="contact"><span>Kontaktdaten</span></label>
+              </div>
+              <div id="bossNoteTextField">
+                <textarea id="bossNoteText" rows="5" maxlength="1500" placeholder="Was soll der Boss zu diesem Kunden wissen?"></textarea>
+              </div>
+              <div id="bossNoteContactField" hidden>
+                <div id="bossNoteRows" class="boss-note-rows"></div>
+                <div class="boss-note-add">
+                  <button class="add-row" type="button" data-add-contact="phone"><span class="plus">+</span><span class="add-label">Telefonnummer</span></button>
+                  <button class="add-row" type="button" data-add-contact="mail"><span class="plus">+</span><span class="add-label">E-Mail-Adresse</span></button>
+                </div>
+              </div>
+              <button class="btn primary" type="button" id="bossNoteSend" disabled>An den Boss senden</button>
+            </div>
           </dialog>
           <dialog id="numbersDialog" class="picker numbers-dialog" aria-labelledby="numbersTitle" closedby="none">
             <div class="picker-head">
@@ -2053,7 +2115,7 @@ td { border-bottom-color: var(--line); }
     mitarbeiter: ["Mitarbeiter", "Arbeitszeiten und Termine deiner Mitarbeiter"],
     lohn: ["Lohn & Abrechnung", "Vergütung und Monatsabrechnung"],
     nachweise: ["Monatsarchiv", "Abgeschlossene Monate und Abrechnungen"],
-    organisation: ["Aufgaben", "Offene und erledigte Aufgaben"],
+    organisation: ["Aufgaben & Notizen", "Offene und erledigte Aufgaben, Notizen zu Kunden"],
     termine: ["Terminvereinbarung", "Filialen, Videocalls und Buchungslinks"],
     telefon: ["Telefonliste", "Kontakte anrufen und Ergebnisse zurückmelden"],
     kundenarchiv: ["Kundenarchiv", "Erledigte Kontakte"],
@@ -2382,7 +2444,7 @@ td { border-bottom-color: var(--line); }
     if (task.due_date && task.due_date < isoDate()) return ["überfällig", "high"];
     return task.priority === "high" ? ["Hoch", "high"] : task.priority === "low" ? ["Niedrig", "good"] : ["", ""];
   };
-  const openTasks = inbox => state.tasks.filter(t => t.status === "open" && isInbox(t) === inbox)
+  const openTasks = inbox => state.tasks.filter(t => t.status === "open" && isInbox(t) === inbox && !isNote(t))
     .sort((a, b) => (b.priority === "high") - (a.priority === "high") || String(a.due_date || "9").localeCompare(String(b.due_date || "9")));
 
   const WIDGETS = {
@@ -3936,6 +3998,8 @@ td { border-bottom-color: var(--line); }
   const PRIORITY_LABELS = { high: "Hoch", normal: "Normal", low: "Niedrig" };
   const BOSS_INBOX = "boss";
   const isInbox = task => task.assigned_to === BOSS_INBOX;
+  const NOTE_TITLE = /^(Notiz zu |Neue Kontaktdaten: )/;
+  const isNote = task => isInbox(task) && NOTE_TITLE.test(String(task.title || ""));
 
   function taskHtml(task) {
     const done = task.status === "completed";
@@ -3960,7 +4024,7 @@ td { border-bottom-color: var(--line); }
 
     let actions = "";
     if (boss) {
-      if (!done && inbox) actions += button("adminComplete", "Erledigt", "primary");
+      if (!done && inbox) actions += button("adminComplete", isNote(task) ? "Gelesen" : "Erledigt", "primary");
       if (done) actions += button("reopen", "Wieder öffnen", "ghost");
       actions += button("delete", "Löschen", "danger");
     } else if (!done) {
@@ -3983,19 +4047,38 @@ td { border-bottom-color: var(--line); }
     $(id).innerHTML = items.length ? items.map(taskHtml).join("") : `<div class="notice">${empty}</div>`;
   }
 
+  // Erledigte Aufgaben verschwinden 30 Tage nach dem Erledigen.
+  const DONE_KEEP_MS = 30 * 24 * 3600 * 1000;
+  const doneExpired = t => t.status === "completed" && t.completed_at &&
+    Date.now() - parseTimestamp(t.completed_at).getTime() > DONE_KEEP_MS;
+  let showDoneTasks = false;
+
+  function renderTaskArchive(list) {
+    const toggle = $("taskArchiveToggle");
+    toggle.hidden = !list.length;
+    toggle.textContent = showDoneTasks ? "Erledigte ausblenden" : `Erledigte anzeigen (${list.length})`;
+    toggle.setAttribute("aria-expanded", String(showDoneTasks));
+    $("taskArchiveList").hidden = !showDoneTasks && list.length > 0;
+    renderTaskList("taskArchiveList", list, "Noch keine erledigten Aufgaben.");
+  }
+
+  $("taskArchiveToggle").addEventListener("click", () => { showDoneTasks = !showDoneTasks; renderTasks(); });
+
   function renderTasks() {
     const boss = state.role === "boss";
     const open = state.tasks.filter(t => t.status === "open");
-    const done = state.tasks.filter(t => t.status === "completed");
-    const inboxOpen = open.filter(isInbox);
+    const done = state.tasks.filter(t => t.status === "completed" && !doneExpired(t));
+    const inboxOpen = open.filter(t => isInbox(t) && !isNote(t));
+    const notesOpen = open.filter(isNote);
     const ownOpen = open.filter(t => !isInbox(t)); // Boss: an Mitarbeiter · Mitarbeiter: an mich
 
     if (boss) {
       setText("taskOpenTitle", "An Mitarbeiter – offen");
       setText("taskOpenSub", "Aufgaben, die deine Mitarbeiter noch erledigen müssen.");
       renderTaskList("taskInboxList", inboxOpen, "Keine offenen Anliegen deiner Mitarbeiter. ✓");
+      renderTaskList("taskNoteList", notesOpen, "Keine neuen Notizen zu Kunden. ✓");
       renderTaskList("taskOpenList", ownOpen, "Keine offenen Aufgaben. ✓");
-      renderTaskList("taskArchiveList", done, "Noch keine erledigten Aufgaben.");
+      renderTaskArchive(done);
     } else {
       setText("taskOpenTitle", "Deine Aufgaben");
       setText("taskOpenSub", "Vom Boss an dich – noch zu erledigen.");
@@ -4004,7 +4087,7 @@ td { border-bottom-color: var(--line); }
       const sent = state.tasks.filter(isInbox);
       const sentShown = [...sent.filter(t => t.status === "open"), ...sent.filter(t => t.status !== "open").slice(0, 10)];
       renderTaskList("taskOutList", sentShown, "Noch nichts an den Boss gesendet.");
-      renderTaskList("taskArchiveList", done.filter(t => !isInbox(t)), "Noch keine erledigten Aufgaben.");
+      renderTaskArchive(done.filter(t => !isInbox(t)));
     }
 
     const today = isoDate();
@@ -4013,6 +4096,7 @@ td { border-bottom-color: var(--line); }
     const overdue = ownOpen.filter(t => t.due_date && t.due_date < today).length;
     const summary = [
       boss ? `${inboxOpen.length} von Mitarbeitern` : "",
+      boss && notesOpen.length ? `${notesOpen.length} ${notesOpen.length === 1 ? "Notiz" : "Notizen"}` : "",
       `${ownOpen.length} offen`,
       dueSoon ? `${dueSoon} diese Woche fällig` : "",
       overdue ? `${overdue} überfällig` : ""
@@ -4028,6 +4112,14 @@ td { border-bottom-color: var(--line); }
     try {
       state.tasks = asArray(await api(state.role === "boss" ? "/admin/tasks" : "/tasks"));
       renderTasks();
+      // Boss räumt auf: erledigte Aufgaben und Notizen älter als 30 Tage endgültig löschen
+      if (state.role === "boss") {
+        const expired = state.tasks.filter(doneExpired);
+        for (const t of expired) {
+          await api(`/admin/tasks/${t.id}`, "DELETE").catch(error => console.warn("Aufräumen fehlgeschlagen:", error.message));
+        }
+        if (expired.length) state.tasks = state.tasks.filter(t => !expired.includes(t));
+      }
     } catch (error) {
       console.error(error);
       state.tasks = [];
@@ -4046,7 +4138,7 @@ td { border-bottom-color: var(--line); }
               confirm: "Aufgabe wirklich löschen?" }
   };
 
-  ["taskInboxList", "taskOpenList", "taskOutList", "taskArchiveList"].forEach(listId =>
+  ["taskInboxList", "taskNoteList", "taskOpenList", "taskOutList", "taskArchiveList"].forEach(listId =>
     $(listId).addEventListener("click", event => {
       const button = event.target.closest("[data-task-action]");
       if (!button) return;
@@ -4236,6 +4328,91 @@ td { border-bottom-color: var(--line); }
   });
 
   $("requestNumbersBtn").addEventListener("click", openNumbersDialog);
+
+  // „+ Notiz“ an einem Kontakt: Notiz oder neue Kontaktdaten als Aufgabe an den Boss
+  let bossNoteCall = null;
+  const bossNoteKind = () => document.querySelector('input[name="bossNoteKind"]:checked').value;
+  const validPhone = v => (v.match(/\d/g) || []).length >= 4;
+  const validMail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+  function bossNoteRow(kind) {
+    return `<div class="boss-note-row" data-kind="${kind}">
+      <span>${kind === "phone" ? "Telefon" : "E-Mail"}</span>
+      <input type="${kind === "phone" ? "tel" : "email"}" maxlength="120" placeholder="${kind === "phone" ? "z. B. 0171 1234567" : "z. B. name@beispiel.de"}" aria-label="${kind === "phone" ? "Neue Telefonnummer" : "E-Mail-Adresse"}">
+      <button class="note-row-weg" type="button" data-row-weg aria-label="Entfernen">×</button>
+    </div>`;
+  }
+
+  function bossNoteContacts() {
+    return $$("#bossNoteRows .boss-note-row").map(r => ({ kind: r.dataset.kind, value: r.querySelector("input").value.trim() }))
+      .filter(r => r.value);
+  }
+
+  function bossNoteSync() {
+    const contact = bossNoteKind() === "contact";
+    $("bossNoteTextField").hidden = contact;
+    $("bossNoteContactField").hidden = !contact;
+    const items = bossNoteContacts();
+    const ok = contact
+      ? items.length > 0 && items.every(r => r.kind === "phone" ? validPhone(r.value) : validMail(r.value))
+      : $("bossNoteText").value.trim().length > 0;
+    $("bossNoteSend").disabled = !ok;
+  }
+
+  function openBossNote(call) {
+    bossNoteCall = call;
+    setText("bossNoteWho", call.customer_name);
+    document.querySelector('input[name="bossNoteKind"][value="note"]').checked = true;
+    $("bossNoteText").value = "";
+    $("bossNoteRows").innerHTML = "";
+    bossNoteSync();
+    openDialog($("bossNoteDialog"));
+    $("bossNoteText").focus();
+  }
+
+  $("bossNoteDialog").addEventListener("cancel", event => event.preventDefault());
+  $("bossNoteClose").addEventListener("click", () => closeDialog($("bossNoteDialog")));
+  $("bossNoteDialog").addEventListener("input", bossNoteSync);
+  $("bossNoteDialog").addEventListener("change", event => {
+    if (event.target.name === "bossNoteKind" && bossNoteKind() === "contact" && !$("bossNoteRows").children.length) {
+      $("bossNoteRows").insertAdjacentHTML("beforeend", bossNoteRow("phone"));
+      $("bossNoteRows").lastElementChild.querySelector("input").focus();
+    }
+    bossNoteSync();
+  });
+  $("bossNoteDialog").addEventListener("click", event => {
+    const add = event.target.closest("[data-add-contact]");
+    if (add) {
+      $("bossNoteRows").insertAdjacentHTML("beforeend", bossNoteRow(add.dataset.addContact));
+      $("bossNoteRows").lastElementChild.querySelector("input").focus();
+      return bossNoteSync();
+    }
+    const weg = event.target.closest("[data-row-weg]");
+    if (weg) { weg.closest(".boss-note-row").remove(); bossNoteSync(); }
+  });
+
+  $("bossNoteSend").addEventListener("click", event => {
+    if (!bossNoteCall) return;
+    const name = bossNoteCall.customer_name;
+    const contact = bossNoteKind() === "contact";
+    const items = bossNoteContacts();
+    const payload = contact
+      ? {
+          title: `Neue Kontaktdaten: ${name}`,
+          description: items.map(r => `${r.kind === "phone" ? "Telefon" : "E-Mail"}: ${r.value}`).join("\n"),
+          priority: "normal"
+        }
+      : { title: `Notiz zu ${name}`, description: $("bossNoteText").value.trim(), priority: "normal" };
+    withBusy(event.currentTarget, async () => {
+      try {
+        await sendTaskToBoss(payload);
+        closeDialog($("bossNoteDialog"));
+        toast("An den Boss gesendet ✓");
+      } catch (error) {
+        alert("Senden fehlgeschlagen: " + error.message);
+      }
+    });
+  });
 
   /* ================= Anruf-Skript =================
    * Themen, Vorlagen und Filialtage werden zentral hier gepflegt.
@@ -4737,7 +4914,8 @@ td { border-bottom-color: var(--line); }
            <button class="btn ghost phone-flag" type="button" data-phone-flag="${i}" title="Nur diese Nummer als falsch markieren">Falsch</button>
          </span>`).join("");
     const scriptOpen = state.scriptExpanded.has(id);
-    const script = `<button class="btn ghost" type="button" data-script-toggle aria-expanded="${scriptOpen}">${ICONS.script}Skript</button>`;
+    const script = `<button class="btn ghost" type="button" data-script-toggle aria-expanded="${scriptOpen}">${ICONS.script}Skript</button>
+      <button class="btn ghost" type="button" data-boss-note>+ Notiz</button>`;
     const help = running
       ? "Letzter Versuch läuft. Niemanden erreicht? Dann „Nicht erreicht“ wählen."
       : isLastAttempt(c)
@@ -5021,6 +5199,7 @@ td { border-bottom-color: var(--line); }
     }
 
     if (event.target.closest("[data-script-booking]")) return openBookingPicker();
+    if (event.target.closest("[data-boss-note]")) return openBossNote(call);
 
     const hold = event.target.closest("[data-hold-action]");
     if (hold) return handleHoldAction(call, hold);
@@ -6990,20 +7169,9 @@ td { border-bottom-color: var(--line); }
    * einfach version ändern und die Punkte ersetzen.
    */
   const WHATS_NEW = {
-    version: "2026-10-08b",
+    version: "2026-10-09",
     items: [
-      ["Neue Nummern anfordern", "Es öffnet sich ein Fenster: Filialen ankreuzen oder oben „Alle auswählen“ – der Boss sieht direkt, wofür du Nummern brauchst."],
-      ["Terminfrage passt zu den Filialtagen", "Im Skript steht jetzt, an welchen Tagen und zu welcher Tageszeit Herr Betcher in der Filiale ist, z. B. „dienstags vormittags und donnerstags ganztags“."],
-      ["Menü mit drei Balken", "Auf dem Handy findest du alle Seiten oben rechts im Menü. Ein Tipp auf das Logo bringt dich zurück zum Dashboard."],
-      ["Neue Reihenfolge", "In der Seitenleiste steht die Telefonliste jetzt direkt unter dem Dashboard."],
-      ["Anrufen zählt automatisch", "Tippen auf die Nummer zählt den Versuch – „Nicht erreicht +1“ gibt es nicht mehr. Zwei Nummern direkt nacheinander zählen als ein Versuch."],
-      ["Wischen", "Kontakt nach links wischen = Halten, nach rechts wischen = ohne Termin."],
-      ["Kurzes Fenster bei jeder Rückgabe", "Bei „Mit Termin“, „Ohne Termin“, „Halten“ und „Nicht erreicht“ kurz notieren, worum es geht, und mit dem Haken bestätigen. Das Kreuz bricht ab."],
-      ["5. Versuch", "Nach dem fünften Anruf erscheint „Nicht erreicht“ – erst damit geht der Kontakt zurück."],
-      ["Falsche Nummern", "„Falsch“ markiert nur diese eine Nummer, der Kontakt bleibt bei dir. Funktioniert keine Nummer mehr, geht er automatisch zurück – ohne Notiz."],
-      ["Notiz speichert sich selbst", "Was du im Kontakt unter „Notiz“ schreibst, wird automatisch gespeichert."],
-      ["Zeiterfassung", "Nur noch „Gesetzte Termine“ eintragen – jeder Termin zählt. „Davon provisionsfähig“ ist weg."],
-      ["Übersichtlicher", "Kontakte sind beim Öffnen zugeklappt."]
+      ["„+ Notiz“ an den Boss", "Im Kontakt neben „Skript“: Wähle „Notiz“ für einen Hinweis zum Kunden oder „Kontaktdaten“, wenn du eine neue Telefonnummer oder E-Mail-Adresse bekommen hast – mit „+“ trägst du mehrere ein. Der Boss bekommt alles gesammelt unter „Aufgaben & Notizen“."]
     ]
   };
 
