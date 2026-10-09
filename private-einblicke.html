@@ -244,7 +244,7 @@
             // „namen“ (optional) beschriftet einzelne Bilder, z. B. die Projekte unter Coding.
             const galerien = {
                 haus: { titel: 'Hauskauf & Kernsanierung 2024', bilder: ["ressources/Haus Bilder & Videos (22).jpeg", "ressources/Haus 1.jpg", "ressources/Haus 2.jpg", "ressources/Haus 3.jpg", "ressources/Haus 4.jpg", "ressources/Haus 5.jpg", "ressources/Haus 6.jpg", "ressources/Haus 7.jpg", "ressources/Haus Bilder & Videos (35).JPEG", "ressources/Haus Bilder & Videos (39).JPEG", "ressources/2025-09-04 (6).jpg", "ressources/haus-wohnzimmer-tv.jpg", "ressources/haus-wohnzimmer-sofa.jpg", "ressources/haus-esszimmer.jpg"] },
-                familie: { titel: 'Meine Familie', bilder: ["ressources/familie-franziska-und-kim.jpg", "ressources/familie-blacky.jpg", "ressources/familie-mondpfote.jpg", "ressources/familie-flitzy.jpg"], namen: ["Franziska und ich", "Blacky", "Mondpfote", "Flitzy"] },
+                familie: { titel: 'Meine Familie', bilder: ["ressources/familie-franziska-und-kim.jpg", "ressources/familie-blacky.jpg", "ressources/familie-blacky-2.jpg", "ressources/familie-mondpfote.jpg", "ressources/familie-mondpfote-2.jpg", "ressources/familie-flitzy.jpg", "ressources/familie-flitzy-2.jpg", "ressources/familie-sakura.jpg"], namen: ["Franziska und ich", "Blacky", "Blacky", "Mondpfote", "Mondpfote", "Flitzy", "Flitzy", "In Erinnerung an Sakura"] },
                 berge: { titel: 'Bergwandern', bilder: ["ressources/IMG_1506.JPG", "ressources/IMG_1497.JPG", "ressources/20171230_125417.jpg", "ressources/20171230_130453.jpg", "ressources/20171230_152835.jpg", "ressources/IMG_0229.jpg", "ressources/IMG_0268.jpg", "ressources/IMG_0276.jpg"] },
                 angeln: { titel: 'Angeln', bilder: ["ressources/IMG_7186.jpg", "ressources/89076192-402C-43F2-85B6-F1D7372917DE.JPG"] },
                 musik: { titel: 'Musik', bilder: ["ressources/e48c1d0f-2676-481b-9c84-dae14748b061.jpg"], links: [
@@ -271,6 +271,27 @@
                     }
                     knopf.addEventListener('click', () => oeffnen(knopf.dataset.galerie, knopf, Number(knopf.dataset.nr) || 0));
                 });
+
+                // Kachel-Überschriften stehen je Reihe auf einer Höhe, auch wenn die Texte darunter
+                // unterschiedlich viele Zeilen haben: die Textblöcke einer Reihe werden gleich hoch.
+                function ueberschriftenAngleichen() {
+                    const texte = [...document.querySelectorAll('.kb-hobby-text')];
+                    texte.forEach(t => { t.style.minHeight = ''; });
+                    const reihen = new Map();
+                    texte.forEach(t => {
+                        const oben = Math.round(t.closest('.kb-hobby').getBoundingClientRect().top + scrollY);
+                        if (!reihen.has(oben)) reihen.set(oben, []);
+                        reihen.get(oben).push(t);
+                    });
+                    reihen.forEach(liste => {
+                        const hoehe = Math.max(...liste.map(t => t.offsetHeight));
+                        liste.forEach(t => { t.style.minHeight = hoehe + 'px'; });
+                    });
+                }
+                ueberschriftenAngleichen();
+                addEventListener('resize', ueberschriftenAngleichen);
+                addEventListener('load', ueberschriftenAngleichen);
+                if (document.fonts && document.fonts.ready) document.fonts.ready.then(ueberschriftenAngleichen);
 
                 function zeigen() {
                     const n = aktuell.bilder.length;
