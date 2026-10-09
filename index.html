@@ -22,7 +22,7 @@
     <script src="https://unpkg.com/lucide@0.468.0"></script>
 
     <link rel="preload" href="ressources/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="kb.css?v=20261009d">
+    <link rel="stylesheet" href="kb.css?v=20261009e">
 </head>
 <body class="text-slate-900 antialiased selection:bg-yellow-200 bg-white relative">
 
@@ -38,16 +38,17 @@
                 <a href="index.html#usp">Mein Mehrwert</a>
                 <a href="index.html#story">Mein Weg</a>
                 <a href="index.html#ziele">Meine Werte</a>
-                <a href="private-einblicke.html">Private Einblicke</a>
                 <a href="index.html#kontakt">Kontakt</a>
+                <span class="kb-links-trenner" aria-hidden="true"></span>
+                <a href="private-einblicke.html">Private Einblicke</a>
             </nav>
             <button class="kb-menu-btn" onclick="toggleMenu()" aria-label="Menü öffnen"><i data-lucide="menu" id="menu-icon"></i></button>
             <div id="mobile-menu" class="kb-mobile hidden">
                 <a href="index.html#usp" onclick="toggleMenu()">Mein Mehrwert</a>
                 <a href="index.html#story" onclick="toggleMenu()">Mein Weg</a>
                 <a href="index.html#ziele" onclick="toggleMenu()">Meine Werte</a>
-                <a href="private-einblicke.html">Private Einblicke</a>
-                <a href="index.html#kontakt" onclick="toggleMenu()">Kontakt</a>
+                <a href="index.html#kontakt" onclick="toggleMenu()" class="kb-mobile-kontakt">Kontakt</a>
+                <a href="private-einblicke.html" class="kb-mobile-privat">Private Einblicke</a>
             </div>
         </header>
 

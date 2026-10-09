@@ -72,18 +72,20 @@ h1, h2, h3, h4 { font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', s
 .kb-brand { display: flex; align-items: center; gap: 14px; font-weight: 750; font-size: 1.35rem; }
 .kb .kb-brand-mark { display: block; flex: none; width: 80px; height: 42px; }
 .kb-links { display: flex; align-items: center; gap: clamp(18px, 2.6vw, 36px); font-weight: 550; font-size: .98rem; }
-.kb-links a { padding: 4px 0; border-bottom: 2px solid transparent; }
+.kb-links a { padding: 4px 0; border-bottom: 2px solid transparent; white-space: nowrap; }
 .kb-links a:hover { border-bottom-color: var(--gelb); }
+.kb-links-trenner { flex: none; width: 1px; height: 1.15em; background: rgba(255,255,255,.55); }
 .kb-menu-btn { display: none; width: 44px; height: 44px; place-items: center; border: 0; border-radius: 4px; background: rgba(23,29,35,.55); color: #fff; cursor: pointer; }
 .kb-mobile { position: absolute; top: 100%; left: 0; right: 0; display: grid; padding: 4px 20px 18px; background: var(--schiefer-tief); }
 .kb-mobile.hidden { display: none; }
 .kb-mobile a { padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,.12); font-weight: 550; }
-.kb-mobile a:last-child { border-bottom: 0; color: var(--gelb); }
-@media (max-width: 860px) {
+.kb-mobile .kb-mobile-kontakt { border-bottom: 0; color: var(--gelb); }
+.kb-mobile .kb-mobile-privat { margin-top: 4px; border-top: 1px solid rgba(255,255,255,.4); border-bottom: 0; }
+@media (max-width: 940px) {
     .kb-links { display: none; }
     .kb-menu-btn { display: grid; }
 }
-@media (min-width: 861px) { .kb-mobile { display: none; } }
+@media (min-width: 941px) { .kb-mobile { display: none; } }
 
 /* --- Der erste Bildschirm: Dach | First | Bank --- */
 .kb-hero {
