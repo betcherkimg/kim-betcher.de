@@ -422,7 +422,7 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   .grid-4, .form-grid, .quick-grid { grid-template-columns: 1fr; }
   .task-item { display: block; }
   .card-head.split { flex-direction: column; }
-  .task-actions { justify-content: flex-start; margin-top: 10px; }
+  .task-actions { justify-content: flex-start; margin-top: 10px; flex-wrap: wrap; }
 
   #entryRows td:last-child {
     position: sticky; right: 0; z-index: 2; background: #fff;
@@ -717,7 +717,19 @@ td { border-bottom-color: var(--line); }
   padding: 6px 12px; border-radius: 999px; cursor: pointer;
 }
 .done-toggle:hover { background: var(--ground); color: var(--ink); }
-#taskArchiveList { margin-top: 10px; }
+#taskArchiveCard { margin-top: 10px; }
+
+/* Aufgaben: eine Zeile, Knöpfe behalten ihren Platz; Klick klappt den ganzen Text auf */
+.task-item { align-items: center; }
+.task-main { flex: 1; min-width: 0; cursor: pointer; }
+.task-actions { flex: none; flex-wrap: nowrap; }
+.task-item:not(.is-open) .task-title,
+.task-item:not(.is-open) .task-description,
+.task-item:not(.is-open) .task-meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.task-item:not(.is-open) .task-meta { flex-wrap: nowrap; }
+.task-item:not(.is-open) .task-meta .chip { flex: none; }
+.task-item.is-open .task-description { white-space: pre-wrap; }
+.task-item.is-open .task-title { white-space: normal; }
 
 /* Notiz / Kontaktdaten an den Boss */
 .boss-note-dialog { width: min(440px, calc(100vw - 32px)); }
@@ -1650,13 +1662,11 @@ td { border-bottom-color: var(--line); }
           <div id="taskOutList" class="task-list"></div>
         </div>
 
-        <div class="card section-card">
-          <div class="card-head">
-            <h2>Erledigte Aufgaben</h2>
-            <p>Werden 30 Tage nach dem Erledigen automatisch gelöscht.</p>
+        <div class="done-block">
+          <button class="done-toggle" type="button" id="taskArchiveToggle" aria-expanded="false" aria-controls="taskArchiveCard">Erledigte anzeigen</button>
+          <div class="card section-card" id="taskArchiveCard" hidden>
+            <div id="taskArchiveList" class="task-list"></div>
           </div>
-          <button class="done-toggle" type="button" id="taskArchiveToggle" aria-expanded="false" aria-controls="taskArchiveList">Erledigte anzeigen</button>
-          <div id="taskArchiveList" class="task-list" hidden></div>
         </div>
       </section>
 
@@ -2146,6 +2156,8 @@ td { border-bottom-color: var(--line); }
     employeeAbsences: [],    // Boss: Urlaub, Krankheit, Feiertage, bezahlte Freistellung
     employeeAdjustments: null, // Boss: Termin-Korrekturen (null = Worker kennt sie noch nicht)
     ownAdjustments: [],      // Mitarbeiter: eigene Termin-Korrekturen
+    taskExpanded: new Set(), // aufgeklappte Aufgaben – beim nächsten Besuch wieder zu
+    showDoneTasks: false,
     selectedUserId: null,
     profiles: {},            // Boss: Abgabenprofile je Mitarbeiter
     tasks: [],
@@ -2338,6 +2350,11 @@ td { border-bottom-color: var(--line); }
     $$("#mobileMenu [data-page]").forEach(b => (b.dataset.page === pageId ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
     closeMobileMenu();
     if (pageId === "boss-dashboard") renderDashboardWidgets();
+    if (pageId === "organisation" && (state.taskExpanded.size || state.showDoneTasks)) {
+      state.taskExpanded.clear();
+      state.showDoneTasks = false;
+      renderTasks();
+    }
     $$(".page").forEach(p => p.classList.toggle("active", p.id === pageId));
     const [title, sub] = (state.role === "boss" && BOSS_PAGE_TITLES[pageId]) || PAGE_TITLES[pageId] || [];
     if (title) { setText("pageTitle", title); setText("pageSub", sub); }
@@ -4001,6 +4018,24 @@ td { border-bottom-color: var(--line); }
   const NOTE_TITLE = /^(Notiz zu |Neue Kontaktdaten: )/;
   const isNote = task => isInbox(task) && NOTE_TITLE.test(String(task.title || ""));
 
+  // Ältere automatische Aufgaben enthalten noch das kodierte Gesprächsskript – nur den Hinweis zeigen.
+  function cleanTaskText(text) {
+    let out = String(text || "");
+    const marker = CALL_SCRIPT_PREFIX.trim();
+    let at = out.indexOf(marker);
+    while (at >= 0) {
+      const start = out.indexOf("{", at);
+      let end = -1, briefing = "";
+      for (let i = out.indexOf("}", start); start >= 0 && i >= 0; i = out.indexOf("}", i + 1)) {
+        try { briefing = String(JSON.parse(out.slice(start, i + 1)).briefing || "").trim(); end = i + 1; break; } catch { /* weiter suchen */ }
+      }
+      if (end < 0) { out = out.slice(0, at).trimEnd(); break; }
+      out = out.slice(0, at) + briefing + out.slice(end);
+      at = out.indexOf(marker);
+    }
+    return out.split("\n").filter(line => !/^Hinweis:\s*$/.test(line.trim())).join("\n").trim();
+  }
+
   function taskHtml(task) {
     const done = task.status === "completed";
     const inbox = isInbox(task);
@@ -4033,10 +4068,12 @@ td { border-bottom-color: var(--line); }
         : button("complete", "Als erledigt markieren", "primary");
     }
 
-    return `<div class="task-item ${done ? "completed" : ""}">
-      <div class="task-main">
+    const open = state.taskExpanded.has(String(task.id));
+    const text = cleanTaskText(task.description);
+    return `<div class="task-item ${done ? "completed" : ""}${open ? " is-open" : ""}">
+      <div class="task-main" data-task-toggle="${task.id}" title="${open ? "Zuklappen" : "Aufklappen"}">
         <div class="task-title">${esc(task.title)}</div>
-        ${task.description ? `<div class="task-description">${esc(task.description)}</div>` : ""}
+        ${text ? `<div class="task-description">${esc(open ? text : text.replace(/\s*\n+\s*/g, " · "))}</div>` : ""}
         <div class="task-meta">${chips}</div>
       </div>
       <div class="task-actions">${actions}</div>
@@ -4051,18 +4088,17 @@ td { border-bottom-color: var(--line); }
   const DONE_KEEP_MS = 30 * 24 * 3600 * 1000;
   const doneExpired = t => t.status === "completed" && t.completed_at &&
     Date.now() - parseTimestamp(t.completed_at).getTime() > DONE_KEEP_MS;
-  let showDoneTasks = false;
 
   function renderTaskArchive(list) {
     const toggle = $("taskArchiveToggle");
     toggle.hidden = !list.length;
-    toggle.textContent = showDoneTasks ? "Erledigte ausblenden" : `Erledigte anzeigen (${list.length})`;
-    toggle.setAttribute("aria-expanded", String(showDoneTasks));
-    $("taskArchiveList").hidden = !showDoneTasks && list.length > 0;
+    toggle.textContent = state.showDoneTasks ? "Erledigte ausblenden" : `Erledigte anzeigen (${list.length}) · werden nach 30 Tagen gelöscht`;
+    toggle.setAttribute("aria-expanded", String(state.showDoneTasks));
+    $("taskArchiveCard").hidden = !state.showDoneTasks || !list.length;
     renderTaskList("taskArchiveList", list, "Noch keine erledigten Aufgaben.");
   }
 
-  $("taskArchiveToggle").addEventListener("click", () => { showDoneTasks = !showDoneTasks; renderTasks(); });
+  $("taskArchiveToggle").addEventListener("click", () => { state.showDoneTasks = !state.showDoneTasks; renderTasks(); });
 
   function renderTasks() {
     const boss = state.role === "boss";
@@ -4140,6 +4176,12 @@ td { border-bottom-color: var(--line); }
 
   ["taskInboxList", "taskNoteList", "taskOpenList", "taskOutList", "taskArchiveList"].forEach(listId =>
     $(listId).addEventListener("click", event => {
+      const toggle = event.target.closest("[data-task-toggle]");
+      if (toggle) {
+        const id = toggle.dataset.taskToggle;
+        state.taskExpanded.has(id) ? state.taskExpanded.delete(id) : state.taskExpanded.add(id);
+        return renderTasks();
+      }
       const button = event.target.closest("[data-task-action]");
       if (!button) return;
       const action = TASK_ACTIONS[button.dataset.taskAction];
