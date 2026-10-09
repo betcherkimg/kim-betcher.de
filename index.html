@@ -20,219 +20,12 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@0.468.0"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
 
-    <style>
-        :root {
-            --schiefer: #222B33;      /* Dachschiefer: dunkle Flächen */
-            --schiefer-tief: #171D23;
-            --tinte: #161B20;         /* Text */
-            --leise: #5B6670;         /* Nebentext */
-            --nebel: #F2F3F1;         /* ruhige Fläche */
-            --linie: #D8DBD7;
-            --gelb: #FFF02D;          /* Gelb aus dem Schwäbisch-Hall-Logo */
-            --rot: #E6002D;           /* Rot aus dem Logo: nur für die Handlung */
-            --rot-tief: #B80024;
-        }
-
-        body { font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif; }
-        h1, h2, h3, h4 { font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif; }
-
-        /* Von den Unterseiten (Impressum, Datenschutz, Private Einblicke) weiter genutzt */
-        .bg-bsh-red { background-color: #E6002D; }
-        .bg-bsh-yellow { background-color: #FFF02D; }
-        .text-bsh-red { color: #E6002D; }
-        .hover\:bg-bsh-red:hover { background-color: #B80024; }
-        .reveal-ready { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease-out, transform 0.65s ease-out; }
-        .reveal-ready.visible { opacity: 1; transform: translateY(0); }
-        .reveal-delay-1 { transition-delay: 0.12s; }
-        .reveal-delay-2 { transition-delay: 0.24s; }
-        .card-lift { transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
-        .card-lift:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -12px rgba(0,0,0,0.12), 0 8px 20px -8px rgba(0,0,0,0.08); }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* ============ Startseite ============ */
-        .kb { color: var(--tinte); background: #fff; font-size: 17px; line-height: 1.55; }
-        .kb *, .kb *::before, .kb *::after { box-sizing: border-box; }
-        .kb h1, .kb h2, .kb h3, .kb p, .kb ol, .kb ul, .kb table { margin: 0; padding: 0; }
-        .kb ol, .kb ul { list-style: none; }
-        .kb a { color: inherit; text-decoration: none; }
-        .kb img { display: block; max-width: 100%; }
-        .kb-wrap { width: min(1180px, 100% - 48px); margin-inline: auto; }
-        .kb-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-        .kb a:focus-visible, .kb button:focus-visible { outline: 3px solid var(--gelb); outline-offset: 3px; }
-
-        .kb-btn {
-            display: inline-flex; align-items: center; justify-content: center; gap: .55em;
-            padding: .85em 1.5em; border: 2px solid transparent; border-radius: 4px;
-            font: inherit; font-weight: 650; font-size: 1rem; line-height: 1.2; white-space: nowrap; cursor: pointer;
-            transition: background-color .15s ease, color .15s ease, border-color .15s ease;
-        }
-        .kb-btn svg { width: 1.15em; height: 1.15em; flex: none; }
-        .kb .kb-btn-rot { background: var(--rot); color: #fff; }
-        .kb .kb-btn-rot:hover { background: var(--rot-tief); }
-        .kb .kb-btn-hell { border-color: rgba(255,255,255,.4); color: #fff; }
-        .kb .kb-btn-hell:hover { background: #fff; border-color: #fff; color: var(--schiefer); }
-
-        /* --- Kopf --- */
-        .kb-nav {
-            position: absolute; inset: 0 0 auto 0; z-index: 30;
-            display: flex; align-items: center; justify-content: space-between; gap: 24px;
-            padding: 22px clamp(20px, 4vw, 56px); color: #fff;
-        }
-        .kb-brand { display: flex; align-items: center; gap: 14px; font-weight: 750; font-size: 1.35rem; }
-        .kb .kb-brand-mark { display: block; flex: none; width: 80px; height: 42px; }
-        .kb-links { display: flex; align-items: center; gap: clamp(18px, 2.6vw, 36px); font-weight: 550; font-size: .98rem; }
-        .kb-links a { padding: 4px 0; border-bottom: 2px solid transparent; }
-        .kb-links a:hover { border-bottom-color: var(--gelb); }
-        .kb-menu-btn { display: none; width: 44px; height: 44px; place-items: center; border: 0; border-radius: 4px; background: rgba(23,29,35,.55); color: #fff; cursor: pointer; }
-        .kb-mobile { position: absolute; top: 100%; left: 0; right: 0; display: grid; padding: 4px 20px 18px; background: var(--schiefer-tief); }
-        .kb-mobile.hidden { display: none; }
-        .kb-mobile a { padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,.12); font-weight: 550; }
-        .kb-mobile a:last-child { border-bottom: 0; color: var(--gelb); }
-        @media (max-width: 860px) {
-            .kb-links { display: none; }
-            .kb-menu-btn { display: grid; }
-        }
-        @media (min-width: 861px) { .kb-mobile { display: none; } }
-
-        /* --- Der erste Bildschirm: Dach | First | Bank --- */
-        .kb-hero {
-            position: relative; display: grid; overflow: hidden;
-            grid-template-columns: 1fr 6px 1fr; grid-template-rows: minmax(0, 1fr) auto;
-            min-height: max(100svh, 620px); background: var(--schiefer-tief);
-        }
-        .kb-half { position: relative; overflow: hidden; min-height: 0; }
-        .kb-half img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-        .kb-dach img { object-position: 50% 55%; filter: saturate(.8) contrast(1.05); }
-        .kb-bank img { object-position: 50% 16%; }
-        .kb-half::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
-        .kb-dach::after { background: linear-gradient(180deg, rgba(23,29,35,.66) 0%, rgba(23,29,35,.42) 34%, rgba(23,29,35,.86) 100%); }
-        .kb-bank::after { background: linear-gradient(180deg, rgba(23,29,35,.5) 0%, rgba(23,29,35,0) 24%, rgba(23,29,35,0) 46%, rgba(23,29,35,.9) 100%); }
-        .kb-first { background: var(--gelb); transform-origin: top; }
-        .kb-half-text { position: absolute; z-index: 2; bottom: clamp(28px, 7.5vh, 76px); color: #fff; }
-        .kb-dach .kb-half-text { right: clamp(16px, 2.4vw, 40px); text-align: right; }
-        .kb-bank .kb-half-text { left: clamp(16px, 2.4vw, 40px); }
-        .kb-wort {
-            display: block; white-space: nowrap;
-            font-size: clamp(2.5rem, 5.6vw, 7rem); font-weight: 800; font-stretch: 112%;
-            line-height: .95; letter-spacing: -.02em;
-        }
-        .kb-rolle { margin-top: .9em !important; font-size: clamp(.95rem, 1.25vw, 1.2rem); font-weight: 500; }
-        .kb-hero-fuss {
-            grid-column: 1 / -1; display: flex; align-items: center; gap: clamp(16px, 3vw, 48px);
-            padding: 20px clamp(20px, 4vw, 56px); background: #fff;
-        }
-        .kb-claim { flex: 1; font-size: clamp(1.05rem, 1.5vw, 1.35rem); font-weight: 650; line-height: 1.3; }
-        .kb-gebiet { color: var(--leise); font-size: .98rem; }
-
-        @media (prefers-reduced-motion: no-preference) {
-            .kb-dach img { animation: kb-bild 1.4s cubic-bezier(.2,.7,.2,1) both; }
-            .kb-bank img { animation: kb-bild 1.4s cubic-bezier(.2,.7,.2,1) both; }
-            .kb-first { animation: kb-first .7s cubic-bezier(.2,.7,.2,1) .15s both; }
-            .kb-dach .kb-half-text { animation: kb-von-links .8s cubic-bezier(.2,.7,.2,1) .35s both; }
-            .kb-bank .kb-half-text { animation: kb-von-rechts .8s cubic-bezier(.2,.7,.2,1) .55s both; }
-        }
-        @keyframes kb-bild { from { transform: scale(1.07); } to { transform: scale(1); } }
-        @keyframes kb-first { from { transform: scaleY(0); } to { transform: scaleY(1); } }
-        @keyframes kb-von-links { from { opacity: 0; transform: translateX(-36px); } to { opacity: 1; transform: none; } }
-        @keyframes kb-von-rechts { from { opacity: 0; transform: translateX(36px); } to { opacity: 1; transform: none; } }
-
-        @media (max-width: 760px) {
-            .kb-hero { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) 6px minmax(0, 1.2fr) auto; }
-            .kb-half { min-height: 34svh; }
-            .kb-first { transform-origin: left; }
-            .kb-dach .kb-half-text, .kb-bank .kb-half-text { left: 20px; right: 20px; text-align: left; bottom: 22px; }
-            .kb-wort { font-size: clamp(2.3rem, 12vw, 3.8rem); }
-            .kb-hero-fuss { flex-direction: column; align-items: stretch; gap: 12px; padding: 20px; }
-            .kb-hero-fuss .kb-btn { width: 100%; }
-            @keyframes kb-first { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-        }
-
-        /* --- Abschnitte --- */
-        .kb-sec { padding: clamp(64px, 9vw, 124px) 0; }
-        .kb-h2 { font-size: clamp(1.9rem, 3.5vw, 3rem); font-weight: 800; font-stretch: 108%; line-height: 1.07; letter-spacing: -.015em; text-wrap: balance; }
-        .kb-lead { margin-top: 1.1em !important; max-width: 58ch; font-size: clamp(1.05rem, 1.35vw, 1.22rem); color: var(--leise); }
-        .kb-h3 { font-size: 1.3rem; font-weight: 750; line-height: 1.2; }
-
-        /* Mehrwert */
-        .kb-usp { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(40px, 6vw, 96px); align-items: start; }
-        .kb-punkte { display: grid; gap: 26px; margin-top: 44px !important; }
-        .kb-punkte li { padding-left: 22px; border-left: 4px solid var(--gelb); }
-        .kb-punkte p { margin-top: 6px; color: var(--leise); }
-        .kb-vergleich { width: 100%; border-collapse: collapse; }
-        .kb-vergleich caption { text-align: left; padding-bottom: 22px; font-size: 1.3rem; font-weight: 750; }
-        .kb-vergleich th { width: 50%; padding: 0 20px 14px 0; border-bottom: 3px solid var(--tinte); text-align: left; vertical-align: bottom; font-weight: 650; font-size: .95rem; color: var(--leise); }
-        .kb-vergleich th + th { padding-left: 20px; color: var(--tinte); }
-        .kb-vergleich td { padding: 20px 20px 20px 0; border-bottom: 1px solid var(--linie); vertical-align: top; color: var(--leise); }
-        .kb-vergleich td + td { padding-left: 20px; background: var(--nebel); color: var(--tinte); font-weight: 650; }
-        .kb-vergleich tr:last-child td { border-bottom: 0; }
-
-        /* Weg */
-        .kb-weg-sec { background: var(--nebel); }
-        .kb-weg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: clamp(40px, 5vw, 64px) !important; border-top: 3px solid var(--tinte); }
-        .kb-weg li { position: relative; padding: 38px clamp(20px, 3vw, 44px) 0 0; }
-        .kb-weg li::before { content: ""; position: absolute; top: -10px; left: 0; width: 36px; height: 17px; background: var(--rot); }
-        .kb-weg p { margin-top: 10px; color: var(--leise); }
-
-        /* Werte */
-        .kb-stein { position: relative; overflow: hidden; background: var(--gelb); }
-        .kb-stein-text { max-width: 720px; }
-        .kb-zitat { margin-top: 1em !important; max-width: 34ch; font-size: clamp(1.15rem, 1.7vw, 1.5rem); font-weight: 500; line-height: 1.35; }
-        .kb-werte { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; margin-top: 44px !important; padding-top: 22px !important; border-top: 3px solid var(--tinte); }
-        .kb-werte strong { display: block; font-weight: 750; font-size: 1.08rem; line-height: 1.25; }
-        .kb-werte span { display: block; margin-top: 4px; font-size: .98rem; }
-        .kb-fuchs { position: absolute; bottom: 0; right: max(16px, calc((100vw - 1180px) / 2 - 20px)); height: min(92%, 520px); width: auto; max-width: none !important; pointer-events: none; }
-
-        /* Kontakt */
-        .kb-kontakt { background: var(--schiefer); color: #fff; }
-        .kb-kontakt-raster { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: clamp(40px, 6vw, 96px); align-items: center; }
-        .kb-kontakt .kb-lead { color: rgba(255,255,255,.78); }
-        .kb-wege { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px !important; }
-        .kb-karte { width: 232px; padding: 18px 18px 16px; border-radius: 4px; background: #fff; color: var(--tinte); text-align: center; }
-        .kb-karte img { width: 100%; height: auto; }
-        .kb-karte p { margin-top: 12px; font-weight: 650; font-size: .98rem; line-height: 1.3; }
-        .kb-karte span { display: block; margin-top: 2px; font-weight: 400; font-size: .88rem; color: var(--leise); }
-
-        /* Fuß */
-        .kb-fuss { padding: 44px 0; background: var(--schiefer-tief); color: rgba(255,255,255,.66); font-size: .93rem; }
-        .kb-fuss-raster { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 28px; }
-        .kb-fuss strong { display: block; color: #fff; font-size: 1.05rem; font-weight: 750; }
-        .kb-sh { display: inline-block; margin-bottom: 20px; }
-        .kb .kb-sh svg { display: block; width: 313px; height: 32px; }
-        .kb .kb-sh path { fill: #fff; }   /* Schriftzug hell, damit er auf dem dunklen Grund lesbar ist */
-        .kb-fuss-links { display: flex; flex-wrap: wrap; gap: 8px 26px; }
-        .kb-fuss a:hover { color: #fff; }
-        .kb-sozial { display: flex; gap: 16px; margin-top: 16px; }
-        .kb-sozial svg { width: 20px; height: 20px; }
-
-        @media (max-width: 900px) {
-            .kb-usp { grid-template-columns: 1fr; }
-            .kb-kontakt-raster { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 760px) {
-            .kb { font-size: 16px; }
-            .kb-weg { grid-template-columns: 1fr; border-top: 0; border-left: 3px solid var(--tinte); }
-            .kb-weg li { padding: 0 0 34px 28px; }
-            .kb-weg li:last-child { padding-bottom: 0; }
-            .kb-weg li::before { top: 4px; left: -11px; width: 19px; height: 12px; }
-            .kb-werte { grid-template-columns: 1fr; gap: 18px; }
-            .kb-fuchs { position: static; display: block; height: 260px; margin: 28px auto -64px; }
-            .kb-wege .kb-btn { width: 100%; }
-            .kb-karte { width: 100%; max-width: 260px; }
-        }
-        @media (min-width: 761px) and (max-width: 1100px) {
-            .kb-stein-text { max-width: 58%; }
-            .kb-fuchs { height: min(80%, 420px); right: 8px; }
-        }
-    </style>
+    <link rel="preload" href="ressources/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="kb.css?v=20261009">
 </head>
 <body class="text-slate-900 antialiased selection:bg-yellow-200 bg-white relative">
 
-    <!-- Inhalt Container für SPA Navigation -->
     <div id="swappable-content">
       <div class="kb">
 
@@ -612,63 +405,20 @@
             }
         });
 
-        // Router Logic (SPA)
+        // Sprungmarken auf der Startseite weich anfahren. Alle anderen Links lädt der Browser ganz normal:
+        // jede Seite bringt ihr eigenes Skript und Stylesheet mit.
         document.addEventListener('click', e => {
             const link = e.target.closest('a');
-            if (!link) return;
-            if (link.href.startsWith(window.location.origin) && !link.target) {
-                const url = new URL(link.href);
-                const currentPath = window.location.pathname;
-                const normalizedPath = url.pathname === '/' ? '/index.html' : url.pathname;
-                const normalizedCurrentPath = currentPath === '/' ? '/index.html' : currentPath;
-
-                if (normalizedPath === normalizedCurrentPath && url.hash) {
-                    e.preventDefault();
-                    const targetId = url.hash.substring(1);
-                    const targetElement = document.getElementById(targetId);
-                    if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth' });
-                    return;
-                }
-                e.preventDefault();
-                loadPage(link.href);
-            }
+            if (!link || link.target || !link.href.startsWith(window.location.origin)) return;
+            const url = new URL(link.href);
+            const norm = p => p.endsWith('/') ? p + 'index.html' : p;
+            if (norm(url.pathname) !== norm(window.location.pathname) || !url.hash) return;
+            const ziel = document.getElementById(url.hash.substring(1));
+            if (!ziel) return;
+            e.preventDefault();
+            ziel.scrollIntoView({ behavior: 'smooth' });
+            history.replaceState(null, '', url.hash);
         });
-
-        async function loadPage(url) {
-            try {
-                const res = await fetch(url);
-                const text = await res.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, 'text/html');
-                const newContent = doc.getElementById('swappable-content');
-                if(!newContent) { window.location.href = url; return; }
-                document.getElementById('swappable-content').innerHTML = newContent.innerHTML;
-                document.title = doc.title;
-                const destUrl = new URL(url);
-                history.pushState({}, '', url);
-                if (destUrl.hash) {
-                    const targetId = destUrl.hash.substring(1);
-                    const targetElement = document.getElementById(targetId);
-                    if (targetElement) setTimeout(() => targetElement.scrollIntoView({ behavior: 'smooth' }), 100);
-                    else window.scrollTo(0,0);
-                } else {
-                    window.scrollTo(0,0);
-                }
-                lucide.createIcons();
-                document.querySelectorAll('[data-reveal]:not(.visible)').forEach(el => { el.classList.add('reveal-ready'); revealObserver.observe(el); });
-                const scripts = document.getElementById('swappable-content').querySelectorAll('script');
-                scripts.forEach(oldScript => {
-                    const newScript = document.createElement('script');
-                    if(oldScript.src) newScript.src = oldScript.src;
-                    else newScript.textContent = oldScript.textContent;
-                    document.body.appendChild(newScript);
-                });
-            } catch (err) {
-                console.error("Navigation failed", err);
-                window.location.href = url;
-            }
-        }
-        window.addEventListener('popstate', () => loadPage(window.location.href));
     </script>
 </body>
 </html>
