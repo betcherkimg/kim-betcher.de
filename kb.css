@@ -313,6 +313,13 @@ body { margin: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: 
 .kb .kb-projekte .kb-h3 { margin-top: 16px; }
 .kb .kb-projekte p { margin-top: 6px; max-width: 46ch; color: rgba(255,255,255,.78); }
 .kb .kb-projekte .kb-hinweis { font-size: .88rem; color: rgba(255,255,255,.58); }
+/* Letzter Punkt, etwas abgesetzt: gemeinsames Projekt und die Seite des Partners */
+.kb-partner {
+    display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(24px, 4vw, 64px); align-items: center;
+    margin-top: clamp(40px, 5vw, 64px); padding-top: clamp(40px, 5vw, 64px); border-top: 1px solid rgba(255,255,255,.2);
+}
+.kb .kb-partner .kb-h3 { font-size: clamp(1.4rem, 2.2vw, 1.8rem); font-weight: 800; font-stretch: 108%; line-height: 1.12; text-wrap: balance; }
+.kb .kb-partner p { margin-top: 12px; max-width: 52ch; color: rgba(255,255,255,.78); }
 .kb .kb-projekt-link { display: inline-block; margin-top: 8px; color: #fff; font-weight: 650; text-decoration: underline; text-decoration-color: var(--gelb); text-decoration-thickness: 2px; text-underline-offset: 3px; }
 
 /* Eigenschaften: gleiche Tabelle wie „Der Unterschied in der Beratung“ */
@@ -378,6 +385,7 @@ body { margin: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: 
 @media (max-width: 760px) {
     .kb-abschnitt { grid-template-columns: 1fr; }
     .kb .kb-zwei { grid-template-columns: 1fr; }
+    .kb-partner { grid-template-columns: 1fr; }
     .kb-hobbys { grid-template-columns: 1fr; gap: 10px; }
     .kb-hobby { aspect-ratio: 3 / 2; }
     .kb-hobby img { object-position: 50% 26%; }
