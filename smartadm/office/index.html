@@ -720,7 +720,9 @@ td { border-bottom-color: var(--line); }
 #taskArchiveCard { margin-top: 10px; }
 
 /* Aufgaben: eine Zeile, Knöpfe behalten ihren Platz; Klick klappt den ganzen Text auf */
-.task-item { align-items: center; }
+.task-list { grid-template-columns: minmax(0, 1fr); }
+.task-list > * { min-width: 0; }
+.task-item { align-items: center; min-width: 0; }
 .task-main { flex: 1; min-width: 0; cursor: pointer; }
 .task-actions { flex: none; flex-wrap: nowrap; }
 .task-item:not(.is-open) .task-title,
