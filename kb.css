@@ -182,6 +182,8 @@ h1, h2, h3, h4 { font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', s
 .kb-karte img { width: 100%; height: auto; }
 .kb-karte p { margin-top: 12px; font-weight: 650; font-size: .98rem; line-height: 1.3; }
 .kb-karte span { display: block; margin-top: 2px; font-weight: 400; font-size: .88rem; color: var(--leise); }
+.kb .kb-buero { margin-top: 22px; max-width: 58ch; color: rgba(255,255,255,.78); }
+.kb .kb-buero a { color: #fff; font-weight: 650; white-space: nowrap; text-decoration: underline; text-decoration-color: var(--gelb); text-decoration-thickness: 2px; text-underline-offset: 3px; }
 
 /* Fuß */
 .kb-fuss { padding: 44px 0; background: var(--schiefer-tief); color: rgba(255,255,255,.66); font-size: .93rem; }
@@ -278,9 +280,9 @@ body { margin: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: 
 .kb-bildknopf .kb-bildzahl { top: auto; bottom: 12px; }
 
 /* --- Hobbys --- */
-.kb-hobbys { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: clamp(36px, 4.5vw, 56px) !important; }
+.kb-hobbys { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: clamp(36px, 4.5vw, 56px) !important; }
 .kb-hobby {
-    position: relative; display: block; width: 100%; aspect-ratio: 3 / 4; padding: 0; border: 0; border-radius: 4px;
+    position: relative; display: block; width: 100%; aspect-ratio: 4 / 5; padding: 0; border: 0; border-radius: 4px;
     overflow: hidden; background: var(--schiefer); text-align: left; cursor: pointer;
 }
 .kb .kb-hobby, .kb .kb-hobby:disabled { color: #fff; }
@@ -290,15 +292,28 @@ body { margin: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: 
 .kb-hobby-text { position: absolute; z-index: 2; left: clamp(14px, 1.6vw, 22px); right: clamp(14px, 1.6vw, 22px); bottom: clamp(14px, 1.6vw, 22px); }
 .kb-hobby-name { display: block; font-size: clamp(1.3rem, 2.1vw, 1.8rem); font-weight: 800; font-stretch: 110%; line-height: 1.05; letter-spacing: -.01em; }
 .kb-hobby-satz { display: block; margin-top: 6px; font-size: .95rem; line-height: 1.35; color: rgba(255,255,255,.86); }
-.kb-hobby-zeichen {
-    position: absolute; left: clamp(14px, 1.6vw, 22px); top: clamp(10px, 1.4vw, 18px);
-    font-size: clamp(3.4rem, 6.4vw, 5.6rem); font-weight: 800; font-stretch: 125%; line-height: 1; letter-spacing: -.04em; color: var(--gelb);
-}
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
     .kb-hobby img, .kb-bildknopf img { transition: transform .6s cubic-bezier(.2,.7,.2,1); }
     .kb-hobby:hover img, .kb-bildknopf:hover img { transform: scale(1.04); }
 }
 .kb .kb-hobby:focus-visible, .kb .kb-bildknopf:focus-visible { outline: 3px solid var(--rot); outline-offset: 3px; }
+
+/* --- Coding & AI-Automatisierung: Projekte mit Bildschirmfoto --- */
+.kb-code-sec { background: var(--schiefer); color: #fff; }
+.kb .kb-code-sec .kb-lead { color: rgba(255,255,255,.78); }
+.kb-projekte { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(30px, 3.6vw, 48px) clamp(16px, 2vw, 28px); margin-top: clamp(36px, 4.5vw, 56px) !important; }
+.kb-projekte > li { grid-column: span 2; }
+.kb-projekte > li:nth-child(-n+2) { grid-column: span 3; }
+.kb-schirm {
+    display: block; width: 100%; padding: 0; border: 0; border-radius: 4px; overflow: hidden;
+    background: var(--schiefer-tief); box-shadow: 0 0 0 1px rgba(255,255,255,.18); cursor: zoom-in;
+}
+.kb-schirm img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: 0 0; }
+.kb .kb-schirm:hover, .kb .kb-schirm:focus-visible { box-shadow: 0 0 0 3px var(--gelb); outline: 0; }
+.kb .kb-projekte .kb-h3 { margin-top: 16px; }
+.kb .kb-projekte p { margin-top: 6px; max-width: 46ch; color: rgba(255,255,255,.78); }
+.kb .kb-projekte .kb-hinweis { font-size: .88rem; color: rgba(255,255,255,.58); }
+.kb .kb-projekt-link { display: inline-block; margin-top: 8px; color: #fff; font-weight: 650; text-decoration: underline; text-decoration-color: var(--gelb); text-decoration-thickness: 2px; text-underline-offset: 3px; }
 
 /* Eigenschaften: gleiche Tabelle wie „Der Unterschied in der Beratung“ */
 .kb-vergleich td strong { display: block; margin-bottom: 4px; color: var(--tinte); font-size: 1.15rem; font-weight: 750; line-height: 1.2; }
@@ -358,14 +373,15 @@ body { margin: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: 
 @media (max-width: 900px) {
     .kb-ich { grid-template-columns: 1fr; }
     .kb-ich .kb-bildknopf { max-width: 520px; }
-    .kb-hobbys { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .kb-projekte > li, .kb-projekte > li:nth-child(-n+2) { grid-column: span 3; }
 }
 @media (max-width: 760px) {
     .kb-abschnitt { grid-template-columns: 1fr; }
     .kb .kb-zwei { grid-template-columns: 1fr; }
-    .kb-hobbys { gap: 10px; }
-    .kb-hobby-name { font-size: clamp(1.02rem, 4.7vw, 1.3rem); }
-    .kb-hobby-satz { font-size: .88rem; }
+    .kb-hobbys { grid-template-columns: 1fr; gap: 10px; }
+    .kb-hobby { aspect-ratio: 3 / 2; }
+    .kb-hobby img { object-position: 50% 26%; }
+    .kb-projekte > li, .kb-projekte > li:nth-child(-n+2) { grid-column: 1 / -1; }
     .kb-licht-buehne { padding: 0 8px; }
     .kb-licht-zurueck, .kb-licht-weiter { top: auto; bottom: 8px; transform: none; background: rgba(23,29,35,.7); }
     .kb-licht-fuss .kb-btn { width: 100%; }
