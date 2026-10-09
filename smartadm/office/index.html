@@ -679,7 +679,16 @@ td { border-bottom-color: var(--line); }
 
 
 /* Boss: Archivzeilen – Aktionen unter dem Inhalt */
-#kkReleaseOldestBtn { white-space: nowrap; flex: 0 0 auto; }
+.fold-tools { display: flex; align-items: center; gap: 6px; flex: none; }
+.fold-btn svg { transition: transform .15s ease; }
+.fold-btn[aria-expanded="false"] svg { transform: rotate(180deg); }
+.fold-head.is-folded { margin-bottom: 0; }
+.fold-release {
+  height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface);
+  color: var(--accent); font: inherit; font-size: 12.5px; font-weight: 700; letter-spacing: -.05em; cursor: pointer;
+}
+.fold-release:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-wash); }
+.fold-release:disabled { opacity: .35; cursor: not-allowed; }
 /* ---------- Boss-Kontaktzeile: kompakt ---------- */
 .acall {
   display: grid; grid-template-columns: 1fr auto; align-items: center;
@@ -1711,30 +1720,25 @@ td { border-bottom-color: var(--line); }
         </div>
 
         <div class="card section-card" data-role="boss">
-          <div class="card-head">
-            <h2>Rückläufer</h2>
-            <p>Mit Termin · ohne Termin · falsche Kontaktdaten. Wer nach 5 Versuchen nicht erreicht wurde, landet im Kein-Kontakt-Archiv.</p>
-          </div>
-          <div id="callReturnedList" class="employee-list"><div class="notice">Wird geladen …</div></div>
-        </div>
-
-        <div class="card section-card" data-role="boss">
-          <div class="card-head">
-            <h2>In Bearbeitung</h2>
-            <p>Offene Kontakte mit aktuellem Versuchsstand – gehaltene Kontakte mit ihrer Notiz.</p>
-          </div>
-          <div id="callOpenList" class="employee-list"><div class="notice">Wird geladen …</div></div>
-        </div>
-
-        <div class="card section-card" data-role="boss">
-          <div class="card-head split">
+          <div class="card-head split fold-head">
             <div>
-              <h2>Kein-Kontakt-Archiv</h2>
-              <p>Nach 5 Versuchen ohne Kontakt. Älteste zuerst – wieder freigeben startet einen neuen Durchlauf, die Historie bleibt.</p>
+              <h2 data-fold-title="returned" data-title="Rückläufer">Rückläufer</h2>
+              <p data-fold-text="returned">Mit Termin · ohne Termin · falsche Kontaktdaten. Wer nach 5 Versuchen nicht erreicht wurde, landet im Kundenarchiv unter „Kein Kontakt“.</p>
             </div>
-            <button class="btn primary" type="button" id="kkReleaseOldestBtn">5 älteste erneut freigeben</button>
+            <div class="fold-tools"><button class="widget-pfeil fold-btn" type="button" data-fold="returned" aria-expanded="true" aria-label="Rückläufer zuklappen" title="Zuklappen"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 15 6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           </div>
-          <div id="callKkList" class="employee-list"><div class="notice">Wird geladen …</div></div>
+          <div id="callReturnedList" class="employee-list" data-fold-body="returned"><div class="notice">Wird geladen …</div></div>
+        </div>
+
+        <div class="card section-card" data-role="boss">
+          <div class="card-head split fold-head">
+            <div>
+              <h2 data-fold-title="open" data-title="In Bearbeitung">In Bearbeitung</h2>
+              <p data-fold-text="open">Offene Kontakte mit aktuellem Versuchsstand – gehaltene Kontakte mit ihrer Notiz.</p>
+            </div>
+            <div class="fold-tools"><button class="widget-pfeil fold-btn" type="button" data-fold="open" aria-expanded="true" aria-label="In Bearbeitung zuklappen" title="Zuklappen"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 15 6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          </div>
+          <div id="callOpenList" class="employee-list" data-fold-body="open"><div class="notice">Wird geladen …</div></div>
         </div>
 
         <!-- Mitarbeiter -->
@@ -1934,10 +1938,6 @@ td { border-bottom-color: var(--line); }
       <!-- ===== Boss: Kundenarchiv ===== -->
       <section class="page" id="kundenarchiv" data-role="boss">
         <div class="card section-card">
-          <div class="card-head">
-            <h2>Kundenarchiv</h2>
-            <p>Erledigte Kontakte, neueste zuerst. „Erneut zuweisen“ gibt einen Kontakt zurück in die Telefonliste.</p>
-          </div>
           <div class="search-tools archive-tools">
             <div class="field">
               <label for="archiveSearchLast">Nachname</label>
@@ -1965,7 +1965,28 @@ td { border-bottom-color: var(--line); }
             </div>
           </div>
           <small class="search-result" id="archiveSearchResult" aria-live="polite"></small>
-          <div id="callArchiveList" class="employee-list archive-list"><div class="notice">Wird geladen …</div></div>
+        </div>
+
+        <div class="card section-card">
+          <div class="card-head split fold-head">
+            <div>
+              <h2 data-fold-title="archived" data-title="Abgeschlossene">Abgeschlossene</h2>
+              <p data-fold-text="archived">Erledigte Kontakte, neueste zuerst. „Erneut zuweisen“ gibt einen Kontakt zurück in die Telefonliste.</p>
+            </div>
+            <div class="fold-tools"><button class="widget-pfeil fold-btn" type="button" data-fold="archived" aria-expanded="true" aria-label="Abgeschlossene zuklappen" title="Zuklappen"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 15 6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          </div>
+          <div id="callArchiveList" class="employee-list archive-list" data-fold-body="archived"><div class="notice">Wird geladen …</div></div>
+        </div>
+
+        <div class="card section-card">
+          <div class="card-head split fold-head">
+            <div>
+              <h2 data-fold-title="kk" data-title="Kein Kontakt">Kein Kontakt</h2>
+              <p data-fold-text="kk">Nach 5 Versuchen ohne Kontakt. Älteste zuerst – wieder freigeben startet einen neuen Durchlauf, die Historie bleibt.</p>
+            </div>
+            <div class="fold-tools"><button class="fold-release" type="button" id="kkReleaseOldestBtn" title="Die 5 ältesten wieder freigeben" aria-label="Die 5 ältesten wieder freigeben">&gt;&gt;&gt;</button><button class="widget-pfeil fold-btn" type="button" data-fold="kk" aria-expanded="true" aria-label="Kein Kontakt zuklappen" title="Zuklappen"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 15 6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          </div>
+          <div id="callKkList" class="employee-list" data-fold-body="kk"><div class="notice">Wird geladen …</div></div>
         </div>
       </section>
 
@@ -2136,7 +2157,7 @@ td { border-bottom-color: var(--line); }
 
   // Der Boss sieht einige Seiten unter eigenem Namen.
   const BOSS_PAGE_TITLES = {
-    telefon: ["Kontakte", "Kontakte einstellen, Rückläufer und Kein-Kontakt-Archiv"],
+    telefon: ["Kontakte", "Kontakte einstellen, Rückläufer und offene Kontakte"],
     termine: ["Filialen", "Filialen, Videocalls und Buchungslinks"]
   };
 
@@ -5285,7 +5306,7 @@ td { border-bottom-color: var(--line); }
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ß/g, "ss").replace(/[\s,]+/g, " ").trim();
 
   const ADMIN_SCOPES = [
-    ["returned", "Rückläufer"], ["open", "In Bearbeitung"], ["kk", "Kein-Kontakt-Archiv"], ["archived", "Kundenarchiv"]
+    ["returned", "Rückläufer"], ["open", "In Bearbeitung"], ["kk", "Kein Kontakt"], ["archived", "Abgeschlossen"]
   ];
 
   // Themen als Chips – so sieht der Boss sofort, wo für das Skript noch etwas fehlt.
@@ -5500,6 +5521,35 @@ td { border-bottom-color: var(--line); }
     });
   }
 
+  // Abschnitte zuklappen: bleibt so, bis du es wieder aufklappst (je Gerät gemerkt)
+  const FOLD_STORE = "smartadm.office.folds.v1";
+  let folds = {};
+  try { folds = JSON.parse(localStorage.getItem(FOLD_STORE) || "{}") || {}; } catch { folds = {}; }
+
+  function renderFolds(counts) {
+    $$("[data-fold]").forEach(btn => {
+      const key = btn.dataset.fold, closed = Boolean(folds[key]);
+      const title = document.querySelector(`[data-fold-title="${key}"]`);
+      title.textContent = closed ? `${title.dataset.title} (${counts[key] ?? 0})` : title.dataset.title;
+      const body = document.querySelector(`[data-fold-body="${key}"]`);
+      if (body) body.hidden = closed;
+      const text = document.querySelector(`[data-fold-text="${key}"]`);
+      if (text) text.hidden = closed;
+      btn.closest(".fold-head").classList.toggle("is-folded", closed);
+      btn.setAttribute("aria-expanded", String(!closed));
+      btn.title = closed ? "Aufklappen" : "Zuklappen";
+      btn.setAttribute("aria-label", `${title.dataset.title} ${closed ? "aufklappen" : "zuklappen"}`);
+    });
+  }
+
+  document.addEventListener("click", event => {
+    const btn = event.target.closest("[data-fold]");
+    if (!btn) return;
+    folds[btn.dataset.fold] = !folds[btn.dataset.fold];
+    try { localStorage.setItem(FOLD_STORE, JSON.stringify(folds)); } catch { /* nur diese Sitzung */ }
+    renderAdminCalls();
+  });
+
   function renderAdminCalls() {
     const query = nameQuery("callSearch");
     const filter = $("callFilter").value;
@@ -5512,7 +5562,6 @@ td { border-bottom-color: var(--line); }
 
     $("callReturnedList").innerHTML = list("returned", c => adminCallHtml(c, "returned"), "Keine neuen Rückläufer.");
     $("callOpenList").innerHTML = list("open", c => adminCallHtml(c, "open"), "Keine offenen Kontakte.");
-    $("callKkList").innerHTML = list("kk", kkRowHtml, "Kein-Kontakt-Archiv ist leer.");
 
     // Kundenarchiv (eigene Seite) mit eigener Suche
     const archiveQuery = nameQuery("archiveSearch");
@@ -5520,20 +5569,25 @@ td { border-bottom-color: var(--line); }
     const archiveNarrowed = hasQuery(archiveQuery) || archiveFilter;
     const archived = sortCalls(state.adminCalls.archived.filter(c => matchesName(c, archiveQuery) && matchesFilter(c, archiveFilter)), "archive");
     const archiveTotal = state.adminCalls.archived.length;
+    const kkTotal = state.adminCalls.kk.length;
     setText("archiveSearchResult", archiveNarrowed
-      ? `${archived.length} von ${archiveTotal} ${archiveTotal === 1 ? "Kontakt" : "Kontakten"}`
-      : `${archiveTotal} ${archiveTotal === 1 ? "erledigter Kontakt" : "erledigte Kontakte"}`);
+      ? `${archived.length} von ${archiveTotal} abgeschlossen · ${state.adminCalls.kk.filter(c => matchesName(c, archiveQuery) && matchesFilter(c, archiveFilter)).length} von ${kkTotal} ohne Kontakt`
+      : `${archiveTotal} abgeschlossen · ${kkTotal} ohne Kontakt`);
     $("callArchiveList").innerHTML = archived.length
       ? archived.map(c => adminCallHtml(c, "archived")).join("")
       : `<div class="notice">${archiveNarrowed ? "Kein Treffer." : "Noch keine erledigten Kontakte."}</div>`;
+    const kkShown = sortCalls(state.adminCalls.kk.filter(c => matchesName(c, archiveQuery) && matchesFilter(c, archiveFilter)), "archive");
+    $("callKkList").innerHTML = kkShown.length
+      ? kkShown.map(kkRowHtml).join("")
+      : `<div class="notice">${archiveNarrowed ? "Kein Treffer." : "Keine Kontakte ohne Erreichbarkeit."}</div>`;
 
     const kk = state.adminCalls.kk.length;
     $("kkReleaseOldestBtn").disabled = !kk;
-    setText("kkReleaseOldestBtn", kk && kk < 5 ? `${kk} älteste erneut freigeben` : "5 älteste erneut freigeben");
+    renderFolds({ returned: hits.returned.length, open: hits.open.length, archived: archived.length, kk: kkShown.length });
 
     const parts = ADMIN_SCOPES.filter(([scope]) => hits[scope].length).map(([scope, label]) => `${hits[scope].length} × ${label}`);
     setText("callSearchResult", !narrowed
-      ? "Durchsucht Rückläufer, In Bearbeitung, Kein-Kontakt-Archiv und Kundenarchiv."
+      ? "Durchsucht Rückläufer, In Bearbeitung und das Kundenarchiv (Abgeschlossen, Kein Kontakt)."
       : parts.length ? `Gefunden: ${parts.join(" · ")}`
       : hasQuery(query) && !filter ? "Kein Kontakt mit diesem Namen vorhanden." : "Kein Kontakt passt zu Suche und Filter.");
     updateCallSummary();
@@ -5959,7 +6013,7 @@ td { border-bottom-color: var(--line); }
 
   $("kkReleaseOldestBtn").addEventListener("click", event => {
     const n = Math.min(5, state.adminCalls.kk.length);
-    if (!n || !confirm(`Die ${n} ältesten Kontakte aus dem Kein-Kontakt-Archiv wieder zum Anrufen freigeben?`)) return;
+    if (!n || !confirm(`Die ${n === 1 ? "älteste Kontakt" : n + " ältesten Kontakte"} aus „Kein Kontakt“ wieder zum Anrufen freigeben?`)) return;
     withBusy(event.currentTarget, async () => {
       try {
         const result = await api("/admin/calls/kk/release-oldest", "POST", { count: 5 });
