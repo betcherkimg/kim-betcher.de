@@ -283,9 +283,9 @@ body { margin: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: 
 .kb-bildknopf .kb-bildzahl { top: auto; bottom: 12px; }
 
 /* --- Hobbys --- */
-.kb-hobbys { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: clamp(36px, 4.5vw, 56px) !important; }
+.kb-hobbys { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: clamp(36px, 4.5vw, 56px) !important; }
 .kb-hobby {
-    position: relative; display: block; width: 100%; aspect-ratio: 4 / 5; padding: 0; border: 0; border-radius: 4px;
+    position: relative; display: block; width: 100%; aspect-ratio: 3 / 4; padding: 0; border: 0; border-radius: 4px;
     overflow: hidden; background: var(--schiefer); text-align: left; cursor: pointer;
 }
 .kb .kb-hobby, .kb .kb-hobby:disabled { color: #fff; }
@@ -383,15 +383,16 @@ body { margin: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: 
 @media (max-width: 900px) {
     .kb-ich { grid-template-columns: 1fr; }
     .kb-ich .kb-bildknopf { max-width: 520px; }
+    .kb-hobbys { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .kb-projekte > li, .kb-projekte > li:nth-child(-n+2) { grid-column: span 3; }
 }
 @media (max-width: 760px) {
     .kb-abschnitt { grid-template-columns: 1fr; }
     .kb .kb-zwei { grid-template-columns: 1fr; }
     .kb-partner { grid-template-columns: 1fr; }
-    .kb-hobbys { grid-template-columns: 1fr; gap: 10px; }
-    .kb-hobby { aspect-ratio: 3 / 2; }
-    .kb-hobby img { object-position: 50% 26%; }
+    .kb-hobbys { gap: 10px; }
+    .kb-hobby-name { font-size: clamp(1.02rem, 4.7vw, 1.3rem); }
+    .kb-hobby-satz { font-size: .88rem; }
     .kb-projekte > li, .kb-projekte > li:nth-child(-n+2) { grid-column: 1 / -1; }
     .kb-licht-buehne { padding: 0 8px; }
     .kb-licht-zurueck, .kb-licht-weiter { top: auto; bottom: 8px; transform: none; background: rgba(23,29,35,.7); }

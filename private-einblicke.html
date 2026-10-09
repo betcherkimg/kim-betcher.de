@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Private Einblicke | Kim Betcher</title>
-    <meta name="description" content="Kim Betcher privat: 29, aus Heidenheim, verheiratet. Haus selbst kernsaniert, dazu Bergwandern, Angeln, Musik sowie Coding und AI-Automatisierung.">
+    <meta name="description" content="Kim Betcher privat: 29, aus Heidenheim, verheiratet. Haus selbst kernsaniert, dazu Familie, Bergwandern, Angeln, Musik sowie Coding und AI-Automatisierung.">
 
     <link rel="icon" type="image/png" sizes="512x512" href="ressources/Logo.png">
     <link rel="apple-touch-icon" href="ressources/Logo.png">
 
     <!-- Gleiches Stylesheet wie die Startseite. Schrift liegt lokal, die Seite lädt nichts von fremden Servern. -->
     <link rel="preload" href="ressources/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="kb.css?v=20261009e">
+    <link rel="stylesheet" href="kb.css?v=20261009f">
 </head>
 <body>
   <div class="kb kb-seite">
@@ -76,6 +76,13 @@
                 <h2 class="kb-h2">Was mich erdet</h2>
                 <p class="kb-lead">Wenn ich nicht gerade arbeite, brauche ich einen Ausgleich, der mich erdet.</p>
                 <ul class="kb-hobbys">
+                    <li>
+                        <button type="button" class="kb-hobby" data-galerie="familie">
+                            <img src="ressources/klein/familie.jpg" alt="Kim Betcher mit seiner Frau Franziska" loading="lazy">
+                            <span class="kb-bildzahl" hidden><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 22H4a2 2 0 0 1-2-2V6"/><path d="m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18"/><circle cx="12" cy="8" r="2"/><rect width="16" height="16" x="6" y="2" rx="2"/></svg><span></span></span>
+                            <span class="kb-hobby-text"><span class="kb-hobby-name">Meine Familie</span><span class="kb-hobby-satz">Meine Frau Franziska, zwei Katzen und ein Hund.</span></span>
+                        </button>
+                    </li>
                     <li>
                         <button type="button" class="kb-hobby" data-galerie="berge">
                             <img src="ressources/klein/berge.jpg" alt="Blick von oben in ein grünes Bergtal" loading="lazy">
@@ -236,7 +243,8 @@
             // Bilder je Galerie. Neue Bilder: Datei nach ressources/ legen und hier eintragen.
             // „namen“ (optional) beschriftet einzelne Bilder, z. B. die Projekte unter Coding.
             const galerien = {
-                haus: { titel: 'Hauskauf & Kernsanierung 2024', bilder: ["ressources/Haus Bilder & Videos (22).jpeg", "ressources/Haus 1.jpg", "ressources/Haus 2.jpg", "ressources/Haus 3.jpg", "ressources/Haus 4.jpg", "ressources/Haus 5.jpg", "ressources/Haus 6.jpg", "ressources/Haus 7.jpg", "ressources/Haus Bilder & Videos (35).JPEG", "ressources/Haus Bilder & Videos (39).JPEG", "ressources/2025-09-04 (6).jpg"] },
+                haus: { titel: 'Hauskauf & Kernsanierung 2024', bilder: ["ressources/Haus Bilder & Videos (22).jpeg", "ressources/Haus 1.jpg", "ressources/Haus 2.jpg", "ressources/Haus 3.jpg", "ressources/Haus 4.jpg", "ressources/Haus 5.jpg", "ressources/Haus 6.jpg", "ressources/Haus 7.jpg", "ressources/Haus Bilder & Videos (35).JPEG", "ressources/Haus Bilder & Videos (39).JPEG", "ressources/2025-09-04 (6).jpg", "ressources/haus-wohnzimmer-tv.jpg", "ressources/haus-wohnzimmer-sofa.jpg", "ressources/haus-esszimmer.jpg"] },
+                familie: { titel: 'Meine Familie', bilder: ["ressources/familie-franziska-und-kim.jpg", "ressources/familie-blacky.jpg", "ressources/familie-mondpfote.jpg", "ressources/familie-flitzy.jpg"], namen: ["Franziska und ich", "Blacky", "Mondpfote", "Flitzy"] },
                 berge: { titel: 'Bergwandern', bilder: ["ressources/IMG_1506.JPG", "ressources/IMG_1497.JPG", "ressources/20171230_125417.jpg", "ressources/20171230_130453.jpg", "ressources/20171230_152835.jpg", "ressources/IMG_0229.jpg", "ressources/IMG_0268.jpg", "ressources/IMG_0276.jpg"] },
                 angeln: { titel: 'Angeln', bilder: ["ressources/IMG_7186.jpg", "ressources/89076192-402C-43F2-85B6-F1D7372917DE.JPG"] },
                 musik: { titel: 'Musik', bilder: ["ressources/e48c1d0f-2676-481b-9c84-dae14748b061.jpg"], links: [
