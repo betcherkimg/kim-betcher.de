@@ -531,6 +531,17 @@ svg.i { stroke-width: 1.7; }
 .quick, .panel { border: 0; background: var(--ground); border-radius: 12px; }
 .quick span { color: var(--ink-soft); font-weight: 500; }
 .quick b { font-weight: 700; letter-spacing: -.02em; }
+.appt-stepper { display: inline-flex; align-items: center; gap: 10px; }
+.appt-stepper b { min-width: 2ch; text-align: center; }
+.step-btn {
+  width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface);
+  color: var(--ink-soft); font: inherit; font-size: 17px; line-height: 1; padding: 0; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.step-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.step-btn:disabled { opacity: .35; cursor: not-allowed; }
+.appt-note { display: block; margin-top: 4px; font-size: 11.5px; color: var(--rot); }
+.appt-note:empty { display: none; }
 .panel h3 { font-weight: 600; }
 .panel > p { color: var(--ink-soft); }
 .payroll-summary .emphasis { background: var(--accent-wash); border: 0; }
@@ -1355,7 +1366,7 @@ td { border-bottom-color: var(--line); }
         <div class="grid-4">
           <div class="card kpi"><div class="kpi-label">Netto-Arbeitszeit</div><div class="kpi-value" id="bossEmpHours">0:00 h</div><div class="kpi-foot"><span>im gewählten Monat</span></div></div>
           <div class="card kpi"><div class="kpi-label">Arbeitstage</div><div class="kpi-value" id="bossEmpDays">0</div><div class="kpi-foot"><span>erfasste Tage</span></div></div>
-          <div class="card kpi"><div class="kpi-label">Termine</div><div class="kpi-value" id="bossEmpAppointments">0</div><div class="kpi-foot"><span>gesamt</span></div></div>
+          <div class="card kpi"><div class="kpi-label">Termine</div><div class="kpi-value"><div class="appt-stepper"><button class="step-btn" type="button" data-appt-adjust="-1" aria-label="Einen Termin abziehen">−</button><b id="bossEmpAppointments">0</b><button class="step-btn" type="button" data-appt-adjust="1" aria-label="Abzug zurücknehmen">+</button></div></div><div class="kpi-foot"><span data-appt-adjust-note>gesamt</span></div></div>
           <div class="card kpi"><div class="kpi-label">Brutto</div><div class="kpi-value" id="bossEmpGross">–</div><div class="kpi-foot"><span>Stunden + Termine</span></div></div>
         </div>
 
@@ -1438,6 +1449,7 @@ td { border-bottom-color: var(--line); }
             <div class="quick-grid">
               <div class="quick"><span>Ist-Arbeitszeit</span><b id="payrollHours">0:00 h</b></div>
               <div class="quick"><span>Arbeitstage</span><b id="payrollDays">0</b></div>
+              <div class="quick"><span>Termine</span><div class="appt-stepper"><button class="step-btn" type="button" data-appt-adjust="-1" aria-label="Einen Termin abziehen">−</button><b id="payrollAppointments">0</b><button class="step-btn" type="button" data-appt-adjust="1" aria-label="Abzug zurücknehmen">+</button></div><small class="appt-note" data-appt-adjust-note></small></div>
               <div class="quick"><span>Urlaub / Rest</span><b id="payrollVacation">0 / 0</b></div>
               <div class="quick"><span>Krankheitstage</span><b id="payrollSickDays">0</b></div>
             </div>
@@ -2070,6 +2082,8 @@ td { border-bottom-color: var(--line); }
     employees: [],           // Boss: Mitarbeiterliste
     employeeEntries: [],     // Boss: Einträge des gewählten Mitarbeiters
     employeeAbsences: [],    // Boss: Urlaub, Krankheit, Feiertage, bezahlte Freistellung
+    employeeAdjustments: null, // Boss: Termin-Korrekturen (null = Worker kennt sie noch nicht)
+    ownAdjustments: [],      // Mitarbeiter: eigene Termin-Korrekturen
     selectedUserId: null,
     profiles: {},            // Boss: Abgabenprofile je Mitarbeiter
     tasks: [],
@@ -2579,7 +2593,9 @@ td { border-bottom-color: var(--line); }
   function renderEmployeeDashboard() {
     const { goalHours, goalAppointments, cutAppointments } = state.settings;
     const month = inMonth(state.entries, isoMonth());
-    const { mins, appts, days } = summarize(month);
+    const { mins, appts: entryAppts, days } = summarize(month);
+    const ownAdjust = adjustSum(adjustmentsFor(state.ownAdjustments, isoMonth()));
+    const appts = Math.max(0, entryAppts + ownAdjust);
     const hours = mins / 60;
 
     const values = {
@@ -2588,7 +2604,8 @@ td { border-bottom-color: var(--line); }
       kpiDays: days,
       kpiCut: `${appts} / ${cutAppointments}`,
       hoursText: `${decimal(hours)} von ${goalHours} Stunden erbracht`,
-      appointmentsText: `${appts} von ${goalAppointments} Zielterminen`,
+      appointmentsText: `${appts} von ${goalAppointments} Zielterminen` +
+        (ownAdjust ? ` · ${Math.abs(ownAdjust)} ${Math.abs(ownAdjust) === 1 ? "Termin" : "Termine"} wegen Kundenabsage ${ownAdjust < 0 ? "abgezogen" : "gutgeschrieben"}` : ""),
       cutText: `${cutAppointments} Termine = Monats-Cut`,
       heroMeta: `${decimal(hours)} von ${goalHours} Stunden`,
       heroStatus: appts >= cutAppointments ? "Cut erreicht"
@@ -2634,7 +2651,12 @@ td { border-bottom-color: var(--line); }
     state.loading = true;
     setFormBusy(true, "Daten werden geladen …");
     try {
-      state.entries = toEntries(await api("/entries"));
+      const [entries, adjustments] = await Promise.all([
+        api("/entries"),
+        api("/appointment-adjustments").catch(() => [])
+      ]);
+      state.entries = toEntries(entries);
+      state.ownAdjustments = asArray(adjustments);
       renderEmployeeDashboard();
     } catch (error) {
       console.error(error);
@@ -2872,7 +2894,7 @@ td { border-bottom-color: var(--line); }
 
   async function loadEmployeeData(userId) {
     try {
-      const [rows, absences, profile, master] = await Promise.all([
+      const [rows, absences, profile, master, adjustments] = await Promise.all([
         api(forUser("/admin/entries", userId)),
         api(forUser("/admin/absences", userId)).catch(error => {
           console.warn("Abwesenheiten nicht verfügbar:", error);
@@ -2882,11 +2904,13 @@ td { border-bottom-color: var(--line); }
         api(forUser("/admin/employee-profile", userId)).catch(error => {
           console.warn("Stammdaten nicht verfügbar:", error);
           return {};
-        })
+        }),
+        api(forUser("/admin/appointment-adjustments", userId)).catch(() => null) // älterer Worker: noch keine Korrekturen
       ]);
       if (state.selectedUserId !== userId) return; // inzwischen anderer Mitarbeiter gewählt
       state.employeeEntries = toEntries(rows);
       state.employeeAbsences = toAbsences(absences);
+      state.employeeAdjustments = Array.isArray(adjustments) ? adjustments : null;
       state.employeeProfiles[userId] = master || {};
       fillFields("data-emp", master);
       state.profiles[userId] = { ...DEFAULT_PROFILE, ...profile };
@@ -2907,7 +2931,20 @@ td { border-bottom-color: var(--line); }
 
     setText("bossEmpHours", fmtMinutes(mins));
     setText("bossEmpDays", days);
-    setText("bossEmpAppointments", appts);
+    const adjust = adjustSum(adjustmentsFor(state.employeeAdjustments, month));
+    setText("bossEmpAppointments", Math.max(0, appts + adjust));
+    setText("payrollAppointments", Math.max(0, appts + adjust));
+    $$("[data-appt-adjust-note]").forEach(el => (el.textContent = adjust
+      ? `${adjust < 0 ? "−" : "+"}${Math.abs(adjust)} durch Korrektur (${appts} erfasst)`
+      : el.matches(".kpi-foot span") ? "gesamt" : ""));
+    const monthClosed = state.closings.some(c => c.payroll_month === month);
+    $$("[data-appt-adjust]").forEach(btn => {
+      const minus = btn.dataset.apptAdjust === "-1";
+      btn.disabled = !state.selectedUserId || !Array.isArray(state.employeeAdjustments) || monthClosed ||
+        (minus ? appts + adjust <= 0 : adjust >= 0);
+      btn.title = !Array.isArray(state.employeeAdjustments) ? "Dafür braucht es den neuen Worker."
+        : monthClosed ? "Monat ist abgeschlossen." : minus ? "Einen Termin abziehen" : "Abzug zurücknehmen";
+    });
     setText("bossTotalHours", fmtMinutes(mins));
     setText("bossTotalAppointments", appts);
     $$("[data-selected-month]").forEach(el => (el.textContent = fmtMonth(month)));
@@ -2920,6 +2957,33 @@ td { border-bottom-color: var(--line); }
     renderPayrollPreview();
     renderDashboardWidgets();
   }
+
+  document.addEventListener("click", event => {
+    const btn = event.target.closest("[data-appt-adjust]");
+    if (!btn || btn.disabled) return;
+    const delta = Number(btn.dataset.apptAdjust);
+    const name = employeeName(findEmployee(state.selectedUserId));
+    const month = payrollMonth();
+    const text = delta < 0
+      ? `Achtung: Einen Termin von ${name} für ${fmtMonth(month)} abziehen?\n\n` +
+        "Nur wenn der Kunde rechtzeitig abgesagt hat und keinen neuen Termin ausmachen möchte. " +
+        "Ist der Kunde einfach nicht erschienen, zählt der Termin trotzdem.\n\n" +
+        `Hast du das vorher mit ${name} besprochen? Die Korrektur erfolgt auf deine eigene Verantwortung ` +
+        "und steht als „−1 Termin“ im Gehaltsnachweis."
+      : `Abzug zurücknehmen und ${name} den Termin für ${fmtMonth(month)} wieder gutschreiben?\n\n` +
+        "Auch das steht im Gehaltsnachweis.";
+    if (!confirm(text)) return;
+    withBusy(btn, async () => {
+      try {
+        await api(forUser("/admin/appointment-adjustments", state.selectedUserId), "POST", { month, delta });
+        state.employeeAdjustments = asArray(await api(forUser("/admin/appointment-adjustments", state.selectedUserId)));
+        renderEmployeeData();
+        toast(delta < 0 ? "1 Termin abgezogen." : "Abzug zurückgenommen.");
+      } catch (error) {
+        alert("Korrektur nicht möglich: " + error.message);
+      }
+    }).then(renderEmployeeData);
+  });
 
   async function loadBossData() {
     try {
@@ -3280,9 +3344,15 @@ td { border-bottom-color: var(--line); }
 
   const contributionGroup = p => `${p.employerKv ? "6" : "0"}${p.employeeRv ? "1" : "5"}00`;
 
-  function calculatePayroll(list, profile, month, employment = {}, absences = []) {
+  const adjustmentsFor = (rows, month) => asArray(rows).filter(r => r.payroll_month === month);
+  const adjustSum = rows => asArray(rows).reduce((sum, r) => sum + Number(r.delta || 0), 0);
+
+  function calculatePayroll(list, profile, month, employment = {}, absences = [], adjustments = []) {
     // Arbeitsstunden × Stundenlohn + alle gesetzten Termine × Terminvergütung
-    const { mins, appts, days } = summarize(list);
+    // Termin-Korrekturen (Kundenabsage) ziehen einzelne Termine wieder ab.
+    const { mins, appts: entryAppts, days } = summarize(list);
+    const apptAdjust = adjustSum(adjustments);
+    const appts = Math.max(0, entryAppts + apptAdjust);
     const timePay = Math.round((mins * HOURLY_RATE_CENTS) / 60);
     const commission = appts * COMMISSION_RATE_CENTS;
     const absenceMoney = type => absences.filter(a => a.type === type).reduce((sum, a) => sum + a.paidAmountCents, 0);
@@ -3330,7 +3400,7 @@ td { border-bottom-color: var(--line); }
 
     return {
       // „eligible" = vergütete Termine; der Name bleibt, weil gespeicherte Monatsabschlüsse ihn verwenden.
-      mins, appts, eligible: appts, days,
+      mins, appts, eligible: appts, days, entryAppts, apptAdjust,
       goalMinutes: Math.round(Number(state.settings.goalHours || 24) * 60),
       paidMinutes, overtimeMinutes: 0,
       vacationDays: count("vacation"), sickDays: count("sick"),
@@ -3383,7 +3453,7 @@ td { border-bottom-color: var(--line); }
     const month = payrollMonth();
     return calculatePayroll(
       inMonth(state.employeeEntries, month), readProfileInputs(), month, selectedEmployment(),
-      inMonthAbsences(state.employeeAbsences, month)
+      inMonthAbsences(state.employeeAbsences, month), adjustmentsFor(state.employeeAdjustments, month)
     );
   }
 
@@ -3740,6 +3810,7 @@ td { border-bottom-color: var(--line); }
       created: dateFmt.format(new Date()),
       employer: state.employer,
       employee: selectedEmployment(),
+      adjustments: adjustmentsFor(state.employeeAdjustments, month),
       entries: inMonth(state.employeeEntries, month)
         .sort((a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start))
         .map(e => ({
@@ -6039,7 +6110,11 @@ td { border-bottom-color: var(--line); }
     ].filter(Boolean);
     const earnings = [
       ["1000", "Grundlohn / Stundenvergütung", `${decimal(p.mins / 60, 2)} Std.`, euro(HOURLY_RATE_CENTS / 100), euro(p.timePay)],
-      ["2000", "Terminprovision", `${paidAppointments(p)} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.commission)],
+      ...(Number(p.apptAdjust || 0)
+        ? [["2000", "Terminprovision (erfasste Termine)", `${p.entryAppts} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.entryAppts * COMMISSION_RATE_CENTS / 100)],
+           ["2010", "Termin-Korrektur (Absage durch Kunde)", `${p.apptAdjust > 0 ? "+" : "−"}${Math.abs(p.apptAdjust)} ${Math.abs(p.apptAdjust) === 1 ? "Termin" : "Termine"}`,
+            euro(COMMISSION_RATE_CENTS / 100), p.apptAdjust < 0 ? minus(Math.abs(p.apptAdjust) * COMMISSION_RATE_CENTS / 100) : euro(p.apptAdjust * COMMISSION_RATE_CENTS / 100)]]
+        : [["2000", "Terminprovision", `${paidAppointments(p)} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.commission)]]),
       ["2100", "Zielbonus", "–", "–", euro(p.targetBonus || 0)],
       p.vacationPay ? ["3000", "Urlaubsentgelt", `${p.vacationDays} Tag(e)`, "", euro(p.vacationPay)] : null,
       p.sickPay ? ["3010", "Krankheitsentgelt", `${p.sickDays} Tag(e)`, "", euro(p.sickPay)] : null,
@@ -6139,10 +6214,16 @@ td { border-bottom-color: var(--line); }
          <tbody>${absences.map(a => `<tr><td>${esc(fmtDate(a.absence_date))}</td><td>${esc(ABSENCE_LABELS[a.absence_type] || a.absence_type)}</td><td class="num">${fmtMinutes(a.paid_minutes)}</td><td class="num">${euro(Number(a.paid_amount_cents || 0)/100)}</td><td>${esc(a.note || "–")}</td></tr>`).join("")}</tbody></table>`
       : `<div class="pd-note">Keine Abwesenheiten für diesen Monat.</div>`;
 
+    const adjustments = asArray(doc.adjustments);
+    const adjustTable = adjustments.length
+      ? `<div class="pd-sec"><div class="pd-sec-title">Termin-Korrekturen</div><table class="pd-grid zebra"><thead><tr><th>Eingetragen</th><th>Grund</th><th class="num">Termine</th></tr></thead>
+         <tbody>${adjustments.map(a => `<tr><td>${esc(fmtDateTime(a.created_at))}</td><td>${esc(a.note || "–")}</td><td class="num">${Number(a.delta) > 0 ? "+1" : "−1"}</td></tr>`).join("")}</tbody></table></div>`
+      : "";
     return `${docHead(doc, "Arbeitszeit- & Abwesenheitsnachweis")}
       <table class="pd-strip pd-keep"><tbody><tr><td style="width:50%"><span class="l">Mitarbeiter</span><b>${esc(name)}</b></td><td><span class="l">Personalnummer</span><b>${esc(orDash(emp.personnel_number))}</b></td><td><span class="l">Zeitraum</span><b>${esc(doc.monthLabel)}</b></td></tr></tbody></table>
       <div class="pd-sec"><div class="pd-sec-title">Arbeitszeit</div>${workTable}</div>
       <div class="pd-sec"><div class="pd-sec-title">Abwesenheiten</div>${absenceTable}</div>
+      ${adjustTable}
       <table class="pd-sign pd-keep"><tbody><tr><td style="width:50%"><div>Datum, Unterschrift Arbeitgeber</div></td><td><div>Datum, Unterschrift Mitarbeiter</div></td></tr></tbody></table>
       ${docFoot("Arbeitszeit und Abwesenheiten aus SmartADM 5 Office.", `${esc(name)} · ${esc(doc.monthLabel)}`)}`;
   }
@@ -6463,7 +6544,11 @@ td { border-bottom-color: var(--line); }
 
     const earnings = [
       ["1000", "Grundlohn / Stundenvergütung", `${decimal(p.mins / 60, 2)} Std.`, euro(HOURLY_RATE_CENTS / 100), euro(p.timePay)],
-      ["2000", "Terminprovision", `${paidAppointments(p)} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.commission)],
+      ...(Number(p.apptAdjust || 0)
+        ? [["2000", "Terminprovision (erfasste Termine)", `${p.entryAppts} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.entryAppts * COMMISSION_RATE_CENTS / 100)],
+           ["2010", "Termin-Korrektur (Absage durch Kunde)", `${p.apptAdjust > 0 ? "+" : "−"}${Math.abs(p.apptAdjust)} ${Math.abs(p.apptAdjust) === 1 ? "Termin" : "Termine"}`,
+            euro(COMMISSION_RATE_CENTS / 100), p.apptAdjust < 0 ? minus(Math.abs(p.apptAdjust) * COMMISSION_RATE_CENTS / 100) : euro(p.apptAdjust * COMMISSION_RATE_CENTS / 100)]]
+        : [["2000", "Terminprovision", `${paidAppointments(p)} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.commission)]]),
       ["2100", "Zielbonus", "–", "–", euro(p.targetBonus || 0)],
       p.vacationPay ? ["3000", "Urlaubsentgelt", `${p.vacationDays} Tag(e)`, "", euro(p.vacationPay)] : null,
       p.sickPay ? ["3010", "Krankheitsentgelt", `${p.sickDays} Tag(e)`, "", euro(p.sickPay)] : null,
@@ -6576,6 +6661,20 @@ td { border-bottom-color: var(--line); }
       });
     } else {
       y = vNote(k, y + 2, "Hinweis:", "Keine Abwesenheiten für diesen Monat.");
+    }
+
+    const adjustments = asArray(doc.adjustments);
+    if (adjustments.length) {
+      y += 4;
+      if (y + 30 > VP.B - 10) { k.pdf.addPage(); y = pageTop(); }
+      y = vSectionTitle(k, y, "Termin-Korrekturen");
+      y = vTable(k, y, {
+        cols: [{ w: 30 }, { w: 54 }, { w: 16, align: "right" }],
+        head: ["Eingetragen", "Grund", "Termine"],
+        rows: adjustments.map(a => [fmtDateTime(a.created_at), a.note || "–", Number(a.delta) > 0 ? "+1" : "−1"]),
+        zebra: true,
+        onPageBreak: () => { k.pdf.addPage(); return vSectionTitle(k, pageTop(), "Termin-Korrekturen"); }
+      });
     }
 
     if (y + 22 > VP.B - 8) { k.pdf.addPage(); y = pageTop(); }

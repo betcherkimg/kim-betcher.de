@@ -7221,13 +7221,14 @@ function awZeichnen(){
     var heute = heuteIso();
     var faellig = wv.filter(function(t){ return t.wv <= heute; }).length;
     treffer.textContent = wv.length + " offen" + (faellig ? " \u00b7 " + faellig + " davon f\u00e4llig" : "");
+    if(awWvAufraeumen()) setTimeout(sichern, 0);
     var erledigt = awGefiltert(awWvErledigt());
     ziel.innerHTML = (wv.length
       ? '<div class="zeilen">' + wv.map(awWvZeile).join("") + '</div>'
       : '<p class="leer-hinweis">Keine offenen Wiedervorlagen</p>')
       + (erledigt.length
           ? '<button type="button" class="aw-erledigt-schalter" data-aw-erledigt-zeigen>'
-            + (awErledigtZeigen ? "Abgehakte ausblenden" : "Abgehakte anzeigen (" + erledigt.length + ")") + '</button>'
+            + (awErledigtZeigen ? "Abgehakte ausblenden" : "Abgehakte anzeigen (" + erledigt.length + ") \u00b7 werden nach 30 Tagen gel\u00f6scht") + '</button>'
             + (awErledigtZeigen ? '<div class="aw-erledigt-liste">' + erledigt.slice(0, 50).map(awWvErledigtZeile).join("") + '</div>' : '')
           : '');
   }
@@ -7302,6 +7303,21 @@ function awKundenZeile(e){
 var awErledigtZeigen = false;
 
 // Abgehakte Wiedervorlagen, zuletzt abgehakte zuerst – lassen sich wieder öffnen
+// Abgehakte Wiedervorlagen verschwinden nach 30 Tagen; der Termin selbst bleibt in der Auswertung.
+var WV_ERLEDIGT_WEG_MS = 30 * 24 * 3600 * 1000;
+function awWvAufraeumen(){
+  var jetzt = Date.now(), geaendert = false;
+  AUSWERTUNG.forEach(function(t){
+    if(!t.wv || !t.wvFertig) return;
+    var am = Date.parse(t.wvFertigAm || "");
+    if(!am){ t.wvFertigAm = new Date(jetzt).toISOString(); geaendert = true; return; }
+    if(jetzt - am < WV_ERLEDIGT_WEG_MS) return;
+    delete t.wv; delete t.wvFertig; delete t.wvFertigAm;
+    geaendert = true;
+  });
+  return geaendert;
+}
+
 function awWvErledigt(){
   return AUSWERTUNG.filter(function(t){ return t.wv && t.wvFertig; })
     .sort(function(a, b){ return String(b.wvFertigAm || b.wv || "").localeCompare(String(a.wvFertigAm || a.wv || "")); });
