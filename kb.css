@@ -228,6 +228,7 @@ body { margin: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: 
 .kb-seite button { font: inherit; color: inherit; }
 .kb-menu-btn svg { width: 24px; height: 24px; }
 .kb-fuss-links a[aria-current="page"] { color: #fff; }
+.kb-links a[aria-current="page"] { border-bottom-color: var(--gelb); }
 
 /* Seitenwechsel weich überblenden (wo der Browser es kann) */
 @media (prefers-reduced-motion: no-preference) {
