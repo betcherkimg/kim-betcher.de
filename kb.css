@@ -173,7 +173,16 @@ h1, h2, h3, h4 { font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', s
 .kb-werte { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; margin-top: 44px !important; padding-top: 22px !important; border-top: 3px solid var(--tinte); }
 .kb-werte strong { display: block; font-weight: 750; font-size: 1.08rem; line-height: 1.25; }
 .kb-werte span { display: block; margin-top: 4px; font-size: .98rem; }
-.kb-fuchs { position: absolute; bottom: 0; right: max(16px, calc((100vw - 1180px) / 2 - 20px)); height: min(92%, 520px); width: auto; max-width: none !important; pointer-events: none; }
+/* Der Fuchs steht vor einem schieferfarbenen Feld, damit sich das gelbe Shirt vom gelben Grund abhebt.
+   --f ist seine Höhe; das Feld ist etwas niedriger, Kopf und Ohren ragen oben heraus. */
+.kb-fuchs-feld {
+    --f: clamp(340px, 34vw, 460px);
+    position: absolute; top: 50%; right: max(24px, calc((100vw - 1180px) / 2));
+    width: calc(var(--f) * .62); height: calc(var(--f) * .86);
+    transform: translateY(calc(-50% + var(--f) * .07));
+    border-radius: 4px; background: var(--schiefer); pointer-events: none;
+}
+.kb .kb-fuchs { position: absolute; left: 50%; bottom: calc(var(--f) * .04); height: var(--f); width: auto; max-width: none; transform: translateX(-50%); }
 
 /* Kontakt */
 .kb-kontakt { background: var(--schiefer); color: #fff; }
@@ -184,7 +193,8 @@ h1, h2, h3, h4 { font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', s
 .kb-karte img { width: 100%; height: auto; }
 .kb-karte p { margin-top: 12px; font-weight: 650; font-size: .98rem; line-height: 1.3; }
 .kb-karte span { display: block; margin-top: 2px; font-weight: 400; font-size: .88rem; color: var(--leise); }
-.kb .kb-buero { margin-top: 22px; max-width: 58ch; color: rgba(255,255,255,.78); }
+.kb .kb-buero { margin-top: 30px; max-width: 58ch; color: rgba(255,255,255,.78); }
+.kb .kb-buero + .kb-wege { margin-top: 16px !important; }
 .kb .kb-buero a { color: #fff; font-weight: 650; white-space: nowrap; text-decoration: underline; text-decoration-color: var(--gelb); text-decoration-thickness: 2px; text-underline-offset: 3px; }
 
 /* Fuß */
@@ -210,13 +220,12 @@ h1, h2, h3, h4 { font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', s
     .kb-weg li:last-child { padding-bottom: 0; }
     .kb-weg li::before { top: 4px; left: -11px; width: 19px; height: 12px; }
     .kb-werte { grid-template-columns: 1fr; gap: 18px; }
-    .kb-fuchs { position: static; display: block; height: 260px; margin: 28px auto -64px; }
+    .kb-fuchs-feld { --f: 300px; position: relative; top: auto; right: auto; transform: none; margin: calc(var(--f) * .18 + 36px) auto 0; }
     .kb-wege .kb-btn { width: 100%; }
     .kb-karte { width: 100%; max-width: 260px; }
 }
 @media (min-width: 761px) and (max-width: 1100px) {
     .kb-stein-text { max-width: 58%; }
-    .kb-fuchs { height: min(80%, 420px); right: 8px; }
 }
 
 /* =====================================================================
