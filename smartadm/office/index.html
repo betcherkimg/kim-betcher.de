@@ -869,10 +869,78 @@ td { border-bottom-color: var(--line); }
 .whats-new { max-height: min(86vh, 640px); }
 .whats-new-body { display: grid; gap: 12px; padding: 20px 18px 16px; max-height: inherit; overflow-y: auto; }
 #whatsNewTitle { font-size: 20px; font-weight: 600; letter-spacing: -.02em; }
-#whatsNewList { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+#whatsNewList { display: grid; gap: 14px; }
+#whatsNewList ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
 #whatsNewList li { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; background: var(--ground); font-size: 14px; line-height: 1.45; color: var(--ink-soft); }
 #whatsNewList b { color: var(--ink); font-weight: 600; }
 #whatsNewOk { width: 100%; }
+.wn-intro { margin: -4px 0 0; font-size: 13.5px; line-height: 1.45; color: var(--ink-soft); }
+.wn-intro:empty { display: none; }
+.wn-section h3 { margin: 0 0 8px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.wn-section.pflicht h3 { color: var(--rot); }
+.wn-section.neu h3 { color: var(--accent); }
+#whatsNewList .wn-section.pflicht li { box-shadow: inset 3px 0 0 var(--rot); }
+.wn-confirm { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border-radius: 12px; background: var(--gelb-wash); color: var(--ink); font-size: 14px; font-weight: 600; line-height: 1.4; cursor: pointer; }
+.wn-confirm[hidden] { display: none; }
+.wn-confirm input { width: 20px; height: 20px; flex: none; margin: 0; accent-color: var(--accent); }
+#whatsNewStatus:empty { display: none; }
+
+/* Einsatzplan (Mitarbeiter) */
+.plan-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.plan-head .btn-row { flex: none; }
+#planNotice { display: grid; gap: 8px; margin-bottom: 12px; }
+#planNotice:empty { display: none; }
+.plan-weeks { display: grid; gap: 12px; }
+@media (min-width: 900px) { .plan-weeks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.plan-week { display: grid; gap: 8px; align-content: start; padding: 12px; border-radius: 14px; background: var(--ground); }
+.plan-week-head { display: flex; justify-content: space-between; align-items: baseline; gap: 4px 10px; flex-wrap: wrap; padding: 0 2px; }
+.plan-week-head strong { font-size: 15px; }
+.plan-week-head span { font-size: 12.5px; color: var(--ink-soft); }
+.plan-row { display: grid; grid-template-columns: 88px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; background: var(--surface); }
+.plan-row.is-cancelled .plan-when { opacity: .55; text-decoration: line-through; }
+.plan-when { display: grid; line-height: 1.3; }
+.plan-when b { font-size: 14px; }
+.plan-when span { font-size: 12.5px; color: var(--ink-soft); }
+.plan-info { display: grid; gap: 3px; justify-items: start; min-width: 0; font-size: 12.5px; color: var(--ink-soft); }
+.plan-info small { overflow-wrap: anywhere; }
+.plan-row .row-actions { align-items: center; }
+.plan-empty { margin: 0; padding: 4px 2px; font-size: 13px; color: var(--ink-soft); }
+.btn.small { padding: 6px 12px; font-size: 13px; min-height: 0; }
+@media (max-width: 520px) {
+  .plan-week-head { flex-direction: column; align-items: flex-start; }
+  .plan-row { grid-template-columns: 76px minmax(0, 1fr); }
+  .plan-row .row-actions { grid-column: 1 / -1; justify-content: flex-end; }
+}
+.nd-title { font-size: 20px; font-weight: 600; letter-spacing: -.02em; }
+.nd-who { margin-top: -6px; font-size: 13.5px; color: var(--ink-soft); }
+.nd-text {
+  width: 100%; min-height: 110px; padding: 11px 13px; resize: vertical;
+  border: 1.5px solid var(--line); border-radius: 14px; background: var(--ground);
+  font: inherit; font-size: 16px; line-height: 1.45; color: var(--ink);
+}
+.nd-text:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+.nd-hint { font-size: 12.5px; line-height: 1.4; color: var(--ink-soft); }
+#planCancelStatus:empty, #planStatus:empty { display: none; }
+
+/* Einsatzplan & Wochenkonto, Vorfälle (Boss) */
+.hr-sub { margin: 22px 0 10px; font-size: 15px; font-weight: 600; }
+.hr-info { max-width: 340px; font-size: 13px; color: var(--ink-soft); white-space: pre-line; overflow-wrap: anywhere; }
+.hr-minus { color: var(--rot); font-weight: 600; }
+.hr-plus { color: var(--gruen); font-weight: 600; }
+.chip-btn.hr-review.high { background: var(--rot-wash); color: var(--rot); border-color: transparent; }
+.chip-btn.hr-review.warn { background: var(--gelb-wash); color: var(--gelb); border-color: transparent; }
+.chip-btn.hr-review.good { background: var(--gruen-wash); color: var(--gruen); border-color: transparent; }
+#hrAckStatus { margin-top: 12px; }
+#hrAckStatus[hidden] { display: none; }
+small.muted { color: var(--ink-soft); font-size: 12px; }
+.review-options { display: grid; gap: 8px; margin-bottom: 14px; }
+.review-option { display: flex; gap: 10px; align-items: flex-start; padding: 11px 12px; border: 1.5px solid var(--line); border-radius: 12px; cursor: pointer; }
+.review-option:has(input:checked) { border-color: var(--accent); background: var(--accent-wash); }
+.review-option input { margin: 3px 0 0; flex: none; accent-color: var(--accent); }
+.review-option span { display: grid; gap: 2px; font-size: 14px; }
+.review-option small { color: var(--ink-soft); font-size: 12.5px; line-height: 1.4; }
+#incidentHandedField[hidden] { display: none; }
+#incidentText { width: 100%; min-height: 96px; resize: vertical; font: inherit; }
 
 /* Kurze Bestätigung, die von selbst verschwindet */
 .toast {
@@ -1217,6 +1285,21 @@ td { border-bottom-color: var(--line); }
           </div>
         </div>
 
+        <div class="card section-card plan-card" id="planCard">
+          <div class="card-head plan-head">
+            <div>
+              <h2>Einsatzplan</h2>
+              <p>Plane deine Telefontage mit Startzeit – höchstens 3 pro Woche. Kannst du nicht, sag hier vor dem Start ab.</p>
+            </div>
+            <div class="btn-row">
+              <button class="btn ghost" type="button" id="planRulesBtn">Regeln</button>
+              <button class="btn primary" type="button" id="planAddBtn"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M12 13v5M9.5 15.5h5"/></svg>Tag planen</button>
+            </div>
+          </div>
+          <div id="planNotice"></div>
+          <div id="planWeeks" class="plan-weeks"><div class="notice">Einsatzplan wird geladen …</div></div>
+        </div>
+
         <div class="card shortcut">
           <div><strong>Telefonliste</strong><span data-call-summary>Kontakte werden geladen …</span></div>
           <button class="btn primary" type="button" data-jump-page="telefon"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/></svg>Telefonliste öffnen</button>
@@ -1410,6 +1493,68 @@ td { border-bottom-color: var(--line); }
             <table>
               <thead><tr><th>Datum</th><th>Art</th><th>Bezahlte Zeit</th><th>Entgelt</th><th>Notiz</th><th></th></tr></thead>
               <tbody id="absenceRows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card section-card" id="hrPlanCard">
+          <div class="card-head">
+            <h2>Einsatzplan &amp; Wochenkonto</h2>
+            <p>Geplante Telefontage, Absagen und Soll/Ist je Woche (6 Std., anteilig bei Ein-/Austritt und nach dem Monats-Cut). Wochen mit Fehlstunden ordnest du ein: unentschuldigt = wird nachgearbeitet, entschuldigt = unbezahlt, liegt an mir = bezahlte Freistellung.</p>
+          </div>
+          <div class="quick-grid">
+            <div class="quick"><span>Geplante Tage (kommend)</span><b id="hrPlannedCount">0</b></div>
+            <div class="quick"><span>Ohne Absage / spät abgesagt</span><b id="hrMissedCount">0</b></div>
+            <div class="quick"><span>Wochen noch einzuordnen</span><b id="hrOpenWeeks">0</b></div>
+            <div class="quick"><span>Nacharbeit offen</span><b id="hrMakeUp">0:00 h</b></div>
+          </div>
+          <div id="hrAckStatus" class="notice" hidden></div>
+          <h3 class="hr-sub">Einsatzplan</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tag</th><th>Start</th><th>Status</th><th>Notiz / Absage</th><th></th></tr></thead>
+              <tbody id="hrPlanRows"></tbody>
+            </table>
+          </div>
+          <h3 class="hr-sub">Wochenkonto</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Woche</th><th>Soll</th><th>Ist</th><th>Differenz</th><th>Einordnung</th></tr></thead>
+              <tbody id="hrWeekRows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card section-card" id="hrIncidentCard">
+          <div class="card-head">
+            <h2>Vorfälle &amp; Abmahnungen</h2>
+            <p>Nur für dich sichtbar. Halte sachlich fest, was passiert ist, welche Gespräche du geführt hast und wann eine Abmahnung übergeben wurde.</p>
+          </div>
+          <form id="incidentForm">
+            <input id="incidentId" type="hidden">
+            <input id="incidentPlanId" type="hidden">
+            <div class="form-grid">
+              <div class="field"><label for="incidentDate">Datum</label><input id="incidentDate" type="date" required></div>
+              <div class="field"><label for="incidentKind">Art</label><select id="incidentKind" required>
+                <option value="no_cancel">Nicht erschienen ohne Absage</option>
+                <option value="late_sick">Krankmeldung verspätet</option>
+                <option value="talk">Gespräch geführt</option>
+                <option value="warning">Abmahnung</option>
+                <option value="other">Sonstiges</option>
+              </select></div>
+              <div class="field" id="incidentHandedField" hidden><label for="incidentHanded">Übergeben am</label><input id="incidentHanded" type="date"></div>
+              <div class="field full"><label for="incidentText">Was ist passiert?</label><textarea id="incidentText" rows="4" maxlength="4000" required placeholder="Sachlich: Datum, Uhrzeit, was vereinbart war, was passiert ist, wie sich gemeldet wurde."></textarea></div>
+            </div>
+            <div class="actions start">
+              <button class="btn primary" id="saveIncidentBtn" type="submit">Vorfall speichern</button>
+              <button class="btn ghost" id="resetIncidentBtn" type="button">Zurücksetzen</button>
+              <span id="incidentStatus" class="status-text" style="margin:0"></span>
+            </div>
+          </form>
+          <div class="table-wrap" style="margin-top:16px">
+            <table>
+              <thead><tr><th>Datum</th><th>Art</th><th>Beschreibung</th><th>Übergeben</th><th></th></tr></thead>
+              <tbody id="incidentRows"></tbody>
             </table>
           </div>
         </div>
@@ -2027,7 +2172,7 @@ td { border-bottom-color: var(--line); }
           <div class="card-head split">
             <div>
               <h2>„Was ist neu?“ für Mitarbeiter</h2>
-              <p>Das sehen deine Mitarbeiter einmalig beim nächsten Öffnen. Per Knopfdruck bekommen sie zusätzlich eine Push-Nachricht.</p>
+              <p>Das sehen deine Mitarbeiter beim nächsten Öffnen. Enthält es neue Pflichten, müssen sie es bestätigen. Per Knopfdruck bekommen sie zusätzlich eine Push-Nachricht.</p>
             </div>
             <button class="btn primary" type="button" id="announceBtn">Push an alle Mitarbeiter</button>
           </div>
@@ -2078,11 +2223,74 @@ td { border-bottom-color: var(--line); }
 
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
-<dialog id="whatsNew" class="note-dialog whats-new" aria-labelledby="whatsNewTitle">
+<dialog id="whatsNew" class="note-dialog whats-new" aria-labelledby="whatsNewTitle" closedby="none">
   <div class="whats-new-body">
     <strong id="whatsNewTitle">Was ist neu?</strong>
-    <ul id="whatsNewList"></ul>
+    <p id="whatsNewIntro" class="wn-intro"></p>
+    <div id="whatsNewList"></div>
+    <label class="wn-confirm" id="whatsNewConfirmWrap" hidden><input type="checkbox" id="whatsNewCheck"><span id="whatsNewCheckText"></span></label>
+    <div id="whatsNewStatus" class="status-text" aria-live="polite"></div>
     <button class="btn primary" type="button" id="whatsNewOk">Alles klar</button>
+  </div>
+</dialog>
+
+<!-- Mitarbeiter: Telefontag planen / ändern -->
+<dialog id="planDialog" class="form-dialog" data-role="employee" aria-labelledby="planDialogTitle" closedby="none">
+  <div class="picker-head">
+    <strong id="planDialogTitle">Telefontag planen</strong>
+    <button class="picker-close" type="button" id="planDialogClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
+  </div>
+  <div class="form-dialog-body">
+    <p class="form-dialog-hint">Höchstens 3 Tage pro Woche. 30 Minuten nach der Startzeit erinnert dich Office, falls noch nichts passiert ist. Ab dem Vortag kannst du einen Tag nur noch mit Grund absagen.</p>
+    <form id="planForm">
+      <input type="hidden" id="planId">
+      <div class="form-grid">
+        <div class="field"><label for="planDate">Datum</label><input id="planDate" type="date" required></div>
+        <div class="field"><label for="planStart">Startzeit</label><input id="planStart" type="time" step="300" required></div>
+        <div class="field full"><label for="planNote">Notiz (optional)</label><input id="planNote" type="text" maxlength="200" placeholder="z. B. nur bis 12 Uhr"></div>
+      </div>
+      <div id="planStatus" class="status-text" aria-live="polite"></div>
+      <div class="actions"><button class="btn primary" type="submit" id="planSaveBtn">Tag eintragen</button></div>
+    </form>
+  </div>
+</dialog>
+
+<!-- Mitarbeiter: Einsatz absagen (Grund ist Pflicht) -->
+<dialog id="planCancelDialog" class="note-dialog" data-role="employee" aria-labelledby="planCancelTitle" closedby="none">
+  <form id="planCancelForm" novalidate>
+    <strong id="planCancelTitle" class="nd-title">Einsatz absagen</strong>
+    <span id="planCancelWho" class="nd-who"></span>
+    <textarea id="planCancelReason" class="nd-text" rows="4" maxlength="300" placeholder="Grund, z. B. krank (Migräne)" aria-labelledby="planCancelTitle"></textarea>
+    <small class="nd-hint">Kim bekommt die Absage sofort als Nachricht. Bei Krankheit bitte absagen, sobald du es weißt.</small>
+    <div id="planCancelStatus" class="status-text" aria-live="polite"></div>
+    <div class="note-actions">
+      <button class="note-btn cancel" type="button" id="planCancelClose" aria-label="Abbrechen"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <button class="note-btn ok" type="submit" id="planCancelOk" aria-label="Absage senden" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Boss: Woche mit Fehlstunden einordnen -->
+<dialog id="weekReviewDialog" class="form-dialog" data-role="boss" aria-labelledby="weekReviewTitle" closedby="none">
+  <div class="picker-head">
+    <strong id="weekReviewTitle">Woche einordnen</strong>
+    <button class="picker-close" type="button" id="weekReviewClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
+  </div>
+  <div class="form-dialog-body">
+    <p class="form-dialog-hint" id="weekReviewInfo"></p>
+    <form id="weekReviewForm">
+      <div class="review-options">
+        <label class="review-option"><input type="radio" name="weekResult" value="unexcused"><span><b>Unentschuldigt</b><small>Sie hat die Fehlstunden zu vertreten (z. B. nicht erschienen, nicht abgesagt). Die Stunden werden nachgearbeitet (Vertrag § 5).</small></span></label>
+        <label class="review-option"><input type="radio" name="weekResult" value="excused"><span><b>Entschuldigt</b><small>Z. B. rechtzeitig abgesagt oder krank ohne Entgeltfortzahlung. Unbezahlt, keine Nacharbeit.</small></span></label>
+        <label class="review-option"><input type="radio" name="weekResult" value="employer"><span><b>Liegt an mir</b><small>Z. B. keine Kontakte da oder von dir abgesagt. Wird als bezahlte Freistellung vergütet.</small></span></label>
+      </div>
+      <div class="field full"><label for="weekReviewNote">Notiz (nur für dich)</label><input id="weekReviewNote" type="text" maxlength="500" placeholder="z. B. Di 13.10. ohne Absage, Krankmeldung erst 20:30"></div>
+      <div id="weekReviewStatus" class="status-text" aria-live="polite"></div>
+      <div class="actions">
+        <button class="btn danger" type="button" id="weekReviewRemove" hidden>Einordnung entfernen</button>
+        <button class="btn primary" type="submit">Speichern</button>
+      </div>
+    </form>
   </div>
 </dialog>
 
@@ -2204,7 +2412,12 @@ td { border-bottom-color: var(--line); }
     settings: { goalHours: 24, goalAppointments: 40, cutAppointments: 50 },
     loading: false,
     bootstrappedFor: null,
-    installPrompt: null
+    installPrompt: null,
+    plans: [],               // Mitarbeiter: eigener Einsatzplan
+    weekAccount: null,       // Mitarbeiter: Einordnungen, Eintritt, Abwesenheiten fürs Wochenkonto
+    plansUnsupported: false, // Worker kennt den Einsatzplan noch nicht
+    hr: { plans: [], reviews: [], incidents: [], acks: [], unsupported: false }, // Boss: gewählter Mitarbeiter
+    bossPlans: []            // Boss: Einsatzpläne aller Mitarbeiter (Widget); null = alter Worker
   };
 
   /* ================= Helfer ================= */
@@ -2439,12 +2652,19 @@ td { border-bottom-color: var(--line); }
   /* ================= Boss-Dashboard: Widgets (wie SmartADM 5 Sales) ================= */
 
   const WIDGET_STORE = "smartadm.office.widgets.v1";
-  const WIDGET_MAX = 4;
-  const WIDGET_KEYS = ["kontakte", "mitarbeiter", "aufgabenBoss", "aufgabenAssistenz"];
+  const WIDGET_MAX = 6;
+  const WIDGET_KEYS = ["kontakte", "mitarbeiter", "aufgabenBoss", "aufgabenAssistenz", "einsatzplan"];
   let widgets = [...WIDGET_KEYS];
   try {
     const saved = JSON.parse(localStorage.getItem(WIDGET_STORE) || "null");
     if (Array.isArray(saved)) widgets = saved.filter(k => WIDGET_KEYS.includes(k)).slice(0, WIDGET_MAX);
+    // Neues Widget einmalig auch in schon gespeicherte Dashboards aufnehmen
+    const ADDED = "smartadm.office.widgets.added.einsatzplan";
+    if (!localStorage.getItem(ADDED)) {
+      if (!widgets.includes("einsatzplan") && widgets.length < WIDGET_MAX) widgets.push("einsatzplan");
+      localStorage.setItem(ADDED, "1");
+      localStorage.setItem(WIDGET_STORE, JSON.stringify(widgets));
+    }
   } catch { /* Standard-Widgets */ }
   const ASSIST_FILTER_STORE = "smartadm.office.widgets.assistFilter.v1";
   let assistFilter = "";
@@ -2457,7 +2677,8 @@ td { border-bottom-color: var(--line); }
     kontakte: '<path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/>',
     mitarbeiter: '<circle cx="9" cy="8" r="3"/><path d="M3.8 19c.6-3.5 2.3-5.2 5.2-5.2s4.6 1.7 5.2 5.2"/><circle cx="17" cy="9" r="2.3"/><path d="M15.6 14.2c2.8-.6 4.6.9 5 3.8"/>',
     aufgabenBoss: '<path d="m5.2 12 4.2 4.2L18.8 6.8"/>',
-    aufgabenAssistenz: '<rect x="4.5" y="4" width="15" height="17" rx="2.5"/><path d="M9 4h6v3H9zM8.5 12l2 2 4-4M8.5 17h7"/>'
+    aufgabenAssistenz: '<rect x="4.5" y="4" width="15" height="17" rx="2.5"/><path d="M9 4h6v3H9zM8.5 12l2 2 4-4M8.5 17h7"/>',
+    einsatzplan: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h6"/>'
   };
   const widgetRow = (attrs, name, status, cls, meta) =>
     `<button class="widget-datensatz" type="button" ${attrs}>
@@ -2544,6 +2765,29 @@ td { border-bottom-color: var(--line); }
         const rows = list.slice(0, 3).map(t => { const [st, cls] = taskStatus(t); return widgetRow('data-widget-task', t.title, st, cls, taskMeta(t)); }).join("");
         return { sub: [who, `${list.length} offen`].filter(Boolean).join(" · "), body: (rows || widgetEmpty("Keine offenen Aufgaben. ✓")) + widgetAdd("task", "Aufgabe erstellen") };
       }
+    },
+    einsatzplan: {
+      title: "Einsatzplan", page: "mitarbeiter", text: "Geplante Telefontage, Absagen und Tage ohne Absage",
+      render() {
+        if (state.bossPlans === null) return { sub: "Neuer Worker nötig", body: widgetEmpty("Der Einsatzplan braucht den neuen Worker.") };
+        const today = isoDate();
+        const plans = state.bossPlans;
+        const problems = plans.filter(p => planProblem(p) && p.plan_date >= addDaysIso(today, -7)).sort((a, b) => byPlanDate(b, a));
+        const upcoming = plans.filter(p => p.plan_date >= today && p.status !== "missed").sort(byPlanDate);
+        const rows = [...problems, ...upcoming].slice(0, 4).map(p => {
+          const [label, cls] = planStatus(p);
+          const who = p.display_name || p.email || employeeName(findEmployee(p.clerk_user_id));
+          const when = `${p.plan_date === today ? "Heute" : fmtDayShort(p.plan_date)} · ${p.start_time} Uhr`;
+          return widgetRow(`data-widget-plan="${esc(p.clerk_user_id)}"`, who, label, cls, [when, p.cancel_reason].filter(Boolean).join(" · "));
+        }).join("");
+        const todays = plans.filter(p => p.plan_date === today && p.status !== "cancelled").sort(byPlanDate);
+        const ws = mondayOfWeek(today);
+        const week = plans.filter(p => p.plan_date >= ws && p.plan_date <= addDaysIso(ws, 6) && p.status !== "cancelled").length;
+        return {
+          sub: todays.length ? `Heute ab ${todays[0].start_time} Uhr · ${week} diese Woche` : `${week} ${week === 1 ? "Tag" : "Tage"} diese Woche geplant`,
+          body: rows || widgetEmpty("Noch keine Telefontage geplant.")
+        };
+      }
     }
   };
 
@@ -2616,6 +2860,13 @@ td { border-bottom-color: var(--line); }
     if (add) return $(add.dataset.widgetAdd === "call" ? "callAddBtn" : "taskAddBtn").click();
     const call = event.target.closest("[data-widget-call]");
     if (call) return editCall(call.dataset.widgetCall);
+    const plan = event.target.closest("[data-widget-plan]");
+    if (plan) {
+      showPage("mitarbeiter");
+      Promise.resolve(plan.dataset.widgetPlan !== state.selectedUserId && selectEmployee(plan.dataset.widgetPlan))
+        .then(() => $("hrPlanCard").scrollIntoView({ behavior: "smooth", block: "start" }));
+      return;
+    }
     if (event.target.closest("[data-widget-task]")) return showPage("organisation");
   });
   document.addEventListener("click", event => {
@@ -2723,6 +2974,7 @@ td { border-bottom-color: var(--line); }
     });
 
     $("entryRows").innerHTML = entryRowsHtml(month, true, "Noch keine Einträge im aktuellen Monat.");
+    renderPlanCard();
   }
 
   function entryRowsHtml(list, withActions, emptyText) {
@@ -2985,6 +3237,7 @@ td { border-bottom-color: var(--line); }
     if (!userId) {
       state.employeeEntries = [];
       state.employeeAbsences = [];
+      state.hr = emptyHr();
       state.closings = [];
       renderEmployeeData();
       renderClosings();
@@ -2996,7 +3249,7 @@ td { border-bottom-color: var(--line); }
 
   async function loadEmployeeData(userId) {
     try {
-      const [rows, absences, profile, master, adjustments] = await Promise.all([
+      const [rows, absences, profile, master, adjustments, hr] = await Promise.all([
         api(forUser("/admin/entries", userId)),
         api(forUser("/admin/absences", userId)).catch(error => {
           console.warn("Abwesenheiten nicht verfügbar:", error);
@@ -3007,9 +3260,14 @@ td { border-bottom-color: var(--line); }
           console.warn("Stammdaten nicht verfügbar:", error);
           return {};
         }),
-        api(forUser("/admin/appointment-adjustments", userId)).catch(() => null) // älterer Worker: noch keine Korrekturen
+        api(forUser("/admin/appointment-adjustments", userId)).catch(() => null), // älterer Worker: noch keine Korrekturen
+        fetchHr(userId).catch(error => {
+          console.warn("Einsatzplan nicht verfügbar:", error);
+          return emptyHr();
+        })
       ]);
       if (state.selectedUserId !== userId) return; // inzwischen anderer Mitarbeiter gewählt
+      state.hr = hr;
       state.employeeEntries = toEntries(rows);
       state.employeeAbsences = toAbsences(absences);
       state.employeeAdjustments = Array.isArray(adjustments) ? adjustments : null;
@@ -3056,6 +3314,7 @@ td { border-bottom-color: var(--line); }
       : '<tr><td class="empty" colspan="7">Mitarbeiter auswählen.</td></tr>';
 
     renderAbsenceData();
+    renderHr();
     renderPayrollPreview();
     renderDashboardWidgets();
   }
@@ -3105,6 +3364,7 @@ td { border-bottom-color: var(--line); }
 
     const keep = findEmployee(state.selectedUserId) ? state.selectedUserId : null;
     await selectEmployee(keep || state.employees[0]?.clerk_user_id || null);
+    await loadBossPlans();
   }
 
   // Ein Monat für Mitarbeiterdaten und Lohn – beide Seiten zeigen immer denselben Zeitraum.
@@ -7262,56 +7522,723 @@ td { border-bottom-color: var(--line); }
     }
   });
 
+  /* ================= Einsatzplan, Wochenkonto, Vorfälle =================
+   * Mitarbeiter: Telefontage planen (max. 3/Woche), ändern, absagen (mit Grund).
+   * Boss: Plan + Absagen sehen, Wochen mit Fehlstunden einordnen, Vorfälle festhalten.
+   * Die Daten liegen in eigenen Tabellen – Urlaub und Abrechnung bleiben unberührt.
+   */
+
+  const PLAN_STATUS = {
+    planned: ["Geplant", "from"],
+    started: ["Gestartet", "good"],
+    missed: ["Ohne Absage", "high"],
+    late: ["Verspätet gestartet", "warn"],
+    cancelled: ["Abgesagt", ""]
+  };
+  const planStatus = p => (p.status === "cancelled" && !Number(p.cancelled_in_time)
+    ? ["Spät abgesagt", "warn"] : PLAN_STATUS[p.status] || [p.status, ""]);
+  const WEEK_RESULT_LABELS = {
+    unexcused: ["Unentschuldigt", "high"],
+    excused: ["Entschuldigt", "warn"],
+    employer: ["Liegt an mir", "good"]
+  };
+  const INCIDENT_LABELS = {
+    no_cancel: "Nicht erschienen ohne Absage",
+    late_sick: "Krankmeldung verspätet",
+    talk: "Gespräch geführt",
+    warning: "Abmahnung",
+    other: "Sonstiges"
+  };
+  // Ein Abwesenheitstag ohne eingetragene bezahlte Zeit zählt mit 6 Std. / 3 Tage = 2 Std.
+  const ABSENCE_CREDIT_MIN = Math.round(CONTRACT_WEEKLY_HOURS * 60 / CONTRACT_MAX_WORKDAYS_PER_WEEK);
+  const round5 = m => Math.round(m / 5) * 5;
+  const addDaysIso = (date, n) => {
+    const d = new Date(`${date}T12:00:00Z`);
+    d.setUTCDate(d.getUTCDate() + n);
+    return d.toISOString().slice(0, 10);
+  };
+  const fmtDayShort = iso => `${fmtWeekday(iso)} ${iso.slice(8, 10)}.${iso.slice(5, 7)}.`;
+  const fmtSigned = m => (m > 0 ? "+" : m < 0 ? "−" : "± ") + fmtMinutes(Math.abs(m));
+  const planStartPassed = p => new Date(`${p.plan_date}T${p.start_time}:00`) <= new Date();
+  const byPlanDate = (a, b) => a.plan_date.localeCompare(b.plan_date) || a.start_time.localeCompare(b.start_time);
+  const dayMonth = iso => `${iso.slice(8, 10)}.${iso.slice(5, 7)}.`;
+  const weekRangeLabel = ws => `${isoWeekLabel(ws)} · ${dayMonth(ws)}–${dayMonth(addDaysIso(ws, 6))}`;
+  const planProblem = p => p.status === "missed" || p.status === "late" || (p.status === "cancelled" && !Number(p.cancelled_in_time));
+
+  // Tag, an dem im Monat der Cut erreicht wurde → danach Freistellung mit Fortzahlung (Vertrag § 6).
+  function cutDates(entries, cut) {
+    const months = {};
+    [...entries].sort((a, b) => a.date.localeCompare(b.date)).forEach(e => {
+      const m = months[e.date.slice(0, 7)] ||= { n: 0, date: null };
+      m.n += Number(e.appointments || 0);
+      if (!m.date && cut > 0 && m.n >= cut) m.date = e.date;
+    });
+    return Object.fromEntries(Object.entries(months).filter(([, m]) => m.date).map(([k, m]) => [k, m.date]));
+  }
+
+  /*
+   * Wochenkonto: Soll 6 Std. je Kalenderwoche, anteilig in Wochen mit Ein-/Austritt und
+   * nach dem Monats-Cut. Ist = erfasste Arbeitszeit + Abwesenheiten (bezahlte Zeit bzw. 2 Std. je Tag).
+   * Nacharbeit = Fehlstunden aus „unentschuldigt“ eingeordneten Wochen, abzüglich Mehrstunden danach.
+   */
+  function computeWeekAccount({ entries = [], absences = [], reviews = [], start, end, cut = 0, today = isoDate() }) {
+    if (!start || start > today) return { weeks: [], owed: 0 };
+    const cuts = cutDates(entries, cut);
+    const reviewFor = Object.fromEntries(reviews.map(r => [r.week_start, r]));
+    const last = end && end < today ? end : today;
+    const weeks = [];
+    let owed = 0;
+    for (let ws = mondayOfWeek(start); ws <= mondayOfWeek(last); ws = addDaysIso(ws, 7)) {
+      const we = addDaysIso(ws, 6);
+      let active = 0, released = 0;
+      for (let i = 0; i < 7; i++) {
+        const d = addDaysIso(ws, i);
+        if (d < start || (end && d > end)) continue;
+        const cutDay = cuts[d.slice(0, 7)];
+        if (cutDay && d > cutDay) released++; else active++;
+      }
+      const soll = round5(CONTRACT_WEEKLY_HOURS * 60 * active / 7);
+      const inWeek = x => x.date >= ws && x.date <= we;
+      const work = entries.filter(inWeek).reduce((sum, e) => sum + Number(e.minutes || 0), 0);
+      const credit = Math.min(soll, absences.filter(inWeek)
+        .reduce((sum, a) => sum + (a.paidMinutes > 0 ? a.paidMinutes : ABSENCE_CREDIT_MIN), 0));
+      const ist = work + credit;
+      const done = we < today;
+      const missing = Math.max(0, soll - ist);
+      const surplus = Math.max(0, ist - soll);
+      const review = reviewFor[ws] || null;
+      if (owed > 0 && surplus) owed = Math.max(0, owed - surplus);
+      if (done && review?.result === "unexcused") owed += missing;
+      weeks.push({ weekStart: ws, weekEnd: we, soll, work, credit, ist, missing, surplus, done, released, review });
+    }
+    return { weeks, owed };
+  }
+
+  /* --- Mitarbeiter: Einsatzplan im Dashboard --- */
+
+  async function loadPlans() {
+    if (state.role !== "employee") return;
+    try {
+      const [plans, account] = await Promise.all([api("/plans"), api("/week-account")]);
+      state.plans = asArray(plans);
+      state.weekAccount = account || null;
+      state.plansUnsupported = false;
+    } catch (error) {
+      state.plansUnsupported = error.status === 404 || error.status === 405;
+      if (!state.plansUnsupported) console.warn("Einsatzplan nicht geladen:", error);
+    }
+    renderPlanCard();
+  }
+
+  function ownWeekAccount() {
+    const acc = state.weekAccount || {};
+    return computeWeekAccount({
+      entries: state.entries,
+      absences: toAbsences(acc.absences),
+      reviews: asArray(acc.reviews),
+      start: acc.start_date,
+      end: acc.end_date,
+      cut: Number(state.settings.cutAppointments || 0)
+    });
+  }
+
+  function planRowHtml(p) {
+    const today = isoDate();
+    const [label, cls] = planStatus(p);
+    const canEdit = p.status === "planned" && !planStartPassed(p);
+    const canDelete = p.status === "planned" && p.plan_date > addDaysIso(today, 1);
+    const canCancel = (p.status === "planned" && p.plan_date >= today) ||
+      (p.status === "missed" && p.plan_date >= addDaysIso(today, -1));
+    const extra = [
+      p.note ? `<small>${esc(p.note)}</small>` : "",
+      p.cancel_reason ? `<small>Grund: ${esc(p.cancel_reason)}</small>` : ""
+    ].join("");
+    return `<div class="plan-row${p.status === "cancelled" ? " is-cancelled" : ""}">
+      <div class="plan-when"><b>${esc(fmtDayShort(p.plan_date))}</b><span>${esc(p.start_time)} Uhr</span></div>
+      <div class="plan-info"><span class="chip ${cls}">${esc(label)}</span>${extra}</div>
+      <div class="row-actions">
+        ${canEdit ? `<button class="icon-btn" type="button" data-plan-edit="${p.id}" title="Ändern" aria-label="Einsatz ändern">${ICONS.edit}</button>` : ""}
+        ${canDelete ? `<button class="icon-btn danger" type="button" data-plan-delete="${p.id}" title="Löschen" aria-label="Einsatz löschen">${ICONS.trash}</button>` : ""}
+        ${canCancel ? `<button class="btn ghost small" type="button" data-plan-cancel="${p.id}">Absagen</button>` : ""}
+      </div>
+    </div>`;
+  }
+
+  function renderPlanCard() {
+    const host = $("planWeeks");
+    if (!host || state.role !== "employee") return;
+    const notice = $("planNotice");
+    if (state.plansUnsupported) {
+      host.innerHTML = '<div class="notice">Der Einsatzplan wird gerade eingerichtet und ist in Kürze verfügbar.</div>';
+      notice.innerHTML = "";
+      $("planAddBtn").disabled = true;
+      return;
+    }
+    $("planAddBtn").disabled = false;
+
+    const today = isoDate();
+    const account = ownWeekAccount();
+    const thisWeek = mondayOfWeek(today);
+    host.innerHTML = [thisWeek, addDaysIso(thisWeek, 7)].map((ws, i) => {
+      const we = addDaysIso(ws, 6);
+      const plans = state.plans.filter(p => p.plan_date >= ws && p.plan_date <= we).sort(byPlanDate);
+      const active = plans.filter(p => p.status !== "cancelled").length;
+      const week = account.weeks.find(w => w.weekStart === ws);
+      const work = state.entries.filter(e => e.date >= ws && e.date <= we).reduce((s, e) => s + e.minutes, 0);
+      const hours = i === 0
+        ? ` · ${fmtMinutes(week ? week.ist : work)} von ${fmtMinutes(week ? week.soll : CONTRACT_WEEKLY_HOURS * 60)}`
+        : "";
+      return `<div class="plan-week">
+        <div class="plan-week-head"><strong>${i ? "Nächste Woche" : "Diese Woche"}</strong>
+          <span>${esc(isoWeekLabel(ws))} · ${active} von ${CONTRACT_MAX_WORKDAYS_PER_WEEK} Tagen geplant${esc(hours).replace(/ h\b/g, "\u00a0h")}</span></div>
+        ${plans.length ? plans.map(planRowHtml).join("")
+          : `<p class="plan-empty">${i ? "Noch kein Tag geplant – bitte bis Sonntag eintragen." : "Diese Woche ist kein Tag mehr geplant."}</p>`}
+      </div>`;
+    }).join("");
+
+    const nextWeek = addDaysIso(thisWeek, 7);
+    const nextPlanned = state.plans.some(p => p.plan_date >= nextWeek && p.plan_date <= addDaysIso(nextWeek, 6) && p.status !== "cancelled");
+    const weekday = new Date(`${today}T12:00:00`).getDay(); // 0 = Sonntag
+    const hints = [];
+    if (account.owed > 0) {
+      hints.push(`<div class="notice warn">Nachzuarbeiten: <b>${esc(fmtMinutes(account.owed))}</b> aus Wochen mit unentschuldigten Fehlstunden. Plane die Zeit zusätzlich ein – sie wird mit deinen nächsten Mehrstunden verrechnet.</div>`);
+    }
+    if (!nextPlanned && (weekday === 0 || weekday >= 5)) {
+      hints.push('<div class="notice warn">Für nächste Woche ist noch kein Telefontag geplant. Bitte trage deine Tage bis Sonntag ein.</div>');
+    }
+    notice.innerHTML = hints.join("");
+  }
+
+  function openPlanDialog(plan = null) {
+    $("planId").value = plan?.id || "";
+    $("planDate").min = isoDate();
+    $("planDate").max = shiftDays(60);
+    $("planDate").value = plan?.plan_date || shiftDays(1);
+    $("planStart").value = plan?.start_time || "";
+    $("planNote").value = plan?.note || "";
+    setText("planDialogTitle", plan ? "Einsatz ändern" : "Telefontag planen");
+    setText("planSaveBtn", plan ? "Änderung speichern" : "Tag eintragen");
+    setStatus("planStatus", "");
+    openDialog($("planDialog"));
+  }
+
+  $("planAddBtn").addEventListener("click", () => openPlanDialog());
+  $("planRulesBtn").addEventListener("click", () => showWhatsNewDialog(false));
+  $("planDialogClose").addEventListener("click", () => closeDialog($("planDialog")));
+  $("planDialog").addEventListener("cancel", event => event.preventDefault());
+
+  $("planForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const id = $("planId").value;
+    const body = { plan_date: $("planDate").value, start_time: $("planStart").value, note: $("planNote").value.trim() };
+    withBusy(event.submitter, async () => {
+      try {
+        await api(id ? `/plans/${id}` : "/plans", id ? "PUT" : "POST", body);
+        closeDialog($("planDialog"));
+        toast(id ? "Einsatz geändert ✓" : `${fmtDayShort(body.plan_date)} ab ${body.start_time} Uhr eingetragen ✓`);
+        await loadPlans();
+      } catch (error) {
+        setStatus("planStatus", error.message, true);
+      }
+    });
+  });
+
+  let cancelPlanId = null;
+  const syncCancelOk = () => ($("planCancelOk").disabled = $("planCancelReason").value.trim().length < 3);
+
+  $("planWeeks").addEventListener("click", event => {
+    const edit = event.target.closest("[data-plan-edit]");
+    const del = event.target.closest("[data-plan-delete]");
+    const cancel = event.target.closest("[data-plan-cancel]");
+    const find = id => state.plans.find(p => String(p.id) === String(id));
+    if (edit) return openPlanDialog(find(edit.dataset.planEdit));
+    if (del) {
+      const p = find(del.dataset.planDelete);
+      if (!p || !confirm(`Einsatz am ${fmtDayShort(p.plan_date)} (${p.start_time} Uhr) löschen?`)) return;
+      return withBusy(del, async () => {
+        try { await api(`/plans/${p.id}`, "DELETE"); await loadPlans(); }
+        catch (error) { alert("Einsatz konnte nicht gelöscht werden: " + error.message); }
+      });
+    }
+    if (cancel) {
+      const p = find(cancel.dataset.planCancel);
+      if (!p) return;
+      cancelPlanId = p.id;
+      setText("planCancelWho", `${fmtDayShort(p.plan_date)}, ${p.start_time} Uhr`);
+      $("planCancelReason").value = "";
+      setStatus("planCancelStatus", "");
+      syncCancelOk();
+      openDialog($("planCancelDialog"));
+      $("planCancelReason").focus();
+    }
+  });
+
+  $("planCancelReason").addEventListener("input", syncCancelOk);
+  $("planCancelDialog").addEventListener("cancel", event => event.preventDefault());
+  $("planCancelClose").addEventListener("click", () => closeDialog($("planCancelDialog")));
+  $("planCancelForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const reason = $("planCancelReason").value.trim();
+    if (reason.length < 3 || !cancelPlanId) return;
+    withBusy($("planCancelOk"), async () => {
+      try {
+        const result = await api(`/plans/${cancelPlanId}/cancel`, "POST", { reason });
+        closeDialog($("planCancelDialog"));
+        toast(result?.cancelled_in_time === false
+          ? "Abgesagt – Kim ist informiert. Bitte künftig vor dem Start absagen."
+          : "Abgesagt – Kim ist informiert ✓");
+        await loadPlans();
+      } catch (error) {
+        setStatus("planCancelStatus", error.message, true);
+      }
+    });
+  });
+
+  /* --- Boss: Einsatzplan & Wochenkonto, Vorfälle --- */
+
+  const emptyHr = () => ({ plans: [], reviews: [], incidents: [], acks: [], unsupported: false });
+
+  async function fetchHr(userId) {
+    const soft = path => api(forUser(path, userId)).catch(error => {
+      if (error.status === 404 || error.status === 405) return null;
+      throw error;
+    });
+    const [plans, reviews, incidents, acks] = await Promise.all([
+      soft("/admin/plans"), soft("/admin/week-reviews"), soft("/admin/incidents"), soft("/admin/notice-acks")
+    ]);
+    if (plans === null) return { ...emptyHr(), unsupported: true };
+    return { plans: asArray(plans), reviews: asArray(reviews), incidents: asArray(incidents), acks: asArray(acks), unsupported: false };
+  }
+
+  async function reloadHr(userId = state.selectedUserId) {
+    if (!userId) return;
+    try {
+      const hr = await fetchHr(userId);
+      if (state.selectedUserId === userId) state.hr = hr;
+    } catch (error) {
+      console.warn("Einsatzplan nicht geladen:", error);
+    }
+    renderHr();
+  }
+
+  async function loadBossPlans() {
+    try {
+      state.bossPlans = asArray(await api("/admin/plans"));
+    } catch (error) {
+      state.bossPlans = error.status === 404 || error.status === 405 ? null : state.bossPlans || [];
+    }
+    renderDashboardWidgets();
+  }
+
+  const selectedWeekAccount = () => computeWeekAccount({
+    entries: state.employeeEntries,
+    absences: state.employeeAbsences,
+    reviews: state.hr.reviews,
+    start: selectedEmployment().start_date,
+    end: selectedEmployment().end_date,
+    cut: Number(state.settings.cutAppointments || 0)
+  });
+
+  function renderHr() {
+    if (!$("hrPlanRows") || state.role !== "boss") return;
+    const hr = state.hr;
+    const none = (cols, text) => `<tr><td class="empty" colspan="${cols}">${esc(text)}</td></tr>`;
+    const ack = $("hrAckStatus");
+
+    if (!state.selectedUserId || hr.unsupported) {
+      const text = hr.unsupported ? "Dafür braucht es den neuen Worker." : "Mitarbeiter auswählen.";
+      $("hrPlanRows").innerHTML = none(5, text);
+      $("hrWeekRows").innerHTML = none(5, text);
+      $("incidentRows").innerHTML = none(5, text);
+      ["hrPlannedCount", "hrMissedCount", "hrOpenWeeks"].forEach(id => setText(id, "0"));
+      setText("hrMakeUp", fmtMinutes(0));
+      ack.hidden = true;
+      return;
+    }
+
+    const today = isoDate();
+    const account = selectedWeekAccount();
+    const plans = [...hr.plans].sort((a, b) => byPlanDate(b, a));
+    const upcoming = plans.filter(p => p.plan_date >= today && p.status === "planned");
+    const problems = plans.filter(planProblem);
+
+    setText("hrPlannedCount", upcoming.length);
+    setText("hrMissedCount", problems.length);
+    setText("hrOpenWeeks", account.weeks.filter(w => w.done && w.missing > 0 && !w.review).length);
+    setText("hrMakeUp", fmtMinutes(account.owed));
+
+    const acked = hr.acks.find(a => a.version === WHATS_NEW.version);
+    ack.hidden = false;
+    ack.className = acked ? "notice" : "notice warn";
+    ack.textContent = acked
+      ? `Neue Regeln („Was ist neu?“ vom ${fmtDate(WHATS_NEW.version)}) gelesen und bestätigt am ${fmtDateTime(acked.acknowledged_at)} Uhr.`
+      : `Neue Regeln („Was ist neu?“ vom ${fmtDate(WHATS_NEW.version)}) noch nicht bestätigt – sie erscheinen beim nächsten Öffnen von Office und müssen bestätigt werden.`;
+
+    $("hrPlanRows").innerHTML = plans.length ? plans.slice(0, 40).map(p => {
+      const [label, cls] = planStatus(p);
+      const info = [
+        p.note ? esc(p.note) : "",
+        p.cancel_reason ? `Abgesagt ${esc(fmtDateTime(p.cancelled_at))} Uhr: ${esc(p.cancel_reason)}` : "",
+        p.status === "late" && p.started_at ? `Aktivität ab ca. ${esc(fmtDateTime(p.started_at))} Uhr` : ""
+      ].filter(Boolean).join("<br>");
+      return `<tr>
+        <td>${esc(fmtDayShort(p.plan_date))}</td>
+        <td>${esc(p.start_time)}</td>
+        <td><span class="chip ${cls}">${esc(label)}</span></td>
+        <td class="hr-info">${info || "–"}</td>
+        <td><div class="row-actions">
+          ${planProblem(p) ? `<button class="btn ghost small" type="button" data-hr-incident="${p.id}">Vorfall erfassen</button>` : ""}
+          <button class="icon-btn danger" type="button" data-hr-plan-delete="${p.id}" title="Löschen" aria-label="Einsatz löschen">${ICONS.trash}</button>
+        </div></td>
+      </tr>`;
+    }).join("") : none(5, "Noch keine Tage geplant.");
+
+    const weeks = [...account.weeks].reverse();
+    $("hrWeekRows").innerHTML = weeks.length ? weeks.map(w => {
+      const diff = w.ist - w.soll;
+      let action;
+      if (!w.done) action = '<span class="chip from">läuft</span>';
+      else if (w.review) {
+        const [label, cls] = WEEK_RESULT_LABELS[w.review.result] || [w.review.result, ""];
+        action = `<button class="chip-btn hr-review ${cls}" type="button" data-hr-week="${w.weekStart}" title="${esc(w.review.note || "Einordnung ändern")}">${esc(label)}</button>`;
+      } else if (w.missing > 0) action = `<button class="btn ghost small" type="button" data-hr-week="${w.weekStart}">Einordnen</button>`;
+      else action = '<span class="chip good">erfüllt</span>';
+      const detail = [w.credit ? `inkl. ${fmtMinutes(w.credit)} Abwesenheit` : "", w.released ? `${w.released} Tage Freistellung (Cut)` : ""].filter(Boolean).join(" · ");
+      return `<tr>
+        <td>${esc(weekRangeLabel(w.weekStart))}</td>
+        <td>${esc(fmtMinutes(w.soll))}</td>
+        <td>${esc(fmtMinutes(w.ist))}${detail ? `<br><small class="muted">${esc(detail)}</small>` : ""}</td>
+        <td class="${diff < 0 ? "hr-minus" : diff > 0 ? "hr-plus" : ""}">${esc(fmtSigned(diff))}</td>
+        <td>${action}</td>
+      </tr>`;
+    }).join("") : none(5, selectedEmployment().start_date ? "Noch keine Wochen." : "Eintrittsdatum in den Stammdaten fehlt.");
+
+    $("incidentRows").innerHTML = hr.incidents.length ? hr.incidents.map(i => `<tr>
+        <td>${esc(fmtDate(i.incident_date))}</td>
+        <td><span class="chip ${i.kind === "warning" ? "high" : i.kind === "talk" ? "from" : "warn"}">${esc(INCIDENT_LABELS[i.kind] || i.kind)}</span></td>
+        <td class="hr-info">${esc(i.description)}</td>
+        <td>${i.handed_over_on ? esc(fmtDate(i.handed_over_on)) : "–"}</td>
+        <td><div class="row-actions">
+          <button class="icon-btn" type="button" data-incident-edit="${i.id}" title="Bearbeiten">${ICONS.edit}</button>
+          <button class="icon-btn danger" type="button" data-incident-delete="${i.id}" title="Löschen">${ICONS.trash}</button>
+        </div></td>
+      </tr>`).join("") : none(5, "Keine Vorfälle festgehalten.");
+  }
+
+  /* Woche einordnen */
+  let reviewWeek = null;
+
+  function openWeekReview(weekStart) {
+    const w = selectedWeekAccount().weeks.find(x => x.weekStart === weekStart);
+    if (!w) return;
+    reviewWeek = w;
+    const plans = state.hr.plans.filter(p => p.plan_date >= w.weekStart && p.plan_date <= w.weekEnd).sort(byPlanDate)
+      .map(p => `${fmtDayShort(p.plan_date)} ${planStatus(p)[0].toLowerCase()}`);
+    setText("weekReviewInfo", `${weekRangeLabel(w.weekStart)}: Soll ${fmtMinutes(w.soll)}, Ist ${fmtMinutes(w.ist)}, es fehlen ${fmtMinutes(w.missing)}.` +
+      (plans.length ? ` Geplant: ${plans.join(", ")}.` : " Keine Tage geplant."));
+    $$("[name=weekResult]").forEach(r => (r.checked = r.value === w.review?.result));
+    $("weekReviewNote").value = w.review?.note || "";
+    $("weekReviewRemove").hidden = !w.review;
+    setStatus("weekReviewStatus", "");
+    openDialog($("weekReviewDialog"));
+  }
+
+  function prefillPaidLeave(w) {
+    const busy = new Set([...state.employeeEntries, ...state.employeeAbsences].map(x => x.date));
+    const { start_date: start, end_date: end } = selectedEmployment();
+    const planned = state.hr.plans.filter(p => p.plan_date >= w.weekStart && p.plan_date <= w.weekEnd).map(p => p.plan_date);
+    const days = [...planned, ...Array.from({ length: 7 }, (_, i) => addDaysIso(w.weekStart, i))]
+      .filter(d => !busy.has(d) && (!start || d >= start) && (!end || d <= end));
+    const hours = Math.round(w.missing / 15) / 4;
+    resetAbsenceForm();
+    $("absenceDate").value = days[0] || w.weekStart;
+    $("absenceType").value = "paid_leave";
+    $("absencePaidHours").value = String(hours);
+    $("absencePaidAmount").value = (Math.round(hours * HOURLY_RATE_CENTS) / 100).toFixed(2);
+    $("absenceNote").value = `Liegt an mir – ${isoWeekLabel(w.weekStart)}`;
+    setStatus("absenceStatus", "Vorschlag für die bezahlte Freistellung – bitte prüfen und speichern.");
+    $("absenceForm").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  $("weekReviewDialog").addEventListener("cancel", event => event.preventDefault());
+  $("weekReviewClose").addEventListener("click", () => closeDialog($("weekReviewDialog")));
+
+  $("weekReviewForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const w = reviewWeek, userId = state.selectedUserId;
+    const result = $$("[name=weekResult]").find(r => r.checked)?.value;
+    if (!w || !userId) return;
+    if (!result) return setStatus("weekReviewStatus", "Bitte eine Einordnung wählen.", true);
+    withBusy(event.submitter, async () => {
+      try {
+        await api(forUser("/admin/week-reviews", userId), "PUT", { week_start: w.weekStart, result, note: $("weekReviewNote").value.trim() });
+        closeDialog($("weekReviewDialog"));
+        await reloadHr(userId);
+        if (result === "employer" && w.missing > 0 &&
+            confirm(`Die fehlenden ${fmtMinutes(w.missing)} jetzt als „Bezahlte Freistellung“ eintragen? Das Formular unter „Abwesenheiten & Urlaub“ wird dafür vorausgefüllt.`)) {
+          prefillPaidLeave(w);
+        } else toast("Woche eingeordnet ✓");
+      } catch (error) {
+        setStatus("weekReviewStatus", error.message, true);
+      }
+    });
+  });
+
+  $("weekReviewRemove").addEventListener("click", event => {
+    const w = reviewWeek;
+    if (!w?.review || !confirm("Einordnung dieser Woche entfernen?")) return;
+    withBusy(event.currentTarget, async () => {
+      try {
+        await api(forUser(`/admin/week-reviews/${w.review.id}`, state.selectedUserId), "DELETE");
+        closeDialog($("weekReviewDialog"));
+        await reloadHr();
+      } catch (error) {
+        setStatus("weekReviewStatus", error.message, true);
+      }
+    });
+  });
+
+  $("hrWeekRows").addEventListener("click", event => {
+    const btn = event.target.closest("[data-hr-week]");
+    if (btn) openWeekReview(btn.dataset.hrWeek);
+  });
+
+  /* Vorfälle */
+  function resetIncidentForm() {
+    $("incidentId").value = "";
+    $("incidentPlanId").value = "";
+    $("incidentDate").value = isoDate();
+    $("incidentKind").value = "no_cancel";
+    $("incidentHanded").value = "";
+    $("incidentText").value = "";
+    $("saveIncidentBtn").textContent = "Vorfall speichern";
+    syncIncidentKind();
+    setStatus("incidentStatus", "");
+  }
+
+  function syncIncidentKind() {
+    const warning = $("incidentKind").value === "warning";
+    $("incidentHandedField").hidden = !warning;
+    if (!warning) $("incidentHanded").value = "";
+  }
+  $("incidentKind").addEventListener("change", syncIncidentKind);
+  $("resetIncidentBtn").addEventListener("click", resetIncidentForm);
+
+  function prefillIncident(p) {
+    resetIncidentForm();
+    const day = `${fmtWeekday(p.plan_date)} ${fmtDate(p.plan_date)}`;
+    const lines = [`Geplanter Einsatz am ${day} ab ${p.start_time} Uhr (selbst eingetragen im Einsatzplan).`];
+    if (p.status === "cancelled") {
+      lines.push(`Absage erst am ${fmtDateTime(p.cancelled_at)} Uhr – nach dem geplanten Start. Grund: ${p.cancel_reason || "–"}.`);
+    } else {
+      const alert = p.alerted_at ? ` (Office-Hinweis um ${fmtDateTime(p.alerted_at)} Uhr)` : "";
+      lines.push(`Keine Aktivität in Office und keine Absage${alert}.`);
+      if (p.status === "late") lines.push(`Aktivität erst ab ca. ${fmtDateTime(p.started_at)} Uhr.`);
+    }
+    $("incidentPlanId").value = p.id;
+    $("incidentDate").value = p.plan_date;
+    $("incidentKind").value = p.status === "cancelled" ? "late_sick" : "no_cancel";
+    $("incidentText").value = lines.join("\n");
+    syncIncidentKind();
+    $("incidentForm").scrollIntoView({ behavior: "smooth", block: "center" });
+    $("incidentText").focus({ preventScroll: true });
+  }
+
+  $("hrPlanRows").addEventListener("click", event => {
+    const inc = event.target.closest("[data-hr-incident]");
+    const del = event.target.closest("[data-hr-plan-delete]");
+    const find = id => state.hr.plans.find(p => String(p.id) === String(id));
+    if (inc) { const p = find(inc.dataset.hrIncident); if (p) prefillIncident(p); return; }
+    if (del) {
+      const p = find(del.dataset.hrPlanDelete);
+      if (!p || !confirm(`Einsatz vom ${fmtDayShort(p.plan_date)} (${p.start_time} Uhr) endgültig löschen?`)) return;
+      withBusy(del, async () => {
+        try { await api(`/admin/plans/${p.id}`, "DELETE"); await reloadHr(); loadBossPlans(); }
+        catch (error) { alert("Einsatz konnte nicht gelöscht werden: " + error.message); }
+      });
+    }
+  });
+
+  $("incidentForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const userId = state.selectedUserId;
+    if (!userId) return alert("Bitte zuerst einen Mitarbeiter auswählen.");
+    const id = $("incidentId").value;
+    const body = {
+      incident_date: $("incidentDate").value,
+      kind: $("incidentKind").value,
+      handed_over_on: $("incidentHanded").value || null,
+      description: $("incidentText").value.trim(),
+      plan_id: $("incidentPlanId").value || null
+    };
+    withBusy(event.submitter, async () => {
+      try {
+        await api(forUser(id ? `/admin/incidents/${id}` : "/admin/incidents", userId), id ? "PUT" : "POST", body);
+        resetIncidentForm();
+        setStatus("incidentStatus", "Gespeichert ✓");
+        await reloadHr(userId);
+      } catch (error) {
+        setStatus("incidentStatus", error.message, true);
+      }
+    });
+  });
+
+  $("incidentRows").addEventListener("click", event => {
+    const edit = event.target.closest("[data-incident-edit]");
+    const del = event.target.closest("[data-incident-delete]");
+    const find = id => state.hr.incidents.find(i => String(i.id) === String(id));
+    if (edit) {
+      const i = find(edit.dataset.incidentEdit);
+      if (!i) return;
+      $("incidentId").value = i.id;
+      $("incidentPlanId").value = i.plan_id || "";
+      $("incidentDate").value = i.incident_date;
+      $("incidentKind").value = i.kind;
+      syncIncidentKind();
+      $("incidentHanded").value = i.handed_over_on || "";
+      $("incidentText").value = i.description;
+      $("saveIncidentBtn").textContent = "Änderungen speichern";
+      $("incidentForm").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    if (del) {
+      const i = find(del.dataset.incidentDelete);
+      if (!i || !confirm(`${INCIDENT_LABELS[i.kind] || "Vorfall"} vom ${fmtDate(i.incident_date)} wirklich löschen?`)) return;
+      withBusy(del, async () => {
+        try {
+          await api(forUser(`/admin/incidents/${i.id}`, state.selectedUserId), "DELETE");
+          resetIncidentForm();
+          await reloadHr();
+        } catch (error) {
+          alert("Vorfall konnte nicht gelöscht werden: " + error.message);
+        }
+      });
+    }
+  });
+
   /* ================= Was ist neu? =================
-   * Mitarbeiter sehen die Liste einmal pro Version und Gerät. Für das nächste Update
-   * einfach version ändern und die Punkte ersetzen.
+   * Mitarbeiter sehen die Liste einmal pro Version. Für das nächste Update version ändern
+   * und die Abschnitte ersetzen. required: true → muss gelesen und bestätigt werden
+   * (Bestätigung liegt im Worker, der Boss sieht sie unter Mitarbeiter → Einsatzplan).
    */
   const WHATS_NEW = {
-    version: "2026-10-09",
-    items: [
-      ["„+ Notiz“ an den Boss", "Im Kontakt neben „Skript“: Wähle „Notiz“ für einen Hinweis zum Kunden oder „Kontaktdaten“, wenn du eine neue Telefonnummer oder E-Mail-Adresse bekommen hast – mit „+“ trägst du mehrere ein. Der Boss bekommt alles gesammelt unter „Aufgaben & Notizen“."]
-    ]
+    version: "2026-10-13",
+    required: true,
+    intro: "Bitte lies dir alles in Ruhe durch. Die Punkte unter „Ab sofort Pflicht“ gelten ab heute für deine Arbeit bei Kim. Danach bestätigst du ganz unten, dass du sie gelesen hast.",
+    sections: [
+      {
+        title: "Ab sofort Pflicht", tone: "pflicht",
+        items: [
+          ["Telefontage vorher planen", "Trage deine Telefontage im Einsatzplan ein – mit Startzeit, höchstens 3 Tage pro Woche (Arbeitsvertrag § 5). Die Tage der nächsten Woche stehen spätestens Sonntagabend drin."],
+          ["Absagen nur in Office – vor dem Start", "Kannst du an einem geplanten Tag nicht, tippst du im Einsatzplan auf „Absagen“, bevor deine Startzeit erreicht ist, und schreibst kurz den Grund dazu. Kim bekommt die Absage sofort."],
+          ["Krankheit sofort melden", "Bist du krank, sagst du ab, sobald du es weißt – nicht erst später am Tag (Arbeitsvertrag § 17). Die Absage im Einsatzplan mit Grund reicht dafür."],
+          ["6 Stunden pro Woche", "Vereinbart sind 6 Stunden pro Woche. Fehlstunden, die du zu vertreten hast, arbeitest du nach (Arbeitsvertrag § 5). Offene Stunden siehst du im Einsatzplan."]
+        ]
+      },
+      {
+        title: "Neu in Office", tone: "neu",
+        items: [
+          ["Einsatzplan im Dashboard", "Hier planst, änderst und sagst du deine Telefontage ab. Du siehst diese und nächste Woche und wie viele Stunden schon erfasst sind."],
+          ["Erinnerungen per Push", "30 Minuten nach deiner Startzeit erinnert dich Office, falls noch nichts passiert ist. Sonntagabend kommt eine Erinnerung, wenn die neue Woche noch leer ist."],
+          ["Kim wird automatisch informiert", "Absagen, kurzfristige Änderungen und geplante Tage ohne Aktivität und ohne Absage meldet Office direkt an Kim."]
+        ]
+      }
+    ],
+    confirm: "Ich habe die neuen Regeln gelesen und verstanden.",
+    push: {
+      title: "Bitte lesen & bestätigen",
+      body: "Ab sofort neue Pflichten: Telefontage planen, vor dem Start absagen, Krankheit sofort melden. Öffne Office, lies „Was ist neu?“ und bestätige."
+    }
   };
 
   const whatsNewKey = () => `smartadm.office.whatsnew:${state.bootstrappedFor || "none"}`;
+  const rememberWhatsNew = () => { try { localStorage.setItem(whatsNewKey(), WHATS_NEW.version); } catch {} };
+  let whatsNewMustConfirm = false;
 
-  function showWhatsNew() {
-    if (state.role !== "employee") return;
-    try {
-      if (localStorage.getItem(whatsNewKey()) === WHATS_NEW.version) return;
-    } catch {}
-    $("whatsNewList").innerHTML = WHATS_NEW.items
-      .map(([title, text]) => `<li><b>${esc(title)}</b>${esc(text)}</li>`).join("");
+  function showWhatsNewDialog(mustConfirm) {
+    whatsNewMustConfirm = Boolean(mustConfirm);
+    setText("whatsNewTitle", whatsNewMustConfirm ? "Was ist neu? – bitte bestätigen" : "Was ist neu?");
+    setText("whatsNewIntro", whatsNewMustConfirm ? WHATS_NEW.intro : "");
+    $("whatsNewList").innerHTML = WHATS_NEW.sections.map(s => `
+      <section class="wn-section ${s.tone}">
+        <h3>${esc(s.title)}</h3>
+        <ul>${s.items.map(([title, text]) => `<li><b>${esc(title)}</b>${esc(text)}</li>`).join("")}</ul>
+      </section>`).join("");
+    $("whatsNewConfirmWrap").hidden = !whatsNewMustConfirm;
+    setText("whatsNewCheckText", WHATS_NEW.confirm);
+    $("whatsNewCheck").checked = false;
+    $("whatsNewOk").disabled = whatsNewMustConfirm;
+    setText("whatsNewOk", whatsNewMustConfirm ? "Gelesen & bestätigen" : "Schließen");
+    setStatus("whatsNewStatus", "");
     openDialog($("whatsNew"));
+    $("whatsNew").querySelector(".whats-new-body").scrollTop = 0;
   }
 
-  $("whatsNew").addEventListener("close", () => {
-    try { localStorage.setItem(whatsNewKey(), WHATS_NEW.version); } catch {}
-  });
-  $("whatsNewOk").addEventListener("click", () => closeDialog($("whatsNew")));
+  async function showWhatsNew() {
+    if (state.role !== "employee") return;
+    let seen = false;
+    try { seen = localStorage.getItem(whatsNewKey()) === WHATS_NEW.version; } catch {}
+    if (WHATS_NEW.required) {
+      // Maßgeblich ist die Bestätigung im Worker. Kennt der Worker sie noch nicht,
+      // wartet der Hinweis, bis er eingespielt ist – sonst ginge die Bestätigung verloren.
+      try {
+        seen = asArray(await api("/notices/acks")).some(a => a.version === WHATS_NEW.version);
+        if (seen) rememberWhatsNew();
+      } catch (error) {
+        if (error.status === 404 || error.status === 405) return;
+        seen = false;
+      }
+    }
+    if (!seen) showWhatsNewDialog(WHATS_NEW.required);
+  }
 
-  // Boss: Vorschau + einmaliger Push „Neue Version!“ an alle Mitarbeiter
+  // Pflicht-Hinweis lässt sich nicht wegklicken – nur über „Gelesen & bestätigen“.
+  $("whatsNew").addEventListener("cancel", event => { if (whatsNewMustConfirm) event.preventDefault(); });
+  $("whatsNew").addEventListener("close", () => { if (!whatsNewMustConfirm && !WHATS_NEW.required) rememberWhatsNew(); });
+  $("whatsNewCheck").addEventListener("change", event => {
+    if (whatsNewMustConfirm) $("whatsNewOk").disabled = !event.target.checked;
+  });
+  $("whatsNewOk").addEventListener("click", event => {
+    if (!whatsNewMustConfirm) return closeDialog($("whatsNew"));
+    if (!$("whatsNewCheck").checked) return;
+    withBusy(event.currentTarget, async () => {
+      try {
+        await api("/notices/ack", "POST", { version: WHATS_NEW.version });
+      } catch (error) {
+        setStatus("whatsNewStatus", `Bestätigung konnte nicht gespeichert werden: ${error.message} Bitte nochmal tippen.`, true);
+        return;
+      }
+      rememberWhatsNew();
+      whatsNewMustConfirm = false;
+      closeDialog($("whatsNew"));
+      toast("Danke! Deine Bestätigung ist gespeichert ✓");
+    }).then(() => { if (whatsNewMustConfirm) $("whatsNewOk").disabled = !$("whatsNewCheck").checked; });
+  });
+
+  // Boss: Vorschau + einmaliger Push an alle Mitarbeiter
   const ANNOUNCE_STORE = "smartadm.office.announced";
+  const announceText = () => (WHATS_NEW.push ? WHATS_NEW.push.body : "Neue Version! Schaue dir jetzt an, was neu ist.");
   function renderAnnounce() {
-    $("whatsNewPreview").innerHTML = WHATS_NEW.items.map(([title, text]) => `<li><b>${esc(title)}</b> – ${esc(text)}</li>`).join("");
+    $("whatsNewPreview").innerHTML = WHATS_NEW.sections.flatMap(s => s.items.map(([title, text]) =>
+      `<li><b>${esc(s.tone === "pflicht" ? "Pflicht: " : "Neu: ")}${esc(title)}</b> – ${esc(text)}</li>`)).join("");
     let sentAt = "";
     try { sentAt = JSON.parse(localStorage.getItem(ANNOUNCE_STORE) || "{}")[WHATS_NEW.version] || ""; } catch { /* nichts gemerkt */ }
     $("announceBtn").disabled = Boolean(sentAt);
     $("announceBtn").textContent = sentAt ? "Push gesendet ✓" : "Push an alle Mitarbeiter";
-    setText("announceStatus", sentAt ? `Für diese Version am ${fmtDateTime(sentAt)} gesendet.` : "Text der Nachricht: „Neue Version! Schaue dir jetzt an, was neu ist.“");
+    setText("announceStatus", (sentAt ? `Für diese Version am ${fmtDateTime(sentAt)} gesendet.` : `Text der Nachricht: „${announceText()}“`) +
+      (WHATS_NEW.required ? " Die Mitarbeiter müssen die neuen Regeln bestätigen – den Stand siehst du unter Mitarbeiter → Einsatzplan & Wochenkonto." : ""));
   }
   renderAnnounce();
   $("announceBtn").addEventListener("click", event => {
-    if (!confirm("Push „Neue Version! Schaue dir jetzt an, was neu ist.“ jetzt an alle Mitarbeiter senden?")) return;
+    if (!confirm(`Push „${announceText()}“ jetzt an alle Mitarbeiter senden?`)) return;
     withBusy(event.currentTarget, async () => {
       try {
-        const result = await api("/admin/push/announce", "POST", { version: WHATS_NEW.version });
+        const result = await api("/admin/push/announce", "POST", { version: WHATS_NEW.version, ...(WHATS_NEW.push || {}) });
         try {
           const store = JSON.parse(localStorage.getItem(ANNOUNCE_STORE) || "{}");
           store[WHATS_NEW.version] = new Date().toISOString();
           localStorage.setItem(ANNOUNCE_STORE, JSON.stringify(store));
         } catch { /* nur Anzeige */ }
-        toast(result?.employees ? `Push gesendet an ${result.employees} ${result.employees === 1 ? "Mitarbeiter" : "Mitarbeiter"} ✓` : "Gesendet – aber noch kein Mitarbeiter hat Benachrichtigungen aktiviert.");
+        toast(result?.employees ? `Push gesendet an ${result.employees} Mitarbeiter ✓` : "Gesendet – aber noch kein Mitarbeiter hat Benachrichtigungen aktiviert.");
       } catch (error) {
         alert(error.status === 404 || error.status === 405
           ? "Dafür braucht es den neuen Worker. Bitte erst den Worker in Cloudflare einspielen."
@@ -7362,6 +8289,7 @@ td { border-bottom-color: var(--line); }
     } else {
       restoreCallStore();
       await loadOwnEntries(); // rendert das Dashboard mit den zentralen Zielwerten
+      await loadPlans();
     }
     await Promise.all([loadTasks(), loadBranches(), loadCalls()]);
     initPush();
