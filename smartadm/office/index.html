@@ -2017,7 +2017,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
               <div class="rate-inline">
                 <label class="check-row"><input data-profile="accident" type="checkbox">
                   <span>Unfallversicherung / BG berücksichtigen<small>Der Satz hängt vom zuständigen Unfallversicherungsträger ab.</small></span></label>
-                <div class="field"><label>Satz in %</label><input data-profile="accidentRate" type="number" min="0" max="20" step="0.01" value="0"></div>
+                <div class="field"><label>Genauer Satz in %</label><input data-profile="accidentRate" type="number" min="0" max="20" step="0.01" value="0"></div>
+              </div>
+              <div class="rate-inline">
+                <p class="status-text" style="margin:0 0 8px" id="accidentRateNote">Noch keinen genauen Satz von der BG? Dann rechnet Office mit deiner Schätzung. Sobald der genaue Satz eingetragen ist, hat er Vorrang.</p>
+                <div class="field"><label>Geschätzter BG-Satz in %</label><input data-profile="accidentRateEstimate" type="number" min="0" max="20" step="0.01" value="0"></div>
               </div>
             </div>
           </div>
@@ -2759,7 +2763,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const DEFAULT_PROFILE = {
     employeeRv: true, rvMinBaseApplies: true, flatTax: true, flatTaxEmployee: false,
     employerKv: true, employerRv: true, u1: true, u2: true,
-    insolvency: true, accident: false, accidentRate: 0
+    insolvency: true, accident: false, accidentRate: 0, accidentRateEstimate: 0
   };
 
   // Gleiche Logik wie im Worker – Vorschau und Monatsabschluss rechnen identisch.
@@ -2770,8 +2774,14 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     u2: p => (p.u2 ? 0.0022 : 0),
     insolvency: p => (p.insolvency ? 0.0015 : 0),
     employerFlatTax: p => (p.flatTax && !p.flatTaxEmployee ? 0.02 : 0),
-    accident: p => (p.accident ? Number(p.accidentRate || 0) / 100 : 0)
+    accident: p => (p.accident ? accidentRatePercent(p) / 100 : 0)
   };
+  // BG-Satz: der genaue Satz hat Vorrang, sonst die Schätzung
+  function accidentRatePercent(p) { return Number(p?.accidentRate) > 0 ? Number(p.accidentRate) : Number(p?.accidentRateEstimate || 0); }
+  function accidentRateLabel(p) {
+    const est = !(Number(p?.accidentRate) > 0) && Number(p?.accidentRateEstimate) > 0;
+    return `${est ? "geschätzt " : ""}${decimal(accidentRatePercent(p), 2)} %`;
+  }
 
   const CONTRIBUTION_DEADLINES_2026 = {
     "2026-01": [25, 28], "2026-02": [22, 25], "2026-03": [24, 27],
@@ -4501,6 +4511,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (rvMinBase) rvMinBase.disabled = !get("employeeRv").checked;
 
     get("accidentRate").disabled = !get("accident").checked;
+    get("accidentRateEstimate").disabled = !get("accident").checked;
   }
 
   // Sozialversicherungstage: voller Monat = 30, sonst Kalendertage der Beschäftigung
@@ -5024,13 +5035,16 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
     setStatus("payrollSaveStatus", "Wird gespeichert …");
     try {
-      const saved = await api(forUser("/admin/payroll-settings", userId), "PUT", readProfileInputs());
-      state.profiles[userId] = { ...DEFAULT_PROFILE, ...saved };
+      const sent = readProfileInputs();
+      const saved = await api(forUser("/admin/payroll-settings", userId), "PUT", sent);
+      const lostEstimate = missingKeys(saved, ["accidentRateEstimate"]).length > 0;
+      state.profiles[userId] = { ...DEFAULT_PROFILE, ...saved, ...(lostEstimate ? { accidentRateEstimate: sent.accidentRateEstimate } : {}) };
       if (state.selectedUserId === userId) {
         setProfileInputs(state.profiles[userId]);
         renderPayrollPreview();
       }
-      setStatus("payrollSaveStatus", "Gespeichert ✓");
+      if (lostEstimate && sent.accident && sent.accidentRateEstimate) setStatus("payrollSaveStatus", `Gespeichert – außer dem geschätzten BG-Satz. ${WORKER_HINT}`, true);
+      else setStatus("payrollSaveStatus", "Gespeichert ✓");
       $("savePayrollProfile").hidden = true;
       return true;
     } catch (error) {
@@ -7731,7 +7745,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       ["Umlage U2 (0,22 %)", p.u2],
       ["Insolvenzgeldumlage (0,15 %)", p.insolvency],
       ["Pauschsteuer Arbeitgeber (2 %)", p.employerFlatTax],
-      [`Unfallversicherung / BG (${decimal(profile.accidentRate || 0, 2)} %)`, p.accident]
+      [`Unfallversicherung / BG (${accidentRateLabel(profile)})`, p.accident]
     ].filter(([, amount]) => Number(amount) > 0);
 
     const minijobZentrale = (p.employerContributions || 0) - (p.accident || 0) + (p.employeeDeductions || 0);
@@ -8300,7 +8314,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       rows: [
         ["Bruttovergütung", num(p.gross)],
         ["Arbeitgeberabgaben an die Minijob-Zentrale", num(own - Number(p.accident || 0))],
-        ...(p.accident ? [[`Unfallversicherung / BG (${decimal(profile.accidentRate || 0, 2)} %, separat an die BG)`, num(p.accident)]] : [])
+        ...(p.accident ? [[`Unfallversicherung / BG (${accidentRateLabel(profile)}, separat an die BG)`, num(p.accident)]] : [])
       ],
       foot: ["Gesamtkosten Arbeitgeber", num(p.employerCost)]
     }) + 4;
