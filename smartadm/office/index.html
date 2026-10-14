@@ -1621,7 +1621,7 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
             <div class="field"><label>Mitarbeiter</label><select data-employee-select></select></div>
           </div>
         </div>
-        <div class="card section-card">
+        <div class="card section-card" id="addendumCard" hidden>
           <div class="card-head">
             <h2>Nachtrag zum Arbeitsvertrag</h2>
             <p>Einsatzplanung, Absagen und Wochenarbeitszeit. Beide Seiten unterschreiben in Office mit dem Finger, danach steht er als PDF bereit.</p>
@@ -8331,7 +8331,8 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
 
   async function loadOwnAddendum() {
     try {
-      state.addendum = await api("/addendum");
+      const add = await api("/addendum");
+      state.addendum = add?.available === false ? null : add;
     } catch (error) {
       if (error.status !== 404 && error.status !== 405) console.warn("Nachtrag nicht geladen:", error);
       state.addendum = null;
@@ -8605,8 +8606,9 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
         api(boss ? forUser("/admin/documents", userId) : "/documents")
       ]);
       if (boss && state.selectedUserId !== userId) return;
-      state.contract = { add, docs: asArray(docs), unsupported: false };
-      if (!boss) state.addendum = add;
+      const own = add?.available === false ? null : add;
+      state.contract = { add: own, docs: asArray(docs), unsupported: false };
+      if (!boss) state.addendum = own;
     } catch (error) {
       state.contract = { add: null, docs: [], unsupported: error.status === 404 || error.status === 405, error: error.message };
     }
@@ -8629,6 +8631,7 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
       return;
     }
     const add = c.add;
+    $("addendumCard").hidden = !add;
     if (add) {
       const row = role => {
         const s = add.signatures?.[role];
