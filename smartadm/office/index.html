@@ -1474,6 +1474,30 @@ html[data-theme="dark"] .logo::after { -webkit-mask-image: var(--logo-bright); m
 .sv-values td:first-child { width: 52px; font-family: "IBM Plex Mono", ui-monospace, monospace; color: var(--ink-soft); }
 .sv-values td:last-child { text-align: right; font-weight: 600; white-space: nowrap; }
 .sv-values tr.sum td { font-weight: 700; border-bottom: 0; border-top: 1.5px solid var(--ink-soft); }
+.lohn-tabs { display: flex; gap: 4px; margin: 0 0 14px; padding: 4px; background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); overflow-x: auto; scrollbar-width: none; }
+.lohn-tabs::-webkit-scrollbar { display: none; }
+.lohn-tabs button { flex: 1 0 auto; border: 0; background: transparent; padding: 10px 16px; border-radius: 10px; font: inherit; font-size: 14.5px; font-weight: 600; color: var(--ink-soft); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; }
+.lohn-tabs button:hover { color: var(--ink); }
+.lohn-tabs button[aria-selected="true"] { background: var(--accent-wash); color: var(--accent); }
+.tab-badge { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 11.5px; font-weight: 700; display: inline-grid; place-items: center; }
+.tab-badge:empty { display: none; }
+.lohn-pane[hidden] { display: none !important; }
+.lohn-block + .lohn-block { margin-top: 22px; }
+.kv-table, .sv-values, .slip-times { min-width: 0; }
+.slip-times td, .slip-times th { padding: 8px 5px; font-size: 13px; }
+.kv-table { width: 100%; border-collapse: collapse; margin: 6px 0 10px; font-size: 14px; }
+.kv-table td { padding: 7px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.kv-table td:last-child { text-align: right; font-weight: 600; }
+.kv-table tr.sum td { font-weight: 700; border-top: 1.5px solid var(--ink-soft); }
+.kv-table small { display: block; font-weight: 400; color: var(--ink-soft); }
+.slip-list { display: grid; gap: 10px; }
+.slip-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.slip-row b { display: block; font-size: 15px; }
+.slip-row small { color: var(--ink-soft); font-size: 12.5px; }
+.slip-row .btn-row { justify-content: flex-end; }
+.slip-chip { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 700; background: var(--gelb-wash); color: var(--gelb); }
+.slip-chip.ok { background: var(--gruen-wash); color: var(--gruen); }
+@media (max-width: 560px) { .slip-row { grid-template-columns: minmax(0, 1fr); } .slip-row .btn-row { justify-content: stretch; } }
 .boss-look-bar { display: flex; justify-content: flex-end; margin: -4px 0 12px; }
 #bossLook:empty { display: none; }
 #bossLook { margin-bottom: 16px; }
@@ -1625,6 +1649,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             <button class="btn primary" type="button" id="pushEnableBtn">Aktivieren</button>
             <button class="btn ghost" type="button" id="pushTestBtn">Test senden</button>
           </div>
+        </div>
+        <div class="card shortcut" id="payslipNotice" hidden>
+          <div><strong id="payslipNoticeTitle">Gehaltsnachweis</strong><span>Bitte ansehen und mit deiner Unterschrift Empfang und Arbeitszeiten bestätigen.</span></div>
+          <div class="btn-row"><button class="btn primary" type="button" id="payslipNoticeBtn">Ansehen &amp; unterschreiben</button></div>
         </div>
         <div class="my-widgets" id="myWidgets"></div>
       </section>
@@ -1946,6 +1974,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <div id="addendumStatus"><div class="notice">Wird geladen …</div></div>
           <div class="btn-row" id="addendumActions"></div>
         </div>
+        <div class="card section-card" id="payslipCard" data-role="employee">
+          <div class="card-head">
+            <h2>Gehaltsnachweise</h2>
+            <p>Nach jedem Monatsabschluss: ansehen, als PDF laden und mit deiner Unterschrift den Empfang und deine Arbeitszeiten bestätigen.</p>
+          </div>
+          <div id="payslipList" class="slip-list"><div class="notice">Wird geladen …</div></div>
+        </div>
         <div class="card section-card" id="docsCard">
           <div class="card-head">
             <h2>Arbeitsvertrag &amp; Dokumente</h2>
@@ -1968,21 +2003,135 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
       <!-- ===== Boss: Lohn & Abrechnung ===== -->
       <section class="page" id="lohn" data-role="boss">
-        <div class="card section-card">
-          <div class="card-head">
-            <h2>Lohn &amp; Abrechnung</h2>
-            <p id="payrollRateIntro">Arbeitsstunden × 13,90 € + gesetzte Termine × 5,00 €. Es zählen alle Einträge des gewählten Monats.</p>
+        <div class="card section-card person-bar">
+          <div class="field"><label>Mitarbeiter</label><select data-employee-select></select></div>
+          <div class="field"><label for="payrollMonth">Abrechnungsmonat</label><input id="payrollMonth" type="month"></div>
+          <p class="person-hint" id="payrollRateIntro">Arbeitsstunden × 13,90 € + gesetzte Termine × 5,00 €.</p>
+        </div>
+        <div class="lohn-tabs" role="tablist" aria-label="Lohn">
+          <button type="button" role="tab" data-lohn-tab="abrechnung">Abrechnung</button>
+          <button type="button" role="tab" data-lohn-tab="beitrag">Beitragsnachweis <span class="tab-badge" id="beitragBadge"></span></button>
+          <button type="button" role="tab" data-lohn-tab="meldungen">Meldungen <span class="tab-badge" id="dutyBadge"></span></button>
+          <button type="button" role="tab" data-lohn-tab="abgaben">Abgaben</button>
+        </div>
+
+        <div class="card section-card lohn-pane" data-lohn-pane="abrechnung">
+          <div class="lohn-block">
+            <div class="quick-grid">
+              <div class="quick"><span>Ist-Arbeitszeit</span><b id="payrollHours">0:00 h</b></div>
+              <div class="quick"><span>Arbeitstage</span><b id="payrollDays">0</b></div>
+              <div class="quick"><span>Termine</span><div class="appt-stepper"><button class="step-btn" type="button" data-appt-adjust="-1" aria-label="Einen Termin abziehen">−</button><b id="payrollAppointments">0</b><button class="step-btn" type="button" data-appt-adjust="1" aria-label="Abzug zurücknehmen">+</button></div><small class="appt-note" data-appt-adjust-note></small></div>
+              <div class="quick"><span>Urlaub / Rest</span><b id="payrollVacation">0 / 0</b></div>
+              <div class="quick"><span>Krankheitstage</span><b id="payrollSickDays">0</b></div>
+            </div>
+            <div class="payroll-summary">
+              <div class="quick"><span id="payrollTimePayLabel">Grundlohn</span><b id="payrollTimePay">0,00 €</b></div>
+              <div class="quick"><span id="payrollCommissionLabel">Provision</span><b id="payrollCommission">0,00 €</b></div>
+              <div class="quick"><span>Entgeltfortzahlung</span><b id="payrollAbsencePay">0,00 €</b></div>
+              <div class="quick emphasis"><span>Brutto</span><b id="payrollGross">0,00 €</b></div>
+              <div class="quick emphasis"><span>Auszahlung</span><b id="payrollNet">0,00 €</b></div>
+            </div>
+            <div class="breakdown">
+              <div><span>Arbeitnehmer-Abzüge</span><strong id="payrollEmployeeDeductions">0,00 €</strong></div>
+              <div><span>Arbeitgeber-Abgaben</span><strong id="payrollEmployerContributions">0,00 €</strong></div>
+              <div><span>Gesamtkosten Arbeitgeber</span><strong id="payrollEmployerCost">0,00 €</strong></div>
+            </div>
+            <div id="payrollWageDue" class="status-text"></div>
+            <div id="payrollRvNote" class="status-text"></div>
+            <div id="payrollWorkdayStatus" class="limit-status warn" style="display:none"></div>
+            <div id="payrollLimitStatus" class="limit-status"></div>
+            <div id="payrollYearStatus" class="limit-status"></div>
+            <div id="payrollDataStatus" class="notice warn" style="margin-top:12px" hidden></div>
           </div>
 
-          <div class="form-grid">
-            <div class="field"><label>Mitarbeiter</label><select data-employee-select></select></div>
-            <div class="field"><label for="payrollMonth">Abrechnungsmonat</label><input id="payrollMonth" type="month"></div>
+          <div class="form-grid" style="margin-top:16px">
+            <div class="field"><label for="payrollPaymentDate">Zahlungsdatum</label><input id="payrollPaymentDate" type="date"></div>
+            <div class="field"><label for="payrollNote">Hinweis auf dem Gehaltsnachweis (optional)</label><input id="payrollNote" type="text" maxlength="180" placeholder="z. B. Nachzahlung September"></div>
+          </div>
+          <div class="actions">
+            <button class="btn ghost" id="createEmployerPayrollPdf" type="button">Arbeitgeber-Abrechnung als PDF</button>
+            <button class="btn primary" id="createPayrollPdf" type="button">Gehaltsnachweis als PDF</button>
+          </div>
+        </div>
+
+        <div class="card section-card lohn-pane" data-lohn-pane="beitrag" hidden>
+          <div class="lohn-block" id="contributionPanel">
+            <div class="card-head" style="margin-bottom:12px">
+              <h2 style="font-size:16px">Beitragsnachweis Minijob-Zentrale</h2>
+              <p>Bereitet die Monatswerte für das SV-Meldeportal vor. Unfallversicherung/BG wird hier bewusst nicht eingerechnet.</p>
+            </div>
+            <div class="quick-grid">
+              <div class="quick"><span>Hochrechnung Brutto (Monatsende)</span><b id="contribProjectedGross">0,00 €</b></div>
+              <div class="quick"><span>Abgaben laut Nachweis</span><b id="contribEstimatedTotal">0,00 €</b></div>
+              <div class="quick"><span>Korrektur Vormonat</span><b id="contribPriorCorrection">0,00 €</b></div>
+              <div class="quick emphasis"><span>Beitragssoll</span><b id="contribPayableTotal">0,00 €</b></div>
+            </div>
+            <div id="contribProjectionNote" class="status-text" style="margin-top:10px"></div>
+            <div class="form-grid" style="margin-top:14px">
+              <div class="field">
+                <label for="contribReportedGross">Für Beitragsnachweis angesetztes Brutto</label>
+                <input id="contribReportedGross" type="number" min="0" step="0.01" placeholder="z. B. 550,00">
+                <small id="contribGrossHint">Vorschlag: die Hochrechnung bis Monatsende. Abweichungen gleichst du im nächsten Monat aus.</small>
+              </div>
+              <div class="field">
+                <label for="contribStatus">Status</label>
+                <select id="contribStatus">
+                  <option value="draft">Entwurf</option>
+                  <option value="submitted">Übermittelt</option>
+                  <option value="paid">Bezahlt</option>
+                </select>
+              </div>
+              <div class="field"><label for="contribSubmittedDate">Übermittelt am</label><input id="contribSubmittedDate" type="date"></div>
+              <div class="field"><label for="contribPaidDate">Bezahlt am</label><input id="contribPaidDate" type="date"></div>
+              <div class="field full"><label for="contribNote">Notiz</label><input id="contribNote" type="text" maxlength="220" placeholder="Optional, z. B. Schätzgrundlage"></div>
+            </div>
+            <div class="actions start">
+              <button class="btn ghost" id="useCurrentGrossBtn" type="button">Hochrechnung übernehmen</button>
+              <button class="btn primary" id="saveContributionBtn" type="button">Beitragsnachweis speichern</button>
+              <button class="btn ghost" id="showSvValuesBtn" type="button" hidden>Werte fürs SV-Meldeportal</button>
+              <span id="contribSaveStatus" class="status-text" style="margin:0"></span>
+            </div>
+            <div class="breakdown" style="margin-top:14px">
+              <div><span>Beitragsnachweis an Minijob-Zentrale bis</span><strong id="contribSubmitDeadline">–</strong></div>
+              <div><span>Beiträge an Minijob-Zentrale fällig</span><strong id="contribPaymentDeadline">–</strong></div>
+              <div><span>Tatsächliches Brutto bisher</span><strong id="contribActualGross">0,00 €</strong></div>
+              <div><span id="contribDifferenceLabel">Voraussichtliche Differenz</span><strong id="contribCurrentDifference">0,00 €</strong></div>
+            </div>
+            <div id="contribWarning" class="limit-status" style="margin-top:10px"></div>
+            <div id="contribValues" class="notice" style="margin-top:12px" hidden></div>
+            <div class="status-text" style="margin-top:8px" id="contribStoreNote">Status, Datumsfelder und Schätzgrundlage werden in Office gespeichert und gelten auf allen Geräten; die eigentliche Meldung erfolgt im SV-Meldeportal.</div>
+          </div>
+        </div>
+
+        <div class="card section-card lohn-pane" data-lohn-pane="meldungen" hidden>
+          <div class="lohn-block" id="dutyPanel">
+            <div class="card-head" style="margin-bottom:12px">
+              <h2 style="font-size:16px">Meldungen &amp; Pflichten</h2>
+              <p>Was außer dem monatlichen Beitragsnachweis an die Minijob-Zentrale und die Unfallversicherung geht. Mit Datum abhaken – dann verschwindet es aus den Fristen.</p>
+            </div>
+            <div id="dutyList" class="duty-list"></div>
+          </div>
+
+          <div class="lohn-block" id="uvPanel" style="margin-top:22px">
+            <div class="card-head" style="margin-bottom:12px">
+              <h2 style="font-size:16px">Lohnnachweis an die Berufsgenossenschaft</h2>
+              <p>Jahreswerte für den digitalen Lohnnachweis im SV-Meldeportal. Erst den Stammdatenabruf mit Unternehmensnummer und PIN der BG machen, dann diese Werte melden – bis 16. Februar des Folgejahres.</p>
+            </div>
+            <div class="form-grid narrow"><div class="field"><label for="uvYear">Beitragsjahr</label><select id="uvYear"></select></div></div>
+            <div id="uvValues"></div>
+            <div class="actions start"><button class="btn ghost" id="uvPdfBtn" type="button">Lohnnachweis als PDF</button></div>
+          </div>
+        </div>
+
+        <div class="card section-card lohn-pane" data-lohn-pane="abgaben" hidden>
+          <div class="card-head">
+            <h2>Abgaben &amp; Vergütung</h2>
+            <p>Wird pro Mitarbeiter gespeichert und gilt für Vorschau, Monatsabschluss und Beitragsnachweis.</p>
+          </div>
+          <div class="form-grid narrow">
             <div class="field"><label>Stundenlohn</label><input id="payrollRateField" value="13,90 € / Stunde" disabled></div>
             <div class="field"><label>Provision</label><input value="5,00 € / gesetztem Termin" disabled></div>
-            <div class="field"><label for="payrollPaymentDate">Zahlungsdatum</label><input id="payrollPaymentDate" type="date"></div>
-            <div class="field full"><label for="payrollNote">Notiz</label><input id="payrollNote" type="text" maxlength="180" placeholder="Optionaler interner Hinweis"></div>
           </div>
-
           <div class="payroll-profile">
             <div class="panel">
               <h3>Abzüge beim Mitarbeiter</h3>
@@ -2031,92 +2180,6 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             <span id="payrollSaveStatus" class="status-text" style="margin:0">Änderungen werden automatisch gespeichert.</span>
           </div>
 
-          <div class="panel" style="margin-top:16px">
-            <div class="quick-grid">
-              <div class="quick"><span>Ist-Arbeitszeit</span><b id="payrollHours">0:00 h</b></div>
-              <div class="quick"><span>Arbeitstage</span><b id="payrollDays">0</b></div>
-              <div class="quick"><span>Termine</span><div class="appt-stepper"><button class="step-btn" type="button" data-appt-adjust="-1" aria-label="Einen Termin abziehen">−</button><b id="payrollAppointments">0</b><button class="step-btn" type="button" data-appt-adjust="1" aria-label="Abzug zurücknehmen">+</button></div><small class="appt-note" data-appt-adjust-note></small></div>
-              <div class="quick"><span>Urlaub / Rest</span><b id="payrollVacation">0 / 0</b></div>
-              <div class="quick"><span>Krankheitstage</span><b id="payrollSickDays">0</b></div>
-            </div>
-            <div class="payroll-summary">
-              <div class="quick"><span id="payrollTimePayLabel">Grundlohn</span><b id="payrollTimePay">0,00 €</b></div>
-              <div class="quick"><span id="payrollCommissionLabel">Provision</span><b id="payrollCommission">0,00 €</b></div>
-              <div class="quick"><span>Entgeltfortzahlung</span><b id="payrollAbsencePay">0,00 €</b></div>
-              <div class="quick emphasis"><span>Brutto</span><b id="payrollGross">0,00 €</b></div>
-              <div class="quick emphasis"><span>Auszahlung</span><b id="payrollNet">0,00 €</b></div>
-            </div>
-            <div class="breakdown">
-              <div><span>Arbeitnehmer-Abzüge</span><strong id="payrollEmployeeDeductions">0,00 €</strong></div>
-              <div><span>Arbeitgeber-Abgaben</span><strong id="payrollEmployerContributions">0,00 €</strong></div>
-              <div><span>Gesamtkosten Arbeitgeber</span><strong id="payrollEmployerCost">0,00 €</strong></div>
-            </div>
-            <div id="payrollWageDue" class="status-text"></div>
-            <div id="payrollRvNote" class="status-text"></div>
-            <div id="payrollWorkdayStatus" class="limit-status warn" style="display:none"></div>
-            <div id="payrollLimitStatus" class="limit-status"></div>
-            <div id="payrollYearStatus" class="limit-status"></div>
-            <div id="payrollDataStatus" class="notice warn" style="margin-top:12px" hidden></div>
-          </div>
-
-          <div class="panel" style="margin-top:16px" id="contributionPanel">
-            <div class="card-head" style="margin-bottom:12px">
-              <h2 style="font-size:16px">Beitragsnachweis Minijob-Zentrale</h2>
-              <p>Bereitet die Monatswerte für das SV-Meldeportal vor. Unfallversicherung/BG wird hier bewusst nicht eingerechnet.</p>
-            </div>
-            <div class="quick-grid">
-              <div class="quick"><span>Hochrechnung Brutto (Monatsende)</span><b id="contribProjectedGross">0,00 €</b></div>
-              <div class="quick"><span>Abgaben laut Nachweis</span><b id="contribEstimatedTotal">0,00 €</b></div>
-              <div class="quick"><span>Korrektur Vormonat</span><b id="contribPriorCorrection">0,00 €</b></div>
-              <div class="quick emphasis"><span>Beitragssoll</span><b id="contribPayableTotal">0,00 €</b></div>
-            </div>
-            <div id="contribProjectionNote" class="status-text" style="margin-top:10px"></div>
-            <div class="form-grid" style="margin-top:14px">
-              <div class="field">
-                <label for="contribReportedGross">Für Beitragsnachweis angesetztes Brutto</label>
-                <input id="contribReportedGross" type="number" min="0" step="0.01" placeholder="z. B. 550,00">
-                <small id="contribGrossHint">Vorschlag: die Hochrechnung bis Monatsende. Abweichungen gleichst du im nächsten Monat aus.</small>
-              </div>
-              <div class="field">
-                <label for="contribStatus">Status</label>
-                <select id="contribStatus">
-                  <option value="draft">Entwurf</option>
-                  <option value="submitted">Übermittelt</option>
-                  <option value="paid">Bezahlt</option>
-                </select>
-              </div>
-              <div class="field"><label for="contribSubmittedDate">Übermittelt am</label><input id="contribSubmittedDate" type="date"></div>
-              <div class="field"><label for="contribPaidDate">Bezahlt am</label><input id="contribPaidDate" type="date"></div>
-              <div class="field full"><label for="contribNote">Notiz</label><input id="contribNote" type="text" maxlength="220" placeholder="Optional, z. B. Schätzgrundlage"></div>
-            </div>
-            <div class="actions start">
-              <button class="btn ghost" id="useCurrentGrossBtn" type="button">Hochrechnung übernehmen</button>
-              <button class="btn primary" id="saveContributionBtn" type="button">Beitragsnachweis speichern</button>
-              <button class="btn ghost" id="showSvValuesBtn" type="button">Werte fürs SV-Meldeportal</button>
-              <span id="contribSaveStatus" class="status-text" style="margin:0"></span>
-            </div>
-            <div class="breakdown" style="margin-top:14px">
-              <div><span>Beitragsnachweis an Minijob-Zentrale bis</span><strong id="contribSubmitDeadline">–</strong></div>
-              <div><span>Beiträge an Minijob-Zentrale fällig</span><strong id="contribPaymentDeadline">–</strong></div>
-              <div><span>Tatsächliches Brutto bisher</span><strong id="contribActualGross">0,00 €</strong></div>
-              <div><span id="contribDifferenceLabel">Voraussichtliche Differenz</span><strong id="contribCurrentDifference">0,00 €</strong></div>
-            </div>
-            <div id="contribWarning" class="limit-status" style="margin-top:10px"></div>
-            <div id="contribValues" class="notice" style="margin-top:12px" hidden></div>
-            <div class="status-text" style="margin-top:8px" id="contribStoreNote">Status, Datumsfelder und Schätzgrundlage werden in Office gespeichert und gelten auf allen Geräten; die eigentliche Meldung erfolgt im SV-Meldeportal.</div>
-          </div>
-          <div class="panel" style="margin-top:16px" id="dutyPanel">
-            <div class="card-head" style="margin-bottom:12px">
-              <h2 style="font-size:16px">Meldungen &amp; Pflichten</h2>
-              <p>Was außer dem monatlichen Beitragsnachweis an die Minijob-Zentrale und die Unfallversicherung geht. Mit Datum abhaken – dann verschwindet es aus den Fristen.</p>
-            </div>
-            <div id="dutyList" class="duty-list"></div>
-          </div>
-
-          <div class="actions">
-            <button class="btn ghost" id="createEmployerPayrollPdf" type="button">Arbeitgeber-Abrechnung als PDF</button>
-            <button class="btn primary" id="createPayrollPdf" type="button">Gehaltsnachweis als PDF</button>
-          </div>
         </div>
       </section>
 
@@ -2145,7 +2208,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           </div>
           <div class="table-wrap">
             <table class="nowrap">
-              <thead><tr><th>Monat</th><th>Arbeitszeit</th><th>Vergütete Termine</th><th>Brutto</th><th>Auszahlung</th><th>Abgeschlossen</th><th></th></tr></thead>
+              <thead><tr><th>Monat</th><th>Arbeitszeit</th><th>Vergütete Termine</th><th>Brutto</th><th>Auszahlung</th><th>Abgeschlossen</th><th>Unterschriften</th><th></th></tr></thead>
               <tbody id="closingRows"></tbody>
             </table>
           </div>
@@ -2590,6 +2653,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
               <div class="field"><label>PLZ und Ort</label><input data-employer-field="zip_city" type="text" maxlength="120"></div>
               <div class="field"><label>Unfallversicherung (Berufsgenossenschaft)</label><input data-employer-field="uv_carrier" type="text" maxlength="120" placeholder="z. B. VBG"></div>
               <div class="field"><label>Unternehmensnummer der BG (15 Ziffern)</label><input data-employer-field="uv_member_number" type="text" inputmode="numeric" maxlength="40" placeholder="früher Mitgliedsnummer"></div>
+              <div class="field"><label>Gefahrtarifstelle</label><input data-employer-field="uv_tariff" type="text" maxlength="40" placeholder="laut Veranlagungsbescheid der BG"></div>
             </div>
             <div class="actions start">
               <button class="btn primary" type="submit">Arbeitgeber speichern</button>
@@ -3221,7 +3285,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       const due = `${addMonthsIso(`${wageMonth}-01`, 1).slice(0, 7)}-${pad(WAGE_PAYMENT_LATEST_DAY)}`;
       const closing = state.closings.find(c => c.payroll_month === wageMonth);
       const planned = closing?.snapshot?.paymentDate;
-      items.push({ date: due, title: `Lohn ${monthWord(wageMonth)} zahlen`,
+      items.push({ date: due, title: `Lohn ${monthWord(wageMonth)} zahlen`, page: "lohn:abrechnung",
         meta: planned ? `Zahlung am ${fmtDate(planned)} vermerkt` : `${name} · spätestens ${fmtDate(due)}`, done: Boolean(planned) });
     }
 
@@ -3229,7 +3293,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const prev = previousMonth();
     if (prev >= AUTO_CLOSING_START_MONTH && (!job.start_date || prev >= job.start_date.slice(0, 7)) &&
         !state.closings.some(c => c.payroll_month === prev)) {
-      items.push({ date: `${isoMonth()}-08`, title: `Monatsabschluss ${monthWord(prev)}`, meta: "Wird am 8. automatisch erstellt – vorher prüfen" });
+      items.push({ date: `${isoMonth()}-08`, title: `Monatsabschluss ${monthWord(prev)}`, meta: "Wird am 8. automatisch erstellt – vorher prüfen", page: "nachweise" });
     }
 
     // Minijob-Zentrale: Beitragsnachweis und Fälligkeit für den laufenden Monat
@@ -3238,10 +3302,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const record = readContributionRecord(userId, month);
     const status = record.status || "draft";
     if (!deadline) {
-      items.push({ date: null, title: "Fristen der Minijob-Zentrale fehlen", meta: `Für ${month.slice(0, 4)} sind in Office noch keine Termine hinterlegt` });
+      items.push({ date: null, title: "Fristen der Minijob-Zentrale fehlen", meta: `Für ${month.slice(0, 4)} sind in Office noch keine Termine hinterlegt`, page: "lohn:beitrag" });
     } else {
-      if (status === "draft") items.push({ date: deadline.submit, title: `Beitragsnachweis ${monthWord(month)}`, meta: "An die Minijob-Zentrale übermitteln" });
-      if (status !== "paid") items.push({ date: deadline.payment, title: `Beiträge ${monthWord(month)} fällig`, meta: "Lastschrift bzw. Überweisung an die Minijob-Zentrale" });
+      if (status === "draft") items.push({ date: deadline.submit, title: `Beitragsnachweis ${monthWord(month)}`, meta: "An die Minijob-Zentrale übermitteln", page: "lohn:beitrag" });
+      if (status !== "paid") items.push({ date: deadline.payment, title: `Beiträge ${monthWord(month)} fällig`, meta: "Lastschrift bzw. Überweisung an die Minijob-Zentrale", page: "lohn:beitrag" });
     }
 
     // Meldungen: Anmeldung, Abmeldung, Jahresmeldungen (ab 15.12.), Unfallversicherung
@@ -3258,6 +3322,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       items.push({ date: null, title: "Nachtrag unterschreiben", meta: add.ready ? `Offen: ${open}` : "Stammdaten unvollständig", page: "mitarbeiter" });
     }
 
+    // Gehaltsnachweise: Mitarbeiterin hat bestätigt, Gegenzeichnung fehlt
+    if (bossSlips.userId === userId) Object.values(bossSlips.rows)
+      .filter(sl => sl.signatures.employee && !sl.signatures.employer)
+      .forEach(sl => items.push({ date: null, title: `Gehaltsnachweis ${monthWord(sl.month)} gegenzeichnen`, meta: `${name} hat Empfang und Arbeitszeiten bestätigt`, page: "nachweise" }));
+
     // Wochenkonto
     const openWeeks = selectedWeekAccount().weeks.filter(w => w.done && w.missing > 0 && !w.review).length;
     if (openWeeks) items.push({ date: null, title: `${openWeeks} ${openWeeks === 1 ? "Woche" : "Wochen"} einordnen`, meta: "Fehlstunden im Wochenkonto", page: "einsatz" });
@@ -3273,6 +3342,19 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     return items.filter(i => !i.done)
       .sort((a, b) => (a.date === null) - (b.date === null) || String(a.date).localeCompare(String(b.date)));
   }
+
+  /* --- Reiter auf der Lohn-Seite --- */
+  const LOHN_TABS = ["abrechnung", "beitrag", "meldungen", "abgaben"];
+  const LOHN_TAB_STORE = "smartadm.office.lohnTab";
+  function setLohnTab(tab, { remember = true } = {}) {
+    if (!LOHN_TABS.includes(tab)) tab = "abrechnung";
+    $$("[data-lohn-tab]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.lohnTab === tab)));
+    $$("[data-lohn-pane]").forEach(pane => (pane.hidden = pane.dataset.lohnPane !== tab));
+    if (remember) { try { localStorage.setItem(LOHN_TAB_STORE, tab); } catch {} }
+    if (tab === "meldungen") loadUv(true);
+  }
+  $$("[data-lohn-tab]").forEach(b => b.addEventListener("click", () => setLohnTab(b.dataset.lohnTab)));
+  (() => { let t = "abrechnung"; try { t = localStorage.getItem(LOHN_TAB_STORE) || t; } catch {} setLohnTab(t, { remember: false }); })();
 
   /* --- Meldepflichten neben dem Beitragsnachweis --- */
   const svDone = key => (myPrefs?.svDone || {})[key] || null;
@@ -3299,11 +3381,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       ].filter(Boolean);
       out.push({ key: "registered", title: "Anmeldung bei der Minijob-Zentrale", due: isoPlusDays(job.start_date, 42),
         text: `Meldeart Anmeldung, Abgabegrund 10 · Personengruppe 109 · Beitragsgruppe ${contributionGroup(readProfileInputs())} · Beginn ${fmtDate(job.start_date)} · Steuer-ID und Pauschsteuer angeben`,
-        missing, done: job.registered_at || null, profileField: "registered_at", page: "lohn" });
+        missing, done: job.registered_at || null, profileField: "registered_at", page: "lohn:meldungen" });
     }
     if (job.end_date) {
       out.push({ key: `ab:${userId}`, title: "Abmeldung bei der Minijob-Zentrale", due: isoPlusDays(job.end_date, 42),
-        text: `Abgabegrund 30 · Ende ${fmtDate(job.end_date)} · mit dem beitragspflichtigen Entgelt des Jahres`, done: svDone(`ab:${userId}`), page: "lohn" });
+        text: `Abgabegrund 30 · Ende ${fmtDate(job.end_date)} · mit dem beitragspflichtigen Entgelt des Jahres`, done: svDone(`ab:${userId}`), page: "lohn:meldungen" });
     }
     if (!employer.uv_carrier || !employer.uv_member_number) {
       out.push({ key: "uv-setup", title: "Unfallversicherung eintragen", due: null,
@@ -3315,11 +3397,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       out.push(
         { key: `jm:${userId}:${y}`, title: `Jahresmeldung ${y}`, due: `${next}-02-15`, year: y,
           text: `Abgabegrund 50 an die Minijob-Zentrale · Zeitraum ${fmtDate([job.start_date, `${y}-01-01`].sort().pop())} bis ${fmtDate([job.end_date || `${y}-12-31`, `${y}-12-31`].sort()[0])} · beitragspflichtiges Entgelt ${euro(yearGross(userId, y))}${y === thisYear ? " (Stand heute)" : ""}`,
-          done: svDone(`jm:${userId}:${y}`), page: "lohn" },
+          done: svDone(`jm:${userId}:${y}`), page: "lohn:meldungen" },
         { key: `uv:${userId}:${y}`, title: `UV-Jahresmeldung ${y}`, due: `${next}-02-16`, year: y,
-          text: "Abgabegrund 92 an die Minijob-Zentrale · Zeitraum 01.01. bis 31.12. · mit Unternehmensnummer und Gefahrtarifstelle der Berufsgenossenschaft", done: svDone(`uv:${userId}:${y}`), page: "lohn" },
+          text: "Abgabegrund 92 an die Minijob-Zentrale · Zeitraum 01.01. bis 31.12. · mit Unternehmensnummer und Gefahrtarifstelle der Berufsgenossenschaft", done: svDone(`uv:${userId}:${y}`), page: "lohn:meldungen" },
         { key: `bg:${y}`, title: `Lohnnachweis an die Berufsgenossenschaft ${y}`, due: `${next}-02-16`, year: y,
-          text: `Digitaler Lohnnachweis mit allen Arbeitsentgelten ${y}${employer.uv_carrier ? ` an ${employer.uv_carrier}` : ""}`, done: svDone(`bg:${y}`), page: "lohn" }
+          text: `Digitaler Lohnnachweis mit allen Arbeitsentgelten ${y}${employer.uv_carrier ? ` an ${employer.uv_carrier}` : ""}`, done: svDone(`bg:${y}`), page: "lohn:meldungen" }
       );
     });
     return out;
@@ -3337,10 +3419,65 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     return Math.round((sum + open) * 100) / 100;
   }
 
+  /* --- Lohnnachweis an die Berufsgenossenschaft --- */
+  const uvCache = {};
+  function initUvYears() {
+    const sel = $("uvYear");
+    if (sel.options.length) return;
+    const y = Number(isoDate().slice(0, 4));
+    sel.innerHTML = [y, y - 1].map(v => `<option value="${v}">${v}</option>`).join("");
+    sel.value = String(isoDate().slice(5) <= "02-16" ? y - 1 : y);
+  }
+  async function loadUv(force = false) {
+    if (state.role !== "boss") return;
+    initUvYears();
+    const year = $("uvYear").value;
+    if (!force && uvCache[year]) return renderUv(uvCache[year]);
+    $("uvValues").innerHTML = '<div class="notice">Wird berechnet …</div>';
+    try {
+      uvCache[year] = await api(`/admin/uv-lohnnachweis?year=${encodeURIComponent(year)}`);
+      if ($("uvYear").value === year) renderUv(uvCache[year]);
+    } catch (error) {
+      $("uvValues").innerHTML = `<div class="notice warn">${esc(error.status === 404 || error.status === 405 ? "Dafür braucht es den neuen Worker." : `Konnte nicht berechnet werden: ${error.message}`)}</div>`;
+    }
+  }
+  const uvHours = mins => Math.round(Number(mins || 0) / 60);
+  function renderUv(d) {
+    const e = d.employer || state.employer || {};
+    const missing = [!e.uv_carrier && "Berufsgenossenschaft", !e.uv_member_number && "Unternehmensnummer", !e.uv_tariff && "Gefahrtarifstelle"].filter(Boolean);
+    const people = asArray(d.employees);
+    $("uvValues").innerHTML = `
+      ${d.complete ? "" : `<div class="notice warn" style="margin-bottom:10px">Vorläufig: ${esc(d.year)} ist noch nicht vollständig abgeschlossen. Offene Monate zählen mit dem aktuellen Stand – endgültig melden erst nach dem Dezember-Abschluss.</div>`}
+      <table class="kv-table"><tbody>
+        <tr><td>Unfallversicherungsträger</td><td>${esc(e.uv_carrier || "–")}</td></tr>
+        <tr><td>Unternehmensnummer</td><td>${esc(e.uv_member_number || "–")}</td></tr>
+        <tr><td>Gefahrtarifstelle</td><td>${esc(e.uv_tariff || "–")}</td></tr>
+        <tr class="sum"><td>Arbeitsentgelt ${esc(d.year)}</td><td>${euro(d.total_gross)}</td></tr>
+        <tr><td>Geleistete Arbeitsstunden<small>ohne Urlaub, Krankheit und Freistellung</small></td><td>${uvHours(d.total_minutes)} Std.<small>${esc(fmtMinutes(d.total_minutes))}</small></td></tr>
+        <tr><td>Zahl der Versicherten</td><td>${Number(d.insured || 0)}</td></tr>
+      </tbody></table>
+      ${people.length ? `<small class="status-text">${people.map(r => `${esc(r.name || "Mitarbeiter")}: ${euro(r.gross)}, ${esc(fmtMinutes(r.minutes))}${r.open_months ? ` (${r.open_months} Monat${r.open_months === 1 ? "" : "e"} noch offen)` : ""}`).join(" · ")}. Mitarbeiter ohne Versicherungsnummer (z. B. Testkonten) zählen nicht.</small>` : '<div class="notice">Keine Beschäftigten mit Entgelt in diesem Jahr.</div>'}
+      ${missing.length ? `<div class="notice warn" style="margin-top:10px">Unter Einstellungen → Arbeitgeber fehlt noch: ${esc(missing.join(", "))}.</div>` : ""}`;
+  }
+  $("uvYear").addEventListener("change", () => loadUv());
+  $("uvPdfBtn").addEventListener("click", event => withBusy(event.currentTarget, async () => {
+    const year = $("uvYear").value;
+    if (!uvCache[year]) await loadUv(true);
+    const d = uvCache[year];
+    if (!d) return;
+    if (typeof window.html2pdf !== "function") return alert("Der PDF-Export wird noch geladen. Bitte gleich noch einmal tippen.");
+    const pdf = await newPdfDocument();
+    pdf.setProperties({ title: `Lohnnachweis ${year}`, creator: "SmartADM 5 Office" });
+    drawUvPdf(pdfKit(pdf), d);
+    pdf.save(`Lohnnachweis_BG_${year}.pdf`);
+  }));
+
   function renderDuties() {
     const host = $("dutyList");
     if (!host) return;
     const items = dutyItems();
+    const horizon = isoPlusDays(isoDate(), 30);
+    setText("dutyBadge", String(items.filter(d => !d.done && (!d.due || d.due <= horizon)).length || ""));
     host.innerHTML = items.length ? items.map(d => {
       const late = !d.done && d.due && d.due < isoDate();
       return `<div class="duty${d.done ? " is-done" : ""}${d.warn || late ? " is-warn" : ""}">
@@ -3348,6 +3485,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           ${d.missing?.length && !d.done ? `<small class="duty-miss">Dafür fehlt noch: ${esc(d.missing.join(", "))}</small>` : ""}</div>
         <div class="duty-done">
           ${d.due ? `<span class="duty-due">${late ? "überfällig · " : ""}bis ${esc(fmtDate(d.due))}</span>` : ""}
+          ${d.key.startsWith("bg:") ? `<button class="btn ghost small" type="button" data-duty-uv="${esc(d.key.slice(3))}">Werte</button>` : ""}
           ${d.key === "uv-setup" ? '<button class="btn ghost small" type="button" data-duty-go="einstellungen">Eintragen</button>'
             : `<input type="date" data-duty="${esc(d.key)}" value="${esc(d.done || "")}" title="Erledigt am" aria-label="${esc(d.title)} erledigt am">`}
         </div></div>`;
@@ -3373,6 +3511,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     renderDashboardWidgets();
   });
   $("dutyList").addEventListener("click", event => {
+    const uv = event.target.closest("[data-duty-uv]");
+    if (uv) {
+      if (![...$("uvYear").options].some(o => o.value === uv.dataset.dutyUv)) $("uvYear").insertAdjacentHTML("beforeend", `<option value="${esc(uv.dataset.dutyUv)}">${esc(uv.dataset.dutyUv)}</option>`);
+      $("uvYear").value = uv.dataset.dutyUv;
+      loadUv();
+      return $("uvPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
     const go = event.target.closest("[data-duty-go]");
     if (go) document.querySelector(`.nav [data-page="${go.dataset.dutyGo}"], [data-page="${go.dataset.dutyGo}"]`)?.click();
   });
@@ -3641,7 +3786,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       return;
     }
     const frist = event.target.closest("[data-widget-frist]");
-    if (frist) return showPage(frist.dataset.widgetFrist);
+    if (frist) {
+      const [page, tab] = frist.dataset.widgetFrist.split(":");
+      if (tab) setLohnTab(tab);
+      return showPage(page);
+    }
     const plan = event.target.closest("[data-widget-plan]");
     if (plan) {
       showPage("einsatz");
@@ -4207,7 +4356,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       try {
         const sent = readFields("data-employer-field");
         const saved = await api("/admin/employer", "PUT", sent);
-        const lost = missingKeys(saved, ["uv_carrier", "uv_member_number"]);
+        const lost = missingKeys(saved, ["uv_carrier", "uv_member_number", "uv_tariff"]);
         state.employer = lost.length ? { ...saved, ...Object.fromEntries(lost.map(k => [k, sent[k]])) } : saved;
         fillFields("data-employer-field", state.employer);
         if (lost.length) setStatus("employerStatus", `Name, Anschrift und Betriebsnummer gespeichert. ${WORKER_HINT}`, true);
@@ -4924,7 +5073,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     }
     warning.classList.toggle("warn", messages.length > 0);
     warning.textContent = messages.length ? messages.join(" ") : `Status: ${contributionStatusLabel(record.status || "draft")} · keine offenen Hinweise.`;
-    renderContributionValues(false);
+    renderContributionValues(true);
+    const soon = deadline && (record.status || "draft") === "draft" && month === isoMonth() && isoDate() >= shiftIsoDate(deadline.submit, -7);
+    setText("beitragBadge", userId && soon ? "!" : "");
   }
 
   function missingMasterData(employer, employee) {
@@ -5168,11 +5319,19 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   /* ================= Boss: Monatsarchiv ================= */
 
+  // Unterschriften der Gehaltsnachweise je Monat (Boss)
+  let bossSlips = { userId: null, rows: {}, unsupported: false };
+  const slipFor = month => (bossSlips.userId === state.selectedUserId ? bossSlips.rows[month] : null);
+
   async function loadClosings(userId) {
     try {
-      const rows = asArray(await api(forUser("/admin/monthly-closings", userId)));
+      const [rows, slips] = await Promise.all([
+        api(forUser("/admin/monthly-closings", userId)),
+        api(forUser("/admin/payslips", userId)).catch(() => null)
+      ]);
       if (state.selectedUserId !== userId) return;
-      state.closings = rows;
+      state.closings = asArray(rows);
+      bossSlips = { userId, rows: Object.fromEntries(asArray(slips).map(sl => [sl.month, sl])), unsupported: slips === null };
     } catch (error) {
       console.error(error);
       state.closings = [];
@@ -5193,40 +5352,65 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             <td>${euro(row.gross ?? p.gross)}</td>
             <td>${euro(row.net ?? p.net)}</td>
             <td>${esc(fmtTimestamp(row.closed_at))}</td>
+            <td>${slipCell(row)}</td>
             <td><div class="row-actions">
               <button class="icon-btn" type="button" data-closing="${row.id}" title="Gehaltsnachweis drucken">PDF</button>
               <button class="icon-btn" type="button" data-closing="${row.id}" data-employer title="Arbeitgeber-Abrechnung">AG</button>
             </div></td>
           </tr>`;
         }).join("")
-      : '<tr><td class="empty" colspan="7">Noch keine Monatsabschlüsse.</td></tr>';
+      : '<tr><td class="empty" colspan="8">Noch keine Monatsabschlüsse.</td></tr>';
+  }
+
+  function slipCell(row) {
+    const sl = slipFor(row.payroll_month);
+    if (!sl) return bossSlips.unsupported ? '<span class="status-text">neuer Worker nötig</span>' : "–";
+    const first = (sl.snapshot?.employee?.full_name || sl.snapshot?.employeeName || "Mitarbeiter").split(" ")[0];
+    const emp = sl.signatures.employee, boss = sl.signatures.employer;
+    return `<span class="slip-chip${emp ? " ok" : ""}">${esc(first)} ${emp ? "✓" : "offen"}</span><span class="slip-chip${boss ? " ok" : ""}">du ${boss ? "✓" : "offen"}</span>
+      <button class="btn ghost small" type="button" data-slip-open="${esc(row.payroll_month)}" style="margin-left:6px">${boss ? "Ansehen" : "Gegenzeichnen"}</button>`;
+  }
+
+  // Dokument für das PDF aus einem gespeicherten Monatsabschluss
+  function closingDoc(snap, { month, closedAt, userId, slip, prior } = {}) {
+    return {
+      employeeName: snap.employeeName || employeeName(findEmployee(userId)),
+      month: snap.month || month,
+      monthLabel: snap.monthLabel || month,
+      payroll: snap.payroll,
+      profile: snap.profile || DEFAULT_PROFILE,
+      note: snap.note || "",
+      paymentDate: snap.paymentDate || null,
+      created: snap.created ? fmtDate(snap.created) : fmtTimestamp(closedAt),
+      employer: snap.employer || null,
+      employee: snap.employee || null,
+      entries: snap.entries || null,
+      absences: snap.absences || [],
+      adjustments: snap.adjustments || [],
+      vacation: snap.vacation || null,
+      contract: snap.contract || null,
+      year: snap.year || null,
+      preview: false,
+      signatures: slip?.signatures || null,
+      hash: slip?.hash || null,
+      priorPayrolls: prior || null
+    };
   }
 
   $("closingRows").addEventListener("click", event => {
+    const open = event.target.closest("[data-slip-open]");
+    if (open) {
+      const sl = slipFor(open.dataset.slipOpen);
+      if (sl) openPayslip(sl, { sign: sl.signatures.employer ? null : "employer", userId: state.selectedUserId });
+      return;
+    }
     const button = event.target.closest("[data-closing]");
     if (!button) return;
     const row = state.closings.find(r => String(r.id) === button.dataset.closing);
     const snap = row?.snapshot;
     if (!snap?.payroll) return alert("Der gespeicherte Monatsabschluss ist unvollständig.");
-
-    downloadDocumentPdf({
-      employeeName: snap.employeeName || employeeName(findEmployee(row.clerk_user_id)),
-      month: snap.month || row.payroll_month,
-      monthLabel: snap.monthLabel || row.payroll_month,
-      payroll: snap.payroll,
-      profile: snap.profile || DEFAULT_PROFILE,
-      note: snap.note || "",
-      paymentDate: snap.paymentDate || null,
-      created: snap.created ? fmtDate(snap.created) : fmtTimestamp(row.closed_at),
-      employer: snap.employer || null,
-      employee: snap.employee || null,
-      entries: snap.entries || null,
-      absences: snap.absences || [],
-      vacation: snap.vacation || null,
-      contract: snap.contract || null,
-      year: snap.year || null,
-      preview: false
-    }, button.hasAttribute("data-employer"));
+    downloadDocumentPdf(closingDoc(snap, { month: row.payroll_month, closedAt: row.closed_at, userId: row.clerk_user_id, slip: slipFor(row.payroll_month) }),
+      button.hasAttribute("data-employer"));
   });
 
   $("closeMonthBtn").addEventListener("click", event => withBusy(event.currentTarget, async () => {
@@ -7994,7 +8178,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   // Summen des Kalenderjahres bis einschließlich Abrechnungsmonat (abgeschlossene Monate + dieser)
   function yearToDate(doc) {
     const y = String(doc.month).slice(0, 4);
-    const earlier = (state.closings || [])
+    const earlier = doc.priorPayrolls || (state.closings || [])
       .filter(c => String(c.payroll_month).startsWith(`${y}-`) && c.payroll_month < doc.month && c.snapshot?.payroll)
       .map(c => c.snapshot.payroll);
     const all = [...earlier, doc.payroll];
@@ -8163,12 +8347,18 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       { label: "Nettoentgelt", value: num(ytd.net), align: "right" },
       { label: "SV-Tage", value: String(ytd.svDays), align: "right", w: 0.7 }
     ]) + 4;
-    if (note) vNote(k, y, "Hinweis:", note);
+    if (note) y = vNote(k, y, "Hinweis:", note) + 4;
+    const empSig = doc.signatures?.employee;
+    if (empSig) {
+      k.cell(`Empfang bestätigt: ${empSig.signer_name}, elektronisch unterschrieben am ${sigWhen(empSig.signed_at)} (Unterschrift im Arbeitszeitnachweis).`,
+        L, y + 2, W, { size: 7, color: VP.strong, pad: 0 });
+    }
 
     k.pdf.addPage();
     drawTimesheetPdf(k, doc);
     vFooters(k,
-      p1 => p1 === 1 ? "Maschinell erstellt – ohne Unterschrift gültig. Arbeitszeitnachweis auf der Folgeseite." : "Arbeitszeitnachweis nach § 17 MiLoG – Aufbewahrung mindestens zwei Jahre.",
+      p1 => (p1 === 1 ? "Maschinell erstellt – ohne Unterschrift gültig. Arbeitszeitnachweis auf der Folgeseite." : "Arbeitszeitnachweis nach § 17 MiLoG – Aufbewahrung mindestens zwei Jahre.")
+        + (doc.hash ? ` · Prüfsumme ${String(doc.hash).slice(0, 12)}` : ""),
       (pn, n) => `SmartADM 5 Office · ${name} · ${doc.monthLabel} · Seite ${pn} von ${n}`);
   }
 
@@ -8247,11 +8437,17 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (y + 26 > VP.B - 8) { k.pdf.addPage(); y = pageTop(); }
     k.cell("Die Aufzeichnungen wurden von der Arbeitnehmerin in SmartADM 5 Office erfasst (spätestens am siebten Tag nach der Arbeitsleistung) und vom Arbeitgeber geprüft.",
       VP.L, y + 7, VP.W, { size: 6.8, color: VP.soft, pad: 0 });
-    const sy = y + 20, half = (VP.W - 20) / 2;
-    k.hline(VP.L, VP.L + half, sy, VP.strong, 0.25);
-    k.hline(VP.R - half, VP.R, sy, VP.strong, 0.25);
-    k.cell("Datum, Unterschrift Arbeitgeber", VP.L, sy + 3.2, half, { size: 7, color: VP.soft, pad: 0 });
-    k.cell("Datum, Unterschrift Arbeitnehmerin / Arbeitnehmer", VP.R - half, sy + 3.2, half, { size: 7, color: VP.soft, pad: 0 });
+    const sy = y + 24, half = (VP.W - 20) / 2;
+    const sigs = doc.signatures || {};
+    [["employer", VP.L, "Arbeitgeber"], ["employee", VP.R - half, "Arbeitnehmerin / Arbeitnehmer"]].forEach(([role, x, label]) => {
+      const sg = sigs[role];
+      if (sg?.signature) { try { k.pdf.addImage(sg.signature, "PNG", x, sy - 15.5, 45, 15); } catch { /* Bild nicht lesbar */ } }
+      k.hline(x, x + half, sy, VP.strong, 0.25);
+      const place = String((role === "employer" ? doc.employer : emp)?.zip_city || "").replace(/^\d{5}\s*/, "");
+      k.cell(sg ? `${place ? place + ", " : ""}${sigWhen(sg.signed_at)}` : `Datum, Unterschrift ${label}`,
+        x, sy + 3.2, half, { size: 7, color: sg ? VP.ink : VP.soft, pad: 0 });
+      if (sg) k.cell(`${sg.signer_name} (${label})`, x, sy + 6.6, half, { size: 7, bold: true, pad: 0 });
+    });
   }
 
   function drawEmployerPdf(k, doc) {
@@ -8335,6 +8531,43 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     vFooters(k,
       () => "Interne Arbeitgeberübersicht – nicht für die Arbeitnehmerin bestimmt.",
       (pn, n) => `SmartADM 5 Office · ${doc.monthLabel} · Seite ${pn} von ${n}`);
+  }
+
+  function drawUvPdf(k, d) {
+    const e = d.employer || {};
+    const doc = { created: dateFmt.format(new Date()), preview: !d.complete };
+    let y = vDocHead(k, doc, "Lohnnachweis", {
+      boxes: [
+        { label: "Datum", value: doc.created },
+        { label: "Beitragsjahr", value: String(d.year), w: 0.8 },
+        { label: "Unternehmensnummer", value: orDash(e.uv_member_number), w: 1.6 }
+      ],
+      sub: "Werte für den digitalen Lohnnachweis an die Berufsgenossenschaft (Übermittlung im SV-Meldeportal)."
+    });
+    y = vStrip(k, y, [
+      { label: "Unternehmer", value: [e.name, e.zip_city].filter(Boolean).join(", ") || "–", w: 2 },
+      { label: "Unfallversicherungsträger", value: orDash(e.uv_carrier), w: 1.2 },
+      { label: "Gefahrtarifstelle", value: orDash(e.uv_tariff) }
+    ]) + 4;
+    y = vSectionTitle(k, y, `Summen ${d.year}`);
+    y = vTable(k, y, {
+      cols: [{ w: 70 }, { w: 30, align: "right", mono: true }],
+      rows: [
+        ["Arbeitsentgelt (EUR)", num(d.total_gross)],
+        ["Geleistete Arbeitsstunden", `${uvHours(d.total_minutes)} Std.`],
+        ["Zahl der Versicherten", String(Number(d.insured || 0))]
+      ]
+    }) + 5;
+    y = vSectionTitle(k, y, "Beschäftigte");
+    y = vTable(k, y, {
+      cols: [{ w: 34 }, { w: 26, mono: true }, { w: 20, align: "right", mono: true }, { w: 20, align: "right", mono: true }],
+      head: ["Name", "Beschäftigt", "Entgelt EUR", "Stunden"],
+      rows: asArray(d.employees).length ? d.employees.map(r => [r.name || "–", `${pdfDate([r.start_date, `${d.year}-01-01`].sort().pop())} – ${pdfDate([r.end_date || `${d.year}-12-31`, `${d.year}-12-31`].sort()[0])}`, num(r.gross), fmtMinutes(r.minutes)])
+        : [["Keine Beschäftigten mit Entgelt", "", "", ""]],
+      zebra: true
+    }) + 5;
+    vNote(k, y, "So meldest du:", `Im SV-Meldeportal zuerst den Stammdatenabruf mit Unternehmensnummer und PIN der Berufsgenossenschaft durchführen, danach den Lohnnachweis mit den Summen oben übermitteln. Frist: 16.02.${Number(d.year) + 1}.${d.complete ? "" : " Vorläufige Werte – das Jahr ist noch nicht vollständig abgeschlossen."}`);
+    vFooters(k, () => "Arbeitsentgelt aus abgeschlossenen Monaten, offene Monate mit dem aktuellen Stand.", (pn, n) => `SmartADM 5 Office · Lohnnachweis ${d.year} · Seite ${pn} von ${n}`);
   }
 
   // jsPDF-Instanz aus der vorhandenen html2pdf-Bibliothek holen (leere Startseite).
@@ -9751,6 +9984,126 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       <p class="ad-foot">${add.complete ? "Von beiden Parteien unterschrieben." : "Wird wirksam, sobald beide Parteien unterschrieben haben."} Prüfsumme ${esc(String(add.hash || "").slice(0, 16))}</p>`;
   }
 
+  /* --- Gehaltsnachweise (abgeschlossene Monate) --- */
+  let mySlips = null;
+  async function loadMyPayslips() {
+    if (state.role !== "employee") return;
+    try { mySlips = asArray(await api("/payslips")); }
+    catch (error) { mySlips = error.status === 404 || error.status === 405 ? [] : mySlips; }
+    renderMyPayslips();
+  }
+  const slipOpenForMe = () => asArray(mySlips).filter(sl => !sl.signatures?.employee);
+  function renderMyPayslips() {
+    const list = asArray(mySlips);
+    if ($("payslipList")) $("payslipList").innerHTML = mySlips === null ? '<div class="notice">Wird geladen …</div>'
+      : list.length ? list.map(sl => {
+          const done = sl.signatures?.employee;
+          return `<div class="slip-row">
+            <div><b>${esc(sl.snapshot?.monthLabel || sl.month)}<span class="slip-chip${done ? " ok" : ""}">${done ? "unterschrieben" : "offen"}</span></b>
+              <small>Auszahlung ${euro(sl.net)} · ${esc(fmtMinutes(sl.work_minutes))} Arbeitszeit${done ? ` · bestätigt am ${esc(sigWhen(done.signed_at))}` : ""}</small></div>
+            <div class="btn-row">
+              <button class="btn ghost small" type="button" data-myslip-pdf="${esc(sl.month)}">PDF</button>
+              <button class="btn ${done ? "ghost" : "primary"} small" type="button" data-myslip-open="${esc(sl.month)}">${done ? "Ansehen" : "Ansehen & unterschreiben"}</button>
+            </div></div>`;
+        }).join("")
+      : '<div class="notice">Noch kein abgeschlossener Monat. Den Gehaltsnachweis gibt es nach jedem Monatsabschluss hier.</div>';
+    const open = slipOpenForMe()[0];
+    $("payslipNotice").hidden = !open;
+    if (open) setText("payslipNoticeTitle", `Dein Gehaltsnachweis für ${open.snapshot?.monthLabel || open.month} ist da`);
+  }
+  const mySlip = month => asArray(mySlips).find(sl => sl.month === month);
+  const priorOf = (list, sl) => asArray(list).filter(x => x.month.slice(0, 4) === sl.month.slice(0, 4) && x.month < sl.month && x.snapshot?.payroll).map(x => x.snapshot.payroll);
+  const slipDoc = (sl, list) => closingDoc(sl.snapshot || {}, { month: sl.month, closedAt: sl.closed_at, slip: sl, prior: priorOf(list, sl) });
+  $("payslipList").addEventListener("click", event => {
+    const pdfBtn = event.target.closest("[data-myslip-pdf]");
+    if (pdfBtn) return withBusy(pdfBtn, () => downloadDocumentPdf(slipDoc(mySlip(pdfBtn.dataset.myslipPdf), mySlips), false));
+    const open = event.target.closest("[data-myslip-open]");
+    if (open) { const sl = mySlip(open.dataset.myslipOpen); openPayslip(sl, { sign: sl.signatures?.employee ? null : "employee" }); }
+  });
+  $("payslipNoticeBtn").addEventListener("click", () => { const sl = slipOpenForMe()[0]; if (sl) openPayslip(sl, { sign: "employee" }); });
+
+  const placeFromZip = zip => String(zip || "").replace(/^\d{5}\s*/, "");
+  function payslipHtml(sl) {
+    const snap = sl.snapshot || {}, p = snap.payroll || {}, emp = snap.employee || {};
+    const empName = emp.full_name || snap.employeeName || "";
+    const sig = role => {
+      const sg = sl.signatures?.[role];
+      const name = role === "employer" ? snap.employer?.name : empName;
+      const place = placeFromZip((role === "employer" ? snap.employer : emp)?.zip_city);
+      return `<div class="ad-sig">
+        <div class="ad-sig-img">${sg ? `<img src="${esc(sg.signature)}" alt="Unterschrift ${esc(name || "")}">` : '<span class="ad-sig-open">noch nicht unterschrieben</span>'}</div>
+        <div class="ad-sig-line">${esc(place)}${sg ? `, ${esc(sigWhen(sg.signed_at))}` : ""}</div>
+        <div class="ad-sig-name">${esc(name || "")} (${ROLE_LABEL[role]})</div>
+      </div>`;
+    };
+    const rows = asArray(snap.entries).map(e => `<tr><td>${esc(fmtDayShort(e.work_date))}</td><td>${esc(e.start_time)}–${esc(e.end_time)}${Number(e.break_minutes) ? `<br><small>${Number(e.break_minutes)} min Pause</small>` : ""}</td><td>${esc(fmtMinutes(e.work_minutes))}</td><td>${Number(e.appointments || 0)}</td></tr>`).join("");
+    const both = sl.signatures?.employee && sl.signatures?.employer;
+    return `<h2 class="ad-title">Gehaltsnachweis ${esc(snap.monthLabel || sl.month)}</h2>
+      <p>${esc(empName)} · Arbeitgeber: ${esc(snap.employer?.name || "")}</p>
+      <table class="kv-table"><tbody>
+        <tr><td>Arbeitszeit</td><td>${esc(fmtMinutes(p.mins))} an ${Number(p.days || 0)} Tagen</td></tr>
+        <tr><td>Vergütete Termine</td><td>${paidAppointments(p)}</td></tr>
+        <tr><td>Bruttoentgelt</td><td>${euro(p.gross)}</td></tr>
+        <tr><td>Gesetzliche Abzüge (Rentenversicherung)</td><td>${euro(p.employeeDeductions)}</td></tr>
+        <tr class="sum"><td>Auszahlung</td><td>${euro(p.net)}</td></tr>
+        ${snap.paymentDate ? `<tr><td>Zahlung am</td><td>${esc(fmtDate(snap.paymentDate))}</td></tr>` : ""}
+      </tbody></table>
+      <h3>Arbeitszeitnachweis</h3>
+      ${rows ? `<table class="slip-times"><thead><tr><th>Tag</th><th>Zeit</th><th>Dauer</th><th>Termine</th></tr></thead><tbody>${rows}</tbody>
+        <tfoot><tr><td><b>Summe</b></td><td></td><td><b>${esc(fmtMinutes(p.mins))}</b></td><td><b>${asArray(snap.entries).reduce((a, e) => a + Number(e.appointments || 0), 0)}</b></td></tr></tfoot></table>` : "<p>Keine Arbeitszeiten in diesem Monat.</p>"}
+      <p class="ad-foot" style="margin-top:10px">Alle Angaben (Steuer, Sozialversicherung, Urlaub, Jahressummen) stehen im PDF.</p>
+      <div class="ad-sigs">${sig("employer")}${sig("employee")}</div>
+      <p class="ad-foot">${both ? "Von beiden unterschrieben." : "Unterschriften: Empfang und Arbeitszeiten bestätigen."} Prüfsumme ${esc(String(sl.hash || "").slice(0, 16))}</p>`;
+  }
+
+  function openPayslip(sl, { sign = null, userId = null } = {}) {
+    if (!sl) return;
+    addendumCtx = { kind: "payslip", slip: sl, sign, userId };
+    const snap = sl.snapshot || {};
+    setText("addendumDialogTitle", `Gehaltsnachweis ${snap.monthLabel || sl.month}`);
+    $("addendumDoc").innerHTML = payslipHtml(sl);
+    $("addendumSignBox").hidden = !sign;
+    $("addendumViewActions").hidden = false;
+    $("addendumPdf").textContent = "Gehaltsnachweis als PDF";
+    setText("addendumClose", "Schließen ×");
+    $("addendumClose").hidden = false;
+    if (sign) {
+      const who = sign === "employer" ? snap.employer?.name : (snap.employee?.full_name || snap.employeeName);
+      const place = placeFromZip((sign === "employer" ? snap.employer : snap.employee)?.zip_city);
+      setText("signNote", sign === "employee"
+        ? `Mit meiner Unterschrift bestätige ich, dass ich den Gehaltsnachweis für ${snap.monthLabel || sl.month} erhalten habe und meine Arbeitszeiten im Arbeitszeitnachweis vollständig und richtig sind.`
+        : `Mit meiner Unterschrift bestätige ich die Abrechnung und die Arbeitszeiten für ${snap.monthLabel || sl.month}.`);
+      setText("signMeta", `${who || ""} (${ROLE_LABEL[sign]}) · ${place ? place + ", " : ""}${dateFmt.format(new Date())}`);
+      setStatus("signStatus", "");
+    }
+    openDialog($("addendumDialog"));
+    $("addendumDialog").querySelector(".form-dialog-body").scrollTop = 0;
+    if (sign) requestAnimationFrame(setupPad);
+  }
+
+  async function submitPayslipSignature(button) {
+    const { slip, sign, userId } = addendumCtx;
+    const body = { month: slip.month, signature: exportSignature() };
+    await withBusy(button, async () => {
+      try {
+        if (sign === "employee") {
+          const updated = await api("/payslips/sign", "POST", body);
+          mySlips = asArray(mySlips).map(x => (x.month === updated.month ? updated : x));
+          renderMyPayslips();
+        } else {
+          const updated = await api(forUser("/admin/payslips/sign", userId), "POST", body);
+          if (bossSlips.userId === userId) bossSlips.rows[updated.month] = updated;
+          renderClosings();
+          renderDashboardWidgets();
+        }
+        closeDialog($("addendumDialog"));
+        toast(sign === "employee" ? "Danke, bestätigt ✓" : "Gegengezeichnet ✓");
+      } catch (error) {
+        setStatus("signStatus", error.status === 404 || error.status === 405 ? "Dafür braucht es den neuen Worker." : error.message, true);
+      }
+    });
+  }
+
   /* --- Unterschriftenfeld --- */
 
   const sigPad = { strokes: [], drawing: false, length: 0 };
@@ -9833,11 +10186,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   /* --- Fenster --- */
 
-  let addendumCtx = { add: null, sign: null, userId: null };
+  let addendumCtx = { kind: "addendum", add: null, sign: null, userId: null };
 
   function openAddendum(add, { sign = null, userId = null } = {}) {
     if (!add) return;
-    addendumCtx = { add, sign, userId };
+    addendumCtx = { kind: "addendum", add, sign, userId };
+    setText("addendumDialogTitle", "Nachtrag zum Arbeitsvertrag");
     const doc = add.doc || {};
     $("addendumDoc").innerHTML = addendumHtml(add);
     $("addendumSignBox").hidden = !sign;
@@ -9858,9 +10212,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   $("addendumDialog").addEventListener("cancel", event => event.preventDefault());
   $("addendumClose").addEventListener("click", () => {
-    const { sign } = addendumCtx;
+    const { sign, kind } = addendumCtx;
     closeDialog($("addendumDialog"));
-    if (sign === "employer") toast("Du kannst den Nachtrag jederzeit unter „Mitarbeiter“ unterschreiben.");
+    if (kind === "addendum" && sign === "employer") toast("Du kannst den Nachtrag jederzeit unter „Mitarbeiter“ unterschreiben.");
   });
   $("signClear").addEventListener("click", clearPad);
   window.addEventListener("resize", () => { if ($("addendumDialog").open && !$("addendumSignBox").hidden && !sigPad.strokes.length) setupPad(); });
@@ -9868,6 +10222,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   $("signSubmit").addEventListener("click", event => {
     const { add, sign, userId } = addendumCtx;
     if (!sign || sigPad.length < 120) return;
+    if (addendumCtx.kind === "payslip") return submitPayslipSignature(event.currentTarget);
     const body = { version: add.version, signature: exportSignature() };
     withBusy(event.currentTarget, async () => {
       try {
@@ -9889,7 +10244,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     });
   });
 
-  $("addendumPdf").addEventListener("click", event => withBusy(event.currentTarget, () => downloadAddendumPdf(addendumCtx.add)));
+  $("addendumPdf").addEventListener("click", event => withBusy(event.currentTarget, () => addendumCtx.kind === "payslip"
+    ? downloadDocumentPdf(addendumCtx.sign === "employer" || state.role === "boss"
+        ? closingDoc(addendumCtx.slip.snapshot || {}, { month: addendumCtx.slip.month, closedAt: addendumCtx.slip.closed_at, userId: addendumCtx.userId, slip: addendumCtx.slip })
+        : slipDoc(addendumCtx.slip, mySlips), false)
+    : downloadAddendumPdf(addendumCtx.add)));
 
   /* --- PDF --- */
 
@@ -10006,6 +10365,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       state.contract = { add: null, docs: [], unsupported: error.status === 404 || error.status === 405, error: error.message };
     }
     renderContracts();
+    if (!boss) loadMyPayslips();
   }
 
   function renderContracts() {
@@ -10189,6 +10549,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       await loadOwnEntries(); // rendert das Dashboard mit den zentralen Zielwerten
       await loadPlans();
       await loadMyPrefs();
+      loadMyPayslips();
     }
     await Promise.all([loadTasks(), loadBranches(), loadCalls()]);
     initPush();
