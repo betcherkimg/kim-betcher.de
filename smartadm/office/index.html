@@ -1766,13 +1766,26 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
               <div class="field"><label>Eintritt</label><input data-emp="start_date" type="date"></div>
               <div class="field"><label>Austritt (optional)</label><input data-emp="end_date" type="date"></div>
               <div class="field"><label>Staatsangehörigkeit</label><input data-emp="nationality" type="text" maxlength="60" placeholder="z. B. deutsch"></div>
-              <div class="field"><label>Tätigkeitsschlüssel (9 Ziffern)</label><input data-emp="activity_key" type="text" inputmode="numeric" maxlength="11" placeholder="wie im SV-Meldeportal angelegt"></div>
+              <div class="field"><label for="actKldb">Tätigkeit (Berufsnummer KldB 2010, 5 Ziffern)</label><input id="actKldb" type="text" inputmode="numeric" maxlength="5" placeholder="aus der Tätigkeitsschlüssel-Suche"><input data-emp="activity_key" type="hidden"></div>
+              <div class="field"><label for="actSchool">Höchster Schulabschluss</label><select id="actSchool">
+                <option value="">bitte wählen</option><option value="1">ohne Schulabschluss</option><option value="2">Haupt-/Volksschulabschluss</option>
+                <option value="3">Mittlere Reife oder gleichwertig</option><option value="4">Abitur / Fachabitur</option><option value="9">Abschluss unbekannt</option></select></div>
+              <div class="field"><label for="actTraining">Höchster beruflicher Abschluss</label><select id="actTraining">
+                <option value="">bitte wählen</option><option value="1">ohne beruflichen Ausbildungsabschluss</option><option value="2">anerkannte Berufsausbildung</option>
+                <option value="3">Meister / Techniker / Fachschule</option><option value="4">Bachelor</option><option value="5">Diplom / Magister / Master / Staatsexamen</option>
+                <option value="6">Promotion</option><option value="9">Abschluss unbekannt</option></select></div>
+              <div class="field"><label for="actContract">Vertragsform</label><select id="actContract">
+                <option value="">bitte wählen</option><option value="2">Teilzeit, unbefristet</option><option value="4">Teilzeit, befristet</option>
+                <option value="1">Vollzeit, unbefristet</option><option value="3">Vollzeit, befristet</option></select></div>
+              <div class="field"><label for="actAue">Arbeitnehmerüberlassung</label><select id="actAue">
+                <option value="1">nein</option><option value="2">ja (nur Zeitarbeitsfirmen)</option></select></div>
+              <div class="field"><label>Tätigkeitsschlüssel</label><input id="actKeyView" type="text" disabled placeholder="ergibt sich aus den Feldern"></div>
               <div class="field"><label>Weitere Beschäftigungen</label><select data-emp="other_employment">
                 <option value="">noch nicht abgefragt</option><option value="none">keine</option>
                 <option value="minijob">weiterer Minijob</option><option value="main">Hauptbeschäftigung</option></select></div>
               <div class="field"><label>Anmeldung Minijob-Zentrale übermittelt am</label><input data-emp="registered_at" type="date"></div>
             </div>
-            <p class="status-text" style="margin-top:4px">Staatsangehörigkeit, Tätigkeitsschlüssel und weitere Beschäftigungen brauchst du für die Anmeldung bei der Minijob-Zentrale. Weitere Beschäftigungen fragst du schriftlich ab (Personalfragebogen) – ein zweiter Minijob wird zusammengerechnet.</p>
+            <p class="status-text" style="margin-top:4px">Staatsangehörigkeit, Tätigkeitsschlüssel und weitere Beschäftigungen brauchst du für die Anmeldung bei der Minijob-Zentrale. Der 9-stellige Tätigkeitsschlüssel setzt sich aus Berufsnummer, Schulabschluss, Berufsabschluss, Arbeitnehmerüberlassung und Vertragsform zusammen. Weitere Beschäftigungen fragst du schriftlich ab (Personalfragebogen) – ein zweiter Minijob wird zusammengerechnet.</p>
             <div class="actions start">
               <button class="btn primary" type="submit">Stammdaten speichern</button>
               <span id="employeeProfileStatus" class="status-text" style="margin:0"></span>
@@ -2048,16 +2061,17 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
               <p>Bereitet die Monatswerte für das SV-Meldeportal vor. Unfallversicherung/BG wird hier bewusst nicht eingerechnet.</p>
             </div>
             <div class="quick-grid">
-              <div class="quick"><span>Voraussichtliches Brutto</span><b id="contribEstimatedGross">0,00 €</b></div>
-              <div class="quick"><span>Voraussichtliche Abgaben</span><b id="contribEstimatedTotal">0,00 €</b></div>
+              <div class="quick"><span>Hochrechnung Brutto (Monatsende)</span><b id="contribProjectedGross">0,00 €</b></div>
+              <div class="quick"><span>Abgaben laut Nachweis</span><b id="contribEstimatedTotal">0,00 €</b></div>
               <div class="quick"><span>Korrektur Vormonat</span><b id="contribPriorCorrection">0,00 €</b></div>
               <div class="quick emphasis"><span>Beitragssoll</span><b id="contribPayableTotal">0,00 €</b></div>
             </div>
+            <div id="contribProjectionNote" class="status-text" style="margin-top:10px"></div>
             <div class="form-grid" style="margin-top:14px">
               <div class="field">
                 <label for="contribReportedGross">Für Beitragsnachweis angesetztes Brutto</label>
                 <input id="contribReportedGross" type="number" min="0" step="0.01" placeholder="z. B. 550,00">
-                <small>Vor der Frist als realistische Schätzung festlegen.</small>
+                <small id="contribGrossHint">Vorschlag: die Hochrechnung bis Monatsende. Abweichungen gleichst du im nächsten Monat aus.</small>
               </div>
               <div class="field">
                 <label for="contribStatus">Status</label>
@@ -2072,7 +2086,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
               <div class="field full"><label for="contribNote">Notiz</label><input id="contribNote" type="text" maxlength="220" placeholder="Optional, z. B. Schätzgrundlage"></div>
             </div>
             <div class="actions start">
-              <button class="btn ghost" id="useCurrentGrossBtn" type="button">Aktuelles Brutto übernehmen</button>
+              <button class="btn ghost" id="useCurrentGrossBtn" type="button">Hochrechnung übernehmen</button>
               <button class="btn primary" id="saveContributionBtn" type="button">Beitragsnachweis speichern</button>
               <button class="btn ghost" id="showSvValuesBtn" type="button">Werte fürs SV-Meldeportal</button>
               <span id="contribSaveStatus" class="status-text" style="margin:0"></span>
@@ -2080,8 +2094,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             <div class="breakdown" style="margin-top:14px">
               <div><span>Beitragsnachweis an Minijob-Zentrale bis</span><strong id="contribSubmitDeadline">–</strong></div>
               <div><span>Beiträge an Minijob-Zentrale fällig</span><strong id="contribPaymentDeadline">–</strong></div>
-              <div><span>Tatsächliches Brutto aktuell</span><strong id="contribActualGross">0,00 €</strong></div>
-              <div><span>Voraussichtliche Differenz</span><strong id="contribCurrentDifference">0,00 €</strong></div>
+              <div><span>Tatsächliches Brutto bisher</span><strong id="contribActualGross">0,00 €</strong></div>
+              <div><span id="contribDifferenceLabel">Voraussichtliche Differenz</span><strong id="contribCurrentDifference">0,00 €</strong></div>
             </div>
             <div id="contribWarning" class="limit-status" style="margin-top:10px"></div>
             <div id="contribValues" class="notice" style="margin-top:12px" hidden></div>
@@ -3338,6 +3352,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       const userId = state.selectedUserId;
       try {
         const saved = await api(forUser("/admin/employee-profile", userId), "PUT", { ...(state.employeeProfiles[userId] || {}), registered_at: date || "" });
+        if (missingKeys(saved, ["registered_at"]).length) { alert(WORKER_HINT); return renderDuties(); }
         state.employeeProfiles[userId] = saved;
         if (state.selectedUserId === userId) fillFields("data-emp", saved);
       } catch (error) { alert("Nicht gespeichert: " + error.message); }
@@ -4137,7 +4152,34 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   /* ================= Boss: Stammdaten ================= */
 
   const readFields = attr => Object.fromEntries($$(`[${attr}]`).map(i => [i.getAttribute(attr), i.value.trim()]));
-  const fillFields = (attr, data) => $$(`[${attr}]`).forEach(i => (i.value = data?.[i.getAttribute(attr)] || ""));
+  const fillFields = (attr, data) => {
+    $$(`[${attr}]`).forEach(i => (i.value = data?.[i.getAttribute(attr)] || ""));
+    if (attr === "data-emp") activityFromKey();
+  };
+
+  // Tätigkeitsschlüssel = Berufsnummer (5) + Schulabschluss + Berufsabschluss + Arbeitnehmerüberlassung + Vertragsform
+  const ACT_PARTS = ["actSchool", "actTraining", "actAue", "actContract"];
+  function activityFromKey() {
+    const key = String($$('[data-emp="activity_key"]')[0]?.value || "");
+    const ok = /^\d{9}$/.test(key);
+    $("actKldb").value = ok ? key.slice(0, 5) : "";
+    ACT_PARTS.forEach((id, i) => { $(id).value = ok ? key[5 + i] : (id === "actAue" ? "1" : ""); });
+    activityToKey();
+  }
+  function activityToKey() {
+    const kldb = $("actKldb").value.replace(/\D/g, "");
+    const parts = ACT_PARTS.map(id => $(id).value);
+    const complete = /^\d{5}$/.test(kldb) && parts.every(Boolean);
+    const empty = !kldb && !$("actSchool").value && !$("actTraining").value && !$("actContract").value;
+    $$('[data-emp="activity_key"]')[0].value = complete ? kldb + parts.join("") : "";
+    $("actKeyView").value = complete ? `${kldb} ${parts.join(" ")}` : empty ? "" : "unvollständig";
+    return complete || empty;
+  }
+  ["actKldb", ...ACT_PARTS].forEach(id => $(id).addEventListener(id === "actKldb" ? "input" : "change", activityToKey));
+
+  // Alter Worker kennt neue Felder nicht und gibt sie nicht zurück → Eingaben behalten und Hinweis zeigen
+  const WORKER_HINT = "Der neue Worker ist noch nicht eingefügt – diese Felder werden erst danach gespeichert (Cloudflare → smartadm-office-api → Edit code).";
+  const missingKeys = (saved, keys) => keys.filter(k => !saved || !(k in saved));
 
   async function loadEmployer() {
     try {
@@ -4153,9 +4195,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     event.preventDefault();
     withBusy(event.submitter, async () => {
       try {
-        state.employer = await api("/admin/employer", "PUT", readFields("data-employer-field"));
+        const sent = readFields("data-employer-field");
+        const saved = await api("/admin/employer", "PUT", sent);
+        const lost = missingKeys(saved, ["uv_carrier", "uv_member_number"]);
+        state.employer = lost.length ? { ...saved, ...Object.fromEntries(lost.map(k => [k, sent[k]])) } : saved;
         fillFields("data-employer-field", state.employer);
-        setStatus("employerStatus", "Gespeichert ✓");
+        if (lost.length) setStatus("employerStatus", `Name, Anschrift und Betriebsnummer gespeichert. ${WORKER_HINT}`, true);
+        else setStatus("employerStatus", "Gespeichert ✓");
         renderPayrollPreview();
       } catch (error) {
         setStatus("employerStatus", error.message, true);
@@ -4168,12 +4214,19 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const userId = state.selectedUserId;
     if (!userId) return alert("Bitte zuerst einen Mitarbeiter auswählen.");
 
+    if (!activityToKey()) {
+      setStatus("employeeProfileStatus", "Tätigkeitsschlüssel unvollständig: Berufsnummer (5 Ziffern), Schulabschluss, Berufsabschluss und Vertragsform ausfüllen.", true);
+      return;
+    }
     withBusy(event.submitter, async () => {
       try {
-        const saved = await api(forUser("/admin/employee-profile", userId), "PUT", readFields("data-emp"));
-        state.employeeProfiles[userId] = saved;
-        if (state.selectedUserId === userId) fillFields("data-emp", saved);
-        setStatus("employeeProfileStatus", "Gespeichert ✓");
+        const sent = readFields("data-emp");
+        const saved = await api(forUser("/admin/employee-profile", userId), "PUT", sent);
+        const lost = missingKeys(saved, ["nationality", "activity_key", "other_employment", "registered_at"]);
+        state.employeeProfiles[userId] = lost.length ? { ...sent, ...saved, ...Object.fromEntries(lost.map(k => [k, sent[k]])) } : saved;
+        if (state.selectedUserId === userId) fillFields("data-emp", state.employeeProfiles[userId]);
+        if (lost.length) setStatus("employeeProfileStatus", `Grunddaten gespeichert. ${WORKER_HINT}`, true);
+        else setStatus("employeeProfileStatus", "Gespeichert ✓");
         renderPayrollPreview();
       } catch (error) {
         setStatus("employeeProfileStatus", error.message, true);
@@ -4755,7 +4808,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const c = contributionBreakdownFromGross($("contribReportedGross").value, readProfileInputs(), payrollMonth(), selectedEmployment());
     const correction = priorMonthCorrection(payrollMonth());
     const total = Math.round((c.total + correction) * 100) / 100;
-    host.innerHTML = `<b>Beitragsnachweis im SV-Meldeportal – ${esc(fmtMonth(payrollMonth()))}</b>
+    host.innerHTML = `<b>Beitragsnachweis im SV-Meldeportal – ${esc(fmtMonth(payrollMonth()))} · angesetztes Brutto ${euro(c.gross)}</b>
       <table class="sv-values"><tbody>${svNachweisRows(c, readProfileInputs()).map(([key, label, value]) =>
         `<tr><td>${esc(key)}</td><td>${esc(label)}</td><td>${euro(value)}</td></tr>`).join("")}
         <tr class="sum"><td></td><td>Summe Beitragsnachweis</td><td>${euro(c.total)}</td></tr>
@@ -4766,6 +4819,46 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (forceShow) host.hidden = false;
   }
 
+  /* Hochrechnung bis Monatsende: Der Beitragsnachweis ist vor Monatsende fällig (z. B. 25.10.),
+   * also werden die echten Stunden und Termine der letzten bis zu 28 Tage auf die restlichen Tage hochgerechnet. */
+  function projectedPayroll(month = payrollMonth()) {
+    const job = selectedEmployment();
+    const actual = calculatePayroll(inMonth(state.employeeEntries, month), readProfileInputs(), month, job,
+      inMonthAbsences(state.employeeAbsences, month), adjustmentsFor(state.employeeAdjustments, month));
+    const first = [`${month}-01`, job.start_date || ""].sort().pop();
+    const last = [monthEnd(month), job.end_date || "9999-12-31"].sort()[0];
+    const today = isoDate();
+    const base = { actual, gross: Number(actual.gross || 0), mins: actual.mins, appts: actual.appts, remaining: 0, method: "ist" };
+    if (last < first || today > last) return base;                     // Monat vorbei: Ist-Werte
+
+    const dayCount = (a, b) => Math.round((Date.parse(`${b}T12:00:00Z`) - Date.parse(`${a}T12:00:00Z`)) / 86400000) + 1;
+    const winTo = today < first ? isoPlusDays(first, -1) : today;
+    const winFrom = [isoPlusDays(winTo, -27), job.start_date || ""].sort().pop();
+    const winDays = winFrom <= winTo ? dayCount(winFrom, winTo) : 0;
+    const inWin = state.employeeEntries.filter(e => e.date >= winFrom && e.date <= winTo);
+    const winMins = inWin.reduce((a, e) => a + Number(e.minutes || 0), 0);
+    const winAppts = inWin.reduce((a, e) => a + Number(e.appointments || 0), 0);
+    const trend = winDays >= 7 && winMins > 0;
+    const minsPerDay = trend ? winMins / winDays : (CONTRACT_WEEKLY_HOURS * 60) / 7;
+    const apptsPerDay = trend ? winAppts / winDays : 0;
+    const remaining = dayCount(today < first ? first : isoPlusDays(today, 1), last);
+    const mins = actual.mins + Math.round(minsPerDay * remaining);
+    const appts = actual.appts + Math.round(apptsPerDay * remaining);
+    const cents = Math.round(mins * hourlyRateCents(month) / 60) + appts * COMMISSION_RATE_CENTS
+      + Math.round(Number(actual.absencePay || 0) * 100) + Math.round(Number(actual.targetBonus || 0) * 100);
+    return { actual, gross: cents / 100, mins, appts, remaining, minsPerDay, apptsPerDay, winDays, last,
+      method: trend ? "trend" : "vertrag" };
+  }
+
+  function projectionText(pr) {
+    const a = pr.actual;
+    if (pr.method === "ist") return `Monat abgeschlossen: angesetzt wird das tatsächliche Brutto (${fmtMinutes(a.mins)}, ${a.appts} Termine).`;
+    const per = pr.method === "trend"
+      ? `Schnitt der letzten ${pr.winDays} Tage: ${fmtMinutes(Math.round(pr.minsPerDay * 7))} und ${decimal(pr.apptsPerDay * 7, 1)} Termine pro Woche`
+      : `zu wenig Daten – gerechnet mit der vertraglichen Arbeitszeit (${CONTRACT_WEEKLY_HOURS} Std./Woche), ohne Termine`;
+    return `Bisher ${fmtMinutes(a.mins)} und ${a.appts} Termine (${euro(a.gross)}). ${per}. Für die restlichen ${pr.remaining} Tage bis ${fmtDate(pr.last)} ergibt das insgesamt ${fmtMinutes(pr.mins)} und ${pr.appts} Termine – rund ${euro(pr.gross)} brutto.`;
+  }
+
   function renderContributionModule() {
     renderDuties();
     if (!$("contributionPanel")) return;
@@ -4774,20 +4867,28 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const profile = readProfileInputs();
     const payroll = currentPayroll();
     const record = readContributionRecord(userId, month);
-    const reportedGross = record.reportedGross != null && record.reportedGross !== "" ? Number(record.reportedGross) : Number(payroll.gross || 0);
+    const projection = projectedPayroll(month);
+    const saved = record.reportedGross != null && record.reportedGross !== "";
+    const reportedGross = saved ? Number(record.reportedGross) : projection.gross;
     const estimated = contributionBreakdownFromGross(reportedGross, profile, month, selectedEmployment());
-    const actualTotal = (Number(payroll.employerContributions || 0) - Number(payroll.accident || 0)) + Number(payroll.employeeDeductions || 0);
+    const expected = contributionBreakdownFromGross(projection.gross, profile, month, selectedEmployment());
     const correction = priorMonthCorrection(month);
     const payable = Math.round((estimated.total + correction) * 100) / 100;
-    const difference = Math.round((actualTotal - estimated.total) * 100) / 100;
+    const difference = Math.round((expected.total - estimated.total) * 100) / 100;
 
-    $("contribReportedGross").value = record.reportedGross != null ? record.reportedGross : Number(payroll.gross || 0).toFixed(2);
+    $("contribReportedGross").value = saved ? record.reportedGross : projection.gross.toFixed(2);
+    setText("contribProjectedGross", euro(projection.gross));
+    setText("contribProjectionNote", userId ? projectionText(projection) : "");
+    setText("contribDifferenceLabel", projection.method === "ist" ? "Differenz zum Nachweis (Ist)" : "Differenz zur Hochrechnung");
+    const drift = saved && (record.status || "draft") === "draft" && Math.abs(Number(record.reportedGross) - projection.gross) >= 1;
+    setText("contribGrossHint", drift
+      ? `Gespeichert sind ${euro(record.reportedGross)}, die aktuelle Hochrechnung ergibt ${euro(projection.gross)} – mit „Hochrechnung übernehmen“ aktualisieren.`
+      : "Vorschlag: die Hochrechnung bis Monatsende. Abweichungen gleichst du im nächsten Monat aus.");
     $("contribStatus").value = record.status || "draft";
     $("contribSubmittedDate").value = record.submittedDate || "";
     $("contribPaidDate").value = record.paidDate || "";
     $("contribNote").value = record.note || "";
 
-    setText("contribEstimatedGross", euro(estimated.gross));
     setText("contribEstimatedTotal", euro(estimated.total));
     setText("contribPriorCorrection", `${correction > 0 ? "+" : ""}${euro(correction)}`);
     setText("contribPayableTotal", euro(payable));
@@ -4802,7 +4903,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const messages = [];
     if (!userId) messages.push("Bitte zuerst einen Mitarbeiter auswählen.");
     if (correction) messages.push(`Aus dem Vormonat sind ${correction > 0 ? euro(correction) + " nachzuzahlen" : euro(Math.abs(correction)) + " zu verrechnen"}.`);
-    if (difference) messages.push(`Aktuell weicht die tatsächliche Beitragsschuld um ${euro(Math.abs(difference))} von der angesetzten Schätzung ab.`);
+    if (Math.abs(difference) >= 0.01) messages.push(projection.method === "ist"
+      ? `Die tatsächliche Beitragsschuld weicht um ${euro(Math.abs(difference))} vom Nachweis ab – wird im Folgemonat ausgeglichen.`
+      : `Nach der aktuellen Hochrechnung weicht die Beitragsschuld um ${euro(Math.abs(difference))} vom angesetzten Wert ab.`);
     if (deadline && month === isoMonth()) {
       const today = isoDate();
       if ((record.status || "draft") === "draft" && today >= shiftIsoDate(deadline.submit, -3)) messages.push("Die Frist für den Beitragsnachweis steht kurz bevor oder ist erreicht.");
@@ -4963,7 +5066,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   });
 
   $("useCurrentGrossBtn").addEventListener("click", () => {
-    $("contribReportedGross").value = Number(currentPayroll().gross || 0).toFixed(2);
+    $("contribReportedGross").value = projectedPayroll().gross.toFixed(2);
     $("contribReportedGross").dispatchEvent(new Event("input"));
   });
 
@@ -4972,7 +5075,6 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   $("contribReportedGross").addEventListener("input", () => {
     const c = contributionBreakdownFromGross($("contribReportedGross").value, readProfileInputs(), payrollMonth(), selectedEmployment());
     const correction = priorMonthCorrection(payrollMonth());
-    setText("contribEstimatedGross", euro(c.gross));
     setText("contribEstimatedTotal", euro(c.total));
     setText("contribPayableTotal", euro(Math.round((c.total + correction) * 100) / 100));
     renderContributionValues(false);
