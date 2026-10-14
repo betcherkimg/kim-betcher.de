@@ -2585,7 +2585,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
               <div class="field"><label>Straße und Hausnummer</label><input data-employer-field="street" type="text" maxlength="120"></div>
               <div class="field"><label>PLZ und Ort</label><input data-employer-field="zip_city" type="text" maxlength="120"></div>
               <div class="field"><label>Unfallversicherung (Berufsgenossenschaft)</label><input data-employer-field="uv_carrier" type="text" maxlength="120" placeholder="z. B. VBG"></div>
-              <div class="field"><label>Mitgliedsnummer bei der BG</label><input data-employer-field="uv_member_number" type="text" maxlength="40"></div>
+              <div class="field"><label>Unternehmensnummer der BG (15 Ziffern)</label><input data-employer-field="uv_member_number" type="text" inputmode="numeric" maxlength="40" placeholder="früher Mitgliedsnummer"></div>
             </div>
             <div class="actions start">
               <button class="btn primary" type="submit">Arbeitgeber speichern</button>
@@ -3297,7 +3297,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     }
     if (!employer.uv_carrier || !employer.uv_member_number) {
       out.push({ key: "uv-setup", title: "Unfallversicherung eintragen", due: null,
-        text: "Als Arbeitgeber bist du Mitglied der Berufsgenossenschaft. Name und Mitgliedsnummer brauchst du für die UV-Jahresmeldung und den Lohnnachweis.",
+        text: "Als Arbeitgeber bist du Mitglied der Berufsgenossenschaft. Name und Unternehmensnummer brauchst du für die UV-Jahresmeldung und den Lohnnachweis.",
         warn: true, page: "einstellungen" });
     }
     [thisYear - 1, thisYear].filter(y => employedInYear(job, y)).forEach(y => {
@@ -3307,7 +3307,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           text: `Abgabegrund 50 an die Minijob-Zentrale · Zeitraum ${fmtDate([job.start_date, `${y}-01-01`].sort().pop())} bis ${fmtDate([job.end_date || `${y}-12-31`, `${y}-12-31`].sort()[0])} · beitragspflichtiges Entgelt ${euro(yearGross(userId, y))}${y === thisYear ? " (Stand heute)" : ""}`,
           done: svDone(`jm:${userId}:${y}`), page: "lohn" },
         { key: `uv:${userId}:${y}`, title: `UV-Jahresmeldung ${y}`, due: `${next}-02-16`, year: y,
-          text: "Abgabegrund 92 an die Minijob-Zentrale · Zeitraum 01.01. bis 31.12. · mit Mitgliedsnummer und Gefahrtarifstelle der Berufsgenossenschaft", done: svDone(`uv:${userId}:${y}`), page: "lohn" },
+          text: "Abgabegrund 92 an die Minijob-Zentrale · Zeitraum 01.01. bis 31.12. · mit Unternehmensnummer und Gefahrtarifstelle der Berufsgenossenschaft", done: svDone(`uv:${userId}:${y}`), page: "lohn" },
         { key: `bg:${y}`, title: `Lohnnachweis an die Berufsgenossenschaft ${y}`, due: `${next}-02-16`, year: y,
           text: `Digitaler Lohnnachweis mit allen Arbeitsentgelten ${y}${employer.uv_carrier ? ` an ${employer.uv_carrier}` : ""}`, done: svDone(`bg:${y}`), page: "lohn" }
       );
