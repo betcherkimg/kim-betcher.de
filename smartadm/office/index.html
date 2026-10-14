@@ -1167,8 +1167,8 @@ body[data-my-size="l"] .content { zoom: 1.12; }
 .my-hint { margin: 0; padding: 9px 11px; border-radius: 12px; background: var(--w-wash); font-size: 13px; font-weight: 600; color: var(--w-ink); }
 .my-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
 .my-actions .btn { min-height: 44px; flex: 1 1 auto; }
-.my-widget .btn.primary { background: var(--w-accent); border-color: var(--w-accent); color: #fff; }
-.my-widget.is-dark .btn.primary { color: #1D2733; }
+.my-widget .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.my-widget.is-dark .btn.primary { box-shadow: 0 0 0 1.5px rgba(255,255,255,.35); }
 .my-widget .btn.ghost { background: transparent; border-color: color-mix(in srgb, var(--w-ink) 22%, transparent); color: var(--w-ink); }
 .my-widget .kennzahl-zeile { border-top-color: color-mix(in srgb, var(--w-ink) 12%, transparent); }
 .my-widget .kennzahl-zeile span { color: var(--w-soft); }
@@ -8709,6 +8709,7 @@ body.my-editing .my-widget { outline: 2px dashed color-mix(in srgb, var(--accent
     flieder:  { name: "Flieder",    accent: "#5B41A8", hi: "#463287", wash: "#ECE6F8" },
     sonne:    { name: "Sonnengelb", accent: "#8A6400", hi: "#6B4D00", wash: "#FAF0D2" },
     rose:     { name: "Rosé",       accent: "#A3304E", hi: "#83253E", wash: "#FAE3E9" },
+    pink:     { name: "Pink",       accent: "#C2185B", hi: "#9C1349", wash: "#FCE4EF" },
     salbei:   { name: "Salbei",     accent: "#44693A", hi: "#34522C", wash: "#E5EEE2" },
     grafit:   { name: "Grafit",     accent: "#2B323B", hi: "#1B2026", wash: "#E7EAEE" }
   };
@@ -8784,7 +8785,8 @@ body.my-editing .my-widget { outline: 2px dashed color-mix(in srgb, var(--accent
   function applyMyTheme() {
     if (state.role !== "employee") return;
     const a = MY_ACCENTS[myPrefs.accent], f = MY_FONTS[myPrefs.font];
-    const root = document.body.style;
+    // Auf :root setzen – dort hängen auch --blue, --brand, --nav-active usw. an --accent.
+    const root = document.documentElement.style;
     root.setProperty("--accent", a.accent);
     root.setProperty("--accent-hi", a.hi);
     root.setProperty("--accent-wash", a.wash);
