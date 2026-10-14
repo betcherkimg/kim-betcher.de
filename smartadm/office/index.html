@@ -4240,6 +4240,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
 
   function renderEmployeeData() {
+    applyMonthBounds();
     const month = payrollMonth();
     const list = inMonth(state.employeeEntries, month);
     const { mins, appts, days } = summarize(list);
@@ -4327,8 +4328,25 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const month = event.target.value || isoMonth();
     $("bossMonth").value = month;
     $("payrollMonth").value = month;
+    applyMonthBounds();
     renderEmployeeData();
   }));
+  $("closingMonth").addEventListener("change", applyMonthBounds);
+
+  // Vor dem Eintritt und nach dem Austritt gibt es keine Abrechnung – diese Monate sind nicht wählbar.
+  function applyMonthBounds() {
+    const job = state.role === "boss" ? selectedEmployment() : {};
+    const min = job.start_date ? job.start_date.slice(0, 7) : "";
+    const max = job.end_date ? job.end_date.slice(0, 7) : "";
+    ["bossMonth", "payrollMonth", "closingMonth"].forEach(id => {
+      const el = $(id);
+      if (!el) return;
+      el.min = min;
+      el.max = max;
+      if (min && el.value && el.value < min) el.value = min;
+      if (max && el.value && el.value > max) el.value = max;
+    });
+  }
 
   /* ================= Boss: Stammdaten ================= */
 
@@ -5118,6 +5136,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
 
   function renderPayrollPreview() {
+    applyMonthBounds();
     const p = currentPayroll();
     const vacation = calculateVacationStats(state.employeeEntries, state.employeeAbsences, selectedEmployment(), payrollMonth());
     const gross = state.selectedUserId ? euro(p.gross) : "–";
@@ -5406,7 +5425,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     else if (isoDate() < end) {
       disabled = true;
       const prev = previousMonth();
-      text = month === isoMonth() && !state.closings.some(c => c.payroll_month === prev)
+      const startMonth = (selectedEmployment().start_date || "").slice(0, 7);
+      text = month === isoMonth() && prev >= startMonth && !state.closings.some(c => c.payroll_month === prev)
         ? `${monthWord(prev)} ist noch offen – oben ${monthWord(prev)} wählen, um ${first} zu fragen.`
         : `Ab ${fmtDate(end)} kannst du ${first} fragen, ob alles eingetragen ist.`;
     }
