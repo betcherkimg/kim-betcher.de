@@ -3265,7 +3265,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const calls = ["open", "returned", "kk", "archived"].flatMap(scope => state.adminCalls[scope] || []);
     const seen = new Set();
     const by = {};
-    const get = id => (by[id] ||= { attempts: 0, termine: 0, last: null });
+    const get = id => (by[id] ||= { attempts: 0, termine: 0, last: null, first: null });
     calls.forEach(c => {
       if (seen.has(c.id)) return;
       seen.add(c.id);
@@ -3275,6 +3275,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         const a = get(who), t = parseTimestamp(ts);
         a.attempts++;
         if (!a.last || t > a.last) a.last = t;
+        if (!a.first || t < a.first) a.first = t;
       });
       if (c.status === "R_TA_mT" && sameDay(c.closed_at, day)) get(who).termine++;
     });
@@ -3580,6 +3581,18 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         }).join("");
         const next = plans.filter(p => p.plan_date > today && p.status === "planned").sort(byPlanDate)[0];
         const totals = Object.values(act).reduce((t, a) => ({ attempts: t.attempts + a.attempts, termine: t.termine + a.termine }), { attempts: 0, termine: 0 });
+        // Arbeitszeit heute: eingetragene Zeiten, sonst geschätzt von der ersten bis zur letzten Aktivität
+        let workMins = 0, estimated = false;
+        people.forEach(id => {
+          const recorded = id === state.selectedUserId
+            ? state.employeeEntries.filter(e => e.date === today).reduce((sum, e) => sum + Number(e.minutes || 0), 0) : 0;
+          if (recorded) { workMins += recorded; return; }
+          const a = act[id];
+          const plan = plans.find(p => p.plan_date === today && p.clerk_user_id === id && p.started_at);
+          const started = [a?.first, plan ? parseTimestamp(plan.started_at) : null].filter(Boolean).sort((x, y) => x - y)[0];
+          if (started && a?.last && a.last > started) { workMins += Math.round((a.last - started) / 60000); estimated = true; }
+        });
+        const workText = workMins ? `${estimated ? "≈ " : ""}${fmtMinutes(workMins)}` : "–";
         const day = new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "2-digit", month: "2-digit" }).format(new Date());
         return {
           sub: day,
@@ -3588,6 +3601,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             + `<div class="widget-zahlen">
                 <div class="kennzahl-zeile"><span>Anrufversuche heute</span><b>${totals.attempts}</b></div>
                 <div class="kennzahl-zeile"><span>Termine heute gesetzt</span><b>${totals.termine}</b></div>
+                <div class="kennzahl-zeile" title="${estimated ? "Noch nicht eingetragen – geschätzt von der ersten bis zur letzten Aktivität" : "Eingetragene Arbeitszeit"}"><span>Arbeitszeit heute${estimated ? " (bisher)" : ""}</span><b>${workText}</b></div>
                 <div class="kennzahl-zeile"><span>Offene Kontakte</span><b>${(state.adminCalls.open || []).length}</b></div>
                 <div class="kennzahl-zeile"><span>Nächster Einsatz</span><b>${next ? esc(`${fmtDayShort(next.plan_date)} · ${next.start_time}`) : "–"}</b></div>
               </div>`
