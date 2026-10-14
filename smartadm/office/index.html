@@ -1474,6 +1474,7 @@ html[data-theme="dark"] .logo::after { -webkit-mask-image: var(--logo-bright); m
 .sv-values td:first-child { width: 52px; font-family: "IBM Plex Mono", ui-monospace, monospace; color: var(--ink-soft); }
 .sv-values td:last-child { text-align: right; font-weight: 600; white-space: nowrap; }
 .sv-values tr.sum td { font-weight: 700; border-bottom: 0; border-top: 1.5px solid var(--ink-soft); }
+.close-ask-status { margin: 0 auto 0 0; align-self: center; max-width: 420px; }
 .lohn-tabs { display: flex; gap: 4px; margin: 0 0 14px; padding: 4px; background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); overflow-x: auto; scrollbar-width: none; }
 .lohn-tabs::-webkit-scrollbar { display: none; }
 .lohn-tabs button { flex: 1 0 auto; border: 0; background: transparent; padding: 10px 16px; border-radius: 10px; font: inherit; font-size: 14.5px; font-weight: 600; color: var(--ink-soft); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; }
@@ -1649,6 +1650,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             <button class="btn primary" type="button" id="pushEnableBtn">Aktivieren</button>
             <button class="btn ghost" type="button" id="pushTestBtn">Test senden</button>
           </div>
+        </div>
+        <div class="card shortcut" id="closeNotice" hidden>
+          <div><strong id="closeNoticeTitle">Monat abschließen?</strong><span>Kim möchte den Monat abschließen. Sind alle Arbeitszeiten und Termine eingetragen?</span></div>
+          <div class="btn-row"><button class="btn primary" type="button" id="closeNoticeBtn">Antworten</button></div>
         </div>
         <div class="card shortcut" id="payslipNotice" hidden>
           <div><strong id="payslipNoticeTitle">Gehaltsnachweis</strong><span>Bitte ansehen und mit deiner Unterschrift Empfang und Arbeitszeiten bestätigen.</span></div>
@@ -2049,6 +2054,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             <div class="field"><label for="payrollNote">Hinweis auf dem Gehaltsnachweis (optional)</label><input id="payrollNote" type="text" maxlength="180" placeholder="z. B. Nachzahlung September"></div>
           </div>
           <div class="actions">
+            <span id="closeAskStatus" class="status-text close-ask-status"></span>
+            <button class="btn ghost" id="closeAskBtn" type="button">Monat abschließen</button>
             <button class="btn ghost" id="createEmployerPayrollPdf" type="button">Arbeitgeber-Abrechnung als PDF</button>
             <button class="btn primary" id="createPayrollPdf" type="button">Gehaltsnachweis als PDF</button>
           </div>
@@ -2705,6 +2712,21 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     <label class="wn-confirm" id="whatsNewConfirmWrap" hidden><input type="checkbox" id="whatsNewCheck"><span id="whatsNewCheckText"></span></label>
     <div id="whatsNewStatus" class="status-text" aria-live="polite"></div>
     <button class="btn primary" type="button" id="whatsNewOk">Alles klar</button>
+  </div>
+</dialog>
+
+<!-- Mitarbeiterin: Monat abschließen? -->
+<dialog id="closeDialog" class="form-dialog close-dialog" data-role="employee" aria-labelledby="closeDialogTitle" closedby="none">
+  <div class="picker-head"><strong id="closeDialogTitle">Monat abschließen?</strong></div>
+  <div class="form-dialog-body">
+    <p id="closeDialogText"></p>
+    <table class="kv-table" id="closeDialogSum"></table>
+    <div class="field" id="closeNoteWrap" hidden><label for="closeNote">Was fehlt noch? (optional)</label><textarea id="closeNote" rows="2" maxlength="300" placeholder="z. B. Dienstag 28.10. trage ich noch nach"></textarea></div>
+    <div id="closeStatus" class="status-text" aria-live="polite"></div>
+    <div class="actions">
+      <button class="btn ghost" type="button" id="closeNo">Nein, ich trage noch etwas nach</button>
+      <button class="btn primary" type="button" id="closeYes">Ja, Monat abschließen</button>
+    </div>
   </div>
 </dialog>
 
@@ -5158,6 +5180,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
          Arbeitgeber unter „Einstellungen“, Mitarbeiter unter „Mitarbeiter“ ergänzen.`
       : "";
     renderContributionModule();
+    renderCloseAsk();
   }
 
   let profileSaveTimer = null;
@@ -5323,15 +5346,20 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   let bossSlips = { userId: null, rows: {}, unsupported: false };
   const slipFor = month => (bossSlips.userId === state.selectedUserId ? bossSlips.rows[month] : null);
 
+  // Abschluss-Anfragen an die Mitarbeiterin (Boss)
+  let closeReqs = { userId: null, rows: {}, unsupported: false };
+
   async function loadClosings(userId) {
     try {
-      const [rows, slips] = await Promise.all([
+      const [rows, slips, reqs] = await Promise.all([
         api(forUser("/admin/monthly-closings", userId)),
-        api(forUser("/admin/payslips", userId)).catch(() => null)
+        api(forUser("/admin/payslips", userId)).catch(() => null),
+        api(forUser("/admin/close-requests", userId)).catch(() => null)
       ]);
       if (state.selectedUserId !== userId) return;
       state.closings = asArray(rows);
       bossSlips = { userId, rows: Object.fromEntries(asArray(slips).map(sl => [sl.month, sl])), unsupported: slips === null };
+      closeReqs = { userId, rows: Object.fromEntries(asArray(reqs).map(r => [r.month, r])), unsupported: reqs === null };
     } catch (error) {
       console.error(error);
       state.closings = [];
@@ -5339,6 +5367,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     }
     renderClosings();
     renderPayrollPreview(); // die 12-Monats-Betrachtung nutzt die abgeschlossenen Monate
+    renderCloseAsk();
   }
 
   function renderClosings() {
@@ -5361,6 +5390,45 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         }).join("")
       : '<tr><td class="empty" colspan="8">Noch keine Monatsabschlüsse.</td></tr>';
   }
+
+  function renderCloseAsk() {
+    const btn = $("closeAskBtn");
+    if (!btn) return;
+    const userId = state.selectedUserId, month = payrollMonth();
+    const first = employeeName(findEmployee(userId)).split(" ")[0] || "die Mitarbeiterin";
+    const req = closeReqs.userId === userId ? closeReqs.rows[month] : null;
+    const closed = state.closings.some(c => c.payroll_month === month);
+    const end = monthEnd(month);
+    let label = "Monat abschließen", disabled = false, text = "";
+    if (!userId) { disabled = true; }
+    else if (closed) { label = "Monat abgeschlossen ✓"; disabled = true; text = "Gehaltsnachweis liegt im Monatsarchiv."; }
+    else if (closeReqs.unsupported) { disabled = true; text = "Dafür braucht es den neuen Worker."; }
+    else if (isoDate() < end) {
+      disabled = true;
+      const prev = previousMonth();
+      text = month === isoMonth() && !state.closings.some(c => c.payroll_month === prev)
+        ? `${monthWord(prev)} ist noch offen – oben ${monthWord(prev)} wählen, um ${first} zu fragen.`
+        : `Ab ${fmtDate(end)} kannst du ${first} fragen, ob alles eingetragen ist.`;
+    }
+    else if (req?.status === "pending") { label = "Anfrage läuft …"; disabled = true; text = `${first} wurde am ${fmtDateTime(req.requested_at)} gefragt – noch keine Antwort.`; }
+    else if (req?.status === "declined") { label = "Erneut fragen"; text = `${first} trägt noch nach${req.note ? `: „${req.note}“` : "."}`; }
+    else { text = `${first} bekommt die Frage, ob alles eingetragen ist – bei Ja unterschreibt sie direkt den Gehaltsnachweis.`; }
+    btn.textContent = label;
+    btn.disabled = disabled;
+    setText("closeAskStatus", text);
+  }
+
+  $("closeAskBtn").addEventListener("click", event => withBusy(event.currentTarget, async () => {
+    const userId = state.selectedUserId, month = payrollMonth();
+    try {
+      const row = await api(forUser("/admin/close-requests", userId), "POST", { month });
+      if (closeReqs.userId === userId && row?.month) closeReqs.rows[month] = row;
+      toast(`Frage an ${employeeName(findEmployee(userId)).split(" ")[0]} gesendet ✓`);
+    } catch (error) {
+      alert(error.message);
+    }
+    renderCloseAsk();
+  }).then(renderCloseAsk));
 
   function slipCell(row) {
     const sl = slipFor(row.payroll_month);
@@ -10104,6 +10172,67 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     });
   }
 
+  /* --- Monat abschließen? (Frage vom Boss) --- */
+  let myCloseReqs = [];
+  async function loadMyCloseRequests({ prompt = true } = {}) {
+    if (state.role !== "employee") return;
+    try { myCloseReqs = asArray(await api("/close-requests")); } catch { myCloseReqs = []; }
+    const req = myCloseReqs[0];
+    $("closeNotice").hidden = !req;
+    if (req) setText("closeNoticeTitle", `${req.label} abschließen?`);
+    if (req && prompt && !document.querySelector("dialog[open]")) openCloseDialog(req);
+  }
+  let closeCtx = null;
+  function openCloseDialog(req) {
+    closeCtx = req;
+    const mine = inMonth(state.entries, req.month);
+    const mins = mine.reduce((a, e) => a + Number(e.minutes || 0), 0);
+    const appts = mine.reduce((a, e) => a + Number(e.appointments || 0), 0);
+    setText("closeDialogTitle", `${req.label} abschließen?`);
+    setText("closeDialogText", `Kim möchte den ${req.label} abschließen. Hast du alle Arbeitszeiten und Termine eingetragen? Danach kannst du für diesen Monat nichts mehr ändern.`);
+    $("closeDialogSum").innerHTML = `<tbody>
+      <tr><td>Arbeitstage</td><td>${new Set(mine.map(e => e.date)).size}</td></tr>
+      <tr><td>Arbeitszeit</td><td>${esc(fmtMinutes(mins))}</td></tr>
+      <tr><td>Termine</td><td>${appts}</td></tr></tbody>`;
+    $("closeNoteWrap").hidden = true;
+    $("closeNote").value = "";
+    setText("closeNo", "Nein, ich trage noch etwas nach");
+    setStatus("closeStatus", "");
+    openDialog($("closeDialog"));
+  }
+  $("closeDialog").addEventListener("cancel", event => event.preventDefault());
+  $("closeNoticeBtn").addEventListener("click", () => { if (myCloseReqs[0]) openCloseDialog(myCloseReqs[0]); });
+  $("closeNo").addEventListener("click", event => {
+    if ($("closeNoteWrap").hidden) {
+      $("closeNoteWrap").hidden = false;
+      setText("closeNo", "Nein senden");
+      $("closeNote").focus();
+      return;
+    }
+    withBusy(event.currentTarget, async () => {
+      try {
+        await api("/close-requests/answer", "POST", { month: closeCtx.month, answer: "no", note: $("closeNote").value.trim() });
+        closeDialog($("closeDialog"));
+        toast("Kim weiß Bescheid – trag in Ruhe nach ✓");
+        loadMyCloseRequests({ prompt: false });
+      } catch (error) { setStatus("closeStatus", error.message, true); }
+    });
+  });
+  $("closeYes").addEventListener("click", event => withBusy(event.currentTarget, async () => {
+    try {
+      const res = await api("/close-requests/answer", "POST", { month: closeCtx.month, answer: "yes" });
+      closeDialog($("closeDialog"));
+      await loadMyCloseRequests({ prompt: false });
+      if (res?.slip) {
+        mySlips = [res.slip, ...asArray(mySlips).filter(x => x.month !== res.slip.month)].sort((a, b) => b.month.localeCompare(a.month));
+        renderMyPayslips();
+        openPayslip(res.slip, { sign: "employee" });
+      } else {
+        loadMyPayslips();
+      }
+    } catch (error) { setStatus("closeStatus", error.message, true); }
+  }));
+
   /* --- Unterschriftenfeld --- */
 
   const sigPad = { strokes: [], drawing: false, length: 0 };
@@ -10555,6 +10684,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     initPush();
     await showWhatsNew();
     await promptBossSignatures();
+    loadMyCloseRequests();
   }
 
   const displayName = user =>
