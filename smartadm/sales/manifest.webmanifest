@@ -1,0 +1,25 @@
+{
+  "id": "/smartadm/sales/",
+  "name": "SmartADM 5 Sales",
+  "short_name": "Sales",
+  "description": "SmartADM 5 Sales",
+  "start_url": "/smartadm/sales/",
+  "scope": "/smartadm/sales/",
+  "display": "standalone",
+  "background_color": "#F3F5F6",
+  "theme_color": "#F3F5F6",
+  "icons": [
+    {
+      "src": "/smartadm/sales/sales-icon-192-v4.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/smartadm/sales/sales-icon-512-v4.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
