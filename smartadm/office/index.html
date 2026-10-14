@@ -1463,7 +1463,21 @@ html[data-theme="dark"] .logo::after { -webkit-mask-image: var(--logo-bright); m
 #bossLook { margin-bottom: 16px; }
 #bossLook .my-panel { max-width: 720px; margin-left: auto; }
 body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px; }
-.widget-farben { margin: -4px 0 12px; padding: 8px; border-radius: 12px; background: color-mix(in srgb, var(--w-ink, #1D2733) 6%, transparent); }
+.widget-farben { margin: -4px 0 12px; padding: 8px; border-radius: 12px; background: color-mix(in srgb, var(--w-ink, #1D2733) 6%, transparent); display: grid; gap: 8px; }
+.widget-farben .my-seg { justify-self: start; }
+/* Größen: Raster in Zeilen-Einheiten, Kompakt = halbe Höhe (zwei Kompakte übereinander = eine normale Karte) */
+.widget.size-kompakt { height: 172px; min-height: 172px; }
+.widget.size-hoch { height: 548px; min-height: 548px; }
+.widget.size-kompakt :is(.widget-add, .widget-zahlen, .kennzahl-zeile) { display: none; }
+body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { height: auto; min-height: 232px; }
+@media (min-width: 720px) {
+  body[data-office-role="boss"]:not(.boss-editing) .widget-raster { grid-auto-rows: 172px; }
+  body[data-office-role="boss"]:not(.boss-editing) .widget-raster > .widget { height: auto; min-height: 0; grid-row: span 2; }
+  body[data-office-role="boss"]:not(.boss-editing) .widget-raster > .widget.size-kompakt { grid-row: span 1; }
+  body[data-office-role="boss"]:not(.boss-editing) .widget-raster > .widget.size-hoch { grid-row: span 3; }
+  body[data-office-role="boss"]:not(.boss-editing) .widget-raster > .widget-neu { grid-row: span 2; }
+  .widget.size-breit { grid-column: span 2; }
+}
 .widget.is-colored { background: var(--w-bg); color: var(--w-ink); }
 .widget.is-colored .widget-titel strong { color: var(--w-ink); }
 .widget.is-colored :is(.widget-titel span, .wd-meta, .kennzahl-text, .kennzahl-zeile span, .widget-leer, .widget-mehr) { color: var(--w-soft); }
@@ -3034,8 +3048,11 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
   /* ================= Boss-Dashboard: Widgets (wie SmartADM 5 Sales) ================= */
 
   const WIDGET_STORE = "smartadm.office.widgets.v1";
-  const WIDGET_MAX = 6;
   const WIDGET_KEYS = ["heute", "fristen", "kontakte", "mitarbeiter", "aufgabenBoss", "aufgabenAssistenz", "einsatzplan"];
+  const WIDGET_MAX = WIDGET_KEYS.length;
+  // Wie viele Einträge eine Karte zeigt, hängt von ihrer Größe ab
+  let widgetSize = "normal";
+  const fit = n => widgetSize === "kompakt" ? 1 : widgetSize === "hoch" ? n + 3 : n;   // keine Grenze – alle Widgets möglich
   let widgets = WIDGET_KEYS.slice(0, WIDGET_MAX);
   try {
     const saved = JSON.parse(localStorage.getItem(WIDGET_STORE) || "null");
@@ -3047,7 +3064,6 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
       if (!widgets.includes(key)) widgets.unshift(key);
       localStorage.setItem(flag, "1");
     });
-    if (widgets.length > WIDGET_MAX && widgets.includes("einsatzplan")) widgets = widgets.filter(k => k !== "einsatzplan");
     widgets = widgets.slice(0, WIDGET_MAX);
     localStorage.setItem(WIDGET_STORE, JSON.stringify(widgets));
   } catch { /* Standard-Widgets */ }
@@ -3239,7 +3255,7 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
       render() {
         if (!state.selectedUserId) return { sub: "", body: widgetEmpty("Noch keine Mitarbeiter angemeldet.") };
         const items = deadlineItems();
-        const shown = items.slice(0, items.length > 4 ? 3 : 4);
+        const max = fit(4), shown = items.slice(0, items.length > max ? Math.max(1, max - 1) : max);
         const rows = shown.map(i => {
           const [label, cls] = deadlineChip(i);
           return widgetRow(`data-widget-frist="${esc(i.page || "lohn")}"`, i.title, label, cls, i.meta);
@@ -3256,7 +3272,7 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
       title: "Kontakte", page: "telefon", text: "Die drei zuletzt eingestellten Kontakte",
       render() {
         const all = ["open", "returned", "kk", "archived"].flatMap(scope => (state.adminCalls[scope] || []).map(c => [c, scope]));
-        const latest = all.sort((a, b) => Number(b[0].id) - Number(a[0].id)).slice(0, 3);
+        const latest = all.sort((a, b) => Number(b[0].id) - Number(a[0].id)).slice(0, fit(3));
         const rows = latest.map(([c, scope]) => {
           const [status, cls] = callWidgetStatus(c, scope);
           const topics = callScriptData(c).topics.filter(k => CALL_TOPICS[k]).map(k => CALL_TOPICS[k].label);
@@ -3293,7 +3309,7 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
       title: "Meine Aufgaben", page: "organisation", text: "Deine offenen Aufgaben – von Mitarbeitern und vom Office",
       render() {
         const list = openTasks(true);
-        const rows = list.slice(0, 4).map(t => { const [st, cls] = taskStatus(t); return widgetRow('data-widget-task', t.title, st, cls, taskMeta(t)); }).join("");
+        const rows = list.slice(0, fit(4)).map(t => { const [st, cls] = taskStatus(t); return widgetRow('data-widget-task', t.title, st, cls, taskMeta(t)); }).join("");
         return { sub: `${list.length} offen`, body: rows || widgetEmpty("Keine offenen Aufgaben. ✓") };
       }
     },
@@ -3305,7 +3321,7 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
       render() {
         const list = openTasks(false).filter(t => !assistFilter || t.assigned_to === assistFilter);
         const who = assistFilter ? employeeName(findEmployee(assistFilter)) : "";
-        const rows = list.slice(0, 3).map(t => { const [st, cls] = taskStatus(t); return widgetRow('data-widget-task', t.title, st, cls, taskMeta(t)); }).join("");
+        const rows = list.slice(0, fit(3)).map(t => { const [st, cls] = taskStatus(t); return widgetRow('data-widget-task', t.title, st, cls, taskMeta(t)); }).join("");
         return { sub: [who, `${list.length} offen`].filter(Boolean).join(" · "), body: (rows || widgetEmpty("Keine offenen Aufgaben. ✓")) + widgetAdd("task", "Aufgabe erstellen") };
       }
     },
@@ -3317,7 +3333,7 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
         const plans = state.bossPlans;
         const problems = plans.filter(p => planProblem(p) && p.plan_date >= addDaysIso(today, -7)).sort((a, b) => byPlanDate(b, a));
         const upcoming = plans.filter(p => p.plan_date >= today && p.status !== "missed").sort(byPlanDate);
-        const rows = [...problems, ...upcoming].slice(0, 4).map(p => {
+        const rows = [...problems, ...upcoming].slice(0, fit(4)).map(p => {
           const [label, cls] = planStatus(p);
           const who = p.display_name || p.email || employeeName(findEmployee(p.clerk_user_id));
           const when = `${p.plan_date === today ? "Heute" : fmtDayShort(p.plan_date)} · ${p.start_time} Uhr`;
@@ -3341,13 +3357,18 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
     const host = $("widgetRaster");
     if (!host || state.role !== "boss") return;
     host.innerHTML = widgets.map(key => {
+      widgetSize = (myPrefs.bossSizes || {})[key] || "normal";
       const w = WIDGETS[key], d = w.render();
       const c = MY_COLORS[(myPrefs.bossColors || {})[key]];
       const colored = c && c !== MY_COLORS.weiss;
       const style = colored ? ` style="${cardVars(c)}"` : "";
-      const swatches = !bossEditing ? "" : `<div class="my-swatches widget-farben" role="group" aria-label="Kartenfarbe">${Object.entries(MY_COLORS).map(([id, col]) =>
-        `<button type="button" class="my-swatch" data-boss-color="${id}" data-key="${key}" style="--sw:${col.bg}" aria-pressed="${((myPrefs.bossColors || {})[key] || "weiss") === id}" title="${esc(col.name)}"></button>`).join("")}</div>`;
-      return `<section class="widget${colored ? " is-colored" : ""}${c === MY_COLORS.grafit ? " is-dark" : ""}" data-widget="${key}"${style}>
+      const size = (myPrefs.bossSizes || {})[key] || "normal";
+      const swatches = !bossEditing ? "" : `<div class="widget-farben">
+        <div class="my-seg" role="group" aria-label="Größe">${[["kompakt", "Kompakt"], ["normal", "Normal"], ["hoch", "Hoch"], ["breit", "Breit"]].map(([id, label]) =>
+          `<button type="button" data-boss-size="${id}" data-key="${key}" aria-pressed="${size === id}">${label}</button>`).join("")}</div>
+        <div class="my-swatches" role="group" aria-label="Kartenfarbe">${Object.entries(MY_COLORS).map(([id, col]) =>
+        `<button type="button" class="my-swatch" data-boss-color="${id}" data-key="${key}" style="--sw:${col.bg}" aria-pressed="${((myPrefs.bossColors || {})[key] || "weiss") === id}" title="${esc(col.name)}"></button>`).join("")}</div></div>`;
+      return `<section class="widget size-${size}${colored ? " is-colored" : ""}${c === MY_COLORS.grafit ? " is-dark" : ""}" data-widget="${key}"${style}>
         <div class="widget-kopf">
           <button class="widget-marke" type="button" data-jump-page="${w.page}">
             <span class="widget-symbol">${widgetIcon(key)}</span>
@@ -3403,6 +3424,12 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
   $("widgetDialogClose").addEventListener("click", () => closeDialog($("widgetDialog")));
 
   $("widgetRaster").addEventListener("click", event => {
+    const sizeBtn = event.target.closest("[data-boss-size]");
+    if (sizeBtn) {
+      myPrefs.bossSizes = { ...(myPrefs.bossSizes || {}), [sizeBtn.dataset.key]: sizeBtn.dataset.bossSize };
+      saveMyPrefs();
+      return renderDashboardWidgets();
+    }
     const colorBtn = event.target.closest("[data-boss-color]");
     if (colorBtn) {
       myPrefs.bossColors = { ...(myPrefs.bossColors || {}), [colorBtn.dataset.key]: colorBtn.dataset.bossColor };
@@ -8926,6 +8953,7 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
     out.note = String(out.note || "").slice(0, 2000);
     if (!["light", "dark"].includes(out.theme)) delete out.theme;
     out.bossColors = Object.fromEntries(Object.entries(out.bossColors || {}).filter(([, v]) => MY_COLORS[v]));
+    out.bossSizes = Object.fromEntries(Object.entries(out.bossSizes || {}).filter(([, v]) => ["kompakt", "normal", "hoch", "breit"].includes(v)));
     return out;
   }
 
