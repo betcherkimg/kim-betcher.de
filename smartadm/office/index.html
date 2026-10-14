@@ -11,6 +11,7 @@
 <link rel="manifest" href="/smartadm/office/manifest.webmanifest">
 <link rel="apple-touch-icon" sizes="192x192" href="/smartadm/office/office-icon-192-v2.png">
 <meta name="theme-color" content="#F3F5F6">
+<script>try{if(localStorage.getItem("smartadm.office.theme")==="dark"){document.documentElement.dataset.theme="dark";document.querySelector('meta[name="theme-color"]').content="#12161B";}}catch(e){}</script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -1272,6 +1273,70 @@ body.my-editing .my-widget { outline: 2px dashed color-mix(in srgb, var(--accent
   .my-greet { font-size: 22px; }
 }
 
+/* ===== Dunkelmodus ===== */
+.theme-toggle { width: 38px; height: 38px; padding: 0; display: inline-grid; place-items: center; }
+.theme-toggle svg.i { width: 19px; height: 19px; }
+.theme-toggle .theme-sun { display: none; }
+html[data-theme="dark"] .theme-toggle .theme-sun { display: block; }
+html[data-theme="dark"] .theme-toggle .theme-moon { display: none; }
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #12161B;
+  --surface: #1B2128;
+  --ink: #E7EBEF;
+  --ink-soft: #A3ADB8;
+  --ink-faint: #74808C;
+  --line: #2C343D;
+  --accent: #7FA6D9;
+  --accent-hi: #2C5E9E;
+  --accent-wash: #1D2B3C;
+  --hell: #6AA8FF;   --hell-wash: #172C45;
+  --gelb: #E2B652;   --gelb-wash: #3A3020;
+  --gruen: #6CCB9B;  --gruen-wash: #173326;
+  --lila: #B3A6E8;   --lila-wash: #2A2640;
+  --rot: #F08A80;    --rot-wash: #3B2220;
+  --shadow: 0 1px 2px rgba(0,0,0,.35), 0 6px 20px rgba(0,0,0,.3);
+  --nav-active-bg: var(--accent-wash);
+  --soft: var(--surface);
+  --danger: #F08A80;
+}
+html[data-theme="dark"] body { background: var(--ground); color: var(--ink); }
+html[data-theme="dark"] :is(.topbar) { background: rgba(27,33,40,.92); border-bottom-color: var(--line); }
+html[data-theme="dark"] .sidebar { background: var(--surface); border-right-color: var(--line); }
+html[data-theme="dark"] :is(.form-dialog, .note-dialog, .picker, .card, .pill, .breakdown, .call-note, .widget, .my-panel, .my-add, .mobile-menu, .more-panel, .widget-kontext) { background-color: var(--surface); color: var(--ink); border-color: var(--line); }
+html[data-theme="dark"] .picker-head { background: var(--surface); border-bottom-color: var(--line); }
+html[data-theme="dark"] :is(td, th, .breakdown div, .kennzahl-zeile, .ad-status-row, .doc-row) { border-color: var(--line); }
+html[data-theme="dark"] .breakdown div:last-child { background: var(--ground); }
+html[data-theme="dark"] :is(.btn.primary, #dashboard > .shortcut:not(#pushCard) > .btn, .my-widget .btn.primary) { background: var(--accent-hi); border-color: var(--accent-hi); color: #fff; }
+html[data-theme="dark"] .btn.primary:hover { background: color-mix(in srgb, var(--accent-hi) 85%, #fff); }
+html[data-theme="dark"] .hero { background: var(--accent-hi); }
+html[data-theme="dark"] .btn.ghost, html[data-theme="dark"] .btn:not(.primary):not(.danger) { background: transparent; color: var(--ink); border-color: var(--line); }
+html[data-theme="dark"] .btn.danger { background: transparent; color: var(--rot); border-color: var(--line); }
+html[data-theme="dark"] .field input::placeholder, html[data-theme="dark"] .field textarea::placeholder { color: var(--ink-faint); }
+html[data-theme="dark"] :is(.tabbar) { background: rgba(27,33,40,.97); border-top-color: var(--line); }
+html[data-theme="dark"] .picker-close { background: var(--rot-wash); color: var(--rot); }
+html[data-theme="dark"] .my-tool.danger { background: var(--surface); }
+html[data-theme="dark"] .icon-btn { background: transparent; border-color: var(--line); color: var(--ink-soft); }
+html[data-theme="dark"] .icon-btn.danger { color: var(--rot); }
+html[data-theme="dark"] .add-row .plus, html[data-theme="dark"] .widget-add .plus, html[data-theme="dark"] .widget-neu .plus { background: var(--ground); }
+html[data-theme="dark"] .add-row:hover { background: var(--surface); }
+html[data-theme="dark"] .my-seg button[aria-pressed="true"] { background: var(--ground); color: var(--ink); }
+html[data-theme="dark"] .widget.is-colored .widget-datensatz, html[data-theme="dark"] .widget-datensatz { background: rgba(255,255,255,.05); border-color: var(--line); }
+html[data-theme="dark"] .widget.is-colored .widget-datensatz:hover, html[data-theme="dark"] .widget-datensatz:hover { background: rgba(255,255,255,.09); }
+html[data-theme="dark"] .call-card.is-held { border-color: #5A4A24; }
+html[data-theme="dark"] #toast { background: #E7EBEF; color: #12161B; }
+html[data-theme="dark"] :is(.sign-pad-wrap) { background: #fff; }
+html[data-theme="dark"] .ad-sig-img img { background: #fff; border-radius: 6px; }
+/* Logo im Dunkeln: blaue Teile hell in der App-Farbe */
+html[data-theme="dark"] .logo { position: relative; background-image: var(--logo-base); }
+html[data-theme="dark"] .logo::before, html[data-theme="dark"] .logo::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  -webkit-mask: var(--logo-dark) center / contain no-repeat; mask: var(--logo-dark) center / contain no-repeat;
+  background: color-mix(in srgb, var(--accent) 75%, #fff);
+}
+html[data-theme="dark"] .logo::after { -webkit-mask-image: var(--logo-bright); mask-image: var(--logo-bright); background: var(--accent); }
+
 /* ===== Gruppen in der Seitenleiste ===== */
 .nav-label { padding: 14px 11px 5px; font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-faint); flex: none; }
 .nav > .nav-label:first-of-type { padding-top: 10px; }
@@ -1495,6 +1560,7 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
         <span id="pageSub">Überblick über den laufenden Monat</span>
       </div>
       <div class="top-actions">
+        <button class="pill theme-toggle" id="themeBtn" type="button" aria-label="Dunkles Design" title="Dunkles Design"><svg class="i theme-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.6A8 8 0 0 1 9.4 4.5a8 8 0 1 0 10.1 10.1Z"/></svg><svg class="i theme-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/></svg></button>
         <button class="pill" id="installAppBtn" type="button" title="SmartADM 5 Office als App installieren">
           <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M5 19h14"/></svg>
           <span class="label-full">Als App installieren</span><span class="label-mobile">App</span>
@@ -3278,7 +3344,7 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
       const w = WIDGETS[key], d = w.render();
       const c = MY_COLORS[(myPrefs.bossColors || {})[key]];
       const colored = c && c !== MY_COLORS.weiss;
-      const style = colored ? ` style="--w-bg:${c.bg};--w-ink:${c.ink};--w-soft:${c.soft};--w-accent:${c.accent};--w-wash:${c.wash}"` : "";
+      const style = colored ? ` style="${cardVars(c)}"` : "";
       const swatches = !bossEditing ? "" : `<div class="my-swatches widget-farben" role="group" aria-label="Kartenfarbe">${Object.entries(MY_COLORS).map(([id, col]) =>
         `<button type="button" class="my-swatch" data-boss-color="${id}" data-key="${key}" style="--sw:${col.bg}" aria-pressed="${((myPrefs.bossColors || {})[key] || "weiss") === id}" title="${esc(col.name)}"></button>`).join("")}</div>`;
       return `<section class="widget${colored ? " is-colored" : ""}${c === MY_COLORS.grafit ? " is-dark" : ""}" data-widget="${key}"${style}>
@@ -8796,6 +8862,37 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
   };
   const MY_SIZES = { s: "Klein", m: "Normal", l: "Groß" };
 
+  /* --- Dunkelmodus --- */
+  const THEME_STORE = "smartadm.office.theme";
+  const isDark = () => document.documentElement.dataset.theme === "dark";
+  function mixHex(a, b, t) {
+    const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+    const [x, y] = [p(a), p(b)];
+    return "#" + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, "0")).join("");
+  }
+  // Kartenfarben: im Dunkeln nur leicht eingefärbt, Schrift hell
+  function cardVars(c) {
+    if (!isDark()) return `--w-bg:${c.bg};--w-ink:${c.ink};--w-soft:${c.soft};--w-accent:${c.accent};--w-wash:${c.wash}`;
+    const tint = c === MY_COLORS.weiss ? "#1B2128" : mixHex("#1B2128", c === MY_COLORS.grafit ? "#5A6675" : c.accent, 0.2);
+    const accent = c === MY_COLORS.weiss ? "#7FA6D9" : mixHex(c.accent, "#ffffff", 0.35);
+    return `--w-bg:${tint};--w-ink:#E7EBEF;--w-soft:#A3ADB8;--w-accent:${accent};--w-wash:${mixHex(tint, accent, 0.18)}`;
+  }
+  function setTheme(theme, { save = true } = {}) {
+    const dark = theme === "dark";
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    try { localStorage.setItem(THEME_STORE, dark ? "dark" : "light"); } catch {}
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = dark ? "#12161B" : "#F3F5F6";
+    $("themeBtn").setAttribute("aria-label", dark ? "Helles Design" : "Dunkles Design");
+    $("themeBtn").title = dark ? "Helles Design" : "Dunkles Design";
+    if (save && state.role) { myPrefs.theme = dark ? "dark" : "light"; saveMyPrefs(); }
+    applyMyTheme();
+    renderMyStart();
+    renderDashboardWidgets();
+  }
+  $("themeBtn").addEventListener("click", () => setTheme(isDark() ? "light" : "dark"));
+  if (isDark()) { $("themeBtn").setAttribute("aria-label", "Helles Design"); $("themeBtn").title = "Helles Design"; }
+
   const MY_WIDGETS = {
     einsatz:    { title: "Nächster Einsatz", fixed: true, icon: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M9 15l2 2 4-4"/>' },
     meintag:    { title: "Mein Tag",          icon: '<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/>' },
@@ -8826,6 +8923,7 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
     out.colors = Object.fromEntries(Object.entries(out.colors || {}).filter(([k, v]) => MY_WIDGETS[k] && MY_COLORS[v]));
     out.sizes = Object.fromEntries(Object.entries(out.sizes || {}).filter(([k, v]) => MY_WIDGETS[k] && ["kompakt", "gross"].includes(v)));
     out.note = String(out.note || "").slice(0, 2000);
+    if (!["light", "dark"].includes(out.theme)) delete out.theme;
     out.bossColors = Object.fromEntries(Object.entries(out.bossColors || {}).filter(([, v]) => MY_COLORS[v]));
     return out;
   }
@@ -8838,6 +8936,7 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
       const res = await api("/me/prefs");
       if (res?.prefs) {
         myPrefs = cleanPrefs(res.prefs);
+        if (myPrefs.theme && myPrefs.theme !== (isDark() ? "dark" : "light")) setTheme(myPrefs.theme, { save: false });
         try { localStorage.setItem(MY_STORE(), JSON.stringify(myPrefs)); } catch {}
         applyMyTheme();
         renderMyStart();
@@ -8863,9 +8962,16 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
     const a = MY_ACCENTS[myPrefs.accent], f = MY_FONTS[myPrefs.font];
     // Auf :root setzen – dort hängen auch --blue, --brand, --nav-active usw. an --accent.
     const root = document.documentElement.style;
-    root.setProperty("--accent", a.accent);
-    root.setProperty("--accent-hi", a.hi);
-    root.setProperty("--accent-wash", a.wash);
+    if (isDark()) {
+      const base = myPrefs.accent === "weiss" ? "#2C5E9E" : myPrefs.accent === "grafit" ? "#4A5563" : a.accent;
+      root.setProperty("--accent", mixHex(base, "#ffffff", myPrefs.accent === "grafit" ? 0.55 : 0.4));
+      root.setProperty("--accent-hi", base);
+      root.setProperty("--accent-wash", mixHex("#1B2128", base, 0.28));
+    } else {
+      root.setProperty("--accent", a.accent);
+      root.setProperty("--accent-hi", a.hi);
+      root.setProperty("--accent-wash", a.wash);
+    }
     root.setProperty("--my-head-font", `${f.head}, "IBM Plex Sans", system-ui, sans-serif`);
     root.setProperty("--my-body-font", `${f.body}, "IBM Plex Sans", system-ui, sans-serif`);
     document.body.dataset.myFont = myPrefs.font;
@@ -8994,7 +9100,7 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
     const w = MY_WIDGETS[key];
     const color = MY_COLORS[myPrefs.colors[key] || "weiss"];
     const compact = myPrefs.sizes[key] === "kompakt";
-    const style = `--w-bg:${color.bg};--w-ink:${color.ink};--w-soft:${color.soft};--w-accent:${color.accent};--w-wash:${color.wash}`;
+    const style = cardVars(color);
     const last = myPrefs.widgets.length - 1;
     const tools = !myEditing ? "" : `<div class="my-tools">
         <div class="my-tool-row">
