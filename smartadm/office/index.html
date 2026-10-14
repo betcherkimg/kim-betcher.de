@@ -1459,6 +1459,9 @@ html[data-theme="dark"] .logo::after { -webkit-mask-image: var(--logo-bright); m
 .widget-leer { margin: 4px 0 0; font-size: 13px; color: var(--ink-faint); }
 .widget-zahlen { margin-top: auto; }
 .duty-list { display: grid; gap: 8px; }
+.kennzahl-link { width: 100%; background: none; border: 0; border-top: 1px solid var(--line); font: inherit; color: inherit; cursor: pointer; text-align: left; }
+.kennzahl-link:hover b { text-decoration: underline; }
+#termineList { display: grid; gap: 8px; }
 .duty { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 14px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
 .duty b { display: block; font-size: 14px; }
 .duty small { display: block; color: var(--ink-soft); font-size: 12.5px; line-height: 1.45; margin-top: 2px; }
@@ -2437,6 +2440,17 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         </div>
       </dialog>
 
+      <dialog id="termineDialog" class="form-dialog" data-role="boss" aria-labelledby="termineDialogTitle" closedby="none">
+        <div class="picker-head">
+          <strong id="termineDialogTitle">Termine heute</strong>
+          <button class="picker-close" type="button" id="termineDialogClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
+        </div>
+        <div class="form-dialog-body">
+          <p class="form-dialog-hint">Gezählt werden alle Kontakte, die heute mit „Mit Termin“ abgeschlossen wurden.</p>
+          <div id="termineList" class="task-list"></div>
+        </div>
+      </dialog>
+
       <!-- Boss: Aufgabe an Mitarbeiter (Fenster) -->
       <dialog id="taskDialog" class="form-dialog" data-role="boss" aria-labelledby="taskDialogTitle" closedby="none">
         <div class="picker-head">
@@ -3265,7 +3279,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const calls = ["open", "returned", "kk", "archived"].flatMap(scope => state.adminCalls[scope] || []);
     const seen = new Set();
     const by = {};
-    const get = id => (by[id] ||= { attempts: 0, termine: 0, last: null, first: null });
+    const get = id => (by[id] ||= { attempts: 0, termine: 0, last: null, first: null, terminCalls: [] });
     calls.forEach(c => {
       if (seen.has(c.id)) return;
       seen.add(c.id);
@@ -3277,7 +3291,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         if (!a.last || t > a.last) a.last = t;
         if (!a.first || t < a.first) a.first = t;
       });
-      if (c.status === "R_TA_mT" && sameDay(c.closed_at, day)) get(who).termine++;
+      if (c.status === "R_TA_mT" && sameDay(c.closed_at, day)) { get(who).termine++; get(who).terminCalls.push(c); }
     });
     return by;
   }
@@ -3600,7 +3614,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
               : rows || widgetEmpty("Heute ist kein Einsatz geplant."))
             + `<div class="widget-zahlen">
                 <div class="kennzahl-zeile"><span>Anrufversuche heute</span><b>${totals.attempts}</b></div>
-                <div class="kennzahl-zeile"><span>Termine heute gesetzt</span><b>${totals.termine}</b></div>
+                <button class="kennzahl-zeile kennzahl-link" type="button" data-heute-termine title="Welche Kontakte zählen?"><span>Termine heute gesetzt</span><b>${totals.termine}</b></button>
                 <div class="kennzahl-zeile" title="${estimated ? "Noch nicht eingetragen – geschätzt von der ersten bis zur letzten Aktivität" : "Eingetragene Arbeitszeit"}"><span>Arbeitszeit heute${estimated ? " (bisher)" : ""}</span><b>${workText}</b></div>
                 <div class="kennzahl-zeile"><span>Offene Kontakte</span><b>${(state.adminCalls.open || []).length}</b></div>
                 <div class="kennzahl-zeile"><span>Nächster Einsatz</span><b>${next ? esc(`${fmtDayShort(next.plan_date)} · ${next.start_time}`) : "–"}</b></div>
@@ -3778,6 +3792,26 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     saveWidgets(); renderDashboardWidgets();
   }
 
+  // Welche Kontakte zählen bei „Termine heute gesetzt“?
+  function openTermineHeute() {
+    const act = todayActivity();
+    const today = isoDate();
+    const rows = Object.entries(act).flatMap(([id, a]) => a.terminCalls.map(c => ({ id, c })))
+      .sort((x, y) => String(x.c.closed_at).localeCompare(String(y.c.closed_at)));
+    const corrections = asArray(state.employeeAdjustments).filter(r => sameDay(r.created_at, today) && Number(r.delta) < 0);
+    $("termineList").innerHTML = (rows.length ? rows.map(({ id, c }) => {
+      const topics = callScriptData(c).topics.filter(k => CALL_TOPICS[k]).map(k => CALL_TOPICS[k].label);
+      const who = c.display_name || employeeName(findEmployee(id));
+      return `<div class="duty"><div><b>${esc(c.customer_name || "Kontakt")}</b>
+        <small>${esc(clock(parseTimestamp(c.closed_at)))} Uhr · ${esc(who)}${topics.length ? ` · ${esc(topics.join(", "))}` : ""}</small></div></div>`;
+    }).join("") : '<div class="notice">Heute wurde noch kein Kontakt mit Termin abgeschlossen.</div>')
+      + (corrections.length ? `<div class="notice warn" style="margin-top:10px">Heute ${corrections.length === 1 ? "wurde 1 Termin" : `wurden ${corrections.length} Termine`} per Termin-Korrektur abgezogen (Kundenabsage) – der Kontakt selbst bleibt „mit Termin“ und zählt hier mit.</div>` : "");
+    setText("termineDialogTitle", `Termine heute (${rows.length})`);
+    openDialog($("termineDialog"));
+  }
+  $("termineDialog").addEventListener("cancel", event => event.preventDefault());
+  $("termineDialogClose").addEventListener("click", () => closeDialog($("termineDialog")));
+
   $("widgetDialog").addEventListener("cancel", event => event.preventDefault());
   $("widgetDialogClose").addEventListener("click", () => closeDialog($("widgetDialog")));
 
@@ -3823,6 +3857,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (add) return $(add.dataset.widgetAdd === "call" ? "callAddBtn" : "taskAddBtn").click();
     const call = event.target.closest("[data-widget-call]");
     if (call) return editCall(call.dataset.widgetCall);
+    if (event.target.closest("[data-heute-termine]")) return openTermineHeute();
     const heute = event.target.closest("[data-widget-heute]");
     if (heute) {
       showPage("einsatz");
