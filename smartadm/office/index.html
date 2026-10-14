@@ -1458,6 +1458,22 @@ html[data-theme="dark"] .logo::after { -webkit-mask-image: var(--logo-bright); m
 .widget-neu .plus { width: 44px; height: 44px; font-size: 22px; }
 .widget-leer { margin: 4px 0 0; font-size: 13px; color: var(--ink-faint); }
 .widget-zahlen { margin-top: auto; }
+.duty-list { display: grid; gap: 8px; }
+.duty { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 14px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.duty b { display: block; font-size: 14px; }
+.duty small { display: block; color: var(--ink-soft); font-size: 12.5px; line-height: 1.45; margin-top: 2px; }
+.duty .duty-miss { color: var(--danger, #B42318); }
+.duty .duty-done { display: flex; align-items: center; gap: 8px; }
+.duty .duty-done input { width: 150px; }
+.duty .duty-due { font-size: 12.5px; font-weight: 600; color: var(--ink-soft); white-space: nowrap; }
+.duty.is-done { opacity: .72; }
+.duty.is-warn { border-color: color-mix(in srgb, #E2A400 55%, var(--line)); }
+@media (max-width: 640px) { .duty { grid-template-columns: minmax(0, 1fr); } .duty .duty-done input { width: 100%; } }
+.sv-values { width: 100%; border-collapse: collapse; margin: 8px 0 6px; font-size: 13.5px; }
+.sv-values td { padding: 5px 6px; border-bottom: 1px solid var(--line); }
+.sv-values td:first-child { width: 52px; font-family: "IBM Plex Mono", ui-monospace, monospace; color: var(--ink-soft); }
+.sv-values td:last-child { text-align: right; font-weight: 600; white-space: nowrap; }
+.sv-values tr.sum td { font-weight: 700; border-bottom: 0; border-top: 1.5px solid var(--ink-soft); }
 .boss-look-bar { display: flex; justify-content: flex-end; margin: -4px 0 12px; }
 #bossLook:empty { display: none; }
 #bossLook { margin-bottom: 16px; }
@@ -1749,7 +1765,14 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
               <div class="field"><label>IBAN</label><input data-emp="iban" type="text" maxlength="42" placeholder="DE00 0000 0000 0000 0000 00"></div>
               <div class="field"><label>Eintritt</label><input data-emp="start_date" type="date"></div>
               <div class="field"><label>Austritt (optional)</label><input data-emp="end_date" type="date"></div>
+              <div class="field"><label>Staatsangehörigkeit</label><input data-emp="nationality" type="text" maxlength="60" placeholder="z. B. deutsch"></div>
+              <div class="field"><label>Tätigkeitsschlüssel (9 Ziffern)</label><input data-emp="activity_key" type="text" inputmode="numeric" maxlength="11" placeholder="wie im SV-Meldeportal angelegt"></div>
+              <div class="field"><label>Weitere Beschäftigungen</label><select data-emp="other_employment">
+                <option value="">noch nicht abgefragt</option><option value="none">keine</option>
+                <option value="minijob">weiterer Minijob</option><option value="main">Hauptbeschäftigung</option></select></div>
+              <div class="field"><label>Anmeldung Minijob-Zentrale übermittelt am</label><input data-emp="registered_at" type="date"></div>
             </div>
+            <p class="status-text" style="margin-top:4px">Staatsangehörigkeit, Tätigkeitsschlüssel und weitere Beschäftigungen brauchst du für die Anmeldung bei der Minijob-Zentrale. Weitere Beschäftigungen fragst du schriftlich ab (Personalfragebogen) – ein zweiter Minijob wird zusammengerechnet.</p>
             <div class="actions start">
               <button class="btn primary" type="submit">Stammdaten speichern</button>
               <span id="employeeProfileStatus" class="status-text" style="margin:0"></span>
@@ -1935,13 +1958,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card">
           <div class="card-head">
             <h2>Lohn &amp; Abrechnung</h2>
-            <p>Arbeitsstunden × 13,90 € + gesetzte Termine × 5,00 €. Es zählen alle Einträge des gewählten Monats.</p>
+            <p id="payrollRateIntro">Arbeitsstunden × 13,90 € + gesetzte Termine × 5,00 €. Es zählen alle Einträge des gewählten Monats.</p>
           </div>
 
           <div class="form-grid">
             <div class="field"><label>Mitarbeiter</label><select data-employee-select></select></div>
             <div class="field"><label for="payrollMonth">Abrechnungsmonat</label><input id="payrollMonth" type="month"></div>
-            <div class="field"><label>Stundenlohn</label><input value="13,90 € / Stunde" disabled></div>
+            <div class="field"><label>Stundenlohn</label><input id="payrollRateField" value="13,90 € / Stunde" disabled></div>
             <div class="field"><label>Provision</label><input value="5,00 € / gesetztem Termin" disabled></div>
             <div class="field"><label for="payrollPaymentDate">Zahlungsdatum</label><input id="payrollPaymentDate" type="date"></div>
             <div class="field full"><label for="payrollNote">Notiz</label><input id="payrollNote" type="text" maxlength="180" placeholder="Optionaler interner Hinweis"></div>
@@ -2062,7 +2085,14 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             </div>
             <div id="contribWarning" class="limit-status" style="margin-top:10px"></div>
             <div id="contribValues" class="notice" style="margin-top:12px" hidden></div>
-            <div class="status-text" style="margin-top:8px">Status, Datumsfelder und Schätzgrundlage werden lokal in diesem Browser gespeichert; die eigentliche Meldung erfolgt im SV-Meldeportal.</div>
+            <div class="status-text" style="margin-top:8px" id="contribStoreNote">Status, Datumsfelder und Schätzgrundlage werden in Office gespeichert und gelten auf allen Geräten; die eigentliche Meldung erfolgt im SV-Meldeportal.</div>
+          </div>
+          <div class="panel" style="margin-top:16px" id="dutyPanel">
+            <div class="card-head" style="margin-bottom:12px">
+              <h2 style="font-size:16px">Meldungen &amp; Pflichten</h2>
+              <p>Was außer dem monatlichen Beitragsnachweis an die Minijob-Zentrale und die Unfallversicherung geht. Mit Datum abhaken – dann verschwindet es aus den Fristen.</p>
+            </div>
+            <div id="dutyList" class="duty-list"></div>
           </div>
 
           <div class="actions">
@@ -2532,7 +2562,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card">
           <div class="card-head">
             <h2>Arbeitgeber</h2>
-            <p>Erscheint im Kopf jedes Gehaltsnachweises.</p>
+            <p>Erscheint im Kopf jedes Gehaltsnachweises. Betriebsnummer und Unfallversicherung brauchst du für die Meldungen.</p>
           </div>
           <form id="employerForm">
             <div class="form-grid narrow">
@@ -2540,6 +2570,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
               <div class="field"><label>Betriebsnummer (optional)</label><input data-employer-field="company_number" type="text" inputmode="numeric" maxlength="9" placeholder="8 Ziffern"></div>
               <div class="field"><label>Straße und Hausnummer</label><input data-employer-field="street" type="text" maxlength="120"></div>
               <div class="field"><label>PLZ und Ort</label><input data-employer-field="zip_city" type="text" maxlength="120"></div>
+              <div class="field"><label>Unfallversicherung (Berufsgenossenschaft)</label><input data-employer-field="uv_carrier" type="text" maxlength="120" placeholder="z. B. VBG"></div>
+              <div class="field"><label>Mitgliedsnummer bei der BG</label><input data-employer-field="uv_member_number" type="text" maxlength="40"></div>
             </div>
             <div class="actions start">
               <button class="btn primary" type="submit">Arbeitgeber speichern</button>
@@ -2697,6 +2729,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const HOURLY_RATE_CENTS = 1390;
   const COMMISSION_RATE_CENTS = 500;
   const MINIJOB_LIMIT = 603;                 // Geringfügigkeitsgrenze 2026 je Monat
+  // Ab 2027: Mindestlohn 14,60 € → Stundenlohn mindestens 14,60 €, Minijob-Grenze 633 €
+  const hourlyRateCents = month => (String(month || "") >= "2027-01" ? 1460 : HOURLY_RATE_CENTS);
+  const minijobLimit = month => (String(month || "") >= "2027-01" ? 633 : MINIJOB_LIMIT);
   const RV_MIN_BASE_CENTS = 17500;           // Mindestbeitragsbemessungsgrundlage (§ 163 Abs. 8 SGB VI)
   const RV_FULL_RATE = 0.186;
   const RV_EMPLOYER_RATE = 0.15;
@@ -3185,6 +3220,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       if (status !== "paid") items.push({ date: deadline.payment, title: `Beiträge ${monthWord(month)} fällig`, meta: "Lastschrift bzw. Überweisung an die Minijob-Zentrale" });
     }
 
+    // Meldungen: Anmeldung, Abmeldung, Jahresmeldungen (ab 15.12.), Unfallversicherung
+    dutyItems(userId).forEach(d => {
+      if (d.done) return;
+      if (d.year && d.year === Number(today.slice(0, 4)) && today < `${d.year}-12-15`) return;
+      items.push({ date: d.due, title: d.title, meta: d.missing?.length ? `Fehlt: ${d.missing.join(", ")}` : d.text.split(" · ")[0], page: d.page });
+    });
+
     // Nachtrag
     const add = (state.addenda || []).find(a => a.clerk_user_id === userId);
     if (add && !add.complete) {
@@ -3207,6 +3249,108 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     return items.filter(i => !i.done)
       .sort((a, b) => (a.date === null) - (b.date === null) || String(a.date).localeCompare(String(b.date)));
   }
+
+  /* --- Meldepflichten neben dem Beitragsnachweis --- */
+  const svDone = key => (myPrefs?.svDone || {})[key] || null;
+  function setSvDone(key, date) {
+    const next = { ...(myPrefs.svDone || {}) };
+    if (date) next[key] = date; else delete next[key];
+    myPrefs.svDone = next;
+    saveMyPrefs();
+  }
+  const employedInYear = (job, y) => Boolean(job.start_date) && job.start_date <= `${y}-12-31` && (!job.end_date || job.end_date >= `${y}-01-01`);
+
+  function dutyItems(userId = state.selectedUserId) {
+    if (!userId) return [];
+    const job = state.employeeProfiles[userId] || {};
+    const employer = state.employer || {};
+    const name = employeeName(findEmployee(userId));
+    const thisYear = Number(isoDate().slice(0, 4));
+    const out = [];
+    if (job.start_date) {
+      const missing = [
+        !employer.company_number && "Betriebsnummer", !job.insurance_number && "Versicherungsnummer",
+        !(job.street && job.zip_city) && "Anschrift", !job.nationality && "Staatsangehörigkeit",
+        !job.activity_key && "Tätigkeitsschlüssel", !job.tax_id && "Steuer-ID"
+      ].filter(Boolean);
+      out.push({ key: "registered", title: "Anmeldung bei der Minijob-Zentrale", due: isoPlusDays(job.start_date, 42),
+        text: `Meldeart Anmeldung, Abgabegrund 10 · Personengruppe 109 · Beitragsgruppe ${contributionGroup(readProfileInputs())} · Beginn ${fmtDate(job.start_date)} · Steuer-ID und Pauschsteuer angeben`,
+        missing, done: job.registered_at || null, profileField: "registered_at", page: "lohn" });
+    }
+    if (job.end_date) {
+      out.push({ key: `ab:${userId}`, title: "Abmeldung bei der Minijob-Zentrale", due: isoPlusDays(job.end_date, 42),
+        text: `Abgabegrund 30 · Ende ${fmtDate(job.end_date)} · mit dem beitragspflichtigen Entgelt des Jahres`, done: svDone(`ab:${userId}`), page: "lohn" });
+    }
+    if (!employer.uv_carrier || !employer.uv_member_number) {
+      out.push({ key: "uv-setup", title: "Unfallversicherung eintragen", due: null,
+        text: "Als Arbeitgeber bist du Mitglied der Berufsgenossenschaft. Name und Mitgliedsnummer brauchst du für die UV-Jahresmeldung und den Lohnnachweis.",
+        warn: true, page: "einstellungen" });
+    }
+    [thisYear - 1, thisYear].filter(y => employedInYear(job, y)).forEach(y => {
+      const next = y + 1;
+      out.push(
+        { key: `jm:${userId}:${y}`, title: `Jahresmeldung ${y}`, due: `${next}-02-15`, year: y,
+          text: `Abgabegrund 50 an die Minijob-Zentrale · Zeitraum ${fmtDate([job.start_date, `${y}-01-01`].sort().pop())} bis ${fmtDate([job.end_date || `${y}-12-31`, `${y}-12-31`].sort()[0])} · beitragspflichtiges Entgelt ${euro(yearGross(userId, y))}${y === thisYear ? " (Stand heute)" : ""}`,
+          done: svDone(`jm:${userId}:${y}`), page: "lohn" },
+        { key: `uv:${userId}:${y}`, title: `UV-Jahresmeldung ${y}`, due: `${next}-02-16`, year: y,
+          text: "Abgabegrund 92 an die Minijob-Zentrale · Zeitraum 01.01. bis 31.12. · mit Mitgliedsnummer und Gefahrtarifstelle der Berufsgenossenschaft", done: svDone(`uv:${userId}:${y}`), page: "lohn" },
+        { key: `bg:${y}`, title: `Lohnnachweis an die Berufsgenossenschaft ${y}`, due: `${next}-02-16`, year: y,
+          text: `Digitaler Lohnnachweis mit allen Arbeitsentgelten ${y}${employer.uv_carrier ? ` an ${employer.uv_carrier}` : ""}`, done: svDone(`bg:${y}`), page: "lohn" }
+      );
+    });
+    return out;
+  }
+
+  // Jahresbrutto aus abgeschlossenen Monaten + laufendem Monat
+  function yearGross(userId, y) {
+    if (userId !== state.selectedUserId) return 0;
+    const closed = state.closings.filter(c => String(c.payroll_month).startsWith(`${y}-`));
+    const sum = closed.reduce((a, c) => a + Number(c.gross || 0), 0);
+    const open = isoMonth().startsWith(`${y}-`) && !closed.some(c => c.payroll_month === isoMonth())
+      ? Number(calculatePayroll(inMonth(state.employeeEntries, isoMonth()), readProfileInputs(), isoMonth(), selectedEmployment(),
+          inMonthAbsences(state.employeeAbsences, isoMonth()), adjustmentsFor(state.employeeAdjustments, isoMonth())).gross || 0)
+      : 0;
+    return Math.round((sum + open) * 100) / 100;
+  }
+
+  function renderDuties() {
+    const host = $("dutyList");
+    if (!host) return;
+    const items = dutyItems();
+    host.innerHTML = items.length ? items.map(d => {
+      const late = !d.done && d.due && d.due < isoDate();
+      return `<div class="duty${d.done ? " is-done" : ""}${d.warn || late ? " is-warn" : ""}">
+        <div><b>${esc(d.title)}</b><small>${esc(d.text)}</small>
+          ${d.missing?.length && !d.done ? `<small class="duty-miss">Dafür fehlt noch: ${esc(d.missing.join(", "))}</small>` : ""}</div>
+        <div class="duty-done">
+          ${d.due ? `<span class="duty-due">${late ? "überfällig · " : ""}bis ${esc(fmtDate(d.due))}</span>` : ""}
+          ${d.key === "uv-setup" ? '<button class="btn ghost small" type="button" data-duty-go="einstellungen">Eintragen</button>'
+            : `<input type="date" data-duty="${esc(d.key)}" value="${esc(d.done || "")}" title="Erledigt am" aria-label="${esc(d.title)} erledigt am">`}
+        </div></div>`;
+    }).join("") : '<div class="notice">Mitarbeiter auswählen.</div>';
+  }
+
+  $("dutyList").addEventListener("change", async event => {
+    const input = event.target.closest("[data-duty]");
+    if (!input) return;
+    const key = input.dataset.duty, date = input.value || null;
+    if (key === "registered") {
+      const userId = state.selectedUserId;
+      try {
+        const saved = await api(forUser("/admin/employee-profile", userId), "PUT", { ...(state.employeeProfiles[userId] || {}), registered_at: date || "" });
+        state.employeeProfiles[userId] = saved;
+        if (state.selectedUserId === userId) fillFields("data-emp", saved);
+      } catch (error) { alert("Nicht gespeichert: " + error.message); }
+    } else {
+      setSvDone(key, date);
+    }
+    renderDuties();
+    renderDashboardWidgets();
+  });
+  $("dutyList").addEventListener("click", event => {
+    const go = event.target.closest("[data-duty-go]");
+    if (go) document.querySelector(`.nav [data-page="${go.dataset.dutyGo}"], [data-page="${go.dataset.dutyGo}"]`)?.click();
+  });
 
   function deadlineChip(item) {
     if (!item.date) return ["offen", "warn"];
@@ -3858,7 +4002,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       return;
     }
 
-    await Promise.all([loadEmployeeData(userId), loadClosings(userId)]);
+    await Promise.all([loadEmployeeData(userId), loadClosings(userId), loadContributionReports(userId)]);
     if (document.querySelector("#vertrag.active, #mitarbeiter.active")) loadContracts();
   }
 
@@ -4115,7 +4259,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function fullMonthsBetween(start, end) {
     if (!start || !end || end < start) return 0;
     const [sy, sm, sd] = start.split("-").map(Number);
-    const [ey, em, ed] = end.split("-").map(Number);
+    const [ey, em, ed] = isoPlusDays(end, 1).split("-").map(Number); // 01.10.–31.10. = 1 voller Monat (§ 5 BUrlG)
     let months = (ey - sy) * 12 + (em - sm);
     if (ed < sd) months -= 1;
     return Math.max(0, months);
@@ -4330,7 +4474,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const { mins, appts: entryAppts, days } = summarize(list);
     const apptAdjust = adjustSum(adjustments);
     const appts = Math.max(0, entryAppts + apptAdjust);
-    const timePay = Math.round((mins * HOURLY_RATE_CENTS) / 60);
+    const timePay = Math.round((mins * hourlyRateCents(month)) / 60);
     const commission = appts * COMMISSION_RATE_CENTS;
     const absenceMoney = type => absences.filter(a => a.type === type).reduce((sum, a) => sum + a.paidAmountCents, 0);
     const vacationPay = absenceMoney("vacation");
@@ -4348,12 +4492,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     let employeeRv = 0;
     let rvMinBase = 0;
     if (profile.employeeRv && gross > 0) {
-      employeeRv = Math.round(gross * RV_EMPLOYEE_RATE);
       const base = Math.round((RV_MIN_BASE_CENTS * svDays) / 30);
-      if (profile.rvMinBaseApplies && gross < base) {
-        rvMinBase = base;
-        employeeRv = Math.round(base * RV_FULL_RATE) - Math.round(gross * RV_EMPLOYER_RATE);
-      }
+      if (profile.rvMinBaseApplies && gross < base) rvMinBase = base;
+      employeeRv = Math.max(0, Math.round((rvMinBase || gross) * RV_FULL_RATE) - Math.round(gross * RV_EMPLOYER_RATE));
     }
     const employee = {
       employeeRv,
@@ -4408,7 +4549,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       months[key].absence += a.paidAmountCents;
     });
     const cents = Object.fromEntries(Object.entries(months).map(([key, v]) =>
-      [key, Math.round((v.mins * HOURLY_RATE_CENTS) / 60) + v.appts * COMMISSION_RATE_CENTS + v.absence]));
+      [key, Math.round((v.mins * hourlyRateCents(key)) / 60) + v.appts * COMMISSION_RATE_CENTS + v.absence]));
     state.closings.forEach(row => {
       const key = row.payroll_month;
       if (key >= from && key < month) cents[key] = Math.round(Number(row.gross || 0) * 100);
@@ -4418,8 +4559,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       from,
       to: month,
       gross: values.reduce((a, b) => a + b, 0) / 100,
-      limit: MINIJOB_LIMIT * 12,
-      monthsOver: values.filter(v => v > MINIJOB_LIMIT * 100).length
+      limit: minijobLimit(month) * 12,
+      monthsOver: Object.entries(cents).filter(([key, v]) => v > minijobLimit(key) * 100).length
     };
   }
 
@@ -4440,15 +4581,63 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const contributionStoreKey = (userId = state.selectedUserId, month = payrollMonth()) =>
     `${CONTRIBUTION_STORE_PREFIX}:${userId || "none"}:${month || "none"}`;
 
+  // Gespeichert im Worker (alle Geräte); lokal nur, falls der Worker die Funktion noch nicht hat.
+  let contrib = { userId: null, remote: false, rows: {} };
+  const contribFromRow = r => ({
+    id: r.id, reportedGross: Number(r.estimated_gross || 0).toFixed(2), reportedTotal: Number(r.reported_total || 0),
+    status: r.status || "draft", submittedDate: r.submitted_at ? String(r.submitted_at).slice(0, 10) : null,
+    paidDate: r.paid_at ? String(r.paid_at).slice(0, 10) : null, note: r.note || ""
+  });
+
   function readContributionRecord(userId = state.selectedUserId, month = payrollMonth()) {
     if (!userId || !month) return {};
+    if (contrib.remote && contrib.userId === userId) return contrib.rows[month] || {};
     try { return JSON.parse(localStorage.getItem(contributionStoreKey(userId, month)) || "{}"); }
     catch { return {}; }
   }
 
-  function writeContributionRecord(record, userId = state.selectedUserId, month = payrollMonth()) {
+  async function saveContributionRemote(record, userId, month) {
+    const row = await api(forUser("/admin/contribution-reports", userId), "PUT", {
+      month, estimated_gross: Number(record.reportedGross || 0), note: record.note || "",
+      status: record.status || "draft", submitted_date: record.submittedDate || null, paid_date: record.paidDate || null
+    });
+    if (contrib.userId === userId) contrib.rows[month] = contribFromRow(row);
+  }
+
+  async function writeContributionRecord(record, userId = state.selectedUserId, month = payrollMonth()) {
     if (!userId || !month) return;
-    localStorage.setItem(contributionStoreKey(userId, month), JSON.stringify(record));
+    try { localStorage.setItem(contributionStoreKey(userId, month), JSON.stringify(record)); } catch {}
+    if (contrib.remote && contrib.userId === userId) await saveContributionRemote(record, userId, month);
+  }
+
+  async function loadContributionReports(userId) {
+    if (!userId) { contrib = { userId: null, remote: false, rows: {} }; return; }
+    try {
+      const rows = asArray(await api(forUser("/admin/contribution-reports", userId)));
+      if (state.selectedUserId !== userId) return;
+      contrib = { userId, remote: true, rows: Object.fromEntries(rows.map(r => [r.payroll_month, contribFromRow(r)])) };
+      // Bisher nur in diesem Browser gespeicherte Monate einmalig in Office übernehmen
+      let keys = [];
+      try { keys = Object.keys(localStorage); } catch {}
+      const prefix = `${CONTRIBUTION_STORE_PREFIX}:${userId}:`;
+      for (const key of keys) {
+        const month = key.startsWith(prefix) ? key.slice(prefix.length) : "";
+        if (!/^\d{4}-\d{2}$/.test(month) || contrib.rows[month]) continue;
+        try {
+          const rec = JSON.parse(localStorage.getItem(key) || "{}");
+          if (rec.reportedGross != null && rec.reportedGross !== "") await saveContributionRemote(rec, userId, month);
+        } catch (error) { console.warn("Beitragsnachweis nicht übernommen:", month, error); }
+      }
+    } catch (error) {
+      if (state.selectedUserId === userId) contrib = { userId, remote: false, rows: {} };
+    }
+    if (state.selectedUserId === userId) {
+      if ($("contribStoreNote")) $("contribStoreNote").textContent = contrib.remote
+        ? "Status, Datumsfelder und Schätzgrundlage werden in Office gespeichert und gelten auf allen Geräten; die eigentliche Meldung erfolgt im SV-Meldeportal."
+        : "Status, Datumsfelder und Schätzgrundlage werden bis zum Worker-Update nur in diesem Browser gespeichert; die eigentliche Meldung erfolgt im SV-Meldeportal.";
+      renderContributionModule();
+      if (typeof renderDashboardWidgets === "function") renderDashboardWidgets();
+    }
   }
 
   function previousContributionMonth(month) {
@@ -4462,10 +4651,33 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     return isoDate(d);
   }
 
+  // Datum ± Tage (Funktionsdeklaration: schon beim Laden verfügbar)
+  function isoPlusDays(iso, n) {
+    const d = new Date(`${iso}T12:00:00Z`);
+    d.setUTCDate(d.getUTCDate() + n);
+    return d.toISOString().slice(0, 10);
+  }
+  // Bundesweite Feiertage + 24./31.12. sind keine Bankarbeitstage
+  function bankHolidays(y) {
+    const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4;
+    const f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+    const i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+    const easter = `${y}-${pad(Math.floor((h + l - 7 * m + 114) / 31))}-${pad(((h + l - 7 * m + 114) % 31) + 1)}`;
+    return new Set([`${y}-01-01`, isoPlusDays(easter, -2), isoPlusDays(easter, 1), `${y}-05-01`, isoPlusDays(easter, 39), isoPlusDays(easter, 50),
+      `${y}-10-03`, `${y}-12-24`, `${y}-12-25`, `${y}-12-26`, `${y}-12-31`]);
+  }
+  // Beitragsnachweis bis zum Beginn des fünftletzten, Zahlung am drittletzten Bankarbeitstag (§ 23 SGB IV)
   function contributionDeadline(month) {
     const days = CONTRIBUTION_DEADLINES_2026[month];
-    if (!days) return null;
-    return { submit: `${month}-${pad(days[0])}`, payment: `${month}-${pad(days[1])}` };
+    if (days) return { submit: `${month}-${pad(days[0])}`, payment: `${month}-${pad(days[1])}` };
+    if (!/^\d{4}-\d{2}$/.test(String(month || ""))) return null;
+    const holidays = bankHolidays(Number(month.slice(0, 4)));
+    const bank = [];
+    for (let d = monthEnd(month); d.startsWith(month) && bank.length < 5; d = isoPlusDays(d, -1)) {
+      const wd = new Date(`${d}T12:00:00Z`).getUTCDay();
+      if (wd !== 0 && wd !== 6 && !holidays.has(d)) bank.push(d);
+    }
+    return { submit: isoPlusDays(bank[4], -1), payment: bank[2] };
   }
 
   function contributionBreakdownFromGross(grossEuros, profile, month = payrollMonth(), employment = selectedEmployment()) {
@@ -4473,11 +4685,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const svDays = insuredDays(month, employment?.start_date, employment?.end_date);
     let employeeRv = 0;
     if (profile.employeeRv && gross > 0) {
-      employeeRv = Math.round(gross * RV_EMPLOYEE_RATE);
       const base = Math.round((RV_MIN_BASE_CENTS * svDays) / 30);
-      if (profile.rvMinBaseApplies && gross < base) {
-        employeeRv = Math.max(0, Math.round(base * RV_FULL_RATE) - Math.round(gross * RV_EMPLOYER_RATE));
-      }
+      employeeRv = Math.max(0, Math.round((profile.rvMinBaseApplies && gross < base ? base : gross) * RV_FULL_RATE) - Math.round(gross * RV_EMPLOYER_RATE));
     }
     const kv = profile.employerKv ? Math.round(gross * 0.13) : 0;
     const rv = profile.employerRv ? Math.round(gross * RV_EMPLOYER_RATE) : 0;
@@ -4526,21 +4735,39 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     return status === "paid" ? "Bezahlt" : status === "submitted" ? "Übermittelt" : "Entwurf";
   }
 
+  // Zeilen wie im Beitragsnachweis der Minijob-Zentrale (gewerblich)
+  function svNachweisRows(c, profile) {
+    return [
+      profile.employerKv && ["6000", "Krankenversicherung – Pauschalbeitrag (13 %)", c.kv],
+      profile.employeeRv
+        ? ["0100", "Rentenversicherung – voller Beitrag (18,6 %)", c.rv + c.employeeRv]
+        : profile.employerRv && ["0500", "Rentenversicherung – Pauschalbeitrag (15 %)", c.rv],
+      profile.u1 && ["U1", "Umlage Krankheitsaufwendungen (0,80 %)", c.u1],
+      profile.u2 && ["U2", "Umlage Mutterschaftsaufwendungen (0,22 %)", c.u2],
+      profile.insolvency && ["0050", "Insolvenzgeldumlage (0,15 %)", c.insolvency],
+      profile.flatTax && ["St", "Einheitliche Pauschsteuer (2 %)", c.flatTax]
+    ].filter(Boolean);
+  }
+
   function renderContributionValues(forceShow = true) {
     const host = $("contribValues");
     if (!host) return;
     const c = contributionBreakdownFromGross($("contribReportedGross").value, readProfileInputs(), payrollMonth(), selectedEmployment());
     const correction = priorMonthCorrection(payrollMonth());
     const total = Math.round((c.total + correction) * 100) / 100;
-    host.innerHTML = `<b>Werte für das SV-Meldeportal</b><br>
-      KV 13 %: <b>${euro(c.kv)}</b> · RV 15 %: <b>${euro(c.rv)}</b> · U1 0,80 %: <b>${euro(c.u1)}</b> · U2 0,22 %: <b>${euro(c.u2)}</b><br>
-      Insolvenzgeldumlage 0,15 %: <b>${euro(c.insolvency)}</b> · Pauschsteuer 2 %: <b>${euro(c.flatTax)}</b>${c.employeeRv ? ` · AN-RV: <b>${euro(c.employeeRv)}</b>` : ""}<br>
-      ${correction ? `Korrektur Vormonat: <b>${correction > 0 ? "+" : ""}${euro(correction)}</b><br>` : ""}
-      <span style="font-size:15px">Gesamtes Beitragssoll: <b>${euro(total)}</b></span>`;
+    host.innerHTML = `<b>Beitragsnachweis im SV-Meldeportal – ${esc(fmtMonth(payrollMonth()))}</b>
+      <table class="sv-values"><tbody>${svNachweisRows(c, readProfileInputs()).map(([key, label, value]) =>
+        `<tr><td>${esc(key)}</td><td>${esc(label)}</td><td>${euro(value)}</td></tr>`).join("")}
+        <tr class="sum"><td></td><td>Summe Beitragsnachweis</td><td>${euro(c.total)}</td></tr>
+        ${correction ? `<tr><td></td><td>Korrektur Vormonat (${correction > 0 ? "Nachzahlung" : "Guthaben"})</td><td>${correction > 0 ? "+" : ""}${euro(correction)}</td></tr>
+        <tr class="sum"><td></td><td>Zu zahlen</td><td>${euro(total)}</td></tr>` : ""}
+      </tbody></table>
+      <small>Rentenversicherung: Beitragsgruppe 0100 = voller Beitrag (AG 15 % + AN 3,6 %), 0500 = nur Pauschalbeitrag bei Befreiung. Unfallversicherung geht nicht in den Beitragsnachweis, sondern an die Berufsgenossenschaft.</small>`;
     if (forceShow) host.hidden = false;
   }
 
   function renderContributionModule() {
+    renderDuties();
     if (!$("contributionPanel")) return;
     const month = payrollMonth();
     const userId = state.selectedUserId;
@@ -4598,7 +4825,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       !employee?.tax_id && "Mitarbeiter: Steuer-ID",
       !employee?.health_insurance && "Mitarbeiter: Krankenkasse",
       !employee?.iban && "Mitarbeiter: IBAN",
-      !employee?.start_date && "Mitarbeiter: Eintrittsdatum"
+      !employee?.start_date && "Mitarbeiter: Eintrittsdatum",
+      !employee?.other_employment && "Mitarbeiter: Angabe zu weiteren Beschäftigungen"
     ].filter(Boolean);
   }
 
@@ -4609,7 +4837,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const values = {
       bossGross: gross,
       bossEmpGross: gross,
-      payrollTimePayLabel: `Grundlohn · ${decimal(p.mins / 60, 2)} Std. × ${euro(HOURLY_RATE_CENTS / 100)}`,
+      payrollTimePayLabel: `Grundlohn · ${decimal(p.mins / 60, 2)} Std. × ${euro(hourlyRateCents(payrollMonth()) / 100)}`,
       payrollCommissionLabel: `Provision · ${p.appts} ${p.appts === 1 ? "Termin" : "Termine"} × ${euro(COMMISSION_RATE_CENTS / 100)}`,
       payrollHours: fmtMinutes(p.mins),
       payrollDays: p.days,
@@ -4638,12 +4866,15 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         ? "RV-Mindestbemessung ist für diesen Mitarbeiter deaktiviert; der Arbeitnehmeranteil wird vom tatsächlichen Verdienst mit 3,6 % berechnet."
         : "");
 
-    const over = p.gross > MINIJOB_LIMIT;
+    const LIMIT = minijobLimit(payrollMonth());
+    setText("payrollRateIntro", `Arbeitsstunden × ${euro(hourlyRateCents(payrollMonth()) / 100)} + gesetzte Termine × ${euro(COMMISSION_RATE_CENTS / 100)}. Es zählen alle Einträge des gewählten Monats.`);
+    $("payrollRateField").value = `${euro(hourlyRateCents(payrollMonth()) / 100)} / Stunde`;
+    const over = p.gross > LIMIT;
     const status = $("payrollLimitStatus");
     status.classList.toggle("warn", over);
     status.textContent = over
-      ? `Hinweis: ${euro(p.gross)} brutto liegen über ${euro(MINIJOB_LIMIT)} in diesem Monat. Für die Minijob-Beurteilung zählt zusätzlich die 12-Monats-Betrachtung; Ausnahmen bei unvorhersehbarem Überschreiten separat prüfen.`
-      : `Monatswert: ${euro(p.gross)} von ${euro(MINIJOB_LIMIT)} – noch ${euro(MINIJOB_LIMIT - p.gross)} bis zur monatlichen Richtgröße.`;
+      ? `Hinweis: ${euro(p.gross)} brutto liegen über ${euro(LIMIT)} in diesem Monat. Für die Minijob-Beurteilung zählt zusätzlich die 12-Monats-Betrachtung; Ausnahmen bei unvorhersehbarem Überschreiten separat prüfen.`
+      : `Monatswert: ${euro(p.gross)} von ${euro(LIMIT)} – noch ${euro(LIMIT - p.gross)} bis zur monatlichen Richtgröße.`;
 
     const year = rollingYear(state.employeeEntries, state.employeeAbsences, payrollMonth());
     const yearStatus = $("payrollYearStatus");
@@ -4651,7 +4882,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     yearStatus.classList.toggle("warn", yearWarn);
     yearStatus.textContent =
       `Letzte 12 Monate (${fmtMonthShort(year.from)}–${fmtMonthShort(year.to)}): ${euro(year.gross)} von ${euro(year.limit)}`
-      + (year.monthsOver ? ` · ${year.monthsOver} Monat(e) über ${euro(MINIJOB_LIMIT)}` : "")
+      + (year.monthsOver ? ` · ${year.monthsOver} Monat(e) über ${euro(LIMIT)}` : "")
       + (year.gross > year.limit ? " · Jahresrichtwert überschritten – Einordnung des Beschäftigungsverhältnisses prüfen." : "");
 
     const missing = state.selectedUserId ? missingMasterData(state.employer, selectedEmployment()) : [];
@@ -4754,20 +4985,25 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (status === "paid" && !$("contribPaidDate").value) $("contribPaidDate").value = today;
   });
 
-  $("saveContributionBtn").addEventListener("click", () => {
+  $("saveContributionBtn").addEventListener("click", event => withBusy(event.currentTarget, async () => {
     if (!state.selectedUserId) return alert("Bitte zuerst einen Mitarbeiter auswählen.");
     const gross = Math.max(0, Number($("contribReportedGross").value) || 0);
     const breakdown = contributionBreakdownFromGross(gross, readProfileInputs(), payrollMonth(), selectedEmployment());
     const actual = actualContributionForMonth(payrollMonth());
-    writeContributionRecord({
-      month: payrollMonth(), reportedGross: gross.toFixed(2), reportedTotal: breakdown.total,
-      actualGross: actual.gross, actualTotal: actual.total, status: $("contribStatus").value,
-      submittedDate: $("contribSubmittedDate").value || null, paidDate: $("contribPaidDate").value || null,
-      note: $("contribNote").value.trim(), savedAt: new Date().toISOString()
-    });
-    setStatus("contribSaveStatus", "Gespeichert ✓");
+    try {
+      await writeContributionRecord({
+        month: payrollMonth(), reportedGross: gross.toFixed(2), reportedTotal: breakdown.total,
+        actualGross: actual.gross, actualTotal: actual.total, status: $("contribStatus").value,
+        submittedDate: $("contribSubmittedDate").value || null, paidDate: $("contribPaidDate").value || null,
+        note: $("contribNote").value.trim(), savedAt: new Date().toISOString()
+      });
+      setStatus("contribSaveStatus", "Gespeichert ✓");
+    } catch (error) {
+      setStatus("contribSaveStatus", `Nicht gespeichert: ${error.message}`, true);
+    }
     renderContributionModule();
-  });
+    renderDashboardWidgets();
+  }));
 
   function payrollDocument() {
     const employee = findEmployee(state.selectedUserId);
@@ -7264,7 +7500,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       p.employeeFlatTax ? ["Pauschsteuer vom Arbeitsentgelt (2 %)", euro(p.gross), minus(p.employeeFlatTax)] : null
     ].filter(Boolean);
     const earnings = [
-      ["1000", "Grundlohn / Stundenvergütung", `${decimal(p.mins / 60, 2)} Std.`, euro(HOURLY_RATE_CENTS / 100), euro(p.timePay)],
+      ["1000", "Grundlohn / Stundenvergütung", `${decimal(p.mins / 60, 2)} Std.`, euro(hourlyRateCents(doc.month) / 100), euro(p.timePay)],
       ...(Number(p.apptAdjust || 0)
         ? [["2000", "Terminprovision (erfasste Termine)", `${p.entryAppts} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.entryAppts * COMMISSION_RATE_CENTS / 100)],
            ["2010", "Termin-Korrektur (Absage durch Kunde)", `${p.apptAdjust > 0 ? "+" : "−"}${Math.abs(p.apptAdjust)} ${Math.abs(p.apptAdjust) === 1 ? "Termin" : "Termine"}`,
@@ -7345,7 +7581,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       </tr></tbody></table>
 
       ${note ? `<div class="pd-note pd-keep"><b>Hinweis:</b> ${esc(note)}</div>` : ""}
-      ${docFoot("Maschinell erstellte Entgeltabrechnung – ohne Unterschrift gültig. Arbeitszeit-/Abwesenheitsnachweis siehe Folgeseite.",
+      ${docFoot("Bescheinigung nach § 108 Abs. 3 Satz 1 GewO – maschinell erstellt, ohne Unterschrift gültig. Arbeitszeitnachweis siehe Folgeseite.",
                 `${esc(name)} · ${esc(doc.monthLabel)} · Seite 1`)} `;
 
     return `<div class="pd-page">${page1}</div><div class="pd-page pd-page2">${timesheetHtml(doc)}</div>`;
@@ -7434,7 +7670,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       ${year ? section("Verdienstgrenze", grid(`
         ${moneyTr(`Brutto ${fmtMonthShort(year.from)}–${fmtMonthShort(year.to)}`, euro(year.gross))}
         ${moneyTr("Jahresgrenze (12 Monate)", euro(year.limit))}
-        ${moneyTr(`Monate über ${euro(MINIJOB_LIMIT)}`, String(year.monthsOver))}`)) : ""}
+        ${moneyTr(`Monate über ${euro(minijobLimit(doc.month))}`, String(year.monthsOver))}`)) : ""}
 
       ${note ? `<div class="pd-note pd-keep"><b>Interne Notiz:</b> ${esc(note)}</div>` : ""}
       ${docFoot("Interne Arbeitgeberübersicht – nicht für den Mitarbeiter bestimmt.", esc(doc.monthLabel))}
@@ -7450,9 +7686,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
    */
   const VP = {
     L: 13, R: 197, T: 11, B: 286,
-    ink: [17, 17, 17], soft: [95, 107, 117], head: [31, 59, 87], white: [255, 255, 255],
-    line: [221, 226, 230], frame: [154, 164, 172], thFill: [238, 241, 244], footFill: [244, 246, 248],
-    payFill: [232, 238, 244], zebra: [250, 251, 252], warn: [179, 107, 0], strong: [51, 65, 77]
+    ink: [29, 39, 51], soft: [93, 104, 117], head: [13, 65, 127], headText: [9, 47, 94], white: [255, 255, 255],
+    line: [226, 231, 236], frame: [160, 172, 184], thFill: [230, 238, 248], footFill: [240, 244, 250],
+    payFill: [230, 238, 248], zebra: [248, 250, 252], warn: [179, 107, 0], strong: [51, 65, 77], hell: [20, 123, 249]
   };
   VP.W = VP.R - VP.L;
 
@@ -7465,8 +7701,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function pdfKit(pdf) {
     const k = {
       pdf,
-      font(size = 8.4, bold = false, color = VP.ink) {
-        pdf.setFont("helvetica", bold ? "bold" : "normal");
+      font(size = 8.4, bold = false, color = VP.ink, mono = false) {
+        pdf.setFont(mono ? "courier" : "helvetica", bold ? "bold" : "normal");
         pdf.setFontSize(size);
         pdf.setTextColor(...color);
       },
@@ -7477,8 +7713,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         return t + "…";
       },
       // Text in einer Spalte (links/rechts/mittig), passend gekürzt
-      cell(text, x, y, w, { size = 8.4, bold = false, color = VP.ink, align = "left", pad = 1.6 } = {}) {
-        k.font(size, bold, color);
+      cell(text, x, y, w, { size = 8.4, bold = false, color = VP.ink, align = "left", pad = 1.6, mono = false } = {}) {
+        k.font(size, bold, color, mono);
         const t = k.fit(text, w - pad * 2);
         const tx = align === "right" ? x + w - pad : align === "center" ? x + w / 2 : x + pad;
         pdf.text(t, tx, y, { align, baseline: "alphabetic" });
@@ -7495,62 +7731,72 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     return k;
   }
 
-  // Kopf: Arbeitgeber links, Titel rechts, Linie darunter. Liefert neue y-Position.
-  function vHead(k, doc, title, flag) {
-    const { L, R, T } = VP;
-    const e = doc.employer || {};
-    let y = T + 4;
-    if (e.name) {
-      k.cell(e.name, L, y, 84, { size: 10, bold: true, pad: 0 });
-      k.cell(e.street || "", L, y + 4.2, 84, { pad: 0 });
-      k.cell(e.zip_city || "", L, y + 8, 84, { pad: 0 });
-      if (e.company_number) k.cell(`Betriebsnummer ${e.company_number}`, L, y + 11.8, 84, { size: 7, color: VP.soft, pad: 0 });
-    } else {
-      k.cell("Arbeitgeber", L, y, 84, { size: 10, bold: true, pad: 0 });
-      k.cell("Arbeitgeberdaten fehlen", L, y + 4.2, 84, { color: VP.soft, pad: 0 });
-    }
-    k.cell(title, R - 100, y + 0.6, 100, { size: 13, bold: true, color: VP.head, align: "right", pad: 0 });
-    k.cell(doc.monthLabel, R - 80, y + 5.4, 80, { size: 10, bold: true, align: "right", pad: 0 });
-    k.cell(`Erstellt am ${doc.created}`, R - 80, y + 9, 80, { size: 7, color: VP.soft, align: "right", pad: 0 });
-    let fy = y + 11;
+  const pdfDate = iso => (iso ? `${String(iso).slice(8, 10)}.${String(iso).slice(5, 7)}.${String(iso).slice(0, 4)}` : "–");
+
+  // Kopfbereich wie bei einer Lohnabrechnung: Titelfeld links, beschriftete Kästchen rechts.
+  function vDocHead(k, doc, title, { boxes = [], sub = "", flag = "" } = {}) {
+    const { L, R } = VP;
+    const y = VP.T, h = 13;
+    const titleW = 82;
+    k.fill(L, y, titleW, h, VP.head);
+    k.cell(title, L, y + 8.9, titleW, { size: 14.5, bold: true, color: VP.white, pad: 4 });
+    const bx = L + titleW + 3, bw = R - bx;
+    const total = boxes.reduce((a, b) => a + (b.w || 1), 0) || 1;
+    let x = bx;
+    boxes.forEach(b => {
+      const w = bw * (b.w || 1) / total - (b === boxes[boxes.length - 1] ? 0 : 1.5);
+      vBox(k, x, y, w, h, b.label, b.value, { size: 9.2 });
+      x += w + 1.5;
+    });
+    let ny = y + h + 4.2;
+    if (sub) k.cell(sub, L, ny, VP.W * 0.7, { size: 7.4, bold: true, color: VP.strong, pad: 0 });
+    let fx = R;
     const badge = (text, color) => {
-      k.font(7, true, color);
+      k.font(6.8, true, color);
       const w = k.pdf.getTextWidth(pdfText(text)) + 3.6;
-      k.frame(R - w, fy, w, 4.2, color, 0.35);
-      k.pdf.text(pdfText(text), R - w / 2, fy + 2.95, { align: "center" });
-      fy += 5.2;
+      fx -= w;
+      k.frame(fx, ny - 3.1, w, 4.2, color, 0.35);
+      k.pdf.text(pdfText(text), fx + w / 2, ny - 0.2, { align: "center" });
+      fx -= 1.5;
     };
+    if (doc.preview) badge("VORSCHAU – MONAT NICHT ABGESCHLOSSEN", VP.warn);
     if (flag) badge(flag, VP.ink);
-    if (doc.preview) badge("Vorschau – Monat nicht abgeschlossen", VP.warn);
-    const bottom = Math.max(y + 14, fy) + 1.5;
-    k.hline(L, R, bottom, VP.head, 0.6);
-    return bottom + 3.5;
+    return ny + 3.5;
   }
 
-  // Leiste mit mehreren beschrifteten Werten
-  function vStrip(k, y, items, { big = false } = {}) {
-    const { L, W } = VP;
-    const h = big ? 10.5 : 9.5;
+  // Beschriftetes Kästchen (Bezeichnung klein oben, Wert in Schreibmaschinenschrift)
+  function vBox(k, x, y, w, h, label, value, { size = 8.6, align = "left", fill = null, bold = false } = {}) {
+    if (fill) k.fill(x, y, w, h, fill);
+    k.frame(x, y, w, h, VP.frame, 0.25);
+    k.cell(label, x, y + 2.9, w, { size: 5.9, color: VP.soft, pad: 1.3 });
+    k.cell(value, x, y + h - 1.9, w, { size, mono: true, bold, align, pad: 1.6 });
+  }
+
+  // Reihe von Kästchen über eine Breite; liefert die Unterkante
+  function vBoxRow(k, x, y, w, h, items, gap = 1.2) {
     const total = items.reduce((a, i) => a + (i.w || 1), 0);
-    let x = L;
-    k.frame(L, y, W, h);
-    items.forEach((it, n) => {
-      const w = W * (it.w || 1) / total;
-      if (n) k.vline(x, y, y + h);
-      k.cell(it.label, x, y + 3.3, w, { size: 6.6, color: VP.soft });
-      k.cell(it.value, x, y + (big ? 8.2 : 7.6), w, { size: big ? 9.5 : 8.6, bold: true, align: big ? "right" : "left" });
-      x += w;
+    const free = w - gap * (items.length - 1);
+    let cx = x;
+    items.forEach(i => {
+      const bw = free * (i.w || 1) / total;
+      vBox(k, cx, y, bw, h, i.label, i.value, { align: i.align || "left", size: i.size || 8.4, fill: i.fill || null, bold: i.bold });
+      cx += bw + gap;
     });
     return y + h;
   }
 
-  function vSectionTitle(k, y, text, x = VP.L, w = VP.W) {
-    k.fill(x, y, w, 5.2, VP.head);
-    k.cell(text, x, y + 3.65, w, { bold: true, color: VP.white });
-    return y + 5.2;
+  // Leiste mit mehreren beschrifteten Werten
+  function vStrip(k, y, items, { big = false } = {}) {
+    return vBoxRow(k, VP.L, y, VP.W, big ? 10.5 : 9.5, items.map(i => ({ ...i, align: big ? "right" : "left", size: big ? 9.4 : 8.6 })));
   }
 
-  /* Tabelle: cols = [{ w (Anteil), align }], head = [..], rows = [[..]], foot = [..] (optional)
+  function vSectionTitle(k, y, text, x = VP.L, w = VP.W) {
+    k.fill(x, y, w, 5.4, VP.head);
+    k.cell(text, x, y + 3.8, w, { bold: true, color: VP.white, size: 8.4 });
+    return y + 5.4;
+  }
+
+  /* Tabelle: cols = [{ w (Anteil), align, mono }], head = [..], rows = [[..]], foot = [..] (optional)
    * onPageBreak(y) wird aufgerufen, wenn eine neue Seite nötig ist, und liefert die neue Startposition. */
   function vTable(k, y, { cols, head, rows, foot, x = VP.L, w = VP.W, rowH = 5.4, zebra = false, bold = [], limit = VP.B - 12, onPageBreak }) {
     const total = cols.reduce((a, c) => a + c.w, 0);
@@ -7565,7 +7811,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           for (let j = i + 1; j < cells.length && cells[j] === ""; j++) span += widths[j];
         }
         if (v !== "") k.cell(v, cx, top + rowH - 1.75, span, {
-          size: opt.size || 8.2, bold: !!opt.bold, color: opt.color || VP.ink, align: cols[i].align || "left"
+          size: opt.size || 8.2, bold: !!opt.bold, color: opt.color || VP.ink, align: cols[i].align || "left",
+          mono: !opt.head && !!cols[i].mono
         });
         cx += widths[i];
       });
@@ -7574,7 +7821,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     let sectionTop = y;
     const drawHead = () => {
       if (!head) return;
-      drawRow(head, top, { fillColor: VP.thFill, size: 6.8, bold: true, color: VP.strong });
+      drawRow(head, top, { fillColor: VP.thFill, size: 6.6, bold: true, color: VP.headText, head: true });
       k.hline(x, x + w, top + rowH, VP.frame, 0.25);
       top += rowH;
     };
@@ -7596,30 +7843,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     });
     if (foot) {
       k.fill(x, top, w, rowH, VP.footFill);
-      k.hline(x, x + w, top, VP.strong, 0.35);
+      k.hline(x, x + w, top, VP.head, 0.4);
       drawRow(foot, top, { bold: true });
       top += rowH;
     }
     closeFrame();
-    return top;
-  }
-
-  // Kompakte Summenbox rechts
-  function vNetBox(k, y, rows) {
-    const w = VP.W * 0.58, x = VP.R - w;
-    let top = y;
-    rows.forEach(([label, value, kind]) => {
-      const h = kind === "pay" ? 6.6 : 5.4;
-      if (kind === "sub") k.fill(x, top, w, h, VP.footFill);
-      if (kind === "pay") { k.fill(x, top, w, h, VP.payFill); k.hline(x, x + w, top, VP.ink, 0.5); }
-      const size = kind === "pay" ? 10.5 : 8.2;
-      const bold = kind === "sub" || kind === "pay";
-      k.cell(label, x, top + h - 1.8, w * 0.68, { size, bold });
-      k.cell(value, x + w * 0.68, top + h - 1.8, w * 0.32, { size, bold, align: "right" });
-      if (!kind) k.hline(x, x + w, top + h);
-      top += h;
-    });
-    k.frame(x, y, w, top - y);
     return top;
   }
 
@@ -7637,10 +7865,33 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const n = k.pdf.getNumberOfPages();
     for (let p = 1; p <= n; p++) {
       k.pdf.setPage(p);
-      k.hline(VP.L, VP.R, VP.B - 4.2, VP.frame, 0.25);
-      k.cell(left(p, n), VP.L, VP.B - 1, VP.W * 0.66, { size: 6.6, color: VP.soft, pad: 0 });
-      k.cell(right(p, n), VP.L + VP.W * 0.66, VP.B - 1, VP.W * 0.34, { size: 6.6, color: VP.soft, align: "right", pad: 0 });
+      k.hline(VP.L, VP.R, VP.B - 4.2, VP.head, 0.35);
+      k.cell(left(p, n), VP.L, VP.B - 1, VP.W * 0.56, { size: 6.4, color: VP.soft, pad: 0 });
+      k.cell(right(p, n), VP.L + VP.W * 0.56, VP.B - 1, VP.W * 0.44, { size: 6.4, color: VP.soft, align: "right", pad: 0 });
     }
+  }
+
+  const num = v => Number(v || 0).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const negNum = v => (Number(v) ? `-${num(v)}` : num(0));
+  const otherJobLabel = v => ({ none: "nein", minijob: "ja (Minijob)", main: "ja (Hauptb.)" })[v] || "–";
+
+  // Summen des Kalenderjahres bis einschließlich Abrechnungsmonat (abgeschlossene Monate + dieser)
+  function yearToDate(doc) {
+    const y = String(doc.month).slice(0, 4);
+    const earlier = (state.closings || [])
+      .filter(c => String(c.payroll_month).startsWith(`${y}-`) && c.payroll_month < doc.month && c.snapshot?.payroll)
+      .map(c => c.snapshot.payroll);
+    const all = [...earlier, doc.payroll];
+    const sum = f => Math.round(all.reduce((a, p) => a + Number(f(p) || 0), 0) * 100) / 100;
+    return {
+      year: y,
+      gross: sum(p => p.gross - (p.employeeFlatTax || 0)),
+      svGross: sum(p => p.gross),
+      rvEmployee: sum(p => p.employeeRv),
+      flatTax: sum(p => (p.employerFlatTax || 0) + (p.employeeFlatTax || 0)),
+      net: sum(p => p.net),
+      svDays: all.reduce((a, p) => a + Number(p.svDays ?? 30), 0)
+    };
   }
 
   function drawEmployeePdf(k, doc) {
@@ -7648,123 +7899,161 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const emp = doc.employee || {};
     const name = emp.full_name || doc.employeeName;
     const vacation = doc.vacation || {};
-    const { L, W } = VP;
-    let y = vHead(k, doc, "Entgeltabrechnung");
+    const { L, R, W } = VP;
+    const flat = profile.flatTax !== false;
+    const passOn = Number(p.employeeFlatTax || 0);
+    const totalGross = Math.round((Number(p.gross || 0) - passOn) * 100) / 100;
+    const legal = Number(p.employeeRv || 0);
+    const rate = hourlyRateCents(doc.month) / 100;
 
-    const master = [
-      ["Personalnummer", orDash(emp.personnel_number)],
-      ["Geburtsdatum", emp.birth_date ? fmtDate(emp.birth_date) : "–"],
-      ["Rentenversicherungsnr.", fmtInsurance(emp.insurance_number)],
-      ["Steuer-ID", fmtTaxId(emp.tax_id)],
-      ["Krankenkasse", orDash(emp.health_insurance)],
-      ["Eintritt / Austritt", `${emp.start_date ? fmtDate(emp.start_date) : "–"} / ${emp.end_date ? fmtDate(emp.end_date) : "–"}`]
-    ];
-    const addrW = W * 0.49;
-    if (employer?.name) {
-      const sender = [employer.name, employer.street, employer.zip_city].filter(Boolean).join(" · ");
-      k.cell(sender, L, y + 2.5, addrW, { size: 6.5, color: VP.soft, pad: 0 });
-      k.hline(L, L + addrW, y + 3.4, VP.frame, 0.2);
-    }
-    k.cell(name, L, y + 8.5, addrW, { size: 10, bold: true, pad: 0 });
-    k.cell(emp.street || "", L, y + 12.6, addrW, { pad: 0 });
-    k.cell(emp.zip_city || "", L, y + 16.6, addrW, { pad: 0 });
-
-    const kvX = L + W * 0.5, kvW = W * 0.5, kvH = 4.4;
-    master.forEach(([label, value], i) => {
-      const ty = y + i * kvH;
-      k.cell(label, kvX, ty + kvH - 1.3, kvW * 0.42, { size: 7.8, color: VP.soft });
-      k.cell(value, kvX + kvW * 0.42, ty + kvH - 1.3, kvW * 0.58, { size: 7.8 });
-      if (i < master.length - 1) k.hline(kvX, kvX + kvW, ty + kvH);
+    let y = vDocHead(k, doc, "Entgeltabrechnung", {
+      boxes: [
+        { label: "Datum", value: doc.created },
+        { label: "Abrechnungsmonat", value: doc.monthLabel, w: 1.35 },
+        { label: "Korrektur", value: "nein", w: 0.7 },
+        { label: "Personalnummer", value: orDash(emp.personnel_number) }
+      ],
+      sub: "Bescheinigung nach § 108 Abs. 3 Satz 1 GewO – bitte sorgfältig aufbewahren!"
     });
-    k.frame(kvX, y, kvW, master.length * kvH);
-    y += master.length * kvH + 4;
 
-    y = vSectionTitle(k, y, "Beschäftigung & Zeitraum");
-    y = vTable(k, y, {
-      cols: [{ w: 25 }, { w: 25 }, { w: 25 }, { w: 25 }],
-      rows: [
-        ["Beschäftigung", "Minijob · geringfügig entlohnt", "Abrechnungsmonat", doc.monthLabel],
-        ["Personengruppe", "109", "SV-Tage", String(p.svDays ?? 30)],
-        ["Beitragsgruppe", p.contributionGroup || contributionGroup(profile), "Steuertage", p.taxDays == null ? "– (Pauschsteuer)" : String(p.taxDays)],
-        ["Einzugsstelle", "Minijob-Zentrale", "Besteuerung", profile.flatTax ? "pauschal 2 %" : "individuell"]
-      ]
-    }) + 3;
+    // Anschriftfeld (passt ins Fenster eines DIN-lang-Umschlags) und Stammdaten-Kästchen
+    const top = y + 1;
+    const leftW = 90, rightX = L + leftW + 4, rightW = R - rightX;
+    const rows = [
+      [{ label: "Eintritt", value: emp.start_date ? pdfDate(emp.start_date) : "–" },
+       { label: "Austritt", value: emp.end_date ? pdfDate(emp.end_date) : "–" },
+       { label: "Geburtsdatum", value: emp.birth_date ? pdfDate(emp.birth_date) : "–" }],
+      [{ label: "Pers.-Gruppe", value: "109" },
+       { label: "Beitragsgruppe", value: p.contributionGroup || contributionGroup(profile) },
+       { label: "Mehrfachbesch.", value: otherJobLabel(emp.other_employment), w: 1.25 },
+       { label: "SV-Tage", value: String(p.svDays ?? 30), w: 0.8 }],
+      [{ label: "Krankenkasse", value: orDash(emp.health_insurance), w: 1.6 },
+       { label: "Einzugsstelle", value: "Minijob-Zentrale", w: 1.4 }],
+      [{ label: "StKl.", value: flat ? "–" : "?", w: 0.6 }, { label: "KFB", value: "–", w: 0.6 },
+       { label: "Konf.", value: "–", w: 0.6 }, { label: "Besteuerung", value: flat ? "pauschal 2 %" : "individuell", w: 1.6 },
+       { label: "St.-Tage", value: p.taxDays == null ? "–" : String(p.taxDays), w: 0.8 }],
+      [{ label: "Steuer-ID", value: fmtTaxId(emp.tax_id) }, { label: "Versicherungsnummer", value: fmtInsurance(emp.insurance_number) }]
+    ];
+    let ry = top;
+    rows.forEach(r => { ry = vBoxRow(k, rightX, ry, rightW, 9.4, r) + 1.2; });
+    const boxH = ry - 1.2 - top;
+    k.frame(L, top, leftW, boxH, VP.frame, 0.25);
+    k.cell("Arbeitgeber", L, top + 2.9, leftW, { size: 5.9, color: VP.soft, pad: 1.3 });
+    const sender = employer?.name ? [employer.name, employer.street, employer.zip_city].filter(Boolean).join(", ") : "Arbeitgeberdaten fehlen";
+    k.cell(sender, L, top + 6.4, leftW, { size: 7, pad: 1.6 });
+    if (employer?.company_number) k.cell(`Betriebsnummer ${employer.company_number}`, L, top + 9.6, leftW, { size: 6.3, color: VP.soft, pad: 1.6 });
+    k.hline(L + 1.6, L + leftW - 1.6, top + 11.4, VP.line, 0.2);
+    const ax = L + 6;
+    k.cell(name, ax, top + 20, leftW - 8, { size: 10, mono: true, bold: true, pad: 0 });
+    k.cell(emp.street || "", ax, top + 24.6, leftW - 8, { size: 10, mono: true, pad: 0 });
+    k.cell(emp.zip_city || "", ax, top + 29.2, leftW - 8, { size: 10, mono: true, pad: 0 });
+    const [yy, mm] = String(doc.month).split("-").map(Number);
+    const from = [emp.start_date, `${doc.month}-01`].filter(Boolean).sort().pop();
+    const to = [emp.end_date, monthEnd(doc.month)].filter(Boolean).sort()[0];
+    k.cell(`Abrechnungszeitraum ${pdfDate(from)} – ${pdfDate(to)}`, L, top + boxH - 1.8, leftW, { size: 7, color: VP.strong, pad: 1.6 });
+    y = top + boxH + 4.5;
 
-    y = vStrip(k, y, [
-      { label: "Gesamtbrutto", value: euro(p.gross) },
-      { label: "Steuer-Brutto", value: euro(p.gross) },
-      { label: "SV-Brutto", value: euro(p.gross) },
-      { label: "RV-Bemessungsgrundlage", value: euro(p.rvMinBase || p.gross) }
-    ], { big: true }) + 4;
-
-    const earnings = [
-      ["1000", "Grundlohn / Stundenvergütung", `${decimal(p.mins / 60, 2)} Std.`, euro(HOURLY_RATE_CENTS / 100), euro(p.timePay)],
+    // Be- / Abzüge
+    const tax = flat ? "P" : "L";
+    const lines = [
+      ["1000", "Grundlohn / Stundenvergütung", tax, "L", "L", `${decimal(p.mins / 60, 2)} Std.`, num(rate), num(p.timePay)],
       ...(Number(p.apptAdjust || 0)
-        ? [["2000", "Terminprovision (erfasste Termine)", `${p.entryAppts} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.entryAppts * COMMISSION_RATE_CENTS / 100)],
-           ["2010", "Termin-Korrektur (Absage durch Kunde)", `${p.apptAdjust > 0 ? "+" : "−"}${Math.abs(p.apptAdjust)} ${Math.abs(p.apptAdjust) === 1 ? "Termin" : "Termine"}`,
-            euro(COMMISSION_RATE_CENTS / 100), p.apptAdjust < 0 ? minus(Math.abs(p.apptAdjust) * COMMISSION_RATE_CENTS / 100) : euro(p.apptAdjust * COMMISSION_RATE_CENTS / 100)]]
-        : [["2000", "Terminprovision", `${paidAppointments(p)} Termine`, euro(COMMISSION_RATE_CENTS / 100), euro(p.commission)]]),
-      ["2100", "Zielbonus", "–", "–", euro(p.targetBonus || 0)],
-      p.vacationPay ? ["3000", "Urlaubsentgelt", `${p.vacationDays} Tag(e)`, "", euro(p.vacationPay)] : null,
-      p.sickPay ? ["3010", "Krankheitsentgelt", `${p.sickDays} Tag(e)`, "", euro(p.sickPay)] : null,
-      p.holidayPay ? ["3020", "Feiertagsentgelt", `${p.holidayDays} Tag(e)`, "", euro(p.holidayPay)] : null,
-      p.paidLeavePay ? ["3030", "Bezahlte Freistellung", `${p.paidLeaveDays} Tag(e)`, "", euro(p.paidLeavePay)] : null
+        ? [["2000", "Terminprovision (erfasste Termine)", tax, "L", "L", `${p.entryAppts} Termine`, num(COMMISSION_RATE_CENTS / 100), num(p.entryAppts * COMMISSION_RATE_CENTS / 100)],
+           ["2010", "Termin-Korrektur (Absage durch Kunde)", tax, "L", "L", `${p.apptAdjust > 0 ? "+" : "-"}${Math.abs(p.apptAdjust)} Termin${Math.abs(p.apptAdjust) === 1 ? "" : "e"}`,
+            num(COMMISSION_RATE_CENTS / 100), p.apptAdjust < 0 ? negNum(Math.abs(p.apptAdjust) * COMMISSION_RATE_CENTS / 100) : num(p.apptAdjust * COMMISSION_RATE_CENTS / 100)]]
+        : [["2000", "Terminprovision", tax, "L", "L", `${paidAppointments(p)} Termine`, num(COMMISSION_RATE_CENTS / 100), num(p.commission)]]),
+      p.targetBonus ? ["2100", "Zielbonus", tax, "L", "L", "", "", num(p.targetBonus)] : null,
+      p.vacationPay ? ["3000", "Urlaubsentgelt", tax, "L", "L", `${p.vacationDays} Tag(e)`, "", num(p.vacationPay)] : null,
+      p.sickPay ? ["3010", "Entgeltfortzahlung Krankheit", tax, "L", "L", `${p.sickDays} Tag(e)`, "", num(p.sickPay)] : null,
+      p.holidayPay ? ["3020", "Feiertagsentgelt", tax, "L", "L", `${p.holidayDays} Tag(e)`, "", num(p.holidayPay)] : null,
+      p.paidLeavePay ? ["3030", "Bezahlte Freistellung", tax, "L", "L", `${p.paidLeaveDays} Tag(e)`, "", num(p.paidLeavePay)] : null,
+      passOn ? ["9000", "Übernahme Pauschsteuer durch Arbeitnehmerin", "–", "–", "L", "2 %", num(p.gross), negNum(passOn)] : null
     ].filter(Boolean);
-    y = vSectionTitle(k, y, "Vergütung");
+    y = vSectionTitle(k, y, "Be- / Abzüge");
     y = vTable(k, y, {
-      cols: [{ w: 12 }, { w: 38 }, { w: 18, align: "right" }, { w: 15, align: "right" }, { w: 17, align: "right" }],
-      head: ["Lohnart", "Bezeichnung", "Menge", "Faktor", "Betrag"], rows: earnings,
-      foot: ["Gesamtbrutto", "", "", "", euro(p.gross)]
-    }) + 4;
+      cols: [{ w: 9, mono: true }, { w: 41 }, { w: 4.5, align: "center", mono: true }, { w: 4.5, align: "center", mono: true }, { w: 4.5, align: "center", mono: true },
+             { w: 13, align: "right", mono: true }, { w: 10, align: "right", mono: true }, { w: 13.5, align: "right", mono: true }],
+      head: ["LA-Nr.", "Lohnart", "St", "SV", "GB", "Anzahl", "Faktor", "Betrag EUR"], rows: lines,
+      foot: ["", "Gesamtbrutto", "", "", "", "", "", num(totalGross)], rowH: 5.2
+    });
+    k.cell("St = Steuer, SV = Sozialversicherung, GB = Gesamtbrutto · L = laufender Bezug, E = einmaliger Bezug, P = pauschal versteuert (§ 40a Abs. 2 EStG), – = keine Auswirkung",
+      L, y + 3.2, W, { size: 5.8, color: VP.soft, pad: 0 });
+    y += 6.5;
 
-    const rvLabel = p.rvMinBase
-      ? `Rentenversicherung AN (Mindestbeitrag, Bemessung ${euro(p.rvMinBase)})`
-      : profile.employeeRv && profile.rvMinBaseApplies === false
-        ? "Rentenversicherung AN (3,6 %, Mindestbemessung nicht anzuwenden)"
-        : "Rentenversicherung AN (3,6 %)";
-    const deductions = [
-      p.employeeRv ? [rvLabel, euro(p.rvMinBase || p.gross), minus(p.employeeRv)] : ["Rentenversicherung AN (befreit)", "–", euro(0)],
-      p.employeeFlatTax ? ["Pauschsteuer vom Arbeitsentgelt (2 %)", euro(p.gross), minus(p.employeeFlatTax)] : null
-    ].filter(Boolean);
-    y = vSectionTitle(k, y, "Arbeitnehmer-Abzüge & Steuer");
-    y = vTable(k, y, {
-      cols: [{ w: 61 }, { w: 22, align: "right" }, { w: 17, align: "right" }],
-      head: ["Bezeichnung", "Bemessungsgrundlage", "Betrag"], rows: deductions,
-      foot: ["Arbeitnehmer-Abzüge", "", minus(p.employeeDeductions)]
-    }) + 4;
+    // Monatssummen | Netto-Be-/Abzüge + Auszahlung
+    const leftW2 = W * 0.6, rx = L + leftW2 + 4, rw = W - leftW2 - 4;
+    const sy = y;
+    let ly = vSectionTitle(k, y, "Monatssummen", L, leftW2);
+    const kvOn = profile.employerKv !== false;
+    ly = vTable(k, ly, {
+      x: L, w: leftW2, rowH: 5,
+      cols: [{ w: 21 }, { w: 17, align: "right", mono: true }, { w: 16, align: "right", mono: true }, { w: 16, align: "right", mono: true },
+             { w: 12, align: "right", mono: true }, { w: 12, align: "right", mono: true }],
+      head: ["", flat ? "Steuer pausch." : "Steuer", "KV", "RV", "AV", "PV"],
+      rows: [
+        ["Brutto", num(p.gross), num(kvOn ? p.gross : 0), num(p.gross), num(0), num(0)],
+        ["AN-Anteil", num(0), num(0), num(p.employeeRv), num(0), num(0)],
+        ["AG-Anteil", num(p.employerFlatTax), num(p.employerKv), num(p.employerRv), num(0), num(0)]
+      ]
+    });
+    if (p.rvMinBase) {
+      k.cell(`RV-Mindestbeitrag: Bemessung ${num(p.rvMinBase)} EUR (§ 163 Abs. 8 SGB VI), Arbeitnehmeranteil = 18,6 % davon abzgl. 15 % Arbeitgeberanteil`, L, ly + 3.1, leftW2, { size: 5.8, color: VP.soft, pad: 0 });
+      ly += 4.2;
+    }
+    ly = vBoxRow(k, L, ly + 1.6, leftW2, 9.4, [
+      { label: "Gesamtbrutto", value: num(totalGross), align: "right" },
+      { label: "Gesetzliche Abzüge", value: legal ? `-${num(legal)}` : num(0), align: "right" },
+      { label: "Nettoentgelt", value: num(p.net), align: "right", bold: true, fill: VP.payFill }
+    ]);
 
-    y = vNetBox(k, y, [
-      ["Gesamtbrutto", euro(p.gross)], ["Arbeitnehmer-Abzüge", minus(p.employeeDeductions)],
-      ["Nettoentgelt", euro(p.net), "sub"], ["Tatsächlicher Auszahlungsbetrag", euro(p.net), "pay"]
-    ]) + 4;
+    let ry2 = vSectionTitle(k, sy, "Netto-Be- / Abzüge", rx, rw);
+    ry2 = vTable(k, ry2, { x: rx, w: rw, rowH: 5, cols: [{ w: 70 }, { w: 30, align: "right", mono: true }], rows: [["keine", ""]] });
+    const payH = 13;
+    k.fill(rx, ry2 + 1.6, rw, payH, VP.payFill);
+    k.frame(rx, ry2 + 1.6, rw, payH, VP.head, 0.45);
+    k.cell("Auszahlung", rx, ry2 + 6.2, rw, { size: 7.4, bold: true, color: VP.headText, pad: 2 });
+    k.cell("EUR", rx, ry2 + 11.7, rw * 0.3, { size: 9, mono: true, pad: 2 });
+    k.cell(num(p.net), rx, ry2 + 11.7, rw, { size: 12.5, mono: true, bold: true, align: "right", pad: 2.2 });
+    ry2 += 1.6 + payH + 1.2;
+    ry2 = vBoxRow(k, rx, ry2, rw, 9.4, [{ label: "Zahlungsweg / Datum", value: `Überweisung${doc.paymentDate ? " · " + pdfDate(doc.paymentDate) : ""}` }]) + 1.2;
+    ry2 = vBoxRow(k, rx, ry2, rw, 9.4, [{ label: "IBAN", value: orDash(emp.iban ? String(emp.iban).replace(/(.{4})/g, "$1 ").trim() : "") }]);
+    y = Math.max(ly, ry2) + 4.5;
 
-    y = vStrip(k, y, [
-      { label: "Zahlungsdatum", value: doc.paymentDate ? fmtDate(doc.paymentDate) : "–" },
-      { label: "Bankverbindung (IBAN)", value: orDash(emp.iban), w: 2 }
-    ]) + 4;
-
+    // Urlaub & Arbeitszeit
     const colW = (W - 4) / 2;
-    const twoCols = [{ w: 64 }, { w: 36, align: "right" }];
-    const workRows = [
-      ["Sollstunden", fmtMinutes(p.goalMinutes || 0)], ["Ist-Stunden", fmtMinutes(p.mins)],
-      ["Bezahlte Freistellung", fmtMinutes(p.paidMinutes || 0)], ["Überstunden", "nicht vorgesehen"]
+    const urlaub = [
+      [vacation.provisional ? "Anspruch (erworben bis Monatsende)" : "Urlaubsanspruch", fmtVacation(vacation.entitlement || 0)],
+      ["Genommen im Monat / Jahr", `${p.vacationDays || 0} / ${fmtVacation(vacation.taken || 0)}`],
+      ["Resturlaub", fmtVacation(vacation.remaining || 0)]
     ];
-    const absenceRows = [
-      ["Urlaub im Monat", `${p.vacationDays || 0} Tag(e)`],
-      [vacation.provisional ? "Urlaubsanspruch (Hochrechnung)" : "Urlaubsanspruch", fmtVacation(vacation.entitlement || 0)],
-      ["Resturlaub", fmtVacation(vacation.remaining || 0)],
-      ["Krankheitstage", String(p.sickDays || 0)], ["Feiertage", String(p.holidayDays || 0)]
+    const zeit = [
+      ["Soll / Ist-Stunden", `${fmtMinutes(p.goalMinutes || 0)} / ${fmtMinutes(p.mins)}`],
+      ["Arbeitstage / Krankheitstage", `${p.days || 0} / ${p.sickDays || 0}`],
+      ["Bezahlte Freistellung", fmtMinutes(p.paidMinutes || 0)]
     ];
-    const y1 = vTable(k, vSectionTitle(k, y, "Arbeitszeit", L, colW), { x: L, w: colW, cols: twoCols, rows: workRows });
-    const y2 = vTable(k, vSectionTitle(k, y, "Abwesenheit & Urlaub", L + colW + 4, colW), { x: L + colW + 4, w: colW, cols: twoCols, rows: absenceRows });
-    y = Math.max(y1, y2) + 4;
+    const two = [{ w: 60 }, { w: 40, align: "right", mono: true }];
+    const y1 = vTable(k, vSectionTitle(k, y, "Urlaub", L, colW), { x: L, w: colW, cols: two, rows: urlaub, rowH: 5 });
+    const y2 = vTable(k, vSectionTitle(k, y, "Arbeitszeit", L + colW + 4, colW), { x: L + colW + 4, w: colW, cols: two, rows: zeit, rowH: 5 });
+    y = Math.max(y1, y2) + 4.5;
+
+    // Jahressummen
+    const ytd = yearToDate(doc);
+    y = vSectionTitle(k, y, `Jahressummen ${ytd.year} (bis ${doc.monthLabel})`);
+    y = vBoxRow(k, L, y + 1.2, W, 9.4, [
+      { label: "Gesamtbrutto", value: num(ytd.gross), align: "right" },
+      { label: "SV-Brutto", value: num(ytd.svGross), align: "right" },
+      { label: "RV Arbeitnehmer", value: num(ytd.rvEmployee), align: "right" },
+      { label: "Pauschsteuer 2 %", value: num(ytd.flatTax), align: "right" },
+      { label: "Nettoentgelt", value: num(ytd.net), align: "right" },
+      { label: "SV-Tage", value: String(ytd.svDays), align: "right", w: 0.7 }
+    ]) + 4;
     if (note) vNote(k, y, "Hinweis:", note);
 
     k.pdf.addPage();
     drawTimesheetPdf(k, doc);
     vFooters(k,
-      p1 => p1 === 1 ? "Maschinell erstellte Entgeltabrechnung – Arbeitszeit-/Abwesenheitsnachweis auf Folgeseite." : "Arbeitszeit und Abwesenheiten aus SmartADM 5 Office.",
-      (pn, n) => `${name} · ${doc.monthLabel} · Seite ${pn}/${n}`);
+      p1 => p1 === 1 ? "Maschinell erstellt – ohne Unterschrift gültig. Arbeitszeitnachweis auf der Folgeseite." : "Arbeitszeitnachweis nach § 17 MiLoG – Aufbewahrung mindestens zwei Jahre.",
+      (pn, n) => `SmartADM 5 Office · ${name} · ${doc.monthLabel} · Seite ${pn} von ${n}`);
   }
 
   function drawTimesheetPdf(k, doc) {
@@ -7773,12 +8062,19 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const rows = doc.entries || [];
     const absences = doc.absences || [];
     const sum = key => rows.reduce((a, e) => a + Number(e[key] || 0), 0);
-    const pageTop = title => {
-      let y = vHead(k, doc, title || "Arbeitszeit- & Abwesenheitsnachweis");
+    const pageTop = () => {
+      let y = vDocHead(k, doc, "Arbeitszeitnachweis", {
+        boxes: [
+          { label: "Datum", value: doc.created },
+          { label: "Zeitraum", value: doc.monthLabel, w: 1.35 },
+          { label: "Personalnummer", value: orDash(emp.personnel_number) }
+        ],
+        sub: "Aufzeichnung nach § 17 Abs. 1 MiLoG: Beginn, Ende und Dauer der täglichen Arbeitszeit."
+      });
       y = vStrip(k, y, [
-        { label: "Mitarbeiter", value: name, w: 2 },
-        { label: "Personalnummer", value: orDash(emp.personnel_number) },
-        { label: "Zeitraum", value: doc.monthLabel }
+        { label: "Arbeitnehmerin / Arbeitnehmer", value: name, w: 2 },
+        { label: "Arbeitgeber", value: doc.employer?.name || "–", w: 1.4 },
+        { label: "Vereinbarte Arbeitszeit", value: `${doc.contract?.weeklyHours || CONTRACT_WEEKLY_HOURS} Std. / Woche` }
       ]) + 4;
       return y;
     };
@@ -7787,14 +8083,14 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     y = vSectionTitle(k, y, "Arbeitszeit");
     if (rows.length) {
       const legacy = hasLegacyEligible(rows);
-      const right = w => ({ w, align: "right" });
+      const right = w => ({ w, align: "right", mono: true });
       const extra = value => (legacy ? [String(value)] : []);
       y = vTable(k, y, {
         cols: legacy
-          ? [{ w: 14 }, { w: 9 }, right(11), right(11), right(12), right(15), right(13), right(15)]
-          : [{ w: 16 }, { w: 10 }, right(12), right(12), right(14), right(18), right(18)],
+          ? [{ w: 14, mono: true }, { w: 9 }, right(11), right(11), right(12), right(15), right(13), right(15)]
+          : [{ w: 16, mono: true }, { w: 10 }, right(12), right(12), right(14), right(18), right(18)],
         head: ["Datum", "Tag", "Beginn", "Ende", "Pause", "Arbeitszeit", "Termine", ...(legacy ? ["davon prov."] : [])],
-        rows: rows.map(e => [fmtDate(e.work_date), fmtWeekday(e.work_date), e.start_time, e.end_time, `${Number(e.break_minutes || 0)} min`, fmtMinutes(e.work_minutes), String(Number(e.appointments || 0)), ...extra(Number(e.eligible || 0))]),
+        rows: rows.map(e => [pdfDate(e.work_date), fmtWeekday(e.work_date), e.start_time, e.end_time, `${Number(e.break_minutes || 0)} min`, fmtMinutes(e.work_minutes), String(Number(e.appointments || 0)), ...extra(Number(e.eligible || 0))]),
         foot: [`Summe · ${new Set(rows.map(e => e.work_date)).size} Arbeitstage`, "", "", "", `${sum("break_minutes")} min`, fmtMinutes(sum("work_minutes")), String(sum("appointments")), ...extra(sum("eligible"))],
         rowH: 5.2, zebra: true,
         onPageBreak: () => { k.pdf.addPage(); return vSectionTitle(k, pageTop(), "Arbeitszeit"); }
@@ -7808,9 +8104,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     y = vSectionTitle(k, y, "Abwesenheiten");
     if (absences.length) {
       y = vTable(k, y, {
-        cols: [{ w: 16 }, { w: 24 }, { w: 18, align: "right" }, { w: 18, align: "right" }, { w: 24 }],
-        head: ["Datum", "Art", "Bezahlte Zeit", "Entgelt", "Notiz"],
-        rows: absences.map(a => [fmtDate(a.absence_date), ABSENCE_LABELS[a.absence_type] || a.absence_type, fmtMinutes(a.paid_minutes), euro(Number(a.paid_amount_cents || 0) / 100), a.note || "–"]),
+        cols: [{ w: 16, mono: true }, { w: 24 }, { w: 18, align: "right", mono: true }, { w: 18, align: "right", mono: true }, { w: 24 }],
+        head: ["Datum", "Art", "Bezahlte Zeit", "Entgelt EUR", "Notiz"],
+        rows: absences.map(a => [pdfDate(a.absence_date), ABSENCE_LABELS[a.absence_type] || a.absence_type, fmtMinutes(a.paid_minutes), num(Number(a.paid_amount_cents || 0) / 100), a.note || "–"]),
         zebra: true,
         onPageBreak: () => { k.pdf.addPage(); return vSectionTitle(k, pageTop(), "Abwesenheiten"); }
       });
@@ -7824,92 +8120,105 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       if (y + 30 > VP.B - 10) { k.pdf.addPage(); y = pageTop(); }
       y = vSectionTitle(k, y, "Termin-Korrekturen");
       y = vTable(k, y, {
-        cols: [{ w: 30 }, { w: 54 }, { w: 16, align: "right" }],
+        cols: [{ w: 30, mono: true }, { w: 54 }, { w: 16, align: "right", mono: true }],
         head: ["Eingetragen", "Grund", "Termine"],
-        rows: adjustments.map(a => [fmtDateTime(a.created_at), a.note || "–", Number(a.delta) > 0 ? "+1" : "−1"]),
+        rows: adjustments.map(a => [fmtDateTime(a.created_at), a.note || "–", Number(a.delta) > 0 ? "+1" : "-1"]),
         zebra: true,
         onPageBreak: () => { k.pdf.addPage(); return vSectionTitle(k, pageTop(), "Termin-Korrekturen"); }
       });
     }
 
-    if (y + 22 > VP.B - 8) { k.pdf.addPage(); y = pageTop(); }
-    const sy = y + 18, half = (VP.W - 20) / 2;
-    k.hline(VP.L, VP.L + half, sy, [51, 51, 51], 0.25);
-    k.hline(VP.R - half, VP.R, sy, [51, 51, 51], 0.25);
-    k.cell("Datum, Unterschrift Arbeitgeber", VP.L, sy + 3.2, half, { size: 7, color: [68, 68, 68], pad: 0 });
-    k.cell("Datum, Unterschrift Mitarbeiter", VP.R - half, sy + 3.2, half, { size: 7, color: [68, 68, 68], pad: 0 });
+    if (y + 26 > VP.B - 8) { k.pdf.addPage(); y = pageTop(); }
+    k.cell("Die Aufzeichnungen wurden von der Arbeitnehmerin in SmartADM 5 Office erfasst (spätestens am siebten Tag nach der Arbeitsleistung) und vom Arbeitgeber geprüft.",
+      VP.L, y + 7, VP.W, { size: 6.8, color: VP.soft, pad: 0 });
+    const sy = y + 20, half = (VP.W - 20) / 2;
+    k.hline(VP.L, VP.L + half, sy, VP.strong, 0.25);
+    k.hline(VP.R - half, VP.R, sy, VP.strong, 0.25);
+    k.cell("Datum, Unterschrift Arbeitgeber", VP.L, sy + 3.2, half, { size: 7, color: VP.soft, pad: 0 });
+    k.cell("Datum, Unterschrift Arbeitnehmerin / Arbeitnehmer", VP.R - half, sy + 3.2, half, { size: 7, color: VP.soft, pad: 0 });
   }
 
   function drawEmployerPdf(k, doc) {
     const { payroll: p, profile, note, year } = doc;
-    const name = doc.employee?.full_name || doc.employeeName;
+    const emp = doc.employee || {};
+    const name = emp.full_name || doc.employeeName;
+    const { L, W } = VP;
 
-    let y = vHead(k, doc, "Arbeitgeber-Abrechnung", "NUR INTERN");
+    let y = vDocHead(k, doc, "Arbeitgeber-Abrechnung", {
+      boxes: [
+        { label: "Datum", value: doc.created },
+        { label: "Abrechnungsmonat", value: doc.monthLabel, w: 1.35 },
+        { label: "Personalnummer", value: orDash(emp.personnel_number) }
+      ],
+      sub: "Interne Übersicht für den Arbeitgeber – nicht für die Arbeitnehmerin bestimmt.",
+      flag: "NUR INTERN"
+    });
     y = vStrip(k, y, [
-      { label: "Mitarbeiter", value: name, w: 2 },
+      { label: "Arbeitnehmerin / Arbeitnehmer", value: name, w: 2 },
+      { label: "Personengruppe", value: "109" },
       { label: "Beitragsgruppe", value: p.contributionGroup || contributionGroup(profile) },
-      { label: "SV-Tage", value: String(p.svDays ?? 30) },
-      { label: "Zeitraum", value: doc.monthLabel }
+      { label: "SV-Tage", value: String(p.svDays ?? 30), w: 0.7 },
+      { label: "Betriebsnummer", value: orDash(doc.employer?.company_number) }
     ]) + 4;
 
-    const cols = [{ w: 76 }, { w: 24, align: "right" }];
-    y = vSectionTitle(k, y, "Vergütung");
+    const cols = [{ w: 76 }, { w: 24, align: "right", mono: true }];
+    const pay = [
+      ["Grundlohn / Stundenvergütung", num(p.timePay)],
+      ["Terminprovision", num(p.commission)],
+      ...(p.targetBonus ? [["Zielbonus", num(p.targetBonus)]] : []),
+      ...(p.vacationPay ? [["Urlaubsentgelt", num(p.vacationPay)]] : []),
+      ...(p.sickPay ? [["Entgeltfortzahlung Krankheit", num(p.sickPay)]] : []),
+      ...(p.holidayPay ? [["Feiertagsentgelt", num(p.holidayPay)]] : []),
+      ...(p.paidLeavePay ? [["Bezahlte Freistellung", num(p.paidLeavePay)]] : [])
+    ];
+    const grossRow = pay.length;
+    pay.push(["Bruttovergütung", num(p.gross)], ["Abzüge bei der Arbeitnehmerin", negNum(p.employeeDeductions)]);
+    y = vSectionTitle(k, y, "Vergütung (EUR)");
+    y = vTable(k, y, { cols, rows: pay, bold: [grossRow], foot: ["Auszahlung an die Arbeitnehmerin", num(p.net)] }) + 4;
+
+    // Beitragsnachweis Minijob-Zentrale (so wie im SV-Meldeportal)
+    const c = { kv: p.employerKv || 0, rv: p.employerRv || 0, employeeRv: p.employeeRv || 0, u1: p.u1 || 0, u2: p.u2 || 0,
+      insolvency: p.insolvency || 0, flatTax: (p.employerFlatTax || 0) + (p.employeeFlatTax || 0) };
+    const nachweis = svNachweisRows(c, profile);
+    const toMjz = nachweis.reduce((a, r) => a + Number(r[2] || 0), 0);
+    y = vSectionTitle(k, y, "Beitragsnachweis Minijob-Zentrale (Werte fürs SV-Meldeportal)");
+    y = vTable(k, y, {
+      cols: [{ w: 10, mono: true }, { w: 66 }, { w: 24, align: "right", mono: true }],
+      head: ["Gruppe", "Bezeichnung", "Betrag EUR"],
+      rows: nachweis.length ? nachweis.map(([key, label, v]) => [key, label, num(v)]) : [["", "Keine Abgaben im Profil aktiviert.", ""]],
+      foot: ["", "Summe an die Minijob-Zentrale", num(toMjz)]
+    });
+    k.cell("Enthält den RV-Anteil der Arbeitnehmerin (vom Lohn einbehalten). Fällig laut Fälligkeitskalender der Minijob-Zentrale.", L, y + 3.1, W, { size: 5.8, color: VP.soft, pad: 0 });
+    y += 7;
+
+    const own = Number(p.employerContributions || 0);
+    y = vSectionTitle(k, y, "Kosten des Arbeitgebers (EUR)");
     y = vTable(k, y, {
       cols,
       rows: [
-        ["Grundlohn / Stundenvergütung", euro(p.timePay)],
-        ["Terminprovision", euro(p.commission)],
-        ["Zielbonus", euro(p.targetBonus || 0)],
-        ...(p.vacationPay ? [["Urlaubsentgelt", euro(p.vacationPay)]] : []),
-        ...(p.sickPay ? [["Krankheitsentgelt", euro(p.sickPay)]] : []),
-        ...(p.holidayPay ? [["Feiertagsentgelt", euro(p.holidayPay)]] : []),
-        ...(p.paidLeavePay ? [["Bezahlte Freistellung", euro(p.paidLeavePay)]] : []),
-        ["Bruttovergütung", euro(p.gross)],
-        ["Abzüge beim Mitarbeiter", euro(p.employeeDeductions)]
+        ["Bruttovergütung", num(p.gross)],
+        ["Arbeitgeberabgaben an die Minijob-Zentrale", num(own - Number(p.accident || 0))],
+        ...(p.accident ? [[`Unfallversicherung / BG (${decimal(profile.accidentRate || 0, 2)} %, separat an die BG)`, num(p.accident)]] : [])
       ],
-      bold: [2],
-      foot: ["Auszahlung an Mitarbeiter", euro(p.net)]
+      foot: ["Gesamtkosten Arbeitgeber", num(p.employerCost)]
     }) + 4;
-
-    const shares = [
-      ["Krankenversicherung Arbeitgeber (13 %)", p.employerKv],
-      ["Rentenversicherung Arbeitgeber (15 %)", p.employerRv],
-      ["Umlage U1 (0,80 %)", p.u1],
-      ["Umlage U2 (0,22 %)", p.u2],
-      ["Insolvenzgeldumlage (0,15 %)", p.insolvency],
-      ["Pauschsteuer Arbeitgeber (2 %)", p.employerFlatTax],
-      [`Unfallversicherung / BG (${decimal(profile.accidentRate || 0, 2)} %)`, p.accident]
-    ].filter(([, a]) => Number(a) > 0).map(([l, a]) => [l, euro(a)]);
-    y = vSectionTitle(k, y, "Arbeitgeber-Abgaben");
-    y = vTable(k, y, {
-      cols,
-      rows: shares.length ? shares : [["Keine Arbeitgeber-Abgaben im Profil aktiviert.", ""]],
-      foot: ["Arbeitgeber-Abgaben gesamt", euro(p.employerContributions)]
-    }) + 4;
-
-    const minijobZentrale = (p.employerContributions || 0) - (p.accident || 0) + (p.employeeDeductions || 0);
-    y = vNetBox(k, y, [
-      ["Arbeitgeber-Abgaben gesamt", euro(p.employerContributions), "sub"],
-      ["An Minijob-Zentrale (inkl. AN-Abzüge, ohne BG)", euro(minijobZentrale)],
-      ["Gesamtkosten Arbeitgeber", euro(p.employerCost), "pay"]
-    ]) + 5;
 
     if (year) {
       y = vSectionTitle(k, y, "Verdienstgrenze");
       y = vTable(k, y, {
         cols,
         rows: [
-          [`Brutto ${fmtMonthShort(year.from)}–${fmtMonthShort(year.to)}`, euro(year.gross)],
-          ["Jahresgrenze (12 Monate)", euro(year.limit)],
-          [`Monate über ${euro(MINIJOB_LIMIT)}`, String(year.monthsOver)]
+          [`Brutto ${fmtMonthShort(year.from)}–${fmtMonthShort(year.to)}`, num(year.gross)],
+          ["Jahresgrenze (12 Monate)", num(year.limit)],
+          [`Monate über ${euro(minijobLimit(doc.month))}`, String(year.monthsOver)]
         ]
       }) + 4;
     }
     if (note) vNote(k, y, "Interne Notiz:", note);
 
     vFooters(k,
-      () => "Interne Arbeitgeberübersicht – nicht für den Mitarbeiter bestimmt.",
-      () => doc.monthLabel);
+      () => "Interne Arbeitgeberübersicht – nicht für die Arbeitnehmerin bestimmt.",
+      (pn, n) => `SmartADM 5 Office · ${doc.monthLabel} · Seite ${pn} von ${n}`);
   }
 
   // jsPDF-Instanz aus der vorhandenen html2pdf-Bibliothek holen (leere Startseite).
@@ -8576,7 +8885,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     $("absenceDate").value = days[0] || w.weekStart;
     $("absenceType").value = "paid_leave";
     $("absencePaidHours").value = String(hours);
-    $("absencePaidAmount").value = (Math.round(hours * HOURLY_RATE_CENTS) / 100).toFixed(2);
+    $("absencePaidAmount").value = (Math.round(hours * hourlyRateCents(String($("absenceDate").value).slice(0, 7))) / 100).toFixed(2);
     $("absenceNote").value = `Liegt an mir – ${isoWeekLabel(w.weekStart)}`;
     setStatus("absenceStatus", "Vorschlag für die bezahlte Freistellung – bitte prüfen und speichern.");
     $("absenceForm").scrollIntoView({ behavior: "smooth", block: "center" });
@@ -8954,6 +9263,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (!["light", "dark"].includes(out.theme)) delete out.theme;
     out.bossColors = Object.fromEntries(Object.entries(out.bossColors || {}).filter(([, v]) => MY_COLORS[v]));
     out.bossSizes = Object.fromEntries(Object.entries(out.bossSizes || {}).filter(([, v]) => ["kompakt", "normal", "hoch", "breit"].includes(v)));
+    out.svDone = Object.fromEntries(Object.entries(out.svDone || {})
+      .filter(([k, v]) => /^[a-z]{2}:[\w:-]{1,80}$/.test(k) && /^\d{4}-\d{2}-\d{2}$/.test(String(v))).slice(-300));
     return out;
   }
 
@@ -9471,51 +9782,85 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (typeof window.html2pdf !== "function") return alert("Der PDF-Export wird noch geladen. Bitte gleich noch einmal tippen.");
     const doc = add.doc || {};
     const pdf = await newPdfDocument();
-    const L = 22, R = 188, W = R - L, B = 272;
-    let y = 24;
-    const font = (size, bold = false) => { pdf.setFont("helvetica", bold ? "bold" : "normal"); pdf.setFontSize(size); pdf.setTextColor(20, 24, 31); };
-    const need = h => { if (y + h > B) { pdf.addPage(); y = 22; } };
-    const para = (text, { x = L, w = W, size = 10, bold = false, gap = 1.6, lead = 4.6 } = {}) => {
-      font(size, bold);
-      const lines = pdf.splitTextToSize(pdfText(text), w);
-      lines.forEach(line => { need(lead); pdf.text(line, x, y); y += lead; });
+    const L = 22, R = 188, W = R - L, B = 274, TOP = 24;
+    const NAVY = [13, 65, 127], INK = [29, 39, 51], SOFT = [110, 120, 132], HELL = [20, 123, 249];
+    let y = 0;
+    const font = (size, bold = false, color = INK) => { pdf.setFont("helvetica", bold ? "bold" : "normal"); pdf.setFontSize(size); pdf.setTextColor(...color); };
+    const lines = (text, w, size, bold = false) => { font(size, bold); return pdf.splitTextToSize(pdfText(text), w); };
+    const LEAD = 4.7;
+    const newPage = () => { pdf.addPage(); y = TOP; };
+
+    // Höhe eines Punktes (Text + Unterpunkte) vorab ermitteln, damit nichts mitten im Absatz umbricht
+    const itemHeight = it => {
+      const text = typeof it === "string" ? it : it.text;
+      let h = lines(text, W - 7, 10).length * LEAD + 1.4;
+      (typeof it === "string" ? [] : it.sub || []).forEach(sub => { h += lines(sub, W - 12, 10).length * LEAD + 1.1; });
+      return h;
+    };
+    const para = (text, x, w, { size = 10, bold = false, gap = 1.4, color = INK } = {}) => {
+      const ls = lines(text, w, size, bold);
+      font(size, bold, color);
+      ls.forEach(line => { if (y + LEAD > B) newPage(); pdf.text(line, x, y); y += LEAD; });
       y += gap;
     };
 
     pdf.setProperties({ title: `${doc.title} – ${doc.employee?.name || ""}`, creator: "SmartADM 5 Office" });
-    font(16, true); pdf.text(pdfText(doc.title || "Nachtrag zum Arbeitsvertrag"), L, y); y += 10;
-    (doc.intro || []).forEach(p => para(p, { gap: 2.2 }));
+
+    // Kopf: Parteien rechts klein, Titel mit Linie in der App-Farbe
+    y = 17;
+    font(7.6, false, SOFT);
+    pdf.text(pdfText([doc.employer?.name, doc.employer?.street, doc.employer?.zip_city].filter(Boolean).join(" · ")), R, y, { align: "right" });
+    y = 29;
+    font(18, true, NAVY); pdf.text(pdfText(doc.title || "Nachtrag zum Arbeitsvertrag"), L, y);
+    pdf.setDrawColor(...HELL); pdf.setLineWidth(0.7); pdf.line(L, y + 3.2, L + 34, y + 3.2);
+    pdf.setDrawColor(...NAVY); pdf.setLineWidth(0.2); pdf.line(L + 34, y + 3.2, R, y + 3.2);
+    y += 11;
+    (doc.intro || []).forEach(p => para(p, L, W, { gap: 2.4 }));
+
     (doc.sections || []).forEach(s => {
-      need(14); y += 2;
-      para(s.heading, { size: 11, bold: true, gap: 1 });
+      // Ganzer Abschnitt auf eine neue Seite, wenn er hier nicht mehr passt (und auf eine Seite passt)
+      // Überschrift nie allein am Seitenende: mit dem ersten Punkt zusammen, sonst neue Seite
+      if (y + 9 + itemHeight(s.items[0]) > B) newPage();
+      y += 2.5;
+      font(11.2, true, NAVY); pdf.text(pdfText(s.heading), L, y); y += 6.3;
       s.items.forEach((it, i) => {
+        if (y + itemHeight(it) > B) newPage();
         const text = typeof it === "string" ? it : it.text;
-        font(10); need(4.6); pdf.text(`${i + 1}.`, L, y);
-        para(text, { x: L + 6, w: W - 6, gap: 1.2 });
+        font(10, true, NAVY); pdf.text(`${i + 1}.`, L, y);
+        para(text, L + 7, W - 7, { gap: 1.4 });
         (typeof it === "string" ? [] : it.sub || []).forEach(sub => {
-          font(10); need(4.6); pdf.text("–", L + 7, y);
-          para(sub, { x: L + 11, w: W - 11, gap: 1 });
+          font(10, false, NAVY); pdf.text("–", L + 8, y);
+          para(sub, L + 12, W - 12, { gap: 1.1 });
         });
       });
     });
 
-    need(52); y += 8;
+    // Unterschriften immer zusammen auf einer Seite
+    if (y + 48 > B) newPage();
+    y += 8;
+    font(8, true, SOFT); pdf.text("UNTERSCHRIFTEN", L, y); y += 3;
     const colW = (W - 12) / 2;
     [["employer", L], ["employee", L + colW + 12]].forEach(([role, x]) => {
       const s = add.signatures?.[role];
-      if (s) pdf.addImage(s.signature, "PNG", x, y, 60, 20);
-      else { font(9); pdf.setTextColor(140, 146, 152); pdf.text("noch nicht unterschrieben", x, y + 14); }
-      pdf.setDrawColor(120, 128, 136); pdf.setLineWidth(0.3); pdf.line(x, y + 22, x + colW, y + 22);
-      font(8.6); pdf.text(pdfText(`${placeOf(doc, role)}${s ? `, ${sigWhen(s.signed_at)}` : ""}`), x, y + 26.5);
-      font(9, true); pdf.text(pdfText(`${role === "employer" ? doc.employer?.name : doc.employee?.name} (${ROLE_LABEL[role]})`), x, y + 31);
+      if (s) pdf.addImage(s.signature, "PNG", x + 3, y + 2, 60, 20);
+      else { font(9, false, [140, 146, 152]); pdf.text("noch nicht unterschrieben", x + 3, y + 15); }
+      pdf.setDrawColor(...NAVY); pdf.setLineWidth(0.35); pdf.line(x, y + 25, x + colW, y + 25);
+      font(8.4, false, INK); pdf.text(pdfText(`${placeOf(doc, role)}${s ? `, ${sigWhen(s.signed_at)}` : ""}`), x, y + 29.5);
+      font(9, true, INK); pdf.text(pdfText(`${role === "employer" ? doc.employer?.name : doc.employee?.name} (${ROLE_LABEL[role]})`), x, y + 34);
     });
 
     const pages = pdf.getNumberOfPages();
     for (let i = 1; i <= pages; i++) {
       pdf.setPage(i);
-      pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.2); pdf.setTextColor(120, 128, 136);
-      pdf.text(pdfText(`Elektronisch unterschrieben in SmartADM 5 Office · Prüfsumme ${String(add.hash || "").slice(0, 16)}${add.complete ? "" : " · noch nicht von beiden Parteien unterschrieben"}`), L, 287);
-      pdf.text(`Seite ${i} von ${pages}`, R, 287, { align: "right" });
+      if (i > 1) {
+        font(7.4, false, SOFT);
+        pdf.text(pdfText(`${doc.title || "Nachtrag zum Arbeitsvertrag"} · ${doc.employee?.name || ""}`), L, 15);
+        pdf.setDrawColor(210, 217, 224); pdf.setLineWidth(0.2); pdf.line(L, 17, R, 17);
+      }
+      pdf.setDrawColor(...NAVY); pdf.setLineWidth(0.3); pdf.line(L, 281.5, R, 281.5);
+      font(7, false, SOFT);
+      pdf.text(pdfText(`Elektronisch unterschrieben in SmartADM 5 Office · Prüfsumme ${String(add.hash || "").slice(0, 16)}${add.complete ? "" : " · noch nicht von beiden Parteien unterschrieben"}`), L, 286);
+      pdf.text(`Seite ${i} von ${pages}`, R, 286, { align: "right" });
     }
     const name = `Nachtrag_Arbeitsvertrag_${doc.employee?.name || "Mitarbeiter"}`.replace(/[^a-zA-Z0-9äöüÄÖÜß._-]+/g, "_");
     pdf.save(`${name}.pdf`);
@@ -9722,7 +10067,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       loadMyPrefs().then(renderDashboardWidgets);
       await Promise.all([loadBossData(), loadEmployer()]);
       await autoClosePreviousMonth();
-      if (state.selectedUserId) await loadClosings(state.selectedUserId);
+      if (state.selectedUserId) await Promise.all([loadClosings(state.selectedUserId), loadContributionReports(state.selectedUserId)]);
     } else {
       restoreCallStore();
       await loadOwnEntries(); // rendert das Dashboard mit den zentralen Zielwerten
