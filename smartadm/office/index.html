@@ -3299,11 +3299,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const name = employeeName(findEmployee(userId));
     const today = isoDate();
     const job = selectedEmployment();
+    const test = isTestEmployee(userId);
 
     // Lohn spätestens am 15. des Folgemonats
     const day = new Date().getDate();
     const wageMonth = day <= WAGE_PAYMENT_LATEST_DAY ? previousMonth() : isoMonth();
-    if (!job.start_date || wageMonth >= job.start_date.slice(0, 7)) {
+    if (!test && (!job.start_date || wageMonth >= job.start_date.slice(0, 7))) {
       const due = `${addMonthsIso(`${wageMonth}-01`, 1).slice(0, 7)}-${pad(WAGE_PAYMENT_LATEST_DAY)}`;
       const closing = state.closings.find(c => c.payroll_month === wageMonth);
       const planned = closing?.snapshot?.paymentDate;
@@ -3323,7 +3324,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const deadline = contributionDeadline(month);
     const record = readContributionRecord(userId, month);
     const status = record.status || "draft";
-    if (!deadline) {
+    if (test) {
+      // Testkonto: keine Beiträge an die Minijob-Zentrale
+    } else if (!deadline) {
       items.push({ date: null, title: "Fristen der Minijob-Zentrale fehlen", meta: `Für ${month.slice(0, 4)} sind in Office noch keine Termine hinterlegt`, page: "lohn:beitrag" });
     } else {
       if (status === "draft") items.push({ date: deadline.submit, title: `Beitragsnachweis ${monthWord(month)}`, meta: "An die Minijob-Zentrale übermitteln", page: "lohn:beitrag" });
@@ -3354,7 +3357,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (openWeeks) items.push({ date: null, title: `${openWeeks} ${openWeeks === 1 ? "Woche" : "Wochen"} einordnen`, meta: "Fehlstunden im Wochenkonto", page: "einsatz" });
 
     // Probezeit und Entgeltfortzahlung
-    if (job.start_date) {
+    if (job.start_date && !test) {
       const probation = addMonthsIso(job.start_date, PROBATION_MONTHS);
       const lastDay = isoDate(new Date(new Date(`${probation}T12:00:00`).getTime() - 86400000));
       if (lastDay >= today) items.push({ date: lastDay, title: "Probezeit endet", meta: `${name} · bis dahin 2 Wochen Kündigungsfrist`, info: true });
@@ -3388,8 +3391,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
   const employedInYear = (job, y) => Boolean(job.start_date) && job.start_date <= `${y}-12-31` && (!job.end_date || job.end_date >= `${y}-01-01`);
 
+  const isTestEmployee = (userId = state.selectedUserId) => Boolean(findEmployee(userId)?.is_test);
   function dutyItems(userId = state.selectedUserId) {
-    if (!userId) return [];
+    if (!userId || isTestEmployee(userId)) return [];
     const job = state.employeeProfiles[userId] || {};
     const employer = state.employer || {};
     const name = employeeName(findEmployee(userId));
@@ -3500,6 +3504,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const items = dutyItems();
     const horizon = isoPlusDays(isoDate(), 30);
     setText("dutyBadge", String(items.filter(d => !d.done && (!d.due || d.due <= horizon)).length || ""));
+    if (isTestEmployee()) {
+      host.innerHTML = '<div class="notice">Testkonto – hier fallen keine Meldungen an die Minijob-Zentrale oder die Berufsgenossenschaft an. Es zählt auch nicht im Lohnnachweis.</div>';
+      return;
+    }
     host.innerHTML = items.length ? items.map(d => {
       const late = !d.done && d.due && d.due < isoDate();
       return `<div class="duty${d.done ? " is-done" : ""}${d.warn || late ? " is-warn" : ""}">
@@ -4131,7 +4139,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function renderEmployeeSelects() {
     const options = ['<option value="">Mitarbeiter auswählen</option>']
       .concat(state.employees.map(u =>
-        `<option value="${esc(u.clerk_user_id)}">${esc(employeeName(u))}</option>`))
+        `<option value="${esc(u.clerk_user_id)}">${esc(employeeName(u))}${u.is_test ? " · Testkonto" : ""}</option>`))
       .join("");
 
     $$("[data-employee-select]").forEach(select => {
@@ -4305,7 +4313,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   async function loadBossData() {
     try {
       const users = asArray(await api("/admin/users"));
-      state.employees = users.filter(u => u.role !== "boss");
+      state.employees = users.filter(u => u.role !== "boss").sort((a, b) => Number(Boolean(a.is_test)) - Number(Boolean(b.is_test)));
       renderEmployeeList();
     } catch (error) {
       console.error(error);
@@ -4319,7 +4327,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     setText("bossHeroMeta", count === 1 ? "1 Mitarbeiter" : `${count} Mitarbeiter`);
 
     const keep = findEmployee(state.selectedUserId) ? state.selectedUserId : null;
-    await selectEmployee(keep || state.employees[0]?.clerk_user_id || null);
+    // Standard: der erste echte Mitarbeiter, nicht das Testkonto
+    await selectEmployee(keep || (state.employees.find(u => !u.is_test) || state.employees[0])?.clerk_user_id || null);
     await loadBossPlans();
   }
 
@@ -5111,6 +5120,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       if ((record.status || "draft") === "draft" && today >= shiftIsoDate(deadline.submit, -3)) messages.push("Die Frist für den Beitragsnachweis steht kurz bevor oder ist erreicht.");
       if ((record.status || "draft") !== "paid" && today >= shiftIsoDate(deadline.payment, -2)) messages.push("Die Beiträge an die Minijob-Zentrale sind bald oder schon fällig.");
     }
+    if (isTestEmployee(userId)) messages.unshift("Testkonto – nicht an die Minijob-Zentrale melden.");
     warning.classList.toggle("warn", messages.length > 0);
     warning.textContent = messages.length ? messages.join(" ") : `Status: ${contributionStatusLabel(record.status || "draft")} · keine offenen Hinweise.`;
     renderContributionValues(true);
