@@ -1304,7 +1304,7 @@ html[data-theme="dark"] {
 html[data-theme="dark"] body { background: var(--ground); color: var(--ink); }
 html[data-theme="dark"] :is(.topbar) { background: rgba(27,33,40,.92); border-bottom-color: var(--line); }
 html[data-theme="dark"] .sidebar { background: var(--surface); border-right-color: var(--line); }
-html[data-theme="dark"] :is(.form-dialog, .note-dialog, .picker, .card, .pill, .breakdown, .call-note, .widget, .my-panel, .my-add, .mobile-menu, .more-panel, .widget-kontext) { background-color: var(--surface); color: var(--ink); border-color: var(--line); }
+html[data-theme="dark"] :is(.form-dialog, .note-dialog, .picker, .card, .pill, .breakdown, .call-note, .widget:not(.is-colored), .my-panel, .my-add, .mobile-menu, .more-panel, .widget-kontext) { background-color: var(--surface); color: var(--ink); border-color: var(--line); }
 html[data-theme="dark"] .picker-head { background: var(--surface); border-bottom-color: var(--line); }
 html[data-theme="dark"] :is(td, th, .breakdown div, .kennzahl-zeile, .ad-status-row, .doc-row) { border-color: var(--line); }
 html[data-theme="dark"] .breakdown div:last-child { background: var(--ground); }
@@ -8873,9 +8873,10 @@ body.boss-editing .widget { height: auto; min-height: 360px; outline: 2px dashed
   // Kartenfarben: im Dunkeln nur leicht eingefärbt, Schrift hell
   function cardVars(c) {
     if (!isDark()) return `--w-bg:${c.bg};--w-ink:${c.ink};--w-soft:${c.soft};--w-accent:${c.accent};--w-wash:${c.wash}`;
-    const tint = c === MY_COLORS.weiss ? "#1B2128" : mixHex("#1B2128", c === MY_COLORS.grafit ? "#5A6675" : c.accent, 0.2);
-    const accent = c === MY_COLORS.weiss ? "#7FA6D9" : mixHex(c.accent, "#ffffff", 0.35);
-    return `--w-bg:${tint};--w-ink:#E7EBEF;--w-soft:#A3ADB8;--w-accent:${accent};--w-wash:${mixHex(tint, accent, 0.18)}`;
+    // deutlich eingefärbt, aber dunkel genug für helle Schrift
+    const tint = c === MY_COLORS.weiss ? "#1B2128" : c === MY_COLORS.grafit ? "#2E3640" : mixHex("#161B21", c.accent, 0.42);
+    const accent = c === MY_COLORS.weiss ? "#7FA6D9" : mixHex(c.accent, "#ffffff", 0.45);
+    return `--w-bg:${tint};--w-ink:#F2F4F6;--w-soft:${c === MY_COLORS.weiss ? "#A3ADB8" : mixHex(accent, "#E7EBEF", 0.55)};--w-accent:${accent};--w-wash:${mixHex(tint, accent, 0.25)}`;
   }
   function setTheme(theme, { save = true } = {}) {
     const dark = theme === "dark";
