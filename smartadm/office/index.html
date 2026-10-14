@@ -885,6 +885,38 @@ td { border-bottom-color: var(--line); }
 .wn-confirm input { width: 20px; height: 20px; flex: none; margin: 0; accent-color: var(--accent); }
 #whatsNewStatus:empty { display: none; }
 
+/* Arbeitsvertrag & Nachtrag */
+.addendum-dialog { width: min(820px, calc(100vw - 16px)); max-height: calc(100dvh - 16px); }
+.addendum-doc { font-size: 14.5px; line-height: 1.55; color: var(--ink); }
+.addendum-doc .ad-title { margin: 4px 0 14px; font-size: 21px; letter-spacing: -.02em; }
+.addendum-doc p { margin: 0 0 10px; }
+.addendum-doc h3 { margin: 18px 0 6px; font-size: 15px; }
+.addendum-doc ol { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
+.addendum-doc ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; list-style: "– "; }
+.ad-sigs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 26px; }
+@media (max-width: 560px) { .ad-sigs { grid-template-columns: 1fr; } }
+.ad-sig-img { height: 64px; display: flex; align-items: flex-end; border-bottom: 1px solid var(--ink-soft); }
+.ad-sig-img img { max-height: 60px; max-width: 100%; }
+.ad-sig-open { font-size: 12.5px; color: var(--ink-soft); padding-bottom: 6px; }
+.ad-sig-line { margin-top: 4px; font-size: 12.5px; color: var(--ink-soft); }
+.ad-sig-name { font-size: 13px; font-weight: 600; }
+.ad-foot { margin-top: 18px !important; font-size: 12px; color: var(--ink-soft); }
+.sign-box { margin-top: 22px; padding: 14px; border-radius: 16px; background: var(--gelb-wash); display: grid; gap: 10px; }
+.sign-box[hidden], #addendumViewActions[hidden] { display: none; }
+.sign-note { margin: 0; font-size: 14px; font-weight: 600; }
+.sign-pad-wrap { position: relative; background: #fff; border: 1.5px dashed var(--line); border-radius: 12px; }
+#signPad { display: block; width: 100%; height: 190px; touch-action: none; cursor: crosshair; }
+.sign-line { position: absolute; left: 16px; right: 16px; bottom: 34px; border-top: 1px solid #c9d0d6; padding-top: 4px; font-size: 11px; color: #9aa4ad; pointer-events: none; }
+.sign-meta { font-size: 12.5px; color: var(--ink-soft); }
+#signStatus:empty { display: none; }
+.ad-status-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 2px; border-bottom: 1px solid var(--line); font-size: 14px; }
+#addendumStatus .notice { margin-bottom: 8px; }
+#addendumActions { margin-top: 14px; }
+.doc-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 2px; border-bottom: 1px solid var(--line); }
+.doc-info { display: grid; gap: 2px; min-width: 0; }
+.doc-info span { font-size: 12.5px; color: var(--ink-soft); overflow-wrap: anywhere; }
+#docUploadForm { margin-bottom: 8px; }
+
 /* Einsatzplan (Mitarbeiter) */
 .plan-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
 .plan-head .btn-row { flex: none; }
@@ -1230,6 +1262,8 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5.2 12 4.2 4.2L18.8 6.8"/></svg>Aufgaben &amp; Notizen</button>
       <button data-role="shared" data-page="termine">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/><path d="m9.5 15 1.8 1.8 3.4-3.6"/></svg><span data-boss-label="Filialen">Terminvereinbarung</span></button>
+      <button data-role="shared" data-page="vertrag">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.8h9l3 3V20H6z"/><path d="M15 3.8V7h3"/><path d="M8.5 16.5c1.2-1.6 2-1.6 2.6-.4.5 1 1.2 1 2.2-.3M8.7 11h6.6"/></svg><span data-boss-label="Arbeitsverträge">Arbeitsvertrag</span></button>
       <hr class="nav-sep" data-role="boss">
       <button data-role="boss" data-page="mitarbeiter">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.8 19c.6-3.5 2.3-5.2 5.2-5.2s4.6 1.7 5.2 5.2"/><circle cx="17" cy="9" r="2.3"/><path d="M15.6 14.2c2.8-.6 4.6.9 5 3.8"/></svg>Mitarbeiter</button>
@@ -1577,6 +1611,41 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
               <tbody id="bossEntryRows"></tbody>
             </table>
           </div>
+        </div>
+      </section>
+
+      <!-- ===== Arbeitsvertrag (beide Rollen) ===== -->
+      <section class="page" id="vertrag" data-role="shared">
+        <div class="card section-card" data-role="boss">
+          <div class="form-grid narrow">
+            <div class="field"><label>Mitarbeiter</label><select data-employee-select></select></div>
+          </div>
+        </div>
+        <div class="card section-card">
+          <div class="card-head">
+            <h2>Nachtrag zum Arbeitsvertrag</h2>
+            <p>Einsatzplanung, Absagen und Wochenarbeitszeit. Beide Seiten unterschreiben in Office mit dem Finger, danach steht er als PDF bereit.</p>
+          </div>
+          <div id="addendumStatus"><div class="notice">Wird geladen …</div></div>
+          <div class="btn-row" id="addendumActions"></div>
+        </div>
+        <div class="card section-card">
+          <div class="card-head">
+            <h2>Arbeitsvertrag &amp; Dokumente</h2>
+            <p data-role="employee">Dein Arbeitsvertrag und weitere Unterlagen zum Herunterladen.</p>
+            <p data-role="boss">Nur der jeweilige Mitarbeiter und du sehen diese Dateien. PDF oder Bild, höchstens 8 MB.</p>
+          </div>
+          <form id="docUploadForm" data-role="boss">
+            <div class="form-grid">
+              <div class="field"><label for="docTitle">Bezeichnung</label><input id="docTitle" type="text" maxlength="120" value="Arbeitsvertrag"></div>
+              <div class="field"><label for="docFile">Datei</label><input id="docFile" type="file" accept="application/pdf,image/jpeg,image/png"></div>
+            </div>
+            <div class="actions start">
+              <button class="btn primary" type="submit">Hochladen</button>
+              <span id="docStatus" class="status-text" style="margin:0"></span>
+            </div>
+          </form>
+          <div id="docList"></div>
         </div>
       </section>
 
@@ -2234,6 +2303,28 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
   </div>
 </dialog>
 
+<!-- Nachtrag ansehen / unterschreiben (beide Rollen) -->
+<dialog id="addendumDialog" class="form-dialog addendum-dialog" aria-labelledby="addendumDialogTitle" closedby="none">
+  <div class="picker-head">
+    <strong id="addendumDialogTitle">Nachtrag zum Arbeitsvertrag</strong>
+    <button class="picker-close" type="button" id="addendumClose">Schließen ×</button>
+  </div>
+  <div class="form-dialog-body">
+    <article id="addendumDoc" class="addendum-doc"></article>
+    <div id="addendumSignBox" class="sign-box" hidden>
+      <p class="sign-note" id="signNote"></p>
+      <div class="sign-pad-wrap"><canvas id="signPad" aria-label="Hier mit dem Finger unterschreiben"></canvas><span class="sign-line">Hier mit dem Finger unterschreiben</span></div>
+      <div class="sign-meta" id="signMeta"></div>
+      <div id="signStatus" class="status-text" aria-live="polite"></div>
+      <div class="actions">
+        <button class="btn ghost" type="button" id="signClear">Löschen</button>
+        <button class="btn primary" type="button" id="signSubmit" disabled>Verbindlich unterschreiben</button>
+      </div>
+    </div>
+    <div class="actions" id="addendumViewActions"><button class="btn primary" type="button" id="addendumPdf">Als PDF herunterladen</button></div>
+  </div>
+</dialog>
+
 <!-- Mitarbeiter: Telefontag planen / ändern -->
 <dialog id="planDialog" class="form-dialog" data-role="employee" aria-labelledby="planDialogTitle" closedby="none">
   <div class="picker-head">
@@ -2360,13 +2451,15 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
     termine: ["Terminvereinbarung", "Filialen, Videocalls und Buchungslinks"],
     telefon: ["Telefonliste", "Kontakte anrufen und Ergebnisse zurückmelden"],
     kundenarchiv: ["Kundenarchiv", "Erledigte Kontakte"],
+    vertrag: ["Arbeitsvertrag", "Dein Vertrag und der Nachtrag zum Herunterladen"],
     einstellungen: ["Einstellungen", "Ziele und zentrale Datenhaltung"]
   };
 
   // Der Boss sieht einige Seiten unter eigenem Namen.
   const BOSS_PAGE_TITLES = {
     telefon: ["Kontakte", "Kontakte einstellen, Rückläufer und offene Kontakte"],
-    termine: ["Filialen", "Filialen, Videocalls und Buchungslinks"]
+    termine: ["Filialen", "Filialen, Videocalls und Buchungslinks"],
+    vertrag: ["Arbeitsverträge", "Verträge, Nachträge und Unterschriften"]
   };
 
   const ICONS = {
@@ -2417,6 +2510,8 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
     weekAccount: null,       // Mitarbeiter: Einordnungen, Eintritt, Abwesenheiten fürs Wochenkonto
     plansUnsupported: false, // Worker kennt den Einsatzplan noch nicht
     hr: { plans: [], reviews: [], incidents: [], acks: [], unsupported: false }, // Boss: gewählter Mitarbeiter
+    addendum: null,          // Mitarbeiter: eigener Nachtrag (Text, Unterschriften)
+    contract: null,          // Seite Arbeitsvertrag: { add, docs }
     bossPlans: []            // Boss: Einsatzpläne aller Mitarbeiter (Widget); null = alter Worker
   };
 
@@ -2586,6 +2681,7 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
     $$("#mobileMenu [data-page]").forEach(b => (b.dataset.page === pageId ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
     closeMobileMenu();
     if (pageId === "boss-dashboard") renderDashboardWidgets();
+    if (pageId === "vertrag") loadContracts();
     if (pageId === "organisation" && (state.taskExpanded.size || state.showDoneTasks)) {
       state.taskExpanded.clear();
       state.showDoneTasks = false;
@@ -3245,6 +3341,7 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
     }
 
     await Promise.all([loadEmployeeData(userId), loadClosings(userId)]);
+    if (document.querySelector("#vertrag.active")) loadContracts();
   }
 
   async function loadEmployeeData(userId) {
@@ -7871,8 +7968,8 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
     ack.hidden = false;
     ack.className = acked ? "notice" : "notice warn";
     ack.textContent = acked
-      ? `Neue Regeln („Was ist neu?“ vom ${fmtDate(WHATS_NEW.version)}) gelesen und bestätigt am ${fmtDateTime(acked.acknowledged_at)} Uhr.`
-      : `Neue Regeln („Was ist neu?“ vom ${fmtDate(WHATS_NEW.version)}) noch nicht bestätigt – sie erscheinen beim nächsten Öffnen von Office und müssen bestätigt werden.`;
+      ? `Neue Regeln („Was ist neu?“ vom ${fmtDate(WHATS_NEW.version)}) gelesen und Nachtrag unterschrieben am ${fmtDateTime(acked.acknowledged_at)} Uhr. Details unter „Arbeitsverträge“.`
+      : `Neue Regeln („Was ist neu?“ vom ${fmtDate(WHATS_NEW.version)}) noch nicht gelesen – sie erscheinen beim nächsten Öffnen von Office, danach muss der Nachtrag unterschrieben werden (siehe „Arbeitsverträge“).`;
 
     $("hrPlanRows").innerHTML = plans.length ? plans.slice(0, 40).map(p => {
       const [label, cls] = planStatus(p);
@@ -8117,13 +8214,13 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
 
   /* ================= Was ist neu? =================
    * Mitarbeiter sehen die Liste einmal pro Version. Für das nächste Update version ändern
-   * und die Abschnitte ersetzen. required: true → muss gelesen und bestätigt werden
-   * (Bestätigung liegt im Worker, der Boss sieht sie unter Mitarbeiter → Einsatzplan).
+   * und die Abschnitte ersetzen. required: true → führt zum Nachtrag, der unterschrieben werden muss
+   * (die Unterschrift gilt zugleich als Bestätigung; der Boss sieht sie unter Mitarbeiter und Arbeitsvertrag).
    */
   const WHATS_NEW = {
     version: "2026-10-13",
     required: true,
-    intro: "Bitte lies dir alles in Ruhe durch. Die Punkte unter „Ab sofort Pflicht“ gelten ab heute für deine Arbeit bei Kim. Danach bestätigst du ganz unten, dass du sie gelesen hast.",
+    intro: "Bitte lies dir alles in Ruhe durch. Die Punkte unter „Ab sofort Pflicht“ gelten ab heute für deine Arbeit bei Kim. Danach öffnest du ganz unten den Nachtrag zu deinem Arbeitsvertrag, liest ihn und unterschreibst ihn mit dem Finger. Erst dann geht es in Office weiter.",
     sections: [
       {
         title: "Ab sofort Pflicht", tone: "pflicht",
@@ -8139,37 +8236,35 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
         items: [
           ["Einsatzplan im Dashboard", "Hier planst, änderst und sagst du deine Telefontage ab. Du siehst diese und nächste Woche und wie viele Stunden schon erfasst sind."],
           ["Erinnerungen per Push", "30 Minuten nach deiner Startzeit erinnert dich Office, falls noch nichts passiert ist. Sonntagabend kommt eine Erinnerung, wenn die neue Woche noch leer ist."],
-          ["Kim wird automatisch informiert", "Absagen, kurzfristige Änderungen und geplante Tage ohne Aktivität und ohne Absage meldet Office direkt an Kim."]
+          ["Kim wird automatisch informiert", "Absagen, kurzfristige Änderungen und geplante Tage ohne Aktivität und ohne Absage meldet Office direkt an Kim."],
+          ["Arbeitsvertrag in Office", "Unter „Arbeitsvertrag“ findest du deinen Vertrag und den unterschriebenen Nachtrag – jederzeit zum Ansehen und als PDF zum Herunterladen."]
         ]
       }
     ],
-    confirm: "Ich habe die neuen Regeln gelesen und verstanden.",
     push: {
-      title: "Bitte lesen & bestätigen",
-      body: "Ab sofort neue Pflichten: Telefontage planen, vor dem Start absagen, Krankheit sofort melden. Öffne Office, lies „Was ist neu?“ und bestätige."
+      title: "Bitte lesen & unterschreiben",
+      body: "Ab sofort neue Pflichten: Telefontage planen, vor dem Start absagen, Krankheit sofort melden. Öffne Office, lies „Was ist neu?“ und unterschreibe den Nachtrag."
     }
   };
 
   const whatsNewKey = () => `smartadm.office.whatsnew:${state.bootstrappedFor || "none"}`;
   const rememberWhatsNew = () => { try { localStorage.setItem(whatsNewKey(), WHATS_NEW.version); } catch {} };
-  let whatsNewMustConfirm = false;
+  let whatsNewMustSign = false;
 
-  function showWhatsNewDialog(mustConfirm) {
-    whatsNewMustConfirm = Boolean(mustConfirm);
-    setText("whatsNewTitle", whatsNewMustConfirm ? "Was ist neu? – bitte bestätigen" : "Was ist neu?");
-    setText("whatsNewIntro", whatsNewMustConfirm ? WHATS_NEW.intro : "");
+  function showWhatsNewDialog(mustSign) {
+    whatsNewMustSign = Boolean(mustSign);
+    setText("whatsNewTitle", whatsNewMustSign ? "Was ist neu? – bitte lesen" : "Was ist neu?");
+    setText("whatsNewIntro", whatsNewMustSign ? WHATS_NEW.intro : "");
     $("whatsNewList").innerHTML = WHATS_NEW.sections.map(s => `
       <section class="wn-section ${s.tone}">
         <h3>${esc(s.title)}</h3>
         <ul>${s.items.map(([title, text]) => `<li><b>${esc(title)}</b>${esc(text)}</li>`).join("")}</ul>
       </section>`).join("");
-    $("whatsNewConfirmWrap").hidden = !whatsNewMustConfirm;
-    setText("whatsNewCheckText", WHATS_NEW.confirm);
-    $("whatsNewCheck").checked = false;
-    $("whatsNewOk").disabled = whatsNewMustConfirm;
-    setText("whatsNewOk", whatsNewMustConfirm ? "Gelesen & bestätigen" : "Schließen");
+    $("whatsNewConfirmWrap").hidden = true;
+    $("whatsNewOk").disabled = false;
+    setText("whatsNewOk", whatsNewMustSign ? "Zum Nachtrag →" : "Schließen");
     setStatus("whatsNewStatus", "");
-    openDialog($("whatsNew"));
+    if (!$("whatsNew").open) openDialog($("whatsNew"));
     $("whatsNew").querySelector(".whats-new-body").scrollTop = 0;
   }
 
@@ -8177,41 +8272,20 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
     if (state.role !== "employee") return;
     let seen = false;
     try { seen = localStorage.getItem(whatsNewKey()) === WHATS_NEW.version; } catch {}
-    if (WHATS_NEW.required) {
-      // Maßgeblich ist die Bestätigung im Worker. Kennt der Worker sie noch nicht,
-      // wartet der Hinweis, bis er eingespielt ist – sonst ginge die Bestätigung verloren.
-      try {
-        seen = asArray(await api("/notices/acks")).some(a => a.version === WHATS_NEW.version);
-        if (seen) rememberWhatsNew();
-      } catch (error) {
-        if (error.status === 404 || error.status === 405) return;
-        seen = false;
-      }
-    }
-    if (!seen) showWhatsNewDialog(WHATS_NEW.required);
+    if (!WHATS_NEW.required) { if (!seen) showWhatsNewDialog(false); return; }
+    // Pflicht: über den Nachtrag. Alter Worker oder Stammdaten unvollständig → später.
+    const add = await loadOwnAddendum();
+    if (!add) return;
+    if (add.signatures?.employee) { rememberWhatsNew(); return; }
+    if (add.ready) showWhatsNewDialog(true);
   }
 
-  // Pflicht-Hinweis lässt sich nicht wegklicken – nur über „Gelesen & bestätigen“.
-  $("whatsNew").addEventListener("cancel", event => { if (whatsNewMustConfirm) event.preventDefault(); });
-  $("whatsNew").addEventListener("close", () => { if (!whatsNewMustConfirm && !WHATS_NEW.required) rememberWhatsNew(); });
-  $("whatsNewCheck").addEventListener("change", event => {
-    if (whatsNewMustConfirm) $("whatsNewOk").disabled = !event.target.checked;
-  });
-  $("whatsNewOk").addEventListener("click", event => {
-    if (!whatsNewMustConfirm) return closeDialog($("whatsNew"));
-    if (!$("whatsNewCheck").checked) return;
-    withBusy(event.currentTarget, async () => {
-      try {
-        await api("/notices/ack", "POST", { version: WHATS_NEW.version });
-      } catch (error) {
-        setStatus("whatsNewStatus", `Bestätigung konnte nicht gespeichert werden: ${error.message} Bitte nochmal tippen.`, true);
-        return;
-      }
-      rememberWhatsNew();
-      whatsNewMustConfirm = false;
-      closeDialog($("whatsNew"));
-      toast("Danke! Deine Bestätigung ist gespeichert ✓");
-    }).then(() => { if (whatsNewMustConfirm) $("whatsNewOk").disabled = !$("whatsNewCheck").checked; });
+  // Pflicht-Hinweis lässt sich nicht wegklicken – nur „Zum Nachtrag“.
+  $("whatsNew").addEventListener("cancel", event => { if (whatsNewMustSign) event.preventDefault(); });
+  $("whatsNew").addEventListener("close", () => { if (!whatsNewMustSign && !WHATS_NEW.required) rememberWhatsNew(); });
+  $("whatsNewOk").addEventListener("click", () => {
+    closeDialog($("whatsNew"));
+    if (whatsNewMustSign) openAddendum(state.addendum, { sign: "employee" });
   });
 
   // Boss: Vorschau + einmaliger Push an alle Mitarbeiter
@@ -8246,6 +8320,421 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
       }
     }).then(renderAnnounce);
   });
+
+  /* ================= Arbeitsvertrag: Dokumente & Nachtrag =================
+   * Nachtrag: Text + Personendaten kommen vom Worker (nichts Persönliches in dieser Seite).
+   * Mitarbeiter und Boss unterschreiben mit dem Finger; danach als PDF herunterladbar.
+   * Dokumente (z. B. eingescannter Arbeitsvertrag) lädt der Boss hoch.
+   */
+
+  const ROLE_LABEL = { employer: "Arbeitgeber", employee: "Arbeitnehmerin" };
+
+  async function loadOwnAddendum() {
+    try {
+      state.addendum = await api("/addendum");
+    } catch (error) {
+      if (error.status !== 404 && error.status !== 405) console.warn("Nachtrag nicht geladen:", error);
+      state.addendum = null;
+    }
+    return state.addendum;
+  }
+
+  async function apiBlob(path) {
+    const token = await window.Clerk?.session?.getToken();
+    if (!token) throw new Error("Keine aktive Anmeldung. Bitte neu anmelden.");
+    const res = await fetch(API + path, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      throw Object.assign(new Error(data?.error || `API-Fehler ${res.status}`), { status: res.status });
+    }
+    return res.blob();
+  }
+
+  function saveBlob(blob, name) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+
+  const placeOf = (doc, role) => (role === "employee" ? doc.place_employee || doc.place : doc.place) || "";
+  const sigWhen = ts => {
+    const d = parseTimestamp(ts);
+    return `${dateFmt.format(d)}, ${new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Berlin" }).format(d)} Uhr`;
+  };
+
+  /* --- Darstellung --- */
+
+  function addendumHtml(add) {
+    const doc = add.doc || {};
+    const item = it => typeof it === "string"
+      ? `<li>${esc(it)}</li>`
+      : `<li>${esc(it.text)}<ul>${(it.sub || []).map(s => `<li>${esc(s)}</li>`).join("")}</ul></li>`;
+    const sig = role => {
+      const s = add.signatures?.[role];
+      const name = role === "employer" ? doc.employer?.name : doc.employee?.name;
+      return `<div class="ad-sig">
+        <div class="ad-sig-img">${s ? `<img src="${esc(s.signature)}" alt="Unterschrift ${esc(name || "")}">` : '<span class="ad-sig-open">noch nicht unterschrieben</span>'}</div>
+        <div class="ad-sig-line">${esc(placeOf(doc, role))}${s ? `, ${esc(sigWhen(s.signed_at))}` : ""}</div>
+        <div class="ad-sig-name">${esc(name || "")} (${ROLE_LABEL[role]})</div>
+      </div>`;
+    };
+    return `<h2 class="ad-title">${esc(doc.title || "Nachtrag zum Arbeitsvertrag")}</h2>
+      ${(doc.intro || []).map(p => `<p>${esc(p)}</p>`).join("")}
+      ${(doc.sections || []).map(s => `<h3>${esc(s.heading)}</h3><ol>${s.items.map(item).join("")}</ol>`).join("")}
+      <div class="ad-sigs">${sig("employer")}${sig("employee")}</div>
+      <p class="ad-foot">${add.complete ? "Von beiden Parteien unterschrieben." : "Wird wirksam, sobald beide Parteien unterschrieben haben."} Prüfsumme ${esc(String(add.hash || "").slice(0, 16))}</p>`;
+  }
+
+  /* --- Unterschriftenfeld --- */
+
+  const sigPad = { strokes: [], drawing: false, length: 0 };
+
+  function setupPad() {
+    const canvas = $("signPad");
+    const ratio = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = Math.round(rect.width * ratio);
+    canvas.height = Math.round(rect.height * ratio);
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    ctx.lineWidth = 2.4;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#0b1f3a";
+    sigPad.strokes = [];
+    sigPad.length = 0;
+    syncSignButton();
+  }
+
+  function clearPad() {
+    const canvas = $("signPad");
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+    sigPad.strokes = [];
+    sigPad.length = 0;
+    syncSignButton();
+  }
+
+  const syncSignButton = () => ($("signSubmit").disabled = sigPad.length < 120);
+
+  (() => {
+    const canvas = $("signPad");
+    const point = e => { const r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+    canvas.addEventListener("pointerdown", e => {
+      e.preventDefault();
+      canvas.setPointerCapture(e.pointerId);
+      sigPad.drawing = true;
+      sigPad.strokes.push([point(e)]);
+    });
+    canvas.addEventListener("pointermove", e => {
+      if (!sigPad.drawing) return;
+      e.preventDefault();
+      const stroke = sigPad.strokes[sigPad.strokes.length - 1];
+      const [x0, y0] = stroke[stroke.length - 1];
+      const [x, y] = point(e);
+      const ctx = canvas.getContext("2d");
+      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x, y); ctx.stroke();
+      stroke.push([x, y]);
+      sigPad.length += Math.hypot(x - x0, y - y0);
+      syncSignButton();
+    });
+    const end = () => { sigPad.drawing = false; };
+    canvas.addEventListener("pointerup", end);
+    canvas.addEventListener("pointercancel", end);
+  })();
+
+  // Unterschrift zugeschnitten auf weißem Grund (PNG, 3:1).
+  function exportSignature() {
+    const pts = sigPad.strokes.flat();
+    const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+    const m = 8;
+    let minX = Math.min(...xs) - m, maxX = Math.max(...xs) + m, minY = Math.min(...ys) - m, maxY = Math.max(...ys) + m;
+    let w = maxX - minX, h = maxY - minY;
+    if (w / h < 3) { const nw = h * 3; minX -= (nw - w) / 2; w = nw; } else { const nh = w / 3; minY -= (nh - h) / 2; h = nh; }
+    const out = document.createElement("canvas");
+    out.width = 600; out.height = 200;
+    const ctx = out.getContext("2d");
+    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, 600, 200);
+    const s = 600 / w;
+    ctx.lineWidth = Math.max(2.4, 2.4 * s * 0.8); ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.strokeStyle = "#0b1f3a";
+    sigPad.strokes.forEach(stroke => {
+      ctx.beginPath();
+      stroke.forEach(([x, y], i) => (i ? ctx.lineTo((x - minX) * s, (y - minY) * s) : ctx.moveTo((x - minX) * s, (y - minY) * s)));
+      if (stroke.length === 1) ctx.lineTo((stroke[0][0] - minX) * s + 0.1, (stroke[0][1] - minY) * s);
+      ctx.stroke();
+    });
+    return out.toDataURL("image/png");
+  }
+
+  /* --- Fenster --- */
+
+  let addendumCtx = { add: null, sign: null, userId: null };
+
+  function openAddendum(add, { sign = null, userId = null } = {}) {
+    if (!add) return;
+    addendumCtx = { add, sign, userId };
+    const doc = add.doc || {};
+    $("addendumDoc").innerHTML = addendumHtml(add);
+    $("addendumSignBox").hidden = !sign;
+    $("addendumViewActions").hidden = Boolean(sign);
+    $("addendumPdf").textContent = add.complete ? "Als PDF herunterladen" : "Als PDF herunterladen (noch nicht vollständig)";
+    setText("addendumClose", sign === "employee" ? "← Zurück" : sign === "employer" ? "Später" : "Schließen ×");
+    if (sign) {
+      const who = sign === "employer" ? doc.employer?.name : doc.employee?.name;
+      setText("signNote", `Mit meiner Unterschrift bestätige ich, den Nachtrag gelesen zu haben, und stimme ihm zu.`);
+      setText("signMeta", `${who || ""} (${ROLE_LABEL[sign]}) · ${placeOf(doc, sign)}, ${dateFmt.format(new Date())}`);
+      setStatus("signStatus", "");
+    }
+    openDialog($("addendumDialog"));
+    $("addendumDialog").querySelector(".form-dialog-body").scrollTop = 0;
+    if (sign) requestAnimationFrame(setupPad);
+  }
+
+  $("addendumDialog").addEventListener("cancel", event => event.preventDefault());
+  $("addendumClose").addEventListener("click", () => {
+    const { sign } = addendumCtx;
+    closeDialog($("addendumDialog"));
+    if (sign === "employee") showWhatsNewDialog(true);
+    if (sign === "employer") toast("Du kannst den Nachtrag jederzeit unter „Arbeitsverträge“ unterschreiben.");
+  });
+  $("signClear").addEventListener("click", clearPad);
+  window.addEventListener("resize", () => { if ($("addendumDialog").open && !$("addendumSignBox").hidden && !sigPad.strokes.length) setupPad(); });
+
+  $("signSubmit").addEventListener("click", event => {
+    const { add, sign, userId } = addendumCtx;
+    if (!sign || sigPad.length < 120) return;
+    const body = { version: add.version, signature: exportSignature() };
+    withBusy(event.currentTarget, async () => {
+      try {
+        let result;
+        if (sign === "employee") {
+          result = await api("/addendum/sign", "POST", { ...body, notice_version: WHATS_NEW.required ? WHATS_NEW.version : undefined });
+          state.addendum = result;
+          rememberWhatsNew();
+          whatsNewMustSign = false;
+        } else {
+          result = await api(forUser("/admin/addendum/sign", userId), "POST", body);
+        }
+        closeDialog($("addendumDialog"));
+        toast(result?.complete ? "Unterschrieben ✓ Der Nachtrag ist vollständig." : "Unterschrieben ✓");
+        if (sign === "employer") await promptBossSignatures();
+        if (document.querySelector("#vertrag.active")) loadContracts();
+      } catch (error) {
+        setStatus("signStatus", error.message, true);
+      }
+    });
+  });
+
+  $("addendumPdf").addEventListener("click", event => withBusy(event.currentTarget, () => downloadAddendumPdf(addendumCtx.add)));
+
+  /* --- PDF --- */
+
+  async function downloadAddendumPdf(add) {
+    if (!add) return;
+    if (typeof window.html2pdf !== "function") return alert("Der PDF-Export wird noch geladen. Bitte gleich noch einmal tippen.");
+    const doc = add.doc || {};
+    const pdf = await newPdfDocument();
+    const L = 22, R = 188, W = R - L, B = 272;
+    let y = 24;
+    const font = (size, bold = false) => { pdf.setFont("helvetica", bold ? "bold" : "normal"); pdf.setFontSize(size); pdf.setTextColor(20, 24, 31); };
+    const need = h => { if (y + h > B) { pdf.addPage(); y = 22; } };
+    const para = (text, { x = L, w = W, size = 10, bold = false, gap = 1.6, lead = 4.6 } = {}) => {
+      font(size, bold);
+      const lines = pdf.splitTextToSize(pdfText(text), w);
+      lines.forEach(line => { need(lead); pdf.text(line, x, y); y += lead; });
+      y += gap;
+    };
+
+    pdf.setProperties({ title: `${doc.title} – ${doc.employee?.name || ""}`, creator: "SmartADM 5 Office" });
+    font(16, true); pdf.text(pdfText(doc.title || "Nachtrag zum Arbeitsvertrag"), L, y); y += 10;
+    (doc.intro || []).forEach(p => para(p, { gap: 2.2 }));
+    (doc.sections || []).forEach(s => {
+      need(14); y += 2;
+      para(s.heading, { size: 11, bold: true, gap: 1 });
+      s.items.forEach((it, i) => {
+        const text = typeof it === "string" ? it : it.text;
+        font(10); need(4.6); pdf.text(`${i + 1}.`, L, y);
+        para(text, { x: L + 6, w: W - 6, gap: 1.2 });
+        (typeof it === "string" ? [] : it.sub || []).forEach(sub => {
+          font(10); need(4.6); pdf.text("–", L + 7, y);
+          para(sub, { x: L + 11, w: W - 11, gap: 1 });
+        });
+      });
+    });
+
+    need(52); y += 8;
+    const colW = (W - 12) / 2;
+    [["employer", L], ["employee", L + colW + 12]].forEach(([role, x]) => {
+      const s = add.signatures?.[role];
+      if (s) pdf.addImage(s.signature, "PNG", x, y, 60, 20);
+      else { font(9); pdf.setTextColor(140, 146, 152); pdf.text("noch nicht unterschrieben", x, y + 14); }
+      pdf.setDrawColor(120, 128, 136); pdf.setLineWidth(0.3); pdf.line(x, y + 22, x + colW, y + 22);
+      font(8.6); pdf.text(pdfText(`${placeOf(doc, role)}${s ? `, ${sigWhen(s.signed_at)}` : ""}`), x, y + 26.5);
+      font(9, true); pdf.text(pdfText(`${role === "employer" ? doc.employer?.name : doc.employee?.name} (${ROLE_LABEL[role]})`), x, y + 31);
+    });
+
+    const pages = pdf.getNumberOfPages();
+    for (let i = 1; i <= pages; i++) {
+      pdf.setPage(i);
+      pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.2); pdf.setTextColor(120, 128, 136);
+      pdf.text(pdfText(`Elektronisch unterschrieben in SmartADM 5 Office · Prüfsumme ${String(add.hash || "").slice(0, 16)}${add.complete ? "" : " · noch nicht von beiden Parteien unterschrieben"}`), L, 287);
+      pdf.text(`Seite ${i} von ${pages}`, R, 287, { align: "right" });
+    }
+    const name = `Nachtrag_Arbeitsvertrag_${doc.employee?.name || "Mitarbeiter"}`.replace(/[^a-zA-Z0-9äöüÄÖÜß._-]+/g, "_");
+    pdf.save(`${name}.pdf`);
+  }
+
+  /* --- Seite „Arbeitsvertrag“ --- */
+
+  const fmtBytes = n => (n >= 1048576 ? `${decimal(n / 1048576, 1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`);
+
+  async function loadContracts() {
+    const boss = state.role === "boss";
+    const userId = boss ? state.selectedUserId : null;
+    if (boss && !userId) {
+      state.contract = { add: null, docs: [], unsupported: false };
+      return renderContracts();
+    }
+    try {
+      const [add, docs] = await Promise.all([
+        api(boss ? forUser("/admin/addendum", userId) : "/addendum"),
+        api(boss ? forUser("/admin/documents", userId) : "/documents")
+      ]);
+      if (boss && state.selectedUserId !== userId) return;
+      state.contract = { add, docs: asArray(docs), unsupported: false };
+      if (!boss) state.addendum = add;
+    } catch (error) {
+      state.contract = { add: null, docs: [], unsupported: error.status === 404 || error.status === 405, error: error.message };
+    }
+    renderContracts();
+  }
+
+  function renderContracts() {
+    const c = state.contract || { add: null, docs: [] };
+    const boss = state.role === "boss";
+    const status = $("addendumStatus"), actions = $("addendumActions"), list = $("docList");
+    if (c.unsupported || c.error) {
+      const text = c.unsupported ? "Dafür braucht es den neuen Worker." : `Konnte nicht geladen werden: ${c.error}`;
+      status.innerHTML = `<div class="notice">${esc(text)}</div>`;
+      actions.innerHTML = ""; list.innerHTML = "";
+      return;
+    }
+    if (boss && !state.selectedUserId) {
+      status.innerHTML = '<div class="notice">Mitarbeiter auswählen.</div>';
+      actions.innerHTML = ""; list.innerHTML = "";
+      return;
+    }
+    const add = c.add;
+    if (add) {
+      const row = role => {
+        const s = add.signatures?.[role];
+        return `<div class="ad-status-row"><span>${ROLE_LABEL[role]}</span>${s
+          ? `<span class="chip good">Unterschrieben ${esc(sigWhen(s.signed_at))}</span>`
+          : '<span class="chip warn">Offen</span>'}</div>`;
+      };
+      status.innerHTML = (add.ready ? "" : `<div class="notice warn">Bevor unterschrieben werden kann, fehlen noch Stammdaten: ${esc(add.missing.join(", "))}.${boss ? " Eintragen unter Mitarbeiter → Stammdaten bzw. Einstellungen → Arbeitgeber." : " Kim kümmert sich darum."}</div>`) +
+        row("employer") + row("employee");
+      const mine = boss ? "employer" : "employee";
+      actions.innerHTML = [
+        add.ready && !add.signatures?.[mine] ? `<button class="btn primary" type="button" data-ad="sign">Lesen &amp; unterschreiben</button>` : `<button class="btn ghost" type="button" data-ad="view">Ansehen</button>`,
+        `<button class="btn ${add.complete ? "primary" : "ghost"}" type="button" data-ad="pdf">PDF herunterladen</button>`,
+        boss && (add.signatures?.employee || add.signatures?.employer) ? '<button class="btn danger" type="button" data-ad="reset">Unterschriften zurücksetzen</button>' : ""
+      ].join("");
+    }
+    list.innerHTML = c.docs.length ? c.docs.map(d => `<div class="doc-row">
+        <div class="doc-info"><b>${esc(d.title)}</b><span>${esc(d.file_name)} · ${esc(fmtBytes(d.size))} · ${esc(fmtTimestamp(d.created_at))}</span></div>
+        <div class="row-actions">
+          <button class="btn ghost small" type="button" data-doc-get="${d.id}">Herunterladen</button>
+          ${boss ? `<button class="icon-btn danger" type="button" data-doc-del="${d.id}" title="Löschen" aria-label="Dokument löschen">${ICONS.trash}</button>` : ""}
+        </div>
+      </div>`).join("") : `<p class="plan-empty">${boss ? "Noch keine Dokumente hochgeladen." : "Kim hat noch keine Dokumente hinterlegt."}</p>`;
+  }
+
+  $("addendumActions").addEventListener("click", event => {
+    const btn = event.target.closest("[data-ad]");
+    const add = state.contract?.add;
+    if (!btn || !add) return;
+    const boss = state.role === "boss";
+    const action = btn.dataset.ad;
+    if (action === "view") return openAddendum(add);
+    if (action === "sign") return openAddendum(add, { sign: boss ? "employer" : "employee", userId: state.selectedUserId });
+    if (action === "pdf") return withBusy(btn, () => downloadAddendumPdf(add));
+    if (action === "reset" && confirm("Beide Unterschriften für diesen Nachtrag löschen? Danach muss neu unterschrieben werden.")) {
+      withBusy(btn, async () => {
+        try { await api(forUser("/admin/addendum", state.selectedUserId), "DELETE"); await loadContracts(); }
+        catch (error) { alert("Zurücksetzen fehlgeschlagen: " + error.message); }
+      });
+    }
+  });
+
+  $("docList").addEventListener("click", event => {
+    const get = event.target.closest("[data-doc-get]");
+    const del = event.target.closest("[data-doc-del]");
+    const boss = state.role === "boss";
+    const find = id => state.contract?.docs.find(d => String(d.id) === String(id));
+    if (get) {
+      const d = find(get.dataset.docGet);
+      withBusy(get, async () => {
+        try { saveBlob(await apiBlob(boss ? forUser(`/admin/documents/${d.id}`, state.selectedUserId) : `/documents/${d.id}`), d.file_name); }
+        catch (error) { alert("Download fehlgeschlagen: " + error.message); }
+      });
+    }
+    if (del) {
+      const d = find(del.dataset.docDel);
+      if (!d || !confirm(`„${d.title}“ endgültig löschen?`)) return;
+      withBusy(del, async () => {
+        try { await api(forUser(`/admin/documents/${d.id}`, state.selectedUserId), "DELETE"); await loadContracts(); }
+        catch (error) { alert("Löschen fehlgeschlagen: " + error.message); }
+      });
+    }
+  });
+
+  $("docUploadForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const userId = state.selectedUserId;
+    const file = $("docFile").files[0];
+    if (!userId) return alert("Bitte zuerst einen Mitarbeiter auswählen.");
+    if (!file) return setStatus("docStatus", "Bitte eine Datei auswählen.", true);
+    if (file.size > 8 * 1024 * 1024) return setStatus("docStatus", "Die Datei ist größer als 8 MB.", true);
+    withBusy(event.submitter, async () => {
+      try {
+        setStatus("docStatus", "Wird hochgeladen …");
+        const data = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result).split(",")[1] || "");
+          reader.onerror = () => reject(new Error("Datei konnte nicht gelesen werden."));
+          reader.readAsDataURL(file);
+        });
+        await api(forUser("/admin/documents", userId), "POST", {
+          title: $("docTitle").value.trim() || "Arbeitsvertrag", file_name: file.name, mime: file.type, data
+        });
+        $("docUploadForm").reset();
+        setStatus("docStatus", "Hochgeladen ✓");
+        await loadContracts();
+      } catch (error) {
+        setStatus("docStatus", error.message, true);
+      }
+    });
+  });
+
+  // Boss: beim Öffnen von Office offene Gegenzeichnungen abarbeiten.
+  async function promptBossSignatures() {
+    if (state.role !== "boss") return;
+    let list;
+    try { list = asArray(await api("/admin/addenda")); } catch { return; }
+    const next = list.find(a => a.ready && !a.employer_signed);
+    if (!next) return;
+    try {
+      const add = await api(forUser("/admin/addendum", next.clerk_user_id));
+      openAddendum(add, { sign: "employer", userId: next.clerk_user_id });
+    } catch (error) {
+      console.warn("Nachtrag nicht geladen:", error);
+    }
+  }
 
   /* ================= Start & Anmeldung ================= */
 
@@ -8293,7 +8782,8 @@ small.muted { color: var(--ink-soft); font-size: 12px; }
     }
     await Promise.all([loadTasks(), loadBranches(), loadCalls()]);
     initPush();
-    showWhatsNew();
+    await showWhatsNew();
+    await promptBossSignatures();
   }
 
   const displayName = user =>
