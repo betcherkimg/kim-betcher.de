@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>SmartADM 5 Office</title>
+<script>
+  // Eingebettet aus Sales („Kunde weiterleiten“): nur das Fenster „Kontakt einstellen“ zeigen
+  if (new URLSearchParams(location.search).get("embed") === "kontakt") document.documentElement.classList.add("embed-kontakt");
+</script>
 <link rel="icon" type="image/png" sizes="128x128" href="/smartadm/office/office-icon-128-v4.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -194,6 +198,12 @@ body[data-office-role="boss"] [data-role="employee"] { display: none !important;
 .form-dialog[open] { display: flex; flex-direction: column; }
 .form-dialog::backdrop { background: rgba(29,39,51,.45); }
 .form-dialog-body { overflow-y: auto; padding: 14px 18px 18px; overscroll-behavior: contain; }
+/* Eingebettet in Sales: nur das Kontakt-Fenster, randlos und bildschirmfüllend */
+html.embed-kontakt body.signed-in { visibility: hidden; background: #fff; }
+html.embed-kontakt body.signed-in #callDialog { visibility: visible; width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; border-radius: 0; box-shadow: none; }
+html.embed-kontakt #callDialog::backdrop { background: #fff; }
+html.embed-kontakt #callDialog .picker-head { display: none; }
+html.embed-kontakt .embed-laden { visibility: visible; position: fixed; inset: 0; display: grid; place-items: center; color: #5D6875; font: 500 15px "IBM Plex Sans", system-ui, sans-serif; background: #fff; }
 .form-dialog-hint { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
 .search-tools { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1.4fr); gap: 10px; align-items: end; }
 .archive-tools + .search-result { margin-bottom: 12px; }
@@ -3074,6 +3084,14 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function closeDialog(dialog) {
     if (typeof dialog.close === "function") dialog.close();
     else dialog.removeAttribute("open");
+  }
+
+  /* ================= Einbettung aus Sales ================= */
+  const EMBED_PARAMS = new URLSearchParams(location.search);
+  const EMBED_KONTAKT = EMBED_PARAMS.get("embed") === "kontakt";
+  function embedMelden(event, extra = {}) {
+    if (!EMBED_KONTAKT || window.parent === window) return;
+    window.parent.postMessage({ source: "smartadm-office", event, ...extra }, location.origin);
   }
 
   /* ================= API ================= */
@@ -7359,7 +7377,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (open) { if (!dialog.open) openDialog(dialog); dialog.querySelector(".form-dialog-body").scrollTop = 0; }
     else if (dialog.open) closeDialog(dialog);
   }
-  $("callDialogClose").addEventListener("click", () => closeCallForm());
+  $("callDialogClose").addEventListener("click", () => { closeCallForm(); embedMelden("geschlossen"); });
   // Nur „Schließen“ beendet das Fenster – kein Esc, kein Danebenklicken
   $("callDialog").addEventListener("cancel", event => event.preventDefault());
 
@@ -7459,6 +7477,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       try {
         await (id ? api(`/admin/calls/${id}`, "PUT", payload) : api("/admin/calls", "POST", payload));
         const keepEmployee = payload.assigned_to;
+        if (EMBED_KONTAKT && !id) {
+          closeCallForm();
+          embedMelden("gespeichert", { name: payload.customer_name, mitarbeiter: employeeName(findEmployee(keepEmployee)) });
+          return;
+        }
         closeCallForm();
         $("callEmployeeSelect").value = keepEmployee; // nächster Kontakt startet mit demselben Mitarbeiter
         toast(id ? "Änderungen gespeichert." : "Kontakt gespeichert.");
@@ -10734,6 +10757,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (state.bootstrappedFor === user.id) return; // Session-Refreshes ignorieren
     state.bootstrappedFor = user.id;
 
+    if (EMBED_KONTAKT) return bootstrapEmbed();
+
     await syncProfile(user);
     const [role] = await Promise.all([resolveRole(), loadSettings()]);
     state.role = role;
@@ -10764,6 +10789,37 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     await showWhatsNew();
     await promptBossSignatures();
     loadMyCloseRequests();
+  }
+
+  // Nur das Nötigste für „Kontakt einstellen“ laden und das Fenster vorbefüllt öffnen
+  async function bootstrapEmbed() {
+    const hinweis = document.createElement("div");
+    hinweis.className = "embed-laden";
+    hinweis.textContent = "Office wird geladen …";
+    document.body.append(hinweis);
+    try {
+      state.role = await resolveRole();
+      document.body.dataset.officeRole = state.role;
+      if (state.role !== "boss") throw new Error("Nur mit dem Chef-Zugang möglich.");
+      const users = asArray(await api("/admin/users"));
+      state.employees = users.filter(u => u.role !== "boss").sort((a, b) => Number(Boolean(a.is_test)) - Number(Boolean(b.is_test)));
+      renderEmployeeSelects();
+      await Promise.all([loadBranches(), loadCalls()]);
+      resetCallForm();
+      const echt = state.employees.find(u => !u.is_test) || state.employees[0];
+      if (echt) $("callEmployeeSelect").value = echt.clerk_user_id;
+      $("callLastName").value = EMBED_PARAMS.get("nachname") || "";
+      $("callFirstName").value = EMBED_PARAMS.get("vorname") || "";
+      const anrede = EMBED_PARAMS.get("anrede");
+      if (anrede === "Herr" || anrede === "Frau") $("callSalutation").value = anrede;
+      hinweis.remove();
+      showCallForm(true);
+      $(anrede ? "callPhones" : "callSalutation").focus({ preventScroll: true });
+      embedMelden("bereit");
+    } catch (error) {
+      hinweis.textContent = "Office konnte nicht geladen werden: " + error.message;
+      embedMelden("fehler", { text: error.message });
+    }
   }
 
   const displayName = user =>

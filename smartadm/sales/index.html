@@ -1089,6 +1089,18 @@
   .folge-ergebnisse p.titel{margin:0 0 4px;font-size:13px;font-weight:600;color:var(--lila);}
   .folge-ergebnis{border-left:3px solid var(--lila-wash);padding:4px 0 4px 10px;margin-bottom:6px;font-size:13.5px;line-height:1.45;white-space:pre-wrap;}
   .folge-ergebnis b{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);white-space:normal;}
+  .sheet.sheet-wvfrage{width:min(760px, 100%);max-width:760px;}
+  .wvfrage-aktionen[hidden],.wvfrage-office-rahmen[hidden],.wvfrage-neu[hidden],#wvfrage-info[hidden]{display:none;}
+  #wvfrage-details .protokoll{white-space:pre-wrap;margin-top:6px;}
+  .wvfrage-aktionen{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}
+  .wvfrage-aktionen .wvfrage-office{flex:1 1 100%;}
+  @media (min-width:640px){ .wvfrage-aktionen .wvfrage-office{flex:1 1 auto;} }
+  .wvfrage-neu{margin-top:16px;padding:14px;border-radius:12px;background:var(--ground);}
+  .wvfrage-neu .field{margin-bottom:10px;}
+  .wvfrage-neu-knoepfe{display:flex;gap:8px;justify-content:flex-end;}
+  .wvfrage-office-rahmen{display:flex;flex-direction:column;gap:10px;}
+  .wvfrage-zurueck{align-self:flex-start;}
+  #wvfrage-iframe{width:100%;height:min(76vh, 820px);border:1px solid var(--line);border-radius:12px;background:#fff;}
   .folge-vorher{margin:0 0 14px;font-size:13.5px;color:var(--ink-soft);}
   .folge-vorher summary{cursor:pointer;font-weight:500;}
   .folge-vorher p{margin:8px 0 0;white-space:pre-wrap;line-height:1.5;color:var(--ink);background:var(--ground);border-radius:10px;padding:10px 12px;}
@@ -4026,6 +4038,41 @@
     <div class="sheet-foot">
       <button class="btn btn-quiet" id="folge-spaeter" type="button">Sp&auml;ter</button>
       <button class="btn" id="folge-speichern" type="button">Speichern</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- Fällige Wiedervorlage -->
+<div class="veil" id="veil-wvfrage" hidden>
+  <div class="sheet sheet-wvfrage" role="dialog" aria-modal="true" aria-labelledby="wvfrage-title"><div class="sheet-inhalt">
+    <div class="grip"></div>
+    <div class="sheet-head">
+      <h3 id="wvfrage-title">Wiedervorlage f&auml;llig</h3>
+      <button class="x" id="wvfrage-x" type="button" aria-label="Schlie&szlig;en">Schließen <span aria-hidden="true">&times;</span></button>
+    </div>
+    <div id="wvfrage-info">
+      <p class="sheet-sub" id="wvfrage-sub"></p>
+      <div id="wvfrage-details"></div>
+      <div class="wvfrage-neu" id="wvfrage-neu" hidden>
+        <div class="field">
+          <label for="wvfrage-datum">Neue Wiedervorlage am</label>
+          <input id="wvfrage-datum" type="date">
+        </div>
+        <div class="wvfrage-neu-knoepfe">
+          <button class="btn btn-quiet" id="wvfrage-neu-abbruch" type="button">Abbrechen</button>
+          <button class="btn" id="wvfrage-neu-ok" type="button">Wiedervorlage setzen</button>
+        </div>
+      </div>
+      <div class="wvfrage-aktionen" id="wvfrage-aktionen">
+        <button class="btn wvfrage-office" id="wvfrage-office" type="button">Kunde an Office weiterleiten</button>
+        <button class="btn btn-quiet" id="wvfrage-erledigt" type="button">Erledigt</button>
+        <button class="btn btn-quiet" id="wvfrage-verschieben" type="button">Neue Wiedervorlage</button>
+        <button class="btn btn-quiet" id="wvfrage-spaeter" type="button">Sp&auml;ter</button>
+      </div>
+    </div>
+    <div class="wvfrage-office-rahmen" id="wvfrage-office-rahmen" hidden>
+      <button class="btn btn-quiet wvfrage-zurueck" id="wvfrage-zurueck" type="button">&larr; Zur&uuml;ck zur Wiedervorlage</button>
+      <iframe id="wvfrage-iframe" title="Office – Kontakt einstellen"></iframe>
     </div>
   </div></div>
 </div>
@@ -7197,6 +7244,8 @@ function awUebernehmen(t){
       if(alt.wvFertigAm) AUSWERTUNG[i].wvFertigAm = alt.wvFertigAm;
       if(alt.folgetermine) AUSWERTUNG[i].folgetermine = alt.folgetermine;
       if(alt.folgeSpaeter && t.status === "folgetermin" && t.wv === alt.wv) AUSWERTUNG[i].folgeSpaeter = alt.folgeSpaeter;
+      if(alt.wvSpaeter && t.wv === alt.wv) AUSWERTUNG[i].wvSpaeter = alt.wvSpaeter;
+      if(alt.weitergeleitet) AUSWERTUNG[i].weitergeleitet = alt.weitergeleitet;
       awSortieren();
       return;
     }
@@ -7540,7 +7589,8 @@ function awWvErledigtZeile(t){
        +   '<span class="aw-haupt">'
        +     '<span class="aw-name">' + esc(terminKundenText(t)) + '</span>'
        +     '<span class="aw-meta">Wiedervorlage ' + esc(datumKurz(t.wv))
-       +       (t.wvFertigAm ? ' · abgehakt ' + esc(datumKurz(t.wvFertigAm.slice(0, 10))) : '') + '</span>'
+       +       (t.wvFertigAm ? ' · abgehakt ' + esc(datumKurz(t.wvFertigAm.slice(0, 10))) : '')
+       +       (t.weitergeleitet && t.weitergeleitet.wv === t.wv ? ' · an ' + esc(t.weitergeleitet.an || "Office") + ' weitergeleitet' : '') + '</span>'
        +   '</span>'
        +   '<button type="button" class="aw-zurueck" data-aw-zurueck="' + esc(awSchluessel(t)) + '">Wieder öffnen</button>'
        + '</div>';
@@ -7783,6 +7833,7 @@ function folgeNachfragen(){
     return t.folgeSpaeter !== heute && !folgeSitzungAus[awSchluessel(t)];
   });
   if(naechster) folgeOeffnen(awSchluessel(naechster));
+  else wvNachfragen();
 }
 var folgeUhr = null;
 function folgeSpaeterPruefen(){ clearTimeout(folgeUhr); folgeUhr = setTimeout(folgeNachfragen, 900); }
@@ -7838,6 +7889,149 @@ document.getElementById("folge-speichern").addEventListener("click", function(){
   delete folgeSitzungAus[s];
   melden("Ergebnis gespeichert – Status: " + statusInfo(status).label);
   folgeSpaeterPruefen();
+});
+
+
+/* ---------- Fällige Wiedervorlagen ---------- */
+
+// Ab dem Fälligkeitstag poppt eine Wiedervorlage auf (gilt für Wiedervorlagen ab 14.10.2026).
+// Von dort aus lässt sich der Kunde direkt als neuer Kontakt an Office weitergeben.
+var WV_AB = "2026-10-14";
+var wvAktuell = null;
+var wvSitzungAus = {};
+
+function wvFaelligListe(){
+  var heute = heuteIso();
+  return AUSWERTUNG.filter(function(t){
+    return istWiedervorlage(t) && !t.wvFertig && t.wv <= heute && t.wv >= WV_AB
+      && t.wvSpaeter !== heute && !wvSitzungAus[awSchluessel(t) + "|" + t.wv];
+  }).sort(function(a, b){ return String(a.wv).localeCompare(String(b.wv)); });
+}
+
+function wvNachfragen(){
+  if(document.querySelector(".veil:not([hidden])")) return;
+  var t = wvFaelligListe()[0];
+  if(t) wvOeffnen(awSchluessel(t));
+}
+
+function wvEintrag(){
+  return AUSWERTUNG.find(function(a){ return awSchluessel(a) === wvAktuell; }) || null;
+}
+
+function wvAnsichtOffice(an){
+  document.getElementById("wvfrage-info").hidden = an;
+  document.getElementById("wvfrage-office-rahmen").hidden = !an;
+  document.getElementById("wvfrage-title").textContent = an ? "Kunde an Office weiterleiten" : "Wiedervorlage fällig";
+  if(!an) document.getElementById("wvfrage-iframe").removeAttribute("src");
+}
+
+function wvOeffnen(schluessel){
+  wvAktuell = schluessel;
+  var t = wvEintrag();
+  if(!t) return;
+  var heute = heuteIso();
+  var tage = Math.round((new Date(heute) - new Date(t.wv)) / 86400000);
+  document.getElementById("wvfrage-sub").textContent = terminKundenText(t) + " · Wiedervorlage "
+    + (tage === 0 ? "heute" : "seit " + datumKurz(t.wv)) + (t.bma ? " · " + t.bma : "");
+  document.getElementById("wvfrage-details").innerHTML =
+      '<ul class="daten">'
+    +   zeile("Termin", datumKurz(t.datum) + (t.ort ? ' · ' + t.ort : ''))
+    + '</ul>'
+    + terminZusatzHtml(t)
+    + '<p class="protokoll-titel">Was wir besprochen haben</p>'
+    + '<div class="protokoll' + (t.protokoll ? '' : ' leer') + '">' + (t.protokoll ? esc(t.protokoll) : "Kein Protokoll hinterlegt") + '</div>'
+    + folgeErgebnisseHtml(t);
+  document.getElementById("wvfrage-neu").hidden = true;
+  document.getElementById("wvfrage-aktionen").hidden = false;
+  wvAnsichtOffice(false);
+  oeffnen("veil-wvfrage");
+}
+
+function wvSchliessen(){
+  if(wvAktuell){
+    var t = wvEintrag();
+    if(t) wvSitzungAus[wvAktuell + "|" + t.wv] = true;
+  }
+  wvAktuell = null;
+  wvAnsichtOffice(false);
+  schliessen("veil-wvfrage");
+  folgeSpaeterPruefen();
+}
+
+function wvSpeichernUndZeichnen(text){
+  sichern();
+  zeichnen();
+  awZeichnen();
+  if(typeof widgetsZeichnen === "function") widgetsZeichnen();
+  if(text) melden(text);
+}
+
+document.getElementById("wvfrage-x").addEventListener("click", wvSchliessen);
+
+document.getElementById("wvfrage-spaeter").addEventListener("click", function(){
+  var t = wvEintrag();
+  if(t){ t.wvSpaeter = heuteIso(); sichern(); }
+  wvSchliessen();
+  melden("Ich erinnere dich morgen wieder daran.");
+});
+
+document.getElementById("wvfrage-erledigt").addEventListener("click", function(){
+  var s = wvAktuell;
+  wvSchliessen();
+  awWvSetzen(s, true);
+  melden("Wiedervorlage abgehakt", {label:"Rückgängig", fn:function(){ awWvSetzen(s, false); melden("Wiedervorlage wieder offen"); }});
+});
+
+document.getElementById("wvfrage-verschieben").addEventListener("click", function(){
+  var morgen = new Date(); morgen.setDate(morgen.getDate() + 7);
+  document.getElementById("wvfrage-datum").value = morgen.toISOString().slice(0, 10);
+  document.getElementById("wvfrage-neu").hidden = false;
+  document.getElementById("wvfrage-aktionen").hidden = true;
+});
+document.getElementById("wvfrage-neu-abbruch").addEventListener("click", function(){
+  document.getElementById("wvfrage-neu").hidden = true;
+  document.getElementById("wvfrage-aktionen").hidden = false;
+});
+document.getElementById("wvfrage-neu-ok").addEventListener("click", function(){
+  var datum = document.getElementById("wvfrage-datum").value;
+  if(!datum || datum <= heuteIso()){ maengel("wvfrage-datum", "Bitte ein Datum ab morgen wählen."); return; }
+  var t = wvEintrag();
+  if(!t){ wvSchliessen(); return; }
+  var s = wvAktuell;
+  t.wv = datum; t.wvFertig = false; delete t.wvFertigAm; delete t.wvSpaeter;
+  TERMINE.forEach(function(x){ if(awSchluessel(x) === s) x.wv = datum; });
+  wvSchliessen();
+  wvSpeichernUndZeichnen("Neue Wiedervorlage am " + datumKurz(datum));
+});
+
+document.getElementById("wvfrage-office").addEventListener("click", function(){
+  var t = wvEintrag();
+  if(!t) return;
+  var n = nameTeilen(t.kunde || "");
+  var url = "../office/?embed=kontakt&nachname=" + encodeURIComponent(n.nachname) + "&vorname=" + encodeURIComponent(n.vorname);
+  document.getElementById("wvfrage-iframe").src = url;
+  wvAnsichtOffice(true);
+});
+document.getElementById("wvfrage-zurueck").addEventListener("click", function(){ wvAnsichtOffice(false); });
+
+window.addEventListener("message", function(e){
+  if(e.origin !== location.origin || !e.data || e.data.source !== "smartadm-office") return;
+  if(e.data.event === "geschlossen"){ wvAnsichtOffice(false); return; }
+  if(e.data.event === "gespeichert"){
+    var t = wvEintrag();
+    var s = wvAktuell;
+    var an = e.data.mitarbeiter || "Office";
+    if(t){
+      t.weitergeleitet = {am:new Date().toISOString(), an:an, wv:t.wv};
+      t.wvFertig = true; t.wvFertigAm = new Date().toISOString();
+      delete t.wvSpaeter;
+    }
+    wvAktuell = null;
+    wvAnsichtOffice(false);
+    schliessen("veil-wvfrage");
+    wvSpeichernUndZeichnen((e.data.name || "Kunde") + " ist bei " + an + " in der Telefonliste – Wiedervorlage abgehakt.");
+    folgeSpaeterPruefen();
+  }
 });
 
 /* ---------- Bedienung ---------- */
@@ -8081,7 +8275,7 @@ document.getElementById("open-termin").addEventListener("click", function(){
   oeffnen("veil-termin");
 });
 
-var FENSTER = ["veil-konflikt","veil-prov-steuer","veil-widget","veil-speicher","veil-profil","veil-bank","veil-bma","veil-termin","veil-detail","veil-frage","veil-prov","veil-prov-archiv","veil-folge"];
+var FENSTER = ["veil-konflikt","veil-prov-steuer","veil-widget","veil-speicher","veil-profil","veil-bank","veil-bma","veil-termin","veil-detail","veil-frage","veil-prov","veil-prov-archiv","veil-folge","veil-wvfrage"];
 
 document.querySelectorAll("[data-close]").forEach(function(el){
   el.addEventListener("click", function(){ schliessen(el.getAttribute("data-close")); });
