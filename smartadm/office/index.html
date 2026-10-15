@@ -6695,6 +6695,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const syncNoteOk = () => ($("noteOk").disabled = !$("noteText").value.trim());
 
   function openNoteDialog(call, kind, { value = "", send, done, forced = false }) {
+    // Das Fenster liegt in der Telefonliste – nie auf einer verdeckten Seite öffnen (sonst blockiert es alles unsichtbar)
+    if (!$("telefon").classList.contains("active")) showPage("telefon");
     noteRequest = { id: String(call.id), kind, send, done, forced };
     // Nach dem 5. Versuch muss ein Ergebnis her – kein Abbrechen, Auswahl statt Kreuz
     $("noteCancel").hidden = forced;
