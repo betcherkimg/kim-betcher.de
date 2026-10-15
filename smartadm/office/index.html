@@ -6639,19 +6639,16 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   /* --- Anrufen zählt den Versuch --- */
 
-  const DIAL_GROUP_MS = 15 * 1000;      // jeder Anruf zählt – nur ein versehentlicher Doppeltipp nicht
+  const DOPPELTIPP_MS = 3000;           // jeder Anruf zählt – nur ein versehentlicher Doppeltipp nicht
+  const letzterTipp = new Map();        // Kontakt → Zeitpunkt des letzten Tipps auf eine Nummer
   const pendingAttempts = new Map();    // Kontakt → laufende Speicherung des Versuchs
-
-  function lastAttemptTime(c) {
-    const last = c.attempt_log.at(-1);
-    const time = last ? parseTimestamp(last).getTime() : NaN;
-    return Number.isFinite(time) ? time : 0;
-  }
 
   // Wird beim Tippen auf eine Nummer aufgerufen. Der Anruf selbst startet über den tel:-Link.
   function countAttempt(call) {
     const id = String(call.id);
-    if (pendingAttempts.has(id) || Math.abs(Date.now() - lastAttemptTime(call)) < DIAL_GROUP_MS) return;
+    if (Date.now() - (letzterTipp.get(id) || 0) < DOPPELTIPP_MS) return;
+    letzterTipp.set(id, Date.now());
+    if (state.finalDial.has(id)) return; // letzter Versuch läuft schon
 
     if (isLastAttempt(call)) {
       state.finalDial.add(id);
@@ -6668,7 +6665,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
     const note = noteDraft(call).trim();
     cancelNoteSave(id);
-    const request = api(`/calls/${id}/attempt`, "POST", { protocol: note }, { keepalive: true })
+    // Läuft die Speicherung des vorigen Versuchs noch (z. B. weil das Handy im Telefonat war),
+    // wird dieser Versuch danach gespeichert statt verworfen.
+    const vorher = pendingAttempts.get(id) || Promise.resolve();
+    const request = vorher.catch(() => {})
+      .then(() => api(`/calls/${id}/attempt`, "POST", { protocol: note }, { keepalive: true }))
       .then(() => noteSaved(call, note))
       .catch(error => {
         console.error(error);
@@ -6677,7 +6678,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         state.callErrors[id] = `Dieser Versuch wurde nicht gezählt: ${error.message}`;
         renderOwnCalls();
       })
-      .finally(() => pendingAttempts.delete(id));
+      .finally(() => { if (pendingAttempts.get(id) === request) pendingAttempts.delete(id); });
     pendingAttempts.set(id, request);
   }
 
