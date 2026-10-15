@@ -1905,6 +1905,84 @@
     .t-wert b{display:inline;}
     .t-kopf{display:none;}
   }
+  /* ---------- Synergie-Rechner ---------- */
+  #seite-synergie.wrap{max-width:1080px;}
+  @media (max-width:699px){
+    #seite-synergie .block-head{flex-wrap:wrap;}
+    #seite-synergie .block-head > div:first-child{flex:1 1 100%;}
+  }
+  .syn-eingabe{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:18px;}
+  @media (min-width:900px){
+    .syn-eingabe{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);}
+    .syn-eingabe .syn-experte{grid-column:1 / -1;}
+  }
+  .syn-karte{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:16px 16px 12px;min-width:0;}
+  .syn-karte h3{margin:0 0 12px;font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-hi);}
+  .syn-felder{display:grid;grid-template-columns:1fr;gap:10px 14px;}
+  @media (min-width:560px){ .syn-felder{grid-template-columns:1fr 1fr;} }
+  .syn-experte .syn-felder{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));}
+  .syn-feld{min-width:0;}
+  .syn-feld > label{display:block;font-size:12.5px;font-weight:500;color:var(--ink-soft);margin-bottom:4px;}
+  .syn-feld-klein{margin:10px 0 6px;}
+  .syn-input{display:flex;align-items:center;background:var(--ground);border:1.5px solid transparent;border-radius:10px;transition:border-color .15s ease, background .15s ease;}
+  .syn-input:focus-within{background:var(--surface);border-color:var(--accent);}
+  .syn-input input{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:16px;color:var(--ink);padding:8px 4px 8px 11px;text-align:right;}
+  .syn-input input:focus{outline:none;}
+  .syn-input span{flex:none;padding:0 11px 0 6px;font-size:13px;color:var(--ink-faint);white-space:nowrap;}
+  .syn-feld select,.syn-pdf-name input{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--ground);border:1.5px solid transparent;border-radius:10px;padding:8px 11px;}
+  .syn-feld select{appearance:none;-webkit-appearance:none;padding-right:32px;
+    background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none'%3E%3Cpath d='M4 6.5 8 10.5 12 6.5' stroke='%235D6875' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 10px center;}
+  .syn-feld select:focus,.syn-pdf-name input:focus{outline:none;background-color:var(--surface);border-color:var(--accent);}
+  .syn-hilfe{margin:5px 0 0;font-size:12px;color:var(--ink-faint);}
+  .syn-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+  .syn-chips button{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:999px;padding:4px 10px;font:inherit;font-size:12.5px;}
+  .syn-chips button[aria-pressed="true"]{background:var(--accent-wash);border-color:var(--accent);color:var(--accent-hi);font-weight:600;}
+  .syn-seg{display:grid;grid-template-columns:1fr 1fr;background:var(--ground);border-radius:10px;padding:3px;margin-bottom:10px;}
+  .syn-seg button{border:0;background:transparent;border-radius:8px;padding:7px 8px;font:inherit;font-size:14px;color:var(--ink-soft);}
+  .syn-seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(29,39,51,.12);}
+  .syn-check{display:flex;align-items:flex-start;gap:10px;padding:7px 0;font-size:14px;line-height:1.35;cursor:pointer;}
+  .syn-check input{width:18px;height:18px;margin:1px 0 0;accent-color:var(--accent);flex:none;}
+  .syn-check.aus{opacity:.45;cursor:default;}
+
+  .syn-vorteil{border-radius:16px;padding:18px 20px;margin-bottom:14px;color:#fff;background:linear-gradient(150deg,#12518F 0%,#0B3A70 100%);
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 18px;}
+  .syn-vorteil.negativ{background:linear-gradient(150deg,#8E3A33 0%,#6E2A24 100%);}
+  .syn-vorteil span{font-size:14.5px;color:rgba(255,255,255,.85);}
+  .syn-vorteil b{font-size:30px;font-weight:700;letter-spacing:-.025em;white-space:nowrap;}
+  .syn-vorteil small{display:block;width:100%;font-size:12.5px;color:rgba(255,255,255,.72);}
+  .syn-sicht{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 12px;}
+  .syn-sicht .syn-seg{margin:0;min-width:300px;}
+  .syn-sicht p{margin:0;font-size:12.5px;color:var(--ink-faint);}
+  .syn-varianten{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px;align-items:start;}
+  @media (min-width:800px){ .syn-varianten{grid-template-columns:1fr 1fr;} }
+  .syn-var{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;min-width:0;}
+  .syn-var h4{margin:0;padding:13px 16px 11px;font-size:15px;font-weight:650;background:var(--accent-wash);color:var(--accent-hi);}
+  .syn-var h4 small{display:block;font-size:12px;font-weight:500;color:var(--ink-soft);margin-top:2px;}
+  .syn-var.v2 h4{background:var(--gruen-wash);color:var(--gruen);}
+  .syn-zeile{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:8px 16px;border-bottom:1px solid var(--line);font-size:14px;}
+  .syn-zeile span{color:var(--ink-soft);min-width:0;}
+  .syn-zeile span em{display:block;font-style:normal;font-size:12px;color:var(--ink-faint);}
+  .syn-zeile b{font-weight:600;font-size:14px;white-space:nowrap;text-align:right;letter-spacing:0;}
+  .syn-zeile b.syn-minus{color:var(--rot);}
+  .syn-zeile b.syn-plus{color:var(--gruen);}
+  .syn-zeile.zwischen{background:var(--ground);}
+  .syn-zeile.saldo{border-bottom:0;padding:12px 16px;font-size:15px;}
+  .syn-zeile.saldo span{color:var(--ink);font-weight:600;}
+  .syn-zeile.saldo b{font-size:18px;}
+  .syn-gruppe{padding:9px 16px 3px;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);}
+  .syn-hinweise{background:var(--gelb-wash);color:#6B4A00;border-radius:14px;padding:12px 16px;margin-bottom:14px;font-size:13.5px;line-height:1.5;}
+  .syn-hinweise ul{margin:0;padding-left:18px;}
+  .syn-foerd{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:14px 16px;margin-bottom:14px;}
+  .syn-foerd h4{margin:0 0 6px;font-size:14px;}
+  .syn-foerd p{margin:6px 0 0;font-size:12.5px;color:var(--ink-faint);}
+  .syn-foerd .syn-zeile{padding:6px 0;}
+  .syn-pdf{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:flex-end;gap:10px;margin-top:4px;}
+  .syn-pdf-name{flex:1 1 240px;max-width:360px;}
+  #seite-synergie #syn-kunde{display:block;width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:9px 11px;text-align:left;box-shadow:none;}
+  #seite-synergie #syn-kunde:focus{outline:none;background:var(--surface);border-color:var(--accent);}
+  .syn-fehler{background:var(--rot-wash);color:var(--rot);border-radius:14px;padding:14px 16px;}
+
   /* ---------- Provisions-Rechner ---------- */
 
 
@@ -3267,6 +3345,80 @@
   </section>
 
 </main>
+
+<main class="wrap" id="seite-synergie" hidden>
+
+  <section class="block">
+    <div class="block-head">
+      <div>
+        <p id="syn-untertitel">Nur ETF oder ETF + Bausparen – was bringt dem Kunden mehr?</p>
+      </div>
+      <div class="head-tools">
+        <button class="btn btn-quiet" id="syn-experte" type="button" aria-pressed="false">Expertenmodus</button>
+        <button class="btn btn-quiet" id="syn-reset" type="button">Zur&uuml;cksetzen</button>
+      </div>
+    </div>
+
+    <div class="syn-eingabe">
+      <div class="syn-karte">
+        <h3>Eckdaten</h3>
+        <div class="syn-felder">
+          <div class="syn-feld"><label for="syn-bedarf">Finanzierungsbedarf</label><div class="syn-input"><input id="syn-bedarf" data-syn="bedarf" inputmode="decimal"><span>&euro;</span></div></div>
+          <div class="syn-feld"><label for="syn-bss">Bausparsumme (Eigenkapital-Baustein)</label><div class="syn-input"><input id="syn-bss" data-syn="bss" inputmode="decimal"><span>&euro;</span></div></div>
+          <div class="syn-feld"><label for="syn-sparrate">Sparrate gesamt</label><div class="syn-input"><input id="syn-sparrate" data-syn="sparrate" inputmode="decimal"><span>&euro;/Monat</span></div></div>
+          <div class="syn-feld"><label for="syn-jahre">Jahre bis zur Finanzierung</label><div class="syn-input"><input id="syn-jahre" data-syn="jahre" inputmode="decimal"><span>Jahre</span></div></div>
+          <div class="syn-feld"><label for="syn-rendite">ETF-Rendite</label><div class="syn-input"><input id="syn-rendite" data-syn="rendite" inputmode="decimal"><span>% p.&nbsp;a.</span></div>
+            <div class="syn-chips" id="syn-rendite-chips">
+              <button type="button" data-rendite="5">5 %</button><button type="button" data-rendite="6">6 %</button><button type="button" data-rendite="7.22">7,22 %</button><button type="button" data-rendite="8">8 %</button>
+            </div>
+          </div>
+          <div class="syn-feld"><label for="syn-anteil">ETF-Anteil in Variante 2</label><div class="syn-input"><input id="syn-anteil" data-syn="etfAnteil" inputmode="decimal"><span>%</span></div><p class="syn-hilfe" id="syn-anteil-hilfe"></p></div>
+          <div class="syn-feld"><label for="syn-tarif">Bauspartarif</label><select id="syn-tarif" data-syn="tarif"></select></div>
+          <div class="syn-feld"><label for="syn-bankzins">Bankzins ohne Eigenkapital</label><div class="syn-input"><input id="syn-bankzins" data-syn="bankZins" inputmode="decimal"><span>%</span></div></div>
+        </div>
+      </div>
+
+      <div class="syn-karte">
+        <h3>Kunde &amp; F&ouml;rderung</h3>
+        <div class="syn-seg" role="group" aria-label="Familienstand">
+          <button type="button" data-verh="0" aria-pressed="true">Ledig</button>
+          <button type="button" data-verh="1" aria-pressed="false">Verheiratet</button>
+        </div>
+        <label class="syn-check"><input type="checkbox" data-syn="wop"><span>Wohnungsbauprämie-berechtigt</span></label>
+        <label class="syn-check"><input type="checkbox" data-syn="asz"><span>Arbeitnehmersparzulage-berechtigt</span></label>
+        <label class="syn-check" id="syn-jlb-zeile"><input type="checkbox" data-syn="jlb"><span>Junge-Leute-Bonus (nur XX06)</span></label>
+        <div class="syn-feld syn-feld-klein"><label for="syn-vl">Verm&ouml;genswirksame Leistungen vom Arbeitgeber</label><div class="syn-input"><input id="syn-vl" data-syn="vl" inputmode="decimal"><span>&euro;/Monat</span></div></div>
+        <label class="syn-check"><input type="checkbox" data-syn="steuer"><span>Abgeltungsteuer auf ETF-Gewinne ber&uuml;cksichtigen</span></label>
+      </div>
+
+      <div class="syn-karte syn-experte" id="syn-experte-karte" hidden>
+        <h3>Expertenmodus</h3>
+        <div class="syn-felder">
+          <div class="syn-feld"><label for="syn-rabatt">Max. Zinsrabatt</label><div class="syn-input"><input id="syn-rabatt" data-syn="rabattMax" inputmode="decimal"><span>%</span></div></div>
+          <div class="syn-feld"><label for="syn-rabatt-ek">Voller Rabatt ab Eigenkapital</label><div class="syn-input"><input id="syn-rabatt-ek" data-syn="rabattAbEk" inputmode="decimal"><span>%</span></div></div>
+          <div class="syn-feld"><label for="syn-klein">Kleindarlehen bis</label><div class="syn-input"><input id="syn-klein" data-syn="kleinGrenze" inputmode="decimal"><span>&euro;</span></div></div>
+          <div class="syn-feld"><label for="syn-klein-zins">Zins Kleindarlehen</label><div class="syn-input"><input id="syn-klein-zins" data-syn="kleinZins" inputmode="decimal"><span>%</span></div></div>
+          <div class="syn-feld"><label for="syn-tilgung">Anfangstilgung Bank</label><div class="syn-input"><input id="syn-tilgung" data-syn="tilgung" inputmode="decimal"><span>%</span></div></div>
+          <div class="syn-feld"><label for="syn-bindung">Zinsbindung</label><div class="syn-input"><input id="syn-bindung" data-syn="bindung" inputmode="decimal"><span>Jahre</span></div></div>
+          <div class="syn-feld"><label for="syn-tilgfrei">Tilgungsfreie Anlaufmonate</label><div class="syn-input"><input id="syn-tilgfrei" data-syn="tilgFrei" inputmode="decimal"><span>Monate</span></div></div>
+          <div class="syn-feld"><label for="syn-blanko">Blanko-Grenze Bauspardarlehen</label><div class="syn-input"><input id="syn-blanko" data-syn="blanko" inputmode="decimal"><span>&euro;</span></div></div>
+          <div class="syn-feld"><label for="syn-mindest">Mindestguthaben (leer = automatisch)</label><div class="syn-input"><input id="syn-mindest" data-syn="mindest" inputmode="decimal" placeholder="auto"><span>%</span></div></div>
+          <div class="syn-feld"><label for="syn-kirche">Kirchensteuer</label><select id="syn-kirche" data-syn="kirche"><option value="0">keine</option><option value="8">8 %</option><option value="9">9 %</option></select></div>
+        </div>
+        <label class="syn-check"><input type="checkbox" data-syn="foerderungEinrechnen"><span>F&ouml;rderung und vL ins Bausparguthaben einrechnen (wie BSHTOP)</span></label>
+      </div>
+    </div>
+
+    <div class="syn-ergebnis" id="syn-ergebnis"></div>
+
+    <div class="syn-pdf">
+      <div class="syn-feld syn-pdf-name"><label for="syn-kunde">Kundenname f&uuml;r das PDF</label><input id="syn-kunde" type="text" autocomplete="off" placeholder="z.&nbsp;B. Familie Muster"></div>
+      <button class="btn" id="syn-pdf" type="button">Konzept als PDF</button>
+    </div>
+  </section>
+
+</main>
+
 
 <!-- Persoenlicher Steuersatz -->
 <div class="veil" id="veil-prov-steuer" hidden>
@@ -7496,6 +7648,9 @@ var LEISTE = [
    pfad:'<rect x="4" y="3" width="16" height="18" rx="3" stroke="currentColor" stroke-width="1.6"/>'
       + '<path d="M8 8h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'
       + '<path d="M8.5 13h.01M12 13h.01M15.5 13h.01M8.5 17h.01M12 17h.01M15.5 17h.01" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'},
+  {seite:"synergie", text:"Synergie-Rechner", aktiv:true,
+   pfad:'<circle cx="9" cy="12" r="5.2" stroke="currentColor" stroke-width="1.6"/>'
+      + '<circle cx="15" cy="12" r="5.2" stroke="currentColor" stroke-width="1.6"/>'},
   {seite:"tarif", text:"Tariftool", aktiv:true,
    pfad:'<path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'
       + '<circle cx="9" cy="6" r="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.6"/>'
@@ -7578,7 +7733,7 @@ function seiteZeigen(name){
     abAlleZu();
     abZeichnen();
   }
-  ["dashboard","banken","bma","termine","auswertung","abstimmung","mail","tarif","prov"].forEach(function(seite){
+  ["dashboard","banken","bma","termine","auswertung","abstimmung","mail","tarif","prov","synergie"].forEach(function(seite){
     document.getElementById("seite-" + seite).hidden = (seite !== name);
   });
   document.getElementById("zurueck").hidden = name === "dashboard";
@@ -7586,7 +7741,7 @@ function seiteZeigen(name){
   leisteMarkieren(name);
 
   var titel = {dashboard:"Dashboard", banken:"Banken", bma:"Bankmitarbeiter", auswertung:"Auswertung", termine:"Terminprotokoll", abstimmung:"Adressabstimmung",
-               mail:"Mail-Generator", prov:"Provisions-Rechner", tarif:"Tariftool"}[name] || "";
+               mail:"Mail-Generator", prov:"Provisions-Rechner", tarif:"Tariftool", synergie:"Synergie-Rechner"}[name] || "";
   document.getElementById("seitentitel").textContent = titel;
   bandAnwenden();
   window.scrollTo(0, 0);
@@ -7743,6 +7898,7 @@ zeichnen();
 <script defer crossorigin="anonymous"
   data-clerk-publishable-key="pk_live_Y2xlcmsua2ltLWJldGNoZXIuZGUk"
   src="https://clerk.kim-betcher.de/npm/@clerk/clerk-js@6/dist/clerk.browser.js"></script>
+<script src="synergie.js?v=1"></script>
 <script src="cloud.js?v=2"></script>
 
 </body>
