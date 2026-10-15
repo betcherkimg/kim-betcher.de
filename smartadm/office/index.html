@@ -870,6 +870,11 @@ td { border-bottom-color: var(--line); }
 #noteStatus { margin: 0; min-height: 0; }
 #noteStatus:empty { display: none; }
 .note-actions { display: flex; justify-content: space-between; align-items: center; padding-top: 2px; }
+.note-actions.only-ok { justify-content: flex-end; }
+.note-choice { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border-radius: 14px; background: var(--ground); }
+.note-choice[hidden] { display: none; }
+.note-choice button { border: 0; border-radius: 10px; padding: 9px 6px; background: transparent; font: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink-soft); }
+.note-choice button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(29,39,51,.15); }
 .note-btn { width: 54px; height: 54px; border: 0; border-radius: 50%; display: inline-grid; place-items: center; }
 .note-btn svg.i { width: 24px; height: 24px; stroke-width: 2.2; }
 .note-btn.cancel { background: var(--ground); color: var(--ink-soft); }
@@ -2427,6 +2432,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             <form id="noteForm" novalidate>
               <strong id="noteTitle">Infos?</strong>
               <span id="noteWho"></span>
+              <div class="note-choice" id="noteChoice" role="group" aria-label="Ergebnis" hidden>
+                <button type="button" data-note-kind="R_TA_kK" aria-pressed="true">Nicht erreicht</button>
+                <button type="button" data-note-kind="R_TA_mT" aria-pressed="false">Mit Termin</button>
+                <button type="button" data-note-kind="R_TA_oT" aria-pressed="false">Ohne Termin</button>
+              </div>
               <textarea id="noteText" rows="4" maxlength="2000" placeholder="Protokoll" aria-labelledby="noteTitle"></textarea>
               <div id="noteStatus" class="status-text" aria-live="polite"></div>
               <div class="note-actions">
@@ -6629,7 +6639,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   /* --- Anrufen zählt den Versuch --- */
 
-  const DIAL_GROUP_MS = 5 * 60 * 1000;  // mehrere Nummern direkt nacheinander = ein Versuch
+  const DIAL_GROUP_MS = 15 * 1000;      // jeder Anruf zählt – nur ein versehentlicher Doppeltipp nicht
   const pendingAttempts = new Map();    // Kontakt → laufende Speicherung des Versuchs
 
   function lastAttemptTime(c) {
@@ -6646,6 +6656,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (isLastAttempt(call)) {
       state.finalDial.add(id);
       saveCallStore();
+      finalWarten(id);
       return;
     }
 
@@ -6674,14 +6685,19 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
      Lässt sich nicht wegklicken: Der Haken geht erst mit mindestens einem Zeichen,
      das Kreuz bricht ab, ohne etwas zu speichern. */
 
-  const NOTE_TITLES = { hold: "Halten?", R_TA_oT: "Kein Termin?", R_TA_mT: "Infos?", R_TA_kK: "Nicht erreicht?" };
+  const NOTE_TITLES = { hold: "Halten?", R_TA_oT: "Kein Termin?", R_TA_mT: "Infos?", R_TA_kK: "Nicht erreicht?", final: "5. Versuch – wie lief’s?" };
   let noteRequest = null; // { id, kind, send, done } solange das Fenster offen ist
 
   const syncNoteOk = () => ($("noteOk").disabled = !$("noteText").value.trim());
 
-  function openNoteDialog(call, kind, { value = "", send, done }) {
-    noteRequest = { id: String(call.id), kind, send, done };
-    setText("noteTitle", NOTE_TITLES[kind]);
+  function openNoteDialog(call, kind, { value = "", send, done, forced = false }) {
+    noteRequest = { id: String(call.id), kind, send, done, forced };
+    // Nach dem 5. Versuch muss ein Ergebnis her – kein Abbrechen, Auswahl statt Kreuz
+    $("noteCancel").hidden = forced;
+    $("noteChoice").hidden = !forced;
+    document.querySelector("#noteDialog .note-actions").classList.toggle("only-ok", forced);
+    if (forced) setNoteChoice("R_TA_kK");
+    setText("noteTitle", NOTE_TITLES[forced ? "final" : kind]);
     setText("noteWho", call.customer_name);
     $("noteText").value = value;
     setStatus("noteStatus", "");
@@ -6690,7 +6706,18 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     $("noteText").focus();
   }
 
+  function setNoteChoice(kind) {
+    if (noteRequest) noteRequest.kind = kind;
+    $$("#noteChoice [data-note-kind]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.noteKind === kind)));
+    $("noteText").placeholder = kind === "R_TA_kK" ? "Kurze Notiz zum Kunden, z. B. nie erreicht, Mailbox voll" : "Protokoll";
+  }
+  $("noteChoice").addEventListener("click", event => {
+    const b = event.target.closest("[data-note-kind]");
+    if (b && noteRequest?.forced) setNoteChoice(b.dataset.noteKind);
+  });
+
   function closeNoteDialog() {
+    if (noteRequest?.forced) finalAus = null;
     noteRequest = null;
     closeDialog($("noteDialog"));
     renderOwnCalls(); // die Karte zeigt wieder den aktuellen Notizstand
@@ -6704,20 +6731,20 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   // Esc und Klick daneben schließen nicht – nur das Kreuz.
   $("noteDialog").addEventListener("cancel", event => event.preventDefault());
-  $("noteCancel").addEventListener("click", closeNoteDialog);
+  $("noteCancel").addEventListener("click", () => { if (!noteRequest?.forced) closeNoteDialog(); });
 
   $("noteForm").addEventListener("submit", event => {
     event.preventDefault();
     const text = $("noteText").value.trim();
     if (!noteRequest || !text) return syncNoteOk();
-    const { id, send, done } = noteRequest;
+    const { id, send, done, forced, kind } = noteRequest;
 
     withBusy($("noteOk"), async () => {
       setStatus("noteStatus", "Wird gespeichert …");
       cancelNoteSave(id);
       try {
         await pendingAttempts.get(id); // ein eben gezählter Versuch muss zuerst ankommen
-        await send(text);
+        await (forced ? finalSenden(id, kind, text) : send(text));
       } catch (error) {
         return setStatus("noteStatus", "Speichern fehlgeschlagen: " + error.message, true);
       }
@@ -6726,6 +6753,54 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       done?.(id);
     });
   });
+
+  /* --- 5. Versuch: nach dem Auflegen Pflichtfenster ---
+     Der Anruf startet über den tel:-Link, Office geht dabei in den Hintergrund. Sobald Office
+     wieder vorne ist (aufgelegt), kommt das Fenster – nie während des Telefonats. */
+  let finalAus = null; // { id, at, weg }
+
+  function finalWarten(id) {
+    finalAus = { id: String(id), at: Date.now(), weg: false };
+  }
+
+  function finalFragen() {
+    if (!finalAus || noteRequest) return;
+    const call = findCall(finalAus.id);
+    if (!call || !state.finalDial.has(finalAus.id)) { finalAus = null; return; }
+    openNoteDialog(call, "R_TA_kK", { value: noteDraft(call), forced: true,
+      done: () => toast(findCall(call.id) ? "Gespeichert." : "Kontakt zurückgegeben ✓") });
+  }
+
+  function finalSenden(id, kind, note) {
+    return kind === "R_TA_kK"
+      ? api(`/calls/${id}/attempt`, "POST", { protocol: note })
+      : api(`/calls/${id}/close`, "POST", { result: kind, protocol: note });
+  }
+
+  // Erst fragen, wenn Office nach dem Anruf wieder vorne ist – und frühestens 8 s nach dem Wählen,
+  // damit eine „Anrufen?“-Rückfrage des Geräts das Fenster nicht schon vorher auslöst.
+  function finalPruefen() {
+    if (!finalAus || !finalAus.weg || document.hidden) return;
+    const rest = 8000 - (Date.now() - finalAus.at);
+    if (rest > 0) return void setTimeout(finalPruefen, rest + 50);
+    finalFragen();
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (!finalAus) return;
+    if (document.hidden) finalAus.weg = true;
+    else setTimeout(finalPruefen, 600);
+  });
+  window.addEventListener("blur", () => { if (finalAus) finalAus.weg = true; });
+  window.addEventListener("focus", () => setTimeout(finalPruefen, 600));
+
+  // Wurde Office während des 5. Anrufs neu geladen: Fenster direkt beim Öffnen der Telefonliste
+  function finalNachLaden() {
+    if (state.role !== "employee" || noteRequest || finalAus) return;
+    const id = [...state.finalDial][0];
+    if (!id || !findCall(id)) return;
+    finalAus = { id, at: 0, weg: true };
+    setTimeout(finalFragen, 600);
+  }
 
   function askReturn(call, result) {
     const id = String(call.id);
@@ -7201,6 +7276,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         pruneCallStore();
         state.callsLoaded = true;
         renderOwnCalls();
+        finalNachLaden();
       }
     } catch (error) {
       console.error(error);
