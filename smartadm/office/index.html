@@ -6758,10 +6758,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   /* --- 5. Versuch: nach dem Auflegen Pflichtfenster ---
      Der Anruf startet über den tel:-Link, Office geht dabei in den Hintergrund. Sobald Office
      wieder vorne ist (aufgelegt), kommt das Fenster – nie während des Telefonats. */
-  let finalAus = null; // { id, at, weg }
+  let finalAus = null; // { id, at }
 
   function finalWarten(id) {
-    finalAus = { id: String(id), at: Date.now(), weg: false };
+    finalAus = { id: String(id), at: Date.now() };
   }
 
   function finalFragen() {
@@ -6778,28 +6778,25 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       : api(`/calls/${id}/close`, "POST", { result: kind, protocol: note });
   }
 
-  // Erst fragen, wenn Office nach dem Anruf wieder vorne ist – und frühestens 8 s nach dem Wählen,
-  // damit eine „Anrufen?“-Rückfrage des Geräts das Fenster nicht schon vorher auslöst.
+  // Frühestens 2 Minuten nach dem Wählen fragen – Sasi ist während des Gesprächs oft in Office
+  // (Skript, „Termin buchen“). Nie, solange ein anderes Fenster offen ist oder Office im Hintergrund liegt.
+  const FINAL_WARTEN_MS = 2 * 60 * 1000;
   function finalPruefen() {
-    if (!finalAus || !finalAus.weg || document.hidden) return;
-    const rest = 8000 - (Date.now() - finalAus.at);
-    if (rest > 0) return void setTimeout(finalPruefen, rest + 50);
+    if (!finalAus || document.hidden) return;
+    if (Date.now() - finalAus.at < FINAL_WARTEN_MS) return;
+    if (document.querySelector("dialog[open]")) return;
     finalFragen();
   }
-  document.addEventListener("visibilitychange", () => {
-    if (!finalAus) return;
-    if (document.hidden) finalAus.weg = true;
-    else setTimeout(finalPruefen, 600);
-  });
-  window.addEventListener("blur", () => { if (finalAus) finalAus.weg = true; });
+  document.addEventListener("visibilitychange", () => { if (finalAus && !document.hidden) setTimeout(finalPruefen, 600); });
   window.addEventListener("focus", () => setTimeout(finalPruefen, 600));
+  setInterval(finalPruefen, 15000);
 
   // Wurde Office während des 5. Anrufs neu geladen: Fenster direkt beim Öffnen der Telefonliste
   function finalNachLaden() {
     if (state.role !== "employee" || noteRequest || finalAus) return;
     const id = [...state.finalDial][0];
     if (!id || !findCall(id)) return;
-    finalAus = { id, at: 0, weg: true };
+    finalAus = { id, at: 0 };
     setTimeout(finalFragen, 600);
   }
 
