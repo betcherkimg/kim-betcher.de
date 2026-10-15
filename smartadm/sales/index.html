@@ -7613,10 +7613,30 @@ function awArchivZu(t){
   return AUSWERTUNG.find(function(a){ return awSchluessel(a) === s; }) || null;
 }
 
-function folgeOhneErgebnis(){
+// Nachgefragt wird nur für Folgetermine ab Einführung der Abfrage – ältere hast du schon nachgetragen.
+var FOLGE_AB = "2026-10-14";
+
+function folgeKundenSchluessel(t){
+  return String(t.kunde || "").toLowerCase().replace(/[^a-z0-9äöüß]/g, "");
+}
+
+// Gibt es zum selben Kunden einen späteren Termin am oder nach dem Folgetermin,
+// ist der Folgetermin schon als eigener Termin erfasst.
+function folgeAlsTerminErfasst(t){
+  var k = folgeKundenSchluessel(t);
+  if(!k || !t.wv) return null;
+  var treffer = AUSWERTUNG.filter(function(a){
+    return a !== t && awSchluessel(a) !== awSchluessel(t) && folgeKundenSchluessel(a) === k && (a.datum || "") >= t.wv;
+  }).sort(function(a, b){ return String(a.datum).localeCompare(String(b.datum)); });
+  return treffer[0] || null;
+}
+
+function folgeOhneErgebnis(alle){
   var heute = heuteIso();
-  return AUSWERTUNG.filter(function(t){ return t.status === "folgetermin" && t.wv && t.wv < heute; })
-    .sort(function(a, b){ return String(a.wv).localeCompare(String(b.wv)); });
+  return AUSWERTUNG.filter(function(t){
+    return t.status === "folgetermin" && t.wv && t.wv < heute && !folgeAlsTerminErfasst(t)
+      && (alle || t.wv >= FOLGE_AB);
+  }).sort(function(a, b){ return String(a.wv).localeCompare(String(b.wv)); });
 }
 
 function folgeAnstehend(){
@@ -7648,19 +7668,23 @@ function folgeErgebnisseHtml(t){
 function folgeZeichnen(ziel, treffer){
   var heute = heuteIso();
   var offen = awGefiltert(folgeOhneErgebnis());
+  var aeltere = awGefiltert(folgeOhneErgebnis(true).filter(function(t){ return t.wv < FOLGE_AB; }));
+  var alsTermin = awGefiltert(AUSWERTUNG.filter(function(t){
+    return t.status === "folgetermin" && t.wv && t.wv < heute && folgeAlsTerminErfasst(t);
+  }));
   var kommend = awGefiltert(folgeAnstehend());
   var verlauf = folgeVerlauf().filter(function(x){ return awGefiltert([x.t]).length; });
   treffer.textContent = kommend.length + " anstehend"
     + (offen.length ? " · " + offen.length + " ohne Ergebnis" : "")
     + (verlauf.length ? " · " + verlauf.length + " erledigt" : "");
 
-  function zeile(t, mitKnopf){
+  function zeile(t, mitKnopf, leise){
     var tage = Math.round((new Date(t.wv) - new Date(heute)) / 86400000);
     var kennung = "fo-" + awSchluessel(t);
     var auf = !!awOffen[kennung];
     var frist = mitKnopf ? (Math.abs(tage) === 1 ? "gestern" : "vor " + Math.abs(tage) + " Tagen")
                          : (tage === 0 ? "heute" : tage === 1 ? "morgen" : "in " + tage + " Tagen");
-    return '<div class="aw-zeile' + (mitKnopf ? " folge-offen" : "") + '">'
+    return '<div class="aw-zeile' + (mitKnopf && !leise ? " folge-offen" : "") + '">'
          +   '<div class="aw-folge-kopfzeile">'
          +   '<button type="button" class="aw-kopf" data-aw-klapp="' + esc(kennung) + '" aria-expanded="' + auf + '">'
          +     '<svg class="ab-chev" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true" '
@@ -7672,7 +7696,7 @@ function folgeZeichnen(ziel, treffer){
          +       '<span class="aw-meta">Folgetermin ' + esc(datumKurz(t.wv))
          +         (t.bma ? ' · ' + esc(t.bma) : '') + ' · erster Termin ' + esc(datumKurz(t.datum)) + '</span>'
          +     '</span>'
-         +     '<span class="aw-frist' + (mitKnopf ? " faellig" : "") + '">' + frist + '</span>'
+         +     '<span class="aw-frist' + (mitKnopf && !leise ? " faellig" : "") + '">' + frist + '</span>'
          +   '</button>'
          +   (mitKnopf ? '<button type="button" class="btn aw-folge-knopf" data-folge-eintragen="' + esc(awSchluessel(t)) + '">Ergebnis eintragen</button>' : '')
          +   '</div>'
@@ -7694,6 +7718,18 @@ function folgeZeichnen(ziel, treffer){
   html += '<p class="aw-abschnitt">Anstehend</p>'
        + (kommend.length ? '<div class="zeilen">' + kommend.map(function(t){ return zeile(t, false); }).join("") + '</div>'
                          : '<p class="leer-hinweis">Keine Folgetermine geplant</p>');
+  if(alsTermin.length){
+    html += '<p class="aw-abschnitt">Als eigener Termin erfasst</p>'
+         + alsTermin.map(function(t){
+             var n = folgeAlsTerminErfasst(t);
+             return '<div class="aw-folge-eintrag"><span class="aw-verlauf-kopf"><span class="aw-name">' + esc(terminKundenText(t)) + '</span>'
+                  + '<span>Folgetermin ' + esc(datumKurz(t.wv)) + ' \u2192 Termin vom ' + esc(datumKurz(n.datum)) + '</span></span></div>';
+           }).join("");
+  }
+  if(aeltere.length){
+    html += '<p class="aw-abschnitt">Ältere ohne Ergebnis (keine Nachfrage)</p><div class="zeilen">'
+         + aeltere.map(function(t){ return zeile(t, true, true); }).join("") + '</div>';
+  }
   if(verlauf.length){
     html += '<p class="aw-abschnitt">Erledigt</p>'
          + verlauf.slice(0, 100).map(function(x){
