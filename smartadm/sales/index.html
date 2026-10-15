@@ -7838,6 +7838,8 @@ function folgeNachfragen(){
 var folgeUhr = null;
 function folgeSpaeterPruefen(){ clearTimeout(folgeUhr); folgeUhr = setTimeout(folgeNachfragen, 900); }
 document.addEventListener("visibilitychange", function(){ if(!document.hidden) folgeSpaeterPruefen(); });
+// Auch wenn Sales den ganzen Tag offen bleibt: regelmäßig nach Fälligem schauen
+setInterval(function(){ if(!document.hidden) folgeNachfragen(); }, 5 * 60 * 1000);
 
 function folgeSchliessen(spaeterMerken){
   var t = AUSWERTUNG.find(function(a){ return awSchluessel(a) === folgeAktuell; });
