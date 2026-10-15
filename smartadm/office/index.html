@@ -870,7 +870,6 @@ td { border-bottom-color: var(--line); }
 #noteStatus { margin: 0; min-height: 0; }
 #noteStatus:empty { display: none; }
 .note-actions { display: flex; justify-content: space-between; align-items: center; padding-top: 2px; }
-.note-actions.only-ok { justify-content: flex-end; }
 .note-choice { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border-radius: 14px; background: var(--ground); }
 .note-choice[hidden] { display: none; }
 .note-choice button { border: 0; border-radius: 10px; padding: 9px 6px; background: transparent; font: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink-soft); }
@@ -1288,6 +1287,47 @@ body.my-editing .my-widget { outline: 2px dashed color-mix(in srgb, var(--accent
   body[data-office-role="employee"] .btn { min-height: 44px; }
   .my-greet { font-size: 22px; }
 }
+
+/* ===== 5. Versuch: Ergebnisleiste ===== */
+.final-bar { display: none; }
+body.final-modus .final-bar:not([hidden]) {
+  display: grid; gap: 8px; position: fixed; z-index: 60; left: 0; right: 0; bottom: 0;
+  padding: 8px 10px calc(10px + env(safe-area-inset-bottom, 0px));
+  background: rgba(255,255,255,.98); border-top: 1px solid var(--line); backdrop-filter: blur(12px);
+  box-shadow: 0 -8px 30px rgba(29,39,51,.12);
+}
+body.final-modus .tabbar, body.final-modus .more-sheet { display: none !important; }
+.final-strip { font-size: 12.5px; color: var(--ink-soft); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.final-strip b { color: var(--ink); font-weight: 600; }
+.final-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.final-btn { min-height: 52px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: 14.5px; font-weight: 600; padding: 6px 4px; }
+.final-btn.kk { background: var(--ground); }
+.final-btn.mt { background: var(--gruen); border-color: var(--gruen); color: #fff; }
+.final-bar.sheet-open .final-strip, .final-bar.sheet-open .final-buttons { display: none; }
+.final-sheet { display: grid; gap: 10px; }
+.final-sheet[hidden] { display: none; }
+.final-sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.final-sheet-head strong { font-size: 18px; letter-spacing: -.01em; }
+.final-back { min-height: 38px !important; padding: 6px 14px; }
+.final-choice { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border-radius: 14px; background: var(--ground); }
+.final-choice button { border: 0; border-radius: 10px; padding: 9px 4px; background: transparent; font: inherit; font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+.final-choice button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(29,39,51,.15); }
+#finalText { width: 100%; min-height: 96px; padding: 11px 13px; resize: vertical; border: 1.5px solid var(--line); border-radius: 14px; background: var(--ground); font: inherit; font-size: 16px; line-height: 1.45; color: var(--ink); }
+#finalText:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+#finalStatus:empty { display: none; }
+.final-send { min-height: 48px; width: 100%; }
+body.final-modus .content { padding-bottom: calc(150px + env(safe-area-inset-bottom, 0px)) !important; }
+body.final-modus #toast { bottom: calc(150px + env(safe-area-inset-bottom, 0px)) !important; }
+body.final-modus .sidebar .nav { opacity: .35; pointer-events: none; }
+.call-card.is-locked, .swipe-wrap.is-locked { opacity: .38; pointer-events: none; filter: grayscale(.4); }
+.call-card.is-final { box-shadow: 0 0 0 2px var(--accent), var(--shadow); }
+@media (min-width: 761px) {
+  body.final-modus .final-bar:not([hidden]) {
+    left: auto; right: 24px; bottom: 20px; width: min(560px, calc(100vw - 48px));
+    border: 1px solid var(--line); border-radius: 20px; padding: 12px 14px;
+  }
+}
+html[data-theme="dark"] body.final-modus .final-bar:not([hidden]) { background: rgba(27,33,40,.98); }
 
 /* ===== Dunkelmodus ===== */
 .theme-toggle { width: 38px; height: 38px; padding: 0; display: inline-grid; place-items: center; }
@@ -2432,11 +2472,6 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             <form id="noteForm" novalidate>
               <strong id="noteTitle">Infos?</strong>
               <span id="noteWho"></span>
-              <div class="note-choice" id="noteChoice" role="group" aria-label="Ergebnis" hidden>
-                <button type="button" data-note-kind="R_TA_kK" aria-pressed="true">Nicht erreicht</button>
-                <button type="button" data-note-kind="R_TA_mT" aria-pressed="false">Mit Termin</button>
-                <button type="button" data-note-kind="R_TA_oT" aria-pressed="false">Ohne Termin</button>
-              </div>
               <textarea id="noteText" rows="4" maxlength="2000" placeholder="Protokoll" aria-labelledby="noteTitle"></textarea>
               <div id="noteStatus" class="status-text" aria-live="polite"></div>
               <div class="note-actions">
@@ -2735,6 +2770,26 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   <button class="tab" type="button" data-page="zeiten"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="13" height="13" rx="2"/><path d="M7 3v4M13 3v4M3.5 10h13"/><circle cx="17" cy="16.5" r="4.2"/><path d="M17 14.6v2l1.3 1"/></svg><span>Zeiten</span></button>
   <button class="tab" type="button" id="tabMore" aria-expanded="false" aria-controls="moreSheet"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Mehr</span></button>
 </nav>
+<!-- 5. Versuch: Ergebnisleiste statt Navigation -->
+<div class="final-bar" id="finalBar" data-role="employee" hidden>
+  <div class="final-sheet" id="finalSheet" hidden>
+    <div class="final-sheet-head"><strong id="finalSheetTitle">Nicht erreicht</strong><button class="btn ghost final-back" type="button" id="finalBack">Zurück</button></div>
+    <div class="final-choice" id="finalChoice" role="group" aria-label="Ergebnis ändern">
+      <button type="button" data-final-kind="R_TA_kK" aria-pressed="true">Nicht erreicht</button>
+      <button type="button" data-final-kind="R_TA_oT" aria-pressed="false">Ohne Termin</button>
+      <button type="button" data-final-kind="R_TA_mT" aria-pressed="false">Mit Termin</button>
+    </div>
+    <textarea id="finalText" rows="3" maxlength="2000" aria-labelledby="finalSheetTitle"></textarea>
+    <div id="finalStatus" class="status-text" aria-live="polite"></div>
+    <button class="btn primary final-send" type="button" id="finalSend" disabled>Abschicken</button>
+  </div>
+  <div class="final-strip">5. Versuch · <b id="finalWho"></b></div>
+  <div class="final-buttons" id="finalButtons">
+    <button type="button" class="final-btn kk" data-final-kind="R_TA_kK">Nicht erreicht</button>
+    <button type="button" class="final-btn ot" data-final-kind="R_TA_oT">Ohne Termin</button>
+    <button type="button" class="final-btn mt" data-final-kind="R_TA_mT">Mit Termin</button>
+  </div>
+</div>
 <div class="more-sheet" id="moreSheet" data-role="employee" hidden>
   <div class="more-panel" role="menu" id="moreList"></div>
 </div>
@@ -3159,6 +3214,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   function showPage(pageId) {
     if (!$(pageId)) return;
+    // Während des 5. Versuchs bleibt die Telefonliste offen, bis das Ergebnis gewählt ist
+    if (pageId !== "telefon" && document.body.classList.contains("final-modus")) pageId = "telefon";
     $$(".nav button").forEach(b => b.classList.toggle("active", b.dataset.page === pageId));
     syncTabbar(pageId);
     if (typeof closeMoreSheet === "function" && !$("moreSheet").hidden) closeMoreSheet();
@@ -6528,7 +6585,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const open = state.callExpanded.has(String(c.id));
     const last = c.attempt_log.at(-1);
     const note = noteDraft(c);
-    return `<div class="call-card is-held${open ? " is-open" : ""}" data-call="${c.id}">
+    return `<div class="call-card is-held${open ? " is-open" : ""}${finalOffen() ? " is-locked" : ""}" data-call="${c.id}">
       ${callSummaryHtml(c, true, open)}
       ${open ? `<div class="cc-body">
         <dl class="cc-facts">
@@ -6556,7 +6613,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   function callCardHtml(c) {
     const id = String(c.id);
-    const open = state.callExpanded.has(id);
+    const finalId = finalOffen();
+    const isFinal = finalId === id;
+    const locked = Boolean(finalId) && !isFinal;
+    const open = isFinal || (!locked && state.callExpanded.has(id));
     const running = state.finalDial.has(id);
     const phones = c.phones.map((p, i) => c.bad_phones.includes(p)
       ? `<span class="phone-group">
@@ -6571,12 +6631,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const script = `<button class="btn ghost" type="button" data-script-toggle aria-expanded="${scriptOpen}">${ICONS.script}Skript</button>
       <button class="btn ghost" type="button" data-boss-note>+ Notiz</button>`;
     const help = running
-      ? "Letzter Versuch läuft. Niemanden erreicht? Dann „Nicht erreicht“ wählen."
+      ? "5. Versuch läuft. Nach dem Auflegen unten das Ergebnis wählen."
       : isLastAttempt(c)
         ? "Der nächste Anruf ist der letzte Versuch."
         : "Jeder Anruf zählt automatisch als Versuch.";
 
-    return swipeWrap(c, `<div class="call-card${open ? " is-open" : ""}" data-call="${c.id}">
+    return swipeWrap(c, `<div class="call-card${open ? " is-open" : ""}${locked ? " is-locked" : ""}${isFinal ? " is-final" : ""}" data-call="${c.id}">
       ${callSummaryHtml(c, false, open)}
       ${open ? `<div class="cc-body">
         ${callBriefing(c) ? `<div class="cc-text"><b>Hinweis</b>${esc(callBriefing(c))}</div>` : ""}
@@ -6590,12 +6650,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             placeholder="z. B. Mailbox, erreichbar ab 17 Uhr">${esc(noteDraft(c))}</textarea>
           <small id="note-hint-${c.id}">${noteHint(c.id)}</small>
         </div>
-        <div class="cc-actions">
+        ${isFinal ? "" : `<div class="cc-actions">
           <button class="btn good" type="button" data-call-action="R_TA_mT">Mit Termin</button>
           <button class="btn ghost" type="button" data-call-action="R_TA_oT">Ohne Termin</button>
-          ${running ? '<button class="btn ghost" type="button" data-call-action="R_TA_kK">Nicht erreicht</button>' : ""}
           <button class="btn quiet" type="button" data-hold-action="hold">Halten</button>
-        </div>
+        </div>`}
       </div>` : ""}
     </div>`);
   }
@@ -6618,6 +6677,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const active = host.contains(document.activeElement) && document.activeElement.id ? document.activeElement : null;
     const caret = active && "selectionStart" in active ? [active.selectionStart, active.selectionEnd] : null;
     host.innerHTML = heldHtml + openHtml;
+    finalAnwenden();
     const again = active && $(active.id);
     if (again) {
       again.focus({ preventScroll: true });
@@ -6689,21 +6749,16 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
      Lässt sich nicht wegklicken: Der Haken geht erst mit mindestens einem Zeichen,
      das Kreuz bricht ab, ohne etwas zu speichern. */
 
-  const NOTE_TITLES = { hold: "Halten?", R_TA_oT: "Kein Termin?", R_TA_mT: "Infos?", R_TA_kK: "Nicht erreicht?", final: "5. Versuch – wie lief’s?" };
+  const NOTE_TITLES = { hold: "Halten?", R_TA_oT: "Kein Termin?", R_TA_mT: "Infos?", R_TA_kK: "Nicht erreicht?" };
   let noteRequest = null; // { id, kind, send, done } solange das Fenster offen ist
 
   const syncNoteOk = () => ($("noteOk").disabled = !$("noteText").value.trim());
 
-  function openNoteDialog(call, kind, { value = "", send, done, forced = false }) {
+  function openNoteDialog(call, kind, { value = "", send, done }) {
     // Das Fenster liegt in der Telefonliste – nie auf einer verdeckten Seite öffnen (sonst blockiert es alles unsichtbar)
     if (!$("telefon").classList.contains("active")) showPage("telefon");
-    noteRequest = { id: String(call.id), kind, send, done, forced };
-    // Nach dem 5. Versuch muss ein Ergebnis her – kein Abbrechen, Auswahl statt Kreuz
-    $("noteCancel").hidden = forced;
-    $("noteChoice").hidden = !forced;
-    document.querySelector("#noteDialog .note-actions").classList.toggle("only-ok", forced);
-    if (forced) setNoteChoice("R_TA_kK");
-    setText("noteTitle", NOTE_TITLES[forced ? "final" : kind]);
+    noteRequest = { id: String(call.id), kind, send, done };
+    setText("noteTitle", NOTE_TITLES[kind]);
     setText("noteWho", call.customer_name);
     $("noteText").value = value;
     setStatus("noteStatus", "");
@@ -6711,16 +6766,6 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     openDialog($("noteDialog"));
     $("noteText").focus();
   }
-
-  function setNoteChoice(kind) {
-    if (noteRequest) noteRequest.kind = kind;
-    $$("#noteChoice [data-note-kind]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.noteKind === kind)));
-    $("noteText").placeholder = kind === "R_TA_kK" ? "Kurze Notiz zum Kunden, z. B. nie erreicht, Mailbox voll" : "Protokoll";
-  }
-  $("noteChoice").addEventListener("click", event => {
-    const b = event.target.closest("[data-note-kind]");
-    if (b && noteRequest?.forced) setNoteChoice(b.dataset.noteKind);
-  });
 
   function closeNoteDialog() {
     noteRequest = null;
@@ -6736,20 +6781,20 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   // Esc und Klick daneben schließen nicht – nur das Kreuz.
   $("noteDialog").addEventListener("cancel", event => event.preventDefault());
-  $("noteCancel").addEventListener("click", () => { if (!noteRequest?.forced) closeNoteDialog(); });
+  $("noteCancel").addEventListener("click", closeNoteDialog);
 
   $("noteForm").addEventListener("submit", event => {
     event.preventDefault();
     const text = $("noteText").value.trim();
     if (!noteRequest || !text) return syncNoteOk();
-    const { id, send, done, forced, kind } = noteRequest;
+    const { id, send, done } = noteRequest;
 
     withBusy($("noteOk"), async () => {
       setStatus("noteStatus", "Wird gespeichert …");
       cancelNoteSave(id);
       try {
         await versucheAbwarten([pendingAttempts.get(id)]); // ein eben gezählter Versuch muss zuerst ankommen
-        await (forced ? finalSenden(id, kind, text) : send(text));
+        await send(text);
       } catch (error) {
         return setStatus("noteStatus", "Speichern fehlgeschlagen: " + error.message, true);
       }
@@ -6759,26 +6804,97 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     });
   });
 
-  /* --- 5. Versuch: Pflichtfenster beim nächsten Schritt ---
-     Nach dem 5. Anruf passiert erst einmal nichts (sie telefoniert ja vielleicht noch).
-     Tippt sie danach auf eine Nummer oder öffnet einen anderen Kontakt, kommt vorher das
-     Fenster – ohne Abbrechen. Von Hand geht es jederzeit über „Nicht erreicht“ auf der Karte. */
+  /* --- 5. Versuch: Abschluss-Leiste ---
+     Mit dem Tipp auf die Nummer beim 5. Versuch wird die untere Leiste zur Ergebnisleiste
+     (Nicht erreicht · Ohne Termin · Mit Termin). Andere Kunden und Seiten sind so lange gesperrt.
+     Kein Fenster, kein Timer: Leiste und Notizfeld gehören zum normalen Bildschirm. */
+  const FINAL_LABELS = { R_TA_kK: "Nicht erreicht", R_TA_oT: "Ohne Termin", R_TA_mT: "Mit Termin" };
+  const FINAL_PLACEHOLDER = {
+    R_TA_kK: "Kurze Notiz, z. B. 5x Mailbox. Willst du ihn behalten, schreib es dazu.",
+    R_TA_oT: "Warum kein Termin? Kurz notieren.",
+    R_TA_mT: "Infos zum Termin"
+  };
+  const finalUi = { id: null, kind: null, busy: false };
+
   function finalOffen() {
+    if (state.role !== "employee") return null;
     return [...state.finalDial].find(id => findCall(id)) || null;
   }
 
-  function finalFragen(id) {
+  function finalAnwenden() {
+    const id = finalOffen();
+    const war = finalUi.id;
+    finalUi.id = id;
+    document.body.classList.toggle("final-modus", Boolean(id));
+    $("finalBar").hidden = !id;
+    if (!id) { finalSheet(null); return; }
     const call = findCall(id);
-    if (!call || noteRequest) return;
-    openNoteDialog(call, "R_TA_kK", { value: noteDraft(call), forced: true,
-      done: () => toast(findCall(call.id) ? "Gespeichert." : "Kontakt zurückgegeben ✓") });
+    setText("finalWho", call.customer_name);
+    if (!$("telefon").classList.contains("active")) showPage("telefon");
+    if (war !== id) {
+      finalSheet(null);
+      // Karte nach oben holen, sobald der Modus startet
+      requestAnimationFrame(() => document.querySelector(`[data-call="${id}"]`)?.scrollIntoView({ block: "start", behavior: "smooth" }));
+    }
   }
 
-  function finalSenden(id, kind, note) {
-    return kind === "R_TA_kK"
-      ? api(`/calls/${id}/attempt`, "POST", { protocol: note })
-      : api(`/calls/${id}/close`, "POST", { result: kind, protocol: note });
+  function finalSheet(kind) {
+    finalUi.kind = kind;
+    const sheet = $("finalSheet");
+    sheet.hidden = !kind;
+    $("finalBar").classList.toggle("sheet-open", Boolean(kind));
+    if (!kind) { setStatus("finalStatus", ""); return; }
+    const call = findCall(finalUi.id);
+    $$("#finalChoice [data-final-kind]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.finalKind === kind)));
+    setText("finalSheetTitle", FINAL_LABELS[kind]);
+    $("finalText").placeholder = FINAL_PLACEHOLDER[kind];
+    if (document.activeElement !== $("finalText")) $("finalText").value = call ? noteDraft(call) : "";
+    $("finalSend").disabled = !$("finalText").value.trim();
+    setStatus("finalStatus", "");
   }
+
+  $("finalBar").addEventListener("click", event => {
+    const b = event.target.closest("[data-final-kind]");
+    if (b && finalUi.id && !finalUi.busy) {
+      const offen = Boolean(finalUi.kind);
+      finalSheet(b.dataset.finalKind);
+      if (!offen) $("finalText").focus({ preventScroll: true });
+    }
+  });
+  $("finalBack").addEventListener("click", () => { if (!finalUi.busy) finalSheet(null); });
+  $("finalText").addEventListener("input", () => {
+    $("finalSend").disabled = !$("finalText").value.trim();
+    if (finalUi.id) setNoteDraft(finalUi.id, $("finalText").value);
+  });
+
+  $("finalSend").addEventListener("click", async () => {
+    const id = finalUi.id, kind = finalUi.kind;
+    const text = $("finalText").value.trim();
+    if (!id || !kind || !text || finalUi.busy) return;
+    finalUi.busy = true;
+    $("finalSend").disabled = true;
+    setStatus("finalStatus", "Wird gespeichert …");
+    cancelNoteSave(id);
+    try {
+      await pendingAttempts.get(id);
+      // „Nicht erreicht“ zählt den 5. Versuch und gibt den Kontakt zurück, sonst Abschluss mit Ergebnis
+      await (kind === "R_TA_kK"
+        ? api(`/calls/${id}/attempt`, "POST", { protocol: text })
+        : api(`/calls/${id}/close`, "POST", { result: kind, protocol: text }));
+    } catch (error) {
+      finalUi.busy = false;
+      $("finalSend").disabled = false;
+      return setStatus("finalStatus", "Speichern fehlgeschlagen: " + error.message, true);
+    }
+    finalUi.busy = false;
+    state.finalDial.delete(id);
+    delete state.callDrafts[id];
+    saveCallStore();
+    $("finalText").value = "";
+    finalSheet(null);
+    toast(kind === "R_TA_kK" ? "Kontakt zurückgegeben ✓" : "Gespeichert ✓");
+    await loadCalls();
+  });
 
   function askReturn(call, result) {
     const id = String(call.id);
@@ -6825,6 +6941,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   $("callList").addEventListener("pointerdown", event => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
+    if (document.body.classList.contains("final-modus")) return; // im 5. Versuch kein Wischen
     const wrap = event.target.closest("[data-swipe-wrap]");
     if (!wrap || event.target.closest("textarea, input, select")) return;
     swipe = { wrap, card: wrap.querySelector(".call-card"), x: event.clientX, y: event.clientY, dx: 0, active: false, pointerId: event.pointerId };
@@ -6879,12 +6996,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const call = findCall(id);
     if (!call) return;
 
-    // Läuft noch ein 5. Versuch ohne Ergebnis: erst das Pflichtfenster, dann weiter
-    const offen = finalOffen();
-    if (offen && (event.target.closest("[data-call-dial]") || (event.target.closest("[data-call-toggle]") && offen !== id))) {
-      event.preventDefault();
-      return finalFragen(offen);
-    }
+    // Während des 5. Versuchs sind andere Kunden gesperrt
+    const finalId = finalOffen();
+    if (finalId && finalId !== id) { event.preventDefault(); return; }
+    if (finalId && event.target.closest("[data-call-toggle], [data-hold-action], [data-call-action]")) return;
 
     if (event.target.closest("[data-call-dial]")) {
       countAttempt(call);
