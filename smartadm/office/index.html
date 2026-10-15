@@ -3117,6 +3117,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       res = await fetch(API + path, {
         method,
         keepalive,
+        signal: keepalive && typeof AbortSignal !== "undefined" && AbortSignal.timeout ? AbortSignal.timeout(20000) : undefined,
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: body === undefined ? undefined : JSON.stringify(body)
       });
@@ -6642,6 +6643,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const DOPPELTIPP_MS = 3000;           // jeder Anruf zählt – nur ein versehentlicher Doppeltipp nicht
   const letzterTipp = new Map();        // Kontakt → Zeitpunkt des letzten Tipps auf eine Nummer
   const pendingAttempts = new Map();    // Kontakt → laufende Speicherung des Versuchs
+  // Auf gezählte Versuche warten – aber nie endlos (hängendes Netz im Telefonat darf die App nicht blockieren)
+  const versucheAbwarten = (liste, ms = 8000) =>
+    Promise.race([Promise.allSettled(liste.filter(Boolean)), new Promise(r => setTimeout(r, ms))]);
 
   // Wird beim Tippen auf eine Nummer aufgerufen. Der Anruf selbst startet über den tel:-Link.
   function countAttempt(call) {
@@ -6653,7 +6657,6 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (isLastAttempt(call)) {
       state.finalDial.add(id);
       saveCallStore();
-      finalWarten(id);
       return;
     }
 
@@ -6718,7 +6721,6 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   });
 
   function closeNoteDialog() {
-    if (noteRequest?.forced) finalAus = null;
     noteRequest = null;
     closeDialog($("noteDialog"));
     renderOwnCalls(); // die Karte zeigt wieder den aktuellen Notizstand
@@ -6744,7 +6746,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       setStatus("noteStatus", "Wird gespeichert …");
       cancelNoteSave(id);
       try {
-        await pendingAttempts.get(id); // ein eben gezählter Versuch muss zuerst ankommen
+        await versucheAbwarten([pendingAttempts.get(id)]); // ein eben gezählter Versuch muss zuerst ankommen
         await (forced ? finalSenden(id, kind, text) : send(text));
       } catch (error) {
         return setStatus("noteStatus", "Speichern fehlgeschlagen: " + error.message, true);
@@ -6755,19 +6757,17 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     });
   });
 
-  /* --- 5. Versuch: nach dem Auflegen Pflichtfenster ---
-     Der Anruf startet über den tel:-Link, Office geht dabei in den Hintergrund. Sobald Office
-     wieder vorne ist (aufgelegt), kommt das Fenster – nie während des Telefonats. */
-  let finalAus = null; // { id, at }
-
-  function finalWarten(id) {
-    finalAus = { id: String(id), at: Date.now() };
+  /* --- 5. Versuch: Pflichtfenster beim nächsten Schritt ---
+     Nach dem 5. Anruf passiert erst einmal nichts (sie telefoniert ja vielleicht noch).
+     Tippt sie danach auf eine Nummer oder öffnet einen anderen Kontakt, kommt vorher das
+     Fenster – ohne Abbrechen. Von Hand geht es jederzeit über „Nicht erreicht“ auf der Karte. */
+  function finalOffen() {
+    return [...state.finalDial].find(id => findCall(id)) || null;
   }
 
-  function finalFragen() {
-    if (!finalAus || noteRequest) return;
-    const call = findCall(finalAus.id);
-    if (!call || !state.finalDial.has(finalAus.id)) { finalAus = null; return; }
+  function finalFragen(id) {
+    const call = findCall(id);
+    if (!call || noteRequest) return;
     openNoteDialog(call, "R_TA_kK", { value: noteDraft(call), forced: true,
       done: () => toast(findCall(call.id) ? "Gespeichert." : "Kontakt zurückgegeben ✓") });
   }
@@ -6776,28 +6776,6 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     return kind === "R_TA_kK"
       ? api(`/calls/${id}/attempt`, "POST", { protocol: note })
       : api(`/calls/${id}/close`, "POST", { result: kind, protocol: note });
-  }
-
-  // Frühestens 2 Minuten nach dem Wählen fragen – Sasi ist während des Gesprächs oft in Office
-  // (Skript, „Termin buchen“). Nie, solange ein anderes Fenster offen ist oder Office im Hintergrund liegt.
-  const FINAL_WARTEN_MS = 2 * 60 * 1000;
-  function finalPruefen() {
-    if (!finalAus || document.hidden) return;
-    if (Date.now() - finalAus.at < FINAL_WARTEN_MS) return;
-    if (document.querySelector("dialog[open]")) return;
-    finalFragen();
-  }
-  document.addEventListener("visibilitychange", () => { if (finalAus && !document.hidden) setTimeout(finalPruefen, 600); });
-  window.addEventListener("focus", () => setTimeout(finalPruefen, 600));
-  setInterval(finalPruefen, 15000);
-
-  // Wurde Office während des 5. Anrufs neu geladen: Fenster direkt beim Öffnen der Telefonliste
-  function finalNachLaden() {
-    if (state.role !== "employee" || noteRequest || finalAus) return;
-    const id = [...state.finalDial][0];
-    if (!id || !findCall(id)) return;
-    finalAus = { id, at: 0 };
-    setTimeout(finalFragen, 600);
   }
 
   function askReturn(call, result) {
@@ -6899,6 +6877,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const call = findCall(id);
     if (!call) return;
 
+    // Läuft noch ein 5. Versuch ohne Ergebnis: erst das Pflichtfenster, dann weiter
+    const offen = finalOffen();
+    if (offen && (event.target.closest("[data-call-dial]") || (event.target.closest("[data-call-toggle]") && offen !== id))) {
+      event.preventDefault();
+      return finalFragen(offen);
+    }
+
     if (event.target.closest("[data-call-dial]")) {
       countAttempt(call);
       // Erst nach dem Start des Anrufs neu zeichnen, sonst verliert der Link sein Ziel.
@@ -6940,7 +6925,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const note = noteDraft(call).trim() || (last ? "Alle Nummern falsch" : "");
     withBusy(button, async () => {
       try {
-        await pendingAttempts.get(id);
+        await versucheAbwarten([pendingAttempts.get(id)]);
         await api(`/calls/${id}/phone`, "POST", { phone, wrong, protocol: note });
         noteSaved(call, note);
         if (last) toast("Kontakt zurückgegeben ✓");
@@ -7269,12 +7254,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         state.callsLoaded = true;
         renderAdminCalls();
       } else if (state.role === "employee") {
-        await Promise.all(pendingAttempts.values()); // eben gezählte Versuche erst ankommen lassen
+        await versucheAbwarten([...pendingAttempts.values()]); // eben gezählte Versuche erst ankommen lassen
         state.calls = asArray(await api("/calls"));
         pruneCallStore();
         state.callsLoaded = true;
         renderOwnCalls();
-        finalNachLaden();
       }
     } catch (error) {
       console.error(error);
