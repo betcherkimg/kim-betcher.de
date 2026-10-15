@@ -1075,6 +1075,24 @@
 
   .aw-frist.faellig{color:var(--gelb);}
 
+  .aw-abschnitt{margin:18px 0 8px;font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);}
+  .aw-abschnitt:first-child{margin-top:0;}
+  .aw-folge-kopfzeile{display:flex;align-items:center;gap:10px;padding-right:14px;}
+  .aw-folge-kopfzeile .aw-kopf{flex:1;min-width:0;}
+  .aw-folge-knopf{flex:none;padding:7px 14px;font-size:13px;}
+  @media (max-width:559px){ .aw-folge-kopfzeile{flex-wrap:wrap;padding-bottom:12px;} .aw-folge-knopf{margin-left:40px;} }
+  .aw-zeile.folge-offen{border-color:var(--gelb);background:var(--gelb-wash);}
+  .aw-folge-eintrag{background:var(--surface);border-radius:12px;box-shadow:var(--shadow);padding:12px 14px;margin-bottom:8px;}
+  .aw-folge-eintrag .aw-verlauf-kopf{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;}
+  .aw-folge-eintrag .aw-name{font-weight:600;color:var(--ink);}
+  .folge-ergebnisse{margin:12px 0 0;}
+  .folge-ergebnisse p.titel{margin:0 0 4px;font-size:13px;font-weight:600;color:var(--lila);}
+  .folge-ergebnis{border-left:3px solid var(--lila-wash);padding:4px 0 4px 10px;margin-bottom:6px;font-size:13.5px;line-height:1.45;white-space:pre-wrap;}
+  .folge-ergebnis b{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);white-space:normal;}
+  .folge-vorher{margin:0 0 14px;font-size:13.5px;color:var(--ink-soft);}
+  .folge-vorher summary{cursor:pointer;font-weight:500;}
+  .folge-vorher p{margin:8px 0 0;white-space:pre-wrap;line-height:1.5;color:var(--ink);background:var(--ground);border-radius:10px;padding:10px 12px;}
+
   .kennzahl-zeile b.warn{color:var(--gelb);}
 
   @media (min-width:700px){
@@ -3119,6 +3137,7 @@
       <button class="aw-reiter-knopf aktiv" data-aw="termine" role="tab">Termine</button>
       <button class="aw-reiter-knopf" data-aw="kunden" role="tab">Kunden</button>
       <button class="aw-reiter-knopf" data-aw="wv" role="tab">Wiedervorlagen</button>
+      <button class="aw-reiter-knopf" data-aw="folge" role="tab">Folgetermine</button>
     </div>
 
     <div class="filter">
@@ -3982,6 +4001,35 @@
   </div></div>
 </div>
 
+<!-- Ergebnis eines Folgetermins -->
+<div class="veil" id="veil-folge" hidden>
+  <div class="sheet sheet-schmal" role="dialog" aria-modal="true" aria-labelledby="folge-title"><div class="sheet-inhalt">
+    <div class="grip"></div>
+    <div class="sheet-head">
+      <h3 id="folge-title">Wie lief der Folgetermin?</h3>
+      <button class="x" id="folge-x" type="button" aria-label="Schlie&szlig;en">Schließen <span aria-hidden="true">&times;</span></button>
+    </div>
+    <p class="sheet-sub" id="folge-sub"></p>
+    <details class="folge-vorher" id="folge-vorher"><summary>Protokoll vom ersten Termin</summary><p id="folge-protokoll"></p></details>
+    <div class="field">
+      <label for="folge-ergebnis" class="pflicht">Ergebnis des Termins</label>
+      <textarea id="folge-ergebnis" placeholder="Was ist beim Folgetermin herausgekommen?"></textarea>
+    </div>
+    <div class="field">
+      <label for="folge-status" class="pflicht">Neuer Status</label>
+      <select id="folge-status"></select>
+    </div>
+    <div class="field" id="feld-folge-wv" hidden>
+      <label for="folge-wv" id="folge-wv-label">Datum</label>
+      <input id="folge-wv" type="date">
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-quiet" id="folge-spaeter" type="button">Sp&auml;ter</button>
+      <button class="btn" id="folge-speichern" type="button">Speichern</button>
+    </div>
+  </div></div>
+</div>
+
 <div class="toast" id="toast" hidden></div>
 
 <!-- Detailansicht -->
@@ -4252,7 +4300,7 @@ function kopfAktualisieren(){
 
   var heute = heuteIso();
   var offen = TERMINE.filter(function(t){
-    return t.wv && t.status !== "erledigt" && t.status !== "storno" && t.wv >= heute;
+    return istWiedervorlage(t) && t.wv >= heute;
   }).length;
 
   document.getElementById("z-termine").textContent = TERMINE.length;
@@ -4338,7 +4386,8 @@ function detailTermin(t){
            + '</ul>'
            + '<p class="protokoll-titel">Protokoll</p>'
            + '<div class="protokoll' + (t.protokoll ? '' : ' leer') + '">'
-           + (t.protokoll ? esc(t.protokoll) : "Kein Protokoll hinterlegt") + '</div>';
+           + (t.protokoll ? esc(t.protokoll) : "Kein Protokoll hinterlegt") + '</div>'
+           + folgeErgebnisseHtml(awArchivZu(t) || t);
   return html;
 }
 
@@ -5063,6 +5112,7 @@ function allesZeichnen(){
   profilAnzeigen();
   zeichnen();
   awZeichnen();
+  folgeSpaeterPruefen();
 }
 
 function neueKennung(praefix){
@@ -6869,7 +6919,7 @@ var WIDGET_ARTEN = {
         + '<path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>',
     zeichnen: function(){
       var heute = heuteIso();
-      var offen = TERMINE.filter(function(t){ return t.wv && t.status !== "erledigt" && t.status !== "storno"; })
+      var offen = TERMINE.filter(istWiedervorlage)
         .sort(function(a,b){ return String(a.wv).localeCompare(String(b.wv)); });
       var faellig = offen.filter(function(t){ return t.wv <= heute; }).length;
       var liste = "";
@@ -7140,10 +7190,13 @@ function awUebernehmen(t){
   var s = awSchluessel(t);
   for(var i = 0; i < AUSWERTUNG.length; i++){
     if(awSchluessel(AUSWERTUNG[i]) === s){
-      var fertig = AUSWERTUNG[i].wvFertig;
+      var alt = AUSWERTUNG[i];
       AUSWERTUNG[i] = {id:t.id, datum:t.datum, kunde:t.kunde, ort:t.ort, ortTyp:t.ortTyp,
                        bma:t.bma, personen:terminPersonen(t), terminart:terminArt(t), gespraechPersonen:terminGespraechPersonen(t), wv:t.wv, status:t.status, protokoll:t.protokoll,
-                       wvFertig: fertig};
+                       wvFertig: alt.wvFertig};
+      if(alt.wvFertigAm) AUSWERTUNG[i].wvFertigAm = alt.wvFertigAm;
+      if(alt.folgetermine) AUSWERTUNG[i].folgetermine = alt.folgetermine;
+      if(alt.folgeSpaeter && t.status === "folgetermin" && t.wv === alt.wv) AUSWERTUNG[i].folgeSpaeter = alt.folgeSpaeter;
       awSortieren();
       return;
     }
@@ -7241,9 +7294,14 @@ function awKunden(){
   }).sort(function(a, b){ return (b.letzter || "").localeCompare(a.letzter || ""); });
 }
 
+// Folgetermine sind keine Wiedervorlagen – die laufen unter „Folgetermine“.
+function istWiedervorlage(t){
+  return !!t.wv && t.status !== "erledigt" && t.status !== "storno" && t.status !== "folgetermin";
+}
+
 function awWiedervorlagen(){
   return AUSWERTUNG.filter(function(t){
-    return t.wv && !t.wvFertig && t.status !== "erledigt" && t.status !== "storno";
+    return istWiedervorlage(t) && !t.wvFertig;
   }).sort(function(a, b){ return (a.wv || "").localeCompare(b.wv || ""); });
 }
 
@@ -7365,6 +7423,9 @@ function awZeichnen(){
       ? '<div class="zeilen">' + kunden.map(awKundenZeile).join("") + '</div>'
       : '<p class="leer-hinweis">Keine Kunden gefunden</p>';
 
+  }else if(awReiter === "folge"){
+    folgeZeichnen(ziel, treffer);
+
   }else{
     var wv = awGefiltert(awWiedervorlagen());
     var heute = heuteIso();
@@ -7404,10 +7465,11 @@ function awTerminZeile(t){
        +   '</button>'
        +   (offen
             ? '<div class="aw-detail">'
-              + (t.wv ? '<p class="aw-wv">Wiedervorlage: ' + esc(datumKurz(t.wv)) + '</p>' : '')
+              + (t.wv ? '<p class="aw-wv">' + (t.status === "folgetermin" ? "Folgetermin" : "Wiedervorlage") + ': ' + esc(datumKurz(t.wv)) + '</p>' : '')
               + terminZusatzHtml(t)
               + '<p class="protokoll' + (t.protokoll ? '' : ' leer') + '">'
               + (t.protokoll ? esc(t.protokoll) : "Kein Protokoll hinterlegt") + '</p>'
+              + folgeErgebnisseHtml(t)
               + '</div>'
             : '')
        + '</div>';
@@ -7442,6 +7504,7 @@ function awKundenZeile(e){
                        +   '<p class="termin-zusatz">Anwesende: ' + esc(terminKundenText(t)) + '</p>'
                        +   terminZusatzHtml(t)
                        +   (t.protokoll ? '<span class="aw-verlauf-text">' + esc(t.protokoll) + '</span>' : '')
+                       +   folgeErgebnisseHtml(t)
                        + '</div>';
                 }).join("")
               + '</div>'
@@ -7468,7 +7531,7 @@ function awWvAufraeumen(){
 }
 
 function awWvErledigt(){
-  return AUSWERTUNG.filter(function(t){ return t.wv && t.wvFertig; })
+  return AUSWERTUNG.filter(function(t){ return t.wv && t.wvFertig && t.status !== "folgetermin"; })
     .sort(function(a, b){ return String(b.wvFertigAm || b.wv || "").localeCompare(String(a.wvFertigAm || a.wv || "")); });
 }
 
@@ -7537,6 +7600,210 @@ function awWvZeile(t){
        + '</div>';
 }
 
+/* ---------- Folgetermine ---------- */
+
+// Ab dem Tag nach einem Folgetermin wird nach dem Ergebnis und dem neuen Status gefragt.
+// Der Verlauf liegt im Auswertungs-Eintrag (bleibt auch, wenn das Protokoll geleert wird).
+var folgeAktuell = null;
+var folgeSitzungAus = {};
+
+function awArchivZu(t){
+  if(!t) return null;
+  var s = awSchluessel(t);
+  return AUSWERTUNG.find(function(a){ return awSchluessel(a) === s; }) || null;
+}
+
+function folgeOhneErgebnis(){
+  var heute = heuteIso();
+  return AUSWERTUNG.filter(function(t){ return t.status === "folgetermin" && t.wv && t.wv < heute; })
+    .sort(function(a, b){ return String(a.wv).localeCompare(String(b.wv)); });
+}
+
+function folgeAnstehend(){
+  var heute = heuteIso();
+  return AUSWERTUNG.filter(function(t){ return t.status === "folgetermin" && t.wv && t.wv >= heute; })
+    .sort(function(a, b){ return String(a.wv).localeCompare(String(b.wv)); });
+}
+
+function folgeVerlauf(){
+  var liste = [];
+  AUSWERTUNG.forEach(function(t){
+    (t.folgetermine || []).forEach(function(f){ liste.push({t:t, f:f}); });
+  });
+  return liste.sort(function(a, b){ return String(b.f.datum || "").localeCompare(String(a.f.datum || "")); });
+}
+
+function folgeErgebnisseHtml(t){
+  var liste = (t && t.folgetermine) || [];
+  if(!liste.length) return "";
+  return '<div class="folge-ergebnisse"><p class="titel">Folgetermin-Ergebnisse</p>'
+    + liste.map(function(f){
+        var st = statusInfo(f.status);
+        return '<div class="folge-ergebnis"><b>Folgetermin ' + esc(datumKurz(f.datum)) + ' → ' + esc(st.label)
+             + (f.wv ? ' am ' + esc(datumKurz(f.wv)) : '') + '</b>' + esc(f.ergebnis || "") + '</div>';
+      }).join("")
+    + '</div>';
+}
+
+function folgeZeichnen(ziel, treffer){
+  var heute = heuteIso();
+  var offen = awGefiltert(folgeOhneErgebnis());
+  var kommend = awGefiltert(folgeAnstehend());
+  var verlauf = folgeVerlauf().filter(function(x){ return awGefiltert([x.t]).length; });
+  treffer.textContent = kommend.length + " anstehend"
+    + (offen.length ? " · " + offen.length + " ohne Ergebnis" : "")
+    + (verlauf.length ? " · " + verlauf.length + " erledigt" : "");
+
+  function zeile(t, mitKnopf){
+    var tage = Math.round((new Date(t.wv) - new Date(heute)) / 86400000);
+    var kennung = "fo-" + awSchluessel(t);
+    var auf = !!awOffen[kennung];
+    var frist = mitKnopf ? (Math.abs(tage) === 1 ? "gestern" : "vor " + Math.abs(tage) + " Tagen")
+                         : (tage === 0 ? "heute" : tage === 1 ? "morgen" : "in " + tage + " Tagen");
+    return '<div class="aw-zeile' + (mitKnopf ? " folge-offen" : "") + '">'
+         +   '<div class="aw-folge-kopfzeile">'
+         +   '<button type="button" class="aw-kopf" data-aw-klapp="' + esc(kennung) + '" aria-expanded="' + auf + '">'
+         +     '<svg class="ab-chev" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true" '
+         +       'style="transform:rotate(' + (auf ? 90 : 0) + 'deg)">'
+         +       '<path d="M6 3.5 10.5 8 6 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'
+         +     '</svg>'
+         +     '<span class="aw-haupt">'
+         +       '<span class="aw-name">' + esc(terminKundenText(t)) + '</span>'
+         +       '<span class="aw-meta">Folgetermin ' + esc(datumKurz(t.wv))
+         +         (t.bma ? ' · ' + esc(t.bma) : '') + ' · erster Termin ' + esc(datumKurz(t.datum)) + '</span>'
+         +     '</span>'
+         +     '<span class="aw-frist' + (mitKnopf ? " faellig" : "") + '">' + frist + '</span>'
+         +   '</button>'
+         +   (mitKnopf ? '<button type="button" class="btn aw-folge-knopf" data-folge-eintragen="' + esc(awSchluessel(t)) + '">Ergebnis eintragen</button>' : '')
+         +   '</div>'
+         +   (auf
+              ? '<div class="aw-detail">'
+                + terminZusatzHtml(t)
+                + '<p class="protokoll' + (t.protokoll ? '' : ' leer') + '">'
+                + (t.protokoll ? esc(t.protokoll) : "Kein Protokoll hinterlegt") + '</p>'
+                + folgeErgebnisseHtml(t)
+                + '</div>'
+              : '')
+         + '</div>';
+  }
+
+  var html = "";
+  if(offen.length){
+    html += '<p class="aw-abschnitt">Ergebnis fehlt</p><div class="zeilen">' + offen.map(function(t){ return zeile(t, true); }).join("") + '</div>';
+  }
+  html += '<p class="aw-abschnitt">Anstehend</p>'
+       + (kommend.length ? '<div class="zeilen">' + kommend.map(function(t){ return zeile(t, false); }).join("") + '</div>'
+                         : '<p class="leer-hinweis">Keine Folgetermine geplant</p>');
+  if(verlauf.length){
+    html += '<p class="aw-abschnitt">Erledigt</p>'
+         + verlauf.slice(0, 100).map(function(x){
+             var st = statusInfo(x.f.status);
+             return '<div class="aw-folge-eintrag">'
+                  +   '<span class="aw-verlauf-kopf"><span class="aw-name">' + esc(terminKundenText(x.t)) + '</span>'
+                  +     '<span>Folgetermin ' + esc(datumKurz(x.f.datum)) + (x.t.bma ? ' · ' + esc(x.t.bma) : '') + '</span>'
+                  +     '<span class="pill ' + st.klasse + '">' + st.label + (x.f.wv ? ' ' + esc(datumKurz(x.f.wv)) : '') + '</span></span>'
+                  +   '<span class="aw-verlauf-text">' + esc(x.f.ergebnis || "") + '</span>'
+                  + '</div>';
+           }).join("");
+  }
+  ziel.innerHTML = html;
+}
+
+(function(){
+  var sel = document.getElementById("folge-status");
+  sel.innerHTML = '<option value="">Bitte wählen</option>'
+    + STATUS.map(function(x){ return '<option value="' + x.id + '">' + x.label + '</option>'; }).join("");
+  sel.addEventListener("change", folgeWvFeldPruefen);
+})();
+
+function folgeWvFeldPruefen(){
+  var st = document.getElementById("folge-status").value;
+  var mitDatum = st === "wiedervorlage" || st === "folgetermin";
+  document.getElementById("feld-folge-wv").hidden = !mitDatum;
+  document.getElementById("folge-wv-label").textContent = st === "folgetermin" ? "Neuer Folgetermin" : "Wiedervorlage am";
+}
+
+function folgeOeffnen(schluessel){
+  var t = AUSWERTUNG.find(function(a){ return awSchluessel(a) === schluessel; });
+  if(!t) return;
+  folgeAktuell = schluessel;
+  document.getElementById("folge-sub").textContent = terminKundenText(t) + " · Folgetermin am " + datumKurz(t.wv)
+    + (t.bma ? " · " + t.bma : "");
+  document.getElementById("folge-protokoll").textContent = t.protokoll || "Kein Protokoll hinterlegt";
+  document.getElementById("folge-vorher").open = false;
+  document.getElementById("folge-ergebnis").value = "";
+  document.getElementById("folge-status").value = "";
+  document.getElementById("folge-wv").value = "";
+  folgeWvFeldPruefen();
+  oeffnen("veil-folge");
+  document.getElementById("folge-ergebnis").focus();
+}
+
+// Fragt beim Öffnen der App (und wenn sie wieder in den Vordergrund kommt) nach offenen Ergebnissen.
+function folgeNachfragen(){
+  if(document.querySelector(".veil:not([hidden])")) return;
+  var heute = heuteIso();
+  var naechster = folgeOhneErgebnis().find(function(t){
+    return t.folgeSpaeter !== heute && !folgeSitzungAus[awSchluessel(t)];
+  });
+  if(naechster) folgeOeffnen(awSchluessel(naechster));
+}
+var folgeUhr = null;
+function folgeSpaeterPruefen(){ clearTimeout(folgeUhr); folgeUhr = setTimeout(folgeNachfragen, 900); }
+document.addEventListener("visibilitychange", function(){ if(!document.hidden) folgeSpaeterPruefen(); });
+
+function folgeSchliessen(spaeterMerken){
+  var t = AUSWERTUNG.find(function(a){ return awSchluessel(a) === folgeAktuell; });
+  if(t){
+    folgeSitzungAus[folgeAktuell] = true;
+    if(spaeterMerken){ t.folgeSpaeter = heuteIso(); sichern(); }
+  }
+  folgeAktuell = null;
+  schliessen("veil-folge");
+  folgeSpaeterPruefen();
+}
+document.getElementById("folge-x").addEventListener("click", function(){ folgeSchliessen(false); });
+document.getElementById("folge-spaeter").addEventListener("click", function(){
+  folgeSchliessen(true);
+  melden("Ich frage morgen noch einmal nach.");
+});
+
+document.getElementById("folge-speichern").addEventListener("click", function(){
+  var t = AUSWERTUNG.find(function(a){ return awSchluessel(a) === folgeAktuell; });
+  if(!t){ schliessen("veil-folge"); return; }
+  var ergebnis = document.getElementById("folge-ergebnis").value.trim();
+  var status = document.getElementById("folge-status").value;
+  var mitDatum = status === "wiedervorlage" || status === "folgetermin";
+  var wv = mitDatum ? document.getElementById("folge-wv").value : "";
+  if(!ergebnis){ maengel("folge-ergebnis", "Bitte das Ergebnis des Termins eintragen."); return; }
+  if(!status){ maengel("folge-status", "Bitte den neuen Status wählen."); return; }
+  if(mitDatum && !wv){ maengel("folge-wv", "Bitte ein Datum wählen."); return; }
+  if(status === "folgetermin" && wv < heuteIso()){ maengel("folge-wv", "Der neue Folgetermin liegt in der Vergangenheit."); return; }
+
+  var eintrag = {datum:t.wv, ergebnis:ergebnis, status:status, am:new Date().toISOString()};
+  if(wv) eintrag.wv = wv;
+  t.folgetermine = (t.folgetermine || []).concat([eintrag]);
+  t.status = status;
+  t.wv = wv;
+  delete t.folgeSpaeter;
+  if(status === "wiedervorlage"){ t.wvFertig = false; delete t.wvFertigAm; }
+  TERMINE.forEach(function(x){
+    if(awSchluessel(x) !== awSchluessel(t)) return;
+    x.status = status;
+    x.wv = wv;
+  });
+  var s = folgeAktuell;
+  folgeAktuell = null;
+  schliessen("veil-folge");
+  sichern();
+  zeichnen();
+  awZeichnen();
+  if(typeof widgetsZeichnen === "function") widgetsZeichnen();
+  delete folgeSitzungAus[s];
+  melden("Ergebnis gespeichert – Status: " + statusInfo(status).label);
+  folgeSpaeterPruefen();
+});
+
 /* ---------- Bedienung ---------- */
 
 document.addEventListener("click", function(e){
@@ -7556,6 +7823,12 @@ document.addEventListener("click", function(e){
     var kk = klapp.getAttribute("data-aw-klapp");
     awOffen[kk] = !awOffen[kk];
     awZeichnen();
+    return;
+  }
+
+  var folgeKnopf = e.target.closest("[data-folge-eintragen]");
+  if(folgeKnopf){
+    folgeOeffnen(folgeKnopf.getAttribute("data-folge-eintragen"));
     return;
   }
 
@@ -7772,7 +8045,7 @@ document.getElementById("open-termin").addEventListener("click", function(){
   oeffnen("veil-termin");
 });
 
-var FENSTER = ["veil-konflikt","veil-prov-steuer","veil-widget","veil-speicher","veil-profil","veil-bank","veil-bma","veil-termin","veil-detail","veil-frage","veil-prov","veil-prov-archiv"];
+var FENSTER = ["veil-konflikt","veil-prov-steuer","veil-widget","veil-speicher","veil-profil","veil-bank","veil-bma","veil-termin","veil-detail","veil-frage","veil-prov","veil-prov-archiv","veil-folge"];
 
 document.querySelectorAll("[data-close]").forEach(function(el){
   el.addEventListener("click", function(){ schliessen(el.getAttribute("data-close")); });
@@ -7896,7 +8169,7 @@ zeichnen();
   data-clerk-publishable-key="pk_live_Y2xlcmsua2ltLWJldGNoZXIuZGUk"
   src="https://clerk.kim-betcher.de/npm/@clerk/clerk-js@6/dist/clerk.browser.js"></script>
 <script src="synergie.js?v=2"></script>
-<script src="cloud.js?v=2"></script>
+<script src="cloud.js?v=3"></script>
 
 </body>
 </html>

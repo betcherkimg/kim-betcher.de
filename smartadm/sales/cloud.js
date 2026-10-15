@@ -755,7 +755,7 @@
     kunde: "Kunde", datum: "Datum", protokoll: "Protokoll", wv: "Wiedervorlage", status: "Status", ort: "Ort",
     bma: "Bankmitarbeiter", terminart: "Terminart", personen: "Personen", gespraechPersonen: "Gesprächspartner",
     name: "Name", adresse: "Adresse", blz: "BLZ", betreuung: "Betreuung", bank: "Bank", rolle: "Rolle",
-    mail: "E-Mail", telefon: "Telefon", mobil: "Mobil", wvFertig: "Wiedervorlage erledigt", betrag: "Betrag",
+    mail: "E-Mail", telefon: "Telefon", mobil: "Mobil", wvFertig: "Wiedervorlage erledigt", folgetermine: "Folgetermin-Ergebnis", folgeSpaeter: "Folgetermin-Nachfrage", betrag: "Betrag",
     art: "Art", vorname: "Vorname", nachname: "Nachname", strasse: "Straße", plz: "PLZ", vo: "VO-Nummer",
     gebiet: "Gebiet", funktion: "Funktion", anrede: "Anrede", bild: "Profilbild", provSteuer: "Steuersatz"
   };
