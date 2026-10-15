@@ -437,11 +437,15 @@
   }
 
   function h(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
-  function zahl(text){
+  // Punkte sind immer Tausendertrenner (egal wo sie stehen), das Komma ist das Dezimalzeichen.
+  // Nur bei Prozent- und Jahresfeldern gilt ein einzelner Punkt ohne Komma als Dezimalpunkt (7.22).
+  var DEZIMAL_PUNKT = {rendite:1, etfAnteil:1, bankZins:1, jahre:1, rabattMax:1, rabattAbEk:1, kleinZins:1, tilgung:1, mindest:1};
+  function zahl(text, feld){
     var t = String(text == null ? "" : text).trim().replace(/\s/g, "").replace(/€|%/g, "");
     if(t === "") return null;
     if(t.indexOf(",") >= 0) t = t.replace(/\./g, "").replace(",", ".");
-    else if(/^\d{1,3}(\.\d{3})+$/.test(t)) t = t.replace(/\./g, "");
+    else if(DEZIMAL_PUNKT[feld] && (t.match(/\./g) || []).length === 1) t = t;
+    else t = t.replace(/\./g, "");
     var z = parseFloat(t);
     return isNaN(z) ? null : z;
   }
@@ -478,7 +482,6 @@
       else if(document.activeElement !== el) el.value = feldText(k);
     });
     seite.querySelectorAll("[data-verh]").forEach(function(b){ b.setAttribute("aria-pressed", (b.getAttribute("data-verh") === "1") === !!E.verh ? "true" : "false"); });
-    seite.querySelectorAll("[data-rendite]").forEach(function(b){ b.setAttribute("aria-pressed", Math.abs(Number(b.getAttribute("data-rendite")) - E.rendite) < 1e-9 ? "true" : "false"); });
     var jlbMoeglich = !!(S.TARIFE[E.tarif] && S.TARIFE[E.tarif].jlb);
     var jlbZeile = document.getElementById("syn-jlb-zeile");
     jlbZeile.classList.toggle("aus", !jlbMoeglich);
@@ -496,7 +499,7 @@
     var k = el.getAttribute("data-syn");
     if(el.type === "checkbox"){ E[k] = el.checked; return true; }
     if(el.tagName === "SELECT"){ E[k] = k === "kirche" ? Number(el.value) : el.value; return true; }
-    var z = zahl(el.value);
+    var z = zahl(el.value, k);
     if(k === "mindest"){ E.mindest = z == null ? null : Math.min(55, Math.max(25, Math.round(z))); return true; }
     if(z == null) return false;
     var g = GRENZEN[k];
@@ -527,8 +530,6 @@
   seite.addEventListener("click", function(ev){
     var b = ev.target.closest("[data-verh]");
     if(b){ E.verh = b.getAttribute("data-verh") === "1"; formularFuellen(); rechnenUndZeigen(); return; }
-    var r = ev.target.closest("[data-rendite]");
-    if(r){ E.rendite = Number(r.getAttribute("data-rendite")); formularFuellen(); rechnenUndZeigen(); return; }
     var s = ev.target.closest("[data-sicht]");
     if(s){ sicht = s.getAttribute("data-sicht"); schreibenSpeicher(); zeigen(letztes); return; }
   });
