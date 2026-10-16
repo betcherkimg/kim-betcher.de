@@ -2634,7 +2634,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <button class="picker-close" type="button" id="poolImportClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
         </div>
         <div class="form-dialog-body">
-          <p class="form-dialog-hint">Spalten: Anrede, Vorname, Nachname, Ansprachegrund, Telefonnummer, Termin bei, Rückholung – optional Bausparnummer. Die Kontakte landen im Paket ihrer Filiale, nicht direkt in einer Telefonliste. Vor dem Import siehst du, wer schon in Office ist und wer schon Kontakt in Sales hatte.</p>
+          <p class="form-dialog-hint">Spalten: Anrede, Vorname, Nachname, Ansprachegrund, Telnr. 1, Telnr. 2, Termin bei, Rückholung – optional Bausparnummer. Nummern in jedem Format (0151/12345678, +49 151 …). Zeilen ohne Nummer bleiben draußen, gleiche Nummer wird ein Kontakt. Die Kontakte landen im Paket ihrer Filiale, nicht direkt in einer Telefonliste. Vor dem Import siehst du, wer schon in Office ist und wer schon Kontakt in Sales hatte.</p>
           <label class="pi-file"><input type="file" id="poolImportFile" accept=".xlsx,.xls,.csv"><span class="plus" aria-hidden="true">+</span><span id="poolImportFileLabel">Excel-Datei auswählen</span></label>
           <div id="poolImportStatus" class="pi-status" aria-live="polite"></div>
           <div class="field" id="poolImportPlaceField" hidden>
@@ -7663,17 +7663,80 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     }));
   }
 
-  // Spaltenköpfe → Felder (Bausparnummer vor Telefonnummer prüfen – beide enthalten „nummer“)
+  // Spaltenköpfe → Felder. Telefon-Spalten gibt es mehrere (Telnr. 1, Telnr. 2, Telefon, Mobil …).
+  const IMPORT_BSNR = /bauspar|bs-?nr|vertragsn/;
+  const IMPORT_PHONE = /tel|rufnummer|mobil|handy|^fon|phone/;
   const IMPORT_COLUMNS = [
-    ["bsnr", /bauspar|bs-?nr|vertragsn/],
     ["anrede", /^anrede/],
     ["vorname", /^vorname/],
     ["nachname", /^nachname|^name$/],
     ["themen", /ansprache|thema|themen|anlass/],
-    ["telefon", /telefon|rufnummer|^tel\b/],
     ["ort", /termin bei|filiale|paket/],
     ["rueckholung", /r(ü|ue)ckhol|f(ä|ae)llig/]
   ];
+  /* Telefonnummern in jedem üblichen Format lesen: 0151/12345678, 015112345678, 0151 12345678,
+     01511 2345678, +49 151 2345678, 0049 (0)151-2345678, „Tel.: 07361 / 12 34 56“, Excel-Zahl ohne 0 …
+     Ergebnis einheitlich „0151 12345678“ bzw. „07361 123456“. */
+  function phoneVorwahl(digits) {
+    if (/^0(30|40|69|89)/.test(digits)) return 3;
+    if (/^01[5-7]/.test(digits)) return 4;           // Handy: 0151, 0160, 0176 …
+    if (/^0[2-9]\d1/.test(digits)) return 4;         // 0711, 0221, 0201 …
+    if (/^0[2-9]/.test(digits)) return 5;            // 07361, 07366, 07961 …
+    return 0;
+  }
+
+  function phoneNorm(value) {
+    let text = typeof value === "number" ? String(Math.round(value)) : String(value ?? "");
+    if (typeof value === "number" && !text.startsWith("0")) text = (/^49\d{9,}$/.test(text) ? "+" : "0") + text;
+    text = text.replace(/\(\s*0\s*\)/g, " ")          // +49 (0) 151 …
+      .replace(/[^\d+/().\s-]/g, " ")                // Beschriftungen wie „Tel.:“, „mobil“
+      .replace(/^[^\d+]+/, "").trim()
+      .replace(/^00(?=[1-9])/, "+");
+    let groups = text.split(/[\s/().-]+/).filter(Boolean);
+    if (!groups.length) return "";
+    if (groups[0].startsWith("+")) {
+      const all = groups.join("").replace(/\+/g, "");
+      if (!all.startsWith("49")) return "+" + groups.join(" ").replace(/\+/g, "");   // Ausland bleibt international
+      groups[0] = groups[0].replace(/^\+49/, "");
+      if (!groups[0]) groups.shift();
+      if (!groups.length) return "";
+      if (!groups[0].startsWith("0")) groups[0] = "0" + groups[0];
+    }
+    groups = groups.map(g => g.replace(/\D/g, "")).filter(Boolean);
+    let digits = groups.join("");
+    if (!digits.startsWith("0") && digits.length >= 9) { digits = "0" + digits; groups[0] = "0" + groups[0]; }   // führende 0 verloren
+    if (digits.length < 6 || digits.length > 15) return "";
+    if (groups.length >= 2 && groups[0].startsWith("0") && groups[0].length >= 3 && groups[0].length <= 6) {
+      return `${groups[0]} ${groups.slice(1).join("")}`;
+    }
+    const cut = phoneVorwahl(digits);
+    return cut && digits.length > cut + 2 ? `${digits.slice(0, cut)} ${digits.slice(cut)}` : digits;
+  }
+
+  // Eine Zelle kann mehrere Nummern enthalten: „0151 1234567 / 07361 12345“, „… ; …“, „… oder …“
+  function phonesFrom(value) {
+    if (value === null || value === undefined || value === "") return { phones: [], bad: [] };
+    if (typeof value === "number") { const n = phoneNorm(value); return n ? { phones: [n], bad: [] } : { phones: [], bad: [String(value)] }; }
+    const parts = [];
+    const split = part => {
+      for (let i = part.indexOf("/"); i >= 0; i = part.indexOf("/", i + 1)) {
+        const left = part.slice(0, i), right = part.slice(i + 1);
+        if ((left.match(/\d/g) || []).length >= 7 && /^\s*(\+|0)/.test(right) && (right.match(/\d/g) || []).length >= 7) {
+          split(left); split(right); return;
+        }
+      }
+      parts.push(part);
+    };
+    String(value).split(/[\n;,|]+|\s+(?:oder|od\.|und|u\.|bzw\.?|sowie)\s+/i).forEach(p => p.trim() && split(p));
+    const phones = [], bad = [];
+    parts.forEach(p => {
+      if (!/\d/.test(p)) return;
+      const n = phoneNorm(p);
+      if (!n) bad.push(p.trim());
+      else if (!phones.some(x => x.replace(/\D/g, "") === n.replace(/\D/g, ""))) phones.push(n);
+    });
+    return { phones, bad };
+  }
 
   const topicNorm = text => normalizeName(text).replace(/[–—-]/g, " ").replace(/\s+/g, " ").trim();
   const TOPIC_BY_LABEL = new Map(Object.entries(CALL_TOPICS)
@@ -7703,6 +7766,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     return hit ? String(hit.id) : null;
   }
 
+  const digits = phone => String(phone).replace(/\D/g, "");
+
   function importRow(cells, map, index) {
     const raw = key => (map[key] === undefined ? "" : cells[map[key]]);
     const text = key => String(raw(key) ?? "").trim();
@@ -7710,7 +7775,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const salutation = anrede.startsWith("frau") ? "Frau" : anrede.startsWith("herr") ? "Herr" : "";
     const vorname = cleanNamePart(text("vorname"));
     const nachname = cleanNamePart(text("nachname"));
-    const phones = text("telefon").split(/[\n;]+|,(?=\s*\+?\d)/).map(p => p.trim()).filter(p => (p.match(/\d/g) || []).length >= 4);
+    const phones = [];
+    const badPhones = [];
+    asArray(map.phones).forEach(col => {
+      const found = phonesFrom(cells[col]);
+      found.phones.forEach(n => phones.some(x => digits(x) === digits(n)) || phones.push(n));
+      badPhones.push(...found.bad);
+    });
     const topics = [];
     const unknown = [];
     text("themen").split(/[,;\n]+/).map(t => t.trim()).filter(Boolean).forEach(label => {
@@ -7725,19 +7796,18 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       place: importBranch(ort),
       due: importDate(raw("rueckholung")),
       bsnr: text("bsnr").slice(0, 40),
-      errors: [], notes: [], sales: [], on: true
+      errors: [], notes: [], sales: [], on: true, noPhone: !phones.length && !badPhones.length
     };
     if (!row.name) row.errors.push("Name fehlt");
     if (!salutation) row.errors.push("Anrede fehlt");
-    if (!phones.length) row.errors.push("Telefonnummer fehlt");
+    if (badPhones.length) row.errors.push(`Nummer unklar: ${badPhones.join(", ")}`);
+    else if (!phones.length) row.errors.push("Noch keine Nummer");
     if (phones.length > MAX_PHONES) row.errors.push("Mehr als 2 Nummern");
     if (topics.length > MAX_CALL_TOPICS) row.errors.push("Mehr als 3 Themen");
     if (unknown.length) row.notes.push(["warn", `Thema unbekannt: ${unknown.join(", ")}`]);
     if (ort && !row.place) row.notes.push(["warn", `Filiale „${ort}“ nicht gefunden`]);
     return row;
   }
-
-  const digits = phone => String(phone).replace(/\D/g, "");
 
   // Gibt es den Kunden schon in Office (Telefonliste, Archiv) oder in einem Paket?
   function officeTwins(row) {
@@ -7828,7 +7898,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         + rows.map(r => {
           const ok = !r.errors.length;
           const notes = [
-            ...r.errors.map(e => `<span class="chip high">${esc(e)}</span>`),
+            ...r.errors.map(e => `<span class="chip ${e === "Noch keine Nummer" ? "" : "high"}">${esc(e)}</span>`),
             ...r.notes.map(([cls, text]) => `<span class="chip ${cls}">${esc(text)}</span>`),
             ...(r.sales.length ? ['<span class="chip data">Kontakt in Sales</span>', ...r.sales.map(t => `<span>${esc(t)}</span>`)] : [])
           ];
@@ -7875,33 +7945,56 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       const table = XLSX.utils.sheet_to_json(book.Sheets[book.SheetNames[0]], { header: 1, raw: true, defval: "" });
       const head = table.findIndex(r => r.some(c => /nachname/i.test(String(c))));
       if (head < 0) throw new Error("Keine Kopfzeile mit „Nachname“ gefunden.");
-      const map = {};
+      const map = { phones: [] };
       table[head].forEach((cell, i) => {
         const title = String(cell).trim().toLowerCase();
+        if (!title) return;
+        if (IMPORT_BSNR.test(title)) { if (map.bsnr === undefined) map.bsnr = i; return; }
+        if (IMPORT_PHONE.test(title) && !/marketing/.test(title)) { map.phones.push(i); return; }
         const hit = IMPORT_COLUMNS.find(([key, re]) => map[key] === undefined && re.test(title));
         if (hit) map[hit[0]] = i;
       });
-      const missing = [["anrede", "Anrede"], ["vorname", "Vorname"], ["nachname", "Nachname"], ["telefon", "Telefonnummer"]]
+      const missing = [["anrede", "Anrede"], ["vorname", "Vorname"], ["nachname", "Nachname"]]
         .filter(([key]) => map[key] === undefined).map(([, label]) => label);
+      if (!map.phones.length) missing.push("Telefonnummer (z. B. „Telnr. 1“)");
       if (missing.length) throw new Error(`Spalte fehlt: ${missing.join(", ")}`);
 
+      const rows = table.slice(head + 1).filter(r => r.some(c => String(c).trim())).map((cells, i) => importRow(cells, map, i));
+      // Gleiche Nummer = ein Kontakt: Haushalt mit gleichem Nachnamen wird zusammengefasst, Themen aller Personen.
       const seen = new Map();
-      poolImportRows = table.slice(head + 1).filter(r => r.some(c => String(c).trim())).map((cells, i) => importRow(cells, map, i));
+      poolImportRows = [];
+      rows.forEach(r => {
+        const twin = !r.errors.length && r.phones.map(digits).map(n => seen.get(n)).find(Boolean);
+        if (twin && normalizeName(twin.nachname) === normalizeName(r.nachname)) {
+          twin.vorname = `${twin.vorname} und ${r.vorname}`;
+          twin.name = joinName(twin.nachname, twin.vorname);
+          r.topics.forEach(key => twin.topics.includes(key) || twin.topics.push(key));
+          r.phones.forEach(n => twin.phones.some(x => digits(x) === digits(n)) || twin.phones.push(n));
+          if (r.bsnr) twin.bsnr = [twin.bsnr, r.bsnr].filter(Boolean).join(", ").slice(0, 40);
+          if (r.due && (!twin.due || r.due < twin.due)) twin.due = r.due;
+          twin.notes.push(["", `zusammengefasst mit ${r.vorname} (gleiche Nummer)`]);
+          if (twin.topics.length > MAX_CALL_TOPICS && !twin.errors.includes("Mehr als 3 Themen")) twin.errors.push("Mehr als 3 Themen");
+          if (twin.phones.length > MAX_PHONES && !twin.errors.includes("Mehr als 2 Nummern")) twin.errors.push("Mehr als 2 Nummern");
+          return;
+        }
+        if (twin) { r.on = false; r.notes.push(["warn", `Gleiche Nummer wie ${twin.name}`]); }
+        if (!r.errors.length) r.phones.forEach(p => seen.has(digits(p)) || seen.set(digits(p), r));
+        poolImportRows.push(r);
+      });
       poolImportRows.forEach(r => {
+        r.sales = salesTreffer(r, bestand);
         if (r.errors.length) { r.on = false; return; }
         const twins = officeTwins(r);
         if (twins.length) { r.on = false; r.notes.push(["warn", `Schon in Office: ${twins.join(", ")}`]); }
-        const twinRow = r.phones.map(digits).map(n => seen.get(n)).find(Boolean);
-        if (twinRow) { r.on = false; r.notes.push(["warn", `Gleiche Nummer wie ${twinRow.name}`]); }
-        r.phones.forEach(p => seen.has(digits(p)) || seen.set(digits(p), r));
-        r.sales = salesTreffer(r, bestand);
       });
 
-      const fehler = poolImportRows.filter(r => r.errors.length).length;
+      const ohneNummer = poolImportRows.filter(r => r.noPhone).length;
+      const fehler = poolImportRows.filter(r => r.errors.length && !r.noPhone).length;
       const doppelt = poolImportRows.filter(r => !r.errors.length && !r.on).length;
+      const zusammen = rows.length - poolImportRows.length;
       const sales = poolImportRows.filter(r => r.sales.length).length;
       importStatus([
-        ["", `${poolImportRows.length} Zeilen gelesen${fehler ? ` · ${fehler} mit Fehlern` : ""}${doppelt ? ` · ${doppelt} schon vorhanden (abgewählt)` : ""}.`],
+        ["", `${rows.length} Zeilen gelesen${zusammen ? ` · ${zusammen} mit gleicher Nummer zusammengefasst` : ""}${ohneNummer ? ` · ${ohneNummer} noch ohne Nummer (bleiben draußen)` : ""}${fehler ? ` · ${fehler} mit Fehlern` : ""}${doppelt ? ` · ${doppelt} schon vorhanden (abgewählt)` : ""}.`],
         bestand
           ? [sales ? "warn" : "", sales ? `${sales} ${sales === 1 ? "Kunde hatte" : "Kunden hatten"} schon Kontakt in Sales (${esc(bestand.quelle)}) – unten lila markiert.` : `Kein Kunde der Liste taucht in Sales auf (${esc(bestand.quelle)}).`]
           : ["warn", "Sales-Abgleich nicht möglich – auf diesem Gerät sind keine Sales-Daten erreichbar."]
