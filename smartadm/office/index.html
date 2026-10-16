@@ -1319,7 +1319,10 @@ body.final-modus #poolBox { display: none !important; }
 .pi-file .plus { width: 30px; height: 30px; border-radius: 50%; background: var(--ground); display: grid; place-items: center; font-size: 17px; }
 .pi-status { margin: 12px 0; display: grid; gap: 6px; }
 .pi-status:empty { display: none; }
-#poolImportPlaceField { margin: 0 0 12px; max-width: 360px; }
+.pi-fields { display: flex; gap: 12px; flex-wrap: wrap; margin: 0 0 12px; }
+.pi-fields .field { margin: 0; flex: 1 1 240px; max-width: 360px; }
+.pool-owner { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-soft); }
+.pool-owner select { padding: 4px 28px 4px 10px; min-height: 32px; font-size: 13px; border-radius: 10px; width: auto; }
 .pi-rows { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
 .pi-rows:empty { display: none; }
 .pi-row { display: grid; grid-template-columns: 22px minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.6fr) 84px minmax(0, 1.7fr); gap: 10px; align-items: start; padding: 8px 12px; font-size: 13.5px; border-bottom: 1px solid var(--line); cursor: pointer; }
@@ -2637,9 +2640,15 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <p class="form-dialog-hint">Spalten: Anrede, Vorname, Nachname, Ansprachegrund, Telnr. 1, Telnr. 2, Termin bei, Rückholung – optional Bausparnummer. Nummern in jedem Format (0151/12345678, +49 151 …). Zeilen ohne Nummer bleiben draußen, gleiche Nummer wird ein Kontakt. Die Kontakte landen im Paket ihrer Filiale, nicht direkt in einer Telefonliste. Vor dem Import siehst du, wer schon in Office ist und wer schon Kontakt in Sales hatte.</p>
           <label class="pi-file"><input type="file" id="poolImportFile" accept=".xlsx,.xls,.csv"><span class="plus" aria-hidden="true">+</span><span id="poolImportFileLabel">Excel-Datei auswählen</span></label>
           <div id="poolImportStatus" class="pi-status" aria-live="polite"></div>
-          <div class="field" id="poolImportPlaceField" hidden>
-            <label for="poolImportPlace">Paket für Zeilen ohne passende Filiale</label>
-            <select id="poolImportPlace"></select>
+          <div class="pi-fields">
+            <div class="field">
+              <label for="poolImportOwner">Paket für</label>
+              <select id="poolImportOwner"></select>
+            </div>
+            <div class="field" id="poolImportPlaceField" hidden>
+              <label for="poolImportPlace">Filiale für Zeilen ohne passende Filiale</label>
+              <select id="poolImportPlace"></select>
+            </div>
           </div>
           <div id="poolImportRows" class="pi-rows"></div>
         </div>
@@ -7524,6 +7533,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const placeName = place => place === "teams" ? "Microsoft Teams" : !place ? "Ohne Filiale"
     : state.branches.find(b => String(b.id) === String(place))?.name || "Filiale gelöscht";
   const kontakte = n => `${n} ${n === 1 ? "Kontakt" : "Kontakte"}`;
+  const packKey = p => `${p.place}|${p.assigned_to || ""}`;
+  const packFor = p => p.assigned_to ? `für ${p.display_name || employeeName(findEmployee(p.assigned_to))}` : "für alle Mitarbeiter";
+  function poolOwnerOptions(current = "") {
+    return `<option value="">Alle Mitarbeiter</option>` + state.employees.map(u =>
+      `<option value="${esc(u.clerk_user_id)}"${u.clerk_user_id === current ? " selected" : ""}>${esc(employeeName(u))}${u.is_test ? " (Test)" : ""}</option>`).join("");
+  }
 
   async function loadPool() {
     try {
@@ -7555,8 +7570,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         : `Hol dir bis zu ${POOL_TAKE} Kontakte – die dringendsten kommen zuerst.`}</small></div>
       ${packs.map(p => `<div class="pool-row">
         <span class="pool-name">${esc(poolName(p))}</span>
-        <span class="pool-meta">${kontakte(p.count)}</span>
-        <button class="btn primary" type="button" data-pool-take="${esc(p.place)}"${blocked ? " disabled" : ""}>${Math.min(POOL_TAKE, p.count)} holen</button>
+        <span class="pool-meta">${kontakte(p.count)}${p.assigned_to ? " · nur für dich" : ""}</span>
+        <button class="btn primary" type="button" data-pool-take="${esc(p.place)}" data-pool-mine="${p.assigned_to ? 1 : ""}"${blocked ? " disabled" : ""}>${Math.min(POOL_TAKE, p.count)} holen</button>
       </div>`).join("")}`;
   }
 
@@ -7564,10 +7579,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const button = event.target.closest("[data-pool-take]");
     if (!button || finalOffen()) return;
     const place = button.dataset.poolTake;
-    const pack = state.pool.find(p => p.place === place) || {};
+    const mine = Boolean(button.dataset.poolMine);
+    const pack = state.pool.find(p => p.place === place && Boolean(p.assigned_to) === mine) || {};
     withBusy(button, async () => {
       try {
-        const res = await api("/pool/take", "POST", { place });
+        const res = await api("/pool/take", "POST", { place, mine });
         toast(`${kontakte(Number(res.taken || 0))} aus „${poolName(pack)}“ geholt ✓`);
       } catch (error) {
         alert(error.message);
@@ -7601,16 +7617,18 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       return;
     }
     host.innerHTML = `<div class="pool-admin">${state.pool.map(p => {
-      const open = state.poolOpen.has(p.place);
-      const items = state.adminPool.filter(row => row.place === p.place);
-      return `<div class="pool-pack">
+      const key = packKey(p);
+      const open = state.poolOpen.has(key);
+      const items = state.adminPool.filter(row => packKey(row) === key);
+      return `<div class="pool-pack" data-pack="${esc(key)}">
         <div class="pool-pack-head">
           <span class="pool-name">${esc(poolName(p))}</span>
+          <label class="pool-owner"><span>für</span><select data-pool-owner aria-label="Paket für">${poolOwnerOptions(p.assigned_to || "")}</select></label>
           <span class="chip">${kontakte(p.count)}</span>
           ${p.next_due ? `<span class="chip warn">nächste Rückholung ${esc(deDate(p.next_due))}</span>` : ""}
           <span class="pool-pack-btns">
-            <button class="btn ghost" type="button" data-pool-toggle="${esc(p.place)}" aria-expanded="${open}">${open ? "Zuklappen" : "Ansehen"}</button>
-            <button class="btn danger" type="button" data-pool-clear="${esc(p.place)}">Leeren</button>
+            <button class="btn ghost" type="button" data-pool-toggle aria-expanded="${open}">${open ? "Zuklappen" : "Ansehen"}</button>
+            <button class="btn danger" type="button" data-pool-clear>Leeren</button>
           </span>
         </div>
         ${open ? `<div class="pool-pack-list">${items.map(poolItemHtml).join("") || '<div class="notice">Leer.</div>'}</div>` : ""}
@@ -7618,21 +7636,44 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     }).join("")}</div>`;
   }
 
+  const packOf = el => {
+    const key = el.closest("[data-pack]")?.dataset.pack;
+    return state.pool.find(p => packKey(p) === key) || null;
+  };
+
+  $("poolAdminList").addEventListener("change", event => {
+    const select = event.target.closest("[data-pool-owner]");
+    const pack = select && packOf(select);
+    if (!pack) return;
+    const to = select.value;
+    select.disabled = true;
+    (async () => {
+      try {
+        await api("/admin/pool/assign", "PUT", { place: pack.place, from: pack.assigned_to || "", to });
+        toast(`Paket „${poolName(pack)}“ ist jetzt ${to ? `für ${employeeName(findEmployee(to))}` : "für alle Mitarbeiter"}.`);
+      } catch (error) { alert(error.message); }
+      await loadPool();
+    })();
+  });
+
   $("poolAdminList").addEventListener("click", event => {
     const toggle = event.target.closest("[data-pool-toggle]");
     if (toggle) {
-      const place = toggle.dataset.poolToggle;
-      state.poolOpen.has(place) ? state.poolOpen.delete(place) : state.poolOpen.add(place);
+      const key = toggle.closest("[data-pack]").dataset.pack;
+      state.poolOpen.has(key) ? state.poolOpen.delete(key) : state.poolOpen.add(key);
       renderPoolAdmin();
       return;
     }
     const clear = event.target.closest("[data-pool-clear]");
     if (clear) {
-      const pack = state.pool.find(p => p.place === clear.dataset.poolClear) || {};
-      if (!confirm(`Paket „${poolName(pack)}“ mit ${kontakte(pack.count || 0)} leeren? Die Kontakte werden gelöscht.`)) return;
+      const pack = packOf(clear);
+      if (!pack) return;
+      if (!confirm(`Paket „${poolName(pack)}“ (${packFor(pack)}) mit ${kontakte(pack.count || 0)} leeren? Die Kontakte werden gelöscht.`)) return;
       withBusy(clear, async () => {
-        try { await api(`/admin/pool?place=${encodeURIComponent(clear.dataset.poolClear)}`, "DELETE"); toast("Paket geleert."); }
-        catch (error) { alert(error.message); }
+        try {
+          await api(`/admin/pool?place=${encodeURIComponent(pack.place)}&assigned_to=${encodeURIComponent(pack.assigned_to || "")}`, "DELETE");
+          toast("Paket geleert.");
+        } catch (error) { alert(error.message); }
         await loadPool();
       });
       return;
@@ -7915,8 +7956,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           </label>`;
         }).join("")
       : "";
+    const owner = $("poolImportOwner").value;
     $("poolImportCount").textContent = chosen.length
-      ? `${kontakte(chosen.length)} → ${[...packs].map(([place, n]) => `${placeName(place)} (${n})`).join(" · ")}`
+      ? `${kontakte(chosen.length)} → ${[...packs].map(([place, n]) => `${placeName(place)} (${n})`).join(" · ")} · ${owner ? `für ${employeeName(findEmployee(owner))}` : "für alle Mitarbeiter"}`
       : rows.length ? "Keine Kontakte ausgewählt." : "";
     $("poolImportGo").disabled = !chosen.length;
     $("poolImportGo").textContent = chosen.length ? `${kontakte(chosen.length)} ins Paket legen` : "Importieren";
@@ -7932,6 +7974,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     $("poolImportPlace").innerHTML = '<option value="">Ohne Filiale</option>'
       + (branches.length ? `<optgroup label="Filialen">${options(branches)}</optgroup>` : "")
       + (videoCalls.length ? `<optgroup label="Videocalls">${options(videoCalls)}</optgroup>` : "");
+    $("poolImportOwner").innerHTML = poolOwnerOptions("");
     importStatus([]);
     renderImportPreview();
     openDialog($("poolImport"));
@@ -8032,6 +8075,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (file) readPoolImport(file);
   });
   $("poolImportPlace").addEventListener("change", renderImportPreview);
+  $("poolImportOwner").addEventListener("change", renderImportPreview);
   $("poolImportRows").addEventListener("change", event => {
     const box = event.target.closest("[data-pi]");
     const row = box && poolImportRows.find(r => String(r.index) === box.dataset.pi);
@@ -8042,6 +8086,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   $("poolImportGo").addEventListener("click", event => {
     const fallback = $("poolImportPlace").value;
+    const owner = $("poolImportOwner").value;
     const chosen = poolImportRows.filter(r => r.on && !r.errors.length);
     if (!chosen.length) return;
     const groups = new Map();
@@ -8057,7 +8102,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         for (const [place, rows] of groups) {
           for (let i = 0; i < rows.length; i += POOL_CHUNK) {
             const part = rows.slice(i, i + POOL_CHUNK);
-            const res = await api("/admin/pool", "POST", { place, contacts: part.map(importPayload) });
+            const last = i + POOL_CHUNK >= rows.length;   // Push an den Mitarbeiter erst nach dem letzten Teil
+            const res = await api("/admin/pool", "POST", { place, assigned_to: owner, notify: last, contacts: part.map(importPayload) });
             added += Number(res?.added || 0);
             asArray(res?.skipped).forEach(s => failed.push(`${part[s.index]?.name || "?"}: ${s.error}`));
           }
