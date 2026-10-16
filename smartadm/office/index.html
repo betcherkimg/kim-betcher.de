@@ -7764,7 +7764,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     ["themen", /ansprache|thema|themen|anlass/],
     ["ort", /termin bei|filiale|paket/],
     ["rueckholung", /r(ü|ue)ckhol|f(ä|ae)llig/],
-    ["alter", /^alter/]
+    ["alter", /^alter/],
+    ["skript", /skript/]
   ];
   /* Telefonnummern in jedem üblichen Format lesen: 0151/12345678, 015112345678, 0151 12345678,
      01511 2345678, +49 151 2345678, 0049 (0)151-2345678, „Tel.: 07361 / 12 34 56“, Excel-Zahl ohne 0 …
@@ -7851,7 +7852,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function importBranch(text) {
     const wanted = normalizeName(text);
     if (!wanted) return null;
-    if (/^(teams|microsoft teams)$/.test(wanted)) return "teams";
+    if (/^(teams|microsoft teams|videocall|video)$/.test(wanted)) {
+      const video = state.branches.find(isVideoCall);   // hinterlegter Videocall mit Bookings-Link, sonst Teams ohne Link
+      return video ? String(video.id) : "teams";
+    }
     const list = state.branches;
     const hit = list.find(b => normalizeName(b.name) === wanted)
       || list.find(b => !isVideoCall(b) && (normalizeName(b.name).includes(wanted) || wanted.includes(normalizeName(b.name))));
@@ -7876,7 +7880,17 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     });
     const topics = [];
     const unknown = [];
+    let termArt = "neu";
+    let termDatum = "";
     text("themen").split(/[,;\n]+/).map(t => t.trim()).filter(Boolean).forEach(label => {
+      // „Folgetermin (07.07.2026)“ / „Neuer Termin (14.10.2026)“ → Terminierung allgemein mit Art und Datum
+      const termin = /^(folgetermin|neuer termin)\s*(?:\(?\s*(?:vom|am)?\s*([\d.]+)\s*\)?)?$/i.exec(label);
+      if (termin) {
+        termArt = termin[1].toLowerCase() === "folgetermin" ? "folge" : "neu";
+        termDatum = parseDeDate(termin[2] || "");
+        if (!topics.includes("neuterminierung")) topics.push("neuterminierung");
+        return;
+      }
       const key = TOPIC_BY_LABEL.get(topicNorm(label));
       if (!key) unknown.push(label);
       else if (!topics.includes(key)) topics.push(key);
@@ -7885,8 +7899,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const alter = Number(String(raw("alter") ?? "").replace(/\D/g, "") || NaN);
     const kind = Number.isFinite(alter) && alter < 18 && String(raw("alter") ?? "").trim() !== ""
       ? { vorname: vorname.split(" ")[0], alter, art: salutation === "Frau" ? "tochter" : "sohn" } : null;
+    const skript = String(raw("skript") ?? "").replace(/\r\n?/g, "\n").trim();
     const row = {
-      kind,
+      kind, termArt, termDatum, skript,
       index, salutation, vorname, nachname, phones, topics, ort,
       name: nachname && vorname ? joinName(nachname, vorname) : "",
       place: importBranch(ort),
@@ -7903,6 +7918,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     else if (!phones.length) row.errors.push("Noch keine Nummer");
     if (phones.length > MAX_PHONES) row.errors.push("Mehr als 2 Nummern");
     if (topics.length > MAX_CALL_TOPICS) row.errors.push("Mehr als 3 Themen");
+    if (skript && importPayload(row).briefing.length > CALL_BRIEFING_MAX) row.errors.push("Eigenes Skript zu lang");
     if (unknown.length) row.notes.push(["warn", `Thema unbekannt: ${unknown.join(", ")}`]);
     if (ort && !row.place) row.notes.push(["warn", `Filiale „${ort}“ nicht gefunden`]);
     return row;
@@ -8005,7 +8021,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             <input type="checkbox" data-pi="${r.index}"${r.on && ok ? " checked" : ""}${ok ? "" : " disabled"}>
             <span><b>${esc(r.kind ? "Herr/Frau" : r.salutation)} ${esc(r.name || "–")}</b>${r.kind ? `<small class="pi-kind">Kind ${esc(kindText(r.kind))} – Skript über das Konto ${r.kind.art === "tochter" ? "der Tochter" : r.kind.art === "kinder" ? "der Kinder" : "des Sohnes"}</small>` : ""}${r.bsnr ? `<small>${esc(r.bsnr)}</small>` : ""}</span>
             <span>${esc(r.phones.join(", ") || "–")}</span>
-            <span class="chips">${r.topics.map(key => `<span class="chip from">${esc(CALL_TOPICS[key].label)}</span>`).join("") || '<span class="chip warn">Thema fehlt</span>'}</span>
+            <span class="chips">${r.topics.map(key => `<span class="chip from">${esc(key === "neuterminierung" && r.termArt === "folge" ? `Folgetermin${r.termDatum ? ` ${r.termDatum}` : ""}` : CALL_TOPICS[key].label)}</span>`).join("") || '<span class="chip warn">Thema fehlt</span>'}${r.skript ? '<span class="chip data">Eigenes Skript</span>' : ""}</span>
             <span>${r.due ? esc(deDate(r.due)) : "–"}</span>
             <span class="pi-notes">${notes.join("") || '<span class="chip good">Neu</span>'}</span>
           </label>`;
@@ -8116,10 +8132,14 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
 
   const importPayload = r => {
-    const extended = r.bsnr || r.kind || r.topics.some(key => !API_TOPIC_KEYS.has(key));
+    const extended = r.bsnr || r.kind || r.skript || (r.topics.includes("neuterminierung") && (r.termArt === "folge" || r.termDatum))
+      || r.topics.some(key => !API_TOPIC_KEYS.has(key));
     const saved = { version: 1, topics: r.topics, briefing: "", customScript: "", parent: "vater" };
     if (r.bsnr) saved.bsnr = r.bsnr;
     if (r.kind) saved.kind = cleanKind(r.kind);
+    const termin = r.topics.includes("neuterminierung") && (r.termArt === "folge" || r.termDatum);
+    if (termin) { saved.termArt = r.termArt; saved.termDatum = r.termDatum; }
+    if (r.skript) { saved.customScript = r.skript; saved.scriptOverride = true; }
     return {
       customer_name: r.name, salutation: r.salutation, phones: r.phones.join("\n"),
       topics: r.topics.filter(key => API_TOPIC_KEYS.has(key)),
