@@ -1303,11 +1303,24 @@ body.my-editing .my-widget { outline: 2px dashed color-mix(in srgb, var(--accent
 body.final-modus #poolBox { display: none !important; }
 .pool-admin { display: grid; gap: 10px; }
 .pool-pack { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-.pool-pack-head { display: flex; align-items: center; gap: 8px 10px; flex-wrap: wrap; padding: 10px 12px; }
-.pool-pack-head .pool-name { font-weight: 600; }
-.pool-pack-btns { margin-left: auto; display: flex; gap: 8px; }
+.pool-pack-head { display: grid; grid-template-columns: 150px 270px 130px minmax(0, 1fr) auto; align-items: center; gap: 10px 14px; padding: 10px 12px; }
+.pool-pack-head > * { justify-self: start; min-width: 0; }
+.pool-pack-head .pool-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.pool-pack-btns { justify-self: end; display: flex; gap: 8px; }
+.pool-pack-head .pool-owner { width: 100%; }
+.pool-pack-head .pool-owner select { flex: 1; min-width: 0; }
+@media (max-width: 900px) {
+  .pool-pack-head { grid-template-columns: minmax(0, 1fr) auto; }
+  .pool-pack-head .pool-owner { grid-column: 1 / -1; grid-row: 2; }
+  .pool-pack-head .chip { grid-row: 3; }
+  .pool-pack-btns { grid-column: 2; grid-row: 1; }
+}
+.pool-edit-name { all: unset; cursor: pointer; display: grid; gap: 1px; min-width: 0; }
+.pool-edit-name:hover b, .pool-edit-name:focus-visible b { color: var(--accent); text-decoration: underline; }
+.pool-edit-name small { color: var(--gelb, #94600f); font-size: 12px; font-weight: 600; }
+.pool-item-btns { display: flex; gap: 6px; }
 .pool-pack-list { border-top: 1px solid var(--line); max-height: 380px; overflow-y: auto; }
-.pool-item { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 2fr) 140px auto; gap: 10px; align-items: center; padding: 7px 12px; font-size: 13.5px; border-bottom: 1px solid var(--line); }
+.pool-item { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 2fr) 150px auto; gap: 10px; align-items: center; padding: 7px 12px; font-size: 13.5px; border-bottom: 1px solid var(--line); }
 .pool-item:last-child { border-bottom: 0; }
 .pool-item .chips, .pi-row .chips { display: flex; gap: 4px; flex-wrap: wrap; }
 .pool-due { color: var(--ink-soft); font-size: 12.5px; }
@@ -2668,7 +2681,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             <form id="callForm">
               <input type="hidden" id="callEditId">
               <div class="form-grid">
-                <div class="field"><label>Mitarbeiter</label><select id="callEmployeeSelect" data-employee-select data-independent required></select></div>
+                <div class="field" id="callEmployeeField"><label>Mitarbeiter</label><select id="callEmployeeSelect" data-employee-select data-independent required></select></div>
                 <div class="field"><label for="callSalutation">Anrede</label>
                   <select id="callSalutation" required><option value="" disabled selected>Bitte wählen</option><option value="Herr">Herr</option><option value="Frau">Frau</option></select>
                   <small>Steht so in der Begrüßung des Skripts.</small></div>
@@ -7646,12 +7659,16 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   function poolItemHtml(row) {
     const topics = callScriptData(row).topics.filter(key => CALL_TOPICS[key]);
+    const kind = callScriptData(row).kind;
     return `<div class="pool-item">
-      <span><b>${esc(row.salutation)} ${esc(row.customer_name)}</b></span>
+      <button class="pool-edit-name" type="button" data-pool-edit="${row.id}" title="Kontakt bearbeiten"><b>${esc(kind ? "Herr/Frau" : row.salutation)} ${esc(row.customer_name)}</b>${kind ? `<small>Kind ${esc(kindText(kind))}</small>` : ""}</button>
       <span>${esc(asArray(row.phones).join(", "))}</span>
       <span class="chips">${topics.map(key => `<span class="chip from">${esc(CALL_TOPICS[key].label)}</span>`).join("") || '<span class="chip warn">Thema fehlt</span>'}</span>
       <span class="pool-due">${row.due_date ? `Rückholung ${esc(deDate(row.due_date))}` : "ohne Datum"}</span>
-      <button class="icon-btn danger" type="button" data-pool-del="${row.id}" title="Aus dem Paket löschen" aria-label="Aus dem Paket löschen">${ICONS.trash}</button>
+      <span class="pool-item-btns">
+        <button class="icon-btn" type="button" data-pool-edit="${row.id}" title="Bearbeiten" aria-label="Bearbeiten">${ICONS.edit}</button>
+        <button class="icon-btn danger" type="button" data-pool-del="${row.id}" title="Aus dem Paket löschen" aria-label="Aus dem Paket löschen">${ICONS.trash}</button>
+      </span>
     </div>`;
   }
 
@@ -7675,7 +7692,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <span class="pool-name">${esc(poolName(p))}</span>
           <label class="pool-owner"><span>für</span><select data-pool-owner aria-label="Paket für">${poolOwnerOptions(p.assigned_to || "")}</select></label>
           <span class="chip">${kontakte(p.count)}</span>
-          ${p.next_due ? `<span class="chip warn">nächste Rückholung ${esc(deDate(p.next_due))}</span>` : ""}
+          ${p.next_due ? `<span class="chip warn">nächste Rückholung ${esc(deDate(p.next_due))}</span>` : "<span></span>"}
           <span class="pool-pack-btns">
             <button class="btn ghost" type="button" data-pool-toggle aria-expanded="${open}">${open ? "Zuklappen" : "Ansehen"}</button>
             <button class="btn danger" type="button" data-pool-clear>Leeren</button>
@@ -7728,6 +7745,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       });
       return;
     }
+    const edit = event.target.closest("[data-pool-edit]");
+    if (edit) { editPoolContact(edit.dataset.poolEdit); return; }
     const del = event.target.closest("[data-pool-del]");
     if (del) {
       withBusy(del, async () => {
@@ -8389,6 +8408,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   });
 
   function resetCallForm() {
+    setPoolMode(null);
     callScriptManual = false;
     callFormBsnr = "";
     setMinorForm(null);
@@ -8432,8 +8452,51 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function editCall(id) {
     const c = ADMIN_SCOPES.flatMap(([scope]) => state.adminCalls[scope]).find(x => String(x.id) === String(id));
     if (!c) return;
+    fillCallForm(c);
+    setText("callFormTitle", `Kontakt bearbeiten: ${c.customer_name}`);
+    showCallForm(true);
+  }
+
+  // Kontakt aus einem Paket: gleiches Formular, gespeichert wird zurück ins Paket.
+  let callFormPool = null;
+  function setPoolMode(row) {
+    callFormPool = row;
+    $("callEmployeeField").hidden = Boolean(row);
+    $("callEmployeeSelect").required = !row;
+  }
+  function editPoolContact(id) {
+    const row = state.adminPool.find(x => String(x.id) === String(id));
+    if (!row) return;
+    fillCallForm(row);
+    setPoolMode(row);
+    setText("callFormTitle", `Paket-Kontakt bearbeiten: ${row.customer_name}`);
+    showCallForm(true);
+  }
+
+  // Der Worker kennt fürs Paket nur Anlegen und Löschen: neu anlegen (gleiche Rückholung, gleicher Mitarbeiter),
+  // dann den alten Eintrag löschen. Ein anderer Terminort verschiebt den Kontakt ins passende Paket.
+  function savePoolContact(button, payload) {
+    const row = callFormPool;
+    withBusy(button, async () => {
+      try {
+        const contact = { customer_name: payload.customer_name, salutation: payload.salutation, phones: payload.phones,
+          topics: payload.topics, briefing: payload.briefing, due_date: row.due_date || null };
+        const res = await api("/admin/pool", "POST", { place: payload.place, assigned_to: row.assigned_to || "", notify: false, contacts: [contact] });
+        if (!Number(res?.added)) throw new Error(asArray(res?.skipped)[0]?.error || "Kontakt konnte nicht gespeichert werden.");
+        try { await api(`/admin/pool/${row.id}`, "DELETE"); }
+        catch (error) { alert(`Gespeichert, aber der alte Eintrag konnte nicht gelöscht werden – bitte im Paket prüfen: ${error.message}`); }
+        closeCallForm();
+        toast("Paket-Kontakt gespeichert.");
+        await loadPool();
+      } catch (error) {
+        alert("Speichern fehlgeschlagen: " + error.message);
+      }
+    });
+  }
+
+  function fillCallForm(c) {
     $("callEditId").value = c.id;
-    $("callEmployeeSelect").value = c.assigned_to;
+    $("callEmployeeSelect").value = c.assigned_to || state.employees[0]?.clerk_user_id || "";
     // „Nachname, Vorname“ – ältere Einträge ohne Komma landen komplett im Nachnamen
     const [last, ...rest] = String(c.customer_name || "").split(",");
     $("callLastName").value = last.trim();
@@ -8455,9 +8518,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     $("callTermDate").value = script.termDatum || "";
     $("callScriptSuggestion").value = "0";
     setCallTopics(script.topics);
-    setText("callFormTitle", `Kontakt bearbeiten: ${c.customer_name}`);
     setText("callSaveBtn", "Änderungen speichern");
-    showCallForm(true);
   }
 
 
@@ -8506,6 +8567,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       topics: script.topics.filter(key => API_TOPIC_KEYS.has(key)),
       briefing
     };
+
+    if (callFormPool) return savePoolContact(event.submitter, payload);
 
     if (!id) {
       const name = normalizeName(payload.customer_name);
