@@ -1289,6 +1289,54 @@ body.my-editing .my-widget { outline: 2px dashed color-mix(in srgb, var(--accent
 }
 
 #callTermDate.invalid { border-color: var(--danger); }
+
+/* Kontakt-Pakete */
+.pool-box { display: grid; gap: 8px; margin: 0 0 14px; padding: 12px 14px; border-radius: 14px; background: var(--ground); }
+.pool-box[hidden] { display: none; }
+.pool-box-head { display: flex; justify-content: space-between; gap: 6px 12px; align-items: baseline; flex-wrap: wrap; }
+.pool-box-head b { font-size: 14.5px; }
+.pool-box-head small { color: var(--ink-soft); font-size: 12.5px; }
+.pool-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 10px 8px 12px; border-radius: 12px; background: var(--surface); }
+.pool-row .pool-name { font-weight: 600; }
+.pool-row .pool-meta { color: var(--ink-soft); font-size: 13px; }
+.pool-row .btn { margin-left: auto; }
+body.final-modus #poolBox { display: none !important; }
+.pool-admin { display: grid; gap: 10px; }
+.pool-pack { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.pool-pack-head { display: flex; align-items: center; gap: 8px 10px; flex-wrap: wrap; padding: 10px 12px; }
+.pool-pack-head .pool-name { font-weight: 600; }
+.pool-pack-btns { margin-left: auto; display: flex; gap: 8px; }
+.pool-pack-list { border-top: 1px solid var(--line); max-height: 380px; overflow-y: auto; }
+.pool-item { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 2fr) 140px auto; gap: 10px; align-items: center; padding: 7px 12px; font-size: 13.5px; border-bottom: 1px solid var(--line); }
+.pool-item:last-child { border-bottom: 0; }
+.pool-item .chips, .pi-row .chips { display: flex; gap: 4px; flex-wrap: wrap; }
+.pool-due { color: var(--ink-soft); font-size: 12.5px; }
+.pool-import { width: min(1100px, calc(100vw - 24px)); }
+.pi-file { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 14px; border: 1.5px dashed var(--line); border-radius: 12px; cursor: pointer; font-weight: 500; }
+.pi-file { position: relative; }
+.pi-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.pi-file:hover, .pi-file:focus-within { border-color: var(--accent); }
+.pi-file .plus { width: 30px; height: 30px; border-radius: 50%; background: var(--ground); display: grid; place-items: center; font-size: 17px; }
+.pi-status { margin: 12px 0; display: grid; gap: 6px; }
+.pi-status:empty { display: none; }
+#poolImportPlaceField { margin: 0 0 12px; max-width: 360px; }
+.pi-rows { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.pi-rows:empty { display: none; }
+.pi-row { display: grid; grid-template-columns: 22px minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.6fr) 84px minmax(0, 1.7fr); gap: 10px; align-items: start; padding: 8px 12px; font-size: 13.5px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.pi-row:last-child { border-bottom: 0; }
+.pi-row small { display: block; color: var(--ink-soft); font-size: 12px; }
+.pi-row.is-head { background: var(--ground); font-weight: 600; font-size: 12.5px; color: var(--ink-soft); cursor: default; }
+.pi-row.is-off > :not(input):not(.pi-notes) { opacity: .5; }
+.pi-row input { margin-top: 3px; }
+.pi-notes { display: grid; gap: 3px; font-size: 12.5px; color: var(--ink-soft); justify-items: start; }
+.pi-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 18px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--ink-soft); }
+@media (max-width: 760px) {
+  .pi-row { grid-template-columns: 22px minmax(0, 1fr); }
+  .pi-row > :nth-child(n+3) { grid-column: 2; }
+  .pi-row.is-head { display: none; }
+  .pool-item { grid-template-columns: minmax(0, 1fr) auto; }
+  .pool-item > :nth-child(n+2):not(:last-child) { grid-column: 1; }
+}
 /* ===== 5. Versuch: Ergebnisleiste ===== */
 .final-bar { display: none; }
 body.final-modus .final-bar:not([hidden]) {
@@ -2392,6 +2440,19 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <small class="search-result" id="callSearchResult" aria-live="polite"></small>
         </div>
 
+        <div class="card section-card" data-role="boss" id="poolCard">
+          <div class="card-head split">
+            <div>
+              <h2>Pakete</h2>
+              <p>Importierte Kontakte je Filiale. Mitarbeiter holen sich daraus je 10 in ihre Liste – immer die mit der frühesten Rückholung zuerst.</p>
+            </div>
+            <div class="head-btns">
+              <button class="btn primary" type="button" id="poolImportBtn">Excel importieren</button>
+            </div>
+          </div>
+          <div id="poolAdminList"><div class="notice">Wird geladen …</div></div>
+        </div>
+
         <div class="card section-card" data-role="boss">
           <div class="card-head split fold-head">
             <div>
@@ -2481,6 +2542,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
               </div>
             </form>
           </dialog>
+          <div id="poolBox" class="pool-box" hidden></div>
           <div id="callList" class="call-groups"><div class="notice">Kontakte werden geladen …</div></div>
         </div>
       </section>
@@ -2566,6 +2628,23 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       </dialog>
 
       <!-- Boss: Kontakt einstellen / bearbeiten (Fenster, schließt nur über „Schließen“) -->
+      <dialog id="poolImport" class="form-dialog pool-import" data-role="boss" aria-labelledby="poolImportTitle" closedby="none">
+        <div class="picker-head">
+          <strong id="poolImportTitle">Excel-Liste ins Paket importieren</strong>
+          <button class="picker-close" type="button" id="poolImportClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
+        </div>
+        <div class="form-dialog-body">
+          <p class="form-dialog-hint">Spalten: Anrede, Vorname, Nachname, Ansprachegrund, Telefonnummer, Termin bei, Rückholung – optional Bausparnummer. Die Kontakte landen im Paket ihrer Filiale, nicht direkt in einer Telefonliste. Vor dem Import siehst du, wer schon in Office ist und wer schon Kontakt in Sales hatte.</p>
+          <label class="pi-file"><input type="file" id="poolImportFile" accept=".xlsx,.xls,.csv"><span class="plus" aria-hidden="true">+</span><span id="poolImportFileLabel">Excel-Datei auswählen</span></label>
+          <div id="poolImportStatus" class="pi-status" aria-live="polite"></div>
+          <div class="field" id="poolImportPlaceField" hidden>
+            <label for="poolImportPlace">Paket für Zeilen ohne passende Filiale</label>
+            <select id="poolImportPlace"></select>
+          </div>
+          <div id="poolImportRows" class="pi-rows"></div>
+        </div>
+        <div class="pi-foot"><span id="poolImportCount"></span><button class="btn primary" type="button" id="poolImportGo" disabled>Importieren</button></div>
+      </dialog>
       <dialog id="callDialog" class="form-dialog" data-role="boss" aria-labelledby="callFormTitle" closedby="none">
         <div class="picker-head">
           <strong id="callFormTitle">Kontakt einstellen</strong>
@@ -3030,6 +3109,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     phoneFixDrafts: {},       // Boss: neue Nummern für Rückläufer mit falschen Kontaktdaten
     callsLoaded: false,       // Telefonliste mindestens einmal geladen
     adminCalls: { open: [], returned: [], archived: [], kk: [] },
+    pool: [],                 // Kontakt-Pakete je Filiale (Anzahl)
+    adminPool: [],            // Boss: alle Kontakte in Paketen
+    poolOpen: new Set(),      // Boss: aufgeklappte Pakete
+    poolUnsupported: false,   // Worker kennt Pakete noch nicht
     closings: [],
     employer: {},
     employeeProfiles: {},
@@ -6169,6 +6252,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   let callScriptVisible = false;
   let callScriptMergedTopics = [];
   let callScriptMergedParent = "vater";
+  let callFormBsnr = "";        // Bausparnummer des bearbeiteten Kontakts (bleibt beim Speichern erhalten)
   const MAX_CALL_TOPICS = 3;
   const API_TOPIC_KEYS = new Set(["zuteilung", "mindestguthaben", "kinder", "sohn", "tochter", "besparung", "foerderung", "treuepraemie", "riester", "neuterminierung"]);
   const CALL_SCRIPT_PREFIX = "[SmartADM-Skript v1]\n";
@@ -6186,7 +6270,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   // Hinweisfeld gespeichert. Der Worker erhält weiterhin nur bekannte Themenkeys.
   function callScriptData(c) {
     const fallback = {topics:asArray(c.topics), briefing:c.briefing || "", customScript:"", parent:"vater",
-      mergedTopics:[], mergedParent:"vater", scriptOverride:false, termArt:"neu", termDatum:""};
+      mergedTopics:[], mergedParent:"vater", scriptOverride:false, termArt:"neu", termDatum:"", bsnr:""};
     if (!fallback.briefing.startsWith(CALL_SCRIPT_PREFIX)) return fallback;
     try {
       const data = JSON.parse(fallback.briefing.slice(CALL_SCRIPT_PREFIX.length));
@@ -6195,7 +6279,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         customScript:data.customScript, parent:data.parent === "mutter" ? "mutter" : "vater",
         mergedTopics:asArray(data.mergedTopics).filter(key => CALL_TOPICS[key]?.subject),
         mergedParent:data.mergedParent === "mutter" ? "mutter" : "vater", scriptOverride:data.scriptOverride === true,
-        termArt:data.termArt === "folge" ? "folge" : "neu", termDatum:parseDeDate(data.termDatum || "")};
+        termArt:data.termArt === "folge" ? "folge" : "neu", termDatum:parseDeDate(data.termDatum || ""),
+        bsnr:typeof data.bsnr === "string" ? data.bsnr.slice(0, 40) : ""};
     } catch { return fallback; }
   }
 
@@ -6203,9 +6288,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   function encodeCallScript(data) {
     const termin = data.topics.includes("neuterminierung") && (data.termArt === "folge" || parseDeDate(data.termDatum));
-    const extended = data.customScript || termin || data.topics.some(key => !API_TOPIC_KEYS.has(key));
+    const extended = data.customScript || termin || data.bsnr || data.topics.some(key => !API_TOPIC_KEYS.has(key));
     if (!extended) return data.briefing;
     const saved = {version:1, topics:data.topics, briefing:data.briefing, customScript:data.customScript, parent:data.parent};
+    if (data.bsnr) saved.bsnr = data.bsnr;   // Bausparnummer aus dem Import – nur für den Boss
     if (termin) { saved.termArt = data.termArt; saved.termDatum = parseDeDate(data.termDatum); }
     if (data.customScript) {
       saved.mergedTopics = data.mergedTopics;
@@ -6716,6 +6802,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const active = host.contains(document.activeElement) && document.activeElement.id ? document.activeElement : null;
     const caret = active && "selectionStart" in active ? [active.selectionStart, active.selectionEnd] : null;
     host.innerHTML = heldHtml + openHtml;
+    renderPoolBox();
     finalAnwenden();
     const again = active && $(active.id);
     if (again) {
@@ -7150,7 +7237,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       </div>
       ${open ? `<div class="acall-body">
         ${c.protocol ? `<div class="call-note"><b>Notiz:</b> ${esc(c.protocol)}</div>` : ""}
-        <small>${phoneList(c)} · Termin: ${esc(placeLabel(c))}</small>
+        <small>${phoneList(c)} · Termin: ${esc(placeLabel(c))}${callScriptData(c).bsnr ? ` · Bausparnr. ${esc(callScriptData(c).bsnr)}` : ""}</small>
         <div class="task-meta">
           ${scope === "open" ? attemptDots(c.attempts) : ""}
           <span class="chip">${c.attempts} / ${CALL_MAX_ATTEMPTS} Versuche</span>
@@ -7409,12 +7496,14 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         };
         state.callsLoaded = true;
         renderAdminCalls();
+        loadPool();
       } else if (state.role === "employee") {
         await versucheAbwarten([...pendingAttempts.values()]); // eben gezählte Versuche erst ankommen lassen
         state.calls = asArray(await api("/calls"));
         pruneCallStore();
         state.callsLoaded = true;
         renderOwnCalls();
+        loadPool();
       }
     } catch (error) {
       console.error(error);
@@ -7423,6 +7512,471 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       $$("[data-call-summary]").forEach(el => (el.textContent = "Telefonliste nicht verfügbar."));
     }
   }
+
+  /* ================= Kontakt-Pakete ================= */
+  // Der Boss importiert Excel-Listen in Pakete je Filiale. Mitarbeiter holen sich daraus je
+  // POOL_TAKE Kontakte – der Worker gibt immer die mit der frühesten Rückholung heraus.
+  const POOL_TAKE = 10;
+  const POOL_CHUNK = 50;
+
+  const deDate = iso => /^\d{4}-\d{2}-\d{2}/.test(String(iso || "")) ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}` : "";
+  const poolName = p => p.teams ? "Microsoft Teams" : p.place ? (p.branch_name || "Filiale gelöscht") : "Ohne Filiale";
+  const placeName = place => place === "teams" ? "Microsoft Teams" : !place ? "Ohne Filiale"
+    : state.branches.find(b => String(b.id) === String(place))?.name || "Filiale gelöscht";
+  const kontakte = n => `${n} ${n === 1 ? "Kontakt" : "Kontakte"}`;
+
+  async function loadPool() {
+    try {
+      const [packs, rows] = await Promise.all([api("/pool"), state.role === "boss" ? api("/admin/pool") : null]);
+      state.pool = asArray(packs);
+      state.adminPool = asArray(rows);
+      state.poolUnsupported = false;
+    } catch (error) {
+      state.pool = [];
+      state.adminPool = [];
+      state.poolUnsupported = error.status === 404;   // Worker kennt Pakete noch nicht
+      if (!state.poolUnsupported) console.error(error);
+    }
+    if (state.role === "boss") renderPoolAdmin(); else renderPoolBox();
+  }
+
+  /* --- Mitarbeiter: Paket-Kasten über der Telefonliste --- */
+
+  function renderPoolBox() {
+    const box = $("poolBox");
+    if (!box || state.role !== "employee") return;
+    const packs = state.pool.filter(p => p.count > 0);
+    box.hidden = !packs.length;
+    if (!packs.length) { box.innerHTML = ""; return; }
+    const untouched = state.calls.filter(c => !Number(c.attempts)).length;
+    const blocked = untouched >= POOL_TAKE;
+    box.innerHTML = `<div class="pool-box-head"><b>Pakete</b><small>${blocked
+        ? `Neue Kontakte gibt es, sobald weniger als ${POOL_TAKE} noch nicht angerufen sind (gerade ${untouched}).`
+        : `Hol dir bis zu ${POOL_TAKE} Kontakte – die dringendsten kommen zuerst.`}</small></div>
+      ${packs.map(p => `<div class="pool-row">
+        <span class="pool-name">${esc(poolName(p))}</span>
+        <span class="pool-meta">${kontakte(p.count)}</span>
+        <button class="btn primary" type="button" data-pool-take="${esc(p.place)}"${blocked ? " disabled" : ""}>${Math.min(POOL_TAKE, p.count)} holen</button>
+      </div>`).join("")}`;
+  }
+
+  $("poolBox").addEventListener("click", event => {
+    const button = event.target.closest("[data-pool-take]");
+    if (!button || finalOffen()) return;
+    const place = button.dataset.poolTake;
+    const pack = state.pool.find(p => p.place === place) || {};
+    withBusy(button, async () => {
+      try {
+        const res = await api("/pool/take", "POST", { place });
+        toast(`${kontakte(Number(res.taken || 0))} aus „${poolName(pack)}“ geholt ✓`);
+      } catch (error) {
+        alert(error.message);
+      }
+      await loadCalls();
+    });
+  });
+
+  /* --- Boss: Pakete verwalten --- */
+
+  function poolItemHtml(row) {
+    const topics = callScriptData(row).topics.filter(key => CALL_TOPICS[key]);
+    return `<div class="pool-item">
+      <span><b>${esc(row.salutation)} ${esc(row.customer_name)}</b></span>
+      <span>${esc(asArray(row.phones).join(", "))}</span>
+      <span class="chips">${topics.map(key => `<span class="chip from">${esc(CALL_TOPICS[key].label)}</span>`).join("") || '<span class="chip warn">Thema fehlt</span>'}</span>
+      <span class="pool-due">${row.due_date ? `Rückholung ${esc(deDate(row.due_date))}` : "ohne Datum"}</span>
+      <button class="icon-btn danger" type="button" data-pool-del="${row.id}" title="Aus dem Paket löschen" aria-label="Aus dem Paket löschen">${ICONS.trash}</button>
+    </div>`;
+  }
+
+  function renderPoolAdmin() {
+    const host = $("poolAdminList");
+    if (!host || state.role !== "boss") return;
+    if (state.poolUnsupported) {
+      host.innerHTML = '<div class="notice warn">Für Pakete braucht Office den neuen Worker-Code – bitte erst in Cloudflare einfügen.</div>';
+      return;
+    }
+    if (!state.pool.length) {
+      host.innerHTML = '<div class="notice">Noch keine Pakete. Über „Excel importieren“ legst du Kontakte je Filiale ab.</div>';
+      return;
+    }
+    host.innerHTML = `<div class="pool-admin">${state.pool.map(p => {
+      const open = state.poolOpen.has(p.place);
+      const items = state.adminPool.filter(row => row.place === p.place);
+      return `<div class="pool-pack">
+        <div class="pool-pack-head">
+          <span class="pool-name">${esc(poolName(p))}</span>
+          <span class="chip">${kontakte(p.count)}</span>
+          ${p.next_due ? `<span class="chip warn">nächste Rückholung ${esc(deDate(p.next_due))}</span>` : ""}
+          <span class="pool-pack-btns">
+            <button class="btn ghost" type="button" data-pool-toggle="${esc(p.place)}" aria-expanded="${open}">${open ? "Zuklappen" : "Ansehen"}</button>
+            <button class="btn danger" type="button" data-pool-clear="${esc(p.place)}">Leeren</button>
+          </span>
+        </div>
+        ${open ? `<div class="pool-pack-list">${items.map(poolItemHtml).join("") || '<div class="notice">Leer.</div>'}</div>` : ""}
+      </div>`;
+    }).join("")}</div>`;
+  }
+
+  $("poolAdminList").addEventListener("click", event => {
+    const toggle = event.target.closest("[data-pool-toggle]");
+    if (toggle) {
+      const place = toggle.dataset.poolToggle;
+      state.poolOpen.has(place) ? state.poolOpen.delete(place) : state.poolOpen.add(place);
+      renderPoolAdmin();
+      return;
+    }
+    const clear = event.target.closest("[data-pool-clear]");
+    if (clear) {
+      const pack = state.pool.find(p => p.place === clear.dataset.poolClear) || {};
+      if (!confirm(`Paket „${poolName(pack)}“ mit ${kontakte(pack.count || 0)} leeren? Die Kontakte werden gelöscht.`)) return;
+      withBusy(clear, async () => {
+        try { await api(`/admin/pool?place=${encodeURIComponent(clear.dataset.poolClear)}`, "DELETE"); toast("Paket geleert."); }
+        catch (error) { alert(error.message); }
+        await loadPool();
+      });
+      return;
+    }
+    const del = event.target.closest("[data-pool-del]");
+    if (del) {
+      withBusy(del, async () => {
+        try { await api(`/admin/pool/${del.dataset.poolDel}`, "DELETE"); }
+        catch (error) { alert(error.message); }
+        await loadPool();
+      });
+    }
+  });
+
+  /* --- Boss: Excel-Import mit Vorschau --- */
+
+  let poolImportRows = [];
+  let xlsxLaden = null;
+
+  function xlsxLib() {
+    if (window.XLSX) return Promise.resolve(window.XLSX);
+    return xlsxLaden || (xlsxLaden = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+      script.onload = () => (window.XLSX ? resolve(window.XLSX) : reject(new Error("Excel-Leser fehlt.")));
+      script.onerror = () => { xlsxLaden = null; reject(new Error("Excel-Leser konnte nicht geladen werden – bitte Internetverbindung prüfen.")); };
+      document.head.appendChild(script);
+    }));
+  }
+
+  // Spaltenköpfe → Felder (Bausparnummer vor Telefonnummer prüfen – beide enthalten „nummer“)
+  const IMPORT_COLUMNS = [
+    ["bsnr", /bauspar|bs-?nr|vertragsn/],
+    ["anrede", /^anrede/],
+    ["vorname", /^vorname/],
+    ["nachname", /^nachname|^name$/],
+    ["themen", /ansprache|thema|themen|anlass/],
+    ["telefon", /telefon|rufnummer|^tel\b/],
+    ["ort", /termin bei|filiale|paket/],
+    ["rueckholung", /r(ü|ue)ckhol|f(ä|ae)llig/]
+  ];
+
+  const topicNorm = text => normalizeName(text).replace(/[–—-]/g, " ").replace(/\s+/g, " ").trim();
+  const TOPIC_BY_LABEL = new Map(Object.entries(CALL_TOPICS)
+    .filter(([key]) => !["eigenes_skript", "sohn", "tochter"].includes(key))
+    .flatMap(([key, topic]) => [[topicNorm(topic.label), key], [topicNorm(key), key]]));
+  TOPIC_BY_LABEL.set(topicNorm("Neuterminierung"), "neuterminierung");
+
+  function importDate(value) {
+    if (typeof value === "number" && value > 30000 && value < 80000) {
+      return new Date(Math.round((value - 25569) * 86400000)).toISOString().slice(0, 10);   // Excel-Seriennummer
+    }
+    const text = String(value ?? "").trim();
+    let m = /^(\d{4})-(\d{2})-(\d{2})/.exec(text);
+    if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+    m = /^(\d{1,2})\.(\d{1,2})\.(\d{2}|\d{4})$/.exec(text);
+    if (m) return `${m[3].length === 2 ? "20" + m[3] : m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`;
+    return "";
+  }
+
+  function importBranch(text) {
+    const wanted = normalizeName(text);
+    if (!wanted) return null;
+    if (/^(teams|microsoft teams)$/.test(wanted)) return "teams";
+    const list = state.branches;
+    const hit = list.find(b => normalizeName(b.name) === wanted)
+      || list.find(b => !isVideoCall(b) && (normalizeName(b.name).includes(wanted) || wanted.includes(normalizeName(b.name))));
+    return hit ? String(hit.id) : null;
+  }
+
+  function importRow(cells, map, index) {
+    const raw = key => (map[key] === undefined ? "" : cells[map[key]]);
+    const text = key => String(raw(key) ?? "").trim();
+    const anrede = text("anrede").toLowerCase();
+    const salutation = anrede.startsWith("frau") ? "Frau" : anrede.startsWith("herr") ? "Herr" : "";
+    const vorname = cleanNamePart(text("vorname"));
+    const nachname = cleanNamePart(text("nachname"));
+    const phones = text("telefon").split(/[\n;]+|,(?=\s*\+?\d)/).map(p => p.trim()).filter(p => (p.match(/\d/g) || []).length >= 4);
+    const topics = [];
+    const unknown = [];
+    text("themen").split(/[,;\n]+/).map(t => t.trim()).filter(Boolean).forEach(label => {
+      const key = TOPIC_BY_LABEL.get(topicNorm(label));
+      if (!key) unknown.push(label);
+      else if (!topics.includes(key)) topics.push(key);
+    });
+    const ort = text("ort");
+    const row = {
+      index, salutation, vorname, nachname, phones, topics, ort,
+      name: nachname && vorname ? joinName(nachname, vorname) : "",
+      place: importBranch(ort),
+      due: importDate(raw("rueckholung")),
+      bsnr: text("bsnr").slice(0, 40),
+      errors: [], notes: [], sales: [], on: true
+    };
+    if (!row.name) row.errors.push("Name fehlt");
+    if (!salutation) row.errors.push("Anrede fehlt");
+    if (!phones.length) row.errors.push("Telefonnummer fehlt");
+    if (phones.length > MAX_PHONES) row.errors.push("Mehr als 2 Nummern");
+    if (topics.length > MAX_CALL_TOPICS) row.errors.push("Mehr als 3 Themen");
+    if (unknown.length) row.notes.push(["warn", `Thema unbekannt: ${unknown.join(", ")}`]);
+    if (ort && !row.place) row.notes.push(["warn", `Filiale „${ort}“ nicht gefunden`]);
+    return row;
+  }
+
+  const digits = phone => String(phone).replace(/\D/g, "");
+
+  // Gibt es den Kunden schon in Office (Telefonliste, Archiv) oder in einem Paket?
+  function officeTwins(row) {
+    const name = normalizeName(row.name);
+    const numbers = new Set(row.phones.map(digits));
+    const same = c => normalizeName(c.customer_name) === name || asArray(c.phones).some(p => numbers.has(digits(p)));
+    const hits = ADMIN_SCOPES.filter(([scope]) => state.adminCalls[scope].some(same)).map(([, label]) => label);
+    if (state.adminPool.some(same)) hits.push("Paket");
+    return hits;
+  }
+
+  /* Abgleich mit Sales: Termine, Auswertung, Provisionen und Adressabstimmung.
+     Quelle ist die Sales-Cloud (gleiches Konto) – sonst der Sales-Speicher auf diesem Gerät. */
+  const nameTokens = text => normalizeName(text).replace(/[^a-z0-9 -]/g, " ").split(/[\s-]+/).filter(Boolean);
+  const bsnrKey = value => String(value || "").toUpperCase().replace(/[^0-9A-Z]/g, "").slice(0, 9);
+
+  async function salesBestand() {
+    const doc = { termine: [], auswertung: [], provisionen: [], abstimmung: [] };
+    let quelle = "";
+    try {
+      const data = await api("/s5/pull?since=0");
+      asArray(data?.items).forEach(item => {
+        if (!item?.d) return;
+        if (item.s === "abstimmung") doc.abstimmung.push(item.d);
+        else if (doc[item.s]) doc[item.s].push(item.d);
+      });
+      quelle = "Sales-Cloud";
+    } catch {
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (!key || !key.startsWith("smartadm.cloud.v1.")) continue;
+          const saved = JSON.parse(localStorage.getItem(key) || "null")?.doc;
+          if (!saved) continue;
+          ["termine", "auswertung", "provisionen"].forEach(s => doc[s].push(...asArray(saved[s])));
+          if (saved.abstimmung && typeof saved.abstimmung === "object") doc.abstimmung.push(...Object.values(saved.abstimmung));
+          quelle = "Sales auf diesem Gerät";
+        }
+      } catch { /* kein Zugriff auf den Speicher */ }
+    }
+    if (!quelle) return null;
+
+    const eintraege = [];
+    const termin = (t, art) => {
+      if (!t || typeof t !== "object") return;
+      const datum = deDate(String(t.datum || "").slice(0, 10));
+      const text = `${art}${datum ? ` ${datum}` : ""}${t.status ? ` · ${t.status}` : ""}`;
+      const namen = [t.kunde, ...asArray(t.personen).map(p => typeof p === "string" ? p : [p?.vorname, p?.nachname].filter(Boolean).join(" "))];
+      namen.filter(Boolean).forEach(n => eintraege.push({ tokens: nameTokens(n), text, protokoll: String(t.protokoll || "") }));
+    };
+    doc.termine.forEach(t => termin(t, "Termin"));
+    doc.auswertung.forEach(t => termin(t, "Termin"));
+    doc.provisionen.forEach(p => { if (p?.kunde) eintraege.push({ tokens: nameTokens(p.kunde), text: "Provisionseintrag" }); });
+    doc.abstimmung.forEach(satz => Object.values(satz && typeof satz === "object" ? satz : {}).forEach(liste => asArray(liste).forEach(k => {
+      if (!k || typeof k !== "object" || (!k.kunde && !k.bsnr)) return;
+      eintraege.push({ tokens: nameTokens(k.kunde), bsnr: bsnrKey(k.bsnr), text: `Adressabstimmung${k.notiz ? `: ${String(k.notiz).slice(0, 80)}` : ""}` });
+    })));
+    return { quelle, eintraege };
+  }
+
+  function salesTreffer(row, bestand) {
+    if (!bestand) return [];
+    const nach = nameTokens(row.nachname);
+    const vornamen = row.vorname.split(/\s+und\s+|\s*&\s*|\s*\/\s*/).map(v => nameTokens(v)[0]).filter(Boolean);
+    const nummern = row.bsnr.split(/[,;\s]+/).map(bsnrKey).filter(k => k.length === 9);
+    const out = [];
+    bestand.eintraege.forEach(e => {
+      const name = nach.length && nach.every(t => e.tokens.includes(t)) && vornamen.some(v => e.tokens.includes(v));
+      const nummer = e.bsnr && nummern.includes(e.bsnr);
+      if ((name || nummer) && !out.includes(e.text)) out.push(e.text);
+    });
+    return out;
+  }
+
+  function importStatus(lines) {
+    $("poolImportStatus").innerHTML = lines.map(([cls, text]) => `<div class="notice${cls ? " " + cls : ""}">${text}</div>`).join("");
+  }
+
+  function renderImportPreview() {
+    const rows = poolImportRows;
+    const fallback = $("poolImportPlace").value;
+    const chosen = rows.filter(r => r.on && !r.errors.length);
+    const packs = new Map();
+    chosen.forEach(r => { const place = r.place ?? fallback; packs.set(place, (packs.get(place) || 0) + 1); });
+    $("poolImportPlaceField").hidden = !rows.some(r => r.place === null && !r.errors.length);
+    $("poolImportRows").innerHTML = rows.length
+      ? '<div class="pi-row is-head"><span></span><span>Kunde</span><span>Telefon</span><span>Themen</span><span>Rückholung</span><span>Prüfung</span></div>'
+        + rows.map(r => {
+          const ok = !r.errors.length;
+          const notes = [
+            ...r.errors.map(e => `<span class="chip high">${esc(e)}</span>`),
+            ...r.notes.map(([cls, text]) => `<span class="chip ${cls}">${esc(text)}</span>`),
+            ...(r.sales.length ? ['<span class="chip data">Kontakt in Sales</span>', ...r.sales.map(t => `<span>${esc(t)}</span>`)] : [])
+          ];
+          return `<label class="pi-row${r.on && ok ? "" : " is-off"}">
+            <input type="checkbox" data-pi="${r.index}"${r.on && ok ? " checked" : ""}${ok ? "" : " disabled"}>
+            <span><b>${esc(r.salutation)} ${esc(r.name || "–")}</b>${r.bsnr ? `<small>${esc(r.bsnr)}</small>` : ""}</span>
+            <span>${esc(r.phones.join(", ") || "–")}</span>
+            <span class="chips">${r.topics.map(key => `<span class="chip from">${esc(CALL_TOPICS[key].label)}</span>`).join("") || '<span class="chip warn">Thema fehlt</span>'}</span>
+            <span>${r.due ? esc(deDate(r.due)) : "–"}</span>
+            <span class="pi-notes">${notes.join("") || '<span class="chip good">Neu</span>'}</span>
+          </label>`;
+        }).join("")
+      : "";
+    $("poolImportCount").textContent = chosen.length
+      ? `${kontakte(chosen.length)} → ${[...packs].map(([place, n]) => `${placeName(place)} (${n})`).join(" · ")}`
+      : rows.length ? "Keine Kontakte ausgewählt." : "";
+    $("poolImportGo").disabled = !chosen.length;
+    $("poolImportGo").textContent = chosen.length ? `${kontakte(chosen.length)} ins Paket legen` : "Importieren";
+  }
+
+  function openPoolImport() {
+    poolImportRows = [];
+    $("poolImportFile").value = "";
+    setText("poolImportFileLabel", "Excel-Datei auswählen");
+    const branches = state.branches.filter(b => !isVideoCall(b));
+    const videoCalls = state.branches.filter(isVideoCall);
+    const options = list => list.map(b => `<option value="${esc(b.id)}">${esc(b.name)}</option>`).join("");
+    $("poolImportPlace").innerHTML = '<option value="">Ohne Filiale</option>'
+      + (branches.length ? `<optgroup label="Filialen">${options(branches)}</optgroup>` : "")
+      + (videoCalls.length ? `<optgroup label="Videocalls">${options(videoCalls)}</optgroup>` : "");
+    importStatus([]);
+    renderImportPreview();
+    openDialog($("poolImport"));
+  }
+
+  async function readPoolImport(file) {
+    setText("poolImportFileLabel", file.name);
+    poolImportRows = [];
+    renderImportPreview();
+    importStatus([["", "Liste wird gelesen und mit Office und Sales abgeglichen …"]]);
+    try {
+      const [XLSX, bestand] = await Promise.all([xlsxLib(), salesBestand().catch(() => null), loadPool()]);
+      const book = XLSX.read(await file.arrayBuffer(), { type: "array" });
+      const table = XLSX.utils.sheet_to_json(book.Sheets[book.SheetNames[0]], { header: 1, raw: true, defval: "" });
+      const head = table.findIndex(r => r.some(c => /nachname/i.test(String(c))));
+      if (head < 0) throw new Error("Keine Kopfzeile mit „Nachname“ gefunden.");
+      const map = {};
+      table[head].forEach((cell, i) => {
+        const title = String(cell).trim().toLowerCase();
+        const hit = IMPORT_COLUMNS.find(([key, re]) => map[key] === undefined && re.test(title));
+        if (hit) map[hit[0]] = i;
+      });
+      const missing = [["anrede", "Anrede"], ["vorname", "Vorname"], ["nachname", "Nachname"], ["telefon", "Telefonnummer"]]
+        .filter(([key]) => map[key] === undefined).map(([, label]) => label);
+      if (missing.length) throw new Error(`Spalte fehlt: ${missing.join(", ")}`);
+
+      const seen = new Map();
+      poolImportRows = table.slice(head + 1).filter(r => r.some(c => String(c).trim())).map((cells, i) => importRow(cells, map, i));
+      poolImportRows.forEach(r => {
+        if (r.errors.length) { r.on = false; return; }
+        const twins = officeTwins(r);
+        if (twins.length) { r.on = false; r.notes.push(["warn", `Schon in Office: ${twins.join(", ")}`]); }
+        const twinRow = r.phones.map(digits).map(n => seen.get(n)).find(Boolean);
+        if (twinRow) { r.on = false; r.notes.push(["warn", `Gleiche Nummer wie ${twinRow.name}`]); }
+        r.phones.forEach(p => seen.has(digits(p)) || seen.set(digits(p), r));
+        r.sales = salesTreffer(r, bestand);
+      });
+
+      const fehler = poolImportRows.filter(r => r.errors.length).length;
+      const doppelt = poolImportRows.filter(r => !r.errors.length && !r.on).length;
+      const sales = poolImportRows.filter(r => r.sales.length).length;
+      importStatus([
+        ["", `${poolImportRows.length} Zeilen gelesen${fehler ? ` · ${fehler} mit Fehlern` : ""}${doppelt ? ` · ${doppelt} schon vorhanden (abgewählt)` : ""}.`],
+        bestand
+          ? [sales ? "warn" : "", sales ? `${sales} ${sales === 1 ? "Kunde hatte" : "Kunden hatten"} schon Kontakt in Sales (${esc(bestand.quelle)}) – unten lila markiert.` : `Kein Kunde der Liste taucht in Sales auf (${esc(bestand.quelle)}).`]
+          : ["warn", "Sales-Abgleich nicht möglich – auf diesem Gerät sind keine Sales-Daten erreichbar."]
+      ]);
+    } catch (error) {
+      poolImportRows = [];
+      importStatus([["warn", esc(error.message)]]);
+    }
+    renderImportPreview();
+  }
+
+  const importPayload = r => {
+    const extended = r.bsnr || r.topics.some(key => !API_TOPIC_KEYS.has(key));
+    const saved = { version: 1, topics: r.topics, briefing: "", customScript: "", parent: "vater" };
+    if (r.bsnr) saved.bsnr = r.bsnr;
+    return {
+      customer_name: r.name, salutation: r.salutation, phones: r.phones.join("\n"),
+      topics: r.topics.filter(key => API_TOPIC_KEYS.has(key)),
+      briefing: extended ? CALL_SCRIPT_PREFIX + JSON.stringify(saved) : "",
+      due_date: r.due || null
+    };
+  };
+
+  $("poolImportBtn").addEventListener("click", openPoolImport);
+  $("poolImport").addEventListener("cancel", event => event.preventDefault());
+  $("poolImportClose").addEventListener("click", () => closeDialog($("poolImport")));
+  $("poolImportFile").addEventListener("change", () => {
+    const file = $("poolImportFile").files[0];
+    if (file) readPoolImport(file);
+  });
+  $("poolImportPlace").addEventListener("change", renderImportPreview);
+  $("poolImportRows").addEventListener("change", event => {
+    const box = event.target.closest("[data-pi]");
+    const row = box && poolImportRows.find(r => String(r.index) === box.dataset.pi);
+    if (!row) return;
+    row.on = box.checked;
+    renderImportPreview();
+  });
+
+  $("poolImportGo").addEventListener("click", event => {
+    const fallback = $("poolImportPlace").value;
+    const chosen = poolImportRows.filter(r => r.on && !r.errors.length);
+    if (!chosen.length) return;
+    const groups = new Map();
+    chosen.forEach(r => {
+      const place = r.place ?? fallback;
+      if (!groups.has(place)) groups.set(place, []);
+      groups.get(place).push(r);
+    });
+    withBusy(event.currentTarget, async () => {
+      let added = 0;
+      const failed = [];
+      try {
+        for (const [place, rows] of groups) {
+          for (let i = 0; i < rows.length; i += POOL_CHUNK) {
+            const part = rows.slice(i, i + POOL_CHUNK);
+            const res = await api("/admin/pool", "POST", { place, contacts: part.map(importPayload) });
+            added += Number(res?.added || 0);
+            asArray(res?.skipped).forEach(s => failed.push(`${part[s.index]?.name || "?"}: ${s.error}`));
+          }
+        }
+      } catch (error) {
+        failed.push(`Abgebrochen: ${error.message}`);
+      }
+      await loadPool();
+      if (added) toast(`${kontakte(added)} ins Paket gelegt ✓`);
+      if (failed.length) {
+        alert(`${added ? `${kontakte(added)} übernommen. ` : ""}Nicht übernommen:\n${failed.join("\n")}`);
+        const file = $("poolImportFile").files[0];
+        if (file) await readPoolImport(file);   // neu abgleichen – Übernommene stehen jetzt im Paket
+      } else {
+        closeDialog($("poolImport"));
+      }
+    });
+  });
 
   /* --- Themen-Dropdown --- */
 
@@ -7451,7 +8005,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       customScript:topics.includes("eigenes_skript") || callScriptManual ? $("callCustomScript").value.trim() : "",
       parent:topics.includes("elternteil") ? $("callParent").value : "vater",
       termArt:$("callTermArt").value === "folge" ? "folge" : "neu", termDatum:parseDeDate($("callTermDate").value),
-      mergedTopics:callScriptMergedTopics, mergedParent:callScriptMergedParent, scriptOverride:callScriptManual};
+      mergedTopics:callScriptMergedTopics, mergedParent:callScriptMergedParent, scriptOverride:callScriptManual,
+      bsnr:callFormBsnr};
   }
 
   function callFormCustomer() {
@@ -7587,6 +8142,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   function resetCallForm() {
     callScriptManual = false;
+    callFormBsnr = "";
     callScriptVisible = false;
     callScriptMergedTopics = [];
     callScriptMergedParent = "vater";
@@ -7643,6 +8199,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     callScriptVisible = Boolean(script.customScript);
     callScriptMergedTopics = script.mergedTopics;
     callScriptMergedParent = script.mergedParent;
+    callFormBsnr = script.bsnr || "";
     $("callParent").value = script.parent;
     $("callTermArt").value = script.termArt || "neu";
     $("callTermDate").value = script.termDatum || "";
