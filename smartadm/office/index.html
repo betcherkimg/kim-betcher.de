@@ -7798,6 +7798,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       bsnr: text("bsnr").slice(0, 40),
       errors: [], notes: [], sales: [], on: true, noPhone: !phones.length && !badPhones.length
     };
+    // Ohne Einverständnis zum Telefonmarketing kommt niemand in ein Paket.
+    const einwilligung = String(raw("einwilligung") ?? "").trim().toLowerCase();
+    if (/abgelehnt|nein|^no$|verweigert|widerspr|nicht erlaubt|^x$/.test(einwilligung)) row.errors.push("Telefonmarketing abgelehnt");
     if (!row.name) row.errors.push("Name fehlt");
     if (!salutation) row.errors.push("Anrede fehlt");
     if (badPhones.length) row.errors.push(`Nummer unklar: ${badPhones.join(", ")}`);
@@ -7950,7 +7953,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         const title = String(cell).trim().toLowerCase();
         if (!title) return;
         if (IMPORT_BSNR.test(title)) { if (map.bsnr === undefined) map.bsnr = i; return; }
-        if (IMPORT_PHONE.test(title) && !/marketing/.test(title)) { map.phones.push(i); return; }
+        if (/marketing|einwillig|einverst/.test(title)) { if (map.einwilligung === undefined) map.einwilligung = i; return; }
+        if (IMPORT_PHONE.test(title)) { map.phones.push(i); return; }
         const hit = IMPORT_COLUMNS.find(([key, re]) => map[key] === undefined && re.test(title));
         if (hit) map[hit[0]] = i;
       });
@@ -7988,13 +7992,15 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         if (twins.length) { r.on = false; r.notes.push(["warn", `Schon in Office: ${twins.join(", ")}`]); }
       });
 
-      const ohneNummer = poolImportRows.filter(r => r.noPhone).length;
-      const fehler = poolImportRows.filter(r => r.errors.length && !r.noPhone).length;
+      const gesperrt = r => r.errors.includes("Telefonmarketing abgelehnt");
+      const ohneEinwilligung = poolImportRows.filter(gesperrt).length;
+      const ohneNummer = poolImportRows.filter(r => r.noPhone && !gesperrt(r)).length;
+      const fehler = poolImportRows.filter(r => r.errors.length && !r.noPhone && !gesperrt(r)).length;
       const doppelt = poolImportRows.filter(r => !r.errors.length && !r.on).length;
       const zusammen = rows.length - poolImportRows.length;
       const sales = poolImportRows.filter(r => r.sales.length).length;
       importStatus([
-        ["", `${rows.length} Zeilen gelesen${zusammen ? ` · ${zusammen} mit gleicher Nummer zusammengefasst` : ""}${ohneNummer ? ` · ${ohneNummer} noch ohne Nummer (bleiben draußen)` : ""}${fehler ? ` · ${fehler} mit Fehlern` : ""}${doppelt ? ` · ${doppelt} schon vorhanden (abgewählt)` : ""}.`],
+        ["", `${rows.length} Zeilen gelesen${zusammen ? ` · ${zusammen} mit gleicher Nummer zusammengefasst` : ""}${ohneEinwilligung ? ` · ${ohneEinwilligung} ohne Einverständnis zum Telefonmarketing (gesperrt)` : ""}${ohneNummer ? ` · ${ohneNummer} noch ohne Nummer (bleiben draußen)` : ""}${fehler ? ` · ${fehler} mit Fehlern` : ""}${doppelt ? ` · ${doppelt} schon vorhanden (abgewählt)` : ""}.`],
         bestand
           ? [sales ? "warn" : "", sales ? `${sales} ${sales === 1 ? "Kunde hatte" : "Kunden hatten"} schon Kontakt in Sales (${esc(bestand.quelle)}) – unten lila markiert.` : `Kein Kunde der Liste taucht in Sales auf (${esc(bestand.quelle)}).`]
           : ["warn", "Sales-Abgleich nicht möglich – auf diesem Gerät sind keine Sales-Daten erreichbar."]
