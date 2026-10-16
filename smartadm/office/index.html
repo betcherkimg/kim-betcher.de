@@ -1288,6 +1288,7 @@ body.my-editing .my-widget { outline: 2px dashed color-mix(in srgb, var(--accent
   .my-greet { font-size: 22px; }
 }
 
+#callTermDate.invalid { border-color: var(--danger); }
 /* ===== 5. Versuch: Ergebnisleiste ===== */
 .final-bar { display: none; }
 body.final-modus .final-bar:not([hidden]) {
@@ -2592,6 +2593,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
                   </details>
                   <small id="callTopicsHint" aria-live="polite">Bis zu drei Themen in deiner Auswahlreihenfolge. Die ersten beiden werden verbunden, das dritte beginnt mit „Außerdem möchte er …“.</small></div>
                 <div class="field" id="callChildField" hidden><label for="callChild">Kind / Kinder</label><select id="callChild"><option value="kinder">Mehrere Kinder</option><option value="sohn">Sohn</option><option value="tochter">Tochter</option></select></div>
+                <div class="field" id="callTermField" hidden><label for="callTermArt">Terminierung</label><select id="callTermArt"><option value="neu">Neuer Termin</option><option value="folge">Folgetermin</option></select></div>
+                <div class="field" id="callTermDateField" hidden><label for="callTermDate" id="callTermDateLabel">Datum verpasster Termin</label><input id="callTermDate" type="text" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="tt.mm.jjjj"><small id="callTermDateHint">Optional – z. B. 14.10.2026 oder 141026</small></div>
                 <div class="field" id="callParentField" hidden><label for="callParent">Vertrag des Elternteils</label><select id="callParent"><option value="vater">Vater</option><option value="mutter">Mutter</option></select></div>
                 <div class="full script-tools">
                   <div><strong>Gesprächsskript</strong><small>Alle Themen als zusammenhängenden Text ansehen und bearbeiten.</small></div>
@@ -6154,7 +6157,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     elternteil: {label:"Vertrag eines Elternteils", subject:"den Bausparvertrag {elternteil}"},
     eigenes_skript: {label:"Eigenes Skript schreiben"},
     riester: {label:"Riester", subject:"Ihren Riester-Vertrag"},
-    neuterminierung: {label:"Neuterminierung", subject:"die Vereinbarung eines neuen Termins"}
+    neuterminierung: {label:"Terminierung allgemein"} // eigener Einleitungssatz, siehe terminLead()
   };
 
   const TOPIC_KEYS = ["eigenes_skript", ...Object.keys(CALL_TOPICS).filter(key => !["sohn", "tochter", "eigenes_skript"].includes(key))];
@@ -6180,7 +6183,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   // Hinweisfeld gespeichert. Der Worker erhält weiterhin nur bekannte Themenkeys.
   function callScriptData(c) {
     const fallback = {topics:asArray(c.topics), briefing:c.briefing || "", customScript:"", parent:"vater",
-      mergedTopics:[], mergedParent:"vater", scriptOverride:false};
+      mergedTopics:[], mergedParent:"vater", scriptOverride:false, termArt:"neu", termDatum:""};
     if (!fallback.briefing.startsWith(CALL_SCRIPT_PREFIX)) return fallback;
     try {
       const data = JSON.parse(fallback.briefing.slice(CALL_SCRIPT_PREFIX.length));
@@ -6188,16 +6191,19 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       return {topics:data.topics.filter(key => CALL_TOPICS[key]), briefing:data.briefing,
         customScript:data.customScript, parent:data.parent === "mutter" ? "mutter" : "vater",
         mergedTopics:asArray(data.mergedTopics).filter(key => CALL_TOPICS[key]?.subject),
-        mergedParent:data.mergedParent === "mutter" ? "mutter" : "vater", scriptOverride:data.scriptOverride === true};
+        mergedParent:data.mergedParent === "mutter" ? "mutter" : "vater", scriptOverride:data.scriptOverride === true,
+        termArt:data.termArt === "folge" ? "folge" : "neu", termDatum:parseDeDate(data.termDatum || "")};
     } catch { return fallback; }
   }
 
   const callBriefing = c => callScriptData(c).briefing;
 
   function encodeCallScript(data) {
-    const extended = data.customScript || data.topics.some(key => !API_TOPIC_KEYS.has(key));
+    const termin = data.topics.includes("neuterminierung") && (data.termArt === "folge" || parseDeDate(data.termDatum));
+    const extended = data.customScript || termin || data.topics.some(key => !API_TOPIC_KEYS.has(key));
     if (!extended) return data.briefing;
     const saved = {version:1, topics:data.topics, briefing:data.briefing, customScript:data.customScript, parent:data.parent};
+    if (termin) { saved.termArt = data.termArt; saved.termDatum = parseDeDate(data.termDatum); }
     if (data.customScript) {
       saved.mergedTopics = data.mergedTopics;
       saved.mergedParent = data.mergedParent;
@@ -6307,10 +6313,38 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const topicSubject = (key, parent = "vater") => (CALL_TOPICS[key]?.subject || "")
     .replaceAll("{elternteil}", parent === "mutter" ? "Ihrer Mutter" : "Ihres Vaters");
 
+  // „Terminierung allgemein“: Sasi vereinbart den Termin für Herrn Betcher – eigener Einleitungssatz,
+  // wahlweise neuer Termin (verpasster Termin) oder Folgetermin, optional mit Datum.
+  function terminLead(data) {
+    if (!asArray(data.topics).includes("neuterminierung")) return null;
+    const datum = parseDeDate(data.termDatum || "");
+    if (data.termArt === "folge") {
+      return { folge: true, text: `${bossName()} möchte mit Ihnen einen Folgetermin ausmachen, um nochmal über die Themen ${datum ? `vom letzten Termin am ${datum}` : "vom letzten Mal"} zu sprechen.` };
+    }
+    return { folge: false, text: `${bossName()} möchte mit Ihnen einen neuen Termin wegen Ihres Bausparkontos ausmachen, da es ${datum ? `beim letzten Termin am ${datum}` : "beim letzten Mal"} leider nicht geklappt hat.` };
+  }
+
+  // tt.mm.jjjj, tt.mm.jj, ttmmjjjj oder ttmmjj → tt.mm.jjjj (sonst leer)
+  function parseDeDate(text) {
+    const t = String(text || "").trim();
+    let m = t.match(/^(\d{1,2})\.(\d{1,2})\.(\d{2}|\d{4})$/) || t.match(/^(\d{2})(\d{2})(\d{2}|\d{4})$/);
+    if (!m) return "";
+    let [, d, mo, y] = m;
+    if (y.length === 2) y = String(2000 + Number(y));
+    const date = new Date(Date.UTC(Number(y), Number(mo) - 1, Number(d)));
+    if (date.getUTCDate() !== Number(d) || date.getUTCMonth() !== Number(mo) - 1) return "";
+    return `${String(d).padStart(2, "0")}.${String(mo).padStart(2, "0")}.${y}`;
+  }
+
   // Jeder Baustein passt grammatisch hinter „über“. Wiederholtes „über“
   // hält auch Kombinationen mit eigenen Aufzählungen gut verständlich.
-  function topicSentences(subjects) {
+  function topicSentences(subjects, lead = null) {
     const parts = subjects.filter(Boolean);
+    if (lead) {
+      if (!parts.length) return lead.text;
+      return [lead.text, `${lead.folge ? "Außerdem möchte er" : "Er möchte"} über ${parts.slice(0, 2).join(" sowie über ")} sprechen.`,
+        ...parts.slice(2).map(subject => `Außerdem möchte er über ${subject} sprechen.`)].join(" ");
+    }
     if (!parts.length) return "";
     const first = `${bossName()} möchte mit Ihnen über ${parts.slice(0, 2).join(" sowie über ")} sprechen.`;
     return [first, ...parts.slice(2).map(subject => `Außerdem möchte er über ${subject} sprechen.`)].join(" ");
@@ -6325,7 +6359,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const subjects = standard.map(key => topicSubject(key, data.parent));
     let custom = data.customScript || "";
     if (data.scriptOverride && custom) return custom;
-    if (!custom) return fullScriptTemplate(topicSentences(subjects) ||
+    const lead = terminLead(data);
+    if (!custom) return fullScriptTemplate(topicSentences(subjects, lead) ||
       `${bossName()} möchte mit Ihnen über Ihren Vertrag und Ihre Wünsche sprechen.`);
     if (custom.includes("{themen}")) return custom;
 
@@ -6345,7 +6380,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         if (merged.length < MAX_CALL_TOPICS) merged.push(ownSubject);
         else merged[merged.length - 1] += ` sowie über ${ownSubject}`;
       }
-      return custom.replace(sentence, topicSentences(merged) ||
+      return custom.replace(sentence, topicSentences(merged, lead && !custom.includes(lead.text) ? lead : null) ||
         `${bossName()} möchte mit Ihnen über Ihren Vertrag und Ihre Wünsche sprechen.`);
     }
 
@@ -6354,8 +6389,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const additions = parts => parts.map(subject => `Außerdem möchte er über ${subject} sprechen.`).join(" ");
     const previous = additions(asArray(data.mergedTopics).map(key => topicSubject(key, data.mergedParent)));
     if (previous) custom = custom.replace(previous, "").replace(/\n{3,}/g, "\n\n").trim();
-    if (!subjects.length) return custom;
-    const addition = additions(subjects);
+    const leadText = lead && !custom.includes(lead.text) ? lead.text : "";
+    if (!subjects.length && !leadText) return custom;
+    const addition = [leadText, additions(subjects)].filter(Boolean).join(" ");
     return custom.includes("{terminfrage}")
       ? custom.replace("{terminfrage}", `${addition}\n\n{terminfrage}`)
       : `${custom}\n\n${addition}`;
@@ -6364,7 +6400,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function renderConversation(template, c, data, assistant = state.userName || "…") {
     const values = {anrede:customerSalutation(c), kunde:customerLastName(c) || "[Nachname]", mitarbeiter:assistant,
       terminfrage:appointmentQuestion(c), themen:topicSentences(data.topics.filter(key => key !== "eigenes_skript")
-        .map(key => topicSubject(key, data.parent)))};
+        .map(key => topicSubject(key, data.parent)), terminLead(data))};
     // Wer {terminfrage} aus dem Skript löscht, bekommt bewusst keine Terminfrage.
     return template.replace(/\{(anrede|kunde|mitarbeiter|terminfrage|themen)\}/g, (_, key) => values[key]);
   }
@@ -7411,6 +7447,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     return {topics, briefing:$("callBriefing").value.trim(),
       customScript:topics.includes("eigenes_skript") || callScriptManual ? $("callCustomScript").value.trim() : "",
       parent:topics.includes("elternteil") ? $("callParent").value : "vater",
+      termArt:$("callTermArt").value === "folge" ? "folge" : "neu", termDatum:parseDeDate($("callTermDate").value),
       mergedTopics:callScriptMergedTopics, mergedParent:callScriptMergedParent, scriptOverride:callScriptManual};
   }
 
@@ -7468,6 +7505,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       : "Bis zu drei Themen in deiner Auswahlreihenfolge. Die ersten beiden werden verbunden, das dritte beginnt mit „Außerdem möchte er …“.");
     $("callChildField").hidden = !chosen.some(key => ["kinder", "sohn", "tochter"].includes(key));
     $("callParentField").hidden = !chosen.includes("elternteil");
+    $("callTermField").hidden = $("callTermDateField").hidden = !chosen.includes("neuterminierung");
+    setText("callTermDateLabel", $("callTermArt").value === "folge" ? "Datum letzter Termin" : "Datum verpasster Termin");
     $("callCustomScriptField").hidden = !chosen.length && !callScriptVisible && !callScriptManual;
     $("callScriptSuggestionsField").hidden = !chosen.includes("eigenes_skript");
     refreshCallScript(merge);
@@ -7505,7 +7544,18 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     trackTopicSelection(box.dataset.topic, box.checked);
     updateTopicsSummary(true);
   });
-  ["callChild", "callParent"].forEach(id => $(id).addEventListener("change", () => updateTopicsSummary(true)));
+  ["callChild", "callParent", "callTermArt"].forEach(id => $(id).addEventListener("change", () => updateTopicsSummary(true)));
+  $("callTermDate").addEventListener("input", () => {
+    const raw = $("callTermDate").value.trim();
+    const ok = !raw || parseDeDate(raw);
+    $("callTermDate").classList.toggle("invalid", !ok && raw.length >= 6);
+    setText("callTermDateHint", !ok && raw.length >= 6 ? "Bitte als tt.mm.jjjj oder ttmmjj eingeben." : "Optional – z. B. 14.10.2026 oder 141026");
+    if (ok) updateTopicsSummary(true);
+  });
+  $("callTermDate").addEventListener("blur", () => {
+    const d = parseDeDate($("callTermDate").value);
+    if (d) $("callTermDate").value = d;
+  });
   $("callCustomScript").addEventListener("input", () => {
     callScriptManual = true;
     updateScriptPreviews();
@@ -7539,6 +7589,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     callScriptMergedParent = "vater";
     ["callEditId", "callLastName", "callFirstName", "callPhones", "callBriefing", "callCustomScript"].forEach(id => ($(id).value = ""));
     $("callParent").value = "vater";
+    $("callTermArt").value = "neu";
+    $("callTermDate").value = "";
     $("callScriptSuggestion").value = "0";
     renderCallPlaceSelect("");
     $("callSalutation").value = "";
@@ -7589,6 +7641,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     callScriptMergedTopics = script.mergedTopics;
     callScriptMergedParent = script.mergedParent;
     $("callParent").value = script.parent;
+    $("callTermArt").value = script.termArt || "neu";
+    $("callTermDate").value = script.termDatum || "";
     $("callScriptSuggestion").value = "0";
     setCallTopics(script.topics);
     setText("callFormTitle", `Kontakt bearbeiten: ${c.customer_name}`);
