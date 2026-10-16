@@ -1319,6 +1319,9 @@ body.final-modus #poolBox { display: none !important; }
 .pi-file .plus { width: 30px; height: 30px; border-radius: 50%; background: var(--ground); display: grid; place-items: center; font-size: 17px; }
 .pi-status { margin: 12px 0; display: grid; gap: 6px; }
 .pi-status:empty { display: none; }
+.minor-field .check-row { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+.minor-row { display: grid; grid-template-columns: minmax(0, 1.4fr) 90px minmax(0, 1fr); gap: 10px; margin: 8px 0 4px; }
+.minor-row label { display: block; font-size: 12.5px; color: var(--ink-soft); margin-bottom: 4px; }
 .pi-fields { display: flex; gap: 12px; flex-wrap: wrap; margin: 0 0 12px; }
 .pi-fields .field { margin: 0; flex: 1 1 240px; max-width: 360px; }
 .pool-owner { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-soft); }
@@ -1328,6 +1331,7 @@ body.final-modus #poolBox { display: none !important; }
 .pi-row { display: grid; grid-template-columns: 22px minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.6fr) 84px minmax(0, 1.7fr); gap: 10px; align-items: start; padding: 8px 12px; font-size: 13.5px; border-bottom: 1px solid var(--line); cursor: pointer; }
 .pi-row:last-child { border-bottom: 0; }
 .pi-row small { display: block; color: var(--ink-soft); font-size: 12px; }
+.pi-row small.pi-kind { color: var(--gelb, #94600f); font-weight: 600; }
 .pi-row.is-head { background: var(--ground); font-weight: 600; font-size: 12.5px; color: var(--ink-soft); cursor: default; }
 .pi-row.is-off > :not(input):not(.pi-notes) { opacity: .5; }
 .pi-row input { margin-top: 3px; }
@@ -2637,7 +2641,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <button class="picker-close" type="button" id="poolImportClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
         </div>
         <div class="form-dialog-body">
-          <p class="form-dialog-hint">Spalten: Anrede, Vorname, Nachname, Ansprachegrund, Telnr. 1, Telnr. 2, Termin bei, Rückholung – optional Bausparnummer. Nummern in jedem Format (0151/12345678, +49 151 …). Zeilen ohne Nummer bleiben draußen, gleiche Nummer wird ein Kontakt. Die Kontakte landen im Paket ihrer Filiale, nicht direkt in einer Telefonliste. Vor dem Import siehst du, wer schon in Office ist und wer schon Kontakt in Sales hatte.</p>
+          <p class="form-dialog-hint">Spalten: Anrede, Vorname, Nachname, Ansprachegrund, Telnr. 1, Telnr. 2, Termin bei, Rückholung – optional Alter (unter 18 = Eltern anrufen) und Bausparnummer. Nummern in jedem Format (0151/12345678, +49 151 …). Zeilen ohne Nummer bleiben draußen, gleiche Nummer wird ein Kontakt. Die Kontakte landen im Paket ihrer Filiale, nicht direkt in einer Telefonliste. Vor dem Import siehst du, wer schon in Office ist und wer schon Kontakt in Sales hatte.</p>
           <label class="pi-file"><input type="file" id="poolImportFile" accept=".xlsx,.xls,.csv"><span class="plus" aria-hidden="true">+</span><span id="poolImportFileLabel">Excel-Datei auswählen</span></label>
           <div id="poolImportStatus" class="pi-status" aria-live="polite"></div>
           <div class="pi-fields">
@@ -2671,6 +2675,15 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
                 <div class="field name-pair">
                   <div><label for="callLastName">Nachname</label><input id="callLastName" type="text" maxlength="60" required autocomplete="off" placeholder="Mustermann"></div>
                   <div><label for="callFirstName">Vorname</label><input id="callFirstName" type="text" maxlength="55" required autocomplete="off" placeholder="Max"></div>
+                </div>
+                <div class="field full minor-field">
+                  <label class="check-row"><input type="checkbox" id="callMinor"><span>Kunde ist unter 18 – die Nummer gehört den Eltern</span></label>
+                  <div class="minor-row" id="callMinorDetails" hidden>
+                    <div><label for="callMinorName">Vorname des Kindes</label><input id="callMinorName" type="text" maxlength="60" autocomplete="off" placeholder="z. B. Lucas"></div>
+                    <div><label for="callMinorAge">Alter</label><input id="callMinorAge" type="number" min="0" max="17" inputmode="numeric" placeholder="17"></div>
+                    <div><label for="callMinorArt">Kind</label><select id="callMinorArt"><option value="sohn">Sohn</option><option value="tochter">Tochter</option><option value="kinder">Mehrere Kinder</option></select></div>
+                  </div>
+                  <small>Dann begrüßt das Skript mit „Herr/Frau Nachname“ und spricht über das Bausparkonto des Kindes.</small>
                 </div>
                 <div class="field"><label for="callPhones">Telefonnummer(n)</label><textarea id="callPhones" rows="2" required placeholder="Bis zu 2 Nummern, eine pro Zeile"></textarea></div>
                 <div class="field"><label for="callPlace">Termin bei</label><select id="callPlace"></select><small>Filialen und Videocalls mit Bookings-Link pflegst du unter „Filialen“.</small></div>
@@ -6240,7 +6253,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     sohn: {label:"Vertrag des Sohnes", subject:"den Bausparvertrag Ihres Sohnes"},
     tochter: {label:"Vertrag der Tochter", subject:"den Bausparvertrag Ihrer Tochter"},
     jungeleute: {label:"Junge-Leute-Aktion für Kinder", subject:"unsere aktuelle Junge-Leute-Aktion für Ihre Kinder"},
-    jungeleute_selbst: {label:"Junge-Leute-Aktion", subject:"unsere aktuelle Aktion für junge Leute"},
+    jungeleute_selbst: {label:"Ziele & Wünsche", subject:"Ihre Ziele, Wünsche und mögliche Verbesserungen"}, // alt, wie „ziele“
+    ziele: {label:"Ziele & Wünsche", subject:"Ihre Ziele, Wünsche und mögliche Verbesserungen"},
     besparung: {label:"Besparungsqualität", subject:"die aktuelle Besparung Ihres Vertrages und mögliche Verbesserungen"},
     foerderung: {label:"Staatliche Förderungen", subject:"staatliche Förderungen und mögliche Änderungen für Sie"},
     treuepraemie: {label:"Treueprämie", subject:"die anstehende Treueprämie in Ihrem Vertrag"},
@@ -6256,7 +6270,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     neuterminierung: {label:"Terminierung allgemein"} // eigener Einleitungssatz, siehe terminLead()
   };
 
-  const TOPIC_KEYS = ["eigenes_skript", ...Object.keys(CALL_TOPICS).filter(key => !["sohn", "tochter", "eigenes_skript"].includes(key))];
+  const TOPIC_KEYS = ["eigenes_skript", ...Object.keys(CALL_TOPICS).filter(key => !["sohn", "tochter", "eigenes_skript", "jungeleute_selbst"].includes(key))];
   let callTopicOrder = [];
   let callScriptManual = false;
   let callScriptVisible = false;
@@ -6280,7 +6294,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   // Hinweisfeld gespeichert. Der Worker erhält weiterhin nur bekannte Themenkeys.
   function callScriptData(c) {
     const fallback = {topics:asArray(c.topics), briefing:c.briefing || "", customScript:"", parent:"vater",
-      mergedTopics:[], mergedParent:"vater", scriptOverride:false, termArt:"neu", termDatum:"", bsnr:""};
+      mergedTopics:[], mergedParent:"vater", scriptOverride:false, termArt:"neu", termDatum:"", bsnr:"", kind:null};
     if (!fallback.briefing.startsWith(CALL_SCRIPT_PREFIX)) return fallback;
     try {
       const data = JSON.parse(fallback.briefing.slice(CALL_SCRIPT_PREFIX.length));
@@ -6290,18 +6304,37 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         mergedTopics:asArray(data.mergedTopics).filter(key => CALL_TOPICS[key]?.subject),
         mergedParent:data.mergedParent === "mutter" ? "mutter" : "vater", scriptOverride:data.scriptOverride === true,
         termArt:data.termArt === "folge" ? "folge" : "neu", termDatum:parseDeDate(data.termDatum || ""),
-        bsnr:typeof data.bsnr === "string" ? data.bsnr.slice(0, 40) : ""};
+        bsnr:typeof data.bsnr === "string" ? data.bsnr.slice(0, 40) : "", kind:cleanKind(data.kind)};
     } catch { return fallback; }
   }
 
   const callBriefing = c => callScriptData(c).briefing;
 
+  // Kunde unter 18: Die Nummer gehört den Eltern. Begrüßung „Herr/Frau Nachname“, Skript über das Konto des Kindes.
+  function cleanKind(k) {
+    if (!k || typeof k !== "object") return null;
+    const art = ["sohn", "tochter", "kinder"].includes(k.art) ? k.art : "sohn";
+    const leer = k.alter === null || k.alter === undefined || String(k.alter).trim() === "";
+    const alter = !leer && Number.isInteger(Number(k.alter)) && Number(k.alter) >= 0 && Number(k.alter) < 18 ? Number(k.alter) : null;
+    return { vorname: String(k.vorname || "").trim().slice(0, 60), alter, art };
+  }
+  const kindNamen = k => k?.vorname || (k?.art === "kinder" ? "Ihren Kindern" : "Ihrem Kind");
+  function kindLead(data) {
+    const k = data.kind;
+    if (!k) return "";
+    const name = k.vorname ? ` ${k.vorname}` : "";
+    if (k.art === "kinder") return `Es geht um die Bausparkonten Ihrer Kinder${name}.`;
+    return k.art === "tochter" ? `Es geht um das Bausparkonto Ihrer Tochter${name}.` : `Es geht um das Bausparkonto Ihres Sohnes${name}.`;
+  }
+  const kindText = k => k ? `${k.alter !== null && k.alter !== undefined ? `${k.alter} J.` : "unter 18"} – Eltern` : "";
+
   function encodeCallScript(data) {
     const termin = data.topics.includes("neuterminierung") && (data.termArt === "folge" || parseDeDate(data.termDatum));
-    const extended = data.customScript || termin || data.bsnr || data.topics.some(key => !API_TOPIC_KEYS.has(key));
+    const extended = data.customScript || termin || data.bsnr || data.kind || data.topics.some(key => !API_TOPIC_KEYS.has(key));
     if (!extended) return data.briefing;
     const saved = {version:1, topics:data.topics, briefing:data.briefing, customScript:data.customScript, parent:data.parent};
-    if (data.bsnr) saved.bsnr = data.bsnr;   // Bausparnummer aus dem Import – nur für den Boss
+    if (data.bsnr) saved.bsnr = data.bsnr;
+    if (data.kind) saved.kind = cleanKind(data.kind);   // Bausparnummer aus dem Import – nur für den Boss
     if (termin) { saved.termArt = data.termArt; saved.termDatum = parseDeDate(data.termDatum); }
     if (data.customScript) {
       saved.mergedTopics = data.mergedTopics;
@@ -6411,6 +6444,18 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   const topicSubject = (key, parent = "vater") => (CALL_TOPICS[key]?.subject || "")
     .replaceAll("{elternteil}", parent === "mutter" ? "Ihrer Mutter" : "Ihres Vaters");
+  // Bei Kindern unter 18 sprechen die Themen über das Kind, nicht über die Eltern.
+  function subjectFor(key, data, parent = data.parent) {
+    if (!data.kind) return topicSubject(key, parent);
+    if (key === "ziele" || key === "jungeleute_selbst") return `die Ziele und Wünsche von ${kindNamen(data.kind)} und mögliche Verbesserungen`;
+    // „Ihr…“ meint sonst den Angerufenen – beim Kind wird daraus der Artikel: Ihres Vertrages → des Vertrages
+    const artikel = { Ihres: "des", Ihren: "den", Ihrem: "dem", Ihrer: "der", Ihre: "die" };
+    return topicSubject(key, parent).replace(/ für Sie$/, "").replace(/\bIhr(es|en|em|er|e)\b/g, m => artikel[m]);
+  }
+  const withKind = (data, sentences) => [kindLead(data), sentences].filter(Boolean).join(" ");
+  const fallbackSentence = data => data.kind
+    ? `${bossName()} möchte mit Ihnen über die Ziele und Wünsche von ${kindNamen(data.kind)} und mögliche Verbesserungen sprechen.`
+    : `${bossName()} möchte mit Ihnen über Ihren Vertrag und Ihre Wünsche sprechen.`;
 
   // „Terminierung allgemein“: Sasi vereinbart den Termin für Herrn Betcher – eigener Einleitungssatz,
   // wahlweise neuer Termin (verpasster Termin) oder Folgetermin, optional mit Datum.
@@ -6455,12 +6500,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   function conversationTemplate(data) {
     const standard = data.topics.filter(key => CALL_TOPICS[key]?.subject);
-    const subjects = standard.map(key => topicSubject(key, data.parent));
+    const subjects = standard.map(key => subjectFor(key, data));
     let custom = data.customScript || "";
     if (data.scriptOverride && custom) return custom;
     const lead = terminLead(data);
-    if (!custom) return fullScriptTemplate(topicSentences(subjects, lead) ||
-      `${bossName()} möchte mit Ihnen über Ihren Vertrag und Ihre Wünsche sprechen.`);
+    if (!custom) return fullScriptTemplate(withKind(data, topicSentences(subjects, lead) || fallbackSentence(data)));
     if (custom.includes("{themen}")) return custom;
 
     // Vorlagen und übliche eigene Formulierungen werden zu EINER Themenfolge
@@ -6469,18 +6513,18 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const match = custom.match(sentence);
     if (match) {
       const included = new Set((data.mergedTopics?.length ? data.mergedTopics : standard)
-        .map(key => topicSubject(key, data.mergedTopics?.length ? data.mergedParent : data.parent)));
+        .map(key => subjectFor(key, data, data.mergedTopics?.length ? data.mergedParent : data.parent)));
       const existing = match[0].replace(/^Herr Betcher möchte mit Ihnen (?:gerne )?über /, "")
         .replace(/ sprechen\.\s*Außerdem möchte er über /g, " sowie über ")
         .replace(/ sprechen\.$/, "").split(/ (?:und|sowie) über |, über /);
       const ownSubject = existing.filter(subject => !included.has(subject.trim())).join(" sowie über ").trim();
-      const merged = data.topics.map(key => key === "eigenes_skript" ? ownSubject : topicSubject(key, data.parent)).filter(Boolean);
+      const merged = data.topics.map(key => key === "eigenes_skript" ? ownSubject : subjectFor(key, data)).filter(Boolean);
       if (ownSubject && !data.topics.includes("eigenes_skript")) {
         if (merged.length < MAX_CALL_TOPICS) merged.push(ownSubject);
         else merged[merged.length - 1] += ` sowie über ${ownSubject}`;
       }
-      return custom.replace(sentence, topicSentences(merged, lead && !custom.includes(lead.text) ? lead : null) ||
-        `${bossName()} möchte mit Ihnen über Ihren Vertrag und Ihre Wünsche sprechen.`);
+      const sentences = topicSentences(merged, lead && !custom.includes(lead.text) ? lead : null) || fallbackSentence(data);
+      return custom.replace(sentence, kindLead(data) && !custom.includes(kindLead(data)) ? withKind(data, sentences) : sentences);
     }
 
     // Freie Texte bleiben erhalten. {themen} bietet eine frei platzierbare
@@ -6497,9 +6541,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
 
   function renderConversation(template, c, data, assistant = state.userName || "…") {
-    const values = {anrede:customerSalutation(c), kunde:customerLastName(c) || "[Nachname]", mitarbeiter:assistant,
-      terminfrage:appointmentQuestion(c), themen:topicSentences(data.topics.filter(key => key !== "eigenes_skript")
-        .map(key => topicSubject(key, data.parent)), terminLead(data))};
+    const values = {anrede:data.kind ? "Herr/Frau" : customerSalutation(c), kunde:customerLastName(c) || "[Nachname]", mitarbeiter:assistant,
+      terminfrage:appointmentQuestion(c), themen:withKind(data, topicSentences(data.topics.filter(key => key !== "eigenes_skript")
+        .map(key => subjectFor(key, data)), terminLead(data)))};
     // Wer {terminfrage} aus dem Skript löscht, bekommt bewusst keine Terminfrage.
     return template.replace(/\{(anrede|kunde|mitarbeiter|terminfrage|themen)\}/g, (_, key) => values[key]);
   }
@@ -6708,7 +6752,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function callSummaryHtml(c, held, open) {
     const sub = held
       ? `<span class="cc-note">${esc(c.hold_note)}</span>`
-      : `<span class="cc-sub">${esc(attemptText(c))} · ${esc(placeLabel(c))}</span>`;
+      : `<span class="cc-sub">${esc(attemptText(c))} · ${esc(placeLabel(c))}${callScriptData(c).kind ? ` · <b>Kind ${esc(kindText(callScriptData(c).kind))}</b>` : ""}</span>`;
     return `<button class="cc-head" type="button" data-call-toggle aria-expanded="${open}">
       <span class="cc-main"><span class="cc-name">${esc(c.customer_name)}</span>${sub}</span>
       ${held ? "" : attemptDots(shownAttempts(c))}
@@ -7201,6 +7245,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   // Themen als Chips – so sieht der Boss sofort, wo für das Skript noch etwas fehlt.
   function topicChips(c) {
+    const kind = callScriptData(c).kind;
+    const kindChip = kind ? `<span class="chip warn">Kind ${esc(kindText(kind))}</span>` : "";
+    return kindChip + topicChipsOnly(c);
+  }
+  function topicChipsOnly(c) {
     const topics = callScriptData(c).topics.filter(key => CALL_TOPICS[key]);
     if (topics.length) {
       return topics.map(key => `<span class="chip from">${esc(CALL_TOPICS[key].label)}</span>`).join("");
@@ -7714,7 +7763,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     ["nachname", /^nachname|^name$/],
     ["themen", /ansprache|thema|themen|anlass/],
     ["ort", /termin bei|filiale|paket/],
-    ["rueckholung", /r(ü|ue)ckhol|f(ä|ae)llig/]
+    ["rueckholung", /r(ü|ue)ckhol|f(ä|ae)llig/],
+    ["alter", /^alter/]
   ];
   /* Telefonnummern in jedem üblichen Format lesen: 0151/12345678, 015112345678, 0151 12345678,
      01511 2345678, +49 151 2345678, 0049 (0)151-2345678, „Tel.: 07361 / 12 34 56“, Excel-Zahl ohne 0 …
@@ -7782,7 +7832,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   const topicNorm = text => normalizeName(text).replace(/[–—-]/g, " ").replace(/\s+/g, " ").trim();
   const TOPIC_BY_LABEL = new Map(Object.entries(CALL_TOPICS)
-    .filter(([key]) => !["eigenes_skript", "sohn", "tochter"].includes(key))
+    .filter(([key]) => !["eigenes_skript", "sohn", "tochter", "jungeleute_selbst"].includes(key))
     .flatMap(([key, topic]) => [[topicNorm(topic.label), key], [topicNorm(key), key]]));
   TOPIC_BY_LABEL.set(topicNorm("Neuterminierung"), "neuterminierung");
 
@@ -7832,7 +7882,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       else if (!topics.includes(key)) topics.push(key);
     });
     const ort = text("ort");
+    const alter = Number(String(raw("alter") ?? "").replace(/\D/g, "") || NaN);
+    const kind = Number.isFinite(alter) && alter < 18 && String(raw("alter") ?? "").trim() !== ""
+      ? { vorname: vorname.split(" ")[0], alter, art: salutation === "Frau" ? "tochter" : "sohn" } : null;
     const row = {
+      kind,
       index, salutation, vorname, nachname, phones, topics, ort,
       name: nachname && vorname ? joinName(nachname, vorname) : "",
       place: importBranch(ort),
@@ -7949,7 +8003,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           ];
           return `<label class="pi-row${r.on && ok ? "" : " is-off"}">
             <input type="checkbox" data-pi="${r.index}"${r.on && ok ? " checked" : ""}${ok ? "" : " disabled"}>
-            <span><b>${esc(r.salutation)} ${esc(r.name || "–")}</b>${r.bsnr ? `<small>${esc(r.bsnr)}</small>` : ""}</span>
+            <span><b>${esc(r.kind ? "Herr/Frau" : r.salutation)} ${esc(r.name || "–")}</b>${r.kind ? `<small class="pi-kind">Kind ${esc(kindText(r.kind))} – Skript über das Konto ${r.kind.art === "tochter" ? "der Tochter" : r.kind.art === "kinder" ? "der Kinder" : "des Sohnes"}</small>` : ""}${r.bsnr ? `<small>${esc(r.bsnr)}</small>` : ""}</span>
             <span>${esc(r.phones.join(", ") || "–")}</span>
             <span class="chips">${r.topics.map(key => `<span class="chip from">${esc(CALL_TOPICS[key].label)}</span>`).join("") || '<span class="chip warn">Thema fehlt</span>'}</span>
             <span>${r.due ? esc(deDate(r.due)) : "–"}</span>
@@ -8020,6 +8074,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           r.phones.forEach(n => twin.phones.some(x => digits(x) === digits(n)) || twin.phones.push(n));
           if (r.bsnr) twin.bsnr = [twin.bsnr, r.bsnr].filter(Boolean).join(", ").slice(0, 40);
           if (r.due && (!twin.due || r.due < twin.due)) twin.due = r.due;
+          if (r.kind) {
+            twin.kind = twin.kind
+              ? { vorname: `${twin.kind.vorname} und ${r.kind.vorname}`, alter: null, art: "kinder" }
+              : r.kind;
+          }
           twin.notes.push(["", `zusammengefasst mit ${r.vorname} (gleiche Nummer)`]);
           if (twin.topics.length > MAX_CALL_TOPICS && !twin.errors.includes("Mehr als 3 Themen")) twin.errors.push("Mehr als 3 Themen");
           if (twin.phones.length > MAX_PHONES && !twin.errors.includes("Mehr als 2 Nummern")) twin.errors.push("Mehr als 2 Nummern");
@@ -8057,9 +8116,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
 
   const importPayload = r => {
-    const extended = r.bsnr || r.topics.some(key => !API_TOPIC_KEYS.has(key));
+    const extended = r.bsnr || r.kind || r.topics.some(key => !API_TOPIC_KEYS.has(key));
     const saved = { version: 1, topics: r.topics, briefing: "", customScript: "", parent: "vater" };
     if (r.bsnr) saved.bsnr = r.bsnr;
+    if (r.kind) saved.kind = cleanKind(r.kind);
     return {
       customer_name: r.name, salutation: r.salutation, phones: r.phones.join("\n"),
       topics: r.topics.filter(key => API_TOPIC_KEYS.has(key)),
@@ -8152,8 +8212,30 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       parent:topics.includes("elternteil") ? $("callParent").value : "vater",
       termArt:$("callTermArt").value === "folge" ? "folge" : "neu", termDatum:parseDeDate($("callTermDate").value),
       mergedTopics:callScriptMergedTopics, mergedParent:callScriptMergedParent, scriptOverride:callScriptManual,
-      bsnr:callFormBsnr};
+      bsnr:callFormBsnr, kind:readMinorForm()};
   }
+
+  function readMinorForm() {
+    if (!$("callMinor").checked) return null;
+    const age = $("callMinorAge").value.trim();
+    return cleanKind({ vorname: $("callMinorName").value.trim() || cleanNamePart($("callFirstName").value).split(" ")[0],
+      alter: age === "" ? null : Number(age), art: $("callMinorArt").value });
+  }
+  function setMinorForm(kind) {
+    $("callMinor").checked = Boolean(kind);
+    $("callMinorDetails").hidden = !kind;
+    $("callMinorName").value = kind?.vorname || "";
+    $("callMinorAge").value = kind?.alter ?? "";
+    $("callMinorArt").value = kind?.art || ($("callSalutation").value === "Frau" ? "tochter" : "sohn");
+  }
+  $("callMinor").addEventListener("change", () => {
+    $("callMinorDetails").hidden = !$("callMinor").checked;
+    if ($("callMinor").checked && !$("callMinorName").value) $("callMinorName").value = cleanNamePart($("callFirstName").value).split(" ")[0];
+    if ($("callMinor").checked) $("callMinorArt").value = $("callSalutation").value === "Frau" ? "tochter" : "sohn";
+    refreshCallScript(true);
+  });
+  ["callMinorName", "callMinorAge"].forEach(id => $(id).addEventListener("input", () => refreshCallScript(true)));
+  $("callMinorArt").addEventListener("change", () => refreshCallScript(true));
 
   function callFormCustomer() {
     const place = $("callPlace").value;
@@ -8289,6 +8371,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function resetCallForm() {
     callScriptManual = false;
     callFormBsnr = "";
+    setMinorForm(null);
     callScriptVisible = false;
     callScriptMergedTopics = [];
     callScriptMergedParent = "vater";
@@ -8346,6 +8429,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     callScriptMergedTopics = script.mergedTopics;
     callScriptMergedParent = script.mergedParent;
     callFormBsnr = script.bsnr || "";
+    setMinorForm(script.kind);
     $("callParent").value = script.parent;
     $("callTermArt").value = script.termArt || "neu";
     $("callTermDate").value = script.termDatum || "";
