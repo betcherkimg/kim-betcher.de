@@ -6240,6 +6240,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     sohn: {label:"Vertrag des Sohnes", subject:"den Bausparvertrag Ihres Sohnes"},
     tochter: {label:"Vertrag der Tochter", subject:"den Bausparvertrag Ihrer Tochter"},
     jungeleute: {label:"Junge-Leute-Aktion für Kinder", subject:"unsere aktuelle Junge-Leute-Aktion für Ihre Kinder"},
+    jungeleute_selbst: {label:"Junge-Leute-Aktion", subject:"unsere aktuelle Aktion für junge Leute"},
     besparung: {label:"Besparungsqualität", subject:"die aktuelle Besparung Ihres Vertrages und mögliche Verbesserungen"},
     foerderung: {label:"Staatliche Förderungen", subject:"staatliche Förderungen und mögliche Änderungen für Sie"},
     treuepraemie: {label:"Treueprämie", subject:"die anstehende Treueprämie in Ihrem Vertrag"},
@@ -7841,7 +7842,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     };
     // Ohne Einverständnis zum Telefonmarketing kommt niemand in ein Paket.
     const einwilligung = String(raw("einwilligung") ?? "").trim().toLowerCase();
-    if (/abgelehnt|nein|^no$|verweigert|widerspr|nicht erlaubt|^x$/.test(einwilligung)) row.errors.push("Telefonmarketing abgelehnt");
+    if (/abgelehnt|nein|^no$|verweigert|widerspr|nicht erlaubt|nicht angehen|^x$/.test(einwilligung)) row.errors.push("Telefonmarketing abgelehnt");
     if (!row.name) row.errors.push("Name fehlt");
     if (!salutation) row.errors.push("Anrede fehlt");
     if (badPhones.length) row.errors.push(`Nummer unklar: ${badPhones.join(", ")}`);
