@@ -2464,7 +2464,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <div class="card-head split">
             <div>
               <h2>Pakete</h2>
-              <p>Importierte Kontakte je Filiale. Mitarbeiter holen sich daraus je 10 in ihre Liste – immer die mit der frühesten Rückholung zuerst.</p>
+              <p>Importierte Kontakte je Filiale. Mitarbeiter ziehen sich daraus je 10 in ihre Liste – immer die mit der frühesten Rückholung zuerst. Bei jedem Ziehen bekommst du eine Nachricht; ein leeres Paket verschwindet.</p>
             </div>
             <div class="head-btns">
               <button class="btn primary" type="button" id="poolImportBtn">Excel importieren</button>
@@ -7630,11 +7630,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const blocked = untouched >= POOL_TAKE;
     box.innerHTML = `<div class="pool-box-head"><b>Pakete</b><small>${blocked
         ? `Neue Kontakte gibt es, sobald weniger als ${POOL_TAKE} noch nicht angerufen sind (gerade ${untouched}).`
-        : `Hol dir bis zu ${POOL_TAKE} Kontakte – die dringendsten kommen zuerst.`}</small></div>
+        : `Zieh dir bis zu ${POOL_TAKE} Kontakte – die dringendsten kommen zuerst.`}</small></div>
       ${packs.map(p => `<div class="pool-row">
         <span class="pool-name">${esc(poolName(p))}</span>
         <span class="pool-meta">${kontakte(p.count)}${p.assigned_to ? " · nur für dich" : ""}</span>
-        <button class="btn primary" type="button" data-pool-take="${esc(p.place)}" data-pool-mine="${p.assigned_to ? 1 : ""}"${blocked ? " disabled" : ""}>${Math.min(POOL_TAKE, p.count)} holen</button>
+        <button class="btn primary" type="button" data-pool-take="${esc(p.place)}" data-pool-mine="${p.assigned_to ? 1 : ""}"${blocked ? " disabled" : ""}>${Math.min(POOL_TAKE, p.count)} ziehen</button>
       </div>`).join("")}`;
   }
 
@@ -7647,7 +7647,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     withBusy(button, async () => {
       try {
         const res = await api("/pool/take", "POST", { place, mine });
-        toast(`${kontakte(Number(res.taken || 0))} aus „${poolName(pack)}“ geholt ✓`);
+        const rest = Number(res.rest ?? NaN);
+        toast(`${kontakte(Number(res.taken || 0))} aus „${poolName(pack)}“ gezogen ✓${rest === 0 ? " Das Paket ist jetzt leer." : ""}`);
       } catch (error) {
         alert(error.message);
       }
@@ -8473,18 +8474,24 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     showCallForm(true);
   }
 
-  // Der Worker kennt fürs Paket nur Anlegen und Löschen: neu anlegen (gleiche Rückholung, gleicher Mitarbeiter),
-  // dann den alten Eintrag löschen. Ein anderer Terminort verschiebt den Kontakt ins passende Paket.
+  // Speichern zurück ins Paket (gleiche Rückholung, gleicher Mitarbeiter). Ein anderer Terminort verschiebt
+  // den Kontakt ins passende Paket.
   function savePoolContact(button, payload) {
     const row = callFormPool;
     withBusy(button, async () => {
       try {
         const contact = { customer_name: payload.customer_name, salutation: payload.salutation, phones: payload.phones,
           topics: payload.topics, briefing: payload.briefing, due_date: row.due_date || null };
-        const res = await api("/admin/pool", "POST", { place: payload.place, assigned_to: row.assigned_to || "", notify: false, contacts: [contact] });
-        if (!Number(res?.added)) throw new Error(asArray(res?.skipped)[0]?.error || "Kontakt konnte nicht gespeichert werden.");
-        try { await api(`/admin/pool/${row.id}`, "DELETE"); }
-        catch (error) { alert(`Gespeichert, aber der alte Eintrag konnte nicht gelöscht werden – bitte im Paket prüfen: ${error.message}`); }
+        try {
+          await api(`/admin/pool/${row.id}`, "PUT", { ...contact, place: payload.place });
+        } catch (error) {
+          if (!/Endpunkt nicht gefunden/.test(error.message)) throw error;
+          // Älterer Worker ohne „Bearbeiten“: neu anlegen, dann den alten Eintrag löschen
+          const res = await api("/admin/pool", "POST", { place: payload.place, assigned_to: row.assigned_to || "", notify: false, contacts: [contact] });
+          if (!Number(res?.added)) throw new Error(asArray(res?.skipped)[0]?.error || "Kontakt konnte nicht gespeichert werden.");
+          try { await api(`/admin/pool/${row.id}`, "DELETE"); }
+          catch (e) { alert(`Gespeichert, aber der alte Eintrag konnte nicht gelöscht werden – bitte im Paket prüfen: ${e.message}`); }
+        }
         closeCallForm();
         toast("Paket-Kontakt gespeichert.");
         await loadPool();
@@ -10430,8 +10437,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     ack.hidden = false;
     ack.className = acked ? "notice" : "notice warn";
     ack.textContent = acked
-      ? `Neue Regeln („Was ist neu?“ vom ${fmtDate(WHATS_NEW.version)}) gelesen und Nachtrag unterschrieben am ${fmtDateTime(acked.acknowledged_at)} Uhr. Details unter „Mitarbeiter“.`
-      : `Neue Regeln („Was ist neu?“ vom ${fmtDate(WHATS_NEW.version)}) noch nicht gelesen – sie erscheinen beim nächsten Öffnen von Office, danach muss der Nachtrag unterschrieben werden (siehe „Mitarbeiter“).`;
+      ? `„Was ist neu?“ vom ${fmtDate(WHATS_NEW.version)} gelesen und bestätigt am ${fmtDateTime(acked.acknowledged_at)} Uhr.`
+      : `„Was ist neu?“ vom ${fmtDate(WHATS_NEW.version)} noch nicht bestätigt – erscheint beim nächsten Öffnen von Office.`;
 
     $("hrPlanRows").innerHTML = plans.length ? plans.slice(0, 40).map(p => {
       const [label, cls] = planStatus(p);
@@ -10682,32 +10689,32 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
    * Für das nächste Update: version ändern und die Abschnitte ersetzen.
    */
   const WHATS_NEW = {
-    version: "2026-10-14",
+    version: "2026-10-16",
     required: true,
-    intro: "Office hat sich verändert, und es gelten ab sofort neue Regeln für deine Arbeit bei Kim. Bitte lies dir alles in Ruhe durch und bestätige unten. Danach unterschreibst du den Nachtrag zu deinem Arbeitsvertrag.",
+    intro: "Ab sofort bekommst du neue Kontakte über Pakete. Lies dir bitte kurz durch, wie das funktioniert, und bestätige unten, dass du es verstanden hast.",
     sections: [
       {
-        title: "Ab sofort Pflicht", tone: "pflicht",
+        title: "So funktionieren die Pakete", tone: "neu",
         items: [
-          ["Telefontage vorher planen", "Trag deine Telefontage mit Startzeit unter „Einsatz & Zeiten“ ein – höchstens 3 pro Woche. Die Tage der nächsten Woche stehen spätestens Sonntagabend drin."],
-          ["Absagen nur in Office – vor dem Start", "Kannst du an einem geplanten Tag nicht, tippst du auf „Absagen“, bevor deine Startzeit erreicht ist, und schreibst kurz den Grund dazu. Kim bekommt die Absage sofort."],
-          ["Krankheit sofort melden", "Bist du krank, sagst du ab, sobald du es weißt – nicht erst später am Tag. Die Absage in Office mit Grund reicht dafür."],
-          ["6 Stunden pro Woche", "Vereinbart sind 6 Stunden pro Woche. Fehlstunden, die du zu vertreten hast, arbeitest du nach. Deinen Stand siehst du im Wochenkonto."]
+          ["Was ist ein Paket?", "Kim legt neue Kontakte gesammelt in Pakete – eins pro Filiale, z. B. Hüttlingen, Ebnat oder Oberkochen. Die Kontakte warten dort, bis du sie dir ziehst. So bleibt deine Telefonliste übersichtlich."],
+          ["Wo finde ich sie?", "Unter „Telefon“, direkt über deiner Telefonliste. Dort steht jedes Paket mit der Anzahl der Kontakte und dem Knopf „10 ziehen“."],
+          ["10 ziehen", "Ein Tipp holt dir die nächsten 10 Kontakte aus dem Paket in deine Liste – immer die dringendsten zuerst. Danach rufst du sie ganz normal an."],
+          ["Erst anrufen, dann nachziehen", "Neue Kontakte kannst du erst ziehen, wenn weniger als 10 deiner Kontakte noch gar nicht angerufen sind. Bis dahin ist der Knopf grau."],
+          ["Beispiel", "Du hast für Oberkochen kaum noch Kontakte? Dann tippst du beim Paket Oberkochen auf „10 ziehen“ – und die nächsten 10 sind in deiner Liste."],
+          ["Wenn ein Paket zu Ende geht", "Sind zum Beispiel noch 12 Kontakte drin, ziehst du zuerst 10. Danach heißt der Knopf „2 ziehen“. Ziehst du die letzten 2, ist das Paket leer und wird geschlossen – es verschwindet aus deiner Ansicht."],
+          ["Nur für dich", "Steht bei einem Paket „nur für dich“, hat Kim es dir persönlich zugeteilt. Bekommst du ein neues Paket, kommt eine Push-Nachricht."],
+          ["Kim ist immer informiert", "Jedes Mal, wenn du Kontakte aus einem Paket ziehst, bekommt Kim automatisch eine Nachricht. Du musst ihm nichts extra melden."],
+          ["Kein Paket mehr da?", "Dann tippst du wie bisher auf „Neue Nummern anfordern“."]
         ]
       },
       {
-        title: "Neu in Office", tone: "neu",
+        title: "Neu im Skript", tone: "neu",
         items: [
-          ["Deine Startseite", "Auf „Start“ siehst du deinen nächsten Einsatz und deine Widgets. Mit „Anpassen“ stellst du sie dir so zusammen, wie du am besten damit arbeitest: welche Widgets, in welcher Reihenfolge und Größe, Kartenfarben, App-Farbe und Schrift."],
-          ["Leiste unten", "Start, Telefon und Zeiten erreichst du mit einem Tipp. Alles andere – Terminvereinbarung, Aufgaben, Unterlagen – findest du unter „Mehr“."],
-          ["Einsatz & Zeiten", "Einsatzplan, Zeiterfassung, deine Einträge und das Wochenkonto liegen jetzt zusammen auf einer Seite."],
-          ["Erinnerungen", "30 Minuten nach deiner Startzeit erinnert dich Office, falls noch nichts passiert ist. Sonntagabend kommt eine Erinnerung, wenn die neue Woche noch leer ist."],
-          ["Kim wird automatisch informiert", "Absagen, kurzfristige Änderungen und geplante Tage ohne Aktivität und ohne Absage meldet Office direkt an Kim."],
-          ["Meine Unterlagen", "Dein Arbeitsvertrag und der unterschriebene Nachtrag – jederzeit zum Ansehen und als PDF zum Herunterladen."]
+          ["Kunden unter 18", "Steht auf einer Karte „Kind 17 J. – Eltern“, gehört die Nummer den Eltern. Du begrüßt mit „Herr“ oder „Frau“ und dem Nachnamen – das Skript spricht dann über das Bausparkonto des Kindes."]
         ]
       }
     ],
-    confirm: "Ich habe die neuen Regeln gelesen und verstanden."
+    confirm: "Ich habe verstanden, wie die Pakete funktionieren."
   };
 
   const whatsNewKey = () => `smartadm.office.whatsnew:${state.bootstrappedFor || "none"}`;
@@ -10782,7 +10789,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     $("whatsNewPreview").innerHTML = WHATS_NEW.sections.flatMap(s => s.items.map(([title, text]) =>
       `<li><b>${esc(s.tone === "pflicht" ? "Pflicht: " : "Neu: ")}${esc(title)}</b> – ${esc(text)}</li>`)).join("");
     setText("announceStatus", WHATS_NEW.required
-      ? "Erscheint automatisch beim nächsten Öffnen von Office und muss bestätigt werden; danach folgt der Nachtrag. Den Stand siehst du unter Mitarbeiter."
+      ? "Erscheint automatisch beim nächsten Öffnen von Office und lässt sich erst schließen, wenn „verstanden“ angehakt und bestätigt ist. Den Stand siehst du unter „Einsatz & Zeiten“."
       : "Erscheint automatisch beim nächsten Öffnen von Office.");
   }
   renderAnnounce();
