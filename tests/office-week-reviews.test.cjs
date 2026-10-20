@@ -24,7 +24,8 @@ test('both agreements survive the existing API format, including empty and perso
     for (const note of ['', 'Gute Woche, am Freitag früher Schluss.']) {
       const saved = review(result, note);
       assert.ok(['unexcused', 'excused', 'employer'].includes(saved.result));
-      const reopened = normalizeWeekReview(JSON.parse(JSON.stringify(saved)));
+      // Existing APIs may trim whitespace, including an empty note after the marker.
+      const reopened = normalizeWeekReview(JSON.parse(JSON.stringify({ ...saved, note: saved.note.trim() })));
       assert.equal(reopened.id, 7);
       assert.equal(reopened.result, result);
       assert.equal(reopened.note, note);

@@ -10118,8 +10118,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function normalizeWeekReview(review) {
     const note = String(review.note || "");
     for (const [result, stored] of Object.entries(WEEK_REVIEW_STORAGE)) {
-      if (review.result === stored.result && note.startsWith(stored.prefix)) {
-        return { ...review, result, note: note.slice(stored.prefix.length) };
+      const emptyMarker = stored.prefix.trimEnd();
+      if (review.result === stored.result && (note === emptyMarker || note.startsWith(stored.prefix))) {
+        return { ...review, result, note: note === emptyMarker ? "" : note.slice(stored.prefix.length) };
       }
     }
     return review;
