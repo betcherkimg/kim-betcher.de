@@ -1967,7 +1967,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card" id="hrPlanCard">
           <div class="card-head">
             <h2>Einsatzplan &amp; Wochenkonto</h2>
-            <p>Geplante Telefontage, Absagen und Soll/Ist je Woche (6 Std., anteilig bei Ein-/Austritt und nach dem Monats-Cut). Wochen mit Fehlstunden ordnest du ein: unentschuldigt = wird nachgearbeitet, entschuldigt = unbezahlt, liegt an mir = bezahlte Freistellung.</p>
+            <p>Geplante Telefontage, Absagen und Soll/Ist je Woche (6 Std., anteilig bei Ein-/Austritt und nach dem Monats-Cut). Wochen mit Fehlstunden ordnest du ein: genehmigt = keine Nacharbeit, Nacharbeit nächste Woche = einvernehmlich vereinbart, unentschuldigt = wird nachgearbeitet, entschuldigt = unbezahlt, liegt an mir = bezahlte Freistellung.</p>
           </div>
           <div class="quick-grid">
             <div class="quick"><span>Geplante Tage (kommend)</span><b id="hrPlannedCount">0</b></div>
@@ -3005,6 +3005,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     <p class="form-dialog-hint" id="weekReviewInfo"></p>
     <form id="weekReviewForm">
       <div class="review-options">
+        <label class="review-option"><input type="radio" name="weekResult" value="approved"><span><b>Genehmigt</b><small>Du hast die kürzere Arbeitswoche genehmigt. Die fehlenden Stunden müssen nicht nachgearbeitet werden.</small></span></label>
+        <label class="review-option"><input type="radio" name="weekResult" value="makeup"><span><b>Nacharbeit nächste Woche</b><small>Ihr habt vereinbart, die fehlenden Stunden in der nächsten Woche nachzuarbeiten. Sie werden mit späteren Mehrstunden verrechnet.</small></span></label>
         <label class="review-option"><input type="radio" name="weekResult" value="unexcused"><span><b>Unentschuldigt</b><small>Sie hat die Fehlstunden zu vertreten (z. B. nicht erschienen, nicht abgesagt). Die Stunden werden nachgearbeitet (Vertrag § 5).</small></span></label>
         <label class="review-option"><input type="radio" name="weekResult" value="excused"><span><b>Entschuldigt</b><small>Z. B. rechtzeitig abgesagt oder krank ohne Entgeltfortzahlung. Unbezahlt, keine Nacharbeit.</small></span></label>
         <label class="review-option"><input type="radio" name="weekResult" value="employer"><span><b>Liegt an mir</b><small>Z. B. keine Kontakte da oder von dir abgesagt. Wird als bezahlte Freistellung vergütet.</small></span></label>
@@ -10100,10 +10102,35 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const planStatus = p => (p.status === "cancelled" && !Number(p.cancelled_in_time)
     ? ["Spät abgesagt", "warn"] : PLAN_STATUS[p.status] || [p.status, ""]);
   const WEEK_RESULT_LABELS = {
+    approved: ["Genehmigt", "good"],
+    makeup: ["Nacharbeit nächste Woche", "warn"],
     unexcused: ["Unentschuldigt", "high"],
     excused: ["Entschuldigt", "warn"],
     employer: ["Liegt an mir", "good"]
   };
+  // Kompatibel mit vorhandenen Workern: Die Einordnung für das Stundenkonto bleibt
+  // excused/unexcused. Eine gespeicherte Markierung unterscheidet die Vereinbarung;
+  // die persönliche Notiz wird ohne diese Markierung angezeigt und bearbeitet.
+  const WEEK_REVIEW_STORAGE = {
+    approved: { result: "excused", prefix: "[Genehmigt] " },
+    makeup: { result: "unexcused", prefix: "[Nacharbeit vereinbart] " }
+  };
+  function normalizeWeekReview(review) {
+    const note = String(review.note || "");
+    for (const [result, stored] of Object.entries(WEEK_REVIEW_STORAGE)) {
+      if (review.result === stored.result && note.startsWith(stored.prefix)) {
+        return { ...review, result, note: note.slice(stored.prefix.length) };
+      }
+    }
+    return review;
+  }
+  function weekReviewPayload(weekStart, result, note) {
+    const stored = WEEK_REVIEW_STORAGE[result];
+    const prefix = stored?.prefix || "";
+    const limit = 500 - prefix.length;
+    if (note.trim().length > limit) throw new Error(`Bitte die Notiz auf höchstens ${limit} Zeichen kürzen.`);
+    return { week_start: weekStart, result: stored?.result || result, note: prefix + note.trim() };
+  }
   const INCIDENT_LABELS = {
     no_cancel: "Nicht erschienen ohne Absage",
     late_sick: "Krankmeldung verspätet",
@@ -10141,12 +10168,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   /*
    * Wochenkonto: Soll 6 Std. je Kalenderwoche, anteilig in Wochen mit Ein-/Austritt und
    * nach dem Monats-Cut. Ist = erfasste Arbeitszeit + Abwesenheiten (bezahlte Zeit bzw. 2 Std. je Tag).
-   * Nacharbeit = Fehlstunden aus „unentschuldigt“ eingeordneten Wochen, abzüglich Mehrstunden danach.
+   * Nacharbeit = vereinbarte Nacharbeit oder unentschuldigte Fehlstunden, abzüglich Mehrstunden danach.
    */
   function computeWeekAccount({ entries = [], absences = [], reviews = [], start, end, cut = 0, today = isoDate() }) {
     if (!start || start > today) return { weeks: [], owed: 0 };
     const cuts = cutDates(entries, cut);
-    const reviewFor = Object.fromEntries(reviews.map(r => [r.week_start, r]));
+    const reviewFor = Object.fromEntries(reviews.map(r => [r.week_start, normalizeWeekReview(r)]));
     const last = end && end < today ? end : today;
     const weeks = [];
     let owed = 0;
@@ -10170,7 +10197,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       const surplus = Math.max(0, ist - soll);
       const review = reviewFor[ws] || null;
       if (owed > 0 && surplus) owed = Math.max(0, owed - surplus);
-      if (done && review?.result === "unexcused") owed += missing;
+      if (done && ["unexcused", "makeup"].includes(review?.result)) owed += missing;
       weeks.push({ weekStart: ws, weekEnd: we, soll, work, credit, ist, missing, surplus, done, released, review });
     }
     return { weeks, owed };
@@ -10264,7 +10291,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const weekday = new Date(`${today}T12:00:00`).getDay(); // 0 = Sonntag
     const hints = [];
     if (account.owed > 0) {
-      hints.push(`<div class="notice warn">Nachzuarbeiten: <b>${esc(fmtMinutes(account.owed))}</b> aus Wochen mit unentschuldigten Fehlstunden. Plane die Zeit zusätzlich ein – sie wird mit deinen nächsten Mehrstunden verrechnet.</div>`);
+      hints.push(`<div class="notice warn">Nachzuarbeiten: <b>${esc(fmtMinutes(account.owed))}</b> aus Wochen mit vereinbarter Nacharbeit oder unentschuldigten Fehlstunden. Plane die Zeit zusätzlich ein – sie wird mit deinen nächsten Mehrstunden verrechnet.</div>`);
     }
     if (!nextPlanned && (weekday === 0 || weekday >= 5)) {
       hints.push('<div class="notice warn">Für nächste Woche ist noch kein Telefontag geplant. Bitte trage deine Tage bis Sonntag ein.</div>');
@@ -10494,6 +10521,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   /* Woche einordnen */
   let reviewWeek = null;
 
+  function syncWeekReviewNoteLimit() {
+    const result = $$("[name=weekResult]").find(r => r.checked)?.value;
+    $("weekReviewNote").maxLength = 500 - (WEEK_REVIEW_STORAGE[result]?.prefix.length || 0);
+  }
+  $$("[name=weekResult]").forEach(r => r.addEventListener("change", syncWeekReviewNoteLimit));
+
   function openWeekReview(weekStart) {
     const w = selectedWeekAccount().weeks.find(x => x.weekStart === weekStart);
     if (!w) return;
@@ -10504,6 +10537,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       (plans.length ? ` Geplant: ${plans.join(", ")}.` : " Keine Tage geplant."));
     $$("[name=weekResult]").forEach(r => (r.checked = r.value === w.review?.result));
     $("weekReviewNote").value = w.review?.note || "";
+    syncWeekReviewNoteLimit();
     $("weekReviewRemove").hidden = !w.review;
     setStatus("weekReviewStatus", "");
     openDialog($("weekReviewDialog"));
@@ -10537,7 +10571,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (!result) return setStatus("weekReviewStatus", "Bitte eine Einordnung wählen.", true);
     withBusy(event.submitter, async () => {
       try {
-        await api(forUser("/admin/week-reviews", userId), "PUT", { week_start: w.weekStart, result, note: $("weekReviewNote").value.trim() });
+        await api(forUser("/admin/week-reviews", userId), "PUT", weekReviewPayload(w.weekStart, result, $("weekReviewNote").value));
         closeDialog($("weekReviewDialog"));
         await reloadHr(userId);
         if (result === "employer" && w.missing > 0 &&
