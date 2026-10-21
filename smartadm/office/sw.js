@@ -1,7 +1,7 @@
 /* SmartADM 5 Office – Service Worker
  * Bei jeder Änderung an dieser Datei VERSION erhöhen.
  */
-const VERSION = "office-v6.5";
+const VERSION = "office-v6.6";
 const SCOPE = "/smartadm/office/";
 const ICON = `${SCOPE}office-icon-192-v4.png`;
 const SHELL = [SCOPE, `${SCOPE}manifest.webmanifest`, `${SCOPE}week-planner.js`, ICON];
@@ -43,7 +43,8 @@ self.addEventListener("fetch", event => {
 
   event.respondWith((async () => {
     try {
-      const response = await fetch(request);
+      // Auch den HTTP-Cache prüfen lassen, damit veröffentlichte Änderungen sofort ankommen.
+      const response = await fetch(request, { cache: "no-cache" });
       if (response.ok) {
         const copy = response.clone();
         event.waitUntil(caches.open(VERSION).then(cache => cache.put(cacheKey, copy)));

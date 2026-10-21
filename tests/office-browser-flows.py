@@ -113,6 +113,9 @@ with sync_playwright() as pw:
   page.evaluate('__t.planner.open("2026-11-02")');days(page,['2026-11-02','2026-11-04','2026-11-06'],[2,2,2]);api.fail_post=True
   page.locator('#planSaveBtn').click();expect(page.locator('#planStatus')).to_contain_text('erneut speichern');assert len([x for x in api.plans if x['plan_date']>='2026-11-02'])==1
   page.locator('#planSaveBtn').click();expect(page.locator('#planDialog')).not_to_be_visible();assert len([x for x in api.plans if x['plan_date']>='2026-11-02'])==3
+  # An old, unplanned task opens as a reviewable week without trapping the user on past dates.
+  page.evaluate("__t.state.tasks=[{id:99,weekPlanning:true,weekStart:'2026-10-19',title:'Bitte Folgewoche planen',status:'open',priority:'high',assigned_to:'sasi'}];__t.renderTasks();document.querySelector('#taskOpenList [data-task-action=planWeek]').click()")
+  expect(page.locator('#planDialog')).to_be_visible();expect(page.locator('#planDialogClose')).to_be_visible();page.locator('#planDialogClose').click()
   assert not errors+errors2+errors3+errors4,errors+errors2+errors3+errors4
   ctx.close();print(f'PASS {width}: mandatory news, Friday/Saturday deferral, Sunday lock, 5h and 8h reasons, three enabled days, request script and contact-only fifth attempt, receipt')
  browser.close()

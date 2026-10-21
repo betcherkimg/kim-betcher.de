@@ -6030,7 +6030,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       }
       const button = event.target.closest("[data-task-action]");
       if (!button) return;
-      if (button.dataset.taskAction === "planWeek") return weeklyPlanner.open(displayedTasks().find(t => String(t.id) === button.dataset.id)?.weekStart || weeklyPlanner.task()?.weekStart, { required: true });
+      if (button.dataset.taskAction === "planWeek") {
+        const pending = weeklyPlanner.task();
+        const selected = displayedTasks().find(t => String(t.id) === button.dataset.id);
+        const week = selected?.weekStart || pending?.weekStart;
+        return weeklyPlanner.open(week, { required: Boolean(pending && pending.weekStart === week) });
+      }
       const action = TASK_ACTIONS[button.dataset.taskAction];
       if (action.confirm && !confirm(action.confirm)) return;
 
