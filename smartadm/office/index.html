@@ -950,6 +950,27 @@ td { border-bottom-color: var(--line); }
 .doc-info span { font-size: 12.5px; color: var(--ink-soft); overflow-wrap: anywhere; }
 #docUploadForm { margin-bottom: 8px; }
 
+/* Wochenformular */
+.week-plan-days { display: grid; gap: 12px; }
+.week-plan-day { margin: 0; padding: 12px; min-width: 0; border: 1px solid var(--line); border-radius: 14px; }
+.week-plan-day legend { padding: 0 6px; font-weight: 650; font-size: 14px; }
+.week-plan-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, .8fr); gap: 10px; }
+.week-plan-grid .field { min-width: 0; }
+.week-plan-grid input, .week-plan-grid select { width: 100%; min-width: 0; }
+.week-plan-note { margin-top: 8px; font-size: 12.5px; color: var(--ink-soft); }
+.week-plan-note summary { cursor: pointer; }
+.week-plan-note input { margin-top: 6px; width: 100%; }
+.week-plan-day-hint { display: block; margin-top: 7px; color: var(--ink-soft); font-size: 12px; line-height: 1.4; }
+.week-plan-day-hint:empty { display: none; }
+.week-plan-summary { padding: 10px 12px; margin: 12px 0; background: var(--ground); border-radius: 12px; font-size: 13px; }
+.week-plan-summary.is-complete { background: var(--gruen-wash); color: var(--gruen); }
+#planSnoozeBtn[hidden], #planDialogClose[hidden], #planReminderHint[hidden] { display: none; }
+@media (max-width: 520px) {
+  .week-plan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .week-plan-grid .field:first-child { grid-column: 1 / -1; }
+  #planForm .actions .btn { flex: 1 1 auto; }
+}
+
 /* Einsatzplan (Mitarbeiter) */
 .plan-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
 .plan-head .btn-row { flex: none; }
@@ -1369,6 +1390,7 @@ body.final-modus .tabbar, body.final-modus .more-sheet { display: none !importan
 .final-strip { font-size: 12.5px; color: var(--ink-soft); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .final-strip b { color: var(--ink); font-weight: 600; }
 .final-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.final-bar.contact-mode .final-buttons, .final-bar.contact-mode .final-choice { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .final-btn { min-height: 52px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: 14.5px; font-weight: 600; padding: 6px 4px; }
 .final-btn.kk { background: var(--ground); }
 .final-btn.mt { background: var(--gruen); border-color: var(--gruen); color: #fff; }
@@ -1795,11 +1817,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <div class="card-head plan-head">
             <div>
               <h2>Einsatzplan</h2>
-              <p>Plane deine Telefontage mit Startzeit – höchstens 3 pro Woche. Kannst du nicht, sag hier vor dem Start ab.</p>
+              <p>Plane bis zu drei Arbeitstage. Bei mehr oder weniger als sechs Stunden ist eine kurze Begründung nötig. Kannst du nicht arbeiten, sage deinen Einsatz rechtzeitig ab.</p>
             </div>
             <div class="btn-row">
               <button class="btn ghost" type="button" id="planRulesBtn">Regeln</button>
-              <button class="btn primary" type="button" id="planAddBtn"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M12 13v5M9.5 15.5h5"/></svg>Tag planen</button>
+              <button class="btn primary" type="button" id="planAddBtn"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M12 13v5M9.5 15.5h5"/></svg>Woche planen</button>
             </div>
           </div>
           <div id="planNotice"></div>
@@ -2500,7 +2522,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <div class="card-head split">
             <div>
               <h2>Telefonliste</h2>
-              <p>Kontakt antippen und anrufen – jeder Anruf zählt als Versuch. Wischen: nach links = Halten, nach rechts = ohne Termin.</p>
+              <p>Kontakt antippen und anrufen – jeder Anruf zählt als Versuch. Wischen: nach links = Halten, nach rechts = zurückgeben oder Kontaktdaten erfassen.</p>
             </div>
             <div class="head-btns">
               <button class="btn primary" type="button" id="bookingPickerBtn">
@@ -2696,7 +2718,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
                     <div><label for="callMinorAge">Alter</label><input id="callMinorAge" type="number" min="0" max="17" inputmode="numeric" placeholder="17"></div>
                     <div><label for="callMinorArt">Kind</label><select id="callMinorArt"><option value="sohn">Sohn</option><option value="tochter">Tochter</option><option value="kinder">Mehrere Kinder</option></select></div>
                   </div>
-                  <small>Dann begrüßt das Skript mit „Herr/Frau Nachname“ und spricht über das Bausparkonto des Kindes.</small>
+                  <small>Bei „unter 18“ begrüßt das Skript mit „Herr/Frau Nachname“ und spricht über das Bausparkonto des Kindes.</small>
+                  <label class="check-row"><input type="checkbox" id="callRequestContact"><span>Telefonnummer erfragen</span></label>
+                  <div class="field" id="callRequestContactField" hidden><label for="callRequestContactName">Wessen Kontaktdaten werden benötigt?</label><input id="callRequestContactName" type="text" maxlength="120" placeholder="Vorname und Nachname"><small>Das Gesprächsskript fragt nach Telefonnummer und optional E-Mail-Adresse. Es wird kein Termin vereinbart.</small></div>
                 </div>
                 <div class="field"><label for="callPhones">Telefonnummer(n)</label><textarea id="callPhones" rows="2" required placeholder="Bis zu 2 Nummern, eine pro Zeile"></textarea></div>
                 <div class="field"><label for="callPlace">Termin bei</label><select id="callPlace"></select><small>Filialen und Videocalls mit Bookings-Link pflegst du unter „Filialen“.</small></div>
@@ -2893,6 +2917,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     <div class="final-sheet-head"><strong id="finalSheetTitle">Nicht erreicht</strong><button class="btn ghost final-back" type="button" id="finalBack">Zurück</button></div>
     <div class="final-choice" id="finalChoice" role="group" aria-label="Ergebnis ändern">
       <button type="button" data-final-kind="R_TA_kK" aria-pressed="true">Nicht erreicht</button>
+      <button type="button" data-final-kind="contact_details" hidden>Kontaktdaten</button>
       <button type="button" data-final-kind="R_TA_oT" aria-pressed="false">Ohne Termin</button>
       <button type="button" data-final-kind="R_TA_mT" aria-pressed="false">Mit Termin</button>
     </div>
@@ -2903,6 +2928,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   <div class="final-strip">5. Versuch · <b id="finalWho"></b></div>
   <div class="final-buttons" id="finalButtons">
     <button type="button" class="final-btn kk" data-final-kind="R_TA_kK">Nicht erreicht</button>
+    <button type="button" class="final-btn ot" data-final-kind="contact_details" hidden>Kontaktdaten</button>
     <button type="button" class="final-btn ot" data-final-kind="R_TA_oT">Ohne Termin</button>
     <button type="button" class="final-btn mt" data-final-kind="R_TA_mT">Mit Termin</button>
   </div>
@@ -2959,23 +2985,39 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   </div>
 </dialog>
 
-<!-- Mitarbeiter: Telefontag planen / ändern -->
+<!-- Kontaktdaten erfragen: kein Terminabschluss -->
+<dialog id="contactDetailsDialog" class="form-dialog" aria-labelledby="contactDetailsTitle" closedby="none">
+  <div class="picker-head"><strong id="contactDetailsTitle">Kontaktdaten</strong><button class="picker-close" type="button" id="contactDetailsClose">Schließen <span aria-hidden="true">×</span></button></div>
+  <div class="form-dialog-body"><p id="contactDetailsWho"></p>
+    <form id="contactDetailsForm" novalidate>
+      <div class="field"><label for="contactDetailsPhone">Telefonnummer</label><input id="contactDetailsPhone" type="tel" maxlength="60" autocomplete="off"></div>
+      <div class="field"><label for="contactDetailsEmail">E-Mail-Adresse</label><input id="contactDetailsEmail" type="email" maxlength="254" autocomplete="off"></div>
+      <p class="muted">Mindestens eine Angabe ist nötig. Beim Absenden erhält Kim die Kontaktdaten als Rückläufer.</p>
+      <div id="contactDetailsStatus" class="status-text" aria-live="polite"></div>
+      <div class="actions"><button class="btn primary" type="submit" id="contactDetailsSend">Kontaktdaten senden</button></div>
+    </form>
+  </div>
+</dialog>
+
+<!-- Mitarbeiter: ganze Woche planen / ändern -->
 <dialog id="planDialog" class="form-dialog" data-role="employee" aria-labelledby="planDialogTitle" closedby="none">
   <div class="picker-head">
-    <strong id="planDialogTitle">Telefontag planen</strong>
+    <strong id="planDialogTitle">Woche planen</strong>
     <button class="picker-close" type="button" id="planDialogClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
   </div>
   <div class="form-dialog-body">
-    <p class="form-dialog-hint">Höchstens 3 Tage pro Woche. 30 Minuten nach der Startzeit erinnert dich Office, falls noch nichts passiert ist. Ab dem Vortag kannst du einen Tag nur noch mit Grund absagen.</p>
-    <form id="planForm">
-      <input type="hidden" id="planId">
-      <div class="form-grid">
-        <div class="field"><label for="planDate">Datum</label><input id="planDate" type="date" required></div>
-        <div class="field"><label for="planStart">Startzeit</label><input id="planStart" type="time" step="300" required></div>
-        <div class="field full"><label for="planNote">Notiz (optional)</label><input id="planNote" type="text" maxlength="200" placeholder="z. B. nur bis 12 Uhr"></div>
-      </div>
+    <p class="form-dialog-hint">Plane bis zu drei Arbeitstage. Zwei Stunden pro Tag sind vorbelegt. Du kannst auch mehr oder weniger als sechs Stunden planen; bei jeder Abweichung ist eine kurze Begründung nötig. Startzeiten kannst du anpassen. Wenn du nicht arbeiten kannst, sage deinen Einsatz wie bisher mit Grund ab.</p>
+    <p class="notice warn" id="planReminderHint" hidden></p>
+    <form id="planForm" novalidate>
+      <div class="field"><label for="planWeek">Woche</label><select id="planWeek"></select></div>
+      <p id="planWeekSummary" class="week-plan-summary" role="status" aria-live="polite"></p>
+      <div id="planWeekDays" class="week-plan-days"></div>
+      <div class="field" id="planWeekReasonField" hidden><label id="planWeekReasonLabel" for="planWeekReason">Warum weniger als sechs Stunden?</label><textarea id="planWeekReason" rows="2" maxlength="120" placeholder="Bitte kurz begründen, z. B. diese Woche nur fünf Stunden möglich oder zusätzliche Nacharbeit."></textarea><small>Kim sieht diese Begründung im Einsatzplan.</small></div>
       <div id="planStatus" class="status-text" aria-live="polite"></div>
-      <div class="actions"><button class="btn primary" type="submit" id="planSaveBtn">Tag eintragen</button></div>
+      <div class="actions">
+        <button class="btn ghost" type="button" id="planSnoozeBtn" hidden>Auf morgen verschieben</button>
+        <button class="btn primary" type="submit" id="planSaveBtn">Woche speichern</button>
+      </div>
     </form>
   </div>
 </dialog>
@@ -3031,6 +3073,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   src="https://clerk.kim-betcher.de/npm/@clerk/clerk-js@6/dist/clerk.browser.js"></script>
 
 <script src="../date-inputs.js"></script>
+<script src="week-planner.js"></script>
 <script>
 (() => {
   "use strict";
@@ -3165,6 +3208,14 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     contract: null,          // Seite Arbeitsvertrag: { add, docs }
     bossPlans: []            // Boss: Einsatzpläne aller Mitarbeiter (Widget); null = alter Worker
   };
+
+  let weeklyPlanner = null;
+  let weeklyPlanningReady = false;
+  const planDetails = plan => {
+    const d = window.SmartADMWeekPlanner.details(plan);
+    return {...d,note:[d.reason ? `Wochenbegründung: ${d.reason}` : "",d.note].filter(Boolean).join(" · ")};
+  };
+  const displayedTasks = () => { const task = weeklyPlanner?.task(); return task && !state.tasks.some(t => String(t.id) === String(task.id)) ? [task, ...state.tasks] : state.tasks; };
 
   /* ================= Helfer ================= */
 
@@ -3462,6 +3513,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const widgetEmpty = text => `<p class="widget-leer">${esc(text)}</p>`;
 
   function callWidgetStatus(c, scope) {
+    if(contactReceipt(c))return ["Kontaktdaten erhalten","good"];
     if (scope === "open") return isHeld(c) ? ["Zu klären", "warn"] : ["In Bearbeitung", "info"];
     const status = CALL_STATUS[c.status];
     return status ? [status.label, status.cls] : ["", ""];
@@ -3918,7 +3970,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         const rows = [...problems, ...upcoming].slice(0, fit(4)).map(p => {
           const [label, cls] = planStatus(p);
           const who = p.display_name || p.email || employeeName(findEmployee(p.clerk_user_id));
-          const when = `${p.plan_date === today ? "Heute" : fmtDayShort(p.plan_date)} · ${p.start_time} Uhr`;
+          const when = `${p.plan_date === today ? "Heute" : fmtDayShort(p.plan_date)} · ${p.start_time} Uhr · ${fmtMinutes(planDetails(p).minutes)}`;
           return widgetRow(`data-widget-plan="${esc(p.clerk_user_id)}"`, who, label, cls, [when, p.cancel_reason].filter(Boolean).join(" · "));
         }).join("");
         const todays = plans.filter(p => p.plan_date === today && p.status !== "cancelled").sort(byPlanDate);
@@ -5849,7 +5901,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     ].join("");
 
     let actions = "";
-    if (boss) {
+    if (task.weekPlanning && !done && !boss) {
+      actions = button("planWeek", "Woche planen", "primary");
+    } else if (boss) {
       if (!done && inbox) actions += button("adminComplete", isNote(task) ? "Gelesen" : "Erledigt", "primary");
       if (done) actions += button("reopen", "Wieder öffnen", "ghost");
       actions += button("delete", "Löschen", "danger");
@@ -5893,8 +5947,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   function renderTasks() {
     const boss = state.role === "boss";
-    const open = state.tasks.filter(t => t.status === "open");
-    const done = state.tasks.filter(t => t.status === "completed" && !doneExpired(t));
+    const open = displayedTasks().filter(t => t.status === "open");
+    const done = displayedTasks().filter(t => t.status === "completed" && !doneExpired(t));
     const inboxOpen = open.filter(t => isInbox(t) && !isNote(t));
     const notesOpen = open.filter(isNote);
     const ownOpen = open.filter(t => !isInbox(t)); // Boss: an Mitarbeiter · Mitarbeiter: an mich
@@ -5908,7 +5962,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       renderTaskArchive(done);
     } else {
       setText("taskOpenTitle", "Deine Aufgaben");
-      setText("taskOpenSub", "Vom Boss an dich – noch zu erledigen.");
+      setText("taskOpenSub", "Deine offenen Aufgaben und die nächste Wochenplanung.");
       renderTaskList("taskOpenList", ownOpen, "Keine offenen Aufgaben. ✓");
       // Gesendete: offene zuerst, erledigte nur die letzten 10
       const sent = state.tasks.filter(isInbox);
@@ -5976,6 +6030,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       }
       const button = event.target.closest("[data-task-action]");
       if (!button) return;
+      if (button.dataset.taskAction === "planWeek") return weeklyPlanner.open(displayedTasks().find(t => String(t.id) === button.dataset.id)?.weekStart || weeklyPlanner.task()?.weekStart, { required: true });
       const action = TASK_ACTIONS[button.dataset.taskAction];
       if (action.confirm && !confirm(action.confirm)) return;
 
@@ -6309,7 +6364,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   // Hinweisfeld gespeichert. Der Worker erhält weiterhin nur bekannte Themenkeys.
   function callScriptData(c) {
     const fallback = {topics:asArray(c.topics), briefing:c.briefing || "", customScript:"", parent:"vater",
-      mergedTopics:[], mergedParent:"vater", scriptOverride:false, termArt:"neu", termDatum:"", bsnr:"", kind:null};
+      mergedTopics:[], mergedParent:"vater", scriptOverride:false, termArt:"neu", termDatum:"", bsnr:"", kind:null, contactRequest:null};
     if (!fallback.briefing.startsWith(CALL_SCRIPT_PREFIX)) return fallback;
     try {
       const data = JSON.parse(fallback.briefing.slice(CALL_SCRIPT_PREFIX.length));
@@ -6319,10 +6374,16 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         mergedTopics:asArray(data.mergedTopics).filter(key => CALL_TOPICS[key]?.subject),
         mergedParent:data.mergedParent === "mutter" ? "mutter" : "vater", scriptOverride:data.scriptOverride === true,
         termArt:data.termArt === "folge" ? "folge" : "neu", termDatum:parseDeDate(data.termDatum || ""),
-        bsnr:typeof data.bsnr === "string" ? data.bsnr.slice(0, 40) : "", kind:cleanKind(data.kind)};
+        bsnr:typeof data.bsnr === "string" ? data.bsnr.slice(0, 40) : "", kind:cleanKind(data.kind), contactRequest:cleanContactRequest(data.contactRequest)};
     } catch { return fallback; }
   }
 
+  function cleanContactRequest(value) {
+    const name=String(value?.name||"").trim().replace(/\s+/g," ").slice(0,120);
+    return name ? {name} : null;
+  }
+  const contactRequest = c => callScriptData(c).contactRequest;
+  const contactReceipt = c => /^Kontaktdaten von .+ erhalten(?:\n|$)/.test(c.protocol||"");
   const callBriefing = c => callScriptData(c).briefing;
 
   // Kunde unter 18: Die Nummer gehört den Eltern. Begrüßung „Herr/Frau Nachname“, Skript über das Konto des Kindes.
@@ -6345,9 +6406,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   function encodeCallScript(data) {
     const termin = data.topics.includes("neuterminierung") && (data.termArt === "folge" || parseDeDate(data.termDatum));
-    const extended = data.customScript || termin || data.bsnr || data.kind || data.topics.some(key => !API_TOPIC_KEYS.has(key));
+    const extended = data.customScript || termin || data.bsnr || data.kind || data.contactRequest || data.topics.some(key => !API_TOPIC_KEYS.has(key));
     if (!extended) return data.briefing;
     const saved = {version:1, topics:data.topics, briefing:data.briefing, customScript:data.customScript, parent:data.parent};
+    if (data.contactRequest) saved.contactRequest = cleanContactRequest(data.contactRequest);
     if (data.bsnr) saved.bsnr = data.bsnr;
     if (data.kind) saved.kind = cleanKind(data.kind);   // Bausparnummer aus dem Import – nur für den Boss
     if (termin) { saved.termArt = data.termArt; saved.termDatum = parseDeDate(data.termDatum); }
@@ -6514,6 +6576,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const scriptTemplate = subject => fullScriptTemplate(`${bossName()} möchte mit Ihnen über ${subject} sprechen.`);
 
   function conversationTemplate(data) {
+    if(data.contactRequest)return `${conversationOpening()}\n\n${bossName()} benötigt die Kontaktdaten von ${data.contactRequest.name}, da diese weder bei uns im System noch bei der Bank hinterlegt sind und es einen konkreten Anlass für die Kontaktaufnahme gibt. Wären Sie so nett, mir die Telefonnummer und, falls vorhanden, auch die E-Mail-Adresse zu geben? Vielen Dank für Ihre Unterstützung.`;
     const standard = data.topics.filter(key => CALL_TOPICS[key]?.subject);
     const subjects = standard.map(key => subjectFor(key, data));
     let custom = data.customScript || "";
@@ -6568,7 +6631,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const template = conversationTemplate(data);
     const text = renderConversation(template, c, data);
     return `<div class="script-box">
-      <button class="btn primary" type="button" data-script-booking>${ICONS.calendar}Termin buchen</button>
+      ${data.contactRequest ? "" : `<button class="btn primary" type="button" data-script-booking>${ICONS.calendar}Termin buchen</button>`}
       <div class="script-block"><b>Dein Gesprächsskript</b>
         <p class="script-line" style="white-space:pre-wrap">${esc(text)}</p>
       </div>
@@ -6578,7 +6641,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <p class="script-line">${esc(data.briefing)}</p>
       </div>` : ""}
 
-      <div class="script-block">
+      ${data.contactRequest ? "" : `<div class="script-block">
         <b>Häufige Fragen</b>
         <div class="script-faq">
           ${SCRIPT_FAQ.map(([question, answer]) => `<details>
@@ -6586,7 +6649,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             <p>${esc(fillBoss(answer))}</p>
           </details>`).join("")}
         </div>
-      </div>
+      </div>`}
 
       <p class="script-fallback">Frage nicht dabei? Dann:
         „Das kann ich Ihnen leider nicht beantworten – ich mache für ${esc(bossName())} die Terminvereinbarung.
@@ -6767,7 +6830,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function callSummaryHtml(c, held, open) {
     const sub = held
       ? `<span class="cc-note">${esc(c.hold_note)}</span>`
-      : `<span class="cc-sub">${esc(attemptText(c))} · ${esc(placeLabel(c))}${callScriptData(c).kind ? ` · <b>Kind ${esc(kindText(callScriptData(c).kind))}</b>` : ""}</span>`;
+      : `<span class="cc-sub">${esc(attemptText(c))} · ${contactRequest(c) ? `Kontaktdaten von ${esc(contactRequest(c).name)} erfragen` : esc(placeLabel(c))}${callScriptData(c).kind ? ` · <b>Kind ${esc(kindText(callScriptData(c).kind))}</b>` : ""}</span>`;
     return `<button class="cc-head" type="button" data-call-toggle aria-expanded="${open}">
       <span class="cc-main"><span class="cc-name">${esc(c.customer_name)}</span>${sub}</span>
       ${held ? "" : attemptDots(shownAttempts(c))}
@@ -6800,7 +6863,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   // Unter jeder offenen Karte liegen die beiden Wisch-Ziele.
   const swipeWrap = (c, cardHtml) => `<div class="swipe-wrap" data-swipe-wrap="${c.id}">
-      <div class="swipe-bg not" aria-hidden="true">Ohne Termin</div>
+      <div class="swipe-bg not" aria-hidden="true">${contactRequest(c) ? "Kontaktdaten" : "Ohne Termin"}</div>
       <div class="swipe-bg hold" aria-hidden="true">Halten</div>
       ${cardHtml}
     </div>`;
@@ -6845,8 +6908,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <small id="note-hint-${c.id}">${noteHint(c.id)}</small>
         </div>
         ${isFinal ? "" : `<div class="cc-actions">
-          <button class="btn good" type="button" data-call-action="R_TA_mT">Mit Termin</button>
-          <button class="btn ghost" type="button" data-call-action="R_TA_oT">Ohne Termin</button>
+          ${contactRequest(c) ? `<button class="btn good" type="button" data-call-action="contact_details">Kontaktdaten</button>` : `<button class="btn good" type="button" data-call-action="R_TA_mT">Mit Termin</button>
+          <button class="btn ghost" type="button" data-call-action="R_TA_oT">Ohne Termin</button>`}
           <button class="btn quiet" type="button" data-hold-action="hold">Halten</button>
         </div>`}
       </div>` : ""}
@@ -7025,6 +7088,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (!id) { finalSheet(null); return; }
     const call = findCall(id);
     setText("finalWho", call.customer_name);
+    const contactMode=Boolean(contactRequest(call));
+    $("finalBar").classList.toggle("contact-mode",contactMode);
+    $$("#finalBar [data-final-kind]").forEach(button=>{button.hidden=button.dataset.finalKind==="contact_details" ? !contactMode : contactMode&&button.dataset.finalKind!=="R_TA_kK";});
     if (!$("telefon").classList.contains("active")) showPage("telefon");
     if (war !== id) {
       finalSheet(null);
@@ -7034,6 +7100,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
 
   function finalSheet(kind) {
+    const activeCall=findCall(finalUi.id);
+    if(kind&&activeCall&&contactRequest(activeCall)&&kind!=="R_TA_kK"){openContactDetails(activeCall);return;}
     finalUi.kind = kind;
     const sheet = $("finalSheet");
     sheet.hidden = !kind;
@@ -7091,7 +7159,42 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     await loadCalls();
   });
 
+  let contactDetailsCall=null, contactDetailsBusy=false;
+  const contactDetailsDrafts=new Map();
+  function rememberContactDetails(){if(contactDetailsCall)contactDetailsDrafts.set(String(contactDetailsCall.id),{phone:$("contactDetailsPhone").value,email:$("contactDetailsEmail").value});}
+  function openContactDetails(call){
+    const request=contactRequest(call);if(!request||contactDetailsBusy)return;
+    contactDetailsCall=call;
+    const draft=contactDetailsDrafts.get(String(call.id))||{};
+    setText("contactDetailsWho",`Kontaktdaten von ${request.name}`);
+    $("contactDetailsPhone").value=draft.phone||"";$("contactDetailsEmail").value=draft.email||"";
+    setStatus("contactDetailsStatus","");
+    if(!$("contactDetailsDialog").open)openDialog($("contactDetailsDialog"));
+  }
+  function closeContactDetails(){if(contactDetailsBusy)return;rememberContactDetails();closeDialog($("contactDetailsDialog"));contactDetailsCall=null;}
+  $("contactDetailsClose").addEventListener("click",closeContactDetails);
+  $("contactDetailsDialog").addEventListener("cancel",e=>e.preventDefault());
+  $("contactDetailsForm").addEventListener("submit",async event=>{
+    event.preventDefault();if(!contactDetailsCall||contactDetailsBusy)return;
+    const phone=$("contactDetailsPhone").value.trim(),email=$("contactDetailsEmail").value.trim();
+    if(!phone&&!email)return setStatus("contactDetailsStatus","Bitte mindestens eine Telefonnummer oder E-Mail-Adresse eintragen.",true);
+    if(phone&&(!/^[+\d\s()/.-]+$/.test(phone)||(phone.match(/\d/g)||[]).length<4))return setStatus("contactDetailsStatus","Bitte eine gültige Telefonnummer eintragen.",true);
+    if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return setStatus("contactDetailsStatus","Bitte eine gültige E-Mail-Adresse eintragen.",true);
+    const id=String(contactDetailsCall.id);contactDetailsBusy=true;
+    $("contactDetailsSend").disabled=$("contactDetailsClose").disabled=true;
+    setStatus("contactDetailsStatus","Kontaktdaten werden gesendet …");cancelNoteSave(id);
+    try{
+      await pendingAttempts.get(id);
+      await api(`/calls/${id}/contact-details`,"POST",{phone,email});
+      contactDetailsDrafts.delete(id);delete state.callDrafts[id];state.finalDial.delete(id);saveCallStore();
+      contactDetailsBusy=false;closeDialog($("contactDetailsDialog"));contactDetailsCall=null;finalSheet(null);
+      await loadCalls();toast("Kontaktdaten an Kim zurückgegeben ✓");
+    }catch(error){setStatus("contactDetailsStatus",error.message,true);}
+    finally{contactDetailsBusy=false;$("contactDetailsSend").disabled=$("contactDetailsClose").disabled=false;}
+  });
+
   function askReturn(call, result) {
+    if(contactRequest(call)&&result!=="R_TA_kK")return openContactDetails(call);
     const id = String(call.id);
     openNoteDialog(call, result, {
       value: noteDraft(call),
@@ -7266,6 +7369,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
   function topicChipsOnly(c) {
     const topics = callScriptData(c).topics.filter(key => CALL_TOPICS[key]);
+    if(contactRequest(c))return `<span class="chip from">Kontaktdaten von ${esc(contactRequest(c).name)} erfragen</span>`;
     if (topics.length) {
       return topics.map(key => `<span class="chip from">${esc(CALL_TOPICS[key].label)}</span>`).join("");
     }
@@ -7276,7 +7380,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   // rechts Stift und Papierkorb. Tippen auf den Kopf klappt die Details auf.
   function adminCallHtml(c, scope) {
     const open = state.adminExpanded.has(String(c.id));
-    const status = CALL_STATUS[c.status];
+    const status = contactReceipt(c) ? {label:"Kontaktdaten erhalten",cls:"good"} : CALL_STATUS[c.status];
     const attempts = c.attempt_log.length
       ? `Versuche: ${c.attempt_log.map(fmtDateTime).join(", ")}`
       : "Noch kein Versuch";
@@ -7310,7 +7414,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           title="Löschen" aria-label="Löschen">${ICONS.trash}</button>
       </div>
       ${open ? `<div class="acall-body">
-        ${c.protocol ? `<div class="call-note"><b>Notiz:</b> ${esc(c.protocol)}</div>` : ""}
+        ${c.protocol ? `<div class="call-note" style="white-space:pre-wrap">${contactReceipt(c) ? "" : "<b>Notiz:</b> "}${esc(c.protocol)}</div>` : ""}
         <small>${phoneList(c)} · Termin: ${esc(placeLabel(c))}${callScriptData(c).bsnr ? ` · Bausparnr. ${esc(callScriptData(c).bsnr)}` : ""}</small>
         <div class="task-meta">
           ${scope === "open" ? attemptDots(c.attempts) : ""}
@@ -8278,9 +8382,19 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       parent:topics.includes("elternteil") ? $("callParent").value : "vater",
       termArt:$("callTermArt").value === "folge" ? "folge" : "neu", termDatum:parseDeDate($("callTermDate").value),
       mergedTopics:callScriptMergedTopics, mergedParent:callScriptMergedParent, scriptOverride:callScriptManual,
-      bsnr:callFormBsnr, kind:readMinorForm()};
+      bsnr:callFormBsnr, kind:readMinorForm(), contactRequest:$("callRequestContact").checked ? {name:$("callRequestContactName").value.trim()} : null};
   }
 
+  function setContactRequestForm(value) {
+    $("callRequestContact").checked=Boolean(value);
+    $("callRequestContactField").hidden=!value;
+    $("callRequestContactName").value=value?.name||"";
+  }
+  $("callRequestContact").addEventListener("change",()=>{
+    $("callRequestContactField").hidden=!$("callRequestContact").checked;
+    updateTopicsSummary(true);
+  });
+  $("callRequestContactName").addEventListener("input",()=>refreshCallScript(true));
   function readMinorForm() {
     if (!$("callMinor").checked) return null;
     const age = $("callMinorAge").value.trim();
@@ -8346,6 +8460,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   function updateTopicsSummary(merge = false) {
     const chosen = selectedTopics();
+    const contactMode=$("callRequestContact").checked;
+    $("callCustomScript").readOnly=contactMode;
     setText("callTopicsSummary", chosen.length
       ? chosen.map(key => CALL_TOPICS[key].label).join(", ")
       : "Kein Thema gewählt");
@@ -8359,8 +8475,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     $("callParentField").hidden = !chosen.includes("elternteil");
     $("callTermField").hidden = $("callTermDateField").hidden = !chosen.includes("neuterminierung");
     setText("callTermDateLabel", $("callTermArt").value === "folge" ? "Datum letzter Termin" : "Datum verpasster Termin");
-    $("callCustomScriptField").hidden = !chosen.length && !callScriptVisible && !callScriptManual;
-    $("callScriptSuggestionsField").hidden = !chosen.includes("eigenes_skript");
+    $("callCustomScriptField").hidden = !contactMode && !chosen.length && !callScriptVisible && !callScriptManual;
+    $("callScriptSuggestionsField").hidden = contactMode || !chosen.includes("eigenes_skript");
     refreshCallScript(merge);
   }
 
@@ -8439,6 +8555,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     callScriptManual = false;
     callFormBsnr = "";
     setMinorForm(null);
+    setContactRequestForm(null);
     callScriptVisible = false;
     callScriptMergedTopics = [];
     callScriptMergedParent = "vater";
@@ -8546,6 +8663,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     callScriptMergedParent = script.mergedParent;
     callFormBsnr = script.bsnr || "";
     setMinorForm(script.kind);
+    setContactRequestForm(script.contactRequest);
     $("callParent").value = script.parent;
     $("callTermArt").value = script.termArt || "neu";
     $("callTermDate").value = script.termDatum || "";
@@ -8576,6 +8694,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     }
     const id = $("callEditId").value;
     const script = readCallScriptForm();
+    if(script.contactRequest&&!script.contactRequest.name){$("callRequestContactName").focus();return alert("Bitte eintragen, wessen Kontaktdaten erfragt werden sollen.");}
     if (script.topics.length > MAX_CALL_TOPICS) {
       return alert("Bitte höchstens drei Themen auswählen.");
     }
@@ -8583,7 +8702,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       $("callBriefing").focus();
       return alert("Bitte den Hinweis auf höchstens 150 Zeichen kürzen.");
     }
-    if ((script.topics.includes("eigenes_skript") || callScriptManual) && !script.customScript) {
+    if (!script.contactRequest && (script.topics.includes("eigenes_skript") || callScriptManual) && !script.customScript) {
       $("callCustomScript").focus();
       return alert("Bitte ein eigenes Skript eintragen oder eine Vorlage übernehmen.");
     }
@@ -10264,11 +10383,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const canCancel = (p.status === "planned" && p.plan_date >= today) ||
       (p.status === "missed" && p.plan_date >= addDaysIso(today, -1));
     const extra = [
-      p.note ? `<small>${esc(p.note)}</small>` : "",
+      planDetails(p).note ? `<small>${esc(planDetails(p).note)}</small>` : "",
       p.cancel_reason ? `<small>Grund: ${esc(p.cancel_reason)}</small>` : ""
     ].join("");
     return `<div class="plan-row${p.status === "cancelled" ? " is-cancelled" : ""}">
-      <div class="plan-when"><b>${esc(fmtDayShort(p.plan_date))}</b><span>${esc(p.start_time)} Uhr</span></div>
+      <div class="plan-when"><b>${esc(fmtDayShort(p.plan_date))}</b><span>${esc(p.start_time)} Uhr · ${esc(fmtMinutes(planDetails(p).minutes))}</span></div>
       <div class="plan-info"><span class="chip ${cls}">${esc(label)}</span>${extra}</div>
       <div class="row-actions">
         ${canEdit ? `<button class="icon-btn" type="button" data-plan-edit="${p.id}" title="Ändern" aria-label="Einsatz ändern">${ICONS.edit}</button>` : ""}
@@ -10300,12 +10419,14 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       const active = plans.filter(p => p.status !== "cancelled").length;
       const week = account.weeks.find(w => w.weekStart === ws);
       const work = state.entries.filter(e => e.date >= ws && e.date <= we).reduce((s, e) => s + e.minutes, 0);
+      const planned = plans.filter(p => p.status !== "cancelled").reduce((sum, p) => sum + planDetails(p).minutes, 0);
       const hours = i === 0
         ? ` · ${fmtMinutes(week ? week.ist : work)} von ${fmtMinutes(week ? week.soll : CONTRACT_WEEKLY_HOURS * 60)}`
         : "";
       return `<div class="plan-week">
         <div class="plan-week-head"><strong>${i ? "Nächste Woche" : "Diese Woche"}</strong>
-          <span>${esc(isoWeekLabel(ws))} · ${active} von ${CONTRACT_MAX_WORKDAYS_PER_WEEK} Tagen geplant${esc(hours).replace(/ h\b/g, "\u00a0h")}</span></div>
+          <span>${esc(isoWeekLabel(ws))} · ${active} von ${CONTRACT_MAX_WORKDAYS_PER_WEEK} Tagen geplant${esc(hours).replace(/ h\b/g, "\u00a0h")} · ${esc(fmtMinutes(planned))} geplant</span></div>
+        <div><button class="btn ghost small" type="button" data-plan-week="${ws}">Woche ${plans.some(p => p.status !== "cancelled") ? "ändern" : "planen"}</button></div>
         ${plans.length ? plans.map(planRowHtml).join("")
           : `<p class="plan-empty">${i ? "Noch kein Tag geplant – bitte bis Sonntag eintragen." : "Diese Woche ist kein Tag mehr geplant."}</p>`}
       </div>`;
@@ -10324,44 +10445,17 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     notice.innerHTML = hints.join("");
   }
 
-  function openPlanDialog(plan = null) {
-    $("planId").value = plan?.id || "";
-    $("planDate").min = isoDate();
-    $("planDate").max = shiftDays(60);
-    $("planDate").value = plan?.plan_date || shiftDays(1);
-    $("planStart").value = plan?.start_time || "";
-    $("planNote").value = plan?.note || "";
-    setText("planDialogTitle", plan ? "Einsatz ändern" : "Telefontag planen");
-    setText("planSaveBtn", plan ? "Änderung speichern" : "Tag eintragen");
-    setStatus("planStatus", "");
-    openDialog($("planDialog"));
-  }
+  function openPlanDialog(plan = null) { weeklyPlanner.open(plan); }
 
   $("planAddBtn").addEventListener("click", () => openPlanDialog());
   $("planRulesBtn").addEventListener("click", () => showWhatsNewDialog(false));
-  $("planDialogClose").addEventListener("click", () => closeDialog($("planDialog")));
-  $("planDialog").addEventListener("cancel", event => event.preventDefault());
-
-  $("planForm").addEventListener("submit", event => {
-    event.preventDefault();
-    const id = $("planId").value;
-    const body = { plan_date: $("planDate").value, start_time: $("planStart").value, note: $("planNote").value.trim() };
-    withBusy(event.submitter, async () => {
-      try {
-        await api(id ? `/plans/${id}` : "/plans", id ? "PUT" : "POST", body);
-        closeDialog($("planDialog"));
-        toast(id ? "Einsatz geändert ✓" : `${fmtDayShort(body.plan_date)} ab ${body.start_time} Uhr eingetragen ✓`);
-        await loadPlans();
-      } catch (error) {
-        setStatus("planStatus", error.message, true);
-      }
-    });
-  });
 
   let cancelPlanId = null;
   const syncCancelOk = () => ($("planCancelOk").disabled = $("planCancelReason").value.trim().length < 3);
 
   $("planWeeks").addEventListener("click", event => {
+    const week = event.target.closest("[data-plan-week]");
+    if (week) return weeklyPlanner.open(week.dataset.planWeek);
     const edit = event.target.closest("[data-plan-edit]");
     const del = event.target.closest("[data-plan-delete]");
     const cancel = event.target.closest("[data-plan-cancel]");
@@ -10495,13 +10589,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     $("hrPlanRows").innerHTML = plans.length ? plans.slice(0, 40).map(p => {
       const [label, cls] = planStatus(p);
       const info = [
-        p.note ? esc(p.note) : "",
+        planDetails(p).note ? esc(planDetails(p).note) : "",
         p.cancel_reason ? `Abgesagt ${esc(fmtDateTime(p.cancelled_at))} Uhr: ${esc(p.cancel_reason)}` : "",
         p.status === "late" && p.started_at ? `Aktivität ab ca. ${esc(fmtDateTime(p.started_at))} Uhr` : ""
       ].filter(Boolean).join("<br>");
       return `<tr>
         <td>${esc(fmtDayShort(p.plan_date))}</td>
-        <td>${esc(p.start_time)}</td>
+        <td>${esc(p.start_time)}<br><small class="muted">${esc(fmtMinutes(planDetails(p).minutes))} geplant</small></td>
         <td><span class="chip ${cls}">${esc(label)}</span></td>
         <td class="hr-info">${info || "–"}</td>
         <td><div class="row-actions">
@@ -10652,7 +10746,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function prefillIncident(p) {
     resetIncidentForm();
     const day = `${fmtWeekday(p.plan_date)} ${fmtDate(p.plan_date)}`;
-    const lines = [`Geplanter Einsatz am ${day} ab ${p.start_time} Uhr (selbst eingetragen im Einsatzplan).`];
+    const lines = [`Geplanter Einsatz am ${day} ab ${p.start_time} Uhr für ${fmtMinutes(planDetails(p).minutes)} (selbst eingetragen im Einsatzplan).`];
     if (p.status === "cancelled") {
       lines.push(`Absage erst am ${fmtDateTime(p.cancelled_at)} Uhr – nach dem geplanten Start. Grund: ${p.cancel_reason || "–"}.`);
     } else {
@@ -10748,32 +10842,23 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
    * Für das nächste Update: version ändern und die Abschnitte ersetzen.
    */
   const WHATS_NEW = {
-    version: "2026-10-16",
+    version: "2026-10-21",
     required: true,
-    intro: "Ab sofort bekommst du neue Kontakte über Pakete. Lies dir bitte kurz durch, wie das funktioniert, und bestätige unten, dass du es verstanden hast.",
+    intro: "Bitte lies die Änderungen zur Wochenplanung und zum Erfragen von Kontaktdaten. Bestätige anschließend, dass du alles verstanden hast.",
     sections: [
-      {
-        title: "So funktionieren die Pakete", tone: "neu",
-        items: [
-          ["Was ist ein Paket?", "Kim legt neue Kontakte gesammelt in Pakete – eins pro Filiale, z. B. Hüttlingen, Ebnat oder Oberkochen. Die Kontakte warten dort, bis du sie dir ziehst. So bleibt deine Telefonliste übersichtlich."],
-          ["Wo finde ich sie?", "Unter „Telefon“, direkt über deiner Telefonliste. Dort steht jedes Paket mit der Anzahl der Kontakte und dem Knopf „10 ziehen“."],
-          ["10 ziehen", "Ein Tipp holt dir die nächsten 10 Kontakte aus dem Paket in deine Liste – immer die dringendsten zuerst. Danach rufst du sie ganz normal an."],
-          ["Erst anrufen, dann nachziehen", "Neue Kontakte kannst du erst ziehen, wenn weniger als 10 deiner Kontakte noch gar nicht angerufen sind. Bis dahin ist der Knopf grau."],
-          ["Beispiel", "Du hast für Oberkochen kaum noch Kontakte? Dann tippst du beim Paket Oberkochen auf „10 ziehen“ – und die nächsten 10 sind in deiner Liste."],
-          ["Wenn ein Paket zu Ende geht", "Sind zum Beispiel noch 12 Kontakte drin, ziehst du zuerst 10. Danach heißt der Knopf „2 ziehen“. Ziehst du die letzten 2, ist das Paket leer und wird geschlossen – es verschwindet aus deiner Ansicht."],
-          ["Nur für dich", "Steht bei einem Paket „nur für dich“, hat Kim es dir persönlich zugeteilt. Bekommst du ein neues Paket, kommt eine Push-Nachricht."],
-          ["Kim ist immer informiert", "Jedes Mal, wenn du Kontakte aus einem Paket ziehst, bekommt Kim automatisch eine Nachricht. Du musst ihm nichts extra melden."],
-          ["Kein Paket mehr da?", "Dann tippst du wie bisher auf „Neue Nummern anfordern“."]
-        ]
-      },
-      {
-        title: "Neu im Skript", tone: "neu",
-        items: [
-          ["Kunden unter 18", "Steht auf einer Karte „Kind 17 J. – Eltern“, gehört die Nummer den Eltern. Du begrüßt mit „Herr“ oder „Frau“ und dem Nachnamen – das Skript spricht dann über das Bausparkonto des Kindes."]
-        ]
-      }
+      {title:"Deine Woche planen",tone:"neu",items:[
+        ["Woche statt einzelner Tag","Wähle unter „Woche planen“ bis zu drei Arbeitstage. Jeweils zwei Stunden sind vorbelegt. Du kannst Stunden und Startzeit anpassen. Alle drei Tage bleiben auswählbar, auch wenn du insgesamt mehr als sechs Stunden planst."],
+        ["Mehr oder weniger als sechs Stunden","Auch zum Beispiel fünf Stunden oder zusätzliche Nacharbeit sind möglich. Sobald deine Summe von sechs Stunden abweicht, ist eine kurze Begründung Pflicht."],
+        ["Ab Freitag: Folgewoche planen","Jeden Freitag bekommst du die Aufgabe „Bitte Folgewoche planen“. Beim Öffnen von Office erscheint die Planung automatisch. Freitag und Samstag kannst du sie jeweils auf morgen verschieben. Am Sonntag musst du sie direkt abschließen."],
+        ["Sonntags-Erinnerungen","Solange deine Folgewoche noch nicht fertig geplant ist, erinnert Office sonntags um 9, 13 und 17 Uhr per Push. Sobald dein Plan gespeichert ist, entfallen die weiteren Erinnerungen."],
+        ["Absagen wie bisher","Falls du einen bereits geplanten Einsatz nicht wahrnehmen kannst, sage ihn rechtzeitig mit Grund ab."]]},
+      {title:"Kontaktdaten statt Termin erfragen",tone:"neu",items:[
+        ["Den Auftrag erkennen","Bei manchen Kontakten sollst du nur die Telefonnummer und gegebenenfalls die E-Mail-Adresse einer bestimmten Person erfragen. Die Karte zeigt dir, um wen es geht; dein fertiges Skript enthält keine Terminfrage."],
+        ["Kontaktdaten eintragen","Tippe nach dem Gespräch auf „Kontaktdaten“. Trage eine Telefonnummer, eine E-Mail-Adresse oder beides ein. Mindestens eine Angabe ist nötig. Du kannst das Fenster auch schließen und später weitermachen."],
+        ["Rückgabe an Kim","Beim Absenden erhält Kim einen Rückläufer mit „Kontaktdaten von … erhalten“ und deinen Angaben. „Mit Termin“ und „Ohne Termin“ stehen bei diesem Auftrag nicht zur Auswahl."]]}
     ],
-    confirm: "Ich habe verstanden, wie die Pakete funktionieren."
+    confirm: "Ich habe alle Änderungen gelesen und verstanden."
+
   };
 
   const whatsNewKey = () => `smartadm.office.whatsnew:${state.bootstrappedFor || "none"}`;
@@ -10817,8 +10902,16 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       }
     }
     if (!seen) return showWhatsNewDialog(WHATS_NEW.required);
-    if (addendumPending()) openAddendum(state.addendum, { sign: "employee" });
   }
+
+  async function afterEmployeeNotices(){
+    if(state.role!=="employee"||$("whatsNew").open)return;
+    await weeklyPlanner.check({refresh:true});
+    if(!$("planDialog").open&&addendumPending()&&!document.querySelector("dialog[open]"))openAddendum(state.addendum,{sign:"employee"});
+  }
+  $("planDialog").addEventListener("close",()=>{
+    if(weeklyPlanningReady&&addendumPending()&&!document.querySelector("dialog[open]"))openAddendum(state.addendum,{sign:"employee"});
+  });
 
   $("whatsNew").addEventListener("cancel", event => { if (whatsNewMustConfirm) event.preventDefault(); });
   $("whatsNew").addEventListener("close", () => { if (!whatsNewMustConfirm && !WHATS_NEW.required) rememberWhatsNew(); });
@@ -10838,8 +10931,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       rememberWhatsNew();
       whatsNewMustConfirm = false;
       closeDialog($("whatsNew"));
-      if (addendumPending()) openAddendum(state.addendum, { sign: "employee" });
-      else toast("Danke! Deine Bestätigung ist gespeichert ✓");
+      toast("Danke! Deine Bestätigung ist gespeichert ✓");
+      await afterEmployeeNotices();
     }).then(() => { if (whatsNewMustConfirm) $("whatsNewOk").disabled = !$("whatsNewCheck").checked; });
   });
 
@@ -11052,13 +11145,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         return `<div class="my-big">Kein Tag geplant</div>
           ${compact ? "" : '<p class="my-muted">Plane deine nächsten Telefontage mit Startzeit.</p>'}
           ${hint}
-          <div class="my-actions"><button class="btn primary" type="button" data-my-act="plan">Tag planen</button></div>`;
+          <div class="my-actions"><button class="btn primary" type="button" data-my-act="plan">Woche planen</button></div>`;
       }
       const [label, cls] = planStatus(p);
       const day = p.plan_date === today ? "Heute" : p.plan_date === addDaysIso(today, 1) ? "Morgen" : fmtDayShort(p.plan_date);
       const canCancel = (p.status === "planned" && p.plan_date >= today) || (p.status === "missed" && p.plan_date >= addDaysIso(today, -1));
       return `<div class="my-big">${esc(day)}, ${esc(p.start_time)} Uhr</div>
-        <div class="my-line"><span class="chip ${cls}">${esc(label)}</span>${p.note ? `<span class="my-muted">${esc(p.note)}</span>` : ""}</div>
+        <div class="my-line"><span class="chip ${cls}">${esc(label)}</span><span class="my-muted">${esc(fmtMinutes(planDetails(p).minutes))} geplant</span>${planDetails(p).note ? `<span class="my-muted">${esc(planDetails(p).note)}</span>` : ""}</div>
         ${hint}
         <div class="my-actions">
           ${canCancel ? `<button class="btn ghost" type="button" data-my-act="cancel" data-plan="${p.id}">Absagen</button>` : ""}
@@ -11111,7 +11204,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         ${account.owed > 0 ? `<p class="my-hint">Nachzuarbeiten: ${esc(fmtMinutes(account.owed))}</p>` : compact ? "" : '<p class="my-muted">diese Woche</p>'}`;
     },
     aufgaben(compact) {
-      const open = state.tasks.filter(t => t.status === "open" && !isInbox(t));
+      const open = displayedTasks().filter(t => t.status === "open" && !isInbox(t));
       if (compact) return `<div class="my-big">${open.length}</div><p class="my-muted">${open.length === 1 ? "offene Aufgabe" : "offene Aufgaben"}</p>`;
       return (open.length ? `<ul class="my-list">${open.slice(0, 3).map(t => `<li>${esc(t.title)}${t.due_date ? ` <span class="my-muted">· bis ${esc(fmtDate(t.due_date).slice(0, 6))}</span>` : ""}</li>`).join("")}</ul>`
           : '<p class="my-muted">Keine offenen Aufgaben.</p>')
@@ -11931,6 +12024,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   async function bootstrap(user) {
     if (state.bootstrappedFor === user.id) return; // Session-Refreshes ignorieren
     state.bootstrappedFor = user.id;
+    weeklyPlanningReady = false;
 
     if (EMBED_KONTAKT) return bootstrapEmbed();
 
@@ -11961,9 +12055,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     }
     await Promise.all([loadTasks(), loadBranches(), loadCalls()]);
     initPush();
+    weeklyPlanningReady = false;
     await showWhatsNew();
+    weeklyPlanningReady = true;
     await promptBossSignatures();
     loadMyCloseRequests();
+    if (state.role === "employee") await afterEmployeeNotices();
   }
 
   // Nur das Nötigste für „Kontakt einstellen“ laden und das Fenster vorbefüllt öffnen
@@ -12021,6 +12118,16 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     renderClosings();
   }
 
+  weeklyPlanner = window.SmartADMWeekPlanner.create({
+    state, $, esc, api, loadPlans, loadTasks, isReady: () => weeklyPlanningReady, loadPrefs: loadMyPrefs, getPrefs: () => myPrefs,
+    setPrefs: prefs => {
+      myPrefs = cleanPrefs({ ...myPrefs, ...prefs });
+      try { localStorage.setItem(MY_STORE(), JSON.stringify(myPrefs)); } catch {}
+    },
+    today: () => window.SmartADMWeekPlanner.berlinDate(),
+    weekLabel: weekRangeLabel, dayLabel: fmtDayShort, fmtMinutes, startPassed: planStartPassed,
+    setStatus, setText, openDialog, closeDialog, renderTasks, toast
+  });
   initStaticValues();
 
   window.addEventListener("load", async () => {
@@ -12031,6 +12138,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     function showLogin() {
       document.body.classList.remove("auth-pending", "signed-in");
       state.bootstrappedFor = null;
+      weeklyPlanningReady = false;
       if (signInMounted) return;
       Clerk.mountSignIn(signInHost, {
         routing: "hash",
