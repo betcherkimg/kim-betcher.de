@@ -7946,14 +7946,59 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     return row;
   }
 
-  // Gibt es den Kunden schon in Office (Telefonliste, Archiv) oder in einem Paket?
-  function officeTwins(row) {
-    const name = normalizeName(row.name);
-    const numbers = new Set(row.phones.map(digits));
-    const same = c => normalizeName(c.customer_name) === name || asArray(c.phones).some(p => numbers.has(digits(p)));
-    const hits = ADMIN_SCOPES.filter(([scope]) => state.adminCalls[scope].some(same)).map(([, label]) => label);
-    if (state.adminPool.some(same)) hits.push("Paket");
-    return hits;
+  // Eine Telefonnummer oder ein Name allein ist keine Personenkennung.
+  // Nur inhaltlich identische Kontakte werden beim Import vorausgehend abgewählt.
+  function poolPhoneKeys(value) {
+    const phones = Array.isArray(value) ? value : String(value || "").split(/[\n,;]+/);
+    return [...new Set(phones.map(p => digits(phoneNorm(p) || p)).filter(Boolean))].sort();
+  }
+
+  function poolContactKey(contact, place) {
+    return JSON.stringify([
+      normalizeName(contact.customer_name), contact.salutation || "",
+      poolPhoneKeys(contact.phones), String(place ?? ""),
+      asArray(contact.topics), contact.briefing || "", contact.due_date || null
+    ]);
+  }
+
+  function poolImportKey(row) {
+    // Unbekannte Filialen bleiben getrennt, bis der Import einem Paket zugeordnet wird.
+    return poolContactKey(importPayload(row), row.place ?? `unbekannt:${row.ort || ""}`);
+  }
+
+  function preparePoolImportRows(rows) {
+    const seen = new Map(), numbers = new Map();
+    rows.forEach(row => {
+      if (row.errors.length) return;
+      const key = poolImportKey(row), twin = seen.get(key);
+      if (twin) {
+        row.on = false;
+        row.notes.push(["warn", `Identische Importzeile für ${twin.name} – abgewählt`]);
+      } else {
+        seen.set(key, row);
+        const shared = poolPhoneKeys(row.phones).map(n => numbers.get(n)).find(Boolean);
+        if (shared) row.notes.push(["warn", `Telefonnummer auch bei ${shared.name} – bleibt eigener Kontakt`]);
+      }
+      poolPhoneKeys(row.phones).forEach(n => { if (!numbers.has(n)) numbers.set(n, row); });
+    });
+    return rows;
+  }
+
+  function officeImportMatches(row) {
+    const key = poolImportKey(row), name = normalizeName(row.name), numbers = new Set(poolPhoneKeys(row.phones));
+    const identical = [], possible = [];
+    const sources = ADMIN_SCOPES.map(([scope, label]) => [label, state.adminCalls[scope]]).concat([["Paket", state.adminPool]]);
+    sources.forEach(([label, contacts]) => {
+      asArray(contacts).forEach(contact => {
+        const place = contact.place ?? (contact.teams ? "teams" : contact.branch_id ? String(contact.branch_id) : "");
+        if (poolContactKey(contact, place) === key) {
+          if (!identical.includes(label)) identical.push(label);
+        } else if (normalizeName(contact.customer_name) === name || poolPhoneKeys(contact.phones).some(p => numbers.has(p))) {
+          if (!possible.includes(label)) possible.push(label);
+        }
+      });
+    });
+    return { identical, possible };
   }
 
   /* Abgleich mit Sales: Termine, Auswertung, Provisionen und Adressabstimmung.
@@ -8100,37 +8145,17 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       if (missing.length) throw new Error(`Spalte fehlt: ${missing.join(", ")}`);
 
       const rows = table.slice(head + 1).filter(r => r.some(c => String(c).trim())).map((cells, i) => importRow(cells, map, i));
-      // Gleiche Nummer = ein Kontakt: Haushalt mit gleichem Nachnamen wird zusammengefasst, Themen aller Personen.
-      const seen = new Map();
-      poolImportRows = [];
-      rows.forEach(r => {
-        const twin = !r.errors.length && r.phones.map(digits).map(n => seen.get(n)).find(Boolean);
-        if (twin && normalizeName(twin.nachname) === normalizeName(r.nachname)) {
-          twin.vorname = `${twin.vorname} und ${r.vorname}`;
-          twin.name = joinName(twin.nachname, twin.vorname);
-          r.topics.forEach(key => twin.topics.includes(key) || twin.topics.push(key));
-          r.phones.forEach(n => twin.phones.some(x => digits(x) === digits(n)) || twin.phones.push(n));
-          if (r.bsnr) twin.bsnr = [twin.bsnr, r.bsnr].filter(Boolean).join(", ").slice(0, 40);
-          if (r.due && (!twin.due || r.due < twin.due)) twin.due = r.due;
-          if (r.kind) {
-            twin.kind = twin.kind
-              ? { vorname: `${twin.kind.vorname} und ${r.kind.vorname}`, alter: null, art: "kinder" }
-              : r.kind;
-          }
-          twin.notes.push(["", `zusammengefasst mit ${r.vorname} (gleiche Nummer)`]);
-          if (twin.topics.length > MAX_CALL_TOPICS && !twin.errors.includes("Mehr als 3 Themen")) twin.errors.push("Mehr als 3 Themen");
-          if (twin.phones.length > MAX_PHONES && !twin.errors.includes("Mehr als 2 Nummern")) twin.errors.push("Mehr als 2 Nummern");
-          return;
-        }
-        if (twin) { r.on = false; r.notes.push(["warn", `Gleiche Nummer wie ${twin.name}`]); }
-        if (!r.errors.length) r.phones.forEach(p => seen.has(digits(p)) || seen.set(digits(p), r));
-        poolImportRows.push(r);
-      });
+      poolImportRows = preparePoolImportRows(rows);
       poolImportRows.forEach(r => {
         r.sales = salesTreffer(r, bestand);
         if (r.errors.length) { r.on = false; return; }
-        const twins = officeTwins(r);
-        if (twins.length) { r.on = false; r.notes.push(["warn", `Schon in Office: ${twins.join(", ")}`]); }
+        const matches = officeImportMatches(r);
+        if (matches.identical.length) {
+          r.on = false;
+          r.notes.push(["warn", `Identischer Kontakt schon in Office: ${matches.identical.join(", ")}`]);
+        } else if (matches.possible.length) {
+          r.notes.push(["warn", `Ähnlicher Kontakt in Office: ${matches.possible.join(", ")} – bitte prüfen`]);
+        }
       });
 
       const gesperrt = r => r.errors.includes("Telefonmarketing abgelehnt");
@@ -8138,10 +8163,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       const ohneNummer = poolImportRows.filter(r => r.noPhone && !gesperrt(r)).length;
       const fehler = poolImportRows.filter(r => r.errors.length && !r.noPhone && !gesperrt(r)).length;
       const doppelt = poolImportRows.filter(r => !r.errors.length && !r.on).length;
-      const zusammen = rows.length - poolImportRows.length;
       const sales = poolImportRows.filter(r => r.sales.length).length;
       importStatus([
-        ["", `${rows.length} Zeilen gelesen${zusammen ? ` · ${zusammen} mit gleicher Nummer zusammengefasst` : ""}${ohneEinwilligung ? ` · ${ohneEinwilligung} ohne Einverständnis zum Telefonmarketing (gesperrt)` : ""}${ohneNummer ? ` · ${ohneNummer} noch ohne Nummer (bleiben draußen)` : ""}${fehler ? ` · ${fehler} mit Fehlern` : ""}${doppelt ? ` · ${doppelt} schon vorhanden (abgewählt)` : ""}.`],
+        ["", `${rows.length} Zeilen gelesen · Personen bleiben getrennt${ohneEinwilligung ? ` · ${ohneEinwilligung} ohne Einverständnis zum Telefonmarketing (gesperrt)` : ""}${ohneNummer ? ` · ${ohneNummer} noch ohne Nummer (bleiben draußen)` : ""}${fehler ? ` · ${fehler} mit Fehlern` : ""}${doppelt ? ` · ${doppelt} identisch vorhanden (abgewählt)` : ""}.`],
         bestand
           ? [sales ? "warn" : "", sales ? `${sales} ${sales === 1 ? "Kunde hatte" : "Kunden hatten"} schon Kontakt in Sales (${esc(bestand.quelle)}) – unten lila markiert.` : `Kein Kunde der Liste taucht in Sales auf (${esc(bestand.quelle)}).`]
           : ["warn", "Sales-Abgleich nicht möglich – auf diesem Gerät sind keine Sales-Daten erreichbar."]
