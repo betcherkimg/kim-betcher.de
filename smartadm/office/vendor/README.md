@@ -1,0 +1,6 @@
+# Browser dependencies
+
+- `xlsx-0.20.3.min.js`: original SheetJS Community Edition build downloaded from https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js on 2026-10-23. Its embedded `XLSX.version` is 0.20.3. Retain its license notice. This replaces 0.18.5, affected by CVE-2023-30533 and CVE-2024-22363 (fixed upstream in 0.19.3 and 0.20.2 respectively). npm's abandoned `xlsx` release does not contain these fixes.
+- `html2pdf.min.js`: reproducible browser bundle built from `tools/vendor/package-lock.json`. Direct versions: html2pdf.js 0.14.0, jsPDF 4.2.1, DOMPurify 3.4.17, html2canvas 1.4.1. Overrides ensure that the PDF wrapper cannot bundle its older transitive versions. License notices are included at the end of the generated bundle. Run `npm ci --prefix tools/vendor --ignore-scripts`, then `npm run build --prefix tools/vendor` and `npm audit --prefix tools/vendor --omit=dev` to rebuild and review advisories. The production dependency audit reported zero known vulnerabilities on 2026-10-23.
+
+The Office page pins both files with SHA-384 Subresource Integrity. After a rebuild, update those integrity values and run `python scripts/update-security-baseline.py` before deploying both Workers and publishing Pages. Runtime browsers load these local files; no npm or external spreadsheet/PDF CDN runs in the user's workflow.

@@ -5,7 +5,7 @@ from http.server import ThreadingHTTPServer,SimpleHTTPRequestHandler
 from urllib.parse import urlparse
 from playwright.sync_api import sync_playwright,expect
 ROOT=Path(__file__).resolve().parents[1]
-HOOK='''window.__t={state,planner:weeklyPlanner,loadPlans,loadTasks,loadCalls,showPage,renderOwnCalls,renderTasks,renderHr,resetCallForm,fillCallForm,showCallForm,readCallScriptForm,encodeCallScript,callScriptData,conversationTemplate,renderConversation,adminCallHtml,openContactDetails,finalAnwenden,showWhatsNew,afterEmployeeNotices};'''
+HOOK='''window.__t={state,planner:weeklyPlanner,loadPlans,loadTasks,loadCalls,showPage,renderOwnCalls,renderTasks,renderHr,resetCallForm,fillCallForm,showCallForm,readCallScriptForm,encodeCallScript,callScriptData,conversationTemplate,renderConversation,adminCallHtml,openContactDetails,finalAnwenden,showWhatsNew,afterEmployeeNotices,renderContributionModule,setProfileInputs,loadContributionReports,currentPortalFields,projectedPayroll,readContributionRecord,setLohnTab,newPdfDocument,xlsxLib};'''
 class Handler(SimpleHTTPRequestHandler):
  def __init__(self,*a,**kw):super().__init__(*a,directory=str(ROOT),**kw)
  def log_message(self,*a):pass
@@ -18,11 +18,18 @@ server=ThreadingHTTPServer(('127.0.0.1',0),Handler);threading.Thread(target=serv
 BASE=f'http://127.0.0.1:{server.server_port}'
 CLERK='''window.Clerk={user:{id:'sasi',firstName:'Saskia',lastName:'Test',primaryEmailAddress:{emailAddress:'sasi@example.test'}},session:{getToken:async()=> 'local-fixture'},load:async()=>{},mountSignIn:()=>{},mountUserButton:()=>{},addListener:()=>{}};'''
 class API:
- def __init__(self):self.plans=[];self.prefs={};self.acks=[];self.calls=[];self.receipts=[];self.count=0;self.confirmed=[];self.fail_post=False
+ def __init__(self):self.plans=[];self.prefs={};self.acks=[];self.calls=[];self.receipts=[];self.count=0;self.confirmed=[];self.fail_post=False;self.reports=[];self.submissions=[]
  def route(self,route):
   req=route.request;p=urlparse(req.url).path;m=req.method;body=req.post_data_json if req.post_data else {}
   out=[];code=200
-  if p=='/me':out={'role':'employee'}
+  if p=='/admin/contribution-reports':
+   if m=='GET':out=self.reports
+   else:
+    self.submissions.append(body)
+    profile={'employeeRv':False,'employerRv':True,'employerKv':True,'flatTax':True,'flatTaxEmployee':False,'u1':True,'u2':True,'insolvency':True}
+    out={'id':1,'payroll_month':body['month'],'estimated_gross':body['estimated_gross'],'reported_total':sum(body['portal_fields'].values())/100,'status':body['status'],'submitted_at':body.get('submitted_date'),'paid_at':body.get('paid_date'),'snapshot':{'baseFields':body['portal_fields'],'portalFields':body['portal_fields'],'priorFields':{},'profile':profile,'manualGross':body.get('manual_gross',False),'submissionConfirmation':{'confirmedBy':'boss'} if body['status']!='draft' else None}}
+    self.reports=[out]
+  elif p=='/me':out={'role':'employee'}
   elif p=='/me/prefs':
    if m=='PUT':self.prefs=copy.deepcopy(body['prefs'])
    out={'prefs':self.prefs}
@@ -118,5 +125,40 @@ with sync_playwright() as pw:
   expect(page.locator('#planDialog')).to_be_visible();expect(page.locator('#planDialogClose')).to_be_visible();page.locator('#planDialogClose').click()
   assert not errors+errors2+errors3+errors4,errors+errors2+errors3+errors4
   ctx.close();print(f'PASS {width}: mandatory news, Friday/Saturday deferral, Sunday lock, 5h and 8h reasons, three enabled days, request script and contact-only fifth attempt, receipt')
+ # Payroll and PDF integration with actual browser libraries; all external services use fixtures.
+ for width in [1280,390]:
+  api=API();ctx,page,errors=page_for(browser,api,width,'2026-10-23T09:00:00Z')
+  page.evaluate("""async()=>{
+   document.querySelectorAll('dialog[open]').forEach(d=>d.close());
+   document.body.dataset.officeRole='boss';const t=__t;t.state.role='boss';t.state.selectedUserId='sasi';t.state.employeeDataError=false;t.state.closingsError=false;
+   t.state.employeeEntries=[{date:'2026-10-05',minutes:120,appointments:3}];t.state.employeeAbsences=[];t.state.employeeAdjustments=[];t.state.closings=[];
+   t.state.employeeProfiles={sasi:{start_date:'2026-10-01'}};
+   t.setProfileInputs({employeeRv:false,employerRv:true,employerKv:true,flatTax:true,flatTaxEmployee:false,u1:true,u2:true,insolvency:true});
+   document.querySelector('#payrollMonth').value='2026-10';document.querySelector('#lohn').hidden=false;
+   t.showPage('lohn');t.setLohnTab('beitrag');await t.loadContributionReports('sasi');
+  }""")
+  expect(page.locator('#contribHeading')).to_contain_text('Oktober 2026');expect(page.locator('#contribBasisLabel')).to_contain_text('Hochrechnung')
+  expect(page.locator('#contribReportedGross')).to_have_js_property('readOnly',True)
+  expect(page.locator('#contribValues')).to_contain_text('eigener RV-Anteil 0,00')
+  fields=page.evaluate('__t.currentPortalFields()');assert fields['0100']==0 and fields['0500']>0
+  page.locator('#saveContributionBtn').click();expect(page.locator('#contribSaveStatus')).to_contain_text('noch nicht übermittelt');assert len(api.submissions)==1
+  page.locator('#contribStatus').select_option('submitted');expect(page.locator('#contribSubmittedDate')).to_have_value('')
+  page.locator('#saveContributionBtn').click();expect(page.locator('#contribSaveStatus')).to_contain_text('Erst tatsächlich');assert len(api.submissions)==1
+  page.locator('#contribSubmittedDate').fill('2026-10-23');page.locator('#contribSubmissionConfirmed').check();page.locator('#saveContributionBtn').click()
+  expect(page.locator('#contribNextSteps')).to_contain_text('von dir bestätigt');assert len(api.submissions)==2
+  expect(page.locator('#contribManualGross')).to_be_disabled();assert api.submissions[-1]['submission_confirmed'] is True
+  assert api.submissions[-1]['portal_fields']==fields
+  page.screenshot(path=f'/tmp/office-contributions-{width}.png',full_page=True);check_width(page)
+  # Past dates alone do not imply a finalized payroll. Only a saved closing does.
+  page.evaluate("__t.state.employeeProfiles.sasi.start_date='2026-09-01';document.querySelector('#payrollMonth').min='2026-09'")
+  page.locator('#payrollMonth').fill('2026-09');page.evaluate('__t.renderContributionModule()');expect(page.locator('#contribBasisLabel')).to_contain_text('vorläufiger Ist-Stand')
+  page.evaluate("__t.state.closings=[{payroll_month:'2026-09',gross:500,snapshot:{payroll:{gross:500,mins:120,appts:2},profile:{employeeRv:false,employerRv:true}}}];__t.renderContributionModule()")
+  expect(page.locator('#contribBasisLabel')).to_contain_text('endgültiger Monatsabschluss')
+  page.wait_for_function('typeof window.html2pdf === "function"')
+  pdf=page.evaluate("async()=>{const p=await __t.newPdfDocument();p.text('SmartADM PDF-Test',10,10);return p.output('arraybuffer').byteLength}");assert pdf>1000
+  sheet=page.evaluate("async()=>{const x=await __t.xlsxLib();const b=x.utils.book_new();x.utils.book_append_sheet(b,x.utils.aoa_to_sheet([['Name','Telefon'],['Muster','07361 123']]));const bytes=x.write(b,{type:'array',bookType:'xlsx'});const parsed=x.read(bytes,{type:'array'});return {version:x.version,rows:x.utils.sheet_to_json(parsed.Sheets[parsed.SheetNames[0]],{header:1})}}")
+  assert sheet['version']=='0.20.3' and sheet['rows'][1]==['Muster','07361 123']
+  assert not errors,errors
+  ctx.close();print(f'PASS {width}: contribution preview, RV exemption, draft, explicit submission, frozen values, open versus final month, real PDF generation')
  browser.close()
 server.shutdown()

@@ -1,0 +1,8 @@
+{
+  "name": "smartadm-vendor-build",
+  "private": true,
+  "scripts": {"build": "esbuild entry.js --bundle --minify --format=iife --legal-comments=eof --outfile=../../smartadm/office/vendor/html2pdf.min.js"},
+  "dependencies": {"html2pdf.js": "0.14.0", "jspdf": "4.2.1", "dompurify": "3.4.17", "html2canvas": "1.4.1"},
+  "devDependencies": {"esbuild": "0.25.12"},
+  "overrides": {"jspdf": "$jspdf", "dompurify": "$dompurify", "html2canvas": "$html2canvas"}
+}

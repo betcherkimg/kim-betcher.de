@@ -18,6 +18,9 @@ const PRIORITIES = ["low", "normal", "high"];
 const ABSENCE_TYPES = ["vacation", "sick", "holiday", "paid_leave"];
 
 const corsHeaders = {
+  "Cache-Control": "private, no-store",
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "no-referrer",
   "Access-Control-Allow-Origin": APP_ORIGIN,
   "Access-Control-Allow-Headers": "Authorization, Content-Type",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -99,11 +102,11 @@ async function verifyClerkToken(request) {
 
   const now = Math.floor(Date.now() / 1000);
   const checks = [
-    [payload.exp && payload.exp < now - CLOCK_TOLERANCE_S, "TOKEN_EXPIRED"],
-    [payload.nbf && payload.nbf > now + CLOCK_TOLERANCE_S, "TOKEN_NOT_ACTIVE"],
+    [!Number.isFinite(payload.exp) || payload.exp < now - CLOCK_TOLERANCE_S, "TOKEN_EXPIRED"],
+    [payload.nbf != null && (!Number.isFinite(payload.nbf) || payload.nbf > now + CLOCK_TOLERANCE_S), "TOKEN_NOT_ACTIVE"],
     [payload.iss !== CLERK_ISSUER, "INVALID_ISSUER"],
     [payload.azp && payload.azp !== APP_ORIGIN, "INVALID_AUTHORIZED_PARTY"],
-    [!payload.sub, "NO_USER"]
+    [!validUserId(payload.sub) || typeof payload.sub !== "string", "NO_USER"]
   ];
   for (const [failed, code] of checks) if (failed) throw new Error(code);
 
@@ -1536,13 +1539,35 @@ async function contributionProfile(env, owner) {
   return mapPayrollSettings(settings, owner);
 }
 
-async function previousContributionCorrection(env, owner, month) {
-  const row = await first(env,
-    `SELECT correction_cents
-     FROM minijob_contribution_reports
-     WHERE clerk_user_id = ? AND payroll_month = ?`,
-    owner, previousMonth(month));
-  return Number(row?.correction_cents || 0);
+// Portalbeträge werden in Cent je Beitragsgruppe eingefroren. Eine Restschuld
+// gehört im Folgemonat in dieselbe Beitragsgruppe, nicht nur in die Zahlungssumme.
+function contributionFields(c, profile) {
+  return { "6000": c.kv_cents, "0100": profile.employeeRv ? c.rv_cents : 0,
+    "0500": profile.employeeRv ? 0 : c.rv_cents, U1: c.u1_cents, U2: c.u2_cents,
+    "0050": c.insolvency_cents, St: c.flat_tax_cents };
+}
+const fieldTotal = fields => Object.values(fields).reduce((sum, n) => sum + n, 0);
+function closingContributionFields(closing) {
+  const snap = safeParse(closing?.snapshot_json);
+  if (!snap?.profile || !snap?.payroll) return null;
+  // Der Abschluss hält die damals gültigen Einstellungen und SV-Tage fest.
+  return contributionFields(calculateMinijobContributions(Number(closing.gross_cents),
+    snap.profile, snap.payroll.svDays), snap.profile);
+}
+function submissionConfirmed(report) {
+  return report?.status !== "draft" && !!safeParse(report?.snapshot_json)?.submissionConfirmation;
+}
+async function previousContributionFields(env, owner, month) {
+  const prior = previousMonth(month);
+  const [report, closing] = await Promise.all([
+    first(env, "SELECT * FROM minijob_contribution_reports WHERE clerk_user_id = ? AND payroll_month = ?", owner, prior),
+    first(env, "SELECT gross_cents, snapshot_json FROM monthly_closings WHERE clerk_user_id = ? AND payroll_month = ?", owner, prior)
+  ]);
+  const actual = closingContributionFields(closing);
+  const snap = safeParse(report?.snapshot_json);
+  if (submissionConfirmed(report) && !actual) return null;
+  if (!submissionConfirmed(report) || !actual || !snap?.baseFields) return {};
+  return Object.fromEntries(Object.keys(actual).map(key => [key, actual[key] - (snap.baseFields[key] || 0)]));
 }
 
 async function syncContributionReportActual(env, owner, month, grossCents, profile = null, svDays = 30) {
@@ -1573,10 +1598,11 @@ async function upsertContributionReport({ request, env, userId, owner }) {
 
   let estimatedGrossCents;
   if (body.estimated_gross_cents != null) {
-    estimatedGrossCents = nonNegInt(body.estimated_gross_cents);
+    estimatedGrossCents = Number(body.estimated_gross_cents);
+    if (!Number.isSafeInteger(estimatedGrossCents) || estimatedGrossCents < 0 || estimatedGrossCents > 10000000) return err("Voraussichtliches Brutto ist ungültig.");
   } else if (body.estimated_gross != null) {
     const euros = Number(body.estimated_gross);
-    if (!Number.isFinite(euros) || euros < 0) return err("Voraussichtliches Brutto ist ungültig.");
+    if (!Number.isFinite(euros) || euros < 0 || euros > 100000) return err("Voraussichtliches Brutto ist ungültig.");
     estimatedGrossCents = Math.round(euros * 100);
   } else {
     return err("Voraussichtliches Brutto fehlt.");
@@ -1584,25 +1610,48 @@ async function upsertContributionReport({ request, env, userId, owner }) {
 
   await ensureContributionReports(env);
   const existing = await first(env,
-    `SELECT id, status
+    `SELECT *
      FROM minijob_contribution_reports
      WHERE clerk_user_id = ? AND payroll_month = ?`,
     owner, month);
 
-  // Status und Daten kommen aus demselben Formular (Entwurf / übermittelt / bezahlt)
   const status = CONTRIBUTION_STATUSES.includes(body.status) ? body.status : (existing?.status || "draft");
-  const submittedAt = status === "draft" ? null : (validDate(body.submitted_date) ? body.submitted_date : berlinToday());
-  const paidAt = status === "paid" ? (validDate(body.paid_date) ? body.paid_date : berlinToday()) : null;
+  const wasConfirmed = submissionConfirmed(existing);
+  const needsConfirmation = status !== "draft" && !wasConfirmed;
+  const submittedAt = status === "draft" ? null : body.submitted_date;
+  const paidAt = status === "paid" ? body.paid_date : null;
+  if (status !== "draft" && (!validDate(submittedAt) || submittedAt > berlinToday())) {
+    return err("Bitte das tatsächliche Übermittlungsdatum im SV-Meldeportal angeben (nicht in der Zukunft).");
+  }
+  if (needsConfirmation && body.submission_confirmed !== true) {
+    return err("Bitte bestätigen, dass diese Werte tatsächlich im SV-Meldeportal übermittelt wurden.");
+  }
+  if (status === "paid" && (!validDate(paidAt) || paidAt < submittedAt || paidAt > berlinToday())) {
+    return err("Bitte das tatsächliche Zahlungsdatum ab Übermittlung bis heute angeben.");
+  }
+  if (wasConfirmed) {
+    if (status === "draft" || estimatedGrossCents !== existing.estimated_gross_cents || submittedAt !== String(existing.submitted_at).slice(0, 10)) {
+      return err("Bestätigte Meldungen sind eingefroren. Abweichungen werden nach Monatsabschluss im Folgemonat verrechnet.", 409);
+    }
+    await run(env, `UPDATE minijob_contribution_reports SET status = ?, paid_at = ?, note = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+      status, paidAt, cleanText(body.note, 500), existing.id);
+    return json(mapContributionReport(await first(env, `${CONTRIBUTION_SELECT} WHERE id = ?`, existing.id)));
+  }
 
-  const [profile, employee, closing, priorCorrection] = await Promise.all([
+  const [storedProfile, employee, closing, priorFields, member] = await Promise.all([
     contributionProfile(env, owner),
     first(env, "SELECT start_date, end_date FROM employee_profiles WHERE clerk_user_id = ?", owner),
     first(env,
-      "SELECT gross_cents FROM monthly_closings WHERE clerk_user_id = ? AND payroll_month = ?",
+      "SELECT gross_cents, snapshot_json FROM monthly_closings WHERE clerk_user_id = ? AND payroll_month = ?",
       owner, month),
-    previousContributionCorrection(env, owner, month)
+    previousContributionFields(env, owner, month),
+    first(env, "SELECT email FROM office_members WHERE clerk_user_id = ?", owner)
   ]);
 
+  if (needsConfirmation && isTestEmail(member?.email)) return err("Testkonto – nicht an die Minijob-Zentrale melden.");
+  if (needsConfirmation && priorFields == null) return err("Bitte zuerst den Vormonat abschließen, damit dessen Beitragsausgleich feststeht.", 409);
+  const profile = safeParse(closing?.snapshot_json)?.profile || storedProfile;
+  const priorCorrection = fieldTotal(priorFields || {});
   const svDays = insuredDays(month, employee?.start_date, employee?.end_date);
   const estimated = calculateMinijobContributions(estimatedGrossCents, profile, svDays || 30);
   const due = contributionDueDates(month);
@@ -1613,13 +1662,21 @@ async function upsertContributionReport({ request, env, userId, owner }) {
   let actualTotal = null;
   let correction = 0;
   if (closing) {
-    const actual = calculateMinijobContributions(Number(closing.gross_cents || 0), profile, svDays || 30);
+    const actual = calculateMinijobContributions(Number(closing.gross_cents || 0), safeParse(closing.snapshot_json)?.profile || profile, safeParse(closing.snapshot_json)?.payroll?.svDays ?? svDays);
     actualGross = actual.gross_cents;
     actualTotal = actual.total_cents;
     correction = actual.total_cents - estimated.total_cents;
   }
 
+  const baseFields = contributionFields(estimated, profile);
+  const portalFields = Object.fromEntries(Object.keys(baseFields).map(key => [key, baseFields[key] + (priorFields?.[key] || 0)]));
+  if (needsConfirmation && JSON.stringify(body.portal_fields) !== JSON.stringify(portalFields)) {
+    return err("Die Portalwerte haben sich geändert. Bitte neu laden und vor Bestätigung mit der tatsächlichen Meldung vergleichen.", 409);
+  }
   const snapshot = {
+    baseFields, priorFields: priorFields || {}, portalFields, manualGross: body.manual_gross === true,
+    basis: closing && Number(closing.gross_cents) === estimatedGrossCents ? "final" : "estimate",
+    submissionConfirmation: needsConfirmation ? { confirmedBy: userId, confirmedAt: new Date().toISOString(), submittedDate: submittedAt } : null,
     payrollMonth: month,
     calculatedAt: new Date().toISOString(),
     profile,
@@ -1636,7 +1693,7 @@ async function upsertContributionReport({ request, env, userId, owner }) {
     accidentInsuranceIncluded: false
   };
 
-  await run(env,
+  const saveResult = await run(env,
     `INSERT INTO minijob_contribution_reports (
        clerk_user_id, payroll_month, estimated_gross_cents,
        kv_cents, rv_employer_cents, rv_employee_cents, rv_cents,
@@ -1670,7 +1727,10 @@ async function upsertContributionReport({ request, env, userId, owner }) {
        note = excluded.note,
        snapshot_json = excluded.snapshot_json,
        created_by = excluded.created_by,
-       updated_at = CURRENT_TIMESTAMP`,
+       updated_at = CURRENT_TIMESTAMP
+     WHERE minijob_contribution_reports.status = 'draft'
+        OR json_extract(CASE WHEN json_valid(minijob_contribution_reports.snapshot_json)
+          THEN minijob_contribution_reports.snapshot_json ELSE '{}' END, '$.submissionConfirmation') IS NULL`,
     owner, month, estimated.gross_cents,
     estimated.kv_cents, estimated.rv_employer_cents, estimated.rv_employee_cents, estimated.rv_cents,
     estimated.u1_cents, estimated.u2_cents, estimated.insolvency_cents, estimated.flat_tax_cents,
@@ -1679,6 +1739,7 @@ async function upsertContributionReport({ request, env, userId, owner }) {
     due.submissionDueDate, due.paymentDueDate, status, submittedAt, paidAt, note, JSON.stringify(snapshot), userId
   );
 
+  if (!saveResult.meta?.changes) return err("Der Nachweis wurde inzwischen bestätigt. Bitte neu laden.", 409);
   const row = await first(env,
     `${CONTRIBUTION_SELECT}
      WHERE clerk_user_id = ? AND payroll_month = ?`,
@@ -1686,53 +1747,16 @@ async function upsertContributionReport({ request, env, userId, owner }) {
   return json(mapContributionReport(row), existing ? 200 : 201);
 }
 
-async function updateContributionReport({ request, env, id }) {
-  const body = (await readJson(request)) || {};
-  const status = String(body.status || "").trim();
-  if (!CONTRIBUTION_STATUSES.includes(status)) {
-    return err("Status muss draft, submitted oder paid sein.");
-  }
-
+async function updateContributionReport({ request, env, id, userId }) {
   await ensureContributionReports(env);
-  const existing = await first(env,
-    "SELECT id, status FROM minijob_contribution_reports WHERE id = ?", id);
+  const existing = await first(env, `${CONTRIBUTION_SELECT} WHERE id = ?`, id);
   if (!existing) return err("Beitragsnachweis nicht gefunden.", 404);
-
-  if (status === "paid" && existing.status === "draft") {
-    return err("Beitragsnachweis muss zuerst als übermittelt markiert werden.", 409);
-  }
-
-  if (status === "draft") {
-    await run(env,
-      `UPDATE minijob_contribution_reports
-       SET status = 'draft', submitted_at = NULL, paid_at = NULL,
-           updated_at = CURRENT_TIMESTAMP
-       WHERE id = ?`,
-      id);
-  } else if (status === "submitted") {
-    await run(env,
-      `UPDATE minijob_contribution_reports
-       SET status = 'submitted',
-           submitted_at = COALESCE(submitted_at, CURRENT_TIMESTAMP),
-           paid_at = NULL,
-           updated_at = CURRENT_TIMESTAMP
-       WHERE id = ?`,
-      id);
-  } else {
-    await run(env,
-      `UPDATE minijob_contribution_reports
-       SET status = 'paid',
-           submitted_at = COALESCE(submitted_at, CURRENT_TIMESTAMP),
-           paid_at = COALESCE(paid_at, CURRENT_TIMESTAMP),
-           updated_at = CURRENT_TIMESTAMP
-       WHERE id = ?`,
-      id);
-  }
-
-  const row = await first(env, `${CONTRIBUTION_SELECT} WHERE id = ?`, id);
-  return json(mapContributionReport(row));
+  const body = (await readJson(request)) || {};
+  return upsertContributionReport({ env, owner: existing.clerk_user_id, userId,
+    request: new Request(request.url, { method: "PUT", body: JSON.stringify({ ...body,
+      month: existing.payroll_month, estimated_gross_cents: existing.estimated_gross_cents,
+      submitted_date: body.submitted_date || existing.submitted_at?.slice(0, 10) }) }) });
 }
-
 
 
 /* ================= Gehaltsnachweise unterschreiben =================
@@ -2967,7 +2991,9 @@ async function vapidAuthorization(config, endpoint) {
 }
 
 async function sendPush(env, config, subscription, message) {
+  if (!validPushEndpoint(subscription.endpoint)) return { status: 0, service: "", detail: "Push-Dienst nicht erlaubt" };
   const res = await fetch(subscription.endpoint, {
+    redirect: "error",
     method: "POST",
     headers: {
       Authorization: await vapidAuthorization(config, subscription.endpoint),
@@ -3029,7 +3055,7 @@ async function savePushSubscription({ request, env, userId }) {
 
   let valid = false;
   try {
-    valid = new URL(endpoint).protocol === "https:" &&
+    valid = validPushEndpoint(endpoint) &&
       endpoint.length <= 1000 &&
       b64url(p256dh).length === 65 &&
       b64url(auth).length === 16;
@@ -3044,7 +3070,8 @@ async function savePushSubscription({ request, env, userId }) {
        p256dh = excluded.p256dh,
        auth = excluded.auth,
        user_agent = excluded.user_agent,
-       updated_at = CURRENT_TIMESTAMP`,
+       updated_at = CURRENT_TIMESTAMP
+     WHERE push_subscriptions.clerk_user_id = excluded.clerk_user_id`,
     userId, endpoint, p256dh, auth,
     String(request.headers.get("User-Agent") || "").slice(0, 200));
 
@@ -4375,6 +4402,7 @@ const routes = [
   route("GET", "/documents", listOwnDocuments),
   route("GET", "/documents/:id", getOwnDocument),
 
+  route("GET", "/admin/security-monitor", getSecurityMonitor),
   route("GET", "/admin/users", getAdminUsers),
   route("GET", "/admin/entries", listEntries, { target: true }),
   route("PUT", "/admin/settings", updateSettings),
@@ -4445,12 +4473,139 @@ const routes = [
   route("DELETE", "/admin/documents/:id", deleteAdminDocument, { target: true })
 ];
 
+/* ================= Sicherheitsprüfung und dauerhafte Überwachung ================= */
+
+async function officeAllowed(env, userId) {
+  return isBoss(env, userId) || !!await first(env,
+    "SELECT 1 FROM employee_profiles WHERE clerk_user_id = ?", userId);
+}
+function validPushEndpoint(value) {
+  try {
+    const u = new URL(value);
+    return u.protocol === "https:" && !u.username && !u.password && !u.port &&
+      (u.hostname === "fcm.googleapis.com" || u.hostname === "web.push.apple.com" ||
+       u.hostname === "updates.push.services.mozilla.com" ||
+       /^[a-z0-9-]+\.notify\.windows\.com$/.test(u.hostname));
+  } catch { return false; }
+}
+let securityReady = false;
+async function ensureSecurity(env) {
+  if (securityReady) return;
+  await run(env, `CREATE TABLE IF NOT EXISTS security_metrics (
+    hour TEXT NOT NULL, kind TEXT NOT NULL, count INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY(hour, kind))`);
+  await run(env, `CREATE TABLE IF NOT EXISTS security_monitor_state (
+    check_key TEXT PRIMARY KEY, failures INTEGER NOT NULL DEFAULT 0,
+    active INTEGER NOT NULL DEFAULT 0, task_id INTEGER, notified INTEGER NOT NULL DEFAULT 0,
+    checked_at TEXT, last_ok TEXT, detail TEXT)`);
+  securityReady = true;
+}
+async function recordSecurityMetric(env, kind) {
+  await ensureSecurity(env);
+  const hour = new Date().toISOString().slice(0, 13);
+  await run(env, `INSERT INTO security_metrics(hour, kind, count) VALUES (?, ?, 1)
+    ON CONFLICT(hour, kind) DO UPDATE SET count = count + 1`, hour, kind);
+}
+async function securityCheckResult(env, key, healthy, detail) {
+  await ensureSecurity(env);
+  const old = await first(env, "SELECT * FROM security_monitor_state WHERE check_key = ?", key);
+  const failures = healthy ? 0 : Number(old?.failures || 0) + 1;
+  const active = !healthy && failures >= 2;
+  let taskId = old?.task_id || null;
+  let notified = old?.notified || 0;
+  if (active && !old?.active) {
+    const task = await run(env, `INSERT INTO office_tasks
+      (assigned_to, created_by, title, description, priority, status)
+      VALUES (?, 'security-monitor', ?, ?, 'high', 'open')`, BOSS_INBOX,
+      `Sicherheitsmonitor: ${key}`, `${detail}\nZwei aufeinanderfolgende Prüfungen auffällig. Dies ist kein Nachweis eines erfolgreichen Angriffs.`);
+    taskId = task.meta?.last_row_id || null;
+    notified = 0;
+  }
+  if (healthy && old?.active) {
+    if (taskId) await run(env, "UPDATE office_tasks SET status = 'completed', completed_at = CURRENT_TIMESTAMP WHERE id = ? AND created_by = 'security-monitor'", taskId);
+    await Promise.all(bossIds(env).map(id => notifyUser(env, id, {
+      title: "Sicherheitsmonitor: wieder unauffällig", body: key,
+      tag: `security-${key}`, url: `${APP_PATH}?page=organisation`
+    })));
+    notified = 0;
+  }
+  if (active && !notified) {
+    const results = await Promise.all(bossIds(env).map(id => notifyUser(env, id, {
+      title: "Sicherheitsmonitor: Prüfung erforderlich", body: `${key}: ${detail}`,
+      tag: `security-${key}`, url: `${APP_PATH}?page=organisation`
+    })));
+    notified = results.flat().some(r => r.status >= 200 && r.status < 300) ? 1 : 0;
+  }
+  await run(env, `INSERT INTO security_monitor_state
+    (check_key, failures, active, task_id, notified, checked_at, last_ok, detail)
+    VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CASE WHEN ? THEN CURRENT_TIMESTAMP END, ?)
+    ON CONFLICT(check_key) DO UPDATE SET failures = excluded.failures, active = excluded.active,
+      task_id = excluded.task_id, notified = excluded.notified, checked_at = excluded.checked_at,
+      last_ok = COALESCE(excluded.last_ok, security_monitor_state.last_ok), detail = excluded.detail`,
+    key, failures, active ? 1 : 0, taskId, notified, healthy ? 1 : 0, detail);
+  if (active) console.warn(JSON.stringify({ event: "security.monitor_alert", check: key, detail }));
+}
+// BEGIN MONITORED_ASSETS (generated by scripts/update-security-baseline.py)
+const MONITORED_ASSETS = {
+  "/index.html": "7e60f96e09362a6b200917a62fb449180dcf9a63236aef24122b4b8c3adece9a",
+  "/kb.css": "94fc9d3b5382f0604a2772cc4d8573ea6a4b25b9c77cd8dc8d949e6fd790c432",
+  "/smartadm/sales/index.html": "b82b016eb1c57e53b2af504b754caa802bc04eb1d2a50722bd785355374f9719",
+  "/smartadm/sales/cloud.js": "b62ef1f8fa93b3c9b8e6007c622c8e2771dda3220e979c77eb1c55084b5e0e26",
+  "/smartadm/office/": "5658a7757890285cfd6c42ac4a52db30c00cf777982bd085e325d86c34919d4f",
+  "/smartadm/office/sw.js": "6511d6967746e83342953639c96d37884644f31be01ad81f833f52b0d8cee660",
+  "/smartadm/office/week-planner.js": "1ff59ff97053f6702be28c7f57a78cf6b3b869271f15d0cb5344be7c61119bf2",
+  "/smartadm/office/vendor/xlsx-0.20.3.min.js": "cc015130aa8521e7f088f88898eba949ccdcbfb38df0bd129b44b7273c3a6f41",
+  "/smartadm/office/vendor/html2pdf.min.js": "f3e5733ad8b0547c6ad7ee6c7766277fc13d1cb584197aaacbed930ce5ce0f8f"
+};
+// END MONITORED_ASSETS
+async function monitorSecurity(env) {
+  await ensureSecurity(env);
+  for (const [path, expected] of Object.entries(MONITORED_ASSETS)) {
+    let healthy = false, detail = "Abruf fehlgeschlagen oder Zeitüberschreitung";
+    try {
+      const response = await fetch(`${APP_ORIGIN}${path}`, { redirect: "error", cache: "no-store", signal: AbortSignal.timeout(10000) });
+      if (response.ok) {
+        const bytes = await response.arrayBuffer();
+        const digest = [...new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))].map(x => x.toString(16).padStart(2, "0")).join("");
+        healthy = digest === expected;
+        detail = healthy ? "HTTPS und SHA-256 stimmen mit dem freigegebenen Repository-Stand überein" : "Inhalt weicht vom freigegebenen Repository-Stand ab; Veröffentlichung oder unerwartete Änderung prüfen";
+      } else detail = `HTTP ${response.status}`;
+    } catch {}
+    await securityCheckResult(env, path, healthy, detail);
+  }
+  let apiHealthy = false, apiDetail = "API nicht erreichbar";
+  try {
+    const health = await fetch("https://smartadm-office-api.betcherkimg.workers.dev/health", { signal: AbortSignal.timeout(10000), redirect: "error" });
+    const body = await health.json();
+    const denied = await fetch("https://smartadm-office-api.betcherkimg.workers.dev/admin/users", { signal: AbortSignal.timeout(10000), redirect: "error" });
+    apiHealthy = health.ok && body.database === true && denied.status === 401 && denied.headers.get("Cache-Control")?.includes("no-store");
+    apiDetail = apiHealthy ? "API/Datenbank erreichbar; anonymer Adminzugriff abgewiesen" : `API-Health ${health.status}, anonymer Adminzugriff ${denied.status}`;
+  } catch {}
+  await securityCheckResult(env, "API-Verfügbarkeit und Zugriffsschutz", apiHealthy, apiDetail);
+  const hour = new Date().toISOString().slice(0, 13);
+  const rows = await all(env, "SELECT kind, count FROM security_metrics WHERE hour = ?", hour);
+  const counts = Object.fromEntries(rows.map(r => [r.kind, Number(r.count)]));
+  const denied = (counts.auth_denied || 0) + (counts.admin_denied || 0);
+  await securityCheckResult(env, "Abgewiesene Zugriffe", denied < 100 && !counts.unapproved_account,
+    `${denied} abgewiesene Authentifizierungen/Adminzugriffe, ${counts.unapproved_account || 0} Zugriffe nicht freigegebener Konten in dieser UTC-Stunde`);
+  await securityCheckResult(env, "API-Fehler", (counts.handler_error || 0) < 5,
+    `${counts.handler_error || 0} interne API-Fehler in dieser UTC-Stunde`);
+  await run(env, "DELETE FROM security_metrics WHERE hour < ?", new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 13));
+}
+async function getSecurityMonitor({ env }) {
+  await ensureSecurity(env);
+  return json({ checks: await all(env, "SELECT * FROM security_monitor_state ORDER BY check_key"),
+    metrics: await all(env, "SELECT * FROM security_metrics ORDER BY hour DESC, kind LIMIT 100"),
+    intervalMinutes: 15, note: "Auffälligkeiten sind Verdachtsmomente, keine Bestätigung eines erfolgreichen Angriffs." });
+}
+
 /* ================= Worker ================= */
 
 export default {
   // Cron-Trigger (Cloudflare → Worker → Einstellungen → Trigger): */15 * * * *
   async scheduled(event, env, exec) {
     exec.waitUntil((async () => {
+      if (env.SECURITY_MONITOR_ONLY === "true") { await monitorSecurity(env); return; }
       await checkPlans(env, exec).catch(e => console.error("checkPlans:", e.message));
       await remindWeekPlanning(env, exec).catch(e => console.error("remindWeekPlanning:", e.message));
     })());
@@ -4462,6 +4617,7 @@ export default {
     }
 
     const url = new URL(request.url);
+    if (env.SECURITY_MONITOR_ONLY === "true") return err("Endpunkt nicht gefunden.", 404);
 
     if (url.pathname === "/push/public-key") {
       const config = await getPushConfig(env);
@@ -4469,15 +4625,16 @@ export default {
     }
 
     if (url.pathname === "/health") {
-      const db = await env.DB.prepare("SELECT 1 AS ok").first();
-      return json({ status: "ok", database: db?.ok === 1 });
+      const db = await env.DB.prepare("SELECT 1 AS ok").first().catch(() => null);
+      return json({ status: db?.ok === 1 ? "ok" : "degraded", database: db?.ok === 1 }, db?.ok === 1 ? 200 : 503);
     }
 
     let userId;
     try {
       ({ userId } = await verifyClerkToken(request));
     } catch (e) {
-      console.error("Auth error:", e.message);
+      console.warn(JSON.stringify({ event: "security.auth_denied", reason: "invalid_or_missing_token" }));
+      exec.waitUntil(recordSecurityMetric(env, "auth_denied").catch(() => {}));
       return err("Nicht autorisiert.", 401);
     }
 
@@ -4491,8 +4648,14 @@ export default {
       }
     }
 
+    if (!await officeAllowed(env, userId)) {
+      await recordSecurityMetric(env, "unapproved_account");
+      return err("Dieses Konto ist für Office nicht freigegeben.", 403);
+    }
+
     const isAdminPath = url.pathname.startsWith("/admin/");
     if (isAdminPath && !isBoss(env, userId)) {
+      exec.waitUntil(recordSecurityMetric(env, "admin_denied").catch(() => {}));
       return err("Keine Boss-Berechtigung.", 403);
     }
 
@@ -4512,7 +4675,12 @@ export default {
         ctx.owner = target;
       }
 
-      return r.handler(ctx);
+      try { return await r.handler(ctx); }
+      catch (error) {
+        console.error(JSON.stringify({ event: "office.handler_error", route: r.pattern.source }));
+        exec.waitUntil(recordSecurityMetric(env, "handler_error").catch(() => {}));
+        return err("Die Anfrage konnte nicht verarbeitet werden.", 500);
+      }
     }
 
     return err(isAdminPath ? "Admin-Endpunkt nicht gefunden." : "Endpunkt nicht gefunden.", 404);

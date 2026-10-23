@@ -3,7 +3,7 @@
   "main": "worker.js",
   "account_id": "3b7413caedf94b7f9ed165fc04566866",
   "compatibility_date": "2026-09-15",
-  "observability": { "enabled": true },
+  "observability": { "enabled": true, "head_sampling_rate": 1, "logs": { "enabled": true, "invocation_logs": true, "persist": true }, "redact_query_string": true },
   "vars": { "BOSS_USER_ID": "user_3JMu8X64anaxeyWQBKl9OQz6Q5G" },
   "d1_databases": [{
     "binding": "DB",

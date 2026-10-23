@@ -1,0 +1,19 @@
+# Security review — 23 October 2026
+
+Scope: `betcherkimg/kim-betcher.de`, branch `KimBetcher`, public Pages assets and `smartadm-office-api` in the configured Cloudflare account. The initial repository and downloaded production Worker matched commit `49fdca6`. Seven checked live public HTML/JS/CSS files exactly matched that pushed source. Requests for `/.env` and `/.git/config` returned 404. The Worker source is publicly accessible as a repository asset, consistent with the public repository; it contains identifiers and a publishable Clerk key, not the Cloudflare token or private push keys.
+
+## Confirmed findings and corrections
+
+1. **Vulnerable Excel reader**: Office actually loads SheetJS 0.18.5 to parse imported spreadsheets. OSV returned GHSA-4r6h-8v6p-xvw6 / CVE-2023-30533 (prototype pollution) and GHSA-5pgg-2g8v-p4x9 / CVE-2024-22363 (ReDoS). Exposure requires parsing a crafted spreadsheet in an operator's browser; neither a malicious import nor exploitation was observed. Replaced with original SheetJS 0.20.3, local hosting and SRI.
+2. **Old PDF dependency bundle**: replaced html2pdf.js 0.10.1 with a rebuilt, locked dependency bundle containing current jsPDF and DOMPurify. `npm audit --omit=dev` reports no known production dependency vulnerabilities on the review date. This establishes the version correction; it does not establish exploitation of every advisory in the previous bundle.
+3. **Office enrollment boundary**: a valid Clerk session could reach Office's own profile registration without separate employer approval. Office now additionally requires a boss ID or an employer-managed employee profile before its routes. Existing legitimate/test profiles were checked before enforcement. Admin endpoints retain their boss-only gate and employee records remain owner-scoped.
+4. **Push destinations**: arbitrary HTTPS push endpoints were accepted, allowing authenticated users to induce outbound requests. Restricted to the actual browser push providers, prohibited credentials and nonstandard ports, disabled redirects, and prevented cross-account takeover of an existing push endpoint.
+5. **API hardening**: required finite JWT expiry, set no-store/nosniff/referrer headers, concealed internal handler errors and added bounded, aggregated access/error counters. Existing signature, issuer, authorized-party, owner filters and SQL binding protections were retained.
+
+## Attack evidence and limits
+
+No successful attack on this website is confirmed. Cloudflare's account analytics returned 250 Worker requests, zero execution errors and 12 subrequests for 22 October 2026 09:00 UTC through 23 October 2026 09:00 UTC. This is an execution metric, not HTTP status or exploit evidence. Historical Workers Observability queries and account notification APIs returned 403 with the credentials available during the review, including after the environment's reported secret updates; their historical event contents could not be inspected. The account-token verification endpoint confirmed that the runtime token is active. No Cloudflare zone for the domain was visible, so zone/WAF attack logs could not establish anything about the GitHub Pages origin.
+
+The absence of changed assets or recorded execution errors does not exclude prior unauthorized reads, a crafted browser import or activity outside the observed period. No production customer, time-entry, closing or submitted-contribution records were changed during the review. Tests run against local fixtures; deployment adds only monitoring tables/counters and uses the existing configuration.
+
+Independent Cloudflare monitoring is described in the Office API README. Alerts explicitly identify anomalies as review items, not confirmed compromise. Review future dependency advisories and refresh pinned baselines with each approved deployment.

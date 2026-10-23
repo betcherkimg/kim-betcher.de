@@ -2214,37 +2214,40 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card lohn-pane" data-lohn-pane="beitrag" hidden>
           <div class="lohn-block" id="contributionPanel">
             <div class="card-head" style="margin-bottom:12px">
-              <h2 style="font-size:16px">Beitragsnachweis Minijob-Zentrale</h2>
+              <h2 style="font-size:16px" id="contribHeading">Beitragsnachweis Minijob-Zentrale</h2>
               <p>Bereitet die Monatswerte für das SV-Meldeportal vor. Unfallversicherung/BG wird hier bewusst nicht eingerechnet.</p>
             </div>
             <div class="quick-grid">
-              <div class="quick"><span>Hochrechnung Brutto (Monatsende)</span><b id="contribProjectedGross">0,00 €</b></div>
+              <div class="quick"><span id="contribBasisLabel">Hochrechnung Brutto (Monatsende)</span><b id="contribProjectedGross">0,00 €</b></div>
               <div class="quick"><span>Abgaben laut Nachweis</span><b id="contribEstimatedTotal">0,00 €</b></div>
               <div class="quick"><span>Korrektur Vormonat</span><b id="contribPriorCorrection">0,00 €</b></div>
               <div class="quick emphasis"><span>Beitragssoll</span><b id="contribPayableTotal">0,00 €</b></div>
             </div>
+            <div id="contribNextSteps" class="notice" style="margin-bottom:12px" aria-live="polite"></div>
             <div id="contribProjectionNote" class="status-text" style="margin-top:10px"></div>
             <div class="form-grid" style="margin-top:14px">
               <div class="field">
                 <label for="contribReportedGross">Für Beitragsnachweis angesetztes Brutto</label>
-                <input id="contribReportedGross" type="number" min="0" step="0.01" placeholder="z. B. 550,00">
+                <input id="contribReportedGross" type="number" min="0" max="100000" step="0.01" readonly>
+                <label class="check-row"><input id="contribManualGross" type="checkbox"> Brutto manuell abweichend ansetzen</label>
                 <small id="contribGrossHint">Vorschlag: die Hochrechnung bis Monatsende. Abweichungen gleichst du im nächsten Monat aus.</small>
               </div>
               <div class="field">
                 <label for="contribStatus">Status</label>
                 <select id="contribStatus">
                   <option value="draft">Entwurf</option>
-                  <option value="submitted">Übermittelt</option>
-                  <option value="paid">Bezahlt</option>
+                  <option value="submitted">Im SV-Meldeportal übermittelt</option>
+                  <option value="paid">Übermittelt und bezahlt</option>
                 </select>
               </div>
               <div class="field"><label for="contribSubmittedDate">Übermittelt am</label><input id="contribSubmittedDate" type="date"></div>
               <div class="field"><label for="contribPaidDate">Bezahlt am</label><input id="contribPaidDate" type="date"></div>
+              <div class="field full"><label class="check-row"><input id="contribSubmissionConfirmed" type="checkbox"> Ich bestätige: Ich habe genau diese Portalwerte tatsächlich im SV-Meldeportal übermittelt.</label><small>Speichern und PDF-Erstellung versenden keine Meldung. Datum erst nach erfolgreicher Übermittlung eintragen.</small></div>
               <div class="field full"><label for="contribNote">Notiz</label><input id="contribNote" type="text" maxlength="220" placeholder="Optional, z. B. Schätzgrundlage"></div>
             </div>
             <div class="actions start">
-              <button class="btn ghost" id="useCurrentGrossBtn" type="button">Hochrechnung übernehmen</button>
-              <button class="btn primary" id="saveContributionBtn" type="button">Beitragsnachweis speichern</button>
+              <button class="btn ghost" id="useCurrentGrossBtn" type="button">Automatischen Betrag verwenden</button>
+              <button class="btn primary" id="saveContributionBtn" type="button">Vorbereitung speichern</button>
               <button class="btn ghost" id="showSvValuesBtn" type="button" hidden>Werte fürs SV-Meldeportal</button>
               <span id="contribSaveStatus" class="status-text" style="margin:0"></span>
             </div>
@@ -2255,7 +2258,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
               <div><span id="contribDifferenceLabel">Voraussichtliche Differenz</span><strong id="contribCurrentDifference">0,00 €</strong></div>
             </div>
             <div id="contribWarning" class="limit-status" style="margin-top:10px"></div>
-            <div id="contribValues" class="notice" style="margin-top:12px" hidden></div>
+            <div id="contribValues" class="notice" style="margin-top:12px;overflow-x:auto"></div>
             <div class="status-text" style="margin-top:8px" id="contribStoreNote">Status, Datumsfelder und Schätzgrundlage werden in Office gespeichert und gelten auf allen Geräten; die eigentliche Meldung erfolgt im SV-Meldeportal.</div>
           </div>
         </div>
@@ -2848,6 +2851,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       <!-- ===== Boss: Einstellungen ===== -->
       <section class="page" id="einstellungen" data-role="boss">
         <div class="card section-card">
+          <div class="card-head"><h2>Sicherheitsmonitor</h2><p>Cloudflare prüft alle 15 Minuten die veröffentlichten Dateien, API-Erreichbarkeit und abgewiesene Zugriffe. Hinweise erscheinen als Aufgabe und Push; unveränderte Zustände bleiben still.</p></div>
+          <button type="button" class="btn ghost" id="refreshSecurityMonitor">Prüfstand aktualisieren</button>
+          <div id="securityMonitorStatus" class="status-text" aria-live="polite">Prüfstand noch nicht geladen.</div>
+        </div>
+        <div class="card section-card">
           <div class="card-head split">
             <div>
               <h2>„Was ist neu?“ für Mitarbeiter</h2>
@@ -3063,9 +3071,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   </div>
 </dialog>
 
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-  integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
-  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script defer src="vendor/html2pdf.min.js" integrity="sha384-VGr7TCa4NLwA0aENl4mc9NMvj4eIE/OIbntSpfqvdOuoxUhrB7ZDtWskMdnfar5e" crossorigin="anonymous"></script>
 <script defer crossorigin="anonymous"
   src="https://clerk.kim-betcher.de/npm/@clerk/ui@1/dist/ui.browser.js"></script>
 <script defer crossorigin="anonymous"
@@ -3386,6 +3392,19 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   /* ================= Navigation ================= */
 
+  async function loadSecurityMonitor() {
+    try {
+      const data = await api("/admin/security-monitor");
+      const checks = asArray(data.checks);
+      $("securityMonitorStatus").innerHTML = checks.length ? checks.map(c => {
+        const stale = !c.checked_at || Date.now() - Date.parse(c.checked_at.replace(" ", "T") + "Z") > 45 * 60000;
+        const status = stale ? "Prüfung überfällig" : c.active ? "Prüfung erforderlich" : c.failures ? "Erneute Prüfung ausstehend" : "Unauffällig";
+        return `<p><b>${esc(c.check_key)} · ${status}</b><br>${esc(c.detail || "")}<br><small>Zuletzt geprüft: ${esc(fmtTimestamp(c.checked_at))}</small></p>`;
+      }).join("") + "<p>Eine Auffälligkeit bestätigt keinen erfolgreichen Angriff.</p>" : "Noch kein Prüflauf dokumentiert.";
+    } catch (error) { setText("securityMonitorStatus", `Prüfstand nicht verfügbar: ${error.message}`); }
+  }
+  $("refreshSecurityMonitor").addEventListener("click", loadSecurityMonitor);
+
   function showPage(pageId) {
     if (!$(pageId)) return;
     // Während des 5. Versuchs bleibt die Telefonliste offen, bis das Ergebnis gewählt ist
@@ -3396,6 +3415,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     $$("#mobileMenu [data-page]").forEach(b => (b.dataset.page === pageId ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
     closeMobileMenu();
     if (pageId === "boss-dashboard") renderDashboardWidgets();
+    if (pageId === "einstellungen") loadSecurityMonitor();
     if (pageId === "vertrag" || pageId === "mitarbeiter") loadContracts();
     if (pageId === "organisation" && (state.taskExpanded.size || state.showDoneTasks)) {
       state.taskExpanded.clear();
@@ -4522,25 +4542,21 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
 
   async function loadEmployeeData(userId) {
+    state.employeeDataError = true;
     try {
       const [rows, absences, profile, master, adjustments, hr] = await Promise.all([
         api(forUser("/admin/entries", userId)),
-        api(forUser("/admin/absences", userId)).catch(error => {
-          console.warn("Abwesenheiten nicht verfügbar:", error);
-          return [];
-        }),
+        api(forUser("/admin/absences", userId)),
         api(forUser("/admin/payroll-settings", userId)),
-        api(forUser("/admin/employee-profile", userId)).catch(error => {
-          console.warn("Stammdaten nicht verfügbar:", error);
-          return {};
-        }),
-        api(forUser("/admin/appointment-adjustments", userId)).catch(() => null), // älterer Worker: noch keine Korrekturen
+        api(forUser("/admin/employee-profile", userId)),
+        api(forUser("/admin/appointment-adjustments", userId)),
         fetchHr(userId).catch(error => {
           console.warn("Einsatzplan nicht verfügbar:", error);
           return emptyHr();
         })
       ]);
       if (state.selectedUserId !== userId) return; // inzwischen anderer Mitarbeiter gewählt
+      state.employeeDataError = false;
       state.hr = hr;
       state.employeeEntries = toEntries(rows);
       state.employeeAbsences = toAbsences(absences);
@@ -5158,29 +5174,32 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   let contrib = { userId: null, remote: false, rows: {} };
   const contribFromRow = r => ({
     id: r.id, reportedGross: Number(r.estimated_gross || 0).toFixed(2), reportedTotal: Number(r.reported_total || 0),
-    status: r.status || "draft", submittedDate: r.submitted_at ? String(r.submitted_at).slice(0, 10) : null,
-    paidDate: r.paid_at ? String(r.paid_at).slice(0, 10) : null, note: r.note || ""
+    status: r.snapshot?.submissionConfirmation ? r.status : "draft", submittedDate: r.submitted_at ? String(r.submitted_at).slice(0, 10) : null,
+    paidDate: r.paid_at ? String(r.paid_at).slice(0, 10) : null, note: r.note || "",
+    confirmed: !!r.snapshot?.submissionConfirmation, snapshot: r.snapshot || {},
+    manualGross: !!r.snapshot?.manualGross
   });
 
   function readContributionRecord(userId = state.selectedUserId, month = payrollMonth()) {
     if (!userId || !month) return {};
     if (contrib.remote && contrib.userId === userId) return contrib.rows[month] || {};
-    try { return JSON.parse(localStorage.getItem(contributionStoreKey(userId, month)) || "{}"); }
-    catch { return {}; }
+    return {};
   }
 
   async function saveContributionRemote(record, userId, month) {
     const row = await api(forUser("/admin/contribution-reports", userId), "PUT", {
       month, estimated_gross: Number(record.reportedGross || 0), note: record.note || "",
-      status: record.status || "draft", submitted_date: record.submittedDate || null, paid_date: record.paidDate || null
+      status: record.status || "draft", submitted_date: record.submittedDate || null, paid_date: record.paidDate || null,
+      submission_confirmed: record.submissionConfirmed === true, portal_fields: record.portalFields,
+      manual_gross: record.manualGross === true
     });
     if (contrib.userId === userId) contrib.rows[month] = contribFromRow(row);
   }
 
   async function writeContributionRecord(record, userId = state.selectedUserId, month = payrollMonth()) {
     if (!userId || !month) return;
-    try { localStorage.setItem(contributionStoreKey(userId, month), JSON.stringify(record)); } catch {}
-    if (contrib.remote && contrib.userId === userId) await saveContributionRemote(record, userId, month);
+    if (!contrib.remote || contrib.userId !== userId) throw new Error("Keine Verbindung zum Beitragsspeicher. Bitte neu laden.");
+    await saveContributionRemote(record, userId, month);
   }
 
   async function loadContributionReports(userId) {
@@ -5189,25 +5208,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       const rows = asArray(await api(forUser("/admin/contribution-reports", userId)));
       if (state.selectedUserId !== userId) return;
       contrib = { userId, remote: true, rows: Object.fromEntries(rows.map(r => [r.payroll_month, contribFromRow(r)])) };
-      // Bisher nur in diesem Browser gespeicherte Monate einmalig in Office übernehmen
-      let keys = [];
-      try { keys = Object.keys(localStorage); } catch {}
-      const prefix = `${CONTRIBUTION_STORE_PREFIX}:${userId}:`;
-      for (const key of keys) {
-        const month = key.startsWith(prefix) ? key.slice(prefix.length) : "";
-        if (!/^\d{4}-\d{2}$/.test(month) || contrib.rows[month]) continue;
-        try {
-          const rec = JSON.parse(localStorage.getItem(key) || "{}");
-          if (rec.reportedGross != null && rec.reportedGross !== "") await saveContributionRemote(rec, userId, month);
-        } catch (error) { console.warn("Beitragsnachweis nicht übernommen:", month, error); }
-      }
     } catch (error) {
       if (state.selectedUserId === userId) contrib = { userId, remote: false, rows: {} };
     }
     if (state.selectedUserId === userId) {
-      if ($("contribStoreNote")) $("contribStoreNote").textContent = contrib.remote
-        ? "Status, Datumsfelder und Schätzgrundlage werden in Office gespeichert und gelten auf allen Geräten; die eigentliche Meldung erfolgt im SV-Meldeportal."
-        : "Status, Datumsfelder und Schätzgrundlage werden bis zum Worker-Update nur in diesem Browser gespeichert; die eigentliche Meldung erfolgt im SV-Meldeportal.";
+      setText("contribStoreNote", contrib.remote
+        ? "Vorbereitung und Bestätigung werden geräteübergreifend gespeichert. Die Übermittlung erfolgt durch dich im SV-Meldeportal."
+        : "Beitragsspeicher nicht erreichbar. Angezeigte Beträge sind eine ungespeicherte Vorschau; Speichern ist derzeit nicht möglich.");
       renderContributionModule();
       if (typeof renderDashboardWidgets === "function") renderDashboardWidgets();
     }
@@ -5274,34 +5281,40 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     };
   }
 
-  function actualContributionForMonth(month) {
-    const closing = state.closings.find(row => row.payroll_month === month);
-    const p = closing?.snapshot?.payroll;
-    if (p) {
-      return {
-        gross: Number(p.gross || 0),
-        total: (Number(p.employerContributions || 0) - Number(p.accident || 0)) + Number(p.employeeDeductions || 0)
-      };
-    }
-    const payroll = calculatePayroll(
-      inMonth(state.employeeEntries, month), readProfileInputs(), month, selectedEmployment(),
-      inMonthAbsences(state.employeeAbsences, month)
-    );
-    return {
-      gross: Number(payroll.gross || 0),
-      total: (Number(payroll.employerContributions || 0) - Number(payroll.accident || 0)) + Number(payroll.employeeDeductions || 0)
-    };
+  function contributionFieldCents(c, profile) {
+    const cents = n => Math.round(Number(n || 0) * 100);
+    return { "6000": cents(c.kv), "0100": profile.employeeRv ? cents(c.rv) + cents(c.employeeRv) : 0,
+      "0500": profile.employeeRv ? 0 : cents(c.rv), U1: cents(c.u1), U2: cents(c.u2),
+      "0050": cents(c.insolvency), St: cents(c.flatTax) };
   }
-
-  function priorMonthCorrection(month) {
+  function priorMonthFields(month) {
     const prior = previousContributionMonth(month);
     const record = readContributionRecord(state.selectedUserId, prior);
-    if (record.reportedGross == null || record.reportedGross === "") return 0;
-    const reportedTotal = record.reportedTotal != null
-      ? Number(record.reportedTotal)
-      : contributionBreakdownFromGross(record.reportedGross, readProfileInputs(), prior, selectedEmployment()).total;
-    const actual = actualContributionForMonth(prior);
-    return Math.round((actual.total - reportedTotal) * 100) / 100;
+    const closing = state.closings.find(row => row.payroll_month === prior);
+    if (!record.confirmed || !record.snapshot?.baseFields || !closing?.snapshot?.profile) return {};
+    const profile = closing.snapshot.profile;
+    const c = contributionBreakdownFromGross(closing.gross, profile, prior, closing.snapshot.employee || selectedEmployment());
+    const fields = contributionFieldCents(c, profile);
+    return Object.fromEntries(Object.keys(fields).map(key => [key, fields[key] - (record.snapshot.baseFields[key] || 0)]));
+  }
+  function priorMonthCorrection(month) {
+    return Object.values(priorMonthFields(month)).reduce((sum, n) => sum + n, 0) / 100;
+  }
+  function actualContributionForMonth(month) {
+    const closing = state.closings.find(row => row.payroll_month === month);
+    if (closing?.snapshot?.profile) return contributionBreakdownFromGross(closing.gross, closing.snapshot.profile, month,
+      closing.snapshot.employee || selectedEmployment());
+    const payroll = calculatePayroll(inMonth(state.employeeEntries, month), readProfileInputs(), month,
+      selectedEmployment(), inMonthAbsences(state.employeeAbsences, month), adjustmentsFor(state.employeeAdjustments, month));
+    return contributionBreakdownFromGross(payroll.gross, readProfileInputs(), month);
+  }
+  function currentPortalFields() {
+    const record = readContributionRecord();
+    if (record.confirmed && record.snapshot?.portalFields) return record.snapshot.portalFields;
+    const profile = state.closings.find(row => row.payroll_month === payrollMonth())?.snapshot?.profile || readProfileInputs();
+    const base = contributionFieldCents(contributionBreakdownFromGross($("contribReportedGross").value, profile), profile);
+    const prior = priorMonthFields(payrollMonth());
+    return Object.fromEntries(Object.keys(base).map(key => [key, base[key] + (prior[key] || 0)]));
   }
 
   function contributionStatusLabel(status) {
@@ -5325,17 +5338,23 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function renderContributionValues(forceShow = true) {
     const host = $("contribValues");
     if (!host) return;
-    const c = contributionBreakdownFromGross($("contribReportedGross").value, readProfileInputs(), payrollMonth(), selectedEmployment());
-    const correction = priorMonthCorrection(payrollMonth());
-    const total = Math.round((c.total + correction) * 100) / 100;
-    host.innerHTML = `<b>Beitragsnachweis im SV-Meldeportal – ${esc(fmtMonth(payrollMonth()))} · angesetztes Brutto ${euro(c.gross)}</b>
-      <table class="sv-values"><tbody>${svNachweisRows(c, readProfileInputs()).map(([key, label, value]) =>
-        `<tr><td>${esc(key)}</td><td>${esc(label)}</td><td>${euro(value)}</td></tr>`).join("")}
-        <tr class="sum"><td></td><td>Summe Beitragsnachweis</td><td>${euro(c.total)}</td></tr>
-        ${correction ? `<tr><td></td><td>Korrektur Vormonat (${correction > 0 ? "Nachzahlung" : "Guthaben"})</td><td>${correction > 0 ? "+" : ""}${euro(correction)}</td></tr>
-        <tr class="sum"><td></td><td>Zu zahlen</td><td>${euro(total)}</td></tr>` : ""}
+    const record = readContributionRecord();
+    const fields = currentPortalFields();
+    const prior = record.confirmed ? record.snapshot.priorFields || {} : priorMonthFields(payrollMonth());
+    const labels = { "6000": "Krankenversicherung · Pauschalbeitrag", "0100": "Rentenversicherung · voller Beitrag",
+      "0500": "Rentenversicherung · Arbeitgeber-Pauschalbeitrag", U1: "Umlage U1 · Krankheit", U2: "Umlage U2 · Mutterschaft",
+      "0050": "Insolvenzgeldumlage", St: "Einheitliche Pauschsteuer" };
+    const total = Object.values(fields).reduce((sum, n) => sum + n, 0) / 100;
+    host.innerHTML = `<b>Diese Werte gehören ins SV-Meldeportal · ${esc(fmtMonth(payrollMonth()))}</b>
+      <p>„Beitragsnachweis“ → Minijob-Zentrale (Betriebsnummer 98000006). Zeitraum: ${esc(fmtDate(`${payrollMonth()}-01`))} bis ${esc(fmtDate(monthEnd(payrollMonth())))}. Beträge in Euro eingeben; das Brutto ist nur die Berechnungsgrundlage.</p>
+      <table class="sv-values"><thead><tr><th>Portal-Feld</th><th>Bezeichnung</th><th>Betrag EUR</th></tr></thead><tbody>${Object.entries(fields).map(([key, value]) =>
+        `<tr><td>${esc(key)}</td><td>${esc(labels[key])}${prior[key] ? `<small> · enthält ${euro(prior[key] / 100)} Restschuld/Guthaben aus ${esc(fmtMonth(previousContributionMonth(payrollMonth())))}</small>` : ""}</td><td><b>${euro(value / 100)}</b></td></tr>`).join("")}
+        <tr class="sum"><td>Summe</td><td>Beitragssoll einschließlich Vormonatsausgleich</td><td>${euro(total)}</td></tr>
       </tbody></table>
-      <small>Rentenversicherung: Beitragsgruppe 0100 = voller Beitrag (AG 15 % + AN 3,6 %), 0500 = nur Pauschalbeitrag bei Befreiung. Unfallversicherung geht nicht in den Beitragsnachweis, sondern an die Berufsgenossenschaft.</small>`;
+      <p>${(record.confirmed ? record.snapshot.profile : state.closings.find(row => row.payroll_month === payrollMonth())?.snapshot?.profile || readProfileInputs()).employeeRv
+        ? "RV-pflichtig: Feld 0100 enthält Arbeitgeber- und Arbeitnehmeranteil."
+        : "Von der Arbeitnehmer-RV befreit: eigener RV-Anteil 0,00 €. Der Arbeitgeber-Pauschalbeitrag bleibt in Feld 0500 bestehen; Feld 0100 ist 0,00 €."}</p>
+      <small>Unfallversicherung/BG wird separat gemeldet. Ein Nachweis gilt für alle Minijobber derselben Betriebsnummer: Bei weiteren Beschäftigten deren Werte je Feld addieren. Testkonten nicht melden. Negative Felder/Guthaben vor Übermittlung im Portal prüfen; sie werden hier nicht auf null gekürzt.</small>`;
     if (forceShow) host.hidden = false;
   }
 
@@ -5345,6 +5364,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const job = selectedEmployment();
     const actual = calculatePayroll(inMonth(state.employeeEntries, month), readProfileInputs(), month, job,
       inMonthAbsences(state.employeeAbsences, month), adjustmentsFor(state.employeeAdjustments, month));
+    const closing = state.closings.find(row => row.payroll_month === month);
+    if (closing?.snapshot?.payroll) return { actual: closing.snapshot.payroll, gross: Number(closing.gross),
+      mins: closing.snapshot.payroll.mins, appts: closing.snapshot.payroll.appts, remaining: 0, method: "final" };
     const first = [`${month}-01`, job.start_date || ""].sort().pop();
     const last = [monthEnd(month), job.end_date || "9999-12-31"].sort()[0];
     const today = isoDate();
@@ -5372,7 +5394,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   function projectionText(pr) {
     const a = pr.actual;
-    if (pr.method === "ist") return `Monat abgeschlossen: angesetzt wird das tatsächliche Brutto (${fmtMinutes(a.mins)}, ${a.appts} Termine).`;
+    if (pr.method === "final") return `Endgültige Abrechnung aus dem gespeicherten Monatsabschluss: ${fmtMinutes(a.mins)}, ${a.appts} Termine.`;
+    if (pr.method === "ist") return `Vorläufiger Ist-Stand: ${fmtMinutes(a.mins)}, ${a.appts} Termine. Der Monat ist vorbei; der Monatsabschluss steht noch aus.`;
     const per = pr.method === "trend"
       ? `Schnitt der letzten ${pr.winDays} Tage: ${fmtMinutes(Math.round(pr.minsPerDay * 7))} und ${decimal(pr.apptsPerDay * 7, 1)} Termine pro Woche`
       : `zu wenig Daten – gerechnet mit der vertraglichen Arbeitszeit (${CONTRACT_WEEKLY_HOURS} Std./Woche), ohne Termine`;
@@ -5384,34 +5407,49 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (!$("contributionPanel")) return;
     const month = payrollMonth();
     const userId = state.selectedUserId;
-    const profile = readProfileInputs();
+    const profile = state.closings.find(row => row.payroll_month === month)?.snapshot?.profile || readProfileInputs();
     const payroll = currentPayroll();
     const record = readContributionRecord(userId, month);
     const projection = projectedPayroll(month);
     const saved = record.reportedGross != null && record.reportedGross !== "";
-    const reportedGross = saved ? Number(record.reportedGross) : projection.gross;
-    const estimated = contributionBreakdownFromGross(reportedGross, profile, month, selectedEmployment());
+    const reportedGross = saved && (record.confirmed || record.manualGross) ? Number(record.reportedGross) : projection.gross;
+    const estimated = contributionBreakdownFromGross(reportedGross, record.confirmed ? record.snapshot.profile : profile, month, selectedEmployment());
     const expected = contributionBreakdownFromGross(projection.gross, profile, month, selectedEmployment());
-    const correction = priorMonthCorrection(month);
+    const correction = record.confirmed ? Object.values(record.snapshot.priorFields || {}).reduce((sum, n) => sum + n, 0) / 100 : priorMonthCorrection(month);
     const payable = Math.round((estimated.total + correction) * 100) / 100;
     const difference = Math.round((expected.total - estimated.total) * 100) / 100;
 
-    $("contribReportedGross").value = saved ? record.reportedGross : projection.gross.toFixed(2);
+    $("contribReportedGross").value = reportedGross.toFixed(2);
+    $("contribReportedGross").readOnly = record.confirmed || !record.manualGross;
+    $("contribManualGross").checked = !!record.manualGross;
+    $("contribManualGross").disabled = !!record.confirmed;
+    $("useCurrentGrossBtn").disabled = !!record.confirmed;
+    $("contribSubmissionConfirmed").checked = !!record.confirmed;
+    $("contribSubmissionConfirmed").disabled = !!record.confirmed;
+    $("contribSubmittedDate").readOnly = !!record.confirmed;
+    $("contribStatus").querySelector('[value="draft"]').disabled = !!record.confirmed;
+    $("saveContributionBtn").disabled = !userId || !contrib.remote || !!state.employeeDataError || !!state.closingsError;
+    setText("saveContributionBtn", record.confirmed ? "Zahlungsstand speichern" : "Vorbereitung / Bestätigung speichern");
+    setText("contribHeading", `Beitragsnachweis · ${fmtMonth(month)}`);
+    setText("contribBasisLabel", projection.method === "final" ? "Brutto · endgültiger Monatsabschluss" : projection.method === "ist" ? "Brutto · vorläufiger Ist-Stand" : "Brutto · Hochrechnung bis Monatsende");
+    setText("contribNextSteps", record.confirmed
+      ? `Übermittlung am ${fmtDate(record.submittedDate)} von dir bestätigt. ${record.status === "paid" ? "Zahlung dokumentiert." : "Noch offen: Beiträge bis zur Zahlungsfrist bezahlen bzw. Lastschrift prüfen und Zahlungsdatum speichern."} ${projection.method === "final" ? "Abweichungen zur Meldung werden im Folgemonat ausgeglichen." : "Nach Monatsende Arbeitszeiten prüfen und den Monat abschließen; Office berechnet dann den Ausgleich für den Folgemonat."}`
+      : `Noch nicht als übermittelt bestätigt. 1. Automatischen Betrag und Portalwerte prüfen. 2. Werte im SV-Meldeportal übermitteln. 3. Erst nach erfolgreicher Übermittlung hier Status, tatsächliches Datum und Bestätigung speichern. ${projection.method === "final" ? "Die Grundlage ist endgültig abgerechnet." : "Nach Monatsende zusätzlich den Monatsabschluss erledigen."}`);
     setText("contribProjectedGross", euro(projection.gross));
     setText("contribProjectionNote", userId ? projectionText(projection) : "");
-    setText("contribDifferenceLabel", projection.method === "ist" ? "Differenz zum Nachweis (Ist)" : "Differenz zur Hochrechnung");
+    setText("contribDifferenceLabel", ["ist", "final"].includes(projection.method) ? "Differenz zum Nachweis (Ist)" : "Differenz zur Hochrechnung");
     const drift = saved && (record.status || "draft") === "draft" && Math.abs(Number(record.reportedGross) - projection.gross) >= 1;
     setText("contribGrossHint", drift
       ? `Gespeichert sind ${euro(record.reportedGross)}, die aktuelle Hochrechnung ergibt ${euro(projection.gross)} – mit „Hochrechnung übernehmen“ aktualisieren.`
-      : "Vorschlag: die Hochrechnung bis Monatsende. Abweichungen gleichst du im nächsten Monat aus.");
+      : "Der Betrag wird automatisch berechnet. Ein bestätigter Nachweis bleibt gespeichert; der endgültige Ausgleich folgt nach Monatsabschluss.");
     $("contribStatus").value = record.status || "draft";
     $("contribSubmittedDate").value = record.submittedDate || "";
     $("contribPaidDate").value = record.paidDate || "";
     $("contribNote").value = record.note || "";
 
-    setText("contribEstimatedTotal", euro(estimated.total));
+    setText("contribEstimatedTotal", euro(record.confirmed ? record.reportedTotal : estimated.total));
     setText("contribPriorCorrection", `${correction > 0 ? "+" : ""}${euro(correction)}`);
-    setText("contribPayableTotal", euro(payable));
+    setText("contribPayableTotal", euro(record.confirmed ? Object.values(record.snapshot.portalFields).reduce((sum, n) => sum + n, 0) / 100 : payable));
     setText("contribActualGross", euro(payroll.gross));
     setText("contribCurrentDifference", `${difference > 0 ? "+" : ""}${euro(difference)}`);
 
@@ -5422,6 +5460,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const warning = $("contribWarning");
     const messages = [];
     if (!userId) messages.push("Bitte zuerst einen Mitarbeiter auswählen.");
+    if (state.closingsError) messages.push("Monatsarchiv nicht geladen: Endabrechnung und Vormonatsausgleich unvollständig.");
+    if (state.employeeDataError) messages.push("Abrechnungsdaten unvollständig geladen: Vorschau nicht zur Meldung verwenden.");
+    const priorRecord = readContributionRecord(userId, previousContributionMonth(month));
+    if (priorRecord.confirmed && !state.closings.some(c => c.payroll_month === previousContributionMonth(month))) messages.push("Vormonat zuerst abschließen: Der endgültige Beitragsausgleich fehlt noch.");
     if (correction) messages.push(`Aus dem Vormonat sind ${correction > 0 ? euro(correction) + " nachzuzahlen" : euro(Math.abs(correction)) + " zu verrechnen"}.`);
     if (Math.abs(difference) >= 0.01) messages.push(projection.method === "ist"
       ? `Die tatsächliche Beitragsschuld weicht um ${euro(Math.abs(difference))} vom Nachweis ab – wird im Folgemonat ausgeglichen.`
@@ -5433,7 +5475,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     }
     if (isTestEmployee(userId)) messages.unshift("Testkonto – nicht an die Minijob-Zentrale melden.");
     warning.classList.toggle("warn", messages.length > 0);
-    warning.textContent = messages.length ? messages.join(" ") : `Status: ${contributionStatusLabel(record.status || "draft")} · keine offenen Hinweise.`;
+    warning.textContent = messages.length ? messages.join(" ") : record.status === "paid"
+      ? `Zahlung dokumentiert. ${projection.method === "final" ? "Monat endgültig abgerechnet." : "Monatsabschluss nach Monatsende noch offen."}`
+      : record.confirmed ? "Übermittlung von dir bestätigt · Zahlung bzw. Lastschrift noch prüfen und dokumentieren."
+      : "Vorbereitung · Übermittlung im SV-Meldeportal und anschließende Bestätigung noch offen.";
     renderContributionValues(true);
     const soon = deadline && (record.status || "draft") === "draft" && month === isoMonth() && isoDate() >= shiftIsoDate(deadline.submit, -7);
     setText("beitragBadge", userId && soon ? "!" : "");
@@ -5594,45 +5639,48 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   });
 
   $("useCurrentGrossBtn").addEventListener("click", () => {
+    $("contribManualGross").checked = false;
+    $("contribReportedGross").readOnly = true;
     $("contribReportedGross").value = projectedPayroll().gross.toFixed(2);
     $("contribReportedGross").dispatchEvent(new Event("input"));
   });
-
+  $("contribManualGross").addEventListener("change", () => {
+    $("contribReportedGross").readOnly = !$("contribManualGross").checked;
+    if (!$("contribManualGross").checked) $("useCurrentGrossBtn").click();
+  });
   $("showSvValuesBtn").addEventListener("click", () => renderContributionValues(true));
-
   $("contribReportedGross").addEventListener("input", () => {
-    const c = contributionBreakdownFromGross($("contribReportedGross").value, readProfileInputs(), payrollMonth(), selectedEmployment());
-    const correction = priorMonthCorrection(payrollMonth());
+    const c = contributionBreakdownFromGross($("contribReportedGross").value, readProfileInputs());
     setText("contribEstimatedTotal", euro(c.total));
-    setText("contribPayableTotal", euro(Math.round((c.total + correction) * 100) / 100));
-    renderContributionValues(false);
+    setText("contribPayableTotal", euro(Math.round((c.total + priorMonthCorrection(payrollMonth())) * 100) / 100));
+    $("contribSubmissionConfirmed").checked = false;
+    renderContributionValues(true);
   });
-
   $("contribStatus").addEventListener("change", () => {
-    const status = $("contribStatus").value;
-    const today = isoDate();
-    if ((status === "submitted" || status === "paid") && !$("contribSubmittedDate").value) $("contribSubmittedDate").value = today;
-    if (status === "paid" && !$("contribPaidDate").value) $("contribPaidDate").value = today;
+    if ($("contribStatus").value === "draft") $("contribSubmissionConfirmed").checked = false;
   });
-
   $("saveContributionBtn").addEventListener("click", event => withBusy(event.currentTarget, async () => {
     if (!state.selectedUserId) return alert("Bitte zuerst einen Mitarbeiter auswählen.");
-    const gross = Math.max(0, Number($("contribReportedGross").value) || 0);
-    const breakdown = contributionBreakdownFromGross(gross, readProfileInputs(), payrollMonth(), selectedEmployment());
-    const actual = actualContributionForMonth(payrollMonth());
+    if (state.employeeDataError || state.closingsError) return setStatus("contribSaveStatus", "Abrechnungsdaten unvollständig. Bitte neu laden.", true);
+    if (!await flushProfileSave()) return setStatus("contribSaveStatus", "Abrechnungseinstellungen zuerst erfolgreich speichern.", true);
+    const gross = Number($("contribReportedGross").value);
+    const status = $("contribStatus").value;
+    if (!Number.isFinite(gross) || gross < 0) return setStatus("contribSaveStatus", "Bitte ein gültiges Brutto angeben.", true);
+    if (status !== "draft" && (!$("contribSubmissionConfirmed").checked || !$("contribSubmittedDate").value)) {
+      return setStatus("contribSaveStatus", "Erst tatsächlich im Portal übermitteln, dann Datum und Bestätigung eintragen.", true);
+    }
+    const breakdown = contributionBreakdownFromGross(gross, readProfileInputs());
     try {
       await writeContributionRecord({
-        month: payrollMonth(), reportedGross: gross.toFixed(2), reportedTotal: breakdown.total,
-        actualGross: actual.gross, actualTotal: actual.total, status: $("contribStatus").value,
+        month: payrollMonth(), reportedGross: gross.toFixed(2), reportedTotal: breakdown.total, status,
         submittedDate: $("contribSubmittedDate").value || null, paidDate: $("contribPaidDate").value || null,
-        note: $("contribNote").value.trim(), savedAt: new Date().toISOString()
+        submissionConfirmed: $("contribSubmissionConfirmed").checked, portalFields: currentPortalFields(),
+        manualGross: $("contribManualGross").checked, note: $("contribNote").value.trim()
       });
-      setStatus("contribSaveStatus", "Gespeichert ✓");
-    } catch (error) {
-      setStatus("contribSaveStatus", `Nicht gespeichert: ${error.message}`, true);
-    }
-    renderContributionModule();
-    renderDashboardWidgets();
+      setStatus("contribSaveStatus", status === "draft" ? "Vorbereitung gespeichert · noch nicht übermittelt" : "Deine Übermittlungsbestätigung gespeichert");
+      renderContributionModule();
+      renderDashboardWidgets();
+    } catch (error) { setStatus("contribSaveStatus", `Nicht gespeichert: ${error.message}`, true); }
   }));
 
   function payrollDocument() {
@@ -5690,6 +5738,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   let closeReqs = { userId: null, rows: {}, unsupported: false };
 
   async function loadClosings(userId) {
+    state.closingsError = true;
     try {
       const [rows, slips, reqs] = await Promise.all([
         api(forUser("/admin/monthly-closings", userId)),
@@ -5697,6 +5746,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         api(forUser("/admin/close-requests", userId)).catch(() => null)
       ]);
       if (state.selectedUserId !== userId) return;
+      state.closingsError = false;
       state.closings = asArray(rows);
       bossSlips = { userId, rows: Object.fromEntries(asArray(slips).map(sl => [sl.month, sl])), unsupported: slips === null };
       closeReqs = { userId, rows: Object.fromEntries(asArray(reqs).map(r => [r.month, r])), unsupported: reqs === null };
@@ -7878,7 +7928,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (window.XLSX) return Promise.resolve(window.XLSX);
     return xlsxLaden || (xlsxLaden = new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+      script.src = "vendor/xlsx-0.20.3.min.js";
+      script.integrity = "sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT";
+      script.crossOrigin = "anonymous";
       script.onload = () => (window.XLSX ? resolve(window.XLSX) : reject(new Error("Excel-Leser fehlt.")));
       script.onerror = () => { xlsxLaden = null; reject(new Error("Excel-Leser konnte nicht geladen werden – bitte Internetverbindung prüfen.")); };
       document.head.appendChild(script);

@@ -1,0 +1,10 @@
+{
+  "name": "smartadm-security-monitor",
+  "main": "../smartadm-office-api/worker.js",
+  "account_id": "3b7413caedf94b7f9ed165fc04566866",
+  "compatibility_date": "2026-09-15",
+  "observability": { "enabled": true, "head_sampling_rate": 1, "logs": { "enabled": true, "persist": true, "invocation_logs": true }, "redact_query_string": true },
+  "vars": { "BOSS_USER_ID": "user_3JMu8X64anaxeyWQBKl9OQz6Q5G", "SECURITY_MONITOR_ONLY": "true" },
+  "d1_databases": [{ "binding": "DB", "database_name": "smartadm-office", "database_id": "bf6f01fd-a835-44eb-9d40-fa9a3fde9d41" }],
+  "triggers": { "crons": ["*/15 * * * *"] }
+}
