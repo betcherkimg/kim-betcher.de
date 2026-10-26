@@ -27,7 +27,7 @@ function fixture(){
  const pushes=[],pending=[];
  class Clock extends Date{constructor(...a){super(...(a.length?a:['2026-10-23T09:00:00Z']))}static now(){return Date.parse('2026-10-23T09:00:00Z')}}
  const context=vm.createContext({console:{error(){},warn(){}},Request,Response,Headers,URL,Date:Clock,Intl,TextEncoder,TextDecoder,crypto:webcrypto,atob,btoa,AbortSignal});
- vm.runInContext(source.replace('export default {','const worker={')+`;globalThis.t={worker,calculateMinijobContributions,contributionFields,contributionProfile,upsertContributionReport,updateContributionReport,previousContributionFields,ensureContributionReports,submissionConfirmed,validPushEndpoint,officeAllowed,securityCheckResult,monitorSecurity,verifyClerkToken};notifyUser=async(env,id,message)=>{globalThis.pushes.push({id,...message});return [{status:201}]};`,context);
+ vm.runInContext(source.replace('export default {','const worker={')+`;globalThis.t={worker,calculateMinijobContributions,contributionFields,contributionProfile,upsertContributionReport,updateContributionReport,previousContributionFields,ensureContributionReports,submissionConfirmed,validPushEndpoint,officeAllowed,securityCheckResult,monitorSecurity,verifyClerkToken,documentResponse,listOwnDocuments};notifyUser=async(env,id,message)=>{globalThis.pushes.push({id,...message});return [{status:201}]};`,context);
  context.pushes=pushes;
  const env={DB,BOSS_USER_ID:'boss'};
  const request=data=>new Request('https://api.test/admin/contribution-reports',{method:'PUT',body:JSON.stringify(data)});
@@ -168,5 +168,25 @@ test('full independent monitor checks pinned assets, DB health, anonymous denial
   f.context.fetch=async url=>String(url).endsWith('/health') ? Response.json({database:true}) : String(url).endsWith('/admin/users') ? Response.json({error:'denied'},{status:401,headers:{'Cache-Control':'private, no-store'}}) : new Response('trusted');
   await f.t.monitorSecurity(f.env);
   const checks=f.db.prepare('SELECT * FROM security_monitor_state').all();assert.equal(checks.length,12);assert.ok(checks.every(c=>!c.active&&!c.failures));assert.equal(f.pushes.length,0);
+ }finally{f.close()}
+});
+
+test('private ZIP downloads belong to the signed-in owner and never appear for staff',async()=>{
+ const f=fixture();try{
+  vm.runInContext('ensureContracts=async()=>{}',f.context);
+  f.db.exec(`CREATE TABLE employee_documents(id INTEGER PRIMARY KEY,clerk_user_id TEXT,title TEXT,file_name TEXT,mime TEXT,size INTEGER,chunks INTEGER,created_at TEXT);
+   CREATE TABLE employee_document_chunks(document_id INTEGER,idx INTEGER,data TEXT);`);
+  const bytes=Buffer.from('504b0304aabbccdd','hex');
+  f.db.prepare('INSERT INTO employee_documents VALUES(1,?,?,?,?,?,?,?)').run('boss','Private ZIP','Office_Listen.zip','application/zip',bytes.length,1,'2026-10-26');
+  f.db.prepare('INSERT INTO employee_document_chunks VALUES(1,0,?)').run(bytes.toString('base64'));
+  vm.runInContext("verifyClerkToken=async()=>({userId:'boss'})",f.context);
+  const response=await f.t.worker.fetch(new Request('https://api.test/documents/1'),f.env,f.exec);
+  assert.equal(response.status,200);assert.equal(response.headers.get('Content-Type'),'application/zip');assert.match(response.headers.get('Content-Disposition'),/attachment; filename="Office_Listen.zip"/);
+  assert.match(response.headers.get('Cache-Control'),/no-store/);assert.deepEqual(Buffer.from(await response.arrayBuffer()),bytes);
+  vm.runInContext("verifyClerkToken=async()=>({userId:'sasi'})",f.context);
+  assert.equal((await f.t.worker.fetch(new Request('https://api.test/documents/1'),f.env,f.exec)).status,404);
+  assert.deepEqual(await (await f.t.worker.fetch(new Request('https://api.test/documents'),f.env,f.exec)).json(),[]);
+  assert.equal((await f.t.worker.fetch(new Request('https://api.test/admin/documents/1?user_id=boss'),f.env,f.exec)).status,403);
+  await Promise.all(f.pending);
  }finally{f.close()}
 });

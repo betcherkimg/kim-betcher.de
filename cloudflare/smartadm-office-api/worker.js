@@ -4551,8 +4551,8 @@ const MONITORED_ASSETS = {
   "/kb.css": "94fc9d3b5382f0604a2772cc4d8573ea6a4b25b9c77cd8dc8d949e6fd790c432",
   "/smartadm/sales/index.html": "b82b016eb1c57e53b2af504b754caa802bc04eb1d2a50722bd785355374f9719",
   "/smartadm/sales/cloud.js": "b62ef1f8fa93b3c9b8e6007c622c8e2771dda3220e979c77eb1c55084b5e0e26",
-  "/smartadm/office/": "5658a7757890285cfd6c42ac4a52db30c00cf777982bd085e325d86c34919d4f",
-  "/smartadm/office/sw.js": "6511d6967746e83342953639c96d37884644f31be01ad81f833f52b0d8cee660",
+  "/smartadm/office/": "b5f46941bfab90ff7ea0a7ecb83421dac81516b5f058a5b7b9ad26748b8ac24f",
+  "/smartadm/office/sw.js": "331eeae52240d2e1302245ba1da5482e7f858656ec03c308b2521f735cd9527f",
   "/smartadm/office/week-planner.js": "1ff59ff97053f6702be28c7f57a78cf6b3b869271f15d0cb5344be7c61119bf2",
   "/smartadm/office/vendor/xlsx-0.20.3.min.js": "cc015130aa8521e7f088f88898eba949ccdcbfb38df0bd129b44b7273c3a6f41",
   "/smartadm/office/vendor/html2pdf.min.js": "f3e5733ad8b0547c6ad7ee6c7766277fc13d1cb584197aaacbed930ce5ce0f8f"
