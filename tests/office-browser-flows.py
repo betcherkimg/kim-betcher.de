@@ -1,5 +1,5 @@
 # Local browser integration tests. Production Clerk and API requests are fully intercepted.
-import json,re,threading,copy,io,zipfile
+import json,re,threading,copy
 from pathlib import Path
 from http.server import ThreadingHTTPServer,SimpleHTTPRequestHandler
 from urllib.parse import urlparse
@@ -18,14 +18,11 @@ server=ThreadingHTTPServer(('127.0.0.1',0),Handler);threading.Thread(target=serv
 BASE=f'http://127.0.0.1:{server.server_port}'
 CLERK='''window.Clerk={user:{id:'sasi',firstName:'Saskia',lastName:'Test',primaryEmailAddress:{emailAddress:'sasi@example.test'}},session:{getToken:async()=> 'local-fixture'},load:async()=>{},mountSignIn:()=>{},mountUserButton:()=>{},addListener:()=>{}};'''
 class API:
- def __init__(self):self.plans=[];self.prefs={};self.acks=[];self.calls=[];self.receipts=[];self.count=0;self.confirmed=[];self.fail_post=False;self.reports=[];self.submissions=[];self.downloads=[];self.download_bytes=b''
+ def __init__(self):self.plans=[];self.prefs={};self.acks=[];self.calls=[];self.receipts=[];self.count=0;self.confirmed=[];self.fail_post=False;self.reports=[];self.submissions=[]
  def route(self,route):
   req=route.request;p=urlparse(req.url).path;m=req.method;body=req.post_data_json if req.post_data else {}
   out=[];code=200
-  if p=='/documents':out=self.downloads
-  elif p=='/documents/1987':
-   route.fulfill(status=200,content_type='application/zip',headers={'Content-Disposition':'attachment; filename="Office_Listen_Test.zip"','Cache-Control':'private, no-store'},body=self.download_bytes);return
-  elif p=='/admin/contribution-reports':
+  if p=='/admin/contribution-reports':
    if m=='GET':out=self.reports
    else:
     self.submissions.append(body)
@@ -163,23 +160,5 @@ with sync_playwright() as pw:
   assert sheet['version']=='0.20.3' and sheet['rows'][1]==['Muster','07361 123']
   assert not errors,errors
   ctx.close();print(f'PASS {width}: contribution preview, RV exemption, draft, explicit submission, frozen values, open versus final month, real PDF generation')
- for width in [1280,390]:
-  api=API();ctx,page,errors=page_for(browser,api,width,'2026-10-26T09:00:00Z')
-  archive=io.BytesIO()
-  with zipfile.ZipFile(archive,'w',compression=zipfile.ZIP_DEFLATED) as z:
-   for category in ['Mit Telefonnummer','ohne Telefonnummer','Telefonmarketing abgelehnt']:
-    for branch in ['Ebnat','Oberkochen']:z.writestr(f'{category}/{branch}/Test.xlsx',b'private download fixture')
-  api.download_bytes=archive.getvalue()
-  api.downloads=[{'id':1987,'title':'Office-Listen Ebnat und Oberkochen','file_name':'Office_Listen_Test.zip','mime':'application/zip','size':len(api.download_bytes)}]
-  page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close());document.body.dataset.officeRole='boss';__t.state.role='boss';__t.showPage('einstellungen')")
-  button=page.locator('[data-private-download="1987"]');expect(button).to_be_visible();check_width(page)
-  with page.expect_download() as event:button.click()
-  download=event.value
-  assert download.suggested_filename=='Office_Listen_Test.zip'
-  content=Path(download.path()).read_bytes();assert content==api.download_bytes
-  with zipfile.ZipFile(io.BytesIO(content)) as z:assert len(z.namelist())==6 and z.testzip() is None
-  expect(page.locator('#privateDownloadsStatus')).to_contain_text('An deinen Browser übergeben')
-  assert not errors,errors
-  ctx.close();print(f'PASS {width}: authenticated private ZIP download with six separate Excel files')
  browser.close()
 server.shutdown()

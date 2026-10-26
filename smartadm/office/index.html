@@ -2850,12 +2850,6 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
       <!-- ===== Boss: Einstellungen ===== -->
       <section class="page" id="einstellungen" data-role="boss">
-        <div class="card section-card" id="privateDownloadsCard">
-          <div class="card-head"><h2>Meine Downloads</h2><p>Hier findest du für dich bereitgestellte Dateien. Nur dein eigenes Konto kann diese Downloads öffnen.</p></div>
-          <div id="privateDownloadsList" class="actions start"></div>
-          <div id="privateDownloadsStatus" class="status-text" aria-live="polite">Dateien werden geladen …</div>
-          <button type="button" class="btn ghost small" id="refreshPrivateDownloads">Liste aktualisieren</button>
-        </div>
         <div class="card section-card">
           <div class="card-head"><h2>Sicherheitsmonitor</h2><p>Cloudflare prüft alle 15 Minuten die veröffentlichten Dateien, API-Erreichbarkeit und abgewiesene Zugriffe. Hinweise erscheinen als Aufgabe und Push; unveränderte Zustände bleiben still.</p></div>
           <button type="button" class="btn ghost" id="refreshSecurityMonitor">Prüfstand aktualisieren</button>
@@ -3398,37 +3392,6 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   /* ================= Navigation ================= */
 
-  let privateDownloadItems = [];
-  async function loadPrivateDownloads() {
-    if (state.role !== "boss") return;
-    setText("privateDownloadsStatus", "Dateien werden geladen …");
-    try {
-      privateDownloadItems = asArray(await api("/documents")).filter(d => d.mime === "application/zip");
-      $("privateDownloadsList").innerHTML = privateDownloadItems.map(d =>
-        `<button type="button" class="btn primary" data-private-download="${esc(d.id)}">${esc(d.title || d.file_name)} · ZIP herunterladen</button>`).join("");
-      setText("privateDownloadsStatus", privateDownloadItems.length
-        ? "Die Datei wird nach dem Klick über deine sichere Anmeldung geladen und im Browser gespeichert."
-        : "Aktuell sind keine Downloadpakete für dich hinterlegt.");
-    } catch (error) {
-      privateDownloadItems = [];
-      $("privateDownloadsList").replaceChildren();
-      setStatus("privateDownloadsStatus", `Dateien konnten nicht geladen werden: ${error.message}`, true);
-    }
-  }
-  $("refreshPrivateDownloads").addEventListener("click", loadPrivateDownloads);
-  $("privateDownloadsList").addEventListener("click", event => {
-    const button = event.target.closest("[data-private-download]");
-    const doc = button && privateDownloadItems.find(d => String(d.id) === button.dataset.privateDownload);
-    if (!doc) return;
-    withBusy(button, async () => {
-      try {
-        const blob = await apiBlob(`/documents/${encodeURIComponent(doc.id)}`);
-        saveBlob(blob, doc.file_name);
-        setStatus("privateDownloadsStatus", "An deinen Browser übergeben. Du findest die ZIP in deinem Downloads-Ordner.");
-      } catch (error) { setStatus("privateDownloadsStatus", `Download fehlgeschlagen: ${error.message}`, true); }
-    });
-  });
-
   async function loadSecurityMonitor() {
     try {
       const data = await api("/admin/security-monitor");
@@ -3452,7 +3415,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     $$("#mobileMenu [data-page]").forEach(b => (b.dataset.page === pageId ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
     closeMobileMenu();
     if (pageId === "boss-dashboard") renderDashboardWidgets();
-    if (pageId === "einstellungen") { loadSecurityMonitor(); loadPrivateDownloads(); }
+    if (pageId === "einstellungen") loadSecurityMonitor();
     if (pageId === "vertrag" || pageId === "mitarbeiter") loadContracts();
     if (pageId === "organisation" && (state.taskExpanded.size || state.showDoneTasks)) {
       state.taskExpanded.clear();
