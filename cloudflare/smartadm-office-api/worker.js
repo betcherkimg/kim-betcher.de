@@ -217,7 +217,7 @@ const ENTRY_SELECT = `
     w.id, w.work_date, w.start_time, w.end_time, w.break_minutes, w.work_minutes,
     COALESCE(p.appointments, 0) AS appointments,
     COALESCE(p.commissionable_appointments, 0) AS commissionable_appointments,
-    w.regular_slot,w.entry_state,w.submission_id, w.created_at, w.updated_at
+    w.regular_slot,w.record_kind,w.entry_note,CASE WHEN w.record_kind='actual' THEN w.work_date END actual_work_date,w.entry_state,w.submission_id, w.created_at, w.updated_at
   FROM work_entries w
   LEFT JOIN performance_entries p ON p.work_entry_id = w.id
   WHERE w.clerk_user_id = ?
@@ -278,6 +278,7 @@ async function checkEditable(env, id, owner) {
 async function updateEntry({ request, env, owner, id }) {
   const body=await readJson(request);
   await ensureRegular(env);
+  if(await first(env,"SELECT 1 FROM work_entries WHERE id=? AND clerk_user_id=? AND record_kind='weekly_allocation'",id,owner))return err('Bitte diese Wochenzuordnung direkt in der Wochenliste ändern.',409);
   const {error,work,perf}=parseEntryBody(body,await regularCorrectionOpen(env,owner,body?.work_date));
   if (error) return err(error);
 
@@ -1283,7 +1284,7 @@ async function createMonthlyClosing({ request, env, userId, owner, exec, confirm
     first(env, "SELECT * FROM employee_profiles WHERE clerk_user_id = ?", owner).catch(() => null),
     first(env, "SELECT * FROM office_employer WHERE id = 1").catch(() => null),
     all(env,
-      `SELECT w.work_date, w.start_time, w.end_time, w.break_minutes, w.work_minutes,
+      `SELECT w.work_date, w.start_time, w.end_time, w.break_minutes, w.work_minutes,w.record_kind,w.entry_note,
               COALESCE(p.appointments, 0) AS appointments
        FROM payroll_work_entries w
        LEFT JOIN payroll_performance_entries p ON p.work_entry_id = w.id
@@ -4502,7 +4503,7 @@ async function saveOwnPrefs({ request, env, userId }) {
 /* ================= Kalender, Anträge und Urlaubskonto ================= */
 const leaveSchemaReady = new WeakMap();
 const officeSchemaKnown=new WeakMap();
-async function officeSchemaCurrent(env){if(officeSchemaKnown.get(env.DB))return true;const r=await first(env,"SELECT version FROM office_schema_versions WHERE name='calendar' AND version=2").catch(()=>null);if(r)officeSchemaKnown.set(env.DB,true);return !!r;}
+async function officeSchemaCurrent(env){if(officeSchemaKnown.get(env.DB))return true;const r=await first(env,"SELECT version FROM office_schema_versions WHERE name='calendar' AND version=3").catch(()=>null);if(r)officeSchemaKnown.set(env.DB,true);return !!r;}
 async function ensureLeave(env) {
   if (leaveSchemaReady.has(env.DB)) return leaveSchemaReady.get(env.DB);
   const promise = (async () => {
@@ -4876,7 +4877,7 @@ async function ensureRegular(env) {
       `CREATE UNIQUE INDEX IF NOT EXISTS regular_initial_once ON regular_patterns(clerk_user_id) WHERE kind='initial'`,
       `CREATE INDEX IF NOT EXISTS regular_patterns_owner ON regular_patterns(clerk_user_id,id)`
     ].map(sql=>stmt(env,sql)));
-    for(const [table,col,type] of [['work_entries','regular_slot','TEXT'],['work_entries','entry_state',"TEXT NOT NULL DEFAULT 'final'"],['work_entries','submission_id','INTEGER'],['employee_absences','regular_holiday_id','INTEGER'],['regular_week_confirmations','submission_token','TEXT']]){
+    for(const [table,col,type] of [['work_entries','record_kind',"TEXT NOT NULL DEFAULT 'actual'"],['work_entries','entry_note',"TEXT NOT NULL DEFAULT ''"],['work_entries','regular_slot','TEXT'],['work_entries','entry_state',"TEXT NOT NULL DEFAULT 'final'"],['work_entries','submission_id','INTEGER'],['employee_absences','regular_holiday_id','INTEGER'],['regular_week_confirmations','submission_token','TEXT']]){
       if(!(await all(env,`PRAGMA table_info(${table})`)).some(c=>c.name===col)){
         try{await run(env,`ALTER TABLE ${table} ADD COLUMN ${col} ${type}`)}catch(error){if(!(await all(env,`PRAGMA table_info(${table})`)).some(c=>c.name===col))throw error;}
       }
@@ -4885,6 +4886,8 @@ async function ensureRegular(env) {
       stmt(env,"CREATE VIEW IF NOT EXISTS payroll_work_entries AS SELECT * FROM work_entries WHERE entry_state='final'"),
       stmt(env,"CREATE VIEW IF NOT EXISTS payroll_performance_entries AS SELECT p.* FROM performance_entries p WHERE p.work_entry_id IS NULL OR EXISTS(SELECT 1 FROM work_entries w WHERE w.id=p.work_entry_id AND w.entry_state='final')")
     ]);
+    await run(env,"CREATE UNIQUE INDEX IF NOT EXISTS regular_one_allocation ON work_entries(clerk_user_id,regular_slot) WHERE record_kind='weekly_allocation'");
+    await run(env,`CREATE TRIGGER IF NOT EXISTS regular_allocation_final_guard BEFORE UPDATE ON work_entries WHEN OLD.submission_id IS NOT NULL AND OLD.entry_state='final' AND NEW.entry_state='final' AND (NEW.record_kind<>OLD.record_kind OR NEW.entry_note<>OLD.entry_note) BEGIN SELECT RAISE(ABORT,'Abgesendete Wochenzuordnung ist festgeschrieben.'); END`);
     await ensureAdjustments(env);
     for(const table of ['work_entries','performance_entries','employee_absences','appointment_adjustments','week_reviews','regular_patterns','leave_regions','employee_profiles','payroll_settings','regular_week_confirmations','regular_submission_events','leave_requests']){
       for(const [event,p] of [['INSERT','NEW'],['UPDATE','NEW'],['DELETE','OLD']])await run(env,`CREATE TRIGGER IF NOT EXISTS payroll_check_${table}_${event.toLowerCase()} AFTER ${event} ON ${table} BEGIN DELETE FROM payroll_checks WHERE clerk_user_id=${p}.clerk_user_id; END`);
@@ -4898,10 +4901,11 @@ async function ensureRegular(env) {
     await run(env,`CREATE TRIGGER IF NOT EXISTS regular_final_no_performance_change BEFORE UPDATE ON performance_entries WHEN EXISTS(SELECT 1 FROM work_entries w WHERE w.id=OLD.work_entry_id AND w.submission_id IS NOT NULL AND w.entry_state='final') AND NEW.appointments<>OLD.appointments BEGIN SELECT RAISE(ABORT,'Abgesendete Termine sind festgeschrieben.'); END`);
     const cols=(await all(env,'PRAGMA table_info(work_entries)')).map(c=>c.name).filter(c=>/^[a-z_]+$/.test(c));
     for(const [event,when,p] of [['created','AFTER INSERT','NEW'],['changed','AFTER UPDATE','NEW'],['removed','BEFORE DELETE','OLD']]){
+      await run(env,`DROP TRIGGER IF EXISTS regular_work_${event}`);
       await run(env,`CREATE TRIGGER IF NOT EXISTS regular_work_${event} ${when} ON work_entries BEGIN INSERT INTO regular_work_history(clerk_user_id,entry_id,event,snapshot_json) VALUES(${p}.clerk_user_id,${p}.id,'${event}',json_object(${cols.map(c=>`'${c}',${p}.${c}`).join(',')})); END`);
     }
     await run(env,"CREATE TABLE IF NOT EXISTS office_schema_versions(name TEXT PRIMARY KEY,version INTEGER NOT NULL,installed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)");
-    await run(env,"INSERT OR REPLACE INTO office_schema_versions(name,version) VALUES('calendar',2)");officeSchemaKnown.set(env.DB,true);
+    await run(env,"INSERT OR REPLACE INTO office_schema_versions(name,version) VALUES('calendar',3)");officeSchemaKnown.set(env.DB,true);
   })();regularSchemaReady.set(env.DB,pending);
   try{await pending}catch(error){regularSchemaReady.delete(env.DB);throw error;}
 }
@@ -4980,29 +4984,45 @@ async function regularMonthInfo(env,owner,month,patterns=null,context=null){
   const releaseDays=cutDate?dates.filter(date=>date>cutDate&&!holidays[date]&&!context.work.some(w=>w.work_date===date)&&!context.absences.some(a=>a.absence_date===date&&!String(a.note||'').startsWith(prefix))).map(date=>({date,absence_date:date,absence_type:'paid_leave',paid_minutes:120,paid_amount_cents:2*hourlyRateCents(date.slice(0,7)),note:prefix,source_cut_date:cutDate})):[];
   return {month,baseMinutes,holidayMinutes,appointments,cutAppointments,cutDate,releaseDays};
 }
+async function groupLegacyRegularWeek(env,owner,patterns,week){
+  const pattern=patterns[0];if(!pattern||!pattern.weekdays?.length)return;
+  const requested=await first(env,"SELECT 1 FROM regular_submission_events WHERE clerk_user_id=? AND week_start=? AND event='group_pending'",owner,week);
+  if(!requested||await first(env,"SELECT 1 FROM regular_submission_events WHERE clerk_user_id=? AND week_start=? AND event='legacy_grouped'",owner,week))return;
+  const entries=await all(env,"SELECT * FROM work_entries WHERE clerk_user_id=? AND work_date BETWEEN ? AND ? AND record_kind='actual' AND submission_id IS NULL",owner,week,addDays(week,6));
+  if(entries.some(e=>e.submission_id)||!entries.length)return;
+  for(const e of entries)if(await closedMonthError(env,owner,e.work_date))return;
+  const slot=addDays(week,Math.min(...pattern.weekdays)-1);
+  await env.DB.batch([
+    stmt(env,"INSERT INTO regular_submission_events(clerk_user_id,week_start,event,actor,detail_json) SELECT ?,?,'legacy_grouped','system',? WHERE NOT EXISTS(SELECT 1 FROM regular_submission_events WHERE clerk_user_id=? AND week_start=? AND event='legacy_grouped')",[owner,week,JSON.stringify({slot,entries,reason:'Bestehende Zeiten auf ausdrücklichen Wunsch der ersten Wochenzeile zugeordnet; tatsächliche Daten bleiben erhalten.'}),owner,week]),
+    stmt(env,"UPDATE work_entries SET regular_slot=?,updated_at=CURRENT_TIMESTAMP WHERE clerk_user_id=? AND work_date BETWEEN ? AND ? AND record_kind='actual' AND submission_id IS NULL",[slot,owner,week,addDays(week,6)])
+  ]);
+}
 async function getRegularWeek({env,owner,userId,url}){
   owner=owner||userId;const week=String(url.searchParams.get('week')||mondayOfWeek(berlinToday()));
   if(!validDate(week)||mondayOfWeek(week)!==week)return err('Ungültige Kalenderwoche.');
   const patterns=await regularPatterns(env,owner),end=addDays(week,6),current=regularAt(patterns,end),context=await leaveContext(env,owner);
+  await groupLegacyRegularWeek(env,owner,patterns,week);
   const entries=await all(env,`SELECT w.*,COALESCE(p.appointments,0) appointments FROM work_entries w LEFT JOIN performance_entries p ON p.work_entry_id=w.id WHERE w.clerk_user_id=? AND w.work_date BETWEEN ? AND ? ORDER BY w.work_date,w.start_time`,owner,week,end);
   const holidays=await regularHolidayRows(env,owner,week,end,patterns,context);
   const monthInfos=await Promise.all([...new Set([week.slice(0,7),end.slice(0,7)])].map(m=>regularMonthInfo(env,owner,m,patterns,context)));
   const absences=context.absences.filter(a=>a.absence_date>=week&&a.absence_date<=end);
   for(const day of monthInfos.flatMap(m=>m.releaseDays).filter(d=>d.date>=week&&d.date<=end))if(!absences.some(a=>a.absence_date===day.date))absences.push(day);
-  const dateFor=d=>addDays(week,d-1),weekdaySet=new Set(current?.weekdays||[]);
+  const declared=patterns.find(p=>p.kind==='initial'&&p.declared_date<=end&&(!p.valid_from||week<=mondayOfWeek(p.valid_from)))||null;
+  const dateFor=d=>addDays(week,d-1),weekdaySet=new Set((current||declared)?.weekdays||[]);
   // In a midweek change, show every Regeltag that was valid on its actual date.
   for(const date of leaveDays(week,addDays(week,4))){const p=regularAt(patterns,date);if(p?.weekdays.includes(regularWeekday(date)))weekdaySet.add(regularWeekday(date));}
   const slots=[...weekdaySet].sort().map(day=>{
-    const date=dateFor(day),p=regularAt(patterns,date),holiday=holidays.find(h=>h.date===date),absence=absences.find(a=>a.absence_date===date);
+    const date=dateFor(day),p=regularAt(patterns,date)||declared,holiday=holidays.find(h=>h.date===date),absence=absences.find(a=>a.absence_date===date);
     return {date,weekday:day,pattern_id:p?.id||null,holiday:holiday||null,absence:absence||null,entries:entries.filter(e=>e.regular_slot===date||!e.regular_slot&&e.work_date===date)};
   });
   const assigned=new Set(slots.flatMap(s=>s.entries.map(e=>e.id))),unassigned=entries.filter(e=>!assigned.has(e.id));
   const mins=entries.reduce((n,e)=>n+e.work_minutes,0),credit=holidays.reduce((n,h)=>n+h.minutes,0),other=absences.filter(a=>a.absence_type!=='holiday').reduce((n,a)=>n+a.paid_minutes,0);
   const activeDates=leaveDays(week,addDays(week,4)).filter(date=>{const p=regularAt(patterns,date);return p?.weekdays.includes(regularWeekday(date))&&(!context.job.end_date||date<=context.job.end_date)&&date>=(context.job.start_date||date)});
-  const baseline=current?activeDates.length*120:360,target=Math.max(0,baseline-credit-other),fulfilled=mins+credit+other;
+  const baseline=activeDates.length?activeDates.length*120:declared?360:current?0:360,target=Math.max(0,baseline-credit-other),fulfilled=mins+credit+other;
   const correction=(await first(env,"SELECT MAX(id) id FROM regular_submission_events WHERE clerk_user_id=? AND week_start=? AND event IN ('reopened','correction_allowed')",owner,week))?.id||0;
-  const stateHash=await sha256Hex(JSON.stringify({week,correction,entries:entries.map(e=>[e.id,e.work_date,e.regular_slot,e.work_minutes,e.appointments])}));
+  const stateHash=await sha256Hex(JSON.stringify({week,correction,entries:entries.map(e=>e.record_kind==='weekly_allocation'?[e.id,e.work_date,e.regular_slot,e.work_minutes,e.appointments,e.record_kind,e.entry_note]:[e.id,e.work_date,e.regular_slot,e.work_minutes,e.appointments])}));
   const confirmation=await first(env,"SELECT * FROM regular_week_confirmations WHERE clerk_user_id=? AND week_start=? AND state_hash=? AND id NOT IN(SELECT CAST(json_extract(detail_json,'$.submission_id') AS INTEGER) FROM regular_submission_events WHERE clerk_user_id=? AND week_start=? AND event='reopened') ORDER BY id DESC LIMIT 1",owner,week,stateHash,owner,week);
+  if(confirmation){const event=await first(env,"SELECT actor,detail_json FROM regular_submission_events WHERE clerk_user_id=? AND week_start=? AND event='submitted' AND json_extract(detail_json,'$.submission_id')=? ORDER BY id DESC LIMIT 1",owner,week,confirmation.id);confirmation.automatic=event?.actor==='system'&&safeParse(event?.detail_json)?.automatic===true;}
   const review=await first(env,'SELECT * FROM week_reviews WHERE clerk_user_id=? AND week_start=?',owner,week).catch(()=>null);
   const pastWeeks=[];
   const submittedWeeks=new Set((await all(env,"SELECT week_start FROM regular_week_confirmations WHERE clerk_user_id=? AND id NOT IN(SELECT CAST(json_extract(detail_json,'$.submission_id') AS INTEGER) FROM regular_submission_events WHERE clerk_user_id=? AND event='reopened')",owner,owner)).map(r=>r.week_start));
@@ -5016,36 +5036,61 @@ async function getRegularWeek({env,owner,userId,url}){
   const latestWeeks=[];
   for(let i=0;i<6;i++){
     const w=addDays(mondayOfWeek(berlinToday()),-7*(i+1)),ds=context.work.filter(e=>e.work_date>=w&&e.work_date<=addDays(w,6));
-    if(ds.length)latestWeeks.push(ds.some(e=>!regularAt(patterns,e.work_date)?.weekdays.includes(regularWeekday(e.work_date))));
+    if(ds.length)latestWeeks.push(ds.some(e=>e.record_kind!=='weekly_allocation'&&!regularAt(patterns,e.work_date)?.weekdays.includes(regularWeekday(e.work_date))));
   }
-  return json({correctionOpen:await regularCorrectionOpen(env,owner,week),monthGoals:monthInfos.map(m=>({month:m.month,appointments:m.appointments,cutAppointments:m.cutAppointments,baseMinutes:m.baseMinutes,holidayMinutes:m.holidayMinutes})),week,end,active:activeDates.length>0,current,patterns,slots:slots.filter(s=>s.pattern_id),unassigned,entries,holidays,absences,workMinutes:mins,holidayMinutes:credit,absenceMinutes:other,baseMinutes:baseline,targetMinutes:target,fulfilledMinutes:fulfilled,missingMinutes:Math.max(0,target-mins),overtimeMinutes:Math.max(0,mins-target),actualWorkdays:new Set(entries.map(e=>e.work_date)).size,review,stateHash,confirmed:!!confirmation,confirmation,overdue:pastWeeks,patternReview:latestWeeks.filter(Boolean).length>=4,today:berlinToday()});
+  return json({correctionOpen:await regularCorrectionOpen(env,owner,week),monthGoals:monthInfos.map(m=>({month:m.month,appointments:m.appointments,cutAppointments:m.cutAppointments,baseMinutes:m.baseMinutes,holidayMinutes:m.holidayMinutes})),week,end,active:activeDates.length>0||!!declared,current,patterns,slots:slots.filter(s=>s.pattern_id),unassigned,entries,holidays,absences,workMinutes:mins,holidayMinutes:credit,absenceMinutes:other,baseMinutes:baseline,targetMinutes:target,fulfilledMinutes:fulfilled,missingMinutes:Math.max(0,target-mins),overtimeMinutes:Math.max(0,mins-target),actualWorkdays:new Set(entries.filter(e=>e.record_kind!=='weekly_allocation').map(e=>e.work_date)).size,review,stateHash,confirmed:!!confirmation,confirmation,overdue:pastWeeks,patternReview:latestWeeks.filter(Boolean).length>=4,today:berlinToday()});
+}
+// A weekly allocation is explicitly a reference row, never an invented actual workday or clock interval.
+async function saveRegularSlot({env,userId,request}){
+  if(isBoss(env,userId))return err('Bitte im Mitarbeiterkonto eintragen.',403);
+  await ensureRegular(env);const body=await readJson(request),date=String(body?.slot||''),minutes=Number(body?.minutes),appointments=Number(body?.appointments),note=cleanText(body?.note,500)||'';
+  if(!validDate(date)||!Number.isInteger(minutes)||minutes<0||minutes>1440||!Number.isInteger(appointments)||appointments<0||appointments>1000)return err('Bitte gültige Stunden und eine ganze Terminanzahl eintragen.');
+  const week=mondayOfWeek(date),today=berlinToday();
+  if(week>mondayOfWeek(today)||week<mondayOfWeek(today)&&!await regularCorrectionOpen(env,userId,week))return err('Bitte die aktuelle Woche bearbeiten. Vergangene Wochen muss Kim zur Korrektur öffnen.',409);
+  const response=await getRegularWeek({env,userId,url:new URL('https://local/regular-week?week='+week)}),data=await response.json();
+  const slot=data.slots?.find(s=>s.date===date);if(!data.active||!slot)return err('Bitte einen gültigen Regeltag auswählen.');
+  if(slot.holiday||slot.absence)return err('Feiertage und genehmigte Abwesenheiten sind gesperrt.',409);
+  if(data.confirmed)return err('Diese Woche wurde bereits abgesendet. Kim kann sie zur Korrektur öffnen.',409);
+  const closed=await closedMonthError(env,userId,date);if(closed)return closed;
+  const legacy=slot.entries.filter(e=>e.record_kind!=='weekly_allocation'),baseMinutes=legacy.reduce((n,e)=>n+e.work_minutes,0),baseAppointments=legacy.reduce((n,e)=>n+e.appointments,0);
+  if(minutes<baseMinutes||appointments<baseAppointments)return err('Die bereits dokumentierten Zeiten und Termine bleiben erhalten. Bitte Kim um eine Korrektur dieser ursprünglichen Nachweise bitten.',409);
+  const saved=await env.DB.batch([
+    stmt(env,`INSERT INTO work_entries(clerk_user_id,work_date,start_time,end_time,break_minutes,work_minutes,regular_slot,record_kind,entry_note,entry_state)
+      VALUES(?,?,'','',0,?,?,'weekly_allocation',?,'draft')
+      ON CONFLICT(clerk_user_id,regular_slot) WHERE record_kind='weekly_allocation' DO UPDATE SET work_minutes=excluded.work_minutes,entry_note=excluded.entry_note,updated_at=CURRENT_TIMESTAMP WHERE work_entries.entry_state='draft' AND work_entries.submission_id IS NULL`,[userId,date,minutes-baseMinutes,date,note]),
+    stmt(env,`INSERT INTO performance_entries(clerk_user_id,work_date,appointments,commissionable_appointments,work_entry_id)
+      SELECT ?,?,?,?,id FROM work_entries WHERE clerk_user_id=? AND regular_slot=? AND record_kind='weekly_allocation' AND entry_state='draft' AND submission_id IS NULL
+      ON CONFLICT(work_entry_id) DO UPDATE SET appointments=excluded.appointments,commissionable_appointments=excluded.commissionable_appointments,updated_at=CURRENT_TIMESTAMP`,[userId,date,appointments-baseAppointments,appointments-baseAppointments,userId,date])
+  ]);
+  if(!saved[0].meta?.changes)return err('Die Woche wurde inzwischen abgesendet. Bitte neu laden.',409);
+  return ok({saved:true,slot:date});
 }
 async function completeRegularWeek(ctx){
-  const {env,userId,request,exec}=ctx,body=await readJson(request),week=String(body?.week||'');
+  const {env,userId,request,exec}=ctx,automatic=ctx.automatic===true,body=await readJson(request),week=String(body?.week||'');
   if(!validDate(week)||mondayOfWeek(week)!==week||addDays(week,4)>berlinToday())return err('Die Arbeitswoche kann ab Freitag abgesendet werden.');
   const response=await getRegularWeek({...ctx,url:new URL('https://local/regular-week?week='+week)});if(response.status!==200)return response;const data=await response.json();
   if(!data.active)return err('Für diese Woche ist noch keine neue Regelverteilung aktiv.');
   if(data.confirmed)return ok({already_submitted:true,week});
   if(body.state_hash!==data.stateHash)return err('Die Woche wurde inzwischen geändert. Bitte neu laden.',409);
   const note=cleanText(body?.note,500)||'';
-  if(data.missingMinutes>0&&!note)return err('Bitte die fehlenden Stunden kurz erläutern. Kim entscheidet wie bisher über die Einordnung.');
-  if(data.entries.some(e=>e.work_date>berlinToday()))return err('Zukünftige Arbeit kann nicht als geleistet abgesendet werden.');
+  if(data.missingMinutes>0&&!note&&!automatic)return err('Bitte die fehlenden Stunden kurz erläutern. Kim entscheidet wie bisher über die Einordnung.');
+  if(data.entries.some(e=>e.record_kind!=='weekly_allocation'&&e.work_date>berlinToday()))return err('Zukünftige Arbeit kann nicht als geleistet abgesendet werden.');
   for(const e of data.entries){const closed=await closedMonthError(env,userId,e.work_date);if(closed)return closed;}
-  const token=crypto.randomUUID(),detail={token,week,entries:data.entries,missingMinutes:data.missingMinutes,overtimeMinutes:data.overtimeMinutes,actualWorkdays:data.actualWorkdays,note,source_hash:data.stateHash};
+  const token=crypto.randomUUID(),detail={token,week,automatic,entries:data.entries,missingMinutes:data.missingMinutes,overtimeMinutes:data.overtimeMinutes,actualWorkdays:data.actualWorkdays,note,source_hash:data.stateHash};
   const sent=await env.DB.batch([
     stmt(env,`INSERT OR IGNORE INTO regular_week_confirmations(clerk_user_id,week_start,state_hash,note,submission_token)
       SELECT ?,?,?,?,? WHERE (SELECT COUNT(*) FROM work_entries WHERE clerk_user_id=? AND work_date BETWEEN ? AND ?)=?
-      AND NOT EXISTS(SELECT 1 FROM work_entries w LEFT JOIN performance_entries p ON p.work_entry_id=w.id LEFT JOIN json_each(?) j ON json_extract(j.value,'$.id')=w.id WHERE w.clerk_user_id=? AND w.work_date BETWEEN ? AND ? AND (j.value IS NULL OR w.work_minutes<>json_extract(j.value,'$.work_minutes') OR w.work_date<>json_extract(j.value,'$.work_date') OR w.start_time<>json_extract(j.value,'$.start_time') OR w.end_time<>json_extract(j.value,'$.end_time') OR w.break_minutes<>json_extract(j.value,'$.break_minutes') OR COALESCE(w.regular_slot,'')<>COALESCE(json_extract(j.value,'$.regular_slot'),'') OR COALESCE(p.appointments,0)<>json_extract(j.value,'$.appointments')))`,[userId,week,data.stateHash,note,token,userId,week,addDays(week,6),data.entries.length,JSON.stringify(data.entries),userId,week,addDays(week,6)]),
-    stmt(env,`INSERT INTO regular_submission_events(clerk_user_id,week_start,event,actor,detail_json) SELECT clerk_user_id,week_start,'submitted',?,json_set(?,'$.submission_id',id) FROM regular_week_confirmations WHERE submission_token=?`,[userId,JSON.stringify(detail),token]),
-    stmt(env,`UPDATE work_entries SET entry_state='final',submission_id=(SELECT CAST(json_extract(detail_json,'$.submission_id') AS INTEGER) FROM regular_submission_events WHERE json_extract(detail_json,'$.token')=?),updated_at=CURRENT_TIMESTAMP WHERE clerk_user_id=? AND work_date BETWEEN ? AND ? AND entry_state='draft'`,[token,userId,week,addDays(week,6)])
+      AND NOT EXISTS(SELECT 1 FROM work_entries w LEFT JOIN performance_entries p ON p.work_entry_id=w.id LEFT JOIN json_each(?) j ON json_extract(j.value,'$.id')=w.id WHERE w.clerk_user_id=? AND w.work_date BETWEEN ? AND ? AND (j.value IS NULL OR w.work_minutes<>json_extract(j.value,'$.work_minutes') OR w.work_date<>json_extract(j.value,'$.work_date') OR w.start_time<>json_extract(j.value,'$.start_time') OR w.end_time<>json_extract(j.value,'$.end_time') OR w.break_minutes<>json_extract(j.value,'$.break_minutes') OR COALESCE(w.regular_slot,'')<>COALESCE(json_extract(j.value,'$.regular_slot'),'') OR COALESCE(p.appointments,0)<>json_extract(j.value,'$.appointments') OR COALESCE(w.entry_note,'')<>COALESCE(json_extract(j.value,'$.entry_note'),'') OR w.record_kind<>COALESCE(json_extract(j.value,'$.record_kind'),'actual')))`,[userId,week,data.stateHash,note,token,userId,week,addDays(week,6),data.entries.length,JSON.stringify(data.entries),userId,week,addDays(week,6)]),
+    stmt(env,`INSERT INTO regular_submission_events(clerk_user_id,week_start,event,actor,detail_json) SELECT clerk_user_id,week_start,'submitted',?,json_set(?,'$.submission_id',id) FROM regular_week_confirmations WHERE submission_token=?`,[automatic?'system':userId,JSON.stringify(detail),token]),
+    stmt(env,`UPDATE work_entries SET entry_state='final',submission_id=(SELECT CAST(json_extract(detail_json,'$.submission_id') AS INTEGER) FROM regular_submission_events WHERE json_extract(detail_json,'$.token')=?),updated_at=CURRENT_TIMESTAMP WHERE clerk_user_id=? AND work_date BETWEEN ? AND ? AND submission_id IS NULL`,[token,userId,week,addDays(week,6)])
   ]);
   if(!sent[0].meta?.changes)return err('Die Einträge wurden gleichzeitig geändert. Bitte die aktuellen Werte erneut prüfen und absenden.',409);
   // A concurrent draft change never receives a valid source hash silently.
   const verify=await getRegularWeek({...ctx,url:new URL('https://local/regular-week?week='+week)}),after=await verify.json();
   if(after.stateHash!==data.stateHash)return err('Die Woche wurde gleichzeitig geändert. Bitte Kim um Prüfung der übermittelten Version bitten.',409);
-  await pushBoss(env,exec,{title:'Arbeitswoche abgesendet',body:`${isoWeekLabel(week)}: ${data.workMinutes} Minuten Arbeit, ${data.holidayMinutes+data.absenceMinutes} Minuten Gutschrift.${data.missingMinutes?' '+data.missingMinutes+' Minuten fehlen – bitte einordnen.':''}`,tag:'week-submitted-'+userId+'-'+week,url:hrUrl('einsatz')});
+  await pushBoss(env,exec,{title:automatic?'Arbeitswoche automatisch übernommen':'Arbeitswoche abgesendet',body:`${isoWeekLabel(week)}: ${data.workMinutes} Minuten Arbeit, ${data.holidayMinutes+data.absenceMinutes} Minuten Gutschrift.${data.missingMinutes?' '+data.missingMinutes+' Minuten fehlen – bitte einordnen.':''}`,tag:'week-submitted-'+userId+'-'+week,url:hrUrl('einsatz')});
   await run(env,"UPDATE office_tasks SET status='completed',completed_at=CURRENT_TIMESTAMP WHERE assigned_to=? AND created_by=?",userId,'regular-submit:'+week);
-  return ok({submitted:true,week});
+  return ok({submitted:true,automatic,week});
 }
 async function regularCorrectionOpen(env,owner,date){
   if(!validDate(date))return false;
@@ -5064,6 +5109,20 @@ async function reopenRegularWeek({request,env,owner,userId,exec}){
     stmt(env,"UPDATE work_entries SET entry_state='draft',submission_id=NULL,updated_at=CURRENT_TIMESTAMP WHERE clerk_user_id=? AND work_date BETWEEN ? AND ?",[owner,week,addDays(week,6)])
   ]);
   await runLater(exec,notifyUser(env,owner,{title:'Arbeitswoche zur Korrektur geöffnet',body:`${isoWeekLabel(week)}: ${note} Bitte korrigieren und erneut absenden.`,tag:'week-correction-'+week,url:hrUrl('zeiten')}));return ok();
+}
+async function autoCompleteRegularWeeks(env,exec){
+  await ensureRegular(env);const today=berlinToday(),current=mondayOfWeek(today);
+  const people=await all(env,'SELECT DISTINCT clerk_user_id FROM regular_activations WHERE effective_from<?',current);
+  for(const {clerk_user_id:userId} of people){
+    for(let i=2;i>=1;i--){
+      const week=addDays(current,-7*i);
+      if(await regularCorrectionOpen(env,userId,week))continue;
+      const response=await getRegularWeek({env,userId,url:new URL('https://local/regular-week?week='+week)});if(response.status!==200)continue;
+      const data=await response.json();if(!data.active||data.confirmed)continue;
+      const result=await completeRegularWeek({env,userId,exec,automatic:true,request:new Request('https://local/regular-week/complete',{method:'POST',body:JSON.stringify({week,state_hash:data.stateHash,note:'Automatisch nach Ablauf des Sonntags übernommen. Keine persönliche Bestätigung; fehlende Angaben bleiben offen.'})})});
+      if(result.status!==200)console.warn('Automatic weekly submission deferred:',result.status);
+    }
+  }
 }
 function regularReminderSlot(date,time){
   const day=regularWeekday(date);if(day===6)return time>='12:00'?'sat-12':null;
@@ -5149,7 +5208,7 @@ async function prepareCalendarPayroll(env,owner,month){
   const context=await leaveContext(env,owner),patterns=await regularPatterns(env,owner);
   const holidayRows=await regularHolidayRows(env,owner,month+'-01',monthEnd(month),patterns,context),items=[],blockers=[];
   const [work,perf,settings,office,adjustments]=await Promise.all([
-    all(env,'SELECT id,work_date,start_time,end_time,break_minutes,work_minutes,regular_slot FROM payroll_work_entries WHERE clerk_user_id=? AND substr(work_date,1,7)=? ORDER BY id',owner,month),
+    all(env,'SELECT id,work_date,start_time,end_time,break_minutes,work_minutes,regular_slot,record_kind,entry_note FROM payroll_work_entries WHERE clerk_user_id=? AND substr(work_date,1,7)=? ORDER BY id',owner,month),
     all(env,'SELECT id,work_date,appointments FROM payroll_performance_entries WHERE clerk_user_id=? AND substr(work_date,1,7)=? ORDER BY id',owner,month),
     first(env,'SELECT * FROM payroll_settings WHERE clerk_user_id=?',owner),first(env,'SELECT * FROM office_settings WHERE id=1'),adjustmentRows(env,owner,month)
   ]);
@@ -5258,6 +5317,7 @@ const routes = [
   route("GET","/regular-pattern",getRegularPattern),
   route("POST","/regular-pattern",chooseRegularPattern),
   route("GET","/regular-week",getRegularWeek),
+  route("PUT","/regular-week/slot",saveRegularSlot),
   route("POST","/regular-week/complete",completeRegularWeek),
   route("POST","/admin/regular-week/reopen",reopenRegularWeek,{target:true}),
   route("GET","/admin/regular-pattern",getRegularPattern,{target:true}),
@@ -5480,11 +5540,11 @@ const MONITORED_ASSETS = {
   "/kb.css": "94fc9d3b5382f0604a2772cc4d8573ea6a4b25b9c77cd8dc8d949e6fd790c432",
   "/smartadm/sales/index.html": "b82b016eb1c57e53b2af504b754caa802bc04eb1d2a50722bd785355374f9719",
   "/smartadm/sales/cloud.js": "b62ef1f8fa93b3c9b8e6007c622c8e2771dda3220e979c77eb1c55084b5e0e26",
-  "/smartadm/office/": "a5ed947fd2d038e0ff25b826eb706b4c31f2d2b158e2e4f7ffc4c1ff62efb119",
-  "/smartadm/office/sw.js": "e87976049b5d2f5f318e28170c13090df0d09e1a669be8e8c59ec734f340682a",
+  "/smartadm/office/": "27c257ea2ed434011330a7307393245bca0f3c5867c7cdd23b4618ecc9dbb974",
+  "/smartadm/office/sw.js": "94939526e0a0f747b6bcba7d9205d4e6ab6571f92eda36b08f87b3715971a5e3",
   "/smartadm/office/week-planner.js": "1ff59ff97053f6702be28c7f57a78cf6b3b869271f15d0cb5344be7c61119bf2",
-  "/smartadm/office/absence-calendar.js": "b7709643b6ebe452bb4725f1086c617bcc57bb872f23ae4403ea61c5600214b1",
-  "/smartadm/office/regular-week.js": "7133e9c3c3c83145f2d70f46bf9a884429de0e5885fc56ead97f6f68cb61ac73",
+  "/smartadm/office/absence-calendar.js": "e6b2f7513a3d1c827ba0d28a59e1c3526855b0a1ec6c39644018d21f1439bd1a",
+  "/smartadm/office/regular-week.js": "80b38dc3f048aa23e786a315f5f6e1821bc94e62f8a33e6728da49a6aadb2554",
   "/smartadm/office/guided-intro.js": "f6486a67d097f46fca9cefcaeef85e8cdcffaf34233a93d75a078be95532facb",
   "/smartadm/office/vendor/xlsx-0.20.3.min.js": "cc015130aa8521e7f088f88898eba949ccdcbfb38df0bd129b44b7273c3a6f41",
   "/smartadm/office/vendor/html2pdf.min.js": "f3e5733ad8b0547c6ad7ee6c7766277fc13d1cb584197aaacbed930ce5ce0f8f"
@@ -5543,6 +5603,7 @@ export default {
     exec.waitUntil((async () => {
       if (env.SECURITY_MONITOR_ONLY === "true") { await monitorSecurity(env); return; }
       await checkPlans(env, exec).catch(e => console.error("checkPlans:", e.message));
+      await autoCompleteRegularWeeks(env,exec).catch(e=>console.error("autoCompleteRegularWeeks:",e.message));
       await remindRegularSubmissions(env,exec).catch(e=>console.error("remindRegularSubmissions:",e.message));
       // Only the submitted-week workflow sends employee week reminders.
     })());

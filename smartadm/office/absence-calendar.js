@@ -32,7 +32,7 @@ function create(b){
   for(const p of data.plans.filter(p=>p.plan_date===date&&p.status!=='cancelled')){
    if(!absence)out.push({kind:holiday?'review':'plan',label:holiday?'Soll-Einsatz · Anspruch prüfen':p.start_time+' · '+b.minutes(p.minutes)});
   }
-  const work=data.work.find(w=>w.work_date===date);if(work)out.push({kind:'work',label:'Erfasst · '+b.minutes(work.minutes)});
+  const work=data.work.find(w=>w.work_date===date);if(work)out.push({kind:'work',label:(work.record_kind==='weekly_allocation'?'Wochenzuordnung · ':'Erfasst · ')+b.minutes(work.minutes)});
   for(const r of data.requests.filter(r=>['requested','cancellation_requested'].includes(r.status)&&r.dates.includes(date)))out.push({kind:'pending',label:kindLabel(r.kind)+' · '+labels[r.status]});
   return out;
  }

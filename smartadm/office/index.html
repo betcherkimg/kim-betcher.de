@@ -1722,6 +1722,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 .calendar-toolbar .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.calendar-toolbar input{font:inherit;font-weight:600;font-size:14px;background:var(--ground);color:var(--ink);border:0;border-radius:10px;padding:10px;width:175px;min-width:0}.calendar-toolbar .type-switch button[aria-pressed="false"]{background:transparent}.calendar-toolbar .type-switch button[aria-pressed="true"]{background:var(--surface);color:var(--accent)}.calendar-day{min-height:78px}.calendar-event{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal}.calendar-grid.week-mode .calendar-event{white-space:normal}.calendar-weekday{padding:6px 0}.leave-form-footer{flex:none;border-top:1px solid var(--line);background:var(--surface);padding:14px 22px 16px}.vacation-dialog .form-dialog-body{padding-bottom:0}.vacation-dialog .picker-head{flex:none}.leave-form-footer .leave-submit-hint{margin-bottom:0}
 @media(max-width:600px){.calendar-toolbar input{width:145px;padding:9px}.calendar-day{min-height:65px}.calendar-date{font-size:12px}.leave-form-footer{padding:12px 16px}.calendar-event{font-size:9px}}
 
+/* Three direct weekly rows; no secondary time-entry form. */
+#regularRows .regular-row{grid-template-columns:minmax(120px,1fr) 100px 90px minmax(130px,1fr);align-items:center;gap:14px}#regularRows .regular-row input{width:100%;min-width:0}#regularRows .regular-note{min-width:0}#regularRows .regular-row small{margin-top:5px}#regularRows .regular-disabled input{background:transparent;border-color:transparent}#regularRows .regular-row input:disabled{opacity:1;color:var(--ink-soft)}
+@media(max-width:600px){#regularRows .regular-row{grid-template-columns:minmax(74px,1fr) 50px 48px minmax(65px,1fr);gap:6px;padding:14px 0}#regularRows .regular-row .regular-note{grid-column:auto}#regularRows .regular-col-label{font-size:10px}#regularRows .regular-row input{padding:10px 6px;font-size:12px}#regularRows .regular-row b{font-size:13px}#regularRows .regular-row small{font-size:10px}}
+
 
 /* Modal guided introduction: the highlighted real control remains visible through the shade. */
 #whatsNew.guided-intro {position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;overflow:hidden;background:transparent;box-shadow:none;color:var(--ink)}
@@ -1854,7 +1858,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card shortcut" id="regularSendNotice" hidden><div><strong>Heute bitte die Arbeitszeiten abschicken</strong><span id="regularSendNoticeText">Bitte deine Stunden und Termine prüfen und die Woche spätestens Sonntag absenden.</span></div><button class="btn primary" type="button" data-page="zeiten">Zur Wochenliste</button></div><div class="my-widgets" id="myWidgets"></div>
       </section>
 
-      <section class="page" id="zeiten" data-role="employee"><div class="card section-card" id="regularWeekCard" hidden><div class="card-head"><h2>Arbeitszeiten eintragen</h2><p>1. Stunden und Termine eintragen. 2. Bis Sonntag prüfen. 3. Mit „Absenden“ an Kim übermitteln.</p></div><div class="btn-row"><button class="btn ghost" id="regularPrev" type="button" aria-label="Vorherige Woche">‹</button><b id="regularWeekLabel"></b><button class="btn ghost" id="regularNext" type="button" aria-label="Nächste Woche">›</button><button class="btn ghost" id="regularToday" type="button">Aktuelle Woche</button></div><div id="regularRows"></div><p id="regularSummary" class="notice"></p><p id="regularStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button class="btn primary" type="button" id="regularComplete">Absenden</button><button class="btn ghost" type="button" id="regularChooseDays">Regeltage ändern</button></div></div>
+      <section class="page" id="zeiten" data-role="employee"><div class="card section-card" id="regularWeekCard" hidden><div class="card-head"><h2>Arbeitszeiten eintragen</h2><p>Stunden und Termine direkt neben deinen drei Tagen eintragen. Änderungen werden automatisch gespeichert. Bis Sonntag prüfen und absenden.</p></div><div class="btn-row"><button class="btn ghost" id="regularPrev" type="button" aria-label="Vorherige Woche">‹</button><b id="regularWeekLabel"></b><button class="btn ghost" id="regularNext" type="button" aria-label="Nächste Woche">›</button><button class="btn ghost" id="regularToday" type="button">Aktuelle Woche</button></div><div id="regularRows"></div><p id="regularSummary" class="notice"></p><p id="regularStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button class="btn primary" type="button" id="regularComplete">Absenden</button><button class="btn ghost" type="button" id="regularChooseDays">Regeltage ändern</button></div></div>
         <div class="card section-card plan-card" id="planCard" hidden>
           <div class="card-head plan-head">
             <div>
@@ -1895,6 +1899,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             </form>
           </div>
         </div>
+        <div id="legacyTimeOverview">
         <div class="grid-4">
           <div class="card kpi">
             <div class="kpi-top">
@@ -1940,6 +1945,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             </table>
           </div>
           <p class="mobile-help">Die Aktionen bleiben rechts sichtbar: Stift zum Bearbeiten, Papierkorb zum Löschen.</p>
+        </div>
         </div>
       </section>
 
@@ -3470,7 +3476,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const toEntry = row => ({
     id: String(row.id),
     date: row.work_date,
-    regularSlot:row.regular_slot||null,
+    regularSlot:row.regular_slot||null,recordKind:row.record_kind||"actual",entryNote:row.entry_note||"",
     entryState:row.entry_state||"final",submissionId:row.submission_id||null,
     start: row.start_time,
     end: row.end_time,
@@ -3516,6 +3522,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     $$("#mobileMenu [data-page]").forEach(b => (b.dataset.page === pageId ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
     closeMobileMenu();
     if (pageId === "boss-dashboard") renderDashboardWidgets();
+    if(pageId==="dashboard"&&state.role==="employee"&&!state.loading)loadOwnEntries();
     if (pageId === "einstellungen") loadSecurityMonitor();
     if (pageId === "kalender") officeCalendar.load();
     if(pageId==="lohn")loadCalendarPayroll();
@@ -4383,13 +4390,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
     return [...list].sort(byNewest).map(e => {
       const actions = !withActions ? "" : `<td><div class="row-actions">${
-        isEditable(e.date)&&!e.submissionId
+        isEditable(e.date)&&!e.submissionId&&e.recordKind!=="weekly_allocation"
           ? `<button class="icon-btn" type="button" data-edit="${e.id}" title="Eintrag bearbeiten" aria-label="Eintrag bearbeiten">${ICONS.edit}</button>
              <button class="icon-btn danger" type="button" data-delete="${e.id}" title="Eintrag löschen" aria-label="Eintrag löschen">${ICONS.trash}</button>`
           : ""
       }</div></td>`;
       return `<tr>
-        <td>${esc(fmtDate(e.date))}${e.entryState==='draft'?'<br><span class="chip warn">Entwurf · noch nicht abgesendet</span>':e.submissionId?'<br><span class="chip good">Abgesendet</span>':''}</td>
+        <td>${esc(fmtDate(e.date))}${e.recordKind==='weekly_allocation'?'<br><small>Wochenzuordnung</small>':''}${e.entryState==='draft'?'<br><span class="chip warn">Entwurf · noch nicht abgesendet</span>':e.submissionId?'<br><span class="chip good">Abgesendet</span>':''}</td>
         <td>${esc(e.start || "–")}</td>
         <td>${esc(e.end || "–")}</td>
         <td>${e.break} min</td>
@@ -5839,7 +5846,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       entries: inMonth(state.employeeEntries, month).filter(e=>e.entryState!=="draft")
         .sort((a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start))
         .map(e => ({
-          work_date: e.date, start_time: e.start, end_time: e.end, break_minutes: e.break,
+          record_kind:e.recordKind,entry_note:e.entryNote,work_date: e.date, start_time: e.start, end_time: e.end, break_minutes: e.break,
           work_minutes: e.minutes, appointments: e.appointments
         })),
       absences: inMonthAbsences(state.employeeAbsences, month)
@@ -9580,8 +9587,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const numTd = value => `<td class="num">${value}</td>`;
     const workTable = rows.length
       ? `<table class="pd-grid zebra"><thead><tr><th>Datum</th><th>Tag</th><th class="num">Beginn</th><th class="num">Ende</th><th class="num">Pause</th><th class="num">Arbeitszeit</th><th class="num">Termine</th>${legacy ? '<th class="num">davon prov.</th>' : ""}</tr></thead>
-          <tbody>${rows.map(e => `<tr><td>${esc(fmtDate(e.work_date))}</td><td>${esc(fmtWeekday(e.work_date))}</td><td class="num">${esc(e.start_time)}</td><td class="num">${esc(e.end_time)}</td><td class="num">${Number(e.break_minutes || 0)} min</td><td class="num">${fmtMinutes(e.work_minutes)}</td>${numTd(Number(e.appointments || 0))}${legacy ? numTd(Number(e.eligible || 0)) : ""}</tr>`).join("")}</tbody>
-          <tfoot><tr><td colspan="4">Summe · ${new Set(rows.map(e => e.work_date)).size} Arbeitstage</td><td class="num">${sum("break_minutes")} min</td><td class="num">${fmtMinutes(sum("work_minutes"))}</td>${numTd(sum("appointments"))}${legacy ? numTd(sum("eligible")) : ""}</tr></tfoot></table>`
+          <tbody>${rows.map(e => `<tr><td>${esc(fmtDate(e.work_date))}${e.record_kind==='weekly_allocation'?'<br><small>Zuordnung, kein tatsächlicher Arbeitstag</small>':''}</td><td>${esc(fmtWeekday(e.work_date))}</td><td class="num">${esc(e.start_time)}</td><td class="num">${esc(e.end_time)}</td><td class="num">${Number(e.break_minutes || 0)} min</td><td class="num">${fmtMinutes(e.work_minutes)}</td>${numTd(Number(e.appointments || 0))}${legacy ? numTd(Number(e.eligible || 0)) : ""}</tr>`).join("")}</tbody>
+          <tfoot><tr><td colspan="4">Summe · ${new Set(rows.map(e => e.work_date)).size} ${rows.some(e=>e.record_kind==='weekly_allocation')?'Zuordnungen':'Arbeitstage'}</td><td class="num">${sum("break_minutes")} min</td><td class="num">${fmtMinutes(sum("work_minutes"))}</td>${numTd(sum("appointments"))}${legacy ? numTd(sum("eligible")) : ""}</tr></tfoot></table>`
       : `<div class="pd-note">Keine Arbeitszeiteinträge für diesen Monat.</div>`;
     const absenceTable = absences.length
       ? `<table class="pd-grid zebra"><thead><tr><th>Datum</th><th>Art</th><th class="num">Bezahlte Zeit</th><th class="num">Entgelt</th><th>Notiz</th></tr></thead>
@@ -10069,6 +10076,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     };
 
     let y = pageTop();
+    if(rows.some(e=>e.record_kind==='weekly_allocation'))y=vNote(k,y,"Wochenzuordnung:","Die markierten Daten dienen der Zuordnung zur Wochenzeile. Tatsächliche Arbeitstage und Uhrzeiten wurden für diese Zeilen nicht erfasst.")+4;
     y = vSectionTitle(k, y, "Arbeitszeit");
     if (rows.length) {
       const legacy = hasLegacyEligible(rows);
@@ -10079,8 +10087,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           ? [{ w: 14, mono: true }, { w: 9 }, right(11), right(11), right(12), right(15), right(13), right(15)]
           : [{ w: 16, mono: true }, { w: 10 }, right(12), right(12), right(14), right(18), right(18)],
         head: ["Datum", "Tag", "Beginn", "Ende", "Pause", "Arbeitszeit", "Termine", ...(legacy ? ["davon prov."] : [])],
-        rows: rows.map(e => [pdfDate(e.work_date), fmtWeekday(e.work_date), e.start_time, e.end_time, `${Number(e.break_minutes || 0)} min`, fmtMinutes(e.work_minutes), String(Number(e.appointments || 0)), ...extra(Number(e.eligible || 0))]),
-        foot: [`Summe · ${new Set(rows.map(e => e.work_date)).size} Arbeitstage`, "", "", "", `${sum("break_minutes")} min`, fmtMinutes(sum("work_minutes")), String(sum("appointments")), ...extra(sum("eligible"))],
+        rows: rows.map(e => [pdfDate(e.work_date)+(e.record_kind==='weekly_allocation'?" (Zuordnung)":""), fmtWeekday(e.work_date), e.start_time||"–", e.end_time||"–", e.record_kind==='weekly_allocation'?"–":`${Number(e.break_minutes || 0)} min`, fmtMinutes(e.work_minutes), String(Number(e.appointments || 0)), ...extra(Number(e.eligible || 0))]),
+        foot: [`Summe · ${new Set(rows.map(e => e.work_date)).size} ${rows.some(e=>e.record_kind==='weekly_allocation')?'Zuordnungen':'Arbeitstage'}`, "", "", "", `${sum("break_minutes")} min`, fmtMinutes(sum("work_minutes")), String(sum("appointments")), ...extra(sum("eligible"))],
         rowH: 5.2, zebra: true,
         onPageBreak: () => { k.pdf.addPage(); return vSectionTitle(k, pageTop(), "Arbeitszeit"); }
       });
@@ -11528,7 +11536,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
    * Dokumente (z. B. eingescannter Arbeitsvertrag) lädt der Boss hoch.
    */
 
-  const regularWeek=window.OfficeRegularWeek.create({$,esc,api,role:()=>state.role,today:isoDate,minutes:fmtMinutes,openDialog,closeDialog,showPage,toast,
+  const regularWeek=window.OfficeRegularWeek.create({$,esc,api,role:()=>state.role,userId:()=>state.bootstrappedFor,today:isoDate,minutes:fmtMinutes,openDialog,closeDialog,showPage,toast,
     changed:(pattern,data)=>{state.regularPatterns=pattern.patterns||[];state.regularGoalsByMonth??={};for(const g of data.monthGoals||[])state.regularGoalsByMonth[g.month]=g;},
     openEntry:(slot,week)=>{resetForm();setTimeFormOpen(true);const date=slot>isoDate()?isoDate():slot;$("date").value=date;$("entryRegularSlot").value=slot;$("timeCard").scrollIntoView({block:"start",behavior:"smooth"});$("start").focus();},
     editEntry,onSubmitted:loadOwnEntries,onOnboarded:async()=>{await afterEmployeeNotices();}
@@ -11689,12 +11697,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="ad-sig-name">${esc(name || "")} (${ROLE_LABEL[role]})</div>
       </div>`;
     };
-    const rows = asArray(snap.entries).map(e => `<tr><td>${esc(fmtDayShort(e.work_date))}</td><td>${esc(e.start_time)}–${esc(e.end_time)}${Number(e.break_minutes) ? `<br><small>${Number(e.break_minutes)} min Pause</small>` : ""}</td><td>${esc(fmtMinutes(e.work_minutes))}</td><td>${Number(e.appointments || 0)}</td></tr>`).join("");
+    const rows = asArray(snap.entries).map(e => `<tr><td>${esc(fmtDayShort(e.work_date))}${e.record_kind==='weekly_allocation'?'<br><small>Wochenzuordnung</small>':''}</td><td>${e.record_kind==='weekly_allocation'?'Tatsächlicher Tag / Uhrzeiten nicht erfasst':esc(e.start_time)+'–'+esc(e.end_time)}${Number(e.break_minutes) ? `<br><small>${Number(e.break_minutes)} min Pause</small>` : ""}</td><td>${esc(fmtMinutes(e.work_minutes))}</td><td>${Number(e.appointments || 0)}</td></tr>`).join("");
     const both = sl.signatures?.employee && sl.signatures?.employer;
     return `<h2 class="ad-title">Gehaltsnachweis ${esc(snap.monthLabel || sl.month)}</h2>
       <p>${esc(empName)} · Arbeitgeber: ${esc(snap.employer?.name || "")}</p>
       <table class="kv-table"><tbody>
-        <tr><td>Arbeitszeit</td><td>${esc(fmtMinutes(p.mins))} an ${Number(p.days || 0)} Tagen</td></tr>
+        <tr><td>Arbeitszeit</td><td>${esc(fmtMinutes(p.mins))} · ${Number(p.days || 0)} ${asArray(snap.entries).some(e=>e.record_kind==='weekly_allocation')?'Zuordnungen':'Tage'}</td></tr>
         <tr><td>Vergütete Termine</td><td>${paidAppointments(p)}</td></tr>
         <tr><td>Bruttoentgelt</td><td>${euro(p.gross)}</td></tr>
         <tr><td>Gesetzliche Abzüge (Rentenversicherung)</td><td>${euro(p.employeeDeductions)}</td></tr>

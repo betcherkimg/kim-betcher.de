@@ -7,7 +7,7 @@ function fixture(now='2026-10-27T10:00:00Z'){
  const DB={prepare:statement,async batch(items){db.exec('BEGIN');try{const out=[];for(const x of items)out.push(await x.run());db.exec('COMMIT');return out}catch(e){db.exec('ROLLBACK');throw e}}};
  let time=Date.parse(now);class Clock extends Date{constructor(...a){super(...(a.length?a:[time]))}static now(){return time}}
  const context=vm.createContext({console,Request,Response,Headers,URL,TextEncoder,TextDecoder,crypto:webcrypto,atob,btoa,AbortSignal,Date:Clock,Intl});
- vm.runInContext(source.replace('export default {','const worker={')+`;globalThis.t={worker,regularMonthInfo,yearRules,calculatePayroll,calculateMinijobContributions,reopenRegularWeek,regularReminderSlot,remindRegularSubmissions,prepareCalendarPayroll,confirmPayrollPreparation,createMonthlyClosing,ensureRegular,regularAt,regularActive,regularPatterns,chooseRegularPattern,getRegularPattern,getRegularWeek,completeRegularWeek,regularHolidayRows,getRegularHolidays,decideRegularHoliday,regularClosingError,regularEntryError,createEntry,updateEntry,getLeaveSummary,ensureAdjustments,ensureLeave,leaveYearValue,leaveWaitingEnd,leaveHolidays,leaveAccount,leaveContext,getLeaveCalendar,addLeaveRequest,previewLeaveDecision,decideLeaveRequest,withdrawLeaveRequest,transferLeave,adjustLeave,setLeaveRate,getOwnAddendum,signOwnAddendum,signAdminAddendum,addendumState,renderAddendum,addendumBundle,replayCalendarIntro,seedCalendarTest,TEST_LEAVE_USER_ID,CALENDAR_ADDENDUM,ADDENDUM};notifyUser=async()=>[];pushBoss=async()=>{};notifyCalls=async()=>{};`,context);
+ vm.runInContext(source.replace('export default {','const worker={')+`;globalThis.t={worker,saveRegularSlot,autoCompleteRegularWeeks,groupLegacyRegularWeek,regularMonthInfo,yearRules,calculatePayroll,calculateMinijobContributions,reopenRegularWeek,regularReminderSlot,remindRegularSubmissions,prepareCalendarPayroll,confirmPayrollPreparation,createMonthlyClosing,ensureRegular,regularAt,regularActive,regularPatterns,chooseRegularPattern,getRegularPattern,getRegularWeek,completeRegularWeek,regularHolidayRows,getRegularHolidays,decideRegularHoliday,regularClosingError,regularEntryError,createEntry,updateEntry,getLeaveSummary,ensureAdjustments,ensureLeave,leaveYearValue,leaveWaitingEnd,leaveHolidays,leaveAccount,leaveContext,getLeaveCalendar,addLeaveRequest,previewLeaveDecision,decideLeaveRequest,withdrawLeaveRequest,transferLeave,adjustLeave,setLeaveRate,getOwnAddendum,signOwnAddendum,signAdminAddendum,addendumState,renderAddendum,addendumBundle,replayCalendarIntro,seedCalendarTest,TEST_LEAVE_USER_ID,CALENDAR_ADDENDUM,ADDENDUM};notifyUser=async()=>[];pushBoss=async()=>{};notifyCalls=async()=>{};`,context);
  db.prepare("INSERT INTO office_employer(id,name,street,zip_city) VALUES(1,'Firma Test','Musterweg 1','89518 Heidenheim')").run();
  for(const [id,name,email] of [['sasi','Saskia Test','schreitersaskia@gmail.com'],[context.t.TEST_LEAVE_USER_ID,'Kim Test','betcherkimg@gmail.com'],['other','Andere Person','other@example.test']]){
   db.prepare('INSERT INTO employee_profiles(clerk_user_id,full_name,street,zip_city,birth_date,start_date)VALUES(?,?,?,?,?,?)').run(id,name,'Testweg 1','89567 Sontheim','2000-01-01','2026-10-01');
@@ -309,5 +309,48 @@ test('employee edits keep drafts out of payroll and an employer can explicitly p
   f.setTime('2026-11-12T14:00:00Z');assert.equal((await update()).status,400);
   await read(await f.t.reopenRegularWeek({env:f.env,owner:'sasi',userId:'boss',exec:f.exec,request:f.request({week:'2026-11-02',note:'Verspätete Korrektur abgestimmt.'})}));
   await read(await update());assert.equal(f.db.prepare("SELECT COUNT(*) n FROM regular_submission_events WHERE event='correction_allowed'").get().n,1);
+ }finally{f.close()}
+});
+
+
+test('direct weekly values keep allocation provenance, update totals without duplication, and enter payroll only on submission',async()=>{
+ const f=fixture();try{
+  await signedRegular(f);f.setTime('2026-12-22T11:00:00Z');
+  const save=(slot,minutes,appointments,note='')=>f.t.saveRegularSlot({env:f.env,userId:'sasi',request:f.request({slot,minutes,appointments,note})});
+  await read(await save('2026-12-23',90,3,'Schon erledigt'));
+  const row=f.db.prepare('SELECT * FROM work_entries').get();assert.equal(row.record_kind,'weekly_allocation');assert.equal(row.start_time,'');assert.equal(row.end_time,'');assert.equal(row.entry_note,'Schon erledigt');
+  assert.equal(f.db.prepare('SELECT COUNT(*) n FROM payroll_work_entries').get().n,0);
+  await read(await save('2026-12-23',120,4,'Korrigiert'));
+  assert.equal(f.db.prepare('SELECT COUNT(*) n FROM work_entries').get().n,1);assert.equal((await weekData(f,'2026-12-21')).workMinutes,120);
+  assert.equal((await save('2026-12-25',120,1)).status,409);assert.equal((await save('2026-12-28',120,1)).status,409);
+  f.setTime('2026-12-28T00:15:00Z');await f.t.autoCompleteRegularWeeks(f.env,f.exec);
+  const sent=await weekData(f,'2026-12-21');assert.equal(sent.confirmed,true);assert.equal(sent.workMinutes,120);assert.equal(sent.missingMinutes,120);
+  const audit=f.db.prepare("SELECT * FROM regular_submission_events WHERE week_start='2026-12-21' AND event='submitted'").get();assert.equal(audit.actor,'system');assert.equal(JSON.parse(audit.detail_json).automatic,true);
+  assert.equal(f.db.prepare('SELECT SUM(work_minutes) n FROM payroll_work_entries').get().n,120);
+  const count=f.db.prepare('SELECT COUNT(*) n FROM regular_week_confirmations').get().n;await f.t.autoCompleteRegularWeeks(f.env,f.exec);assert.equal(f.db.prepare('SELECT COUNT(*) n FROM regular_week_confirmations').get().n,count);
+  assert.equal((await save('2026-12-23',180,5)).status,409);
+ }finally{f.close()}
+});
+
+test('Sunday remains editable until the Berlin week boundary; empty weeks auto-submit zero without inventing work or an excuse',async()=>{
+ const f=fixture();try{
+  await signedRegular(f);f.setTime('2026-12-27T22:59:00Z');await f.t.autoCompleteRegularWeeks(f.env,f.exec);assert.equal((await weekData(f,'2026-12-21')).confirmed,false);
+  f.setTime('2026-12-27T23:00:00Z');await f.t.autoCompleteRegularWeeks(f.env,f.exec);const data=await weekData(f,'2026-12-21');assert.equal(data.confirmed,true);assert.equal(data.workMinutes,0);assert.equal(data.entries.length,0);
+  assert.equal(f.db.prepare('SELECT COUNT(*) n FROM week_reviews').get().n,0);
+  await read(await f.t.reopenRegularWeek({env:f.env,userId:'boss',owner:'sasi',exec:f.exec,request:f.request({week:'2026-12-21',note:'Bitte nachtragen.'})}));await f.t.autoCompleteRegularWeeks(f.env,f.exec);assert.equal((await weekData(f,'2026-12-21')).confirmed,false);
+ }finally{f.close()}
+});
+
+test('authorized grouping moves existing current-week totals to the first declared row without changing actual dates or pay',async()=>{
+ const f=fixture();try{
+  await signedRegular(f,[1,3,4]);f.setTime('2026-10-27T12:00:00Z');
+  f.db.prepare("INSERT INTO work_entries(clerk_user_id,work_date,start_time,end_time,work_minutes)VALUES('sasi','2026-10-26','08:00','09:00',60),('sasi','2026-10-27','08:00','08:20',20)").run();
+  for(const [id,date,appts] of [[1,'2026-10-26',2],[2,'2026-10-27',1]])f.db.prepare('INSERT INTO performance_entries(clerk_user_id,work_date,appointments,work_entry_id)VALUES(?,?,?,?)').run('sasi',date,appts,id);
+  f.db.prepare("INSERT INTO regular_submission_events(clerk_user_id,week_start,event,actor,detail_json)VALUES('sasi','2026-10-26','group_pending','boss','{}')").run();
+  const w=await weekData(f,'2026-10-26');assert.equal(w.active,true);assert.equal(w.slots.length,3);assert.equal(w.slots[0].entries.reduce((n,e)=>n+e.work_minutes,0),80);assert.equal(w.slots[0].entries.reduce((n,e)=>n+e.appointments,0),3);
+  assert.equal(f.db.prepare('SELECT work_date FROM work_entries WHERE id=2').get().work_date,'2026-10-27');
+  assert.equal(f.db.prepare('SELECT SUM(work_minutes) n FROM work_entries').get().n,80);
+  await read(await f.t.saveRegularSlot({env:f.env,userId:'sasi',request:f.request({slot:'2026-10-26',minutes:100,appointments:4,note:'Ergänzt'})}));
+  const next=await weekData(f,'2026-10-26');assert.equal(next.workMinutes,100);assert.equal(f.db.prepare('SELECT SUM(appointments) n FROM performance_entries').get().n,4);
  }finally{f.close()}
 });
