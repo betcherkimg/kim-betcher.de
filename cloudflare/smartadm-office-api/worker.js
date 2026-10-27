@@ -4644,15 +4644,34 @@ async function leaveContext(env,owner) {
   const dutyDates=[...new Set([...work.map(w=>w.work_date),...absences.map(a=>a.absence_date),...plans.filter(p=>p.status!=='cancelled').map(p=>p.plan_date)])];
   return {owner,job,terms,region,regions,regionAt,work,absences,plans,requests,adjustments,transfers,closings,dutyDates};
 }
-function leaveAccount(context,year,asOf=berlinToday()) {
+function leaveAllocatedDays(context){return context.requests.filter(r=>['approved','cancellation_requested'].includes(r.status)).flatMap(r=>(safeParse(r.snapshot_json)?.days||[]).flatMap(d=>d.leave_allocations?.length?d.leave_allocations.map(a=>({...d,leave_year:a.year,units:d.units>0?a.units:0})):d));}
+function leaveYearBucket(context,year,asOf=berlinToday()) {
   const value=leaveYearValue({year,asOf,job:context.job,terms:context.terms,dutyDates:context.dutyDates});
   const projection=leaveYearValue({year,asOf:`${year}-12-31`,job:context.job,terms:context.terms,dutyDates:context.dutyDates});
   const adjustment=context.adjustments.filter(a=>a.leave_year===year).reduce((n,a)=>n+a.days_hundredths/100,0);
-  const allocations=context.requests.flatMap(r=>['approved','cancellation_requested'].includes(r.status) ? (safeParse(r.snapshot_json)?.days||[]).map(d=>({...d,request:r})) : []);
+  const allocations=leaveAllocatedDays(context);
   const used=allocations.filter(d=>d.leave_year===year).reduce((n,d)=>n+Number(d.units||0),0)+context.absences.filter(a=>a.absence_type==='vacation'&&!a.leave_request_id&&Number(a.absence_date.slice(0,4))===year).length;
   const reserved=context.requests.filter(r=>r.status==='requested'&&r.kind==='vacation').flatMap(r=>safeParse(r.dates_json)||[]).filter(d=>Number(d.slice(0,4))===year&&!leaveHolidays(year,context.region)[d]).length;
   const taken=allocations.filter(d=>d.leave_year===year&&d.date<=asOf).reduce((n,d)=>n+Number(d.units||0),0)+context.absences.filter(a=>a.absence_type==='vacation'&&!a.leave_request_id&&a.absence_date<=asOf&&Number(a.absence_date.slice(0,4))===year).length;
   return {...value,year,adjustment,entitlement:Math.round((value.entitlement+adjustment)*100)/100,projected:Math.round((projection.entitlement+adjustment)*100)/100,approved:used,taken,reserved,remaining:Math.round((value.entitlement+adjustment-used)*100)/100,planningRemaining:Math.round((projection.entitlement+adjustment-used-reserved)*100)/100,transferRequested:context.transfers.some(t=>t.leave_year===year),adjustments:context.adjustments.filter(a=>a.leave_year===year)};
+}
+// Origin-year buckets remain unchanged; carryover is a derived balance, never a duplicated grant.
+function leaveAccount(context,year,asOf=berlinToday()) {
+  const own=leaveYearBucket(context,year,asOf),start=Number((context.job.start_date||String(year)).slice(0,4)),boundary=`${year}-01-01`,carryover=[];
+  const allocations=leaveAllocatedDays(context);
+  for(let origin=start;origin<year;origin++){
+    const bucket=leaveYearBucket(context,origin,`${origin}-12-31`);
+    const committed=allocations.filter(d=>d.leave_year===origin&&d.date>=boundary).reduce((n,d)=>n+Number(d.units||0),0);
+    const grant=Math.max(0,Math.round((bucket.remaining+committed)*100)/100),approved=Math.min(grant,committed);
+    if(grant||bucket.provisional)carryover.push({year:origin,days:grant,approved,remaining:Math.max(0,Math.round((grant-approved)*100)/100),provisional:bucket.provisional});
+  }
+  const carried=carryover.reduce((n,c)=>n+c.days,0),committed=carryover.reduce((n,c)=>n+c.approved,0),round=n=>Math.round(n*100)/100;
+  const priorPending=context.requests.filter(r=>r.status==='requested'&&r.kind==='vacation').flatMap(r=>safeParse(r.dates_json)||[]).filter(d=>d<boundary).length,priorReserved=Math.min(Math.max(0,carried-committed),priorPending);
+  const carriedTaken=allocations.filter(d=>d.leave_year<year&&d.date>=boundary&&d.date<=asOf&&d.date<=`${year}-12-31`).reduce((n,d)=>n+Number(d.units||0),0);
+  return {...own,reserved:round(own.reserved+priorReserved),taken:round(own.taken+carriedTaken),annualEntitlement:own.entitlement,annualProjected:own.projected,carried:round(carried),carryover,automaticCarryover:true,
+    entitlement:round(own.entitlement+carried),projected:round(own.projected+carried),approved:round(own.approved+committed),
+    remaining:round(own.remaining+carried-committed),planningRemaining:round(own.planningRemaining+carried-committed-priorReserved),
+    provisional:own.provisional||carryover.some(c=>c.provisional)};
 }
 function leaveRequestView(r) {return {...r,dates:safeParse(r.dates_json)||[],snapshot:safeParse(r.snapshot_json),dates_json:undefined,snapshot_json:undefined,decision_token:undefined};}
 async function getLeaveCalendar({env,userId,owner,url}) {
@@ -4753,17 +4772,20 @@ async function decideLeaveRequest({request,env,owner,userId,id,exec}) {
       const selectedPlan=context.plans.find(p=>p.plan_date===date&&p.status!=='cancelled');
       const week=mondayOfWeek(date),otherDates=new Set([...context.plans.filter(p=>p.status!=='cancelled'&&p.plan_date>=week&&p.plan_date<=addDays(week,6)).map(p=>p.plan_date),...context.absences.filter(a=>a.absence_date>=week&&a.absence_date<=addDays(week,6)).map(a=>a.absence_date),...(safeParse(r.dates_json)||[]).filter(d=>d>=week&&d<=addDays(week,6))]);
       if(otherDates.size>3&&body?.extra_days_confirmed!==true)return err('Mehr als drei Soll-Arbeitstage in einer Woche: bitte die abweichende Planung ausdrücklich bestätigen.');
-      let leaveYear=year;
+      let leaveYear=year,leaveAllocations=[];
       if(r.kind==='vacation'){
-        const previous=leaveAccount(context,year-1,date);
-        const priorUsed=usedByYear.get(year-1)||0;
-        if(previous.transferRequested&&previous.remaining-priorUsed>=1)leaveYear=year-1;
-        usedByYear.set(leaveYear,(usedByYear.get(leaveYear)||0)+1);
+        let left=1;
+        for(let origin=Number((context.job.start_date||date).slice(0,4));origin<year&&left>0;origin++){
+          const previous=leaveYearBucket(context,origin,`${origin}-12-31`),available=Math.max(0,previous.remaining-(usedByYear.get(origin)||0)),units=Math.round(Math.min(left,available)*100)/100;
+          if(units){leaveAllocations.push({year:origin,units});usedByYear.set(origin,Math.round(((usedByYear.get(origin)||0)+units)*100)/100);left=Math.round((left-units)*100)/100;}
+        }
+        if(left){leaveAllocations.push({year,units:left});usedByYear.set(year,Math.round(((usedByYear.get(year)||0)+left)*100)/100);}
+        leaveYear=leaveAllocations[0].year;
       }
       const quote=await leavePayQuote(env,owner,date,minutes,r.kind,context,r.from_date);
-      days.push({date,minutes,amount_cents:amount,manual_amount:amount!==quote.suggested_cents,reference_reviewed:true,kind:r.kind,units:r.kind==='vacation'?1:0,leave_year:leaveYear,plan_id:selectedPlan?.id||null,quote});
+      days.push({date,minutes,amount_cents:amount,manual_amount:amount!==quote.suggested_cents,reference_reviewed:true,kind:r.kind,units:r.kind==='vacation'?1:0,leave_year:leaveYear,leave_allocations:leaveAllocations,plan_id:selectedPlan?.id||null,quote});
     }
-    for(const [year,n] of usedByYear){const account=leaveAccount(context,year,r.from_date);if(account.remaining<n&&body?.advance_confirmed!==true)return err('Der verfügbare Anspruch reicht am Urlaubsbeginn noch nicht aus. Einen freiwilligen Vorgriff bitte ausdrücklich bestätigen.');}
+    for(const [year,n] of usedByYear){const account=leaveYearBucket(context,year,year<Number(r.from_date.slice(0,4))?`${year}-12-31`:r.from_date);if(account.remaining<n&&body?.advance_confirmed!==true)return err('Der verfügbare Anspruch reicht am Urlaubsbeginn noch nicht aus. Einen freiwilligen Vorgriff bitte ausdrücklich bestätigen.');}
     const token=crypto.randomUUID(),snapshot={version:1,region:context.region,days,terms:context.terms,approved_by:userId,approved_note:note,advance:body?.advance_confirmed===true};
     const result=await env.DB.batch([
       stmt(env,"UPDATE leave_requests SET status='approved',revision=revision+1,decision_note=?,decided_by=?,decided_at=CURRENT_TIMESTAMP,decision_token=?,snapshot_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND clerk_user_id=? AND status='requested' AND revision=?",[note,userId,token,JSON.stringify(snapshot),id,owner,r.revision]),
@@ -5540,10 +5562,10 @@ const MONITORED_ASSETS = {
   "/kb.css": "94fc9d3b5382f0604a2772cc4d8573ea6a4b25b9c77cd8dc8d949e6fd790c432",
   "/smartadm/sales/index.html": "b82b016eb1c57e53b2af504b754caa802bc04eb1d2a50722bd785355374f9719",
   "/smartadm/sales/cloud.js": "b62ef1f8fa93b3c9b8e6007c622c8e2771dda3220e979c77eb1c55084b5e0e26",
-  "/smartadm/office/": "27c257ea2ed434011330a7307393245bca0f3c5867c7cdd23b4618ecc9dbb974",
-  "/smartadm/office/sw.js": "94939526e0a0f747b6bcba7d9205d4e6ab6571f92eda36b08f87b3715971a5e3",
+  "/smartadm/office/": "c031b16597b1daea15496091b6a78f64b520d9dd04912304205628d49023e87b",
+  "/smartadm/office/sw.js": "fc3b3e101244968bdcdd318a464f1265c493a26e25b248a94cec5a1cb8279f2f",
   "/smartadm/office/week-planner.js": "1ff59ff97053f6702be28c7f57a78cf6b3b869271f15d0cb5344be7c61119bf2",
-  "/smartadm/office/absence-calendar.js": "e6b2f7513a3d1c827ba0d28a59e1c3526855b0a1ec6c39644018d21f1439bd1a",
+  "/smartadm/office/absence-calendar.js": "021031465151a5ae56fb6cb1b131bf5cbf877fe5ff92e68af7ecf8e6af8c3b89",
   "/smartadm/office/regular-week.js": "80b38dc3f048aa23e786a315f5f6e1821bc94e62f8a33e6728da49a6aadb2554",
   "/smartadm/office/guided-intro.js": "f6486a67d097f46fca9cefcaeef85e8cdcffaf34233a93d75a078be95532facb",
   "/smartadm/office/vendor/xlsx-0.20.3.min.js": "cc015130aa8521e7f088f88898eba949ccdcbfb38df0bd129b44b7273c3a6f41",

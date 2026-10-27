@@ -83,7 +83,7 @@ with sync_playwright() as pw:
   page.on('dialog',lambda d:d.accept('Bitte die fehlenden Stunden prüfen.') if d.type=='prompt' else d.accept())
   page.clock.set_fixed_time('2026-12-25T11:00:00Z');page.evaluate('async()=>{await __t.regularWeek.selectWeek("2026-12-21")}');page.locator('#regularComplete').click();expect(page.locator('#regularComplete')).to_have_text('Abgesendet ✓');assert api.submitted
   expect(page.locator('#entryRows')).not_to_contain_text('Entwurf');expect(page.locator('#entryRows')).to_contain_text('Abgesendet')
-  page.evaluate('__t.showPage("kalender")');page.locator('#calendarMonth').fill('2026-12');page.locator('#calendarMonth').dispatch_event('change');page.locator('#calendarNewLeave').click();page.locator('.leave-range summary').click();page.locator('#leaveFrom').fill('2027-01-04');page.locator('#leaveTo').fill('2027-01-10');page.locator('#leaveTo').dispatch_event('change')
+  page.evaluate('__t.showPage("kalender")');page.locator('#calendarMonth').fill('2026-12');page.locator('#calendarMonth').dispatch_event('change');page.locator('#calendarNewLeave').click();expect(page.locator('#leaveDateChoices input:checked')).to_have_count(0);expect(page.locator('#leaveRequestSend')).to_be_disabled();page.locator('.leave-range summary').click();page.locator('#leaveFrom').fill('2027-01-04');page.locator('#leaveTo').fill('2027-01-10');page.locator('#leaveTo').dispatch_event('change')
   for d in ['05','06','07','09','10']:expect(page.locator(f'[data-leave-date="2027-01-{d}"]')).to_be_disabled()
   for d in ['04','08']:expect(page.locator(f'[data-leave-date="2027-01-{d}"]')).to_be_checked()
   expect(page.locator('#leaveSelectionSummary')).to_contain_text('2 Tage ausgewählt')
@@ -98,6 +98,9 @@ with sync_playwright() as pw:
   page.locator('#leaveRequestSend').click();expect(page.locator('#leaveRequestDialog')).not_to_be_visible()
   assert api.requests[-1]['dates']==['2027-01-04','2027-01-08']
   expect(page.locator('#calendarRequests')).to_contain_text('Beantragt')
+  # A plain calendar selection submits without optional range dates being filled.
+  page.locator('#calendarNewLeave').click();expect(page.locator('#leaveFrom')).to_have_value('');expect(page.locator('#leaveDateChoices input:checked')).to_have_count(0)
+  page.locator('[data-leave-date="2026-12-28"]').check();page.locator('#leaveRequestSend').click();expect(page.locator('#leaveRequestDialog')).not_to_be_visible();assert api.requests[-1]['dates']==['2026-12-28']
   # Reopening cannot duplicate a pending request.
   page.locator('#calendarNewLeave').click();page.locator('#leaveNextMonth').click();expect(page.locator('[data-leave-date="2027-01-04"]')).to_be_disabled()
   page.locator('#leaveRequestClose').click();check_width(page)

@@ -41,14 +41,13 @@ function create(b){
   $('calendarMonth').value=month;$('calendarOwnerField').hidden=!boss();$('calendarEmployeeActions').hidden=boss();$('calendarSettings').hidden=!boss();
   if(boss())$('calendarOwner').innerHTML=b.employeeOptions();
   if(boss()&&owner())$('calendarOwner').value=owner();
-  $('calendarTestTools').hidden=!data?.testAccount;
   $('calendarGrid').classList.toggle('week-mode',mode==='week');
   $('calendarViewMonth').setAttribute('aria-pressed',String(mode==='month'));$('calendarViewWeek').setAttribute('aria-pressed',String(mode==='week'));
   if(!data){$('calendarGrid').innerHTML='<p class="calendar-empty">'+esc(owner()?'Kalender derzeit nicht verfügbar.':'Bitte einen Mitarbeiter auswählen.')+'</p>';$('calendarAccount').innerHTML='';$('calendarRequests').innerHTML='';$('calendarDayDetails').innerHTML='';return;}
   const year=Number(month.slice(0,4)),account=data.accounts.find(a=>a.year===year);
-  $('calendarAccount').innerHTML=account?`<div class="vacation-balance"><div class="vacation-balance-main"><span><span class="vacation-eyebrow">URLAUB ${year}</span>Noch planbar</span><strong>${esc(Number(account.planningRemaining).toLocaleString('de-DE',{maximumFractionDigits:2}))} <small>Tage</small></strong></div><div class="vacation-balance-stats"><div><span>Jahresplanung</span><b>${esc(days(account.projected))}</b></div><div><span>Genehmigt</span><b>${esc(days(account.approved))}</b></div><div><span>Beantragt</span><b>${esc(days(account.reserved))}</b></div></div></div><details class="vacation-account-notes"><summary>Wie setzt sich das zusammen?</summary><p class="calendar-hint">Bis Jahresende voraussichtlich ${esc(days(account.projected))}, abzüglich genehmigter Tage und offener Anträge. Bereits erworbener Anspruch: ${esc(days(account.entitlement))}; davon aktuell noch ${esc(days(account.remaining))} übrig. ${account.provisional?'Der Altbestand vor dem neuen Nachtrag ist vorläufig und wird von Kim geprüft.':''} ${b.today()<=account.waitingEnd?'Wartezeit bis '+fmt(account.waitingEnd)+'. Für Urlaub vor Ablauf muss Kim ausdrücklich zustimmen.':''}</p></details>`:'';
-  const prior=data.accounts.filter(a=>a.year<year&&(a.remaining||a.approved));if(prior.length)$('calendarAccount').innerHTML+=prior.map(a=>`<p class="notice">Urlaub aus ${a.year}: ${esc(days(a.remaining))} offen${a.transferRequested?' · Übertragung beantragt/bestätigt':' · Übertragung mit Kim klären'}. Dieser Bestand wird nicht automatisch gelöscht.</p>`).join('');
-  $('calendarTransfer').hidden=boss()||!account||Number((data.job.start_date||'').slice(0,4))!==year||account.waitingEnd<`${year}-12-31`||account.transferRequested;
+  $('calendarAccount').innerHTML=account?`<div class="vacation-balance"><div class="vacation-balance-main"><span><span class="vacation-eyebrow">URLAUB ${year}</span>Noch planbar</span><strong>${esc(Number(account.planningRemaining).toLocaleString('de-DE',{maximumFractionDigits:2}))} <small>Tage</small></strong></div><div class="vacation-balance-stats"><div><span>Jahresplanung</span><b>${esc(days(account.projected))}</b></div><div><span>Genehmigt</span><b>${esc(days(account.approved))}</b></div><div><span>Beantragt</span><b>${esc(days(account.reserved))}</b></div></div></div><details class="vacation-account-notes"><summary>Wie setzt sich das zusammen?</summary><p class="calendar-hint">Jahresanspruch voraussichtlich ${esc(days(account.annualProjected??account.projected))}${account.carried?' plus '+esc(days(account.carried))+' automatisch übernommener Resturlaub':''}, abzüglich genehmigter Tage und offener Anträge. Bereits erworbener Anspruch: ${esc(days(account.entitlement))}; davon aktuell noch ${esc(days(account.remaining))} übrig. ${account.provisional?'Der Altbestand vor dem neuen Nachtrag ist vorläufig und wird von Kim geprüft.':''} ${b.today()<=account.waitingEnd?'Wartezeit bis '+fmt(account.waitingEnd)+'. Für Urlaub vor Ablauf muss Kim ausdrücklich zustimmen.':''}</p></details>`:'';
+  if(account?.carryover?.length)$('calendarAccount').innerHTML+=`<p class="calendar-hint">Automatisch übernommen: ${esc(days(account.carried))} aus früheren Jahren. ${account.carryover.map(c=>esc(c.year+': '+days(c.remaining)+' noch offen')).join(' · ')}. Ältester Resturlaub wird zuerst verwendet.</p>`;
+  $('calendarTransfer').hidden=true;
   const start=mode==='week'?monday(selected):monday(month+'-01');
   const last=new Date(Date.UTC(year,Number(month.slice(5)),0)).toISOString().slice(0,10);const count=mode==='week'?7:Math.ceil(((Date.parse(last)-Date.parse(start))/86400000+1)/7)*7;
   $('calendarGrid').innerHTML=['Mo','Di','Mi','Do','Fr','Sa','So'].map(d=>`<span class="calendar-weekday">${d}</span>`).join('')+Array.from({length:count},(_,i)=>{
@@ -150,12 +149,12 @@ function create(b){
   }catch(error){if(run===pickerGeneration)$('leaveFormStatus').textContent=error.message;}
   finally{if(run===pickerGeneration){pickerBusy=false;renderPicker();}}
  }
- function openRequest(kind='vacation',date=selected){
+ function openRequest(kind='vacation',date=null){
   if(!data)return;pickerCache=new Map([[month,data]]);pickerDays.clear();
-  const initial=date<b.today()?b.today():date;
+  const initial=date?(date<b.today()?b.today():date):b.today();
   $('leaveRequestTitle').textContent=kind==='holiday'?'Feiertagsausfall prüfen lassen':'Urlaub beantragen';
   $('leaveKind').value=kind;$('leaveKindField').hidden=true;$('leaveFrom').value=initial;$('leaveTo').value=initial;$('leaveNote').value='';$('leaveFormStatus').textContent='';$('leaveRequestDialog').querySelector('.leave-range').open=false;
-  requestDays();b.openDialog($('leaveRequestDialog'));
+  if(date)requestDays();else{const run=++pickerGeneration;pickerMonth=initial.slice(0,7);pickerBusy=true;renderPicker();pickerSource(pickerMonth).catch(error=>{$('leaveFormStatus').textContent=error.message;}).finally(()=>{if(run===pickerGeneration){pickerBusy=false;renderPicker();}});}$('leaveFrom').value=date?initial:'';$('leaveTo').value=date?initial:'';b.openDialog($('leaveRequestDialog'));
  }
  async function openReview(id){
   const r=data.requests.find(r=>String(r.id)===String(id));if(!r)return;
@@ -188,7 +187,7 @@ function create(b){
  $('calendarOwner').addEventListener('change',async()=>{await b.selectEmployee($('calendarOwner').value);load()});
  $('calendarGrid').addEventListener('click',e=>{const x=e.target.closest('[data-cal-date]');if(x){selected=x.dataset.calDate;render();$('calendarDayDetails').scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}});
  $('calendarNewLeave').addEventListener('click',()=>openRequest());
- $('calendarDayDetails').addEventListener('click',e=>{if(e.target.closest('[data-cal-regular]'))b.openRegular?.(monday(selected));if(e.target.closest('[data-cal-holiday]'))openRequest('holiday');if(e.target.closest('[data-cal-vacation]'))openRequest('vacation');});
+ $('calendarDayDetails').addEventListener('click',e=>{if(e.target.closest('[data-cal-regular]'))b.openRegular?.(monday(selected));if(e.target.closest('[data-cal-holiday]'))openRequest('holiday',selected);if(e.target.closest('[data-cal-vacation]'))openRequest('vacation',selected);});
  $('leaveDateChoices').addEventListener('change',e=>{const input=e.target.closest('[data-leave-date]');if(!input||input.disabled)return;input.checked?pickerDays.add(input.dataset.leaveDate):pickerDays.delete(input.dataset.leaveDate);pickerSummary();});
  $('leaveSelectionSummary').addEventListener('click',e=>{const button=e.target.closest('[data-leave-remove]');if(button){pickerDays.delete(button.dataset.leaveRemove);renderPicker();}});
  for(const [id,delta] of [['leavePrevMonth',-1],['leaveNextMonth',1]])$(id).addEventListener('click',async()=>{
@@ -211,8 +210,6 @@ function create(b){
  $('calendarRegionForm').addEventListener('submit',e=>{e.preventDefault();mutation(e.submitter,()=>api(path('/leave-region'),'PUT',{region:$('calendarRegion').value,effective_from:$('calendarRegionFrom').value,note:$('calendarRegionNote').value}))});
  $('calendarRateYear').addEventListener('change',()=>fillYearRules($('calendarRateYear').value));
  $('calendarRateForm').addEventListener('submit',e=>{e.preventDefault();mutation(e.submitter,()=>api(path('/leave-pay-rate'),'PUT',{year:Number($('calendarRateYear').value),rate_cents:amount($('calendarRate').value),note:$('calendarRateNote').value,year_rules:Object.fromEntries([...document.querySelectorAll('[data-year-rule]')].map(el=>[el.dataset.yearRule,['limit','rvMinBase'].includes(el.dataset.yearRule)?amount(el.value):Number(el.value.replace(',','.'))/100]))}))});
- $('calendarTestReplay').addEventListener('click',e=>mutation(e.currentTarget,async()=>{await api('/calendar/test/replay','POST',{});await b.replayIntro();}));
- $('calendarTestExamples').addEventListener('click',e=>mutation(e.currentTarget,async()=>{const r=await api('/calendar/test/examples','POST',{});month=r.month;selected=month+'-25';}));
  return {load,render,openRequest,get data(){return data},select(date){selected=date;month=date.slice(0,7);return load()}};
 }
 root.OfficeCalendar={create,labels};

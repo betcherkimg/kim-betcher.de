@@ -259,7 +259,7 @@ test('week reminder policy sends Saturday noon and exactly three Sunday slots, s
 
 test('future calendar years retain 12 days and require explicit yearly payroll parameters instead of silently reusing 2027',async()=>{
  const f=fixture();try{
-  await signedRegular(f);let c=await read(await f.t.getLeaveCalendar({env:f.env,userId:'sasi',url:url('/calendar?month=2028-04')}));assert.equal(c.accounts.find(a=>a.year===2028).projected,12);assert.ok(c.rateReview);
+  await signedRegular(f);let c=await read(await f.t.getLeaveCalendar({env:f.env,userId:'sasi',url:url('/calendar?month=2028-04')}));assert.equal(c.accounts.find(a=>a.year===2028).annualProjected,12);assert.ok(c.rateReview);
   assert.equal(f.t.yearRules('2028-01').confirmed,false);
   const rules={limit:70000,rvMinBase:17500,kv:.13,rvEmployer:.15,rvFull:.186,u1:.01,u2:.0022,insolvency:.0015,flatTax:.02};
   await read(await f.t.setLeaveRate({env:f.env,owner:'sasi',userId:'boss',request:f.request({year:2028,rate_cents:1500,year_rules:rules,note:'Jahreswerte für die lokale Testabrechnung bestätigt.'})}));
@@ -352,5 +352,30 @@ test('authorized grouping moves existing current-week totals to the first declar
   assert.equal(f.db.prepare('SELECT SUM(work_minutes) n FROM work_entries').get().n,80);
   await read(await f.t.saveRegularSlot({env:f.env,userId:'sasi',request:f.request({slot:'2026-10-26',minutes:100,appointments:4,note:'Ergänzt'})}));
   const next=await weekData(f,'2026-10-26');assert.equal(next.workMinutes,100);assert.equal(f.db.prepare('SELECT SUM(appointments) n FROM performance_entries').get().n,4);
+ }finally{f.close()}
+});
+
+
+test('unused leave carries automatically across multiple years and approval uses oldest origin without a transfer request',async()=>{
+ const f=fixture();try{
+  await terms(f,'sasi','2026-10-01');f.setTime('2027-01-02T10:00:00Z');
+  let c=await f.t.leaveContext(f.env,'sasi'),a=f.t.leaveAccount(c,2027);assert.equal(a.carried,3);assert.equal(a.remaining,3);assert.equal(a.projected,15);
+  const r=await requestLeave(f,['2027-01-04']);await read(await approve(f,r,{advance_confirmed:false}));
+  const snap=JSON.parse(f.db.prepare('SELECT snapshot_json FROM leave_requests WHERE id=?').get(r.id).snapshot_json);assert.equal(snap.days[0].leave_year,2026);
+  c=await f.t.leaveContext(f.env,'sasi');a=f.t.leaveAccount(c,2027);assert.equal(a.remaining,2);assert.equal(a.approved,1);assert.equal(a.planningRemaining,14);
+  const next=f.t.leaveAccount(c,2028,'2028-01-01');assert.equal(next.carried,14);assert.equal(next.projected,26);
+  assert.equal(f.t.leaveAccount(c,2028,'2028-01-01').planningRemaining,26);
+
+ }finally{f.close()}
+});
+
+test('fractional carryover is used first and cancellation restores its original bucket',async()=>{
+ const f=fixture();try{
+  await terms(f,'sasi','2026-10-01');await read(await f.t.adjustLeave({env:f.env,owner:'sasi',userId:'boss',request:f.request({year:2026,days:-2.5,note:'Geprüfter Altbestand'})}));f.setTime('2027-04-02T10:00:00Z');
+  const r=await requestLeave(f,['2027-04-05']);await read(await approve(f,r));
+  const saved=f.db.prepare('SELECT * FROM leave_requests WHERE id=?').get(r.id),d=JSON.parse(saved.snapshot_json).days[0];assert.deepEqual(d.leave_allocations,[{year:2026,units:.5},{year:2027,units:.5}]);
+  let c=await f.t.leaveContext(f.env,'sasi');assert.equal(f.t.leaveAccount(c,2027).remaining,11.5);
+  await read(await f.t.decideLeaveRequest({env:f.env,owner:'sasi',userId:'boss',id:r.id,exec:f.exec,request:f.request({action:'cancel',revision:saved.revision,note:'Einvernehmlich aufgehoben'})}));
+  c=await f.t.leaveContext(f.env,'sasi');assert.equal(f.t.leaveAccount(c,2027).remaining,12.5);
  }finally{f.close()}
 });
