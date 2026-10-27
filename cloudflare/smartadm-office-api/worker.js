@@ -2426,8 +2426,8 @@ const CALL_SCOPES = {
   // R_TA_kK läuft nicht mehr über den Rücklauf, sondern über das Kein-Kontakt-Archiv.
   returned: `c.status <> 'open' AND c.status <> 'R_TA_kK' AND c.kk_state IS NULL AND c.archived_at IS NULL
              ORDER BY c.closed_at DESC, c.id DESC`,
-  archived: "c.archived_at IS NOT NULL ORDER BY c.archived_at DESC, c.id DESC LIMIT 1000",   // Kundenarchiv
-  kk: "c.kk_state = 'archived' ORDER BY c.kk_archived_at ASC, c.id ASC LIMIT 500"
+  archived: "c.archived_at IS NOT NULL ORDER BY c.archived_at DESC, c.id DESC",   // Kundenarchiv
+  kk: "c.kk_state = 'archived' AND c.archived_at IS NULL ORDER BY c.kk_archived_at ASC, c.id ASC"
 };
 
 async function listAdminCalls({ env, url }) {
@@ -2469,7 +2469,9 @@ async function updateCall({ request, env, id }) {
 }
 
 async function deleteCall({ env, id }) {
-  const result = await run(env, "DELETE FROM office_calls WHERE id = ?", id);
+  const result = await run(env, `UPDATE office_calls SET status = CASE WHEN status = 'open' THEN 'archived' ELSE status END,
+    archived_at = COALESCE(archived_at, CURRENT_TIMESTAMP), closed_at = COALESCE(closed_at, CURRENT_TIMESTAMP),
+    kk_state = NULL, hold_note = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?`, id);
   await syncFkTask(env);
   return changed(result, "Kontakt nicht gefunden.");
 }
@@ -2477,7 +2479,7 @@ async function deleteCall({ env, id }) {
 async function reopenCall({ env, id, exec }) {
   const row = await first(env,
     `UPDATE office_calls
-     SET status = 'open', attempts = 0, attempt_log = '[]', bad_phones = '[]',
+     SET status = 'open', attempts = 0, rounds = COALESCE(rounds, 1) + 1, bad_phones = '[]',
          closed_at = NULL, archived_at = NULL,
          hold_note = NULL, held_at = NULL, kk_state = NULL, kk_archived_at = NULL,
          updated_at = CURRENT_TIMESTAMP
@@ -2564,11 +2566,65 @@ async function releaseOldestKkCalls({ request, env, exec }) {
   return ok({ released: rows.length });
 }
 
-// Endgültig erledigt → verschwindet aus Office (Weiterbearbeitung im BSH-System).
+// Erledigt bleibt im Kundenarchiv einschließlich Protokoll und Versuchen.
 const finishKkCall = async ({ env, id }) =>
   changed(await run(env,
-    "DELETE FROM office_calls WHERE id = ? AND kk_state = 'archived'", id),
+    "UPDATE office_calls SET archived_at = CURRENT_TIMESTAMP, kk_state = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND kk_state = 'archived' AND archived_at IS NULL", id),
     "Kontakt nicht im Kein-Kontakt-Archiv.");
+
+/* Kontaktverlauf: Datenbank-Trigger sichern jede gespeicherte Fassung atomar.
+ * Kein Ablaufdatum; keine Personen-Zusammenführung über gemeinsam genutzte Nummern.
+ * Initialbestand wird einmal übernommen. Bereits früher gelöschte Daten sind nicht rekonstruierbar.
+ */
+const contactHistoryReady = new WeakMap();
+async function ensureContactHistory(env) {
+  if (contactHistoryReady.has(env.DB)) return contactHistoryReady.get(env.DB);
+  const setup = (async () => {
+    await ensurePool(env);
+    const poolColumns = await all(env, "PRAGMA table_info(office_call_pool)");
+    if (!poolColumns.some(c => c.name === "archived_at")) {
+      try { await run(env, "ALTER TABLE office_call_pool ADD COLUMN archived_at TEXT"); }
+      catch (error) {
+        if (!(await all(env, "PRAGMA table_info(office_call_pool)")).some(c => c.name === "archived_at")) throw error;
+      }
+    }
+    await run(env, `CREATE TABLE IF NOT EXISTS office_contact_history (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, source TEXT NOT NULL, source_id INTEGER NOT NULL,
+      event TEXT NOT NULL, snapshot TEXT NOT NULL, recorded_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )`);
+    await run(env, "CREATE INDEX IF NOT EXISTS office_contact_history_source ON office_contact_history(source, source_id, id)");
+    const statements = [];
+    for (const [source, table] of [["call", "office_calls"], ["pool", "office_call_pool"]]) {
+      const columns = (await all(env, `PRAGMA table_info(${table})`)).map(c => c.name).filter(c => /^[a-z_]+$/.test(c));
+      const snapshot = prefix => `json_object(${columns.map(c => `'${c}', ${prefix}.${c}`).join(", ")})`;
+      for (const [event, timing, prefix] of [["created", "AFTER INSERT", "NEW"], ["updated", "AFTER UPDATE", "NEW"], ["removed", "BEFORE DELETE", "OLD"]]) {
+        statements.push(stmt(env, `CREATE TRIGGER IF NOT EXISTS contact_history_${source}_${event} ${timing} ON ${table}
+          BEGIN INSERT INTO office_contact_history(source, source_id, event, snapshot)
+          VALUES ('${source}', ${prefix}.id, '${event}', ${snapshot(prefix)}); END`));
+      }
+      statements.push(stmt(env, `INSERT INTO office_contact_history(source, source_id, event, snapshot)
+        SELECT '${source}', c.id, 'existing', ${snapshot("c")} FROM ${table} c
+        WHERE NOT EXISTS (SELECT 1 FROM office_contact_history h WHERE h.source = '${source}' AND h.source_id = c.id)`));
+    }
+    // Auch alte App-Versionen und direkte DELETE-Aufrufe dürfen das Kundenarchiv nicht leeren.
+    statements.push(stmt(env, `CREATE TRIGGER IF NOT EXISTS office_calls_preserve BEFORE DELETE ON office_calls
+      BEGIN SELECT RAISE(ABORT, 'Kontakte bleiben im Archiv erhalten.'); END`));
+    await env.DB.batch(statements);
+  })();
+  contactHistoryReady.set(env.DB, setup);
+  try { await setup; } catch (error) { contactHistoryReady.delete(env.DB); throw error; }
+}
+
+async function listContactHistory({env, url}) {
+  await ensureContactHistory(env);
+  const after = nonNegInt(url.searchParams.get("after"), 0);
+  const source = url.searchParams.get("source"), sourceId = nonNegInt(url.searchParams.get("source_id"), 0);
+  const rows = await all(env, `SELECT * FROM office_contact_history WHERE id > ?
+    ${source && sourceId ? "AND source = ? AND source_id = ?" : ""} ORDER BY id LIMIT 250`,
+    after, ...(source && sourceId ? [source, sourceId] : []));
+  return json({items: rows.map(r => ({...r, contact: mapCall(safeParse(r.snapshot) || {}), snapshot: undefined})),
+    next: rows.length === 250 ? rows.at(-1).id : null});
+}
 
 /* ================= Kontakt-Pakete =================
  * Der Boss legt importierte Kontakte je Filiale in ein Paket (z. B. aus einer Excel-Liste) –
@@ -2609,7 +2665,7 @@ async function ensurePool(env) {
 function poolWhere(place, owner) {
   place = String(place ?? "").trim();
   owner = String(owner ?? "").trim();
-  const where = [];
+  const where = ["archived_at IS NULL"];
   const args = [];
   if (place === "teams") where.push("teams = 1");
   else if (nonNegInt(place, 0)) { where.push("teams = 0 AND branch_id = ?"); args.push(nonNegInt(place, 0)); }
@@ -2695,7 +2751,7 @@ async function listPool({ env, userId }) {
      FROM office_call_pool p
      LEFT JOIN office_branches b ON b.id = p.branch_id
      LEFT JOIN office_members m ON m.clerk_user_id = p.assigned_to
-     ${boss ? "" : "WHERE p.assigned_to IS NULL OR p.assigned_to = ?"}
+     ${boss ? "WHERE p.archived_at IS NULL" : "WHERE p.archived_at IS NULL AND (p.assigned_to IS NULL OR p.assigned_to = ?)"}
      GROUP BY p.branch_id, p.teams, p.assigned_to
      ORDER BY p.teams, b.name COLLATE NOCASE, (p.assigned_to IS NOT NULL), m.display_name COLLATE NOCASE`,
     ...(boss ? [] : [userId]));
@@ -2767,6 +2823,7 @@ async function listAdminPool({ env }) {
      FROM office_call_pool p
      LEFT JOIN office_branches b ON b.id = p.branch_id
      LEFT JOIN office_members m ON m.clerk_user_id = p.assigned_to
+     WHERE p.archived_at IS NULL
      ORDER BY (p.due_date IS NULL), p.due_date ASC, p.id ASC`);
   return json(rows.map(r => ({
     ...r, place: poolPlace(r), teams: Boolean(r.teams), assigned_to: r.assigned_to || null,
@@ -2839,20 +2896,20 @@ async function updatePoolContact({ request, env, id }) {
   const sets = ["customer_name = ?", "salutation = ?", "phones = ?", "topics = ?", "briefing = ?", "branch_id = ?", "teams = ?"];
   const args = [r.customer_name, r.salutation, r.phones, r.topics, r.briefing, target.branchId, target.teams];
   if (body && Object.prototype.hasOwnProperty.call(body, "due_date")) { sets.push("due_date = ?"); args.push(r.due_date); }
-  return changed(await run(env, `UPDATE office_call_pool SET ${sets.join(", ")} WHERE id = ?`, ...args, id),
+  return changed(await run(env, `UPDATE office_call_pool SET ${sets.join(", ")} WHERE id = ? AND archived_at IS NULL`, ...args, id),
     "Kontakt ist nicht (mehr) im Paket.");
 }
 
 async function deletePoolContact({ env, id }) {
   await ensurePool(env);
-  return changed(await run(env, "DELETE FROM office_call_pool WHERE id = ?", id), "Kontakt ist nicht (mehr) im Paket.");
+  return changed(await run(env, "UPDATE office_call_pool SET archived_at = CURRENT_TIMESTAMP WHERE id = ? AND archived_at IS NULL", id), "Kontakt ist nicht (mehr) im Paket.");
 }
 
 // Ganzes Paket leeren: DELETE /admin/pool?place=12&assigned_to=…
 async function clearPool({ env, url }) {
   await ensurePool(env);
   const [where, args] = poolWhere(url.searchParams.get("place"), url.searchParams.get("assigned_to"));
-  const result = await run(env, `DELETE FROM office_call_pool WHERE ${where}`, ...args);
+  const result = await run(env, `UPDATE office_call_pool SET archived_at = CURRENT_TIMESTAMP WHERE ${where}`, ...args);
   return ok({ deleted: Number(result.meta?.changes || 0) });
 }
 
@@ -4409,6 +4466,7 @@ const routes = [
   route("POST", "/admin/branches", createBranch),
   route("PUT", "/admin/branches/:id", updateBranch),
   route("DELETE", "/admin/branches/:id", deleteBranch),
+  route("GET", "/admin/contact-history", listContactHistory),
   route("GET", "/admin/calls", listAdminCalls),
   route("POST", "/admin/calls", createCall),
   route("PUT", "/admin/calls/:id", updateCall),
@@ -4551,8 +4609,8 @@ const MONITORED_ASSETS = {
   "/kb.css": "94fc9d3b5382f0604a2772cc4d8573ea6a4b25b9c77cd8dc8d949e6fd790c432",
   "/smartadm/sales/index.html": "b82b016eb1c57e53b2af504b754caa802bc04eb1d2a50722bd785355374f9719",
   "/smartadm/sales/cloud.js": "b62ef1f8fa93b3c9b8e6007c622c8e2771dda3220e979c77eb1c55084b5e0e26",
-  "/smartadm/office/": "5658a7757890285cfd6c42ac4a52db30c00cf777982bd085e325d86c34919d4f",
-  "/smartadm/office/sw.js": "6511d6967746e83342953639c96d37884644f31be01ad81f833f52b0d8cee660",
+  "/smartadm/office/": "cb2ddb7f2a976488c53a7548849e6a5d4a740aebf76fa8361aa5a54b2d9afc02",
+  "/smartadm/office/sw.js": "331eeae52240d2e1302245ba1da5482e7f858656ec03c308b2521f735cd9527f",
   "/smartadm/office/week-planner.js": "1ff59ff97053f6702be28c7f57a78cf6b3b869271f15d0cb5344be7c61119bf2",
   "/smartadm/office/vendor/xlsx-0.20.3.min.js": "cc015130aa8521e7f088f88898eba949ccdcbfb38df0bd129b44b7273c3a6f41",
   "/smartadm/office/vendor/html2pdf.min.js": "f3e5733ad8b0547c6ad7ee6c7766277fc13d1cb584197aaacbed930ce5ce0f8f"
@@ -4675,7 +4733,10 @@ export default {
         ctx.owner = target;
       }
 
-      try { return await r.handler(ctx); }
+      try {
+        if (/^\/(?:admin\/)?(?:calls|pool|contact-history)(?:\/|$)/.test(url.pathname)) await ensureContactHistory(env);
+        return await r.handler(ctx);
+      }
       catch (error) {
         console.error(JSON.stringify({ event: "office.handler_error", route: r.pattern.source }));
         exec.waitUntil(recordSecurityMetric(env, "handler_error").catch(() => {}));

@@ -16,8 +16,9 @@ const code = [
   html.match(/^  const CALL_SCRIPT_PREFIX =[^\n]+/m)[0],
   html.match(/^  const digits =[^\n]+/m)[0],
   section('  function poolPhoneKeys(', '  /* Abgleich mit Sales:'),
+  section('  const nameTokens =', '  function importStatus('),
   section('  const importPayload =', '  $("poolImportBtn")'),
-  'globalThis.subject = { preparePoolImportRows, officeImportMatches, importPayload, poolContactKey };'
+  'globalThis.subject = { preparePoolImportRows, officeImportMatches, importPayload, poolContactKey, salesTreffer, loadContactHistory };'
 ].join('\n');
 function setup() {
   const state = { adminCalls: { open: [], returned: [], kk: [], archived: [] }, adminPool: [] };
@@ -104,4 +105,28 @@ test('invalid and marketing-blocked rows are never combined with a valid contact
   assert.equal(rows.length, 2);
   assert.equal(rows[0].on, false);
   assert.equal(rows[1].on, true);
+});
+
+test('earlier Office records remain recognizable after changes and the whole record history is returned', () => {
+  const { state, officeImportMatches, importPayload } = setup();
+  const contact = { ...importPayload(row()), phones: ['07361 123456'], branch_id: 'bank-1' };
+  state.contactHistory = [{source:'call', source_id:42, contact:{...contact, archived_at:'2026-10-24'}},
+    {source:'call',source_id:42,contact:{...contact,customer_name:'Neu, Lena',phones:['0176 654321']}}];
+  const match=officeImportMatches(row());
+  assert.ok(match.identical.includes('Archiv'));assert.equal(match.history.length,2);
+  assert.equal(match.history[1].contact.customer_name,'Neu, Lena');
+  state.contactHistory=[{source:'call',source_id:43,contact:{...contact,customer_name:'Muster, Tom'}}];
+  assert.equal(officeImportMatches(row()).identical.length,0);
+  assert.equal(officeImportMatches(row()).history.length,1);
+});
+
+test('Sales matches retain distinct complete protocols even for appointments sharing a date and status', () => {
+  const { salesTreffer }=setup();
+  const result=salesTreffer(row(),{eintraege:[
+    {tokens:['lena','muster'],text:'Termin 24.10.2026 · erledigt',protokoll:'Erstes Gespräch\nFörderung erklärt.'},
+    {tokens:['lena','muster'],text:'Termin 24.10.2026 · erledigt',protokoll:'Weiteres Gespräch: Rückruf gewünscht.'},
+    {tokens:['lena','muster'],text:'Termin 24.10.2026 · erledigt',protokoll:'Erstes Gespräch\nFörderung erklärt.'},
+    {tokens:['tom','muster'],text:'Anderer Kunde',protokoll:'Nicht zu Lena gehörend.'}
+  ]});
+  assert.equal(result.length,2);assert.match(result[0].protokoll,/\nFörderung erklärt/);assert.match(result[1].protokoll,/Rückruf/);
 });

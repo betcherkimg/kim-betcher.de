@@ -42,3 +42,13 @@ The monitor verifies HTTPS availability and pinned SHA-256 hashes of nine public
 Before publishing monitored files, run `python scripts/update-security-baseline.py`. Commit/push that exact source; deploy the API before its matching page and deploy the monitor after Pages has published the new assets. Preserve existing API bindings/secrets and cron schedules. Deploy monitor with `npx wrangler deploy --config cloudflare/security-monitor/wrangler.jsonc`. Do not accept a live file as a new baseline merely because it changed: review the repository change first.
 
 This is availability, integrity and application-access monitoring, not a claim that GitHub Pages is protected by a Cloudflare WAF. The website currently responds from GitHub Pages and no `kim-betcher.de` zone is visible to the configured token. Changing DNS or nameservers is not part of this change. The monitor itself relies on Cloudflare cron and D1; an account-wide Cloudflare failure requires an external observer. External Clerk script updates and advisories beyond the pinned dependency audit are not continuously checked.
+
+## Contact archive and import history
+
+Contact deletion endpoints now archive records; completing an unreachable contact also retains it in the customer archive. Reopening preserves the attempt log. Removed package contacts get an `archived_at` timestamp and remain separate from active packages. Package-to-call transfers still remove the queue row, with its full snapshot preserved.
+
+Before any contact route executes, `ensureContactHistory` installs additive, transactional SQLite triggers and backfills the existing stock into `office_contact_history`. Inserts and updates save a full version, and a database trigger rejects physical deletion of calls. Setup failures block the route. There is no automatic history purge. Existing history from `round_log` is also displayed; already-deleted records and previously overwritten notes cannot be reconstructed.
+
+The boss-only `/admin/contact-history` endpoint uses ascending ID cursors (250 versions per page). Excel import reloads the complete history and active packages before matching; an incomplete Office read blocks import instead of claiming that contacts are new. Possible shared-number/name matches remain separate people and can be inspected. Both Office versions and full Sales protocols open in the preview without changing row selection. Sales entries with the same date/status but different protocols are retained separately; absent protocols are labelled explicitly.
+
+Regression coverage: `node --test tests/*.test.cjs`, `python3 tests/office-browser-flows.py` and `python3 tests/office-contact-history-browser.py`. Browser tests use synthetic data and intercept all external authentication/API requests.

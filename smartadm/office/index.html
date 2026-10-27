@@ -1369,6 +1369,11 @@ body.final-modus #poolBox { display: none !important; }
 .pi-row.is-head { background: var(--ground); font-weight: 600; font-size: 12.5px; color: var(--ink-soft); cursor: default; }
 .pi-row.is-off > :not(input):not(.pi-notes) { opacity: .5; }
 .pi-row input { margin-top: 3px; }
+.contact-history { width: 100%; min-width: 0; overflow-wrap: anywhere; }
+.contact-history summary { cursor: pointer; font-weight: 600; color: var(--ink); }
+.contact-history article { border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; }
+.history-protocol { white-space: pre-wrap; margin: 6px 0; }
+.sales-history { color: var(--ink); }
 .pi-notes { display: grid; gap: 3px; font-size: 12.5px; color: var(--ink-soft); justify-items: start; }
 .pi-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 18px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--ink-soft); }
 @media (max-width: 760px) {
@@ -2679,7 +2684,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <button class="picker-close" type="button" id="poolImportClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
         </div>
         <div class="form-dialog-body">
-          <p class="form-dialog-hint">Spalten: Anrede, Vorname, Nachname, Ansprachegrund, Telnr. 1, Telnr. 2, Termin bei, Rückholung – optional Alter (unter 18 = Eltern anrufen) und Bausparnummer. Nummern in jedem Format (0151/12345678, +49 151 …). Zeilen ohne Nummer bleiben draußen, gleiche Nummer wird ein Kontakt. Die Kontakte landen im Paket ihrer Filiale, nicht direkt in einer Telefonliste. Vor dem Import siehst du, wer schon in Office ist und wer schon Kontakt in Sales hatte.</p>
+          <p class="form-dialog-hint">Spalten: Anrede, Vorname, Nachname, Ansprachegrund, Telnr. 1, Telnr. 2, Termin bei, Rückholung – optional Alter (unter 18 = Eltern anrufen) und Bausparnummer. Nummern in jedem Format (0151/12345678, +49 151 …). Zeilen ohne Nummer bleiben draußen. Personen mit gemeinsamer Telefonnummer bleiben getrennt. Die Kontakte landen im Paket ihrer Filiale, nicht direkt in einer Telefonliste. Vor dem Import siehst du, wer in Office vorhanden ist oder früher vorhanden war. Office-Verlauf und vorhandene Sales-Protokolle kannst du aufklappen.</p>
           <label class="pi-file"><input type="file" id="poolImportFile" accept=".xlsx,.xls,.csv"><span class="plus" aria-hidden="true">+</span><span id="poolImportFileLabel">Excel-Datei auswählen</span></label>
           <div id="poolImportStatus" class="pi-status" aria-live="polite"></div>
           <div class="pi-fields">
@@ -2802,7 +2807,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             </div>
             <div class="fold-tools"><button class="widget-pfeil fold-btn" type="button" data-fold="archived" aria-expanded="true" aria-label="Abgeschlossene zuklappen" title="Zuklappen"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 15 6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           </div>
+          <p class="muted">Kontakte und gespeicherte Gesprächsverläufe bleiben erhalten – auch nach erneutem Zuweisen.</p>
           <div id="callArchiveList" class="employee-list archive-list" data-fold-body="archived"><div class="notice">Wird geladen …</div></div>
+          <h3>Frühere Paketkontakte</h3>
+          <p>Aus Paketen entfernte Kontakte bleiben hier mit ihrem bisherigen Verlauf auffindbar.</p>
+          <div id="poolArchiveList" class="employee-list archive-list"></div>
         </div>
 
         <div class="card section-card">
@@ -3194,6 +3203,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     adminExpanded: new Set(), // aufgeklappte Boss-Kontaktzeilen
     phoneFixDrafts: {},       // Boss: neue Nummern für Rückläufer mit falschen Kontaktdaten
     callsLoaded: false,       // Telefonliste mindestens einmal geladen
+    contactHistory: [],
     adminCalls: { open: [], returned: [], archived: [], kk: [] },
     pool: [],                 // Kontakt-Pakete je Filiale (Anzahl)
     adminPool: [],            // Boss: alle Kontakte in Paketen
@@ -6716,6 +6726,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   const CALL_MAX_ATTEMPTS = 5;
   const CALL_STATUS = {
+    archived: { label: "Archiviert ohne Abschlussgespräch", cls: "" },
     R_TA_mT: { label: "mit Termin", cls: "good" },
     R_TA_oT: { label: "ohne Termin", cls: "warn" },
     R_TA_kK: { label: "kein Kontakt", cls: "high" },
@@ -7465,8 +7476,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       <div class="acall-icons">
         <button class="icon-btn" type="button" data-call-admin="edit" data-id="${c.id}"
           title="Bearbeiten" aria-label="Bearbeiten">${ICONS.edit}</button>
-        <button class="icon-btn danger" type="button" data-call-admin="delete" data-id="${c.id}"
-          title="Löschen" aria-label="Löschen">${ICONS.trash}</button>
+        ${scope === "archived" ? "" : `<button class="icon-btn" type="button" data-call-admin="delete" data-id="${c.id}"
+          title="Ins Archiv legen" aria-label="Ins Archiv legen">${ICONS.trash}</button>`}
       </div>
       ${open ? `<div class="acall-body">
         ${c.protocol ? `<div class="call-note" style="white-space:pre-wrap">${contactReceipt(c) ? "" : "<b>Notiz:</b> "}${esc(c.protocol)}</div>` : ""}
@@ -7486,6 +7497,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <textarea id="fix-${c.id}" data-phone-fix="${c.id}" rows="2" placeholder="z. B. 07361 123456">${esc(state.phoneFixDrafts[c.id] ?? "")}</textarea>
           <button class="btn primary" type="button" data-call-admin="phones" data-id="${c.id}">Nummer speichern &amp; erneut zuweisen</button>
         </div>` : ""}
+        ${contactHistoryHtml(historyFor("call", c.id))}
         ${extra ? `<div class="btn-row">${extra}</div>` : ""}
       </div>` : ""}
     </div>`;
@@ -7524,11 +7536,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <span class="chip">${asArray(c.attempt_log).length} Versuche gesamt</span>
           ${topicChips(c)}
         </div>
+        ${contactHistoryHtml(historyFor("call", c.id))}
         ${earlier.length ? `<small>Frühere Archivierungen: ${earlier.map(r => esc(fmtDateTime(r.archived_at))).join(", ")}</small>` : ""}
         <div class="btn-row">
           ${btn("release", `${esc(firstName(c))} wieder freigeben`, "primary")}
           ${reviewed ? "" : btn("keep", "Im Archiv lassen", "ghost")}
-          ${btn("done", "Endgültig erledigt", "danger")}
+          ${btn("done", "Erledigt – im Archiv behalten", "ghost")}
         </div>
       </div>` : ""}
     </div>`;
@@ -7689,6 +7702,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     $("callArchiveList").innerHTML = archived.length
       ? archived.map(c => adminCallHtml(c, "archived")).join("")
       : `<div class="notice">${archiveNarrowed ? "Kein Treffer." : "Noch keine erledigten Kontakte."}</div>`;
+    const removedPools = new Map();
+    asArray(state.contactHistory).forEach(h => { if (h.source === "pool") removedPools.set(h.source_id, h); });
+    $("poolArchiveList").innerHTML = [...removedPools.values()]
+      .filter(h => h.contact.archived_at && matchesName(h.contact, archiveQuery) && matchesFilter(h.contact, archiveFilter))
+      .map(h => `<div class="acall"><div class="acall-body"><b>${esc(h.contact.customer_name)}</b><small>${esc(h.contact.phones.join(", "))}</small>${contactHistoryHtml(historyFor("pool", h.source_id))}</div></div>`).join("")
+      || '<div class="notice">Keine früheren Paketkontakte für diese Auswahl.</div>';
     const kkShown = sortCalls(state.adminCalls.kk.filter(c => matchesName(c, archiveQuery) && matchesFilter(c, archiveFilter)), "archive");
     $("callKkList").innerHTML = kkShown.length
       ? kkShown.map(kkRowHtml).join("")
@@ -7727,6 +7746,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           // Nur echte Archiveinträge – schützt davor, dass ein Worker ohne kk-Scope offene Kontakte liefert.
           kk: asArray(kk).filter(c => c.kk_archived_at)
         };
+        await loadContactHistory();
         state.callsLoaded = true;
         renderAdminCalls();
         loadPool();
@@ -7897,11 +7917,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (clear) {
       const pack = packOf(clear);
       if (!pack) return;
-      if (!confirm(`Paket „${poolName(pack)}“ (${packFor(pack)}) mit ${kontakte(pack.count || 0)} leeren? Die Kontakte werden gelöscht.`)) return;
+      if (!confirm(`Paket „${poolName(pack)}“ (${packFor(pack)}) mit ${kontakte(pack.count || 0)} leeren? Die Kontakte bleiben im Archiv nachvollziehbar.`)) return;
       withBusy(clear, async () => {
         try {
           await api(`/admin/pool?place=${encodeURIComponent(pack.place)}&assigned_to=${encodeURIComponent(pack.assigned_to || "")}`, "DELETE");
-          toast("Paket geleert.");
+          toast("Paket geleert; Kontakte bleiben im Archiv.");
+          await loadContactHistory();
+          renderAdminCalls();
         } catch (error) { alert(error.message); }
         await loadPool();
       });
@@ -7912,7 +7934,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const del = event.target.closest("[data-pool-del]");
     if (del) {
       withBusy(del, async () => {
-        try { await api(`/admin/pool/${del.dataset.poolDel}`, "DELETE"); }
+        try { await api(`/admin/pool/${del.dataset.poolDel}`, "DELETE"); await loadContactHistory(); renderAdminCalls(); }
         catch (error) { alert(error.message); }
         await loadPool();
       });
@@ -8124,7 +8146,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   function poolImportKey(row) {
     // Unbekannte Filialen bleiben getrennt, bis der Import einem Paket zugeordnet wird.
-    return poolContactKey(importPayload(row), row.place ?? `unbekannt:${row.ort || ""}`);
+    return poolContactKey(importPayload(row), row.place ?? (row.ort ? `unbekannt:${row.ort}` : ""));
   }
 
   function preparePoolImportRows(rows) {
@@ -8145,9 +8167,41 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     return rows;
   }
 
+  async function loadContactHistory() {
+    const history = [];
+    let after = 0;
+    do {
+      const page = await api(`/admin/contact-history?after=${after}`);
+      if (!Array.isArray(page?.items)) throw new Error("Office-Verlauf konnte nicht vollständig geladen werden. Bitte erneut versuchen.");
+      history.push(...page.items);
+      const next = Number(page.next || 0);
+      if (next && next <= after) throw new Error("Office-Verlauf konnte nicht vollständig geladen werden.");
+      after = next;
+    } while (after);
+    state.contactHistory = history;
+    return history;
+  }
+
+  const historyFor = (source, id) => asArray(state.contactHistory).filter(h => h.source === source && String(h.source_id) === String(id));
+  function contactHistoryHtml(entries) {
+    if (!entries.length) return "";
+    return `<details class="contact-history"><summary>Office-Verlauf aufklappen (${entries.length})</summary>${entries.slice().reverse().map(h => {
+      const c = h.contact;
+      const event = {existing: "Übernommener Bestand", created: "Kontakt angelegt", updated: "Kontakt geändert", removed: "Aus Paket übernommen"}[h.event] || "Gespeicherter Stand";
+      const status = c.archived_at ? "Archiviert" : c.status === "open" ? "In Bearbeitung" : CALL_STATUS[c.status]?.label || (c.status ? c.status : "Im Paket");
+      return `<article><b>${esc(event)} · ${esc(fmtDateTime(h.recorded_at))}</b><small>${esc(c.customer_name)} · ${esc(status)}${c.assigned_to ? ` · ${esc(employeeName(findEmployee(c.assigned_to)))}` : ""}</small>
+        ${c.protocol ? `<div class="history-protocol"><b>Protokoll:</b> ${esc(c.protocol)}</div>` : '<small>Kein Gesprächsprotokoll gespeichert.</small>'}
+        ${c.hold_note ? `<div class="history-protocol">Zu klären: ${esc(c.hold_note)}</div>` : ""}
+        <small>${esc(asArray(c.phones).join(", "))}${c.attempts != null ? ` · ${Number(c.attempts)} Versuche in diesem Durchlauf` : ""}</small>
+        ${asArray(c.round_log).map(r => `<div class="history-protocol"><b>Früherer Durchlauf ${Number(r.round || 1)} · ${esc(fmtDateTime(r.archived_at))}:</b> ${esc(r.protocol || "Kein Protokoll gespeichert.")}</div>`).join("")}
+        ${asArray(c.attempt_log).length ? `<small>Versuche: ${c.attempt_log.map(t => esc(fmtDateTime(t))).join(", ")}</small>` : ""}
+      </article>`;
+    }).join("")}</details>`;
+  }
+
   function officeImportMatches(row) {
     const key = poolImportKey(row), name = normalizeName(row.name), numbers = new Set(poolPhoneKeys(row.phones));
-    const identical = [], possible = [];
+    const identical = [], possible = [], history = [];
     const sources = ADMIN_SCOPES.map(([scope, label]) => [label, state.adminCalls[scope]]).concat([["Paket", state.adminPool]]);
     sources.forEach(([label, contacts]) => {
       asArray(contacts).forEach(contact => {
@@ -8159,7 +8213,18 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         }
       });
     });
-    return { identical, possible };
+    asArray(state.contactHistory).forEach(h => {
+      const c = h.contact;
+      if (normalizeName(c.customer_name) === name || poolPhoneKeys(c.phones).some(p => numbers.has(p))) {
+        history.push(h);
+        const label = c.archived_at ? "Archiv" : "Früher in Office";
+        const place = c.teams ? "teams" : c.branch_id ? String(c.branch_id) : "";
+        if (poolContactKey(c, place) === key) { if (!identical.includes(label)) identical.push(label); }
+        else if (!possible.includes(label)) possible.push(label);
+      }
+    });
+    const identities = new Set(history.map(h => `${h.source}:${h.source_id}`));
+    return { identical, possible, history: asArray(state.contactHistory).filter(h => identities.has(`${h.source}:${h.source_id}`)) };
   }
 
   /* Abgleich mit Sales: Termine, Auswertung, Provisionen und Adressabstimmung.
@@ -8168,7 +8233,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const bsnrKey = value => String(value || "").toUpperCase().replace(/[^0-9A-Z]/g, "").slice(0, 9);
 
   async function salesBestand() {
-    const doc = { termine: [], auswertung: [], provisionen: [], abstimmung: [] };
+    const doc = { termine: [], auswertung: [], provisionen: [], provArchiv: [], abstimmung: [] };
     let quelle = "";
     try {
       const data = await api("/s5/pull?since=0");
@@ -8185,7 +8250,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           if (!key || !key.startsWith("smartadm.cloud.v1.")) continue;
           const saved = JSON.parse(localStorage.getItem(key) || "null")?.doc;
           if (!saved) continue;
-          ["termine", "auswertung", "provisionen"].forEach(s => doc[s].push(...asArray(saved[s])));
+          ["termine", "auswertung", "provisionen", "provArchiv"].forEach(s => doc[s].push(...asArray(saved[s])));
           if (saved.abstimmung && typeof saved.abstimmung === "object") doc.abstimmung.push(...Object.values(saved.abstimmung));
           quelle = "Sales auf diesem Gerät";
         }
@@ -8203,7 +8268,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     };
     doc.termine.forEach(t => termin(t, "Termin"));
     doc.auswertung.forEach(t => termin(t, "Termin"));
-    doc.provisionen.forEach(p => { if (p?.kunde) eintraege.push({ tokens: nameTokens(p.kunde), text: "Provisionseintrag" }); });
+    [...doc.provisionen, ...doc.provArchiv].forEach(p => { if (p?.kunde) eintraege.push({ tokens: nameTokens(p.kunde), text: "Provisionseintrag" }); });
     doc.abstimmung.forEach(satz => Object.values(satz && typeof satz === "object" ? satz : {}).forEach(liste => asArray(liste).forEach(k => {
       if (!k || typeof k !== "object" || (!k.kunde && !k.bsnr)) return;
       eintraege.push({ tokens: nameTokens(k.kunde), bsnr: bsnrKey(k.bsnr), text: `Adressabstimmung${k.notiz ? `: ${String(k.notiz).slice(0, 80)}` : ""}` });
@@ -8220,7 +8285,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     bestand.eintraege.forEach(e => {
       const name = nach.length && nach.every(t => e.tokens.includes(t)) && vornamen.some(v => e.tokens.includes(v));
       const nummer = e.bsnr && nummern.includes(e.bsnr);
-      if ((name || nummer) && !out.includes(e.text)) out.push(e.text);
+      if ((name || nummer) && !out.some(t => t.text === e.text && t.protokoll === (e.protokoll || ""))) out.push({text: e.text, protokoll: e.protokoll || ""});
     });
     return out;
   }
@@ -8243,16 +8308,17 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           const notes = [
             ...r.errors.map(e => `<span class="chip ${e === "Noch keine Nummer" ? "" : "high"}">${esc(e)}</span>`),
             ...r.notes.map(([cls, text]) => `<span class="chip ${cls}">${esc(text)}</span>`),
-            ...(r.sales.length ? ['<span class="chip data">Kontakt in Sales</span>', ...r.sales.map(t => `<span>${esc(t)}</span>`)] : [])
+            ...(r.sales.length ? [`<details class="contact-history sales-history"><summary>In Sales gefunden · Protokoll aufklappen (${r.sales.length})</summary>${r.sales.map(t => `<article><b>${esc(t.text)}</b><div class="history-protocol">${esc(t.protokoll || "Kein Gesprächsprotokoll für diesen Eintrag in Sales hinterlegt.")}</div></article>`).join("")}</details>`] : []),
+            ...(r.officeHistory?.length ? [contactHistoryHtml(r.officeHistory)] : [])
           ];
-          return `<label class="pi-row${r.on && ok ? "" : " is-off"}">
-            <input type="checkbox" data-pi="${r.index}"${r.on && ok ? " checked" : ""}${ok ? "" : " disabled"}>
+          return `<div class="pi-row${r.on && ok ? "" : " is-off"}">
+            <input type="checkbox" aria-label="${esc(r.name || "Kontakt")} importieren" data-pi="${r.index}"${r.on && ok ? " checked" : ""}${ok ? "" : " disabled"}>
             <span><b>${esc(r.kind ? "Herr/Frau" : r.salutation)} ${esc(r.name || "–")}</b>${r.kind ? `<small class="pi-kind">Kind ${esc(kindText(r.kind))} – Skript über das Konto ${r.kind.art === "tochter" ? "der Tochter" : r.kind.art === "kinder" ? "der Kinder" : "des Sohnes"}</small>` : ""}${r.bsnr ? `<small>${esc(r.bsnr)}</small>` : ""}</span>
             <span>${esc(r.phones.join(", ") || "–")}</span>
             <span class="chips">${r.topics.map(key => `<span class="chip from">${esc(key === "neuterminierung" && r.termArt === "folge" ? `Folgetermin${r.termDatum ? ` ${r.termDatum}` : ""}` : CALL_TOPICS[key].label)}</span>`).join("") || '<span class="chip warn">Thema fehlt</span>'}${r.skript ? '<span class="chip data">Eigenes Skript</span>' : ""}</span>
             <span>${r.due ? esc(deDate(r.due)) : "–"}</span>
-            <span class="pi-notes">${notes.join("") || '<span class="chip good">Neu</span>'}</span>
-          </label>`;
+            <div class="pi-notes">${notes.join("") || '<span class="chip good">Neu</span>'}</div>
+          </div>`;
         }).join("")
       : "";
     const owner = $("poolImportOwner").value;
@@ -8285,7 +8351,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     renderImportPreview();
     importStatus([["", "Liste wird gelesen und mit Office und Sales abgeglichen …"]]);
     try {
-      const [XLSX, bestand] = await Promise.all([xlsxLib(), salesBestand().catch(() => null), loadPool()]);
+      const [XLSX, bestand, pool] = await Promise.all([xlsxLib(), salesBestand().catch(() => null), api("/admin/pool"), loadContactHistory()]);
+      if (!Array.isArray(pool)) throw new Error("Office-Pakete konnten nicht abgeglichen werden.");
+      state.adminPool = pool;
       const book = XLSX.read(await file.arrayBuffer(), { type: "array" });
       const table = XLSX.utils.sheet_to_json(book.Sheets[book.SheetNames[0]], { header: 1, raw: true, defval: "" });
       const head = table.findIndex(r => r.some(c => /nachname/i.test(String(c))));
@@ -8309,8 +8377,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       poolImportRows = preparePoolImportRows(rows);
       poolImportRows.forEach(r => {
         r.sales = salesTreffer(r, bestand);
-        if (r.errors.length) { r.on = false; return; }
         const matches = officeImportMatches(r);
+        r.officeHistory = matches.history;
+        if (r.errors.length) { r.on = false; return; }
         if (matches.identical.length) {
           r.on = false;
           r.notes.push(["warn", `Identischer Kontakt schon in Office: ${matches.identical.join(", ")}`]);
@@ -8809,7 +8878,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     reopen: { path: id => `/admin/calls/${id}/reopen`, method: "PUT",
               confirm: "Kontakt erneut zuweisen? Die Versuche starten wieder bei 0, das Protokoll bleibt sichtbar." },
     delete: { path: id => `/admin/calls/${id}`, method: "DELETE",
-              confirm: "Kontakt endgültig löschen?" }
+              confirm: "Kontakt ins Archiv legen? Protokoll und Verlauf bleiben erhalten." }
   };
 
   ["callReturnedList", "callOpenList", "callArchiveList"].forEach(listId =>
@@ -8867,7 +8936,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     release: { path: id => `/admin/calls/${id}/kk-release`,
                confirm: c => `„${c.customer_name}“ wieder freigeben? Neuer Durchlauf mit 0 Versuchen – die bisherige Historie bleibt.` },
     done: { path: id => `/admin/calls/${id}/kk-done`,
-            confirm: c => `„${c.customer_name}“ endgültig erledigen? Der Kontakt verschwindet aus Office – bitte anschließend im BSH-System als erledigt setzen.` }
+            confirm: c => `„${c.customer_name}“ endgültig erledigen? Der Kontakt bleibt samt Protokoll im Kundenarchiv – bitte anschließend im BSH-System als erledigt setzen.` }
   };
 
   $("callKkList").addEventListener("click", event => {
