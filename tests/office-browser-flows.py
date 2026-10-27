@@ -46,6 +46,8 @@ class API:
   elif p=='/notices/acks':out=[{'version':v} for v in self.acks]
   elif p=='/notices/ack':self.acks.append(body['version']);out={'success':True}
   elif p=='/addendum':out={'available':False}
+  elif p=='/regular-pattern':out={'patterns':[],'current':None,'needsInitial':False}
+  elif p=='/regular-week':out={'active':False,'slots':[],'entries':[],'unassigned':[],'workMinutes':0,'holidayMinutes':0,'absenceMinutes':0,'targetMinutes':360,'confirmed':False,'overdue':[]}
   elif p=='/week-account':out={}
   elif p=='/settings':out={}
   elif p=='/push/public-key':out={'publicKey':None}
@@ -79,8 +81,10 @@ with sync_playwright() as pw:
  browser=pw.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox'])
  for width in [1280,390]:
   api=API();ctx,page,errors=page_for(browser,api,width,'2026-10-23T08:00:00Z')
-  expect(page.locator('#whatsNew')).to_be_visible();expect(page.locator('#planDialog')).not_to_be_visible();expect(page.locator('#whatsNewOk')).to_be_disabled()
+  expect(page.locator('#whatsNew')).to_be_visible();expect(page.locator('#planDialog')).not_to_be_visible();expect(page.locator('#whatsNewOk')).to_be_enabled()
   page.keyboard.press('Escape');expect(page.locator('#whatsNew')).to_be_visible()
+  while not page.locator('#whatsNewCheck').is_visible():page.locator('#whatsNewOk').click()
+  expect(page.locator('#whatsNewOk')).to_be_disabled()
   page.locator('#whatsNewCheck').check();page.locator('#whatsNewOk').click();expect(page.locator('#planDialog')).to_be_visible();expect(page.locator('#planSnoozeBtn')).to_be_visible()
   expect(page.locator('#weekHours0')).to_have_value('2');expect(page.locator('#weekHours2')).to_have_value('2')
   check_width(page)

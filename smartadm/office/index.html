@@ -1281,7 +1281,7 @@ body.my-editing .my-widget { outline: 2px dashed color-mix(in srgb, var(--accent
 @media (max-width: 760px) {
   body[data-office-role="employee"] .mobile-nav { display: none; }
   body[data-office-role="employee"] .tabbar {
-    display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
     background: rgba(255,255,255,.97); border-top: 1px solid var(--line); backdrop-filter: blur(12px);
     padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
   }
@@ -1703,6 +1703,27 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 .widget-option strong { display: block; font-size: 14.5px; font-weight: 600; }
 .widget-option > span > span { display: block; font-size: 12.5px; color: var(--ink-soft); }
 .widget-dialog { width: min(460px, calc(100vw - 24px)); }
+
+/* Calendar: same weekly schedule, additional requests and traceable decisions. */
+.calendar-toolbar {display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.calendar-toolbar input{width:170px}.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.calendar-weekday{text-align:center;font-size:12px;color:var(--ink-soft)}.calendar-day{min-width:0;min-height:105px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;text-align:left;padding:7px;cursor:pointer;overflow-wrap:anywhere}.calendar-date{display:block;font-weight:650;margin-bottom:5px}.calendar-day.today .calendar-date{color:var(--accent)}.calendar-day.selected{outline:2px solid var(--accent);outline-offset:-2px}.calendar-day.other-month{opacity:.55}.calendar-event{display:block;border-radius:5px;font-size:11px;padding:3px;margin:3px 0;background:var(--ground);line-height:1.35}.calendar-event.plan,.calendar-event.work{background:var(--hell-wash);color:var(--hell)}.calendar-event.vacation{background:var(--gruen-wash);color:var(--gruen)}.calendar-event.holiday{background:var(--lila-wash);color:var(--lila)}.calendar-event.pending,.calendar-event.review{background:var(--gelb-wash);color:var(--gelb)}.calendar-legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--ink-soft);font-size:12px;margin-top:12px}.calendar-hint{font-size:13px;color:var(--ink-soft);line-height:1.6}.calendar-empty{grid-column:1/-1;padding:20px;color:var(--ink-soft)}.leave-request{padding:16px 0;border-bottom:1px solid var(--line)}.leave-request>div:first-child{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap}.leave-request small{display:block;color:var(--ink-soft);margin-top:5px}.leave-request p{white-space:pre-wrap;overflow-wrap:anywhere}.leave-date-choices{max-height:330px;overflow:auto;border:1px solid var(--line);border-radius:10px;margin-bottom:16px}.leave-date-choice{display:flex;gap:10px;align-items:center;padding:10px;border-bottom:1px solid var(--line);font-size:13px}.leave-date-choice input{width:18px;flex:none}.leave-quote{border-bottom:1px solid var(--line);padding:14px 0}.leave-quote>small{display:block;margin:7px 0;color:var(--ink-soft)}#calendarSettings form{padding:18px 0;border-bottom:1px solid var(--line)}#leavePaidWrap{display:grid;gap:10px;margin-top:15px}#leavePaidWrap[hidden]{display:none}.week-mode .calendar-day{min-height:180px}.calendar-day small{font-size:11px}
+@media(max-width:600px){.calendar-grid{gap:3px}.calendar-day{padding:4px;min-height:78px;border-radius:7px}.calendar-event{font-size:9px;padding:2px;line-height:1.2}.calendar-toolbar{gap:5px}.calendar-toolbar .btn{padding:8px 11px}.calendar-toolbar input{width:152px}.week-mode{grid-template-columns:1fr}.week-mode .calendar-weekday{display:none}.week-mode .calendar-day{min-height:90px}.week-mode .calendar-event{font-size:12px}.leave-request>div:first-child{display:grid}}
+
+
+/* Modal guided introduction: the highlighted real control remains visible through the shade. */
+#whatsNew.guided-intro {position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;overflow:hidden;background:transparent;box-shadow:none;color:var(--ink)}
+#whatsNew.guided-intro::backdrop {background:transparent}
+.guided-intro .intro-spotlight{position:absolute;box-shadow:0 0 0 200vmax rgba(15,23,36,.74);border:3px solid #fff;pointer-events:none;z-index:0;transition:top .18s,left .18s,width .18s,height .18s}
+.guided-intro .intro-spotlight[hidden]{display:block!important;inset:0!important;width:100vw!important;height:100dvh!important;border:0!important;border-radius:0!important;background:rgba(15,23,36,.74)}
+.guided-intro .whats-new-body{position:absolute;left:50%;width:min(480px,calc(100vw - 28px));max-height:calc(100dvh - 38px);overflow:auto;border-radius:18px;background:var(--surface);padding:22px;box-shadow:0 12px 50px rgba(0,0,0,.3);z-index:1}
+#introProgress{display:block;color:var(--ink-soft);font-size:12px;margin-bottom:9px}.guided-intro #whatsNewTitle{display:block;font-size:22px;line-height:1.25}.guided-intro #whatsNewIntro{display:block;font-size:14px;line-height:1.65;margin:12px 0}.intro-example{background:var(--ground);padding:12px;border-radius:10px;font-size:13px;line-height:1.6}.intro-example p{margin:5px 0 0}.guided-intro #introBack{margin:14px 8px 0 0}.guided-intro #whatsNewOk{margin-top:14px}.guided-intro .wn-confirm{margin-top:16px}.guided-intro #whatsNewStatus{white-space:pre-wrap}
+@media(max-width:420px){.guided-intro .whats-new-body{padding:17px}.guided-intro #whatsNewTitle{font-size:20px}.guided-intro #whatsNewIntro{font-size:13px;line-height:1.5}.intro-example{font-size:12px;padding:10px}}
+@media(prefers-reduced-motion:reduce){.guided-intro .intro-spotlight{transition:none}}
+
+
+.regular-row{display:grid;grid-template-columns:minmax(140px,2fr) 1fr 1fr auto;gap:16px;align-items:center;padding:20px 4px;border-bottom:1px solid var(--line,#e4e8ee)}
+.regular-row>div:first-child{display:grid;gap:4px}.regular-row small,.regular-col-label{display:block;font-size:12px;color:#65758b}.regular-row input{width:100%;min-width:0;padding:12px;border:1px solid #dce2ea;border-radius:10px}.regular-row output{display:block;background:#f0f3f7;padding:12px;border-radius:10px;font-weight:700}.regular-disabled{background:#eceef0;color:#68717b;padding:20px 12px;border-radius:12px}.regular-disabled output{background:#e1e4e7}.regular-disabled strong{font-size:12px}.regular-row details{grid-column:1/-1}.regular-choice{display:flex;gap:12px;align-items:center;padding:14px;border:1px solid #dce2ea;border-radius:12px;margin:8px 0}.regular-choice input{width:22px;height:22px}#regularOverdueDialog h2{font-size:26px}#regularOverdueDialog{border:3px solid #bf165a}.regular-holiday{padding:16px 0;border-top:1px solid #dce2ea}.regular-holiday label{display:block;margin:8px 0}.regular-holiday input[type=text],.regular-holiday textarea{width:100%}
+@media(max-width:600px){.regular-row{grid-template-columns:minmax(105px,1.6fr) 1fr 1fr;gap:10px;padding:18px 8px}.regular-row-action{grid-column:1/-1}.regular-row-action button{width:100%}.regular-row output{padding:10px 6px;font-size:14px}.regular-row>div:first-child b{font-size:14px}}
+.mini-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin:12px 0}.mini-calendar>span{font-size:11px;text-align:center;color:var(--w-soft,var(--muted))}.mini-calendar button{appearance:none;border:0;min-height:30px;background:transparent;color:inherit;border-radius:8px;font:inherit;font-size:12px;position:relative;cursor:pointer}.mini-calendar button.weekend{opacity:.45}.mini-calendar button.today{background:var(--w-accent,var(--accent));color:white;font-weight:700}.mini-calendar button.marked:after{content:"";position:absolute;bottom:2px;left:calc(50% - 2px);width:4px;height:4px;background:currentColor;border-radius:50%}.mini-calendar button:hover{outline:1px solid currentColor}
 </style>
 <link rel="stylesheet" href="../date-inputs.css">
 </head>
@@ -1731,6 +1752,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       <hr class="nav-sep" data-role="employee">
       <button data-role="employee" data-page="zeiten">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="13" height="13" rx="2"/><path d="M7 3v4M13 3v4M3.5 10h13"/><circle cx="17" cy="16.5" r="4.2"/><path d="M17 14.6v2l1.3 1"/></svg><span>Einsatz &amp; Zeiten</span></button>
+      <button data-role="shared" data-page="kalender"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M7.5 3v4M16.5 3v4M3.5 10h17M8 14h2M14 14h2M8 17h2"/></svg><span>Kalender</span></button>
       <button data-role="shared" data-page="telefon">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/></svg><span data-boss-label="Kontakte">Telefonliste</span></button>
       <button data-role="boss" data-page="kundenarchiv">
@@ -1814,10 +1836,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <div><strong id="payslipNoticeTitle">Gehaltsnachweis</strong><span>Bitte ansehen und mit deiner Unterschrift Empfang und Arbeitszeiten bestätigen.</span></div>
           <div class="btn-row"><button class="btn primary" type="button" id="payslipNoticeBtn">Ansehen &amp; unterschreiben</button></div>
         </div>
-        <div class="my-widgets" id="myWidgets"></div>
+        <div class="card shortcut" id="regularSendNotice" hidden><div><strong>Heute bitte die Arbeitszeiten abschicken</strong><span id="regularSendNoticeText">Bitte deine Stunden und Termine prüfen und die Woche spätestens Sonntag absenden.</span></div><button class="btn primary" type="button" data-page="zeiten">Zur Wochenliste</button></div><div class="my-widgets" id="myWidgets"></div>
       </section>
 
-      <section class="page" id="zeiten" data-role="employee">
+      <section class="page" id="zeiten" data-role="employee"><div class="card section-card" id="regularWeekCard" hidden><div class="card-head"><h2>Deine Arbeitswoche</h2><p>Die drei Zeilen sind deine Regeltage. Tatsächlich kannst du weiterhin andere Tage innerhalb der Woche nutzen. Trage geleistete Arbeit ein, sobald du fertig bist.</p></div><div class="btn-row"><button class="btn ghost" id="regularPrev" type="button" aria-label="Vorherige Woche">‹</button><b id="regularWeekLabel"></b><button class="btn ghost" id="regularNext" type="button" aria-label="Nächste Woche">›</button><button class="btn ghost" id="regularToday" type="button">Aktuelle Woche</button></div><div id="regularRows"></div><p id="regularSummary" class="notice"></p><p id="regularStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button class="btn primary" type="button" id="regularComplete">Absenden</button><button class="btn ghost" type="button" id="regularChooseDays">Regeltage ändern</button></div></div>
         <div class="card section-card plan-card" id="planCard">
           <div class="card-head plan-head">
             <div>
@@ -1842,10 +1864,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
               <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2"/></svg>Arbeitszeit erfassen</button>
           </div>
           <div id="timeFormWrap" hidden>
-            <form id="entryForm">
+            <form id="entryForm"><input id="entryRegularSlot" type="hidden"><div class="field" id="entryManualHoursField" hidden><label for="entryManualHours">Von dir geleistete Arbeitsstunden</label><input id="entryManualHours" type="text" inputmode="decimal" placeholder="z. B. 2,0"><small>Du trägst die Stunden selbst ein. Es wird nichts aus deiner Aktivität oder Planung ergänzt.</small></div><p id="entryActualHint" class="calendar-hint"></p>
               <input type="hidden" id="editId">
               <div class="form-grid">
-                <div class="field"><label for="date">Datum</label><input id="date" type="date" required><small>Heute oder maximal 7 Tage rückwirkend.</small></div>
+                <div class="field"><label for="date">Tatsächlicher Arbeitstag</label><input id="date" type="date" required><small>Heute oder maximal 7 Tage rückwirkend.</small></div>
                 <div class="field"><label for="break">Pause in Minuten</label><input id="break" type="number" min="0" step="5" value="0"></div>
                 <div class="field"><label for="start">Beginn</label><input id="start" type="time" step="300" required></div>
                 <div class="field"><label for="end">Ende</label><input id="end" type="time" step="300" required></div>
@@ -2124,12 +2146,33 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         </div>
       </section>
 
+
+      <section class="page" id="kalender" data-role="shared">
+        <div class="card section-card">
+          <div class="card-head"><h2>Dein Kalender</h2><p>Deine Wochentage bleiben frei wählbar. Einsätze, Urlaub und Feiertage sind hier gemeinsam sichtbar.</p></div>
+          <div class="field" id="calendarOwnerField" data-role="boss"><label for="calendarOwner">Mitarbeiter</label><select id="calendarOwner"></select></div>
+          <div class="calendar-toolbar" id="calendarToolbar"><button class="btn ghost" id="calendarPrev" type="button" aria-label="Vorheriger Zeitraum">←</button><label class="sr-only" for="calendarMonth">Kalendermonat</label><input id="calendarMonth" type="month"><button class="btn ghost" id="calendarNext" type="button" aria-label="Nächster Zeitraum">→</button><button class="btn ghost" id="calendarToday" type="button">Heute</button><div class="type-switch" role="group" aria-label="Kalenderansicht"><button class="btn ghost" id="calendarViewMonth" type="button" aria-pressed="true">Monat</button><button class="btn ghost" id="calendarViewWeek" type="button" aria-pressed="false">Woche</button></div></div>
+          <div id="calendarStatus" class="status-text" aria-live="polite"></div>
+          <div id="calendarGrid" class="calendar-grid" aria-label="Arbeitstage und Abwesenheiten"></div>
+          <div class="calendar-legend"><span>● Einsatz</span><span>● Urlaub</span><span>● Feiertag</span><span>● Antrag offen</span></div>
+        </div>
+        <div class="card section-card" id="calendarDayDetails"></div>
+        <div class="card section-card"><div class="card-head"><h2>Urlaubskonto</h2><p>Anspruch, genehmigte Tage und offene Anträge bleiben getrennt nachvollziehbar.</p></div><div id="calendarAccount"></div><div id="calendarEmployeeActions" class="btn-row"><button class="btn primary" type="button" id="calendarNewLeave">Urlaub beantragen</button><button class="btn ghost" type="button" id="calendarTransfer" hidden>Teilurlaub ins Folgejahr übertragen lassen</button></div></div>
+        <div class="card section-card"><div class="card-head"><h2>Anträge &amp; Entscheidungen</h2><p>Ein offener Antrag ist noch keine Genehmigung. Entscheidungen und Korrekturen bleiben im Verlauf erhalten.</p></div><div id="calendarRequests"></div></div><div class="card section-card"><h2>Regeltage &amp; Feiertage</h2><div id="calendarPatterns"></div><div id="calendarRegularHolidays"></div></div>
+        <div class="card section-card" id="calendarSettings" data-role="boss"><details><summary>Kalendereinstellungen und begründete Korrekturen</summary><p id="calendarSettingsNote" class="notice"></p>
+          <form id="calendarRegionForm"><div class="form-grid"><div class="field"><label for="calendarRegion">Bundesland des maßgeblichen Arbeitsorts</label><select id="calendarRegion"><option value="BW">Baden-Württemberg</option><option value="BY">Bayern</option><option value="BE">Berlin</option><option value="BB">Brandenburg</option><option value="HB">Bremen</option><option value="HH">Hamburg</option><option value="HE">Hessen</option><option value="MV">Mecklenburg-Vorpommern</option><option value="NI">Niedersachsen</option><option value="NW">Nordrhein-Westfalen</option><option value="RP">Rheinland-Pfalz</option><option value="SL">Saarland</option><option value="SN">Sachsen</option><option value="ST">Sachsen-Anhalt</option><option value="SH">Schleswig-Holstein</option><option value="TH">Thüringen</option></select></div><div class="field"><label for="calendarRegionFrom">Gültig ab</label><input id="calendarRegionFrom" type="date" required></div><div class="field"><label for="calendarRegionNote">Grund / Arbeitsort</label><input id="calendarRegionNote" maxlength="500" required></div></div><button class="btn ghost" type="submit">Arbeitsort speichern</button></form>
+          <form id="calendarRateForm"><div class="form-grid"><div class="field"><label for="calendarRateYear">Jahr</label><input id="calendarRateYear" type="number" min="2026" max="2100" required></div><div class="field"><label for="calendarRate">Geprüfter Bruttostundensatz in €</label><input id="calendarRate" type="text" inputmode="decimal" required></div><div class="field full"><label for="calendarRateNote">Quelle / Bestätigung des Rechtsstands</label><input id="calendarRateNote" maxlength="500" required></div></div><details><summary>Geprüfte Jahreswerte: Minijobgrenze und Abgaben</summary><p>Einmal pro Jahr anhand der geltenden Werte bestätigen. Bereits abgeschlossene Jahre werden nicht rückwirkend geändert.</p><div class="form-grid"><div class="field"><label>Minijobgrenze pro Monat in €<input data-year-rule="limit" type="text" inputmode="decimal" required></label></div><div class="field"><label>RV-Mindestbemessung in €<input data-year-rule="rvMinBase" type="text" inputmode="decimal" required></label></div><div class="field"><label>KV-Pauschale in %<input data-year-rule="kv" type="text" inputmode="decimal" required></label></div><div class="field"><label>RV Arbeitgeber in %<input data-year-rule="rvEmployer" type="text" inputmode="decimal" required></label></div><div class="field"><label>RV Gesamtbeitrag in %<input data-year-rule="rvFull" type="text" inputmode="decimal" required></label></div><div class="field"><label>U1 in %<input data-year-rule="u1" type="text" inputmode="decimal" required></label></div><div class="field"><label>U2 in %<input data-year-rule="u2" type="text" inputmode="decimal" required></label></div><div class="field"><label>Insolvenzgeldumlage in %<input data-year-rule="insolvency" type="text" inputmode="decimal" required></label></div><div class="field"><label>Pauschsteuer in %<input data-year-rule="flatTax" type="text" inputmode="decimal" required></label></div></div></details><button class="btn ghost" type="submit">Jahreswerte bestätigen</button></form>
+          <form id="calendarAdjustmentForm"><div class="form-grid"><div class="field"><label for="calendarAdjustmentYear">Urlaubsjahr</label><input id="calendarAdjustmentYear" type="number" min="2020" max="2100" required></div><div class="field"><label for="calendarAdjustmentDays">Korrektur in Tagen (+ / −)</label><input id="calendarAdjustmentDays" type="text" inputmode="decimal" required></div><div class="field full"><label for="calendarAdjustmentNote">Nachvollziehbarer Grund</label><input id="calendarAdjustmentNote" maxlength="1000" required></div></div><button class="btn ghost" type="submit">Korrektur dokumentieren</button></form>
+        </details></div>
+        <div class="card section-card" id="calendarTestTools" hidden><h3>Testkonto</h3><p>Diese Funktionen betreffen ausschließlich dein Testkonto.</p><div class="btn-row"><button class="btn ghost" type="button" id="calendarTestReplay">Einführung erneut ausprobieren</button><button class="btn ghost" type="button" id="calendarTestExamples">Weihnachtswoche ansehen</button></div></div>
+      </section>
+
       <!-- ===== Arbeitsvertrag (beide Rollen) ===== -->
       <section class="page" id="vertrag" data-role="shared">
         <div class="card section-card" id="addendumCard" hidden>
           <div class="card-head">
             <h2>Nachtrag zum Arbeitsvertrag</h2>
-            <p>Einsatzplanung, Absagen und Wochenarbeitszeit. Beide Seiten unterschreiben in Office mit dem Finger, danach steht er als PDF bereit.</p>
+            <p>Beide Seiten unterschreiben dasselbe Dokument mit dem Finger. Der neue Nachtrag und frühere unterschriebene Nachträge bleiben jeweils als PDF verfügbar.</p>
           </div>
           <div id="addendumStatus"><div class="notice">Wird geladen …</div></div>
           <div class="btn-row" id="addendumActions"></div>
@@ -2175,7 +2218,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <button type="button" role="tab" data-lohn-tab="abgaben">Abgaben</button>
         </div>
 
-        <div class="card section-card lohn-pane" data-lohn-pane="abrechnung">
+        <div class="card section-card lohn-pane" data-lohn-pane="abrechnung"><div class="lohn-block" id="calendarPayrollCheck"><h2>Abrechnung prüfen</h2><p>1. Offene Anträge entscheiden. 2. Berechnete Beträge prüfen und übernehmen. 3. Monat abschließen und den gespeicherten Lohnzettel herunterladen.</p><div id="calendarPayrollLines"></div><p id="calendarPayrollStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button class="btn ghost" type="button" id="calendarPayrollReload">Neu berechnen</button><button class="btn ghost" type="button" data-page="kalender">Offene Punkte im Kalender</button><button class="btn primary" type="button" id="calendarPayrollConfirm">Berechnung geprüft – übernehmen</button></div></div>
           <div class="lohn-block">
             <div class="quick-grid">
               <div class="quick"><span>Ist-Arbeitszeit</span><b id="payrollHours">0:00 h</b></div>
@@ -2926,6 +2969,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   <button class="tab" type="button" data-page="dashboard"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.2 12 4.5l8 6.7"/><path d="M6.2 9.6V19h11.6V9.6"/><path d="M10 19v-5h4v5"/></svg><span>Start</span></button>
   <button class="tab" type="button" data-page="telefon"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/></svg><span>Telefon</span></button>
   <button class="tab" type="button" data-page="zeiten"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="13" height="13" rx="2"/><path d="M7 3v4M13 3v4M3.5 10h13"/><circle cx="17" cy="16.5" r="4.2"/><path d="M17 14.6v2l1.3 1"/></svg><span>Zeiten</span></button>
+  <button class="tab" type="button" data-page="kalender"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M7.5 3v4M16.5 3v4M3.5 10h17M8 14h2M14 14h2M8 17h2"/></svg><span>Kalender</span></button>
   <button class="tab" type="button" id="tabMore" aria-expanded="false" aria-controls="moreSheet"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Mehr</span></button>
 </nav>
 <!-- 5. Versuch: Ergebnisleiste statt Navigation -->
@@ -3001,6 +3045,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     <div class="actions" id="addendumViewActions"><button class="btn primary" type="button" id="addendumPdf">Als PDF herunterladen</button></div>
   </div>
 </dialog>
+
+
+
+<dialog id="regularPatternDialog" class="form-dialog" aria-labelledby="regularPatternTitle"><div class="picker-head"><strong id="regularPatternTitle">Deine drei Regeltage</strong><button class="picker-close" id="regularPatternClose" type="button">Schließen ×</button></div><div class="form-dialog-body"><p id="regularPatternIntro"></p><form id="regularPatternForm"><div id="regularDayChoices"></div><label class="check-row"><input id="regularPatternCheck" type="checkbox" required><span>Ich lege diese drei Wochentage als meine Regelverteilung mit je zwei Stunden fest. Die Erklärung wird Kim mitgeteilt und bleibt mit Datum gespeichert.</span></label><p class="status-text" id="regularPatternStatus" aria-live="polite"></p><button class="btn primary" id="regularPatternSave" type="submit">Diese drei Regeltage festlegen</button></form></div></dialog>
+<dialog id="regularOverdueDialog" class="form-dialog" aria-labelledby="regularOverdueTitle"><div class="form-dialog-body"><h2 id="regularOverdueTitle">Bitte deine Arbeitswoche nachtragen</h2><p id="regularOverdueText"></p><button class="btn primary" type="button" id="regularOverdueGo">Jetzt Zeiten prüfen &amp; nachtragen</button></div></dialog>
+<dialog id="leaveRequestDialog" class="form-dialog" aria-labelledby="leaveRequestTitle"><div class="picker-head"><strong id="leaveRequestTitle">Abwesenheit beantragen</strong><button class="picker-close" type="button" id="leaveRequestClose">Schließen ×</button></div><div class="form-dialog-body"><form id="leaveRequestForm"><div class="form-grid"><div class="field full"><label for="leaveKind">Antrag</label><select id="leaveKind"><option value="vacation">Urlaub beantragen</option><option value="holiday">Feiertagsausfall prüfen lassen</option></select></div><div class="field"><label for="leaveFrom">Von</label><input id="leaveFrom" type="date" required></div><div class="field"><label for="leaveTo">Bis</label><input id="leaveTo" type="date" required></div></div><p id="leaveFormHint" class="calendar-hint"></p><div id="leaveDateChoices" class="leave-date-choices"></div><div class="field"><label for="leaveNote">Hinweis / Grundlage des Antrags</label><textarea id="leaveNote" maxlength="500" rows="3"></textarea></div><p id="leaveFormStatus" class="status-text" aria-live="polite"></p><button class="btn primary" id="leaveRequestSend" type="submit">Antrag absenden</button></form></div></dialog>
+<dialog id="leaveDecisionDialog" class="form-dialog" data-role="boss" aria-labelledby="leaveDecisionTitle"><div class="picker-head"><strong id="leaveDecisionTitle">Antrag prüfen</strong><button class="picker-close" type="button" id="leaveDecisionClose">Schließen ×</button></div><div class="form-dialog-body"><p class="notice">Vorschläge sind noch keine endgültige Abrechnung. Solltage, Referenzverdienst, Provisionskorrekturen, Zielbonus und unverschuldete Ausfälle prüfen. Keine fiktiven Kundentermine anlegen.</p><div id="leaveDecisionDays"></div><div class="field"><label for="leaveDecisionNote">Entscheidungsgrund / geprüfte Berechnungsgrundlage</label><textarea id="leaveDecisionNote" maxlength="1000" rows="3"></textarea></div><label class="check-row"><input id="leaveDecisionConfirm" type="checkbox"><span>Ich habe die tatsächlichen Solltage und die vollständige Vergütung einschließlich relevanter variabler Bestandteile geprüft.</span></label><label class="check-row"><input id="leaveAdvance" type="checkbox"><span>Falls erforderlich: freiwilligen Vorgriff auf noch nicht verfügbaren Urlaub ausdrücklich genehmigen.</span></label><label class="check-row"><input id="leaveExtraDays" type="checkbox"><span>Falls erforderlich: abweichend mehr als drei Soll-Arbeitstage in dieser Woche bestätigen.</span></label><p id="leaveDecisionStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button id="leaveApprove" class="btn primary" type="button">Geprüft genehmigen</button><button id="leaveReject" class="btn ghost" type="button">Mit Grund ablehnen</button><button id="leaveCancel" class="btn ghost" type="button">Stornierung bestätigen</button></div><div id="leavePaidWrap"><hr><label for="leavePaidDate">Tatsächlich ausgezahlt am</label><input id="leavePaidDate" type="date"><button id="leaveMarkPaid" class="btn ghost" type="button">Ausgeführte Zahlung vermerken</button><small>Dieser Vermerk löst keine Banküberweisung aus.</small></div></div></dialog>
 
 <!-- Kontaktdaten erfragen: kein Terminabschluss -->
 <dialog id="contactDetailsDialog" class="form-dialog" aria-labelledby="contactDetailsTitle" closedby="none">
@@ -3089,6 +3140,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
 <script src="../date-inputs.js"></script>
 <script src="week-planner.js"></script>
+<script src="absence-calendar.js"></script>
+<script src="regular-week.js"></script>
+<script src="guided-intro.js"></script>
 <script>
 (() => {
   "use strict";
@@ -3101,8 +3155,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const COMMISSION_RATE_CENTS = 500;
   const MINIJOB_LIMIT = 603;                 // Geringfügigkeitsgrenze 2026 je Monat
   // Ab 2027: Mindestlohn 14,60 € → Stundenlohn mindestens 14,60 €, Minijob-Grenze 633 €
-  const hourlyRateCents = month => (String(month || "") >= "2027-01" ? 1460 : HOURLY_RATE_CENTS);
-  const minijobLimit = month => (String(month || "") >= "2027-01" ? 633 : MINIJOB_LIMIT);
+  const hourlyRateCents = month => state.payRates?.filter(r=>r.year<=Number(String(month||"2026").slice(0,4))).sort((a,b)=>b.year-a.year)[0]?.rate || (String(month || "") >= "2027-01" ? 1460 : HOURLY_RATE_CENTS);
+  const uiYearRules=month=>state.payrollYears?.find(r=>r.year===Number(String(month).slice(0,4)))||{kv:.13,rvEmployer:.15,rvFull:.186,rvMinBase:17500,u1:.008,u2:.0022,insolvency:.0015,flatTax:.02,limit:String(month)>="2027-01"?63300:60300};
+  const minijobLimit=month=>uiYearRules(month).limit/100;
   const RV_MIN_BASE_CENTS = 17500;           // Mindestbeitragsbemessungsgrundlage (§ 163 Abs. 8 SGB VI)
   const RV_FULL_RATE = 0.186;
   const RV_EMPLOYER_RATE = 0.15;
@@ -3157,6 +3212,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     termine: ["Terminvereinbarung", "Filialen, Videocalls und Buchungslinks"],
     telefon: ["Telefonliste", "Kontakte anrufen und Ergebnisse zurückmelden"],
     kundenarchiv: ["Kundenarchiv", "Erledigte Kontakte"],
+    kalender: ["Kalender", "Einsätze, Urlaub und Feiertage"],
     vertrag: ["Meine Unterlagen", "Arbeitsvertrag und Nachtrag"],
     einstellungen: ["Einstellungen", "Ziele und zentrale Datenhaltung"]
   };
@@ -3203,6 +3259,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     adminExpanded: new Set(), // aufgeklappte Boss-Kontaktzeilen
     phoneFixDrafts: {},       // Boss: neue Nummern für Rückläufer mit falschen Kontaktdaten
     callsLoaded: false,       // Telefonliste mindestens einmal geladen
+    leaveAccounts: {}, payRates: [],
     contactHistory: [],
     adminCalls: { open: [], returned: [], archived: [], kk: [] },
     pool: [],                 // Kontakt-Pakete je Filiale (Anzahl)
@@ -3231,7 +3288,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const d = window.SmartADMWeekPlanner.details(plan);
     return {...d,note:[d.reason ? `Wochenbegründung: ${d.reason}` : "",d.note].filter(Boolean).join(" · ")};
   };
-  const displayedTasks = () => { const task = weeklyPlanner?.task(); return task && !state.tasks.some(t => String(t.id) === String(task.id)) ? [task, ...state.tasks] : state.tasks; };
+  const displayedTasks = () => { const tasks=state.tasks.filter(t=>!regularWeek.data?.active||!t.weekPlanning);const task = regularWeek.data?.active?null:weeklyPlanner?.task();return task&&!tasks.some(t=>String(t.id)===String(task.id))?[task,...tasks]:tasks; };
 
   /* ================= Helfer ================= */
 
@@ -3382,6 +3439,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const toEntry = row => ({
     id: String(row.id),
     date: row.work_date,
+    regularSlot:row.regular_slot||null,
+    entryState:row.entry_state||"final",submissionId:row.submission_id||null,
     start: row.start_time,
     end: row.end_time,
     break: Number(row.break_minutes || 0),
@@ -3395,6 +3454,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     type: row.absence_type,
     paidMinutes: Number(row.paid_minutes || 0),
     paidAmountCents: Number(row.paid_amount_cents || 0),
+    requestId:row.leave_request_id||null,holidayId:row.regular_holiday_id||null,
     note: row.note || ""
   });
   const toAbsences = rows => asArray(rows).map(toAbsence);
@@ -3426,6 +3486,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     closeMobileMenu();
     if (pageId === "boss-dashboard") renderDashboardWidgets();
     if (pageId === "einstellungen") loadSecurityMonitor();
+    if (pageId === "kalender") officeCalendar.load();
+    if(pageId==="lohn")loadCalendarPayroll();
     if (pageId === "vertrag" || pageId === "mitarbeiter") loadContracts();
     if (pageId === "organisation" && (state.taskExpanded.size || state.showDoneTasks)) {
       state.taskExpanded.clear();
@@ -3498,7 +3560,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   /* ================= Boss-Dashboard: Widgets (wie SmartADM 5 Sales) ================= */
 
   const WIDGET_STORE = "smartadm.office.widgets.v1";
-  const WIDGET_KEYS = ["heute", "fristen", "kontakte", "mitarbeiter", "aufgabenBoss", "aufgabenAssistenz", "einsatzplan"];
+  const WIDGET_KEYS = ["heute", "fristen", "kontakte", "mitarbeiter", "aufgabenBoss", "aufgabenAssistenz", "einsatzplan", "kalender"];
   const WIDGET_MAX = WIDGET_KEYS.length;
   // Wie viele Einträge eine Karte zeigt, hängt von ihrer Größe ab
   let widgetSize = "normal";
@@ -3508,7 +3570,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const saved = JSON.parse(localStorage.getItem(WIDGET_STORE) || "null");
     if (Array.isArray(saved)) widgets = saved.filter(k => WIDGET_KEYS.includes(k));
     // „Heute“ und „Fristen“ einmalig nach vorne holen; bei mehr als 6 weicht zuerst „Einsatzplan“.
-    ["fristen", "heute"].forEach(key => {
+    ["kalender", "fristen", "heute"].forEach(key => {
       const flag = `smartadm.office.widgets.added.${key}`;
       if (localStorage.getItem(flag)) return;
       if (!widgets.includes(key)) widgets.unshift(key);
@@ -3525,6 +3587,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const saveWidgets = () => { try { localStorage.setItem(WIDGET_STORE, JSON.stringify(widgets)); } catch { /* nur für diese Sitzung */ } };
 
   const WIDGET_ICONS = {
+    kalender:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h2M14 14h2M8 17h2"/>',
     kontakte: '<path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/>',
     mitarbeiter: '<circle cx="9" cy="8" r="3"/><path d="M3.8 19c.6-3.5 2.3-5.2 5.2-5.2s4.6 1.7 5.2 5.2"/><circle cx="17" cy="9" r="2.3"/><path d="M15.6 14.2c2.8-.6 4.6.9 5 3.8"/>',
     aufgabenBoss: '<path d="m5.2 12 4.2 4.2L18.8 6.8"/>',
@@ -3869,7 +3932,18 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     return [fmtDate(item.date).slice(0, 6), ""];
   }
 
+  function miniCalendarHtml(){
+    const month=isoMonth(),year=Number(month.slice(0,4)),m=Number(month.slice(5,7)),first=new Date(Date.UTC(year,m-1,1)),offset=(first.getUTCDay()+6)%7,days=new Date(Date.UTC(year,m,0)).getUTCDate();
+    const id=state.role==='boss'?state.selectedUserId:state.bootstrappedFor,data=state.calendarDataOwner===id?state.calendarData:null;
+    return '<div class="mini-calendar">'+['Mo','Di','Mi','Do','Fr','Sa','So'].map(d=>'<span>'+d+'</span>').join('')+'<span></span>'.repeat(offset)+Array.from({length:days},(_,i)=>{
+      const date=month+'-'+pad(i+1),weekday=(offset+i)%7,pattern=state.regularPatterns?.filter(p=>p.valid_from&&p.valid_from<=date).sort((a,b)=>a.valid_from.localeCompare(b.valid_from)||a.id-b.id).at(-1);
+      const marked=pattern?.weekdays.includes(weekday+1)||data?.absences.some(a=>a.absence_date===date)||data?.holidays.some(h=>h.date===date);
+      return `<button type="button" class="${weekday>4?'weekend ':''}${date===isoDate()?'today ':''}${marked?'marked':''}" data-quick-calendar="${date}" aria-label="${esc(fmtDate(date))} im Kalender öffnen">${i+1}</button>`;
+    }).join('')+'</div>';
+  }
+  document.addEventListener('click',event=>{const button=event.target.closest('[data-quick-calendar]');if(button){showPage('kalender');officeCalendar.select(button.dataset.quickCalendar);}});
   const WIDGETS = {
+    kalender:{title:"Kalender",page:"kalender",text:"Regeltage, Urlaub und Feiertage",render(){return {sub:fmtMonth(isoMonth()),body:miniCalendarHtml()+widgetRow('data-page="kalender"','Kalender öffnen','','','Arbeitswoche, Urlaubsanträge und Feiertage gemeinsam ansehen')}}},
     heute: {
       title: "Heute", page: "einsatz", text: "Wer heute telefoniert, Anrufversuche und Termine des Tages",
       render() {
@@ -3887,18 +3961,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         }).join("");
         const next = plans.filter(p => p.plan_date > today && p.status === "planned").sort(byPlanDate)[0];
         const totals = Object.values(act).reduce((t, a) => ({ attempts: t.attempts + a.attempts, termine: t.termine + a.termine }), { attempts: 0, termine: 0 });
-        // Arbeitszeit heute: eingetragene Zeiten, sonst geschätzt von der ersten bis zur letzten Aktivität
-        let workMins = 0, estimated = false;
-        people.forEach(id => {
-          const recorded = id === state.selectedUserId
-            ? state.employeeEntries.filter(e => e.date === today).reduce((sum, e) => sum + Number(e.minutes || 0), 0) : 0;
-          if (recorded) { workMins += recorded; return; }
-          const a = act[id];
-          const plan = plans.find(p => p.plan_date === today && p.clerk_user_id === id && p.started_at);
-          const started = [a?.first, plan ? parseTimestamp(plan.started_at) : null].filter(Boolean).sort((x, y) => x - y)[0];
-          if (started && a?.last && a.last > started) { workMins += Math.round((a.last - started) / 60000); estimated = true; }
-        });
-        const workText = workMins ? `${estimated ? "≈ " : ""}${fmtMinutes(workMins)}` : "–";
+        const workMins=state.employeeEntries.filter(e=>e.date===today).reduce((n,e)=>n+e.minutes,0);
+        const workText=fmtMinutes(workMins);
         const day = new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "2-digit", month: "2-digit" }).format(new Date());
         return {
           sub: day,
@@ -3907,7 +3971,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             + `<div class="widget-zahlen">
                 <div class="kennzahl-zeile"><span>Anrufversuche heute</span><b>${totals.attempts}</b></div>
                 <button class="kennzahl-zeile kennzahl-link" type="button" data-heute-termine title="Welche Kontakte zählen?"><span>Termine heute gesetzt</span><b>${totals.termine}</b></button>
-                <div class="kennzahl-zeile" title="${estimated ? "Noch nicht eingetragen – geschätzt von der ersten bis zur letzten Aktivität" : "Eingetragene Arbeitszeit"}"><span>Arbeitszeit heute${estimated ? " (bisher)" : ""}</span><b>${workText}</b></div>
+                <div class="kennzahl-zeile" title="Selbst eingetragene Arbeitszeit des ausgewählten Mitarbeiters"><span>Arbeitszeit heute · ausgewählt</span><b>${workText}</b></div>
                 <div class="kennzahl-zeile"><span>Offene Kontakte</span><b>${(state.adminCalls.open || []).length}</b></div>
                 <div class="kennzahl-zeile"><span>Nächster Einsatz</span><b>${next ? esc(`${fmtDayShort(next.plan_date)} · ${next.start_time}`) : "–"}</b></div>
               </div>`
@@ -4234,7 +4298,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   /* ================= Mitarbeiter: Erfassung ================= */
 
-  const dateRange = () => ({ min: shiftDays(-MAX_BACKDATE_DAYS), max: shiftDays(0) });
+  const dateRange = () => ({ min:regularWeek.data?.correctionOpen?regularWeek.data.week:shiftDays(-MAX_BACKDATE_DAYS),max:shiftDays(0)});
   const isEditable = date => { const r = dateRange(); return date >= r.min && date <= r.max; };
 
   function applyDateLimits() {
@@ -4246,7 +4310,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
 
   function renderEmployeeDashboard() {
-    const { goalHours, goalAppointments, cutAppointments } = state.settings;
+    let {goalHours,goalAppointments,cutAppointments}=state.settings;
+    const goals=state.regularGoalsByMonth?.[isoMonth()];if(goals){goalHours=(goals.baseMinutes-goals.holidayMinutes)/60;goalAppointments=goals.appointments;cutAppointments=goals.cutAppointments;}
     const month = inMonth(state.entries, isoMonth());
     const { mins, appts: entryAppts, days } = summarize(month);
     const ownAdjust = adjustSum(adjustmentsFor(state.ownAdjustments, isoMonth()));
@@ -4286,13 +4351,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
     return [...list].sort(byNewest).map(e => {
       const actions = !withActions ? "" : `<td><div class="row-actions">${
-        isEditable(e.date)
+        isEditable(e.date)&&!e.submissionId
           ? `<button class="icon-btn" type="button" data-edit="${e.id}" title="Eintrag bearbeiten" aria-label="Eintrag bearbeiten">${ICONS.edit}</button>
              <button class="icon-btn danger" type="button" data-delete="${e.id}" title="Eintrag löschen" aria-label="Eintrag löschen">${ICONS.trash}</button>`
           : ""
       }</div></td>`;
       return `<tr>
-        <td>${esc(fmtDate(e.date))}</td>
+        <td>${esc(fmtDate(e.date))}${e.entryState==='draft'?'<br><span class="chip warn">Entwurf · noch nicht abgesendet</span>':e.submissionId?'<br><span class="chip good">Abgesendet</span>':''}</td>
         <td>${esc(e.start || "–")}</td>
         <td>${esc(e.end || "–")}</td>
         <td>${e.break} min</td>
@@ -4313,6 +4378,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         api("/appointment-adjustments").catch(() => [])
       ]);
       state.entries = toEntries(entries);
+      await regularWeek.load();
       state.ownAdjustments = asArray(adjustments);
       renderEmployeeDashboard();
     } catch (error) {
@@ -4344,6 +4410,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     delete save.dataset.label;
     save.textContent = "Eintrag speichern";
     $("editId").value = "";
+    $("entryRegularSlot").value="";$("entryActualHint").textContent="";$("entryManualHours").value="";$("entryManualHoursField").hidden=!regularWeek.data?.active;
     $("start").value = "";
     $("end").value = "";
     ["break", "appointments"].forEach(id => ($(id).value = 0));
@@ -4375,6 +4442,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   ["start", "end"].forEach(id => $(id).addEventListener("change", () => {
     const el = $(id);
+    if(regularWeek.data?.active)return;
     const rounded = roundUpTime(el.value);
     if (rounded !== el.value) el.value = rounded;
   }));
@@ -4383,6 +4451,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const entry = state.entries.find(e => e.id === id);
     if (!entry) return;
     $("editId").value = entry.id;
+    $("entryRegularSlot").value=entry.regularSlot||"";$("entryManualHours").value=decimal(entry.minutes/60,2);
     FORM_FIELDS.forEach(key => ($(key).value = entry[key]));
     applyDateLimits();
     $("saveBtn").textContent = "Änderungen speichern";
@@ -4428,8 +4497,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       return alert(`Das Datum muss zwischen ${fmtDate(dateRange().min)} und heute liegen.`);
     }
 
-    $("start").value = roundUpTime($("start").value);
-    $("end").value = roundUpTime($("end").value);
+    if(!regularWeek.data?.active)$("start").value = roundUpTime($("start").value);
+    if(!regularWeek.data?.active)$("end").value = roundUpTime($("end").value);
     const start = $("start").value;
     const end = $("end").value;
     const breakMinutes = Number($("break").value || 0);
@@ -4439,7 +4508,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (!wholeNumber(appointments)) return alert("Bitte die Termine als ganze Zahl eingeben.");
     if (end <= start) return alert("Das Ende muss nach dem Beginn liegen.");
 
-    const minutes = minutesBetween(start, end, breakMinutes);
+    const actualDuration=minutesBetween(start,end,breakMinutes);
+    const minutes=regularWeek.data?.active?Math.round(Number($("entryManualHours").value.replace(",","."))*60):actualDuration;
+    if(regularWeek.data?.active&&(!Number.isInteger(minutes)||minutes<=0))return alert("Bitte deine tatsächlich geleisteten Arbeitsstunden eingeben.");
+    if(regularWeek.data?.active&&Math.abs(minutes-actualDuration)>1)return alert("Die eingetragenen Stunden passen noch nicht zu Beginn, Ende und Pause im Arbeitsnachweis. Bitte deine Angaben prüfen.");
     if (minutes <= 0) return alert("Die Pause ist so lang wie die Arbeitszeit. Bitte Beginn, Ende und Pause prüfen.");
 
     const existing = state.entries.find(e => e.id === $("editId").value);
@@ -4452,7 +4524,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
     // Jeder gesetzte Termin wird vergütet. Der Worker speichert den Wert weiterhin in beiden Feldern.
     const payload = {
-      work_date: date, start_time: start, end_time: end, break_minutes: breakMinutes,
+      work_date: date, work_minutes:minutes, regular_slot:$("entryRegularSlot").value||undefined, start_time: start, end_time: end, break_minutes: breakMinutes,
       appointments, commissionable_appointments: appointments
     };
 
@@ -4531,6 +4603,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     }
 
     state.selectedUserId = userId;
+    state.regularPatterns=[];state.regularCredits=[];
+    loadLeavePayrollSummary();
+    if($('kalender').classList.contains('active'))officeCalendar.load();
     renderEmployeeSelects();
     setProfileInputs(state.profiles[userId]);
 
@@ -4548,6 +4623,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     }
 
     await Promise.all([loadEmployeeData(userId), loadClosings(userId), loadContributionReports(userId)]);
+    await loadCalendarPayroll();
     if (document.querySelector("#vertrag.active, #mitarbeiter.active")) loadContracts();
   }
 
@@ -4582,6 +4658,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       alert("Mitarbeiterdaten konnten nicht geladen werden: " + error.message);
     }
     renderEmployeeData();
+    if(state.selectedUserId===userId)await loadCalendarPayroll();
   }
 
   function renderEmployeeData() {
@@ -4674,6 +4751,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const month = event.target.value || isoMonth();
     $("bossMonth").value = month;
     $("payrollMonth").value = month;
+    state.payrollPreparation=null;loadLeavePayrollSummary();loadCalendarPayroll();
     applyMonthBounds();
     renderEmployeeData();
   }));
@@ -4864,6 +4942,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
 
   function calculateVacationStats(entries, absences, employment, month) {
+    const cached=state.leaveAccounts?.[state.selectedUserId]?.[month];
+    if(cached)return cached;
     const year = Number(month.slice(0, 4));
     const yearStart = `${year}-01-01`;
     const yearEnd = `${year}-12-31`;
@@ -4948,9 +5028,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <td>${fmtMinutes(a.paidMinutes)}</td>
           <td>${euro(a.paidAmountCents / 100)}</td>
           <td>${esc(a.note || "–")}</td>
-          <td><div class="row-actions">
+          <td><div class="row-actions">${a.requestId||a.holidayId?'<button class="btn ghost small" type="button" data-page="kalender">Im Kalender ansehen</button>':`
             <button class="icon-btn" type="button" data-absence-edit="${a.id}" title="Bearbeiten">${ICONS.edit}</button>
-            <button class="icon-btn danger" type="button" data-absence-delete="${a.id}" title="Löschen">${ICONS.trash}</button>
+            <button class="icon-btn danger" type="button" data-absence-delete="${a.id}" title="Löschen">${ICONS.trash}</button>`}
           </div></td>
         </tr>`).join("")
       : '<tr><td class="empty" colspan="6">Keine Abwesenheiten in diesem Kalenderjahr.</td></tr>';
@@ -5068,8 +5148,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const adjustSum = rows => asArray(rows).reduce((sum, r) => sum + Number(r.delta || 0), 0);
 
   function calculatePayroll(list, profile, month, employment = {}, absences = [], adjustments = []) {
+    const yr=uiYearRules(month);
     // Arbeitsstunden × Stundenlohn + alle gesetzten Termine × Terminvergütung
     // Termin-Korrekturen (Kundenabsage) ziehen einzelne Termine wieder ab.
+    list=list.filter(e=>e.entryState!=="draft");
     const { mins, appts: entryAppts, days } = summarize(list);
     const apptAdjust = adjustSum(adjustments);
     const appts = Math.max(0, entryAppts + apptAdjust);
@@ -5081,7 +5163,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const holidayPay = absenceMoney("holiday");
     const paidLeavePay = absenceMoney("paid_leave");
     const absencePay = vacationPay + sickPay + holidayPay + paidLeavePay;
-    const targetBonus = 0;
+    const targetGross=['user_3JNFepxrEB8HUQ0ADo9FHDNFC5u','user_3JNA7KXodzRQQ7I2egc5wdCfLVv'].includes(profile.clerk_user_id||state.selectedUserId)&&month>='2026-10'&&month<='2026-12'?60000:0;
+    const targetCount=state.regularGoalsByMonth?.[month]?.cutAppointments||50;
+    const targetBonus=targetGross&&appts>=targetCount?Math.max(0,targetGross-timePay-commission-absencePay):0;
     const gross = timePay + commission + targetBonus + absencePay;
     const paidMinutes = absences.reduce((sum, a) => sum + a.paidMinutes, 0);
     const count = type => absences.filter(a => a.type === type).length;
@@ -5091,16 +5175,16 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     let employeeRv = 0;
     let rvMinBase = 0;
     if (profile.employeeRv && gross > 0) {
-      const base = Math.round((RV_MIN_BASE_CENTS * svDays) / 30);
+      const base = Math.round((yr.rvMinBase * svDays) / 30);
       if (profile.rvMinBaseApplies && gross < base) rvMinBase = base;
-      employeeRv = Math.max(0, Math.round((rvMinBase || gross) * RV_FULL_RATE) - Math.round(gross * RV_EMPLOYER_RATE));
+      employeeRv = Math.max(0, Math.round((rvMinBase || gross) * yr.rvFull) - Math.round(gross * yr.rvEmployer));
     }
     const employee = {
       employeeRv,
-      employeeFlatTax: profile.flatTax && profile.flatTaxEmployee ? Math.round(gross * 0.02) : 0
+      employeeFlatTax: profile.flatTax && profile.flatTaxEmployee ? Math.round(gross * yr.flatTax) : 0
     };
     const employer = Object.fromEntries(
-      Object.entries(EMPLOYER_RATES).map(([key, rate]) => [key, Math.round(gross * rate(profile))])
+      Object.entries(EMPLOYER_RATES).map(([key,rate])=>{const rates={employerKv:profile.employerKv?yr.kv:0,employerRv:profile.employerRv?yr.rvEmployer:0,u1:profile.u1?yr.u1:0,u2:profile.u2?yr.u2:0,insolvency:profile.insolvency?yr.insolvency:0,employerFlatTax:profile.flatTax&&!profile.flatTaxEmployee?yr.flatTax:0};return [key,Math.round(gross*(key==='accident'?rate(profile):rates[key]))]})
     );
     const total = obj => Object.values(obj).reduce((a, b) => a + b, 0);
     const employeeDeductions = total(employee);
@@ -5134,7 +5218,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const [y, m] = month.split("-").map(Number);
     const from = isoMonth(new Date(y, m - 12, 1));
     const months = {};
-    entries.forEach(e => {
+    entries.filter(e=>e.entryState!=="draft").forEach(e => {
       const key = e.date.slice(0, 7);
       if (key < from || key > month) return;
       months[key] ??= { mins: 0, appts: 0, absence: 0 };
@@ -5167,7 +5251,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const selectedEmployment = () => state.employeeProfiles[state.selectedUserId] || {};
 
   function currentPayroll() {
-    const month = payrollMonth();
+    const month = payrollMonth(),prepared=state.payrollPreparation;
+    if(prepared?.owner===state.selectedUserId&&prepared.month===month&&prepared.payroll)return prepared.payroll;
     return calculatePayroll(
       inMonth(state.employeeEntries, month), readProfileInputs(), month, selectedEmployment(),
       inMonthAbsences(state.employeeAbsences, month), adjustmentsFor(state.employeeAdjustments, month)
@@ -5271,12 +5356,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
 
   function contributionBreakdownFromGross(grossEuros, profile, month = payrollMonth(), employment = selectedEmployment()) {
+    const yr=uiYearRules(month);
     const gross = Math.max(0, Math.round((Number(grossEuros) || 0) * 100));
     const svDays = insuredDays(month, employment?.start_date, employment?.end_date);
     let employeeRv = 0;
     if (profile.employeeRv && gross > 0) {
-      const base = Math.round((RV_MIN_BASE_CENTS * svDays) / 30);
-      employeeRv = Math.max(0, Math.round((profile.rvMinBaseApplies && gross < base ? base : gross) * RV_FULL_RATE) - Math.round(gross * RV_EMPLOYER_RATE));
+      const base = Math.round((yr.rvMinBase * svDays) / 30);
+      employeeRv = Math.max(0, Math.round((profile.rvMinBaseApplies && gross < base ? base : gross) * yr.rvFull) - Math.round(gross * yr.rvEmployer));
     }
     const kv = profile.employerKv ? Math.round(gross * 0.13) : 0;
     const rv = profile.employerRv ? Math.round(gross * RV_EMPLOYER_RATE) : 0;
@@ -5387,7 +5473,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const winTo = today < first ? isoPlusDays(first, -1) : today;
     const winFrom = [isoPlusDays(winTo, -27), job.start_date || ""].sort().pop();
     const winDays = winFrom <= winTo ? dayCount(winFrom, winTo) : 0;
-    const inWin = state.employeeEntries.filter(e => e.date >= winFrom && e.date <= winTo);
+    const inWin = state.employeeEntries.filter(e => e.entryState!=="draft"&&e.date >= winFrom && e.date <= winTo);
     const winMins = inWin.reduce((a, e) => a + Number(e.minutes || 0), 0);
     const winAppts = inWin.reduce((a, e) => a + Number(e.appointments || 0), 0);
     const trend = winDays >= 7 && winMins > 0;
@@ -5576,6 +5662,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       : "";
     renderContributionModule();
     renderCloseAsk();
+    const frozen=state.closings.some(c=>c.payroll_month===payrollMonth());
+    $("createPayrollPdf").textContent=frozen?"Lohnzettel herunterladen":"Vorschau als PDF";
   }
 
   let profileSaveTimer = null;
@@ -5615,6 +5703,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       if (lostEstimate && sent.accident && sent.accidentRateEstimate) setStatus("payrollSaveStatus", `Gespeichert – außer dem geschätzten BG-Satz. ${WORKER_HINT}`, true);
       else setStatus("payrollSaveStatus", "Gespeichert ✓");
       $("savePayrollProfile").hidden = true;
+      loadCalendarPayroll();
       return true;
     } catch (error) {
       console.error(error);
@@ -5627,6 +5716,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   profileInputs().forEach(input => input.addEventListener("input", () => {
     syncProfileDependencies();
+    state.payrollPreparation=null;
     renderPayrollPreview();
     if (!state.selectedUserId) return;
     clearTimeout(profileSaveTimer);
@@ -5712,7 +5802,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       employer: state.employer,
       employee: selectedEmployment(),
       adjustments: adjustmentsFor(state.employeeAdjustments, month),
-      entries: inMonth(state.employeeEntries, month)
+      entries: inMonth(state.employeeEntries, month).filter(e=>e.entryState!=="draft")
         .sort((a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start))
         .map(e => ({
           work_date: e.date, start_time: e.start, end_time: e.end, break_minutes: e.break,
@@ -5735,7 +5825,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     };
   }
 
-  $("createPayrollPdf").addEventListener("click", () => downloadDocumentPdf(payrollDocument(), false));
+  $("createPayrollPdf").addEventListener("click",()=>{
+    const row=state.closings.find(c=>c.payroll_month===payrollMonth());
+    if(row?.snapshot)return downloadDocumentPdf(closingDoc(row.snapshot,{month:row.payroll_month,closedAt:row.closed_at,userId:state.selectedUserId,slip:slipFor(row.payroll_month)}),false);
+    return downloadDocumentPdf(payrollDocument(),false);
+  });
   $("createEmployerPayrollPdf").addEventListener("click", () => downloadDocumentPdf(payrollDocument(), true));
 
   /* ================= Boss: Monatsarchiv ================= */
@@ -5814,6 +5908,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     else if (req?.status === "pending") { label = "Anfrage läuft …"; disabled = true; text = `${first} wurde am ${fmtDateTime(req.requested_at)} gefragt – noch keine Antwort.`; }
     else if (req?.status === "declined") { label = "Erneut fragen"; text = `${first} trägt noch nach${req.note ? `: „${req.note}“` : "."}`; }
     else { text = `${first} bekommt die Frage, ob alles eingetragen ist – bei Ja unterschreibt sie direkt den Gehaltsnachweis.`; }
+    const prepared=state.payrollPreparation;
+    if(!closed&&prepared?.active&&(!prepared.checked||prepared.blockers?.length)){disabled=true;text='Bitte zuerst oben die offenen Punkte und die Monatsberechnung prüfen.';}
     btn.textContent = label;
     btn.disabled = disabled;
     setText("closeAskStatus", text);
@@ -9171,6 +9267,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const SETTING_IDS = ["goalHours", "goalAppointments", "cutAppointments"];
 
   function applySettings(settings) {
+    if(Array.isArray(settings?.payRates))state.payRates=settings.payRates;
+    if(Array.isArray(settings?.payrollYears))state.payrollYears=settings.payrollYears;
     SETTING_IDS.forEach(id => {
       const value = Number(settings?.[id]);
       if (value >= 1) state.settings[id] = value;
@@ -10440,7 +10538,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
    * nach dem Monats-Cut. Ist = erfasste Arbeitszeit + Abwesenheiten (bezahlte Zeit bzw. 2 Std. je Tag).
    * Nacharbeit = vereinbarte Nacharbeit oder unentschuldigte Fehlstunden, abzüglich Mehrstunden danach.
    */
-  function computeWeekAccount({ entries = [], absences = [], reviews = [], start, end, cut = 0, today = isoDate() }) {
+  function computeWeekAccount({ entries = [], absences = [], reviews = [], patterns=[], start, end, cut = 0, today = isoDate() }) {
     if (!start || start > today) return { weeks: [], owed: 0 };
     const cuts = cutDates(entries, cut);
     const reviewFor = Object.fromEntries(reviews.map(r => [r.week_start, normalizeWeekReview(r)]));
@@ -10456,7 +10554,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         const cutDay = cuts[d.slice(0, 7)];
         if (cutDay && d > cutDay) released++; else active++;
       }
-      const soll = round5(CONTRACT_WEEKLY_HOURS * 60 * active / 7);
+      let soll = round5(CONTRACT_WEEKLY_HOURS * 60 * active / 7);
+      const effective=patterns.filter(p=>p.valid_from&&p.valid_from<=ws).sort((a,b)=>a.valid_from.localeCompare(b.valid_from)||a.id-b.id).at(-1);
+      if(effective){soll=0;for(let i=0;i<5;i++){const d=addDaysIso(ws,i);if(d<start||(end&&d>end))continue;const cutDay=cuts[d.slice(0,7)];if(cutDay&&d>cutDay)continue;const p=patterns.filter(p=>p.valid_from&&p.valid_from<=d).sort((a,b)=>a.valid_from.localeCompare(b.valid_from)||a.id-b.id).at(-1);if(p?.weekdays.includes(i+1))soll+=120;}}
+
       const inWeek = x => x.date >= ws && x.date <= we;
       const work = entries.filter(inWeek).reduce((sum, e) => sum + Number(e.minutes || 0), 0);
       const credit = Math.min(soll, absences.filter(inWeek)
@@ -10481,6 +10582,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       const [plans, account] = await Promise.all([api("/plans"), api("/week-account")]);
       state.plans = asArray(plans);
       state.weekAccount = account || null;
+      if(account?.patterns)state.regularPatterns=account.patterns;
       state.plansUnsupported = false;
     } catch (error) {
       state.plansUnsupported = error.status === 404 || error.status === 405;
@@ -10493,6 +10595,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const acc = state.weekAccount || {};
     return computeWeekAccount({
       entries: state.entries,
+      patterns:state.regularPatterns||[],
       absences: toAbsences(acc.absences),
       reviews: asArray(acc.reviews),
       start: acc.start_date,
@@ -10525,6 +10628,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   function renderPlanCard() {
     renderMyStart();
+    if(typeof regularWeek!=="undefined"&&regularWeek.data?.active){$("planCard").hidden=true;return;}
     const host = $("planWeeks");
     if (!host || state.role !== "employee") return;
     const notice = $("planNotice");
@@ -10571,7 +10675,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     notice.innerHTML = hints.join("");
   }
 
-  function openPlanDialog(plan = null) { weeklyPlanner.open(plan); }
+  function openPlanDialog(plan = null) { if(regularWeek.data?.active){showPage("zeiten");regularWeek.load();return;}weeklyPlanner.open(plan); }
 
   $("planAddBtn").addEventListener("click", () => openPlanDialog());
   $("planRulesBtn").addEventListener("click", () => showWhatsNewDialog(false));
@@ -10670,7 +10774,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   const selectedWeekAccount = () => computeWeekAccount({
     entries: state.employeeEntries,
-    absences: state.employeeAbsences,
+    patterns:state.regularPatterns||[],
+    absences: [...state.employeeAbsences,...toAbsences((state.regularCredits||[]).filter(a=>!state.employeeAbsences.some(e=>e.date===a.absence_date)))],
     reviews: state.hr.reviews,
     start: selectedEmployment().start_date,
     end: selectedEmployment().end_date,
@@ -10709,8 +10814,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     ack.hidden = false;
     ack.className = acked ? "notice" : "notice warn";
     ack.textContent = acked
-      ? `„Was ist neu?“ vom ${fmtDate(WHATS_NEW.version)} gelesen und bestätigt am ${fmtDateTime(acked.acknowledged_at)} Uhr.`
-      : `„Was ist neu?“ vom ${fmtDate(WHATS_NEW.version)} noch nicht bestätigt – erscheint beim nächsten Öffnen von Office.`;
+      ? `„Was ist neu?“ vom ${fmtDate(WHATS_NEW.version.slice(0,10))} gelesen und bestätigt am ${fmtDateTime(acked.acknowledged_at)} Uhr.`
+      : `„Was ist neu?“ vom ${fmtDate(WHATS_NEW.version.slice(0,10))} noch nicht bestätigt – erscheint beim nächsten Öffnen von Office.`;
 
     $("hrPlanRows").innerHTML = plans.length ? plans.slice(0, 40).map(p => {
       const [label, cls] = planStatus(p);
@@ -10741,6 +10846,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         action = `<button class="chip-btn hr-review ${cls}" type="button" data-hr-week="${w.weekStart}" title="${esc(w.review.note || "Einordnung ändern")}">${esc(label)}</button>`;
       } else if (w.missing > 0) action = `<button class="btn ghost small" type="button" data-hr-week="${w.weekStart}">Einordnen</button>`;
       else action = '<span class="chip good">erfüllt</span>';
+      if(w.done&&state.regularPatterns?.some(p=>p.valid_from&&p.valid_from<=w.weekStart))action+=` <button class="btn ghost small" type="button" data-hr-reopen="${w.weekStart}">Korrektur öffnen</button>`;
       const detail = [w.credit ? `inkl. ${fmtMinutes(w.credit)} Abwesenheit` : "", w.released ? `${w.released} Tage Freistellung (Cut)` : ""].filter(Boolean).join(" · ");
       return `<tr>
         <td>${esc(weekRangeLabel(w.weekStart))}</td>
@@ -10968,23 +11074,17 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
    * Für das nächste Update: version ändern und die Abschnitte ersetzen.
    */
   const WHATS_NEW = {
-    version: "2026-10-21",
-    required: true,
-    intro: "Bitte lies die Änderungen zur Wochenplanung und zum Erfragen von Kontaktdaten. Bestätige anschließend, dass du alles verstanden hast.",
-    sections: [
-      {title:"Deine Woche planen",tone:"neu",items:[
-        ["Woche statt einzelner Tag","Wähle unter „Woche planen“ bis zu drei Arbeitstage. Jeweils zwei Stunden sind vorbelegt. Du kannst Stunden und Startzeit anpassen. Alle drei Tage bleiben auswählbar, auch wenn du insgesamt mehr als sechs Stunden planst."],
-        ["Mehr oder weniger als sechs Stunden","Auch zum Beispiel fünf Stunden oder zusätzliche Nacharbeit sind möglich. Sobald deine Summe von sechs Stunden abweicht, ist eine kurze Begründung Pflicht."],
-        ["Ab Freitag: Folgewoche planen","Jeden Freitag bekommst du die Aufgabe „Bitte Folgewoche planen“. Beim Öffnen von Office erscheint die Planung automatisch. Freitag und Samstag kannst du sie jeweils auf morgen verschieben. Am Sonntag musst du sie direkt abschließen."],
-        ["Sonntags-Erinnerungen","Solange deine Folgewoche noch nicht fertig geplant ist, erinnert Office sonntags um 9, 13 und 17 Uhr per Push. Sobald dein Plan gespeichert ist, entfallen die weiteren Erinnerungen."],
-        ["Absagen wie bisher","Falls du einen bereits geplanten Einsatz nicht wahrnehmen kannst, sage ihn rechtzeitig mit Grund ab."]]},
-      {title:"Kontaktdaten statt Termin erfragen",tone:"neu",items:[
-        ["Den Auftrag erkennen","Bei manchen Kontakten sollst du nur die Telefonnummer und gegebenenfalls die E-Mail-Adresse einer bestimmten Person erfragen. Die Karte zeigt dir, um wen es geht; dein fertiges Skript enthält keine Terminfrage."],
-        ["Kontaktdaten eintragen","Tippe nach dem Gespräch auf „Kontaktdaten“. Trage eine Telefonnummer, eine E-Mail-Adresse oder beides ein. Mindestens eine Angabe ist nötig. Du kannst das Fenster auch schließen und später weitermachen."],
-        ["Rückgabe an Kim","Beim Absenden erhält Kim einen Rückläufer mit „Kontaktdaten von … erhalten“ und deinen Angaben. „Mit Termin“ und „Ohne Termin“ stehen bei diesem Auftrag nicht zur Auswahl."]]}
-    ],
-    confirm: "Ich habe alle Änderungen gelesen und verstanden."
-
+    version:"2026-10-27-regeltage-v2",required:true,
+    intro:"Eine geführte Einführung erklärt dir Kalender, Urlaub, Feiertage und den neuen Nachtrag.",
+    sections:[{title:"Kalender, Urlaub und Feiertage",tone:"neu",items:[
+      ["Kalender direkt in der Leiste","Deine bisherigen Wochenpläne, Urlaub und Feiertage in einer Monats- und Wochenansicht."],
+      ["Urlaub beantragen","Zeitraum und tatsächliche Solltage auswählen. Erst Kims Entscheidung genehmigt den Urlaub."],
+      ["Regeltage und Feiertage","Drei selbst gewählte Tage mit Geltungsbeginn. Ein Feiertag auf einem Regeltag gibt zwei Stunden Gutschrift."],
+      ["Entwurf und Absenden","Stunden und Termine selbst eintragen, bis zum Absenden ändern und die Woche spätestens Sonntag übermitteln."],
+      ["Erinnerungen","Freitags ein Hinweis; Samstagmittag und Sonntag um 9, 13 und 17 Uhr Push, solange noch nicht abgesendet."],
+      ["Urlaubskonto und Verlauf","Anspruch, Jahresplanung, offene Anträge und genehmigte Tage bleiben getrennt sichtbar."],
+      ["Nachtrag 2","Beide Seiten unterschreiben dasselbe Dokument. Der bisherige Nachtrag bleibt als eigenes PDF erhalten."]]}],
+    confirm:"Ich habe die Änderungen verstanden."
   };
 
   const whatsNewKey = () => `smartadm.office.whatsnew:${state.bootstrappedFor || "none"}`;
@@ -10994,22 +11094,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const addendumPending = () => Boolean(state.addendum?.ready && !state.addendum.signatures?.employee);
 
   function showWhatsNewDialog(mustConfirm) {
-    whatsNewMustConfirm = Boolean(mustConfirm);
-    setText("whatsNewTitle", whatsNewMustConfirm ? "Was ist neu? – bitte lesen" : "Was ist neu?");
-    setText("whatsNewIntro", whatsNewMustConfirm ? WHATS_NEW.intro : "");
-    $("whatsNewList").innerHTML = WHATS_NEW.sections.map(s => `
-      <section class="wn-section ${s.tone}">
-        <h3>${esc(s.title)}</h3>
-        <ul>${s.items.map(([title, text]) => `<li><b>${esc(title)}</b>${esc(text)}</li>`).join("")}</ul>
-      </section>`).join("");
-    $("whatsNewConfirmWrap").hidden = !whatsNewMustConfirm;
-    setText("whatsNewCheckText", WHATS_NEW.confirm);
-    $("whatsNewCheck").checked = false;
-    $("whatsNewOk").disabled = whatsNewMustConfirm;
-    setText("whatsNewOk", !whatsNewMustConfirm ? "Schließen" : addendumPending() ? "Bestätigen & weiter zum Nachtrag" : "Bestätigen");
-    setStatus("whatsNewStatus", "");
-    if (!$("whatsNew").open) openDialog($("whatsNew"));
-    $("whatsNew").querySelector(".whats-new-body").scrollTop = 0;
+    whatsNewMustConfirm=Boolean(mustConfirm);
+    return guidedIntro.open(mustConfirm);
   }
 
   // Beim Start: erst „Was ist neu?“ bestätigen, dann den Nachtrag unterschreiben.
@@ -11032,34 +11118,18 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   async function afterEmployeeNotices(){
     if(state.role!=="employee"||$("whatsNew").open)return;
+    if(addendumPending()&&!document.querySelector("dialog[open]")){openAddendum(state.addendum,{sign:"employee"});return;}
+    if(await regularWeek.onboarding())return;
+    if(regularWeek.patterns.some(p=>p.valid_from&&p.valid_from<=isoDate())){await regularWeek.afterNotices();return;}
     await weeklyPlanner.check({refresh:true});
-    if(!$("planDialog").open&&addendumPending()&&!document.querySelector("dialog[open]"))openAddendum(state.addendum,{sign:"employee"});
   }
   $("planDialog").addEventListener("close",()=>{
     if(weeklyPlanningReady&&addendumPending()&&!document.querySelector("dialog[open]"))openAddendum(state.addendum,{sign:"employee"});
   });
 
-  $("whatsNew").addEventListener("cancel", event => { if (whatsNewMustConfirm) event.preventDefault(); });
-  $("whatsNew").addEventListener("close", () => { if (!whatsNewMustConfirm && !WHATS_NEW.required) rememberWhatsNew(); });
-  $("whatsNewCheck").addEventListener("change", event => {
-    if (whatsNewMustConfirm) $("whatsNewOk").disabled = !event.target.checked;
-  });
-  $("whatsNewOk").addEventListener("click", event => {
-    if (!whatsNewMustConfirm) return closeDialog($("whatsNew"));
-    if (!$("whatsNewCheck").checked) return;
-    withBusy(event.currentTarget, async () => {
-      try {
-        await api("/notices/ack", "POST", { version: WHATS_NEW.version });
-      } catch (error) {
-        setStatus("whatsNewStatus", `Bestätigung konnte nicht gespeichert werden: ${error.message} Bitte nochmal tippen.`, true);
-        return;
-      }
-      rememberWhatsNew();
-      whatsNewMustConfirm = false;
-      closeDialog($("whatsNew"));
-      toast("Danke! Deine Bestätigung ist gespeichert ✓");
-      await afterEmployeeNotices();
-    }).then(() => { if (whatsNewMustConfirm) $("whatsNewOk").disabled = !$("whatsNewCheck").checked; });
+  const guidedIntro=window.OfficeIntro.create({$,esc,showPage,openDialog,closeDialog,
+    acknowledge:async()=>{await api('/notices/ack','POST',{version:WHATS_NEW.version});rememberWhatsNew();whatsNewMustConfirm=false;},
+    finished:async()=>{await afterEmployeeNotices();}
   });
 
   // Boss: Vorschau. Kein Push mehr nötig – Mitarbeiter sehen es beim nächsten Öffnen automatisch.
@@ -11144,6 +11214,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   if (isDark()) { $("themeBtn").setAttribute("aria-label", "Helles Design"); $("themeBtn").title = "Helles Design"; }
 
   const MY_WIDGETS = {
+    kalender:{title:"Kalender",icon:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h2M14 14h2M8 17h2"/>'},
     einsatz:    { title: "Nächster Einsatz", fixed: true, icon: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M9 15l2 2 4-4"/>' },
     meintag:    { title: "Mein Tag",          icon: '<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/>' },
     monat:      { title: "Monatsstand",       icon: '<path d="M4 19V5M4 19h16"/><path d="M8 15v-3M12 15V9M16 15v-6"/>' },
@@ -11154,7 +11225,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     merkzettel: { title: "Merkzettel",        icon: '<path d="M6 3.8h9l3 3V20H6z"/><path d="M15 3.8V7h3M9 11h6M9 14.5h6M9 18h3.5"/>' }
   };
   const MY_DEFAULT = {
-    widgets: ["einsatz", "meintag", "monat", "telefon", "woche", "aufgaben"],
+    widgets: ["einsatz", "kalender", "meintag", "monat", "telefon", "woche", "aufgaben"],calendarWidgetIntroduced:true,
     colors: {}, sizes: {}, accent: "weiss", font: "klar", size: "m", note: ""
   };
   const MY_MAX = 99;                // keine Grenze – sie stellt sich die Startseite so zusammen, wie sie damit arbeitet
@@ -11166,6 +11237,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function cleanPrefs(p) {
     const out = { ...structuredClone(MY_DEFAULT), ...(p && typeof p === "object" ? p : {}) };
     out.widgets = [...new Set(asArray(out.widgets).filter(k => MY_WIDGETS[k]))];
+    if(p&&!p.calendarWidgetIntroduced&&!out.widgets.includes("kalender"))out.widgets.splice(1,0,"kalender");
+    out.calendarWidgetIntroduced=true;
     out.widgets = ["einsatz", ...out.widgets.filter(k => k !== "einsatz")].slice(0, MY_MAX);
     if (!MY_ACCENTS[out.accent]) out.accent = "weiss";
     if (!MY_FONTS[out.font]) out.font = "klar";
@@ -11258,7 +11331,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
 
   const MY_BODY = {
+    kalender(){return `<div class="my-big">${esc(fmtMonth(isoMonth()))}</div>${miniCalendarHtml()}<p class="my-muted">Deine Regeltage, genehmigter Urlaub und Feiertage. Urlaub beantragst du direkt hier.</p><div class="my-actions"><button class="btn primary" type="button" data-my-act="kalender">Kalender öffnen</button></div>`;},
     einsatz(compact) {
+      if(state.regularPatterns?.some(p=>p.valid_from&&p.valid_from<=isoDate())){const w=regularWeek.data;return `<div class="my-big">Deine Arbeitswoche</div><p class="my-muted">Stunden und Termine trägst du selbst ein. Feiertage und genehmigte Abwesenheiten stehen getrennt im Wochenkonto.</p>${w?`<p>${esc(fmtMinutes(w.workMinutes))} selbst erfasst · ${esc(fmtMinutes(w.holidayMinutes+w.absenceMinutes))} gutgeschrieben</p>`:''}<div class="my-actions"><button class="btn primary" type="button" data-my-act="zeiten">Stunden &amp; Termine eintragen</button></div>`;}
+
       if (state.plansUnsupported) return '<p class="my-muted">Der Einsatzplan wird gerade eingerichtet.</p>';
       const p = nextPlan();
       const today = isoDate();
@@ -11433,6 +11509,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (t.dataset.myFont) return change(() => { myPrefs.font = t.dataset.myFont; });
     if (t.dataset.myTextsize) return change(() => { myPrefs.size = t.dataset.myTextsize; });
     const act = t.dataset.myAct;
+    if (act === "kalender") return showPage("kalender");
     if (act === "plan") return openPlanDialog();
     if (act === "zeiten") return showPage("zeiten");
     if (act === "telefon") return showPage("telefon");
@@ -11451,7 +11528,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   /* --- Leiste unten und „Mehr“ (Handy) --- */
 
-  const TAB_PAGES = ["dashboard", "telefon", "zeiten"];
+  const TAB_PAGES = ["dashboard", "telefon", "zeiten", "kalender"];
   function syncTabbar(pageId) {
     $$("#tabbar [data-page]").forEach(b => (b.dataset.page === pageId ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
     $("tabMore").classList.toggle("is-active", !TAB_PAGES.includes(pageId));
@@ -11484,6 +11561,51 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
    * Dokumente (z. B. eingescannter Arbeitsvertrag) lädt der Boss hoch.
    */
 
+  const regularWeek=window.OfficeRegularWeek.create({$,esc,api,role:()=>state.role,today:isoDate,minutes:fmtMinutes,openDialog,closeDialog,showPage,toast,
+    changed:(pattern,data)=>{state.regularPatterns=pattern.patterns||[];state.regularGoalsByMonth??={};for(const g of data.monthGoals||[])state.regularGoalsByMonth[g.month]=g;},
+    openEntry:(slot,week)=>{resetForm();setTimeFormOpen(true);const date=slot>isoDate()?isoDate():slot;$("date").value=date;$("entryRegularSlot").value=slot;$("timeCard").scrollIntoView({block:"start",behavior:"smooth"});$("start").focus();},
+    editEntry,onOnboarded:async()=>{await afterEmployeeNotices();}
+  });
+
+  const officeCalendar=window.OfficeCalendar.create({$,esc,api,state,today:isoDate,minutes:fmtMinutes,timestamp:fmtTimestamp,openDialog,closeDialog,selectEmployee,
+    employeeOptions:()=>state.employees.map(u=>`<option value="${esc(u.clerk_user_id)}">${esc(employeeName(u))}${u.is_test?" · Testkonto":""}</option>`).join(""),
+    openRegular:async week=>{showPage("zeiten");await regularWeek.selectWeek(week);},
+    planWeek:week=>weeklyPlanner.open(week),replayIntro:async()=>{await loadOwnAddendum();showWhatsNewDialog(true);},
+    onChanged:async()=>{if(state.role==='employee')await loadPlans();else if(state.selectedUserId){await reloadAbsences(state.selectedUserId);await loadLeavePayrollSummary();await loadCalendarPayroll();}}
+  });
+  async function loadLeavePayrollSummary(){
+    const owner=state.selectedUserId,month=payrollMonth();if(state.role!=='boss'||!owner)return;
+    try{const value=await api(forUser('/admin/leave-summary',owner)+'&month='+month);if(owner!==state.selectedUserId||month!==payrollMonth())return;
+      state.leaveAccounts[owner]??={};state.leaveAccounts[owner][month]=value;state.regularPatterns=value.regularPatterns||[];state.regularCredits=value.holidayCredits||[];state.regularGoalsByMonth??={};state.regularGoalsByMonth[month]=value.goals;renderAbsenceData();renderPayrollPreview();renderHr();
+    }catch(error){setText('vacationCalcNote','Urlaubskonto konnte noch nicht geladen werden: '+error.message);}
+  }
+
+  let payrollPreparationGeneration=0;
+  async function loadCalendarPayroll(){
+    const owner=state.selectedUserId,month=payrollMonth();if(state.role!=="boss"||!owner)return;
+    const generation=++payrollPreparationGeneration;
+    state.payrollPreparation=null;
+    $("calendarPayrollStatus").textContent="Abrechnungsdaten werden geprüft …";$("calendarPayrollConfirm").disabled=true;
+    try{const p=await api(forUser('/admin/payroll-preparation',owner)+'&month='+month);if(generation!==payrollPreparationGeneration||owner!==state.selectedUserId||month!==payrollMonth())return;
+      if(!p.payroll){$("calendarPayrollCheck").hidden=true;return;}
+      state.regularGoalsByMonth??={};state.regularGoalsByMonth[month]=p.goals;
+      state.payrollPreparation={...p,owner};$("calendarPayrollCheck").hidden=!p.active;
+      $("calendarPayrollLines").innerHTML=p.items.map(i=>`<div class="duty"><div><b>${esc(fmtDate(i.date))} · ${i.kind==='holiday'?'Feiertag':i.kind==='paid_leave'?'Bezahlte Freistellung':'Genehmigter Urlaub'}</b><small>${esc(fmtMinutes(i.minutes))}${i.manual?' · gesondert geprüfter Betrag':' · automatisch berechnet'}</small></div><b>${euro(i.amount_cents/100)}</b></div>`).join('')+(p.payroll.targetBonus?`<p>Zielbonus: ${euro(p.payroll.targetBonus)}</p>`:'')+`<p><b>Brutto ${euro(p.payroll.gross)} · Auszahlung ${euro(p.payroll.net)}</b></p>`;
+      $("calendarPayrollStatus").textContent=p.blockers.length?p.blockers.join(' '):p.checked?'Berechnung geprüft. Bei späteren Änderungen wird eine neue Bestätigung nötig.':p.provisional?'Aktueller Zwischenstand. Nach Monatsende erneut prüfen; endgültige Berechnungsgrundlagen können sich noch ändern.':'Alle Beträge berechnet. Bitte die angezeigten Grundlagen prüfen und übernehmen.';
+      $("calendarPayrollConfirm").disabled=p.blockers.length>0||p.checked||p.provisional||state.closings.some(c=>c.payroll_month===month);
+      renderPayrollPreview();
+    }catch(error){state.payrollPreparation=null;$("calendarPayrollCheck").hidden=false;$("calendarPayrollStatus").textContent='Abrechnungsprüfung nicht verfügbar: '+error.message;}
+  }
+  $("calendarPayrollReload").addEventListener('click',loadCalendarPayroll);
+  $("calendarPayrollConfirm").addEventListener('click',event=>withBusy(event.currentTarget,async()=>{
+    if(!await flushProfileSave())return;const p=state.payrollPreparation;if(!p||p.owner!==state.selectedUserId||p.month!==payrollMonth())return loadCalendarPayroll();
+    try{await api(forUser('/admin/payroll-preparation',state.selectedUserId),'POST',{month:p.month,hash:p.hash,confirmed:true});await reloadAbsences(state.selectedUserId);await loadCalendarPayroll();toast('Berechnete Beträge geprüft und übernommen.');}catch(error){$("calendarPayrollStatus").textContent=error.message;}
+  }));
+
+  $("hrWeekRows").addEventListener("click",async event=>{
+    const button=event.target.closest('[data-hr-reopen]');if(!button)return;const note=prompt('Warum soll Saskia diese Arbeitswoche korrigieren?');if(!note?.trim())return;
+    try{await api(forUser('/admin/regular-week/reopen',state.selectedUserId),'POST',{week:button.dataset.hrReopen,note});await loadEmployeeData(state.selectedUserId);await loadCalendarPayroll();toast('Woche zur Korrektur geöffnet. Saskia muss anschließend erneut absenden.');}catch(error){alert(error.message);}
+  });
   const ROLE_LABEL = { employer: "Arbeitgeber", employee: "Arbeitnehmerin" };
 
   async function loadOwnAddendum() {
@@ -11816,7 +11938,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function openAddendum(add, { sign = null, userId = null } = {}) {
     if (!add) return;
     addendumCtx = { kind: "addendum", add, sign, userId };
-    setText("addendumDialogTitle", "Nachtrag zum Arbeitsvertrag");
+    setText("addendumDialogTitle", add.doc?.title || "Nachtrag zum Arbeitsvertrag");
     const doc = add.doc || {};
     $("addendumDoc").innerHTML = addendumHtml(add);
     $("addendumSignBox").hidden = !sign;
@@ -11848,7 +11970,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const { add, sign, userId } = addendumCtx;
     if (!sign || sigPad.length < 120) return;
     if (addendumCtx.kind === "payslip") return submitPayslipSignature(event.currentTarget);
-    const body = { version: add.version, signature: exportSignature() };
+    const body = { version: add.version, doc_hash:add.hash, signature: exportSignature() };
     withBusy(event.currentTarget, async () => {
       try {
         let result;
@@ -11863,6 +11985,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         toast(result?.complete ? "Unterschrieben ✓ Der Nachtrag ist vollständig." : sign === "employee" ? "Danke, unterschrieben ✓ Du kannst jetzt normal weitermachen." : "Unterschrieben ✓");
         if (sign === "employer") await promptBossSignatures();
         if (document.querySelector("#vertrag.active, #mitarbeiter.active")) loadContracts();
+        if(sign==='employee')await afterEmployeeNotices();
       } catch (error) {
         setStatus("signStatus", error.message, true);
       }
@@ -11962,7 +12085,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       pdf.text(pdfText(`Elektronisch unterschrieben in SmartADM 5 Office · Prüfsumme ${String(add.hash || "").slice(0, 16)}${add.complete ? "" : " · noch nicht von beiden Parteien unterschrieben"}`), L, 286);
       pdf.text(`Seite ${i} von ${pages}`, R, 286, { align: "right" });
     }
-    const name = `Nachtrag_Arbeitsvertrag_${doc.employee?.name || "Mitarbeiter"}`.replace(/[^a-zA-Z0-9äöüÄÖÜß._-]+/g, "_");
+    const name = `Nachtrag_${add.version || "Arbeitsvertrag"}_${doc.employee?.name || "Mitarbeiter"}`.replace(/[^a-zA-Z0-9äöüÄÖÜß._-]+/g, "_");
     pdf.save(`${name}.pdf`);
   }
 
@@ -12023,8 +12146,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       actions.innerHTML = [
         add.ready && !add.signatures?.[mine] ? `<button class="btn primary" type="button" data-ad="sign">Lesen &amp; unterschreiben</button>` : `<button class="btn ghost" type="button" data-ad="view">Ansehen</button>`,
         `<button class="btn ${add.complete ? "primary" : "ghost"}" type="button" data-ad="pdf">PDF herunterladen</button>`,
-        boss && (add.signatures?.employee || add.signatures?.employer) ? '<button class="btn danger" type="button" data-ad="reset">Unterschriften zurücksetzen</button>' : ""
-      ].join("");
+        ""
+      ].join("") + asArray(add.archive).map((old,i)=>`<div class="doc-row"><div class="doc-info"><b>${esc(old.doc?.title||old.version)}</b><span>${esc(old.version)} · ${old.complete?'Von beiden Seiten unterschrieben':'Unterschriftenstand archiviert'}</span></div><div class="btn-row"><button class="btn ghost small" type="button" data-ad-old="${i}">Ansehen</button><button class="btn ghost small" type="button" data-ad-old-pdf="${i}">PDF herunterladen</button></div></div>`).join("");
     }
     list.innerHTML = c.docs.length ? c.docs.map(d => `<div class="doc-row">
         <div class="doc-info"><b>${esc(d.title)}</b><span>${esc(d.file_name)} · ${esc(fmtBytes(d.size))} · ${esc(fmtTimestamp(d.created_at))}</span></div>
@@ -12036,6 +12159,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
 
   $("addendumActions").addEventListener("click", event => {
+    const old=event.target.closest('[data-ad-old], [data-ad-old-pdf]');
+    if(old){const doc=state.contract?.add?.archive?.[Number(old.dataset.adOld??old.dataset.adOldPdf)];if(doc)return old.hasAttribute('data-ad-old-pdf')?withBusy(old,()=>downloadAddendumPdf(doc)):openAddendum(doc);return;}
     const btn = event.target.closest("[data-ad]");
     const add = state.contract?.add;
     if (!btn || !add) return;
@@ -12245,7 +12370,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
 
   weeklyPlanner = window.SmartADMWeekPlanner.create({
-    state, $, esc, api, loadPlans, loadTasks, isReady: () => weeklyPlanningReady, loadPrefs: loadMyPrefs, getPrefs: () => myPrefs,
+    state, $, esc, api, loadPlans, loadTasks, isReady: () => weeklyPlanningReady&&!regularWeek.patterns.some(p=>p.valid_from&&p.valid_from<=addDaysIso(window.SmartADMWeekPlanner.reminderWeek(isoDate())||mondayOfWeek(isoDate()),6)), loadPrefs: loadMyPrefs, getPrefs: () => myPrefs,
     setPrefs: prefs => {
       myPrefs = cleanPrefs({ ...myPrefs, ...prefs });
       try { localStorage.setItem(MY_STORE(), JSON.stringify(myPrefs)); } catch {}
