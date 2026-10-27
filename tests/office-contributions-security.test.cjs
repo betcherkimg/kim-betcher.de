@@ -27,7 +27,7 @@ function fixture(){
  const pushes=[],pending=[];
  class Clock extends Date{constructor(...a){super(...(a.length?a:['2026-10-23T09:00:00Z']))}static now(){return Date.parse('2026-10-23T09:00:00Z')}}
  const context=vm.createContext({console:{error(){},warn(){}},Request,Response,Headers,URL,Date:Clock,Intl,TextEncoder,TextDecoder,crypto:webcrypto,atob,btoa,AbortSignal});
- vm.runInContext(source.replace('export default {','const worker={')+`;globalThis.t={worker,calculateMinijobContributions,contributionFields,contributionProfile,upsertContributionReport,updateContributionReport,previousContributionFields,ensureContributionReports,submissionConfirmed,validPushEndpoint,officeAllowed,securityCheckResult,monitorSecurity,verifyClerkToken};notifyUser=async(env,id,message)=>{globalThis.pushes.push({id,...message});return [{status:201}]};`,context);
+ vm.runInContext(source.replace('export default {','const worker={')+`;globalThis.t={worker,calculateMinijobContributions,contributionFields,contributionProfile,upsertContributionReport,updateContributionReport,previousContributionFields,ensureContributionReports,submissionConfirmed,validPushEndpoint,sendPush,officeAllowed,securityCheckResult,monitorSecurity,verifyClerkToken};notifyUser=async(env,id,message)=>{globalThis.pushes.push({id,...message});return [{status:201}]};`,context);
  context.pushes=pushes;
  const env={DB,BOSS_USER_ID:'boss'};
  const request=data=>new Request('https://api.test/admin/contribution-reports',{method:'PUT',body:JSON.stringify(data)});
@@ -168,5 +168,43 @@ test('full independent monitor checks pinned assets, DB health, anonymous denial
   f.context.fetch=async url=>String(url).endsWith('/health') ? Response.json({database:true}) : String(url).endsWith('/admin/users') ? Response.json({error:'denied'},{status:401,headers:{'Cache-Control':'private, no-store'}}) : new Response('trusted');
   await f.t.monitorSecurity(f.env);
   const checks=f.db.prepare('SELECT * FROM security_monitor_state').all();assert.equal(checks.length,12);assert.ok(checks.every(c=>!c.active&&!c.failures));assert.equal(f.pushes.length,0);
+ }finally{f.close()}
+});
+
+
+test('monitor uses Workers-compatible manual redirects and treats redirects and thrown fetch errors as failed checks',async()=>{
+ const f=fixture();try{
+  const requests=[];
+  f.context.fetch=async (url,options)=>{
+   if(options.redirect==='error')throw new TypeError('Unsupported redirect mode: error');
+   requests.push({url:String(url),redirect:options.redirect});
+   if(String(url).endsWith('/health'))throw new Error('Connection closed');
+   return new Response(null,{status:302,headers:{Location:'https://unexpected.invalid/'}});
+  };
+  await f.t.monitorSecurity(f.env);
+  assert.equal(requests.length,10);assert.ok(requests.every(r=>r.redirect==='manual'));
+  const checks=f.db.prepare('SELECT * FROM security_monitor_state').all();
+  const asset=checks.find(c=>c.check_key==='/smartadm/office/');
+  assert.equal(asset.failures,1);assert.match(asset.detail,/HTTP 302.*Weiterleitung/);
+  const api=checks.find(c=>c.check_key==='API-Verfügbarkeit und Zugriffsschutz');
+  assert.equal(api.failures,1);assert.match(api.detail,/Connection closed/);
+  assert.ok(!requests.some(r=>r.url.includes('unexpected.invalid')));
+ }finally{f.close()}
+});
+
+
+test('push uses Workers-compatible manual redirect handling without forwarding credentials to redirect destinations',async()=>{
+ const f=fixture();try{
+  vm.runInContext("vapidAuthorization=async()=> 'test-authorization';encryptPushPayload=async()=>new Uint8Array([1,2,3]);",f.context);
+  const calls=[];
+  f.context.fetch=async(url,options)=>{
+   if(options.redirect==='error')throw new TypeError('Unsupported redirect mode: error');
+   calls.push({url,options});
+   return new Response('Redirect refused',{status:302,headers:{Location:'https://other.invalid/'}});
+  };
+  const result=await f.t.sendPush(f.env,{}, {endpoint:'https://fcm.googleapis.com/push/test'}, {title:'Test'});
+  assert.equal(result.status,302);assert.equal(calls.length,1);assert.equal(calls[0].options.redirect,'manual');
+  assert.equal(calls[0].options.headers.Authorization,'test-authorization');
+  assert.equal((await f.t.sendPush(f.env,{}, {endpoint:'https://other.invalid/'}, {})).status,0);assert.equal(calls.length,1);
  }finally{f.close()}
 });

@@ -3050,7 +3050,7 @@ async function vapidAuthorization(config, endpoint) {
 async function sendPush(env, config, subscription, message) {
   if (!validPushEndpoint(subscription.endpoint)) return { status: 0, service: "", detail: "Push-Dienst nicht erlaubt" };
   const res = await fetch(subscription.endpoint, {
-    redirect: "error",
+    redirect: "manual",
     method: "POST",
     headers: {
       Authorization: await vapidAuthorization(config, subscription.endpoint),
@@ -4621,24 +4621,28 @@ async function monitorSecurity(env) {
   for (const [path, expected] of Object.entries(MONITORED_ASSETS)) {
     let healthy = false, detail = "Abruf fehlgeschlagen oder Zeitüberschreitung";
     try {
-      const response = await fetch(`${APP_ORIGIN}${path}`, { redirect: "error", cache: "no-store", signal: AbortSignal.timeout(10000) });
+      const response = await fetch(`${APP_ORIGIN}${path}`, { redirect: "manual", cache: "no-store", signal: AbortSignal.timeout(10000) });
       if (response.ok) {
         const bytes = await response.arrayBuffer();
         const digest = [...new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))].map(x => x.toString(16).padStart(2, "0")).join("");
         healthy = digest === expected;
         detail = healthy ? "HTTPS und SHA-256 stimmen mit dem freigegebenen Repository-Stand überein" : "Inhalt weicht vom freigegebenen Repository-Stand ab; Veröffentlichung oder unerwartete Änderung prüfen";
-      } else detail = `HTTP ${response.status}`;
-    } catch {}
+      } else detail = `HTTP ${response.status}${response.status >= 300 && response.status < 400 ? " – unerwartete Weiterleitung" : ""}`;
+    } catch (error) {
+      detail = `Abruf fehlgeschlagen: ${String(error?.message || "Unbekannter Fehler").slice(0, 200)}`;
+    }
     await securityCheckResult(env, path, healthy, detail);
   }
   let apiHealthy = false, apiDetail = "API nicht erreichbar";
   try {
-    const health = await fetch("https://smartadm-office-api.betcherkimg.workers.dev/health", { signal: AbortSignal.timeout(10000), redirect: "error" });
+    const health = await fetch("https://smartadm-office-api.betcherkimg.workers.dev/health", { signal: AbortSignal.timeout(10000), redirect: "manual" });
     const body = await health.json();
-    const denied = await fetch("https://smartadm-office-api.betcherkimg.workers.dev/admin/users", { signal: AbortSignal.timeout(10000), redirect: "error" });
+    const denied = await fetch("https://smartadm-office-api.betcherkimg.workers.dev/admin/users", { signal: AbortSignal.timeout(10000), redirect: "manual" });
     apiHealthy = health.ok && body.database === true && denied.status === 401 && denied.headers.get("Cache-Control")?.includes("no-store");
     apiDetail = apiHealthy ? "API/Datenbank erreichbar; anonymer Adminzugriff abgewiesen" : `API-Health ${health.status}, anonymer Adminzugriff ${denied.status}`;
-  } catch {}
+  } catch (error) {
+    apiDetail = `API-Prüfung fehlgeschlagen: ${String(error?.message || "Unbekannter Fehler").slice(0, 200)}`;
+  }
   await securityCheckResult(env, "API-Verfügbarkeit und Zugriffsschutz", apiHealthy, apiDetail);
   const hour = new Date().toISOString().slice(0, 13);
   const rows = await all(env, "SELECT kind, count FROM security_metrics WHERE hour = ?", hour);
