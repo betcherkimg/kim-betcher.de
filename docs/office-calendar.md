@@ -27,3 +27,9 @@ Unabgesendete Wochen, offene Anträge oder fehlende Berechnungsgrundlagen blocki
 Die bekannte RV-Befreiung betrifft weiterhin nur Saskias Eigenanteil. Der Arbeitgeberanteil bleibt bestehen. Für weitere Abrechnungsjahre sind die Jahreswerte einmal in den Kalendereinstellungen zu bestätigen, statt unbekannte künftige Abgabensätze stillschweigend fortzuschreiben. Feiertage und Urlaubstage werden unabhängig davon auch für künftige Jahre berechnet.
 
 Im Testkonto ist der gleiche Ablauf mit eigenständigen, als Test gekennzeichneten Unterlagen verfügbar. Unter Kalender kann die Einführung erneut geöffnet und die Weihnachtswoche angesehen werden. Dabei werden keine Arbeitszeiten oder Unterschriften erzeugt.
+
+## Direkteinstieg und Urlaubsplanung
+
+Auf beiden Startseiten stehen die festen Schaltflächen **Arbeitszeiten** und **Kalender & Urlaub**, unabhängig von persönlichen Widgets. Saskias untere Leiste und die Navigation verwenden denselben Namen „Arbeitszeiten“. Bei Kim stehen erfasste Stunden und Termine vor dem Wochenkonto; frühere Einsatzpläne bleiben eingeklappt erhalten. „Woche planen“ und die alten Planungsaufgaben und Push-Erinnerungen sind aus dem laufenden Ablauf entfernt. Der wöchentliche Versand mit seinen Erinnerungen bleibt bestehen.
+
+Im Kalender steht das Urlaubskonto oben. „Noch planbar“ ist der voraussichtliche Jahresanspruch abzüglich genehmigter und beantragter Tage; der bereits erworbene Anspruch und eine mögliche Wartezeit sind getrennt erläutert. Ein Urlaubsantrag öffnet einen Monatskalender: mögliche Tage antippen, Auswahl prüfen, absenden. Für längere Urlaube gibt es eine optionale Von-bis-Auswahl. Eine Auswahl bleibt beim Monatswechsel bestehen. Vergangene Tage, freie Wochentage, Wochenenden, Feiertage, vorhandene Arbeitszeiten und bereits beantragte oder belegte Tage sind gesperrt. Kim entscheidet den Antrag weiterhin ausdrücklich. Frühere Anträge und der Verlauf bleiben erhalten.

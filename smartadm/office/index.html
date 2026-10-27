@@ -1709,6 +1709,20 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 @media(max-width:600px){.calendar-grid{gap:3px}.calendar-day{padding:4px;min-height:78px;border-radius:7px}.calendar-event{font-size:9px;padding:2px;line-height:1.2}.calendar-toolbar{gap:5px}.calendar-toolbar .btn{padding:8px 11px}.calendar-toolbar input{width:152px}.week-mode{grid-template-columns:1fr}.week-mode .calendar-weekday{display:none}.week-mode .calendar-day{min-height:90px}.week-mode .calendar-event{font-size:12px}.leave-request>div:first-child{display:grid}}
 
 
+/* Vacation planning: balance, calendar selection and clear request state. */
+.calendar-page-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:4px 0 22px}.calendar-page-head h1{font:600 26px/1.25 "IBM Plex Sans",sans-serif;margin:0 0 7px}.calendar-page-head p{margin:0;color:var(--ink-soft);font-size:14px}.calendar-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}.calendar-main,.calendar-side{min-width:0}.calendar-layout .section-card{margin-bottom:20px}.calendar-layout .card-head h2{font:600 18px/1.3 "IBM Plex Sans",sans-serif}.calendar-layout .card-head p{font-size:13px}.vacation-account-card{border:1px solid var(--line);box-shadow:none}.vacation-balance{display:flex;align-items:center;gap:32px}.vacation-balance-main{min-width:140px}.vacation-eyebrow{font-size:12px;color:var(--ink-soft);display:block}.vacation-balance-main strong{display:block;font-size:34px;letter-spacing:-1px;line-height:1.3;color:var(--accent)}.vacation-balance-main strong small{font-size:16px;font-weight:500;letter-spacing:0}.vacation-balance-stats{display:flex;flex:1;justify-content:space-evenly;gap:18px;padding-left:22px;border-left:1px solid var(--line)}.vacation-balance-stats span{font-size:12px;color:var(--ink-soft);display:block}.vacation-balance-stats b{font-size:20px;font-weight:600;display:block;margin-top:5px}.vacation-account-notes{margin-top:14px}.vacation-account-notes summary{font-size:12px;color:var(--ink-soft);cursor:pointer}.vacation-account-notes p{margin-bottom:0}.calendar-toolbar .type-switch{margin-left:auto}.calendar-day{min-height:96px;border-color:transparent;background:var(--ground);transition:background .15s}.calendar-day:hover{border-color:var(--line)}.calendar-day.selected{background:var(--accent-wash)}.calendar-event{font-size:10px}.calendar-legend{gap:12px}.calendar-legend span{display:flex;align-items:center;gap:5px}.calendar-legend span:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--hell)}.calendar-legend .legend-vacation:before{background:var(--gruen)}.calendar-legend .legend-holiday:before{background:var(--lila)}.calendar-legend .legend-pending:before{background:var(--gelb)}.calendar-details-title{font-weight:600;font-size:15px;cursor:pointer}.leave-request{padding:16px 0}.leave-request:first-child{padding-top:0}.leave-request:last-child{border-bottom:0;padding-bottom:0}.leave-request>div:first-child{display:block}.leave-request>div:first-child>b{display:block;font-size:14px;line-height:1.5;margin-bottom:8px}.leave-request .chip{font-size:11px}.leave-request .btn{font-size:12px;padding:8px 12px}.leave-request details{margin-top:12px;font-size:12px}.calendar-request-empty{padding:18px 0;color:var(--ink-soft);font-size:13px}.calendar-request-empty b{display:block;color:var(--ink);font-size:15px;margin-bottom:6px}.calendar-request-archive{margin-top:20px;font-size:13px}.calendar-request-archive>summary{cursor:pointer;color:var(--ink-soft);margin-bottom:16px}.calendar-optional{font-weight:400;color:var(--ink-soft)}
+.vacation-dialog{width:min(520px,calc(100vw - 24px))}.vacation-dialog .picker-head{padding:18px 22px}.vacation-dialog .form-dialog-body{padding:0 22px 20px}.vacation-intro{font-size:14px;color:var(--ink-soft);margin:4px 0 16px}.leave-balance{border-radius:12px;padding:13px 16px;background:var(--accent-wash);font-size:13px;color:var(--accent);margin-bottom:18px}.leave-picker-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 14px}.leave-picker-toolbar b{font-size:17px;font-weight:600}.leave-picker-toolbar .btn{padding:7px 14px;font-size:22px}.leave-date-choices{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;border:0;max-height:none;overflow:visible;margin:0}.leave-date-choices .calendar-weekday{padding:5px 0 9px}.leave-date-choice{position:relative;min-width:0;padding:0;border:0;display:block;text-align:center}.leave-date-choice input{position:absolute;opacity:0;width:1px;height:1px}.leave-date-choice>span{display:flex;min-height:48px;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:15px;cursor:pointer}.leave-date-choice small{font-size:8px;line-height:1.3;max-width:100%;overflow:hidden;white-space:nowrap;padding:0 2px;margin-top:2px}.leave-date-choice input:checked+span{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}.leave-date-choice input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}.leave-date-choice input:disabled+span{background:var(--ground);color:var(--ink-soft);border-color:transparent;cursor:default}.leave-date-choice.holiday>span{background:var(--lila-wash);color:var(--lila)}.leave-date-choice.other-month{opacity:.4}.leave-range{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 0;margin:16px 0;font-size:13px}.leave-range summary{cursor:pointer;font-weight:500}.leave-range p{color:var(--ink-soft);font-size:12px;line-height:1.5}.leave-selection-summary{border-radius:12px;background:var(--ground);padding:14px 16px;margin:16px 0;font-size:13px}.leave-selection-summary strong{display:block;font-size:17px;margin-bottom:5px}.leave-selection-summary p{margin:7px 0 0;line-height:1.5;color:var(--ink-soft)}.leave-selection-dates{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.leave-selection-dates button{border:1px solid var(--line);border-radius:20px;padding:5px 9px;font:inherit;font-size:12px;background:var(--surface);color:var(--ink);cursor:pointer}.vacation-dialog #leaveRequestSend{width:100%;justify-content:center}.leave-submit-hint{text-align:center;color:var(--ink-soft);font-size:12px;line-height:1.5;margin:10px 0 0}.vacation-dialog .calendar-hint{font-size:12px;margin:12px 0}.vacation-dialog textarea{width:100%}
+@media(max-width:1100px){.calendar-layout{grid-template-columns:1fr}.calendar-side{display:grid;grid-template-columns:1fr 1fr;gap:20px}.calendar-side .section-card{margin-bottom:0}}
+@media(max-width:600px){.calendar-page-head{display:block;margin-bottom:16px}.calendar-page-head h1{font-size:23px}.calendar-page-head .btn-row{margin-top:14px}.calendar-page-head .btn.primary{width:100%;justify-content:center}.vacation-balance{display:block}.vacation-balance-main{display:flex;justify-content:space-between;align-items:center;gap:12px}.vacation-balance-main strong{font-size:30px}.vacation-balance-stats{margin-top:15px;padding:14px 0 0;border-left:0;border-top:1px solid var(--line);gap:10px;justify-content:space-between}.vacation-balance-stats b{font-size:17px}.vacation-balance-stats span{font-size:11px}.calendar-side{display:block}.calendar-side .section-card{margin-bottom:18px}.calendar-layout{gap:0}.calendar-month-card{padding:16px 12px}.calendar-toolbar .type-switch{margin-left:0}.calendar-day{min-height:78px;padding:4px 2px}.calendar-event{font-size:9px}.vacation-dialog .picker-head{padding:16px}.vacation-dialog .form-dialog-body{padding:0 16px 18px}.leave-date-choices{gap:4px}.leave-date-choice>span{min-height:44px;font-size:14px}.leave-date-choice small{font-size:7px}}
+
+/* Fixed primary entry points, independent of personal widget settings. */
+.office-shortcuts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 22px}.office-shortcut{display:flex;align-items:center;gap:14px;text-align:left;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);padding:20px;font:inherit;cursor:pointer;min-width:0}.office-shortcut:hover{border-color:var(--accent);background:var(--accent-wash)}.office-shortcut>.i{width:30px;height:30px;flex:none;color:var(--accent)}.office-shortcut b{display:block;font-size:17px;font-weight:600}.office-shortcut small{display:block;color:var(--ink-soft);font-size:12px;margin-top:5px;line-height:1.4}.shortcut-arrow{margin-left:auto;color:var(--accent);font-size:26px}.office-shortcut:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.vacation-dialog{background:var(--surface)}
+@media(max-width:600px){.office-shortcuts{grid-template-columns:1fr;gap:10px;margin-bottom:18px}.office-shortcut{padding:16px}.office-shortcut b{font-size:16px}.tab{font-size:10px}.office-shortcut>.i{width:27px;height:27px}}
+
+.calendar-toolbar .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.calendar-toolbar input{font:inherit;font-weight:600;font-size:14px;background:var(--ground);color:var(--ink);border:0;border-radius:10px;padding:10px;width:175px;min-width:0}.calendar-toolbar .type-switch button[aria-pressed="false"]{background:transparent}.calendar-toolbar .type-switch button[aria-pressed="true"]{background:var(--surface);color:var(--accent)}.calendar-day{min-height:78px}.calendar-event{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal}.calendar-grid.week-mode .calendar-event{white-space:normal}.calendar-weekday{padding:6px 0}.leave-form-footer{flex:none;border-top:1px solid var(--line);background:var(--surface);padding:14px 22px 16px}.vacation-dialog .form-dialog-body{padding-bottom:0}.vacation-dialog .picker-head{flex:none}.leave-form-footer .leave-submit-hint{margin-bottom:0}
+@media(max-width:600px){.calendar-toolbar input{width:145px;padding:9px}.calendar-day{min-height:65px}.calendar-date{font-size:12px}.leave-form-footer{padding:12px 16px}.calendar-event{font-size:9px}}
+
+
 /* Modal guided introduction: the highlighted real control remains visible through the shade. */
 #whatsNew.guided-intro {position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;overflow:hidden;background:transparent;box-shadow:none;color:var(--ink)}
 #whatsNew.guided-intro::backdrop {background:transparent}
@@ -1751,7 +1765,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       <div class="nav-label" data-role="boss">Tagesgeschäft</div>
       <hr class="nav-sep" data-role="employee">
       <button data-role="employee" data-page="zeiten">
-        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="13" height="13" rx="2"/><path d="M7 3v4M13 3v4M3.5 10h13"/><circle cx="17" cy="16.5" r="4.2"/><path d="M17 14.6v2l1.3 1"/></svg><span>Einsatz &amp; Zeiten</span></button>
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="13" height="13" rx="2"/><path d="M7 3v4M13 3v4M3.5 10h13"/><circle cx="17" cy="16.5" r="4.2"/><path d="M17 14.6v2l1.3 1"/></svg><span>Arbeitszeiten</span></button>
       <button data-role="shared" data-page="kalender"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M7.5 3v4M16.5 3v4M3.5 10h17M8 14h2M14 14h2M8 17h2"/></svg><span>Kalender</span></button>
       <button data-role="shared" data-page="telefon">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/></svg><span data-boss-label="Kontakte">Telefonliste</span></button>
@@ -1768,7 +1782,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       <button data-role="boss" data-page="mitarbeiter">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.8 19c.6-3.5 2.3-5.2 5.2-5.2s4.6 1.7 5.2 5.2"/><circle cx="17" cy="9" r="2.3"/><path d="M15.6 14.2c2.8-.6 4.6.9 5 3.8"/></svg>Mitarbeiter</button>
       <button data-role="boss" data-page="einsatz">
-        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="13" height="13" rx="2"/><path d="M7 3v4M13 3v4M3.5 10h13"/><circle cx="17" cy="16.5" r="4.2"/><path d="M17 14.6v2l1.3 1"/></svg><span>Einsatz &amp; Zeiten</span></button>
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="13" height="13" rx="2"/><path d="M7 3v4M13 3v4M3.5 10h13"/><circle cx="17" cy="16.5" r="4.2"/><path d="M17 14.6v2l1.3 1"/></svg><span>Arbeitszeiten</span></button>
       <button data-role="boss" data-page="akte">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><path d="M8.5 13h7M8.5 16h4.5"/></svg><span>Personalakte</span></button>
       <div class="nav-label" data-role="boss">Abrechnung</div>
@@ -1820,6 +1834,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           </div>
           <button class="btn ghost" type="button" id="myEditBtn">Anpassen</button>
         </div>
+        <div class="office-shortcuts" id="employeeQuickAccess"><button type="button" class="office-shortcut" data-page="zeiten"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg><span><b>Arbeitszeiten</b><small>Stunden eintragen &amp; Woche absenden</small></span><span class="shortcut-arrow" aria-hidden="true">›</span></button><button type="button" class="office-shortcut" data-page="kalender"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span><b>Kalender &amp; Urlaub</b><small>Freie Tage planen &amp; Urlaub beantragen</small></span><span class="shortcut-arrow" aria-hidden="true">›</span></button></div>
         <div class="card shortcut" id="pushCard" hidden>
           <div><strong>Benachrichtigungen</strong><span id="pushText"></span></div>
           <div class="btn-row">
@@ -1839,8 +1854,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card shortcut" id="regularSendNotice" hidden><div><strong>Heute bitte die Arbeitszeiten abschicken</strong><span id="regularSendNoticeText">Bitte deine Stunden und Termine prüfen und die Woche spätestens Sonntag absenden.</span></div><button class="btn primary" type="button" data-page="zeiten">Zur Wochenliste</button></div><div class="my-widgets" id="myWidgets"></div>
       </section>
 
-      <section class="page" id="zeiten" data-role="employee"><div class="card section-card" id="regularWeekCard" hidden><div class="card-head"><h2>Deine Arbeitswoche</h2><p>Die drei Zeilen sind deine Regeltage. Tatsächlich kannst du weiterhin andere Tage innerhalb der Woche nutzen. Trage geleistete Arbeit ein, sobald du fertig bist.</p></div><div class="btn-row"><button class="btn ghost" id="regularPrev" type="button" aria-label="Vorherige Woche">‹</button><b id="regularWeekLabel"></b><button class="btn ghost" id="regularNext" type="button" aria-label="Nächste Woche">›</button><button class="btn ghost" id="regularToday" type="button">Aktuelle Woche</button></div><div id="regularRows"></div><p id="regularSummary" class="notice"></p><p id="regularStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button class="btn primary" type="button" id="regularComplete">Absenden</button><button class="btn ghost" type="button" id="regularChooseDays">Regeltage ändern</button></div></div>
-        <div class="card section-card plan-card" id="planCard">
+      <section class="page" id="zeiten" data-role="employee"><div class="card section-card" id="regularWeekCard" hidden><div class="card-head"><h2>Arbeitszeiten eintragen</h2><p>1. Stunden und Termine eintragen. 2. Bis Sonntag prüfen. 3. Mit „Absenden“ an Kim übermitteln.</p></div><div class="btn-row"><button class="btn ghost" id="regularPrev" type="button" aria-label="Vorherige Woche">‹</button><b id="regularWeekLabel"></b><button class="btn ghost" id="regularNext" type="button" aria-label="Nächste Woche">›</button><button class="btn ghost" id="regularToday" type="button">Aktuelle Woche</button></div><div id="regularRows"></div><p id="regularSummary" class="notice"></p><p id="regularStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button class="btn primary" type="button" id="regularComplete">Absenden</button><button class="btn ghost" type="button" id="regularChooseDays">Regeltage ändern</button></div></div>
+        <div class="card section-card plan-card" id="planCard" hidden>
           <div class="card-head plan-head">
             <div>
               <h2>Einsatzplan</h2>
@@ -1942,6 +1957,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           </div>
         </div>
 
+        <div class="office-shortcuts" id="bossQuickAccess"><button type="button" class="office-shortcut" data-page="einsatz"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg><span><b>Arbeitszeiten</b><small>Stunden &amp; Wochen prüfen</small></span><span class="shortcut-arrow" aria-hidden="true">›</span></button><button type="button" class="office-shortcut" data-page="kalender"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span><b>Kalender &amp; Urlaub</b><small>Urlaubsanträge &amp; Feiertage prüfen</small></span><span class="shortcut-arrow" aria-hidden="true">›</span></button></div>
         <div class="boss-look-bar">
           <button class="btn ghost" type="button" id="bossEditBtn">Anpassen</button>
         </div>
@@ -2011,40 +2027,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card person-bar">
           <div class="field"><label>Mitarbeiter</label><select data-employee-select></select></div>
           <div class="field"><label for="bossMonth">Monat</label><input id="bossMonth" type="month"></div>
-          <p class="person-hint">Einsatzplan, Wochenkonto, Arbeitszeiten und Abwesenheiten.</p>
-        </div>
-        <div class="card section-card" id="hrPlanCard">
-          <div class="card-head">
-            <h2>Einsatzplan &amp; Wochenkonto</h2>
-            <p>Geplante Telefontage, Absagen und Soll/Ist je Woche (6 Std., anteilig bei Ein-/Austritt und nach dem Monats-Cut). Wochen mit Fehlstunden ordnest du ein: genehmigt = keine Nacharbeit, Nacharbeit nächste Woche = einvernehmlich vereinbart, unentschuldigt = wird nachgearbeitet, entschuldigt = unbezahlt, liegt an mir = bezahlte Freistellung.</p>
-          </div>
-          <div class="quick-grid">
-            <div class="quick"><span>Geplante Tage (kommend)</span><b id="hrPlannedCount">0</b></div>
-            <div class="quick"><span>Ohne Absage / spät abgesagt</span><b id="hrMissedCount">0</b></div>
-            <div class="quick"><span>Wochen noch einzuordnen</span><b id="hrOpenWeeks">0</b></div>
-            <div class="quick"><span>Nacharbeit offen</span><b id="hrMakeUp">0:00 h</b></div>
-          </div>
-          <div id="hrAckStatus" class="notice" hidden></div>
-          <div class="hr-split">
-          <div>
-          <h3 class="hr-sub">Einsatzplan</h3>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Tag</th><th>Start</th><th>Status</th><th>Notiz / Absage</th><th></th></tr></thead>
-              <tbody id="hrPlanRows"></tbody>
-            </table>
-          </div>
-          </div>
-          <div>
-          <h3 class="hr-sub">Wochenkonto</h3>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Woche</th><th>Soll</th><th>Ist</th><th>Differenz</th><th>Einordnung</th></tr></thead>
-              <tbody id="hrWeekRows"></tbody>
-            </table>
-          </div>
-          </div>
-          </div>
+          <p class="person-hint">Erfasste Stunden und Termine. Entwürfe sind bis zum Absenden noch nicht für die Abrechnung freigegeben.</p>
         </div>
         <div class="grid-4">
           <div class="card kpi"><div class="kpi-label">Netto-Arbeitszeit</div><div class="kpi-value" id="bossEmpHours">0:00 h</div><div class="kpi-foot"><span>im gewählten Monat</span></div></div>
@@ -2055,13 +2038,46 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card">
           <div class="card-head">
             <h2>Erfasste Arbeitszeiten &amp; Termine</h2>
-            <p>Nur interne Arbeits- und Leistungsdaten.</p>
+            <p>Hier stehen die von Saskia eingetragenen Stunden und Termine. „Entwurf“ bedeutet: noch nicht verbindlich abgesendet.</p>
           </div>
           <div class="table-wrap">
             <table>
               <thead><tr><th>Datum</th><th>Beginn</th><th>Ende</th><th>Pause</th><th>Netto</th><th>Termine</th></tr></thead>
               <tbody id="bossEntryRows"></tbody>
             </table>
+          </div>
+        </div>
+        <div class="card section-card" id="hrPlanCard">
+          <div class="card-head">
+            <h2>Wochen prüfen</h2>
+            <p>Prüfe die Stunden pro Woche. Bei Fehlstunden wählst du „Einordnen“. Urlaub und Feiertage findest du im Kalender.</p>
+          </div>
+          <div class="quick-grid">
+            <div class="quick"><span>Geplante Tage (kommend)</span><b id="hrPlannedCount">0</b></div>
+            <div class="quick"><span>Ohne Absage / spät abgesagt</span><b id="hrMissedCount">0</b></div>
+            <div class="quick"><span>Wochen noch einzuordnen</span><b id="hrOpenWeeks">0</b></div>
+            <div class="quick"><span>Nacharbeit offen</span><b id="hrMakeUp">0:00 h</b></div>
+          </div>
+          <div id="hrAckStatus" class="notice" hidden></div>
+          <div class="hr-split">
+          <div>
+          <details><summary class="calendar-details-title">Frühere Einsatzpläne</summary>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tag</th><th>Start</th><th>Status</th><th>Notiz / Absage</th><th></th></tr></thead>
+              <tbody id="hrPlanRows"></tbody>
+            </table>
+          </div></details>
+          </div>
+          <div>
+          <h3 class="hr-sub">Wochenkonto</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Woche</th><th>Soll</th><th>Ist</th><th>Differenz</th><th>Einordnung</th></tr></thead>
+              <tbody id="hrWeekRows"></tbody>
+            </table>
+          </div>
+          </div>
           </div>
         </div>
         <div class="card section-card">
@@ -2148,17 +2164,19 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
 
       <section class="page" id="kalender" data-role="shared">
-        <div class="card section-card">
-          <div class="card-head"><h2>Dein Kalender</h2><p>Deine Wochentage bleiben frei wählbar. Einsätze, Urlaub und Feiertage sind hier gemeinsam sichtbar.</p></div>
-          <div class="field" id="calendarOwnerField" data-role="boss"><label for="calendarOwner">Mitarbeiter</label><select id="calendarOwner"></select></div>
-          <div class="calendar-toolbar" id="calendarToolbar"><button class="btn ghost" id="calendarPrev" type="button" aria-label="Vorheriger Zeitraum">←</button><label class="sr-only" for="calendarMonth">Kalendermonat</label><input id="calendarMonth" type="month"><button class="btn ghost" id="calendarNext" type="button" aria-label="Nächster Zeitraum">→</button><button class="btn ghost" id="calendarToday" type="button">Heute</button><div class="type-switch" role="group" aria-label="Kalenderansicht"><button class="btn ghost" id="calendarViewMonth" type="button" aria-pressed="true">Monat</button><button class="btn ghost" id="calendarViewWeek" type="button" aria-pressed="false">Woche</button></div></div>
+        <div class="calendar-page-head"><div><h1>Kalender &amp; Urlaub</h1><p>Deine Arbeitstage, freie Tage und Anträge auf einen Blick.</p></div><div id="calendarEmployeeActions" class="btn-row"><button class="btn primary" type="button" id="calendarNewLeave">+ Urlaub beantragen</button><button class="btn ghost" type="button" id="calendarTransfer" hidden>Urlaub ins Folgejahr übertragen</button></div></div>
+        <div class="field" id="calendarOwnerField" data-role="boss"><label for="calendarOwner">Mitarbeiter</label><select id="calendarOwner"></select></div>
+        <div class="card section-card vacation-account-card"><div id="calendarAccount"></div></div>
+        <div class="calendar-layout"><div class="calendar-main">
+        <div class="card section-card calendar-month-card">
+          <div class="calendar-toolbar" id="calendarToolbar"><button class="btn ghost" id="calendarPrev" type="button" aria-label="Vorheriger Zeitraum">‹</button><label class="sr-only" for="calendarMonth">Kalendermonat</label><input id="calendarMonth" type="month"><button class="btn ghost" id="calendarNext" type="button" aria-label="Nächster Zeitraum">›</button><button class="btn ghost" id="calendarToday" type="button">Heute</button><div class="type-switch" role="group" aria-label="Kalenderansicht"><button class="btn ghost" id="calendarViewMonth" type="button" aria-pressed="true">Monat</button><button class="btn ghost" id="calendarViewWeek" type="button" aria-pressed="false">Woche</button></div></div>
           <div id="calendarStatus" class="status-text" aria-live="polite"></div>
           <div id="calendarGrid" class="calendar-grid" aria-label="Arbeitstage und Abwesenheiten"></div>
-          <div class="calendar-legend"><span>● Einsatz</span><span>● Urlaub</span><span>● Feiertag</span><span>● Antrag offen</span></div>
+          <div class="calendar-legend"><span class="legend-work">Arbeitstag</span><span class="legend-vacation">Urlaub</span><span class="legend-holiday">Feiertag</span><span class="legend-pending">Beantragt</span></div>
         </div>
         <div class="card section-card" id="calendarDayDetails"></div>
-        <div class="card section-card"><div class="card-head"><h2>Urlaubskonto</h2><p>Anspruch, genehmigte Tage und offene Anträge bleiben getrennt nachvollziehbar.</p></div><div id="calendarAccount"></div><div id="calendarEmployeeActions" class="btn-row"><button class="btn primary" type="button" id="calendarNewLeave">Urlaub beantragen</button><button class="btn ghost" type="button" id="calendarTransfer" hidden>Teilurlaub ins Folgejahr übertragen lassen</button></div></div>
-        <div class="card section-card"><div class="card-head"><h2>Anträge &amp; Entscheidungen</h2><p>Ein offener Antrag ist noch keine Genehmigung. Entscheidungen und Korrekturen bleiben im Verlauf erhalten.</p></div><div id="calendarRequests"></div></div><div class="card section-card"><h2>Regeltage &amp; Feiertage</h2><div id="calendarPatterns"></div><div id="calendarRegularHolidays"></div></div>
+        </div><div class="calendar-side"><div class="card section-card"><div class="card-head"><h2>Anträge</h2><p>Hier siehst du, was noch offen oder schon genehmigt ist.</p></div><div id="calendarRequests"></div></div>
+        <div class="card section-card"><details><summary class="calendar-details-title">Regeltage &amp; Feiertage</summary><div id="calendarPatterns"></div><div id="calendarRegularHolidays"></div></details></div></div></div>
         <div class="card section-card" id="calendarSettings" data-role="boss"><details><summary>Kalendereinstellungen und begründete Korrekturen</summary><p id="calendarSettingsNote" class="notice"></p>
           <form id="calendarRegionForm"><div class="form-grid"><div class="field"><label for="calendarRegion">Bundesland des maßgeblichen Arbeitsorts</label><select id="calendarRegion"><option value="BW">Baden-Württemberg</option><option value="BY">Bayern</option><option value="BE">Berlin</option><option value="BB">Brandenburg</option><option value="HB">Bremen</option><option value="HH">Hamburg</option><option value="HE">Hessen</option><option value="MV">Mecklenburg-Vorpommern</option><option value="NI">Niedersachsen</option><option value="NW">Nordrhein-Westfalen</option><option value="RP">Rheinland-Pfalz</option><option value="SL">Saarland</option><option value="SN">Sachsen</option><option value="ST">Sachsen-Anhalt</option><option value="SH">Schleswig-Holstein</option><option value="TH">Thüringen</option></select></div><div class="field"><label for="calendarRegionFrom">Gültig ab</label><input id="calendarRegionFrom" type="date" required></div><div class="field"><label for="calendarRegionNote">Grund / Arbeitsort</label><input id="calendarRegionNote" maxlength="500" required></div></div><button class="btn ghost" type="submit">Arbeitsort speichern</button></form>
           <form id="calendarRateForm"><div class="form-grid"><div class="field"><label for="calendarRateYear">Jahr</label><input id="calendarRateYear" type="number" min="2026" max="2100" required></div><div class="field"><label for="calendarRate">Geprüfter Bruttostundensatz in €</label><input id="calendarRate" type="text" inputmode="decimal" required></div><div class="field full"><label for="calendarRateNote">Quelle / Bestätigung des Rechtsstands</label><input id="calendarRateNote" maxlength="500" required></div></div><details><summary>Geprüfte Jahreswerte: Minijobgrenze und Abgaben</summary><p>Einmal pro Jahr anhand der geltenden Werte bestätigen. Bereits abgeschlossene Jahre werden nicht rückwirkend geändert.</p><div class="form-grid"><div class="field"><label>Minijobgrenze pro Monat in €<input data-year-rule="limit" type="text" inputmode="decimal" required></label></div><div class="field"><label>RV-Mindestbemessung in €<input data-year-rule="rvMinBase" type="text" inputmode="decimal" required></label></div><div class="field"><label>KV-Pauschale in %<input data-year-rule="kv" type="text" inputmode="decimal" required></label></div><div class="field"><label>RV Arbeitgeber in %<input data-year-rule="rvEmployer" type="text" inputmode="decimal" required></label></div><div class="field"><label>RV Gesamtbeitrag in %<input data-year-rule="rvFull" type="text" inputmode="decimal" required></label></div><div class="field"><label>U1 in %<input data-year-rule="u1" type="text" inputmode="decimal" required></label></div><div class="field"><label>U2 in %<input data-year-rule="u2" type="text" inputmode="decimal" required></label></div><div class="field"><label>Insolvenzgeldumlage in %<input data-year-rule="insolvency" type="text" inputmode="decimal" required></label></div><div class="field"><label>Pauschsteuer in %<input data-year-rule="flatTax" type="text" inputmode="decimal" required></label></div></div></details><button class="btn ghost" type="submit">Jahreswerte bestätigen</button></form>
@@ -2968,7 +2986,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 <nav class="tabbar" id="tabbar" data-role="employee" aria-label="Hauptmenü">
   <button class="tab" type="button" data-page="dashboard"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.2 12 4.5l8 6.7"/><path d="M6.2 9.6V19h11.6V9.6"/><path d="M10 19v-5h4v5"/></svg><span>Start</span></button>
   <button class="tab" type="button" data-page="telefon"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/></svg><span>Telefon</span></button>
-  <button class="tab" type="button" data-page="zeiten"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="13" height="13" rx="2"/><path d="M7 3v4M13 3v4M3.5 10h13"/><circle cx="17" cy="16.5" r="4.2"/><path d="M17 14.6v2l1.3 1"/></svg><span>Zeiten</span></button>
+  <button class="tab" type="button" data-page="zeiten"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="13" height="13" rx="2"/><path d="M7 3v4M13 3v4M3.5 10h13"/><circle cx="17" cy="16.5" r="4.2"/><path d="M17 14.6v2l1.3 1"/></svg><span>Arbeitszeiten</span></button>
   <button class="tab" type="button" data-page="kalender"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M7.5 3v4M16.5 3v4M3.5 10h17M8 14h2M14 14h2M8 17h2"/></svg><span>Kalender</span></button>
   <button class="tab" type="button" id="tabMore" aria-expanded="false" aria-controls="moreSheet"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Mehr</span></button>
 </nav>
@@ -3050,7 +3068,20 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
 <dialog id="regularPatternDialog" class="form-dialog" aria-labelledby="regularPatternTitle"><div class="picker-head"><strong id="regularPatternTitle">Deine drei Regeltage</strong><button class="picker-close" id="regularPatternClose" type="button">Schließen ×</button></div><div class="form-dialog-body"><p id="regularPatternIntro"></p><form id="regularPatternForm"><div id="regularDayChoices"></div><label class="check-row"><input id="regularPatternCheck" type="checkbox" required><span>Ich lege diese drei Wochentage als meine Regelverteilung mit je zwei Stunden fest. Die Erklärung wird Kim mitgeteilt und bleibt mit Datum gespeichert.</span></label><p class="status-text" id="regularPatternStatus" aria-live="polite"></p><button class="btn primary" id="regularPatternSave" type="submit">Diese drei Regeltage festlegen</button></form></div></dialog>
 <dialog id="regularOverdueDialog" class="form-dialog" aria-labelledby="regularOverdueTitle"><div class="form-dialog-body"><h2 id="regularOverdueTitle">Bitte deine Arbeitswoche nachtragen</h2><p id="regularOverdueText"></p><button class="btn primary" type="button" id="regularOverdueGo">Jetzt Zeiten prüfen &amp; nachtragen</button></div></dialog>
-<dialog id="leaveRequestDialog" class="form-dialog" aria-labelledby="leaveRequestTitle"><div class="picker-head"><strong id="leaveRequestTitle">Abwesenheit beantragen</strong><button class="picker-close" type="button" id="leaveRequestClose">Schließen ×</button></div><div class="form-dialog-body"><form id="leaveRequestForm"><div class="form-grid"><div class="field full"><label for="leaveKind">Antrag</label><select id="leaveKind"><option value="vacation">Urlaub beantragen</option><option value="holiday">Feiertagsausfall prüfen lassen</option></select></div><div class="field"><label for="leaveFrom">Von</label><input id="leaveFrom" type="date" required></div><div class="field"><label for="leaveTo">Bis</label><input id="leaveTo" type="date" required></div></div><p id="leaveFormHint" class="calendar-hint"></p><div id="leaveDateChoices" class="leave-date-choices"></div><div class="field"><label for="leaveNote">Hinweis / Grundlage des Antrags</label><textarea id="leaveNote" maxlength="500" rows="3"></textarea></div><p id="leaveFormStatus" class="status-text" aria-live="polite"></p><button class="btn primary" id="leaveRequestSend" type="submit">Antrag absenden</button></form></div></dialog>
+<dialog id="leaveRequestDialog" class="form-dialog vacation-dialog" aria-labelledby="leaveRequestTitle">
+ <div class="picker-head"><strong id="leaveRequestTitle">Urlaub beantragen</strong><button class="picker-close" type="button" id="leaveRequestClose" aria-label="Urlaubsantrag schließen">×</button></div>
+ <div class="form-dialog-body"><form id="leaveRequestForm">
+  <p class="vacation-intro">Tippe auf die Tage, an denen du Urlaub möchtest.</p>
+  <div id="leaveBalance" class="leave-balance"></div>
+  <div class="field" id="leaveKindField" hidden><label for="leaveKind">Antrag</label><select id="leaveKind"><option value="vacation">Urlaub beantragen</option><option value="holiday">Feiertagsausfall prüfen lassen</option></select></div>
+  <div class="leave-picker-toolbar"><button class="btn ghost" id="leavePrevMonth" type="button" aria-label="Vorheriger Urlaubsmonat">‹</button><b id="leavePickerMonth"></b><button class="btn ghost" id="leaveNextMonth" type="button" aria-label="Nächster Urlaubsmonat">›</button></div>
+  <div id="leaveDateChoices" class="leave-date-choices" aria-label="Urlaubstage auswählen"></div>
+  <p id="leaveFormHint" class="calendar-hint"></p>
+  <details class="leave-range"><summary>Längeren Zeitraum auswählen</summary><p>Wir wählen nur deine möglichen Urlaubstage aus. Du kannst einzelne Tage danach wieder abwählen.</p><div class="form-grid"><div class="field"><label for="leaveFrom">Von</label><input id="leaveFrom" type="date" required></div><div class="field"><label for="leaveTo">Bis</label><input id="leaveTo" type="date" required></div></div></details>
+  <div id="leaveSelectionSummary" class="leave-selection-summary" aria-live="polite"></div>
+  <div class="field"><label for="leaveNote">Nachricht an Kim <span class="calendar-optional">(optional)</span></label><textarea id="leaveNote" maxlength="500" rows="2" placeholder="Möchtest du etwas dazu sagen?"></textarea></div>
+  <p id="leaveFormStatus" class="status-text" aria-live="polite"></p>
+ </form></div><div class="leave-form-footer"><button class="btn primary" id="leaveRequestSend" type="submit" form="leaveRequestForm" disabled>Antrag absenden</button><p class="leave-submit-hint">Dein Urlaub ist genehmigt, sobald Kim den Antrag bestätigt.</p></div></dialog>
 <dialog id="leaveDecisionDialog" class="form-dialog" data-role="boss" aria-labelledby="leaveDecisionTitle"><div class="picker-head"><strong id="leaveDecisionTitle">Antrag prüfen</strong><button class="picker-close" type="button" id="leaveDecisionClose">Schließen ×</button></div><div class="form-dialog-body"><p class="notice">Vorschläge sind noch keine endgültige Abrechnung. Solltage, Referenzverdienst, Provisionskorrekturen, Zielbonus und unverschuldete Ausfälle prüfen. Keine fiktiven Kundentermine anlegen.</p><div id="leaveDecisionDays"></div><div class="field"><label for="leaveDecisionNote">Entscheidungsgrund / geprüfte Berechnungsgrundlage</label><textarea id="leaveDecisionNote" maxlength="1000" rows="3"></textarea></div><label class="check-row"><input id="leaveDecisionConfirm" type="checkbox"><span>Ich habe die tatsächlichen Solltage und die vollständige Vergütung einschließlich relevanter variabler Bestandteile geprüft.</span></label><label class="check-row"><input id="leaveAdvance" type="checkbox"><span>Falls erforderlich: freiwilligen Vorgriff auf noch nicht verfügbaren Urlaub ausdrücklich genehmigen.</span></label><label class="check-row"><input id="leaveExtraDays" type="checkbox"><span>Falls erforderlich: abweichend mehr als drei Soll-Arbeitstage in dieser Woche bestätigen.</span></label><p id="leaveDecisionStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button id="leaveApprove" class="btn primary" type="button">Geprüft genehmigen</button><button id="leaveReject" class="btn ghost" type="button">Mit Grund ablehnen</button><button id="leaveCancel" class="btn ghost" type="button">Stornierung bestätigen</button></div><div id="leavePaidWrap"><hr><label for="leavePaidDate">Tatsächlich ausgezahlt am</label><input id="leavePaidDate" type="date"><button id="leaveMarkPaid" class="btn ghost" type="button">Ausgeführte Zahlung vermerken</button><small>Dieser Vermerk löst keine Banküberweisung aus.</small></div></div></dialog>
 
 <!-- Kontaktdaten erfragen: kein Terminabschluss -->
@@ -3203,9 +3234,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     dashboard: ["Start", "Dein Tag auf einen Blick"],
     "boss-dashboard": ["Dashboard", "Mitarbeiter, Arbeitszeit und Abrechnung im Überblick"],
     mitarbeiter: ["Mitarbeiter", "Stammdaten, Arbeitsvertrag und Nachtrag"],
-    einsatz: ["Einsatz & Zeiten", "Einsatzplan, Wochenkonto, Arbeitszeiten und Abwesenheiten"],
+    einsatz: ["Arbeitszeiten", "Erfasste Stunden, Termine und Wochen prüfen"],
     akte: ["Personalakte", "Vorfälle, Gespräche und Abmahnungen"],
-    zeiten: ["Einsatz & Zeiten", "Deine Telefontage und Arbeitszeiten"],
+    zeiten: ["Arbeitszeiten", "Stunden eintragen, Woche prüfen und absenden"],
     lohn: ["Lohn & Abrechnung", "Vergütung und Monatsabrechnung"],
     nachweise: ["Monatsarchiv", "Abgeschlossene Monate und Abrechnungen"],
     organisation: ["Aufgaben & Notizen", "Offene und erledigte Aufgaben, Notizen zu Kunden"],
@@ -3288,7 +3319,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const d = window.SmartADMWeekPlanner.details(plan);
     return {...d,note:[d.reason ? `Wochenbegründung: ${d.reason}` : "",d.note].filter(Boolean).join(" · ")};
   };
-  const displayedTasks = () => { const tasks=state.tasks.filter(t=>!regularWeek.data?.active||!t.weekPlanning);const task = regularWeek.data?.active?null:weeklyPlanner?.task();return task&&!tasks.some(t=>String(t.id)===String(task.id))?[task,...tasks]:tasks; };
+  const displayedTasks = () => state.tasks.filter(t=>!t.weekPlanning);
 
   /* ================= Helfer ================= */
 
@@ -3495,6 +3526,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       renderTasks();
     }
     $$(".page").forEach(p => p.classList.toggle("active", p.id === pageId));
+    window.scrollTo({top:0,behavior:"instant"});
     const [title, sub] = (state.role === "boss" && BOSS_PAGE_TITLES[pageId]) || PAGE_TITLES[pageId] || [];
     if (title) { setText("pageTitle", title); setText("pageSub", sub); }
     // Kontakte starten beim Öffnen immer zugeklappt.
@@ -4422,7 +4454,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   function setTimeFormOpen(open) {
     $("timeFormWrap").hidden = !open;
-    $("openTimeFormBtn").hidden = open;
+    const regular=Boolean(regularWeek.data?.active);
+    $("timeCard").hidden = regular&&!open;
+    $("openTimeFormBtn").hidden = regular||open;
     $("timeCard").classList.toggle("is-open", open);
   }
 
@@ -10628,54 +10662,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   function renderPlanCard() {
     renderMyStart();
-    if(typeof regularWeek!=="undefined"&&regularWeek.data?.active){$("planCard").hidden=true;return;}
-    const host = $("planWeeks");
-    if (!host || state.role !== "employee") return;
-    const notice = $("planNotice");
-    if (state.plansUnsupported) {
-      host.innerHTML = '<div class="notice">Der Einsatzplan wird gerade eingerichtet und ist in Kürze verfügbar.</div>';
-      notice.innerHTML = "";
-      $("planAddBtn").disabled = true;
-      return;
-    }
-    $("planAddBtn").disabled = false;
-
-    const today = isoDate();
-    const account = ownWeekAccount();
-    const thisWeek = mondayOfWeek(today);
-    host.innerHTML = [thisWeek, addDaysIso(thisWeek, 7)].map((ws, i) => {
-      const we = addDaysIso(ws, 6);
-      const plans = state.plans.filter(p => p.plan_date >= ws && p.plan_date <= we).sort(byPlanDate);
-      const active = plans.filter(p => p.status !== "cancelled").length;
-      const week = account.weeks.find(w => w.weekStart === ws);
-      const work = state.entries.filter(e => e.date >= ws && e.date <= we).reduce((s, e) => s + e.minutes, 0);
-      const planned = plans.filter(p => p.status !== "cancelled").reduce((sum, p) => sum + planDetails(p).minutes, 0);
-      const hours = i === 0
-        ? ` · ${fmtMinutes(week ? week.ist : work)} von ${fmtMinutes(week ? week.soll : CONTRACT_WEEKLY_HOURS * 60)}`
-        : "";
-      return `<div class="plan-week">
-        <div class="plan-week-head"><strong>${i ? "Nächste Woche" : "Diese Woche"}</strong>
-          <span>${esc(isoWeekLabel(ws))} · ${active} von ${CONTRACT_MAX_WORKDAYS_PER_WEEK} Tagen geplant${esc(hours).replace(/ h\b/g, "\u00a0h")} · ${esc(fmtMinutes(planned))} geplant</span></div>
-        <div><button class="btn ghost small" type="button" data-plan-week="${ws}">Woche ${plans.some(p => p.status !== "cancelled") ? "ändern" : "planen"}</button></div>
-        ${plans.length ? plans.map(planRowHtml).join("")
-          : `<p class="plan-empty">${i ? "Noch kein Tag geplant – bitte bis Sonntag eintragen." : "Diese Woche ist kein Tag mehr geplant."}</p>`}
-      </div>`;
-    }).join("");
-
-    const nextWeek = addDaysIso(thisWeek, 7);
-    const nextPlanned = state.plans.some(p => p.plan_date >= nextWeek && p.plan_date <= addDaysIso(nextWeek, 6) && p.status !== "cancelled");
-    const weekday = new Date(`${today}T12:00:00`).getDay(); // 0 = Sonntag
-    const hints = [];
-    if (account.owed > 0) {
-      hints.push(`<div class="notice warn">Nachzuarbeiten: <b>${esc(fmtMinutes(account.owed))}</b> aus Wochen mit vereinbarter Nacharbeit oder unentschuldigten Fehlstunden. Plane die Zeit zusätzlich ein – sie wird mit deinen nächsten Mehrstunden verrechnet.</div>`);
-    }
-    if (!nextPlanned && (weekday === 0 || weekday >= 5)) {
-      hints.push('<div class="notice warn">Für nächste Woche ist noch kein Telefontag geplant. Bitte trage deine Tage bis Sonntag ein.</div>');
-    }
-    notice.innerHTML = hints.join("");
+    // Historical plans remain available in the calendar; no advance planning UI.
+    $("planCard").hidden=true;
   }
 
-  function openPlanDialog(plan = null) { if(regularWeek.data?.active){showPage("zeiten");regularWeek.load();return;}weeklyPlanner.open(plan); }
+  function openPlanDialog() { showPage("zeiten");regularWeek.load(); }
 
   $("planAddBtn").addEventListener("click", () => openPlanDialog());
   $("planRulesBtn").addEventListener("click", () => showWhatsNewDialog(false));
@@ -11121,7 +11112,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if(addendumPending()&&!document.querySelector("dialog[open]")){openAddendum(state.addendum,{sign:"employee"});return;}
     if(await regularWeek.onboarding())return;
     if(regularWeek.patterns.some(p=>p.valid_from&&p.valid_from<=isoDate())){await regularWeek.afterNotices();return;}
-    await weeklyPlanner.check({refresh:true});
+    // Regular weekdays replace advance weekly planning.
   }
   $("planDialog").addEventListener("close",()=>{
     if(weeklyPlanningReady&&addendumPending()&&!document.querySelector("dialog[open]"))openAddendum(state.addendum,{sign:"employee"});
@@ -11137,7 +11128,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     $("whatsNewPreview").innerHTML = WHATS_NEW.sections.flatMap(s => s.items.map(([title, text]) =>
       `<li><b>${esc(s.tone === "pflicht" ? "Pflicht: " : "Neu: ")}${esc(title)}</b> – ${esc(text)}</li>`)).join("");
     setText("announceStatus", WHATS_NEW.required
-      ? "Erscheint automatisch beim nächsten Öffnen von Office und lässt sich erst schließen, wenn „verstanden“ angehakt und bestätigt ist. Den Stand siehst du unter „Einsatz & Zeiten“."
+      ? "Erscheint automatisch beim nächsten Öffnen von Office und lässt sich erst schließen, wenn „verstanden“ angehakt und bestätigt ist. Den Stand siehst du unter „Arbeitszeiten“."
       : "Erscheint automatisch beim nächsten Öffnen von Office.");
   }
   renderAnnounce();
@@ -11215,7 +11206,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   const MY_WIDGETS = {
     kalender:{title:"Kalender",icon:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h2M14 14h2M8 17h2"/>'},
-    einsatz:    { title: "Nächster Einsatz", fixed: true, icon: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M9 15l2 2 4-4"/>' },
+    einsatz:    { title: "Arbeitszeiten", fixed: true, icon: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M9 15l2 2 4-4"/>' },
     meintag:    { title: "Mein Tag",          icon: '<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/>' },
     monat:      { title: "Monatsstand",       icon: '<path d="M4 19V5M4 19h16"/><path d="M8 15v-3M12 15V9M16 15v-6"/>' },
     telefon:    { title: "Telefonliste",      icon: '<path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/>' },
@@ -11333,32 +11324,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const MY_BODY = {
     kalender(){return `<div class="my-big">${esc(fmtMonth(isoMonth()))}</div>${miniCalendarHtml()}<p class="my-muted">Deine Regeltage, genehmigter Urlaub und Feiertage. Urlaub beantragst du direkt hier.</p><div class="my-actions"><button class="btn primary" type="button" data-my-act="kalender">Kalender öffnen</button></div>`;},
     einsatz(compact) {
-      if(state.regularPatterns?.some(p=>p.valid_from&&p.valid_from<=isoDate())){const w=regularWeek.data;return `<div class="my-big">Deine Arbeitswoche</div><p class="my-muted">Stunden und Termine trägst du selbst ein. Feiertage und genehmigte Abwesenheiten stehen getrennt im Wochenkonto.</p>${w?`<p>${esc(fmtMinutes(w.workMinutes))} selbst erfasst · ${esc(fmtMinutes(w.holidayMinutes+w.absenceMinutes))} gutgeschrieben</p>`:''}<div class="my-actions"><button class="btn primary" type="button" data-my-act="zeiten">Stunden &amp; Termine eintragen</button></div>`;}
-
-      if (state.plansUnsupported) return '<p class="my-muted">Der Einsatzplan wird gerade eingerichtet.</p>';
-      const p = nextPlan();
-      const today = isoDate();
-      const ws = mondayOfWeek(today), next = addDaysIso(ws, 7);
-      const nextEmpty = !(state.plans || []).some(x => x.plan_date >= next && x.plan_date <= addDaysIso(next, 6) && x.status !== "cancelled");
-      const weekday = new Date(`${today}T12:00:00`).getDay();
-      const hint = nextEmpty && (weekday === 0 || weekday >= 5)
-        ? '<p class="my-hint">Für nächste Woche ist noch nichts geplant – bitte bis Sonntag eintragen.</p>' : "";
-      if (!p) {
-        return `<div class="my-big">Kein Tag geplant</div>
-          ${compact ? "" : '<p class="my-muted">Plane deine nächsten Telefontage mit Startzeit.</p>'}
-          ${hint}
-          <div class="my-actions"><button class="btn primary" type="button" data-my-act="plan">Woche planen</button></div>`;
-      }
-      const [label, cls] = planStatus(p);
-      const day = p.plan_date === today ? "Heute" : p.plan_date === addDaysIso(today, 1) ? "Morgen" : fmtDayShort(p.plan_date);
-      const canCancel = (p.status === "planned" && p.plan_date >= today) || (p.status === "missed" && p.plan_date >= addDaysIso(today, -1));
-      return `<div class="my-big">${esc(day)}, ${esc(p.start_time)} Uhr</div>
-        <div class="my-line"><span class="chip ${cls}">${esc(label)}</span><span class="my-muted">${esc(fmtMinutes(planDetails(p).minutes))} geplant</span>${planDetails(p).note ? `<span class="my-muted">${esc(planDetails(p).note)}</span>` : ""}</div>
-        ${hint}
-        <div class="my-actions">
-          ${canCancel ? `<button class="btn ghost" type="button" data-my-act="cancel" data-plan="${p.id}">Absagen</button>` : ""}
-          ${compact ? "" : '<button class="btn primary" type="button" data-my-act="zeiten">Alle Einsätze</button>'}
-        </div>`;
+      const w=regularWeek.data;
+      return `<div class="my-big">Deine Arbeitswoche</div><p class="my-muted">Trage deine geleisteten Stunden und Termine ein und sende die Woche bis Sonntag ab.</p>${w?.active?`<p>${esc(fmtMinutes(w.workMinutes))} erfasst · ${esc(fmtMinutes(w.holidayMinutes+w.absenceMinutes))} gutgeschrieben</p>`:''}<div class="my-actions"><button class="btn primary" type="button" data-my-act="zeiten">Stunden &amp; Termine eintragen</button></div>`;
     },
     meintag(compact) {
       const today = isoDate();
@@ -11564,13 +11531,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const regularWeek=window.OfficeRegularWeek.create({$,esc,api,role:()=>state.role,today:isoDate,minutes:fmtMinutes,openDialog,closeDialog,showPage,toast,
     changed:(pattern,data)=>{state.regularPatterns=pattern.patterns||[];state.regularGoalsByMonth??={};for(const g of data.monthGoals||[])state.regularGoalsByMonth[g.month]=g;},
     openEntry:(slot,week)=>{resetForm();setTimeFormOpen(true);const date=slot>isoDate()?isoDate():slot;$("date").value=date;$("entryRegularSlot").value=slot;$("timeCard").scrollIntoView({block:"start",behavior:"smooth"});$("start").focus();},
-    editEntry,onOnboarded:async()=>{await afterEmployeeNotices();}
+    editEntry,onSubmitted:loadOwnEntries,onOnboarded:async()=>{await afterEmployeeNotices();}
   });
 
   const officeCalendar=window.OfficeCalendar.create({$,esc,api,state,today:isoDate,minutes:fmtMinutes,timestamp:fmtTimestamp,openDialog,closeDialog,selectEmployee,
     employeeOptions:()=>state.employees.map(u=>`<option value="${esc(u.clerk_user_id)}">${esc(employeeName(u))}${u.is_test?" · Testkonto":""}</option>`).join(""),
     openRegular:async week=>{showPage("zeiten");await regularWeek.selectWeek(week);},
-    planWeek:week=>weeklyPlanner.open(week),replayIntro:async()=>{await loadOwnAddendum();showWhatsNewDialog(true);},
+    replayIntro:async()=>{await loadOwnAddendum();showWhatsNewDialog(true);},
     onChanged:async()=>{if(state.role==='employee')await loadPlans();else if(state.selectedUserId){await reloadAbsences(state.selectedUserId);await loadLeavePayrollSummary();await loadCalendarPayroll();}}
   });
   async function loadLeavePayrollSummary(){
@@ -12370,7 +12337,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
 
   weeklyPlanner = window.SmartADMWeekPlanner.create({
-    state, $, esc, api, loadPlans, loadTasks, isReady: () => weeklyPlanningReady&&!regularWeek.patterns.some(p=>p.valid_from&&p.valid_from<=addDaysIso(window.SmartADMWeekPlanner.reminderWeek(isoDate())||mondayOfWeek(isoDate()),6)), loadPrefs: loadMyPrefs, getPrefs: () => myPrefs,
+    state, $, esc, api, loadPlans, loadTasks, isReady: () => false, loadPrefs: loadMyPrefs, getPrefs: () => myPrefs,
     setPrefs: prefs => {
       myPrefs = cleanPrefs({ ...myPrefs, ...prefs });
       try { localStorage.setItem(MY_STORE(), JSON.stringify(myPrefs)); } catch {}

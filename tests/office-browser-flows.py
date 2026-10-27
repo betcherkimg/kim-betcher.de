@@ -85,24 +85,11 @@ with sync_playwright() as pw:
   page.keyboard.press('Escape');expect(page.locator('#whatsNew')).to_be_visible()
   while not page.locator('#whatsNewCheck').is_visible():page.locator('#whatsNewOk').click()
   expect(page.locator('#whatsNewOk')).to_be_disabled()
-  page.locator('#whatsNewCheck').check();page.locator('#whatsNewOk').click();expect(page.locator('#planDialog')).to_be_visible();expect(page.locator('#planSnoozeBtn')).to_be_visible()
-  expect(page.locator('#weekHours0')).to_have_value('2');expect(page.locator('#weekHours2')).to_have_value('2')
-  check_width(page)
-  page.locator('#planSnoozeBtn').click();expect(page.locator('#planDialog')).not_to_be_visible();assert api.prefs['weekPlanning']['2026-10-26']['count']==1
-  ctx.close()
-  ctx,page,errors2=page_for(browser,api,width,'2026-10-23T15:00:00Z');page.wait_for_timeout(150);expect(page.locator('#whatsNew')).not_to_be_visible();expect(page.locator('#planDialog')).not_to_be_visible();ctx.close()
-  ctx,page,errors3=page_for(browser,api,width,'2026-10-24T08:00:00Z');expect(page.locator('#planDialog')).to_be_visible();page.locator('#planSnoozeBtn').click();expect(page.locator('#planDialog')).not_to_be_visible();assert api.prefs['weekPlanning']['2026-10-26']['count']==2;ctx.close()
-  ctx,page,errors4=page_for(browser,api,width,'2026-10-25T08:00:00Z');expect(page.locator('#planDialog')).to_be_visible();expect(page.locator('#planSnoozeBtn')).not_to_be_visible();expect(page.locator('#planDialogClose')).not_to_be_visible()
-  page.keyboard.press('Escape');expect(page.locator('#planDialog')).to_be_visible()
-  days(page,['2026-10-26','2026-10-28'],[3,2]);page.locator('#planSaveBtn').click();expect(page.locator('#planStatus')).to_contain_text('begründe');assert len(api.plans)==0
-  page.locator('#planWeekReason').fill('Diese Woche nur fünf Stunden möglich.');page.locator('#planSaveBtn').click();expect(page.locator('#planDialog')).not_to_be_visible();assert len(api.plans)==2;assert api.confirmed[-1]['reason'];
-  page.evaluate('__t.planner.open("2026-10-26")');expect(page.locator('#planDialog')).to_be_visible();expect(page.locator('#planWeekReason')).to_have_value('Diese Woche nur fünf Stunden möglich.')
-  page.locator('#weekHours1').fill('3');expect(page.locator('#weekDay2')).to_be_enabled();expect(page.locator('#planWeekReasonField')).not_to_be_visible()
-  page.locator('#weekDay2').select_option('2026-10-30');expect(page.locator('#planWeekReasonField')).to_be_visible();expect(page.locator('#planWeekReasonLabel')).to_contain_text('mehr')
-  page.locator('#planWeekReason').fill('');page.locator('#planSaveBtn').click();expect(page.locator('#planStatus')).to_contain_text('begründe')
-  page.locator('#planWeekReason').fill('Nacharbeit aus der Vorwoche');check_width(page)
-  page.screenshot(path=f'/tmp/office-week-more-{width}.png',full_page=True)
-  page.locator('#planSaveBtn').click();expect(page.locator('#planDialog')).not_to_be_visible();assert len(api.plans)==3;assert api.confirmed[-1]['reason']=='Nacharbeit aus der Vorwoche';assert sum(int(x['note'].split(': ')[1].split(':')[0])*60+int(x['note'].split(': ')[1].split(':')[1][:2]) for x in api.plans)==480
+  page.locator('#whatsNewCheck').check();page.locator('#whatsNewOk').click();expect(page.locator('#planDialog')).not_to_be_visible()
+  expect(page.locator('#planCard')).not_to_be_visible();expect(page.locator('#employeeQuickAccess [data-page="zeiten"]')).to_be_visible()
+  page.locator('#employeeQuickAccess [data-page="zeiten"]').click();expect(page.locator('#zeiten')).to_have_class('page active');check_width(page)
+  for date in ['2026-10-24T08:00:00Z','2026-10-25T08:00:00Z']:
+   page.clock.set_fixed_time(date);page.evaluate('__t.afterEmployeeNotices()');expect(page.locator('#planDialog')).not_to_be_visible()
   # Boss configuration, script metadata round trip, and clean automatic request text.
   result=page.evaluate('''()=>{__t.resetCallForm();document.querySelector('#callRequestContact').checked=true;document.querySelector('#callRequestContact').dispatchEvent(new Event('change'));document.querySelector('#callRequestContactName').value='Alexander Muster';document.querySelector('#callRequestContactName').dispatchEvent(new Event('input'));const d=__t.readCallScriptForm();return {briefing:__t.encodeCallScript(d),script:__t.conversationTemplate(d)}}''')
   assert 'Alexander Muster' in result['script'] and '{terminfrage}' not in result['script'] and 'Termin vereinbaren' not in result['script']
@@ -120,15 +107,11 @@ with sync_playwright() as pw:
   page.locator('#contactDetailsSend').click();expect(page.locator('#contactDetailsDialog')).not_to_be_visible();assert api.receipts==[{'phone':'0176 12345678','email':''}];expect(page.locator('#finalBar')).not_to_be_visible()
   receipt=dict(row,status='R_TA_oT',protocol='Kontaktdaten von Alexander Muster erhalten\nTelefon: 0176 12345678',closed_at='2026-10-25 09:00:00')
   html=page.evaluate('c=>__t.adminCallHtml(c,"returned")',receipt);assert 'Kontaktdaten erhalten' in html;assert 'Kontaktdaten von Alexander Muster erhalten' in html
-  # A lost acknowledgement after a stored first day can be retried without duplicating it.
-  page.evaluate('__t.planner.open("2026-11-02")');days(page,['2026-11-02','2026-11-04','2026-11-06'],[2,2,2]);api.fail_post=True
-  page.locator('#planSaveBtn').click();expect(page.locator('#planStatus')).to_contain_text('erneut speichern');assert len([x for x in api.plans if x['plan_date']>='2026-11-02'])==1
-  page.locator('#planSaveBtn').click();expect(page.locator('#planDialog')).not_to_be_visible();assert len([x for x in api.plans if x['plan_date']>='2026-11-02'])==3
-  # An old, unplanned task opens as a reviewable week without trapping the user on past dates.
-  page.evaluate("__t.state.tasks=[{id:99,weekPlanning:true,weekStart:'2026-10-19',title:'Bitte Folgewoche planen',status:'open',priority:'high',assigned_to:'sasi'}];__t.renderTasks();document.querySelector('#taskOpenList [data-task-action=planWeek]').click()")
-  expect(page.locator('#planDialog')).to_be_visible();expect(page.locator('#planDialogClose')).to_be_visible();page.locator('#planDialogClose').click()
-  assert not errors+errors2+errors3+errors4,errors+errors2+errors3+errors4
-  ctx.close();print(f'PASS {width}: mandatory news, Friday/Saturday deferral, Sunday lock, 5h and 8h reasons, three enabled days, request script and contact-only fifth attempt, receipt')
+  # Old planning tasks are retained in storage, with no obsolete employee action.
+  page.evaluate("__t.state.tasks=[{id:99,weekPlanning:true,weekStart:'2026-10-19',title:'Bitte Folgewoche planen',status:'open',priority:'high',assigned_to:'sasi'}];__t.renderTasks()")
+  assert page.locator('#taskOpenList [data-task-action=planWeek]').count()==0
+  assert not errors,errors
+  ctx.close();print(f'PASS {width}: mandatory news, direct work-time access, no obsolete planner or reminder, request script, contact-only fifth attempt and receipt')
  # Payroll and PDF integration with actual browser libraries; all external services use fixtures.
  for width in [1280,390]:
   api=API();ctx,page,errors=page_for(browser,api,width,'2026-10-23T09:00:00Z')

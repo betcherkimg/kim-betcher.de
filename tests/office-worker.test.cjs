@@ -34,6 +34,14 @@ function fixture(now='2026-10-23T08:00:00Z'){
 }
 const body=value=>new Request('https://test.invalid',{method:'POST',body:JSON.stringify(value)});
 
+test('opening employee tasks creates no retired weekly-planning task and preserves existing history',async()=>{
+ const f=fixture();try{
+  const empty=await (await f.t.getOwnTasks({env:f.env,userId:'sasi'})).json();assert.equal(empty.length,0);
+  f.query("INSERT INTO office_tasks(assigned_to,created_by,title,status)VALUES('sasi','week-plan:2026-10-19','Historische Planung','completed')");
+  const rows=await (await f.t.getOwnTasks({env:f.env,userId:'sasi'})).json();assert.equal(rows.length,1);assert.equal(rows[0].status,'completed');
+ }finally{f.close()}
+});
+
 test('Friday task persists once, cannot be dismissed as ordinary task, completes after an explained short week',async()=>{
  const f=fixture();try{
   await f.t.ensureWeekPlanningTask(f.env,'sasi');await f.t.ensureWeekPlanningTask(f.env,'sasi');

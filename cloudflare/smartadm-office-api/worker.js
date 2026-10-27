@@ -514,7 +514,8 @@ const mapPlanningTask = t => String(t.created_by || "").startsWith("week-plan:")
   ? {...t, weekPlanning:true, weekStart:t.created_by.slice(10)} : t;
 
 const getOwnTasks = async ({ env, userId }) => {
-  if (!isBoss(env,userId)) await ensureWeekPlanningTask(env,userId);
+  await ensureHr(env);
+  // Advance weekly planning is retired; keep existing tasks as historical records.
   return json((await all(env,
     `SELECT ${TASK_COLS.join(", ")} FROM office_tasks
      WHERE assigned_to = ? OR (assigned_to = ? AND created_by = ?)
@@ -5479,11 +5480,11 @@ const MONITORED_ASSETS = {
   "/kb.css": "94fc9d3b5382f0604a2772cc4d8573ea6a4b25b9c77cd8dc8d949e6fd790c432",
   "/smartadm/sales/index.html": "b82b016eb1c57e53b2af504b754caa802bc04eb1d2a50722bd785355374f9719",
   "/smartadm/sales/cloud.js": "b62ef1f8fa93b3c9b8e6007c622c8e2771dda3220e979c77eb1c55084b5e0e26",
-  "/smartadm/office/": "293615ee4d6c60e23d7343d164046063ad1c11bdcc52a469117f9610a561672c",
-  "/smartadm/office/sw.js": "796c77ffd978692dad0ee44e5cdfc9504986921dcc759f918b695fb4a7bcb1fa",
+  "/smartadm/office/": "a5ed947fd2d038e0ff25b826eb706b4c31f2d2b158e2e4f7ffc4c1ff62efb119",
+  "/smartadm/office/sw.js": "e87976049b5d2f5f318e28170c13090df0d09e1a669be8e8c59ec734f340682a",
   "/smartadm/office/week-planner.js": "1ff59ff97053f6702be28c7f57a78cf6b3b869271f15d0cb5344be7c61119bf2",
-  "/smartadm/office/absence-calendar.js": "1cf5c433b21f521d43921a636142496bb8c6c77fe4ffecda300c2689202e2ee4",
-  "/smartadm/office/regular-week.js": "57c577a53b5808c34c93604749681c8928c63f19a803c4239243914529cfd2c6",
+  "/smartadm/office/absence-calendar.js": "b7709643b6ebe452bb4725f1086c617bcc57bb872f23ae4403ea61c5600214b1",
+  "/smartadm/office/regular-week.js": "7133e9c3c3c83145f2d70f46bf9a884429de0e5885fc56ead97f6f68cb61ac73",
   "/smartadm/office/guided-intro.js": "f6486a67d097f46fca9cefcaeef85e8cdcffaf34233a93d75a078be95532facb",
   "/smartadm/office/vendor/xlsx-0.20.3.min.js": "cc015130aa8521e7f088f88898eba949ccdcbfb38df0bd129b44b7273c3a6f41",
   "/smartadm/office/vendor/html2pdf.min.js": "f3e5733ad8b0547c6ad7ee6c7766277fc13d1cb584197aaacbed930ce5ce0f8f"
@@ -5543,7 +5544,7 @@ export default {
       if (env.SECURITY_MONITOR_ONLY === "true") { await monitorSecurity(env); return; }
       await checkPlans(env, exec).catch(e => console.error("checkPlans:", e.message));
       await remindRegularSubmissions(env,exec).catch(e=>console.error("remindRegularSubmissions:",e.message));
-      await remindWeekPlanning(env, exec).catch(e => console.error("remindWeekPlanning:", e.message));
+      // Only the submitted-week workflow sends employee week reminders.
     })());
   },
 

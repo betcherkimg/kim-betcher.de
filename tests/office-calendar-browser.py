@@ -12,7 +12,7 @@ class CalendarAPI(API):
   super().__init__();self.plans=[{'id':i+1,'plan_date':d,'start_time':'16:00','note':'Geplante Dauer: 2:00 h','status':'planned'} for i,d in enumerate(['2026-10-26','2026-10-28','2026-10-30'])];self.signed=False;self.patterns=[];self.entries=[];self.requests=[];self.saved=[];self.submitted=False;self.signature=None
   self.doc={'version':definition['version'],'title':definition['title'],'sections':definition['sections'],'employee':{'name':'Saskia Test','street':'Testweg 1','zip_city':'89567 Sontheim','birth_date':'2000-01-01'},'employer':{'name':'Firma Test','street':'Testweg 2','zip_city':'89567 Sontheim'},'intro':['Vertrag im lokalen Browsertest'],'place':'Sontheim','place_employee':'Sontheim'}
  def addendum(self):return {'version':definition['version'],'doc':self.doc,'ready':True,'hash':'fixture-document-hash','complete':self.signed,'canDefer':False,'archive':[],'signatures':{'employee':{'signed_at':'2026-10-27 11:00:00','signer_name':'Saskia Test','signature':self.signature or 'data:image/png;base64,AA=='} if self.signed else None,'employer':{'signed_at':'2026-10-27 10:00:00','signer_name':'Firma Test','signature':self.signature or 'data:image/png;base64,AA=='}}}
- def calendar(self):return {'month':'2026-12','region':'BW','job':{'start_date':'2026-10-01'},'terms':[],'patterns':self.patterns,'accounts':[{'year':2026,'entitlement':3,'approved':0,'reserved':0,'remaining':3,'projected':3,'planningRemaining':3,'provisional':False,'waitingEnd':'2027-03-31'}],'holidays':[{'date':'2026-12-25','name':'1. Weihnachtstag'},{'date':'2027-01-06','name':'Heilige Drei Könige'}],'regularHolidays':[{'date':'2026-12-25','name':'1. Weihnachtstag','minutes':120,'status':'calculated'}] if self.patterns else [],'plans':[],'work':[],'absences':[],'requests':self.requests,'history':[],'audit':[],'rates':[{'year':2026,'rate':1390}],'closedMonths':[]}
+ def calendar(self):return {'month':'2026-12','region':'BW','job':{'start_date':'2026-10-01'},'terms':[],'patterns':self.patterns,'accounts':[{'year':2026,'entitlement':3,'approved':0,'reserved':0,'remaining':3,'projected':3,'planningRemaining':3,'provisional':False,'waitingEnd':'2027-03-31'},{'year':2027,'entitlement':0,'approved':0,'reserved':0,'remaining':0,'projected':12,'planningRemaining':12,'provisional':False,'waitingEnd':'2027-03-31'}],'holidays':[{'date':'2026-12-25','name':'1. Weihnachtstag'},{'date':'2027-01-06','name':'Heilige Drei Könige'}],'regularHolidays':[{'date':'2026-12-25','name':'1. Weihnachtstag','minutes':120,'status':'calculated'}] if self.patterns else [],'plans':[],'work':[],'absences':[],'requests':self.requests,'history':[],'audit':[],'rates':[{'year':2026,'rate':1390}],'closedMonths':[]}
  def week(self,week):
   active=bool(self.patterns and week>='2026-11-01');slots=[]
   import datetime
@@ -74,12 +74,34 @@ with sync_playwright() as pw:
   pdf=fitz.open(f'/workspace/scratch/calendar-addendum-{width}.pdf');assert len(pdf)>=3;assert 'Absenden' in ''.join(p.get_text() for p in pdf);pdf.close()
   page.on('dialog',lambda d:d.accept('Bitte die fehlenden Stunden prüfen.') if d.type=='prompt' else d.accept())
   page.clock.set_fixed_time('2026-12-25T11:00:00Z');page.evaluate('async()=>{await __t.regularWeek.selectWeek("2026-12-21")}');page.locator('#regularComplete').click();expect(page.locator('#regularComplete')).to_have_text('Abgesendet ✓');assert api.submitted
-  page.evaluate('__t.showPage("kalender")');page.locator('#calendarMonth').fill('2026-12');page.locator('#calendarMonth').dispatch_event('change');page.locator('#calendarNewLeave').click();page.locator('#leaveFrom').fill('2027-01-04');page.locator('#leaveTo').fill('2027-01-10');page.locator('#leaveTo').dispatch_event('change')
+  expect(page.locator('#entryRows')).not_to_contain_text('Entwurf');expect(page.locator('#entryRows')).to_contain_text('Abgesendet')
+  page.evaluate('__t.showPage("kalender")');page.locator('#calendarMonth').fill('2026-12');page.locator('#calendarMonth').dispatch_event('change');page.locator('#calendarNewLeave').click();page.locator('.leave-range summary').click();page.locator('#leaveFrom').fill('2027-01-04');page.locator('#leaveTo').fill('2027-01-10');page.locator('#leaveTo').dispatch_event('change')
   for d in ['05','06','07','09','10']:expect(page.locator(f'[data-leave-date="2027-01-{d}"]')).to_be_disabled()
   for d in ['04','08']:expect(page.locator(f'[data-leave-date="2027-01-{d}"]')).to_be_checked()
+  expect(page.locator('#leaveSelectionSummary')).to_contain_text('2 Tage ausgewählt')
+  expect(page.locator('#leaveRequestSend')).to_have_text('2 Tage beantragen')
+  # Month changes preserve selection; occupied days are disabled in the newly fetched month.
+  page.locator('#leaveNextMonth').click();expect(page.locator('#leavePickerMonth')).to_have_text('Februar 2027')
+  expect(page.locator('#leaveSelectionSummary')).to_contain_text('2 Tage ausgewählt')
+  page.locator('#leavePrevMonth').click();expect(page.locator('[data-leave-date="2027-01-04"]')).to_be_checked()
+  page.locator('[data-leave-remove="2027-01-08"]').click();expect(page.locator('#leaveRequestSend')).to_have_text('1 Tag beantragen')
+  page.locator('[data-leave-date="2027-01-08"]').check();page.locator('.leave-range summary').click()
+  page.screenshot(path=f'/workspace/scratch/vacation-picker-{width}.png')
+  page.locator('#leaveRequestSend').click();expect(page.locator('#leaveRequestDialog')).not_to_be_visible()
+  assert api.requests[-1]['dates']==['2027-01-04','2027-01-08']
+  expect(page.locator('#calendarRequests')).to_contain_text('Beantragt')
+  # Reopening cannot duplicate a pending request.
+  page.locator('#calendarNewLeave').click();page.locator('#leaveNextMonth').click();expect(page.locator('[data-leave-date="2027-01-04"]')).to_be_disabled()
   page.locator('#leaveRequestClose').click();check_width(page)
+  page.screenshot(path=f'/workspace/scratch/vacation-calendar-{width}.png',full_page=True)
+  page.locator('#tabbar [data-page="dashboard"]').click() if width==390 else page.locator('.nav [data-page="dashboard"]').click()
+  expect(page.locator('#employeeQuickAccess [data-page="zeiten"]')).to_be_visible()
+  page.locator('#employeeQuickAccess [data-page="zeiten"]').click();expect(page.locator('#regularWeekCard')).to_be_visible()
+  expect(page.locator('#planCard')).not_to_be_visible();expect(page.locator('#timeCard')).not_to_be_visible()
+  page.screenshot(path=f'/workspace/scratch/working-hours-{width}.png',full_page=True)
+
   page.evaluate('''()=>{__t.state.role='boss';document.body.dataset.officeRole='boss';__t.state.selectedUserId='sasi';__t.state.employees=[{clerk_user_id:'sasi',display_name:'Saskia Test'}];__t.showPage('boss-dashboard');__t.renderDashboardWidgets()}''')
-  expect(page.locator('[data-widget="kalender"]')).to_be_visible();assert not errors,errors
+  expect(page.locator('[data-widget="kalender"]')).to_be_visible();expect(page.locator('#bossQuickAccess [data-page="einsatz"]')).to_be_visible();page.locator('#bossQuickAccess [data-page="einsatz"]').click();expect(page.locator('#einsatz')).to_have_class('page active');assert not errors,errors
   print(f'PASS {width}: guided intro → real canvas signature → mandatory 3-day choice; both widgets; grey holiday; manual 1.5h actual Tuesday / Wednesday slot; vacation off-days blocked; multi-page signed PDF; Friday submit freezes drafts')
   ctx.close()
  browser.close();server.shutdown()
