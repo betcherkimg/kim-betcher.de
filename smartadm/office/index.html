@@ -3982,7 +3982,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
   document.addEventListener('click',event=>{const button=event.target.closest('[data-quick-calendar]');if(button){showPage('kalender');officeCalendar.select(button.dataset.quickCalendar);}});
   const WIDGETS = {
-    kalender:{title:"Kalender",page:"kalender",text:"Regeltage, Urlaub und Feiertage",render(){return {sub:fmtMonth(isoMonth()),body:miniCalendarHtml()+widgetRow('data-page="kalender"','Kalender öffnen','','','Arbeitswoche, Urlaubsanträge und Feiertage gemeinsam ansehen')}}},
+    kalender:{title:"Kalender",page:"kalender",text:"Regeltage, Urlaub und Feiertage",render(){return {sub:fmtMonth(isoMonth()),body:miniCalendarHtml()}}},
     heute: {
       title: "Heute", page: "einsatz", text: "Wer heute telefoniert, Anrufversuche und Termine des Tages",
       render() {
@@ -4273,6 +4273,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       return;
     }
     if (event.target.closest("[data-widget-task]")) return showPage("organisation");
+    if(event.target.closest('[data-widget="kalender"]')&&!event.target.closest("button,[data-widget-griff]"))return showPage("kalender");
   });
   document.addEventListener("click", event => {
     if (widgetMenu && !event.target.closest(".widget-kontext, [data-widget-menu]")) { widgetMenu = ""; renderDashboardWidgets(); }
