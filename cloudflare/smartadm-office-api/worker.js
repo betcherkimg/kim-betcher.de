@@ -5556,7 +5556,7 @@ async function securityCheckResult(env, key, healthy, detail) {
 const MONITORED_ASSETS = {
   "/index.html": "7e60f96e09362a6b200917a62fb449180dcf9a63236aef24122b4b8c3adece9a",
   "/kb.css": "94fc9d3b5382f0604a2772cc4d8573ea6a4b25b9c77cd8dc8d949e6fd790c432",
-  "/smartadm/sales/index.html": "b82b016eb1c57e53b2af504b754caa802bc04eb1d2a50722bd785355374f9719",
+  "/smartadm/sales/index.html": "6f4a16abb95ce3a994491b2f1e86057d9cea4648e6fad3979caaa0fb590c843f",
   "/smartadm/sales/cloud.js": "b62ef1f8fa93b3c9b8e6007c622c8e2771dda3220e979c77eb1c55084b5e0e26",
   "/smartadm/office/": "71df0a11a21a2f04f5d79d9781603dc1ca6663c39f49865e8faf43fd2caa58b6",
   "/smartadm/office/sw.js": "d3acea3ba25f51c619770de0d2ca06f386033cbad9c0438b66d292eaa6be6aec",

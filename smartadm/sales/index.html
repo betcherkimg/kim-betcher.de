@@ -7652,7 +7652,7 @@ function awWvZeile(t){
 
 /* ---------- Folgetermine ---------- */
 
-// Ab dem Tag nach einem Folgetermin wird nach dem Ergebnis und dem neuen Status gefragt.
+// Ergebnisse können jederzeit eingetragen werden; ab dem Folgetag erinnern nur offene Termine.
 // Der Verlauf liegt im Auswertungs-Eintrag (bleibt auch, wenn das Protokoll geleert wird).
 var folgeAktuell = null;
 var folgeSitzungAus = {};
@@ -7681,17 +7681,23 @@ function folgeAlsTerminErfasst(t){
   return treffer[0] || null;
 }
 
+function folgeErgebnisVorhanden(t){
+  return !!t.wv && (t.folgetermine || []).some(function(f){
+    return f.datum === t.wv && String(f.ergebnis || "").trim();
+  });
+}
+
 function folgeOhneErgebnis(alle){
   var heute = heuteIso();
   return AUSWERTUNG.filter(function(t){
-    return t.status === "folgetermin" && t.wv && t.wv < heute && !folgeAlsTerminErfasst(t)
+    return t.status === "folgetermin" && t.wv && t.wv < heute && !folgeErgebnisVorhanden(t) && !folgeAlsTerminErfasst(t)
       && (alle || t.wv >= FOLGE_AB);
   }).sort(function(a, b){ return String(a.wv).localeCompare(String(b.wv)); });
 }
 
 function folgeAnstehend(){
   var heute = heuteIso();
-  return AUSWERTUNG.filter(function(t){ return t.status === "folgetermin" && t.wv && t.wv >= heute; })
+  return AUSWERTUNG.filter(function(t){ return t.status === "folgetermin" && t.wv && t.wv >= heute && !folgeErgebnisVorhanden(t); })
     .sort(function(a, b){ return String(a.wv).localeCompare(String(b.wv)); });
 }
 
@@ -7748,7 +7754,7 @@ function folgeZeichnen(ziel, treffer){
          +     '</span>'
          +     '<span class="aw-frist' + (mitKnopf && !leise ? " faellig" : "") + '">' + frist + '</span>'
          +   '</button>'
-         +   (mitKnopf ? '<button type="button" class="btn aw-folge-knopf" data-folge-eintragen="' + esc(awSchluessel(t)) + '">Ergebnis eintragen</button>' : '')
+         +   (!folgeErgebnisVorhanden(t) ? '<button type="button" class="btn aw-folge-knopf" data-folge-eintragen="' + esc(awSchluessel(t)) + '">Ergebnis eintragen</button>' : '')
          +   '</div>'
          +   (auf
               ? '<div class="aw-detail">'
