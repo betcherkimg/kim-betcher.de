@@ -390,3 +390,20 @@ test('October entitlement follows agreed three-day week, independent of sparse o
   }
  }finally{f.close()}
 });
+
+
+test('October transition uses old Monday Thursday Friday plans and submission counts stored work and appointments exactly once',async()=>{
+ const f=fixture();try{
+  await signedRegular(f,[1,3,5]);f.setTime('2026-10-28T10:00:00Z');
+  for(const [date,status] of [['2026-10-26','started'],['2026-10-27','cancelled'],['2026-10-29','planned'],['2026-10-30','planned']])f.db.prepare("INSERT INTO work_plans(clerk_user_id,plan_date,start_time,status,note)VALUES('sasi',?,'08:00',?,'Geplante Dauer: 2:00 h')").run(date,status);
+  f.db.prepare("INSERT INTO work_entries(clerk_user_id,work_date,start_time,end_time,work_minutes,regular_slot)VALUES('sasi','2026-10-26','08:00','09:00',60,'2026-10-26'),('sasi','2026-10-27','08:00','08:20',20,'2026-10-26')").run();
+  for(const [id,date,appts] of [[1,'2026-10-26',2],[2,'2026-10-27',1]])f.db.prepare('INSERT INTO performance_entries(clerk_user_id,work_date,appointments,work_entry_id)VALUES(?,?,?,?)').run('sasi',date,appts,id);
+  let w=await weekData(f,'2026-10-26');assert.equal(w.transition,true);assert.deepEqual(Array.from(w.slots,s=>s.date),['2026-10-26','2026-10-29','2026-10-30']);assert.equal(w.workMinutes,80);
+  const save=(slot,minutes,appointments)=>f.t.saveRegularSlot({env:f.env,userId:'sasi',request:f.request({slot,minutes,appointments})});
+  await read(await save('2026-10-26',80,3));await read(await save('2026-10-26',80,3));await read(await save('2026-10-29',120,4));await read(await save('2026-10-30',120,5));
+  f.setTime('2026-10-30T15:00:00Z');w=await weekData(f,'2026-10-26');assert.equal(w.workMinutes,320);assert.equal(w.entries.reduce((n,e)=>n+e.appointments,0),12);
+  const submit=()=>f.t.completeRegularWeek({env:f.env,userId:'sasi',exec:f.exec,request:f.request({week:w.week,state_hash:w.stateHash,note:'Vollständige tatsächliche Angaben, Fehlzeit bitte prüfen.'})});await read(await submit());await read(await submit());
+  assert.equal(f.db.prepare('SELECT SUM(work_minutes) n FROM payroll_work_entries').get().n,320);assert.equal(f.db.prepare('SELECT SUM(appointments) n FROM payroll_performance_entries').get().n,12);
+  w=await weekData(f,'2026-11-02');assert.equal(w.transition,false);assert.deepEqual(Array.from(w.slots,s=>s.weekday),[1,3,5]);assert.equal(w.workMinutes,0);
+ }finally{f.close()}
+});

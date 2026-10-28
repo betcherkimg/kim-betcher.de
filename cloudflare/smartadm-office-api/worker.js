@@ -5026,12 +5026,14 @@ async function getRegularWeek({env,owner,userId,url}){
   const absences=context.absences.filter(a=>a.absence_date>=week&&a.absence_date<=end);
   for(const day of monthInfos.flatMap(m=>m.releaseDays).filter(d=>d.date>=week&&d.date<=end))if(!absences.some(a=>a.absence_date===day.date))absences.push(day);
   const declared=patterns.find(p=>p.kind==='initial'&&p.declared_date<=end&&(!p.valid_from||week<=mondayOfWeek(p.valid_from)))||null;
+  const transition=!!declared&&!leaveDays(week,addDays(week,4)).some(d=>regularAt(patterns,d)?.weekdays.includes(regularWeekday(d)));
+  const legacyPlans=transition?context.plans.filter(p=>p.plan_date>=week&&p.plan_date<=end&&p.status!=='cancelled'):[];
   const dateFor=d=>addDays(week,d-1),weekdaySet=new Set((current||declared)?.weekdays||[]);
-  // In a midweek change, show every Regeltag that was valid on its actual date.
   for(const date of leaveDays(week,addDays(week,4))){const p=regularAt(patterns,date);if(p?.weekdays.includes(regularWeekday(date)))weekdaySet.add(regularWeekday(date));}
-  const slots=[...weekdaySet].sort().map(day=>{
-    const date=dateFor(day),p=regularAt(patterns,date)||declared,holiday=holidays.find(h=>h.date===date),absence=absences.find(a=>a.absence_date===date);
-    return {date,weekday:day,pattern_id:p?.id||null,holiday:holiday||null,absence:absence||null,entries:entries.filter(e=>e.regular_slot===date||!e.regular_slot&&e.work_date===date)};
+  const slotDates=transition&&legacyPlans.length?[...new Set([...legacyPlans.map(p=>p.plan_date),...entries.map(e=>e.regular_slot||e.work_date)])].filter(d=>regularWeekday(d)>=1&&regularWeekday(d)<=5).sort():[...weekdaySet].sort().map(dateFor);
+  const slots=slotDates.map(date=>{
+    const day=regularWeekday(date),p=regularAt(patterns,date)||declared,holiday=holidays.find(h=>h.date===date),absence=absences.find(a=>a.absence_date===date);
+    return {date,weekday:day,pattern_id:p?.id||null,legacy:transition,holiday:holiday||null,absence:absence||null,entries:entries.filter(e=>e.regular_slot===date||!e.regular_slot&&e.work_date===date)};
   });
   const assigned=new Set(slots.flatMap(s=>s.entries.map(e=>e.id))),unassigned=entries.filter(e=>!assigned.has(e.id));
   const mins=entries.reduce((n,e)=>n+e.work_minutes,0),credit=holidays.reduce((n,h)=>n+h.minutes,0),other=absences.filter(a=>a.absence_type!=='holiday').reduce((n,a)=>n+a.paid_minutes,0);
@@ -5056,7 +5058,7 @@ async function getRegularWeek({env,owner,userId,url}){
     const w=addDays(mondayOfWeek(berlinToday()),-7*(i+1)),ds=context.work.filter(e=>e.work_date>=w&&e.work_date<=addDays(w,6));
     if(ds.length)latestWeeks.push(ds.some(e=>e.record_kind!=='weekly_allocation'&&!regularAt(patterns,e.work_date)?.weekdays.includes(regularWeekday(e.work_date))));
   }
-  return json({correctionOpen:await regularCorrectionOpen(env,owner,week),monthGoals:monthInfos.map(m=>({month:m.month,appointments:m.appointments,cutAppointments:m.cutAppointments,baseMinutes:m.baseMinutes,holidayMinutes:m.holidayMinutes})),week,end,active:activeDates.length>0||!!declared,current,patterns,slots:slots.filter(s=>s.pattern_id),unassigned,entries,holidays,absences,workMinutes:mins,holidayMinutes:credit,absenceMinutes:other,baseMinutes:baseline,targetMinutes:target,fulfilledMinutes:fulfilled,missingMinutes:Math.max(0,target-mins),overtimeMinutes:Math.max(0,mins-target),actualWorkdays:new Set(entries.filter(e=>e.record_kind!=='weekly_allocation').map(e=>e.work_date)).size,review,stateHash,confirmed:!!confirmation,confirmation,overdue:pastWeeks,patternReview:latestWeeks.filter(Boolean).length>=4,today:berlinToday()});
+  return json({transition,regularStart:declared?.valid_from||null,correctionOpen:await regularCorrectionOpen(env,owner,week),monthGoals:monthInfos.map(m=>({month:m.month,appointments:m.appointments,cutAppointments:m.cutAppointments,baseMinutes:m.baseMinutes,holidayMinutes:m.holidayMinutes})),week,end,active:activeDates.length>0||!!declared,current,patterns,slots:slots.filter(s=>s.pattern_id),unassigned,entries,holidays,absences,workMinutes:mins,holidayMinutes:credit,absenceMinutes:other,baseMinutes:baseline,targetMinutes:target,fulfilledMinutes:fulfilled,missingMinutes:Math.max(0,target-mins),overtimeMinutes:Math.max(0,mins-target),actualWorkdays:new Set(entries.filter(e=>e.record_kind!=='weekly_allocation').map(e=>e.work_date)).size,review,stateHash,confirmed:!!confirmation,confirmation,overdue:pastWeeks,patternReview:latestWeeks.filter(Boolean).length>=4,today:berlinToday()});
 }
 // A weekly allocation is explicitly a reference row, never an invented actual workday or clock interval.
 async function saveRegularSlot({env,userId,request}){
@@ -5558,11 +5560,11 @@ const MONITORED_ASSETS = {
   "/kb.css": "94fc9d3b5382f0604a2772cc4d8573ea6a4b25b9c77cd8dc8d949e6fd790c432",
   "/smartadm/sales/index.html": "713465527ce4735ca6271c668e821a18deba69e359fe8524f8d8bd3031c4af41",
   "/smartadm/sales/cloud.js": "b62ef1f8fa93b3c9b8e6007c622c8e2771dda3220e979c77eb1c55084b5e0e26",
-  "/smartadm/office/": "667641088f4ff311343c97c3d98aa7786250a555cae1298f717714a95b4b9666",
-  "/smartadm/office/sw.js": "86da2287e5f059e1914033140989bd6b14daf778837790109e251bbfad66fdea",
+  "/smartadm/office/": "0d40ed1d9ea30643a4a0d2a05d13ed6c5950014e7d8904832cb4ecaeb2c44d3d",
+  "/smartadm/office/sw.js": "b1094c2cdd291639b85d096f3e54a18d372612b0cb759c4b79e80bc2630472bf",
   "/smartadm/office/week-planner.js": "1ff59ff97053f6702be28c7f57a78cf6b3b869271f15d0cb5344be7c61119bf2",
-  "/smartadm/office/absence-calendar.js": "605b48d07c95dc88ca2e8decf537799c9419367ab680b42ea0c4873cc8555870",
-  "/smartadm/office/regular-week.js": "7903b12071e1efe9abce16b11ed23ae87b3fe6f2f04fcafe1e739d70a8765147",
+  "/smartadm/office/absence-calendar.js": "787a9a9b5f94c38183216681fa3f989731f2d97d4ef4983371972abb07aedbcc",
+  "/smartadm/office/regular-week.js": "7c22ab1650f0fe110c9320dcafa24bc27f06125205b5a85230624866270220cd",
   "/smartadm/office/guided-intro.js": "f6486a67d097f46fca9cefcaeef85e8cdcffaf34233a93d75a078be95532facb",
   "/smartadm/office/vendor/xlsx-0.20.3.min.js": "cc015130aa8521e7f088f88898eba949ccdcbfb38df0bd129b44b7273c3a6f41",
   "/smartadm/office/vendor/html2pdf.min.js": "f3e5733ad8b0547c6ad7ee6c7766277fc13d1cb584197aaacbed930ce5ce0f8f"

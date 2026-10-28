@@ -30,7 +30,7 @@ function create(b){
   const auto=data.regularHolidays?.find(h=>h.date===date);if(auto&&!absence){const existing=out.find(e=>e.kind==='holiday');if(existing)existing.label+=' · 2 h gutgeschrieben';else out.push({kind:'holiday',label:'Feiertag · 2 h gutgeschrieben'});}
   const ptn=regular(date);if(ptn&&ptn.weekdays.includes(new Date(date+'T12:00Z').getUTCDay())&&!holiday&&!absence)out.push({kind:'plan',label:'Regeltag · 2 h'});
   for(const p of data.plans.filter(p=>p.plan_date===date&&p.status!=='cancelled')){
-   if(!absence)out.push({kind:holiday?'review':'plan',label:holiday?'Soll-Einsatz · Anspruch prüfen':p.start_time+' · '+b.minutes(p.minutes)});
+   if(!absence&&!ptn)out.push({kind:holiday?'review':'legacy_plan',label:holiday?'Alter Einsatzplan am Feiertag · Anspruch prüfen':'Geplant (keine Arbeitszeit) · '+p.start_time+' · '+b.minutes(p.minutes)});
   }
   const work=data.work.find(w=>w.work_date===date);if(work)out.push({kind:'work',label:(work.record_kind==='weekly_allocation'?'Wochenzuordnung · ':'Erfasst · ')+b.minutes(work.minutes)});
   for(const r of data.requests.filter(r=>['requested','cancellation_requested'].includes(r.status)&&r.dates.includes(date)))out.push({kind:'pending',label:kindLabel(r.kind)+' · '+labels[r.status]});
@@ -52,7 +52,7 @@ function create(b){
   const last=new Date(Date.UTC(year,Number(month.slice(5)),0)).toISOString().slice(0,10);const count=mode==='week'?7:Math.ceil(((Date.parse(last)-Date.parse(start))/86400000+1)/7)*7;
   $('calendarGrid').innerHTML=['Mo','Di','Mi','Do','Fr','Sa','So'].map(d=>`<span class="calendar-weekday">${d}</span>`).join('')+Array.from({length:count},(_,i)=>{
    const date=add(start,i),es=events(date),day=Number(date.slice(-2)),other=date.slice(0,7)!==month;
-   return `<button class="calendar-day${other?' other-month':''}${date===selected?' selected':''}${date===b.today()?' today':''}" type="button" data-cal-date="${date}" aria-pressed="${date===selected}" aria-label="${esc(fmt(date)+' '+es.map(e=>e.label).join(', '))}"><span class="calendar-date">${day}${mode==='week'?'<small>'+fmt(date).slice(3,5)+'.</small>':''}</span>${es.slice(0,3).map(e=>`<span class="calendar-event ${e.kind}" title="${esc(e.label)}">${esc(mode==='week'?e.label:({plan:'2 h',work:e.label.replace('Erfasst · ',''),holiday:'Feiertag',vacation:'Urlaub',pending:'Beantragt',sick:'Krank',paid_leave:'Frei'}[e.kind]||e.label))}</span>`).join('')}${es.length>3?'<small>+'+(es.length-3)+'</small>':''}</button>`;
+   return `<button class="calendar-day${other?' other-month':''}${date===selected?' selected':''}${date===b.today()?' today':''}" type="button" data-cal-date="${date}" aria-pressed="${date===selected}" aria-label="${esc(fmt(date)+' '+es.map(e=>e.label).join(', '))}"><span class="calendar-date">${day}${mode==='week'?'<small>'+fmt(date).slice(3,5)+'.</small>':''}</span>${es.slice(0,3).map(e=>`<span class="calendar-event ${e.kind}" title="${esc(e.label)}">${esc(mode==='week'?e.label:({plan:'Soll · 2 h',legacy_plan:'Geplant',work:e.label.replace('Erfasst · ',''),holiday:'Feiertag',vacation:'Urlaub',pending:'Beantragt',sick:'Krank',paid_leave:'Frei'}[e.kind]||e.label))}</span>`).join('')}${es.length>3?'<small>+'+(es.length-3)+'</small>':''}</button>`;
   }).join('');
   renderDay();renderRequests();renderRegular();
   $('calendarRegion').value=data.region;$('calendarRegionFrom').min=b.today();if(!$('calendarRegionFrom').value)$('calendarRegionFrom').value=b.today();$('calendarRateYear').value=year;$('calendarRate').value=((data.rates||[]).find(r=>r.year===year)?.rate/100||'');
