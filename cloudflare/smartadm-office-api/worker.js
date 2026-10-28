@@ -4605,13 +4605,9 @@ function leaveYearValue({year,asOf,job,terms=[],dutyDates=[]}) {
   const firstTerm=terms.filter(t=>t.effective_from<=end).sort((a,b)=>a.effective_from.localeCompare(b.effective_from));
   const legacyEnd=firstTerm[0] ? addDays(firstTerm[0].effective_from,-1) : end;
   if(start<=legacyEnd) {
-    const sampleEnd=[legacyEnd,asOf,ye].sort()[0];
-    const sampleStart=[start,job.start_date||start].sort().at(-1);
-    const sampleDays=Math.max(1,(Date.parse(sampleEnd)-Date.parse(sampleStart))/86400000+1);
-    const n=new Set(dutyDates.filter(d=>d>=sampleStart&&d<=sampleEnd)).size;
-    const annual=n ? Math.min(24,n*7/sampleDays*4) : 12;
-    const count=monthWeight(start,[legacyEnd,end].sort()[0]);
-    if(count>0){weighted+=annual*count;legacy=true;periods.push({from:start,to:[legacyEnd,end].sort()[0],annual,source:'variable_legacy'});}
+    // The agreed three-day week is the entitlement basis, not the number of logged workdays.
+    const annual=12,count=monthWeight(start,[legacyEnd,end].sort()[0]);
+    if(count>0){weighted+=annual*count;periods.push({from:start,to:[legacyEnd,end].sort()[0],annual,source:'contract_three_days'});}
   }
   for(let i=0;i<firstTerm.length;i++){
     const t=firstTerm[i],a=[start,t.effective_from].sort().at(-1),b=[end,firstTerm[i+1]?addDays(firstTerm[i+1].effective_from,-1):end].sort()[0];
@@ -5562,10 +5558,10 @@ const MONITORED_ASSETS = {
   "/kb.css": "94fc9d3b5382f0604a2772cc4d8573ea6a4b25b9c77cd8dc8d949e6fd790c432",
   "/smartadm/sales/index.html": "b82b016eb1c57e53b2af504b754caa802bc04eb1d2a50722bd785355374f9719",
   "/smartadm/sales/cloud.js": "b62ef1f8fa93b3c9b8e6007c622c8e2771dda3220e979c77eb1c55084b5e0e26",
-  "/smartadm/office/": "91d642efddeec371de4a76ecb12d334be012083f84d57b5bb6b22e8eddbf85cc",
-  "/smartadm/office/sw.js": "ccdf4d55657de5e0ff65a8f47cc234fd7601df2ea29e00608cd4e9858d126930",
+  "/smartadm/office/": "71df0a11a21a2f04f5d79d9781603dc1ca6663c39f49865e8faf43fd2caa58b6",
+  "/smartadm/office/sw.js": "d3acea3ba25f51c619770de0d2ca06f386033cbad9c0438b66d292eaa6be6aec",
   "/smartadm/office/week-planner.js": "1ff59ff97053f6702be28c7f57a78cf6b3b869271f15d0cb5344be7c61119bf2",
-  "/smartadm/office/absence-calendar.js": "021031465151a5ae56fb6cb1b131bf5cbf877fe5ff92e68af7ecf8e6af8c3b89",
+  "/smartadm/office/absence-calendar.js": "605b48d07c95dc88ca2e8decf537799c9419367ab680b42ea0c4873cc8555870",
   "/smartadm/office/regular-week.js": "80b38dc3f048aa23e786a315f5f6e1821bc94e62f8a33e6728da49a6aadb2554",
   "/smartadm/office/guided-intro.js": "f6486a67d097f46fca9cefcaeef85e8cdcffaf34233a93d75a078be95532facb",
   "/smartadm/office/vendor/xlsx-0.20.3.min.js": "cc015130aa8521e7f088f88898eba949ccdcbfb38df0bd129b44b7273c3a6f41",

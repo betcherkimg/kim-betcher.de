@@ -379,3 +379,14 @@ test('fractional carryover is used first and cancellation restores its original 
   c=await f.t.leaveContext(f.env,'sasi');assert.equal(f.t.leaveAccount(c,2027).remaining,12.5);
  }finally{f.close()}
 });
+
+
+test('October entitlement follows agreed three-day week, independent of sparse or dense time entries',()=>{
+ const f=fixture();try{
+  const job={start_date:'2026-10-01'};
+  for(const dutyDates of [[],['2026-10-01','2026-10-26','2026-10-27'],Array.from({length:28},(_,i)=>'2026-10-'+String(i+1).padStart(2,'0'))]){
+   const value=asOf=>f.t.leaveYearValue({year:2026,asOf,job,terms:[],dutyDates});
+   assert.equal(value('2026-10-28').entitlement,0);assert.equal(value('2026-10-31').entitlement,1);assert.equal(value('2026-11-30').entitlement,2);assert.equal(value('2026-12-31').entitlement,3);assert.equal(value('2026-12-31').annual,12);
+  }
+ }finally{f.close()}
+});

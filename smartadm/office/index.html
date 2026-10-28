@@ -5001,13 +5001,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const activeDays = asOf >= activeStart
       ? Math.max(7, Math.round((Date.parse(asOf) - Date.parse(activeStart)) / 86400000) + 1)
       : 7;
-    const averageWorkdaysPerWeek = Math.min(6, equivalent.size / activeDays * 7);
-    const annualBase = Math.min(24, averageWorkdaysPerWeek * 4);
+    const averageWorkdaysPerWeek = CONTRACT_MAX_WORKDAYS_PER_WEEK;
+    const annualBase = averageWorkdaysPerWeek * 4;
 
     let factor = 1;
-    if (employment?.start_date && employment.start_date >= yearStart) {
+    if (employment?.start_date) {
       const months = fullMonthsBetween(employment.start_date, asOf);
-      if (months < 6) factor = Math.min(1, months / 12);
+      if (months < 6) factor = employment.start_date >= yearStart ? Math.min(1, months / 12) : 0;
     }
     if (employment?.end_date && employment.end_date <= `${year}-06-30`) {
       const from = employment.start_date && employment.start_date > yearStart ? employment.start_date : yearStart;
@@ -5055,9 +5055,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     setText("vacationTaken", fmtVacation(stats.taken));
     setText("vacationRemaining", fmtVacation(stats.remaining));
     setText("vacationCalcNote",
-      `${stats.provisional ? "Hochrechnung" : "Berechnung"} ${stats.year}: Ø ${decimal(stats.averageWorkdaysPerWeek, 2)} Arbeitstage/Woche aus ${stats.workedDays} tatsächlichen Arbeitstagen` +
-      (stats.equivalentDays > stats.workedDays ? ` + ${stats.equivalentDays - stats.workedDays} ersetzten Soll-Arbeitstag(en)` : "") +
-      `. Vertraglicher Regelfall: ${CONTRACT_WEEKLY_HOURS}:00 Std./Woche auf maximal ${CONTRACT_MAX_WORKDAYS_PER_WEEK} Arbeitstage; seltene zusätzliche tatsächliche Arbeitstage werden nicht gekappt.`);
+      `Stand ${fmtDate(stats.asOf||monthEnd(month))}: Grundlage sind ${decimal(stats.averageWorkdaysPerWeek,2)} vereinbarte Arbeitstage pro Woche. Bei drei Tagen sind das 12 Urlaubstage im vollen Jahr und im Eintrittsjahr ein Tag je vollem Beschäftigungsmonat. Erfasste Arbeitszeiten verändern diese Grundlage nicht.`);
     renderContractWorkdayWarning("contractWorkdayStatus");
 
     const rows = state.employeeAbsences.filter(a => a.date?.slice(0, 4) === year)
