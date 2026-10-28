@@ -1726,6 +1726,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 #regularRows .regular-row{grid-template-columns:minmax(120px,1fr) 100px 90px minmax(130px,1fr);align-items:center;gap:14px}#regularRows .regular-row input{width:100%;min-width:0}#regularRows .regular-note{min-width:0}#regularRows .regular-row small{margin-top:5px}#regularRows .regular-disabled input{background:transparent;border-color:transparent}#regularRows .regular-row input:disabled{opacity:1;color:var(--ink-soft)}
 @media(max-width:600px){#regularRows .regular-row{grid-template-columns:minmax(74px,1fr) 50px 48px minmax(65px,1fr);gap:6px;padding:14px 0}#regularRows .regular-row .regular-note{grid-column:auto}#regularRows .regular-col-label{font-size:10px}#regularRows .regular-row input{padding:10px 6px;font-size:12px}#regularRows .regular-row b{font-size:13px}#regularRows .regular-row small{font-size:10px}}
 
+.chosen-workdays-head{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}.chosen-workdays-head h2{font:600 17px/1.4 "IBM Plex Sans",sans-serif;margin:0}.chosen-workdays-days{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0 10px}.chosen-workdays-days span{display:inline-block;padding:10px 16px;border-radius:12px;background:var(--accent-wash);color:var(--accent);font-size:18px;font-weight:600}.chosen-workdays p{font-size:13px;color:var(--ink-soft);line-height:1.6;margin-bottom:0}.chosen-workdays-next{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:13px}.chosen-workdays-next .chosen-workdays-days span{font-size:14px;padding:7px 12px}@media(max-width:600px){.chosen-workdays-days span{font-size:15px;padding:9px 12px}.chosen-workdays-head .btn{padding:7px 11px;font-size:12px}}
+
 
 /* Modal guided introduction: the highlighted real control remains visible through the shade. */
 #whatsNew.guided-intro {position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;overflow:hidden;background:transparent;box-shadow:none;color:var(--ink)}
@@ -1964,6 +1966,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         </div>
 
         <div class="office-shortcuts" id="bossQuickAccess"><button type="button" class="office-shortcut" data-page="einsatz"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg><span><b>Arbeitszeiten</b><small>Stunden &amp; Wochen prüfen</small></span><span class="shortcut-arrow" aria-hidden="true">›</span></button><button type="button" class="office-shortcut" data-page="kalender"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span><b>Kalender &amp; Urlaub</b><small>Urlaubsanträge &amp; Feiertage prüfen</small></span><span class="shortcut-arrow" aria-hidden="true">›</span></button></div>
+        <div class="card section-card chosen-workdays" data-workdays-summary aria-live="polite"></div>
         <div class="boss-look-bar">
           <button class="btn ghost" type="button" id="bossEditBtn">Anpassen</button>
         </div>
@@ -2035,6 +2038,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <div class="field"><label for="bossMonth">Monat</label><input id="bossMonth" type="month"></div>
           <p class="person-hint">Erfasste Stunden und Termine. Entwürfe sind bis zum Absenden noch nicht für die Abrechnung freigegeben.</p>
         </div>
+        <div class="card section-card chosen-workdays" data-workdays-summary aria-live="polite"></div>
         <div class="grid-4">
           <div class="card kpi"><div class="kpi-label">Netto-Arbeitszeit</div><div class="kpi-value" id="bossEmpHours">0:00 h</div><div class="kpi-foot"><span>im gewählten Monat</span></div></div>
           <div class="card kpi"><div class="kpi-label">Arbeitstage</div><div class="kpi-value" id="bossEmpDays">0</div><div class="kpi-foot"><span>erfasste Tage</span></div></div>
@@ -3522,6 +3526,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     $$("#mobileMenu [data-page]").forEach(b => (b.dataset.page === pageId ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
     closeMobileMenu();
     if (pageId === "boss-dashboard") renderDashboardWidgets();
+    if(state.role==="boss"&&["boss-dashboard","einsatz"].includes(pageId)&&state.selectedUserId)loadLeavePayrollSummary();
     if(pageId==="dashboard"&&state.role==="employee"&&!state.loading)loadOwnEntries();
     if (pageId === "einstellungen") loadSecurityMonitor();
     if (pageId === "kalender") officeCalendar.load();
@@ -4120,7 +4125,24 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const GRIP = '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="5" cy="4" r="1"/><circle cx="11" cy="4" r="1"/><circle cx="5" cy="8" r="1"/><circle cx="11" cy="8" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="11" cy="12" r="1"/></svg>';
   const widgetIcon = key => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:18px;height:18px">${WIDGET_ICONS[key]}</svg>`;
 
+  function renderChosenWorkdays(){
+    if(state.role!=="boss")return;
+    const owner=state.selectedUserId,record=state.chosenWorkdays,names=['','Montag','Dienstag','Mittwoch','Donnerstag','Freitag'];
+    const pills=p=>[...new Set(asArray(p.weekdays))].filter(d=>d>=1&&d<=5).sort().map(d=>`<span>${names[d]}</span>`).join('');
+    let content;
+    const name=owner?employeeName(findEmployee(owner)):'';
+    if(!owner)content='<p>Bitte einen Mitarbeiter auswählen.</p>';
+    else if(record?.owner!==owner||record.status==='loading')content='<p>Gewählte Arbeitstage werden geladen …</p>';
+    else if(record.status==='error')content='<p>Die Tageswahl konnte nicht geladen werden. Bitte neu laden.</p>';
+    else{
+      const patterns=asArray(record.patterns),today=isoDate(),active=patterns.filter(p=>p.valid_from&&p.valid_from<=today).sort((a,b)=>a.valid_from.localeCompare(b.valid_from)||a.id-b.id).at(-1),next=patterns.filter(p=>p.valid_from&&p.valid_from>today).sort((a,b)=>a.valid_from.localeCompare(b.valid_from)||a.id-b.id)[0],chosen=active||next||patterns.at(-1);
+      content=chosen?`<div class="chosen-workdays-days">${pills(chosen)}</div><p>Jeweils 2 Stunden · 6 Stunden pro Woche${chosen.valid_from?' · '+(active?'Gültig seit ':'Gültig ab ')+esc(fmtDate(chosen.valid_from)):' · Geltungsbeginn wartet auf beide Unterschriften'}.</p>${active&&next?'<div class="chosen-workdays-next"><b>Änderung ab '+esc(fmtDate(next.valid_from))+'</b><div class="chosen-workdays-days">'+pills(next)+'</div></div>':''}`:'<p>Noch keine drei Arbeitstage gewählt. Die Tageswahl ist noch offen.</p>';
+    }
+    $$('[data-workdays-summary]').forEach(el=>{el.innerHTML=`<div class="chosen-workdays-head"><h2>Gewählte Arbeitstage${name?' · '+esc(name):''}</h2>${owner?'<button type="button" class="btn ghost" data-page="kalender">Im Kalender ansehen</button>':''}</div>${content}`;});
+  }
+
   function renderDashboardWidgets() {
+    renderChosenWorkdays();
     const host = $("widgetRaster");
     if (!host || state.role !== "boss") return;
     host.innerHTML = widgets.map(key => {
@@ -4645,7 +4667,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     }
 
     state.selectedUserId = userId;
-    state.regularPatterns=[];state.regularCredits=[];
+    state.regularPatterns=[];state.regularCredits=[];state.chosenWorkdays={owner:userId,status:"loading"};renderChosenWorkdays();
     loadLeavePayrollSummary();
     if($('kalender').classList.contains('active'))officeCalendar.load();
     renderEmployeeSelects();
@@ -10781,6 +10803,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   });
 
   function renderHr() {
+    renderChosenWorkdays();
     if (!$("hrPlanRows") || state.role !== "boss") return;
     const hr = state.hr;
     const none = (cols, text) => `<tr><td class="empty" colspan="${cols}">${esc(text)}</td></tr>`;
@@ -11550,8 +11573,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   async function loadLeavePayrollSummary(){
     const owner=state.selectedUserId,month=payrollMonth();if(state.role!=='boss'||!owner)return;
     try{const value=await api(forUser('/admin/leave-summary',owner)+'&month='+month);if(owner!==state.selectedUserId||month!==payrollMonth())return;
-      state.leaveAccounts[owner]??={};state.leaveAccounts[owner][month]=value;state.regularPatterns=value.regularPatterns||[];state.regularCredits=value.holidayCredits||[];state.regularGoalsByMonth??={};state.regularGoalsByMonth[month]=value.goals;renderAbsenceData();renderPayrollPreview();renderHr();
-    }catch(error){setText('vacationCalcNote','Urlaubskonto konnte noch nicht geladen werden: '+error.message);}
+      state.chosenWorkdays={owner,status:'ready',patterns:asArray(value.regularPatterns)};renderChosenWorkdays();state.leaveAccounts[owner]??={};state.leaveAccounts[owner][month]=value;state.regularPatterns=value.regularPatterns||[];state.regularCredits=value.holidayCredits||[];state.regularGoalsByMonth??={};state.regularGoalsByMonth[month]=value.goals;renderAbsenceData();renderPayrollPreview();renderHr();
+    }catch(error){if(owner===state.selectedUserId){state.chosenWorkdays={owner,status:'error'};renderChosenWorkdays();}setText('vacationCalcNote','Urlaubskonto konnte noch nicht geladen werden: '+error.message);}
   }
 
   let payrollPreparationGeneration=0;

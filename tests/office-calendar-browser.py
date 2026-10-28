@@ -4,7 +4,7 @@ import json,copy,subprocess
 ROOT=Path(__file__).resolve().parents[1]
 base=(ROOT/'tests/office-browser-flows.py').read_text().split('with sync_playwright() as pw:')[0]
 exec(compile(base,str(ROOT/'tests/office-browser-flows.py'),'exec'))
-HOOK=HOOK.replace('window.__t={','window.__t={regularWeek,officeCalendar,loadCalendarPayroll,renderDashboardWidgets,renderMyStart,downloadAddendumPdf,')
+HOOK=HOOK.replace('window.__t={','window.__t={loadLeavePayrollSummary,regularWeek,officeCalendar,loadCalendarPayroll,renderDashboardWidgets,renderMyStart,downloadAddendumPdf,')
 node="const fs=require('fs');eval(fs.readFileSync('cloudflare/smartadm-office-api/worker.js','utf8').replace('export default {','const worker={')+';console.log(JSON.stringify(CALENDAR_ADDENDUM))')"
 definition=json.loads(subprocess.check_output(['node','-e',node],cwd=ROOT))
 class CalendarAPI(API):
@@ -47,7 +47,7 @@ class CalendarAPI(API):
    else:out=self.entries
   elif p=='/leave-requests' and m=='POST':self.requests.append(dict(body,id=1,status='requested',revision=1,from_date=body['dates'][0],to_date=body['dates'][-1],created_at='2026-12-22 10:00:00'));out={'success':True}
   elif p=='/admin/regular-holidays':out=[]
-  elif p=='/admin/leave-summary':out={'entitlement':3,'remaining':3,'taken':0,'averageWorkdaysPerWeek':3}
+  elif p=='/admin/leave-summary':out={'entitlement':3,'remaining':3,'taken':0,'averageWorkdaysPerWeek':3,'regularPatterns':self.patterns}
   elif p=='/admin/payroll-preparation':out={}
   if out is None:return super().route(route)
   route.fulfill(status=200,content_type='application/json',body=json.dumps(out))
@@ -113,7 +113,8 @@ with sync_playwright() as pw:
   page.screenshot(path=f'/workspace/scratch/working-hours-{width}.png',full_page=True)
 
   page.evaluate('''()=>{__t.state.role='boss';document.body.dataset.officeRole='boss';__t.state.selectedUserId='sasi';__t.state.employees=[{clerk_user_id:'sasi',display_name:'Saskia Test'}];__t.showPage('boss-dashboard');__t.renderDashboardWidgets()}''')
-  expect(page.locator('[data-widget="kalender"]')).to_be_visible();expect(page.locator('#bossQuickAccess [data-page="einsatz"]')).to_be_visible();page.locator('#bossQuickAccess [data-page="einsatz"]').click();expect(page.locator('#einsatz')).to_have_class('page active');assert not errors,errors
+  page.evaluate('__t.loadLeavePayrollSummary()');expect(page.locator('#boss-dashboard [data-workdays-summary]')).to_contain_text('Montag');expect(page.locator('#boss-dashboard [data-workdays-summary]')).to_contain_text('Mittwoch');expect(page.locator('#boss-dashboard [data-workdays-summary]')).to_contain_text('Freitag');
+  expect(page.locator('[data-widget="kalender"]')).to_be_visible();expect(page.locator('#bossQuickAccess [data-page="einsatz"]')).to_be_visible();page.locator('#bossQuickAccess [data-page="einsatz"]').click();expect(page.locator('#einsatz')).to_have_class('page active');expect(page.locator('#einsatz [data-workdays-summary]')).to_contain_text('Mittwoch');assert not errors,errors
   print(f'PASS {width}: guided intro → real canvas signature → mandatory 3-day choice; both widgets; grey holiday; direct 1.5h / 3 appointments / note autosave, no invented clocks, Monday rollover; vacation off-days blocked; multi-page signed PDF; Friday submit freezes drafts')
   ctx.close()
  browser.close();server.shutdown()
