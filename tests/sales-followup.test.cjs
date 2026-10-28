@@ -20,3 +20,13 @@ test('completed follow-up does not remind even if its old follow-up status remai
  const f=fixture(),t=f.c.AUSWERTUNG[0];t.folgetermine=[{datum:t.wv,ergebnis:'Ergebnis bereits gespeichert'}];f.date('2026-10-29');assert.equal(f.c.folgeOhneErgebnis().length,0);assert.equal(f.c.folgeOhneErgebnis(true).length,0);
  t.folgetermine=[];assert.equal(f.c.folgeOhneErgebnis().length,1);
 });
+
+
+test('protocol list and archived evaluation offer the same action immediately before the status',()=>{
+ const f=fixture();f.c.STATUS=[{id:'folgetermin',label:'Folgetermin',klasse:'s-folgetermin'}];
+ const part=(a,b)=>html.slice(html.indexOf(a),html.indexOf(b,html.indexOf(a)));
+ vm.runInContext(part('function zeileTermin(', 'function listeTermine(')+part('function awTerminZeile(', 'function awKundenZeile('),f.c);
+ let t=f.c.AUSWERTUNG[0],markup=f.c.zeileTermin(t,0);assert.match(markup,/Jetzt erfassen<\/button><span class="t-status/);
+ f.c.TERMINE=[];markup=f.c.awTerminZeile(t);assert.match(markup,/Jetzt erfassen<\/button><span class="pill/);
+ f.c.folgeOeffnen('1');f.el('folge-ergebnis').value='Erfasst aus der Auswertung';f.el('folge-status').value='erledigt';f.save();f.date('2026-10-29');assert.equal(f.c.folgeOhneErgebnis().length,0);assert.equal(t.folgetermine.length,1);
+});
