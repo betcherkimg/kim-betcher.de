@@ -1885,7 +1885,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
               <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2"/></svg>Arbeitszeit erfassen</button>
           </div>
           <div id="timeFormWrap" hidden>
-            <form id="entryForm"><input id="entryRegularSlot" type="hidden"><div class="field" id="entryManualHoursField" hidden><label for="entryManualHours">Von dir geleistete Arbeitsstunden</label><input id="entryManualHours" type="text" inputmode="decimal" placeholder="z. B. 2,0"><small>Du trägst die Stunden selbst ein. Es wird nichts aus deiner Aktivität oder Planung ergänzt.</small></div><p id="entryActualHint" class="calendar-hint"></p>
+            <form id="entryForm"><input id="entryRegularSlot" type="hidden"><div class="field" id="entryManualHoursField" hidden><label for="entryManualHours">Geleistete Zeit (Stunden:Minuten)</label><input id="entryManualHours" type="text" inputmode="text" placeholder="z. B. 1:20"><small>Du trägst die Stunden selbst ein. Es wird nichts aus deiner Aktivität oder Planung ergänzt.</small></div><p id="entryActualHint" class="calendar-hint"></p>
               <input type="hidden" id="editId">
               <div class="form-grid">
                 <div class="field"><label for="date">Tatsächlicher Arbeitstag</label><input id="date" type="date" required><small>Heute oder maximal 7 Tage rückwirkend.</small></div>
@@ -4515,7 +4515,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const entry = state.entries.find(e => e.id === id);
     if (!entry) return;
     $("editId").value = entry.id;
-    $("entryRegularSlot").value=entry.regularSlot||"";$("entryManualHours").value=decimal(entry.minutes/60,2);
+    $("entryRegularSlot").value=entry.regularSlot||"";$("entryManualHours").value=window.OfficeRegularWeek.formatDuration(entry.minutes);
     FORM_FIELDS.forEach(key => ($(key).value = entry[key]));
     applyDateLimits();
     $("saveBtn").textContent = "Änderungen speichern";
@@ -4573,8 +4573,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (end <= start) return alert("Das Ende muss nach dem Beginn liegen.");
 
     const actualDuration=minutesBetween(start,end,breakMinutes);
-    const minutes=regularWeek.data?.active?Math.round(Number($("entryManualHours").value.replace(",","."))*60):actualDuration;
-    if(regularWeek.data?.active&&(!Number.isInteger(minutes)||minutes<=0))return alert("Bitte deine tatsächlich geleisteten Arbeitsstunden eingeben.");
+    const minutes=regularWeek.data?.active?window.OfficeRegularWeek.parseDuration($("entryManualHours").value):actualDuration;
+    if(regularWeek.data?.active&&(!Number.isInteger(minutes)||minutes<=0))return alert("Bitte die geleistete Zeit als Stunden:Minuten eingeben, zum Beispiel 1:20.");
     if(regularWeek.data?.active&&Math.abs(minutes-actualDuration)>1)return alert("Die eingetragenen Stunden passen noch nicht zu Beginn, Ende und Pause im Arbeitsnachweis. Bitte deine Angaben prüfen.");
     if (minutes <= 0) return alert("Die Pause ist so lang wie die Arbeitszeit. Bitte Beginn, Ende und Pause prüfen.");
 

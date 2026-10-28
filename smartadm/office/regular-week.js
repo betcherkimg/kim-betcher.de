@@ -1,5 +1,11 @@
 /* Three regular-day rows. Grouping never rewrites the actual date of work. */
 (function(root){'use strict';
+function parseDuration(value){
+ const text=String(value??'').trim().toLowerCase();if(!text)return 0;
+ const match=/^(\d{1,2})(?::([0-5]\d))?\s*h?$/.exec(text);if(!match)return null;
+ const minutes=Number(match[1])*60+Number(match[2]||0);return minutes<=1440?minutes:null;
+}
+function formatDuration(minutes){const n=Math.max(0,Math.round(Number(minutes)||0));return Math.floor(n/60)+':'+String(n%60).padStart(2,'0');}
 function create(b){
  const {$,esc,api}=b,names=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
  const fmt=d=>new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',timeZone:'UTC'}).format(new Date(d+'T12:00Z'));
@@ -23,7 +29,7 @@ function create(b){
    const minutes=entries.reduce((n,e)=>n+e.work_minutes,0),appointments=entries.reduce((n,e)=>n+e.appointments,0),note=entries.find(e=>e.record_kind==='weekly_allocation')?.entry_note||'';
    const label=s.holiday?'Feiertag · 2 Stunden gutgeschrieben':s.absence?({vacation:'Urlaub',sick:'Krankheit',paid_leave:'Bezahlte Freistellung'}[s.absence.absence_type]||'Abwesenheit'):'';
    const locked=disabled||sent||week!==mon(b.today())&&!data.correctionOpen;
-   return `<div class="regular-row${disabled?' regular-disabled':''}" data-week-row="${s.date}"><div><b>${esc(names[s.weekday])}</b><small>${esc(fmt(s.date))}</small>${label?'<strong>'+esc(label)+'</strong>':''}${legacy?'<small>Vorhandener Arbeitsnachweis</small>':''}</div><div><label class="regular-col-label" for="regularHours${s.weekday}">Stunden</label><input ${locked?'disabled':''} id="regularHours${s.weekday}" data-slot-hours="${s.date}" type="text" inputmode="decimal" value="${disabled?esc(Number((s.holiday?.minutes||s.absence?.paid_minutes||0)/60).toLocaleString('de-DE')):entries.length?esc(Number(minutes/60).toLocaleString('de-DE',{maximumFractionDigits:2})):''}" placeholder="0" aria-label="Stunden ${esc(names[s.weekday])}"></div><div><label class="regular-col-label" for="regularAppts${s.weekday}">Termine</label><input ${locked?'disabled':''} id="regularAppts${s.weekday}" data-slot-appts="${s.date}" type="number" min="0" step="1" value="${disabled?'':entries.length?appointments:''}" placeholder="0" aria-label="Termine ${esc(names[s.weekday])}"></div><div class="regular-note"><label class="regular-col-label" for="regularNote${s.weekday}">Notiz</label><input ${locked?'disabled':''} id="regularNote${s.weekday}" data-slot-note="${s.date}" type="text" maxlength="500" value="${esc(note)}" placeholder="–" aria-label="Notiz ${esc(names[s.weekday])}"></div></div>`;
+   return `<div class="regular-row${disabled?' regular-disabled':''}" data-week-row="${s.date}"><div><b>${esc(names[s.weekday])}</b><small>${esc(fmt(s.date))}</small>${label?'<strong>'+esc(label)+'</strong>':''}${legacy?'<small>Vorhandener Arbeitsnachweis</small>':''}</div><div><label class="regular-col-label" for="regularHours${s.weekday}">Std:Min</label><input ${locked?'disabled':''} id="regularHours${s.weekday}" data-slot-hours="${s.date}" type="text" inputmode="text" maxlength="8" value="${disabled?formatDuration(s.holiday?.minutes||s.absence?.paid_minutes||0):entries.length?formatDuration(minutes):''}" placeholder="0:00" title="Stunden:Minuten, zum Beispiel 1:20" aria-label="Stunden und Minuten ${esc(names[s.weekday])}"></div><div><label class="regular-col-label" for="regularAppts${s.weekday}">Termine</label><input ${locked?'disabled':''} id="regularAppts${s.weekday}" data-slot-appts="${s.date}" type="number" min="0" step="1" value="${disabled?'':entries.length?appointments:''}" placeholder="0" aria-label="Termine ${esc(names[s.weekday])}"></div><div class="regular-note"><label class="regular-col-label" for="regularNote${s.weekday}">Notiz</label><input ${locked?'disabled':''} id="regularNote${s.weekday}" data-slot-note="${s.date}" type="text" maxlength="500" value="${esc(note)}" placeholder="–" aria-label="Notiz ${esc(names[s.weekday])}"></div></div>`;
   }).join('');
   if(data.unassigned.length)$('regularRows').innerHTML+=`<details open><summary>Weitere tatsächliche Einträge dieser Woche (${data.unassigned.length})</summary>${data.unassigned.map(e=>`<p>${esc(fmt(e.work_date))} · ${esc(b.minutes(e.work_minutes))} · ${e.appointments} Termine ${e.submission_id?'<span class="chip good">Abgesendet</span>':`<button class="btn ghost small" type="button" data-regular-edit="${e.id}">Bearbeiten</button>`}</p>`).join('')}</details>`;
   const messages=[];
@@ -70,12 +76,12 @@ function create(b){
   clearTimeout(saveTimer);
   const work=async()=>{
    while(pending.size){
-    const [slot,draft]=pending.entries().next().value,hours=Number(draft.hours.trim().replace(',','.')),appts=Number(draft.appointments||0);
-    if(!/^(?:\d+(?:[.,]\d{1,2})?)?$/.test(draft.hours.trim())||!Number.isFinite(hours)||hours<0||hours>24||!Number.isInteger(appts)||appts<0){$('regularStatus').textContent='Bitte gültige Stunden (z. B. 1,5) und ganze Termine eintragen. Noch nicht gespeichert.';throw Error('Bitte Eingaben prüfen.');}
-    try{await api('/regular-week/slot','PUT',{slot,minutes:Math.round(hours*60),appointments:appts,note:draft.note});if(pending.get(slot)===draft)pending.delete(slot);}
+    const [slot,draft]=pending.entries().next().value,minutes=parseDuration(draft.hours),appts=Number(draft.appointments||0);
+    if(minutes===null||!Number.isInteger(appts)||appts<0){$('regularStatus').textContent='Bitte Stunden und Minuten als 1:20 sowie ganze Termine eintragen. Noch nicht gespeichert.';throw Error('Bitte Eingaben prüfen.');}
+    try{await api('/regular-week/slot','PUT',{slot,minutes,appointments:appts,note:draft.note});if(pending.get(slot)===draft)pending.delete(slot);}
     catch(error){$('regularStatus').textContent='Nicht gespeichert: '+error.message;throw error;}
    }
-   const total=[...$('regularRows').querySelectorAll('[data-week-row]:not(.regular-disabled) [data-slot-hours]')].reduce((n,x)=>n+Math.round(Number((x.value||'0').replace(',','.'))*60),0)+(data?.unassigned||[]).reduce((n,e)=>n+e.work_minutes,0);$('regularSummary').textContent=`${b.minutes(total)} erfasst + ${b.minutes((data?.holidayMinutes||0)+(data?.absenceMinutes||0))} gutgeschrieben · Noch zu arbeiten: ${b.minutes(Math.max(0,(data?.targetMinutes||0)-total))}`;
+   const total=[...$('regularRows').querySelectorAll('[data-week-row]:not(.regular-disabled) [data-slot-hours]')].reduce((n,x)=>n+(parseDuration(x.value)||0),0)+(data?.unassigned||[]).reduce((n,e)=>n+e.work_minutes,0);$('regularSummary').textContent=`${b.minutes(total)} erfasst + ${b.minutes((data?.holidayMinutes||0)+(data?.absenceMinutes||0))} gutgeschrieben · Noch zu arbeiten: ${b.minutes(Math.max(0,(data?.targetMinutes||0)-total))}`;
    $('regularStatus').textContent='Gespeichert · Bis zum Absenden kannst du deine Angaben ändern.';
   };
   saveQueue=saveQueue.catch(()=>{}).then(work);return saveQueue;
@@ -85,7 +91,7 @@ function create(b){
   try{await flush();}catch{failedDrafts.set(week,[...pending.values()]);try{localStorage.setItem('office-unsaved-week:'+b.userId()+':'+week,JSON.stringify([...pending.values()]));}catch{}pending.clear();b.toast('Einige Änderungen der alten Woche waren noch nicht gespeichert. Bitte Kim um Prüfung bitten.');}if(mon(today)!==oldCurrent)week=mon(today);await load();
  }
  $('regularRows').addEventListener('input',e=>{if(e.target.matches('[data-slot-hours],[data-slot-appts],[data-slot-note]'))changedRow(e.target)});
- $('regularRows').addEventListener('change',e=>{if(e.target.matches('[data-slot-hours],[data-slot-appts],[data-slot-note]')){changedRow(e.target);flush().catch(()=>{});}});
+ $('regularRows').addEventListener('change',e=>{if(e.target.matches('[data-slot-hours],[data-slot-appts],[data-slot-note]')){if(e.target.matches('[data-slot-hours]')){const minutes=parseDuration(e.target.value);if(minutes!==null)e.target.value=formatDuration(minutes);}changedRow(e.target);flush().catch(()=>{});}});
  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')rollover()});root.addEventListener('focus',rollover);setInterval(rollover,30000);
  root.addEventListener('beforeunload',e=>{if(pending.size){e.preventDefault();e.returnValue='';}});
  async function complete(){
@@ -106,5 +112,5 @@ function create(b){
  $('regularOverdueGo').addEventListener('click',async()=>{week=$('regularOverdueGo').dataset.week;b.closeDialog($('regularOverdueDialog'));b.showPage('zeiten');await load();$('regularWeekCard').scrollIntoView({block:'start'});});
  return {load,onboarding,afterNotices,choose,render,get data(){return data},get patterns(){return pattern?.patterns||[]},flush,get slot(){return selectedSlot},async selectWeek(value){week=value;await load()},entrySlot(){return $('entryRegularSlot').value||null}};
 }
-root.OfficeRegularWeek={create};
+root.OfficeRegularWeek={create,parseDuration,formatDuration};
 })(typeof window!=='undefined'?window:globalThis);

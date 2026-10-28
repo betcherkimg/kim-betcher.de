@@ -69,11 +69,11 @@ with sync_playwright() as pw:
   expect(page.locator('[data-my="kalender"]')).to_be_visible();page.locator('[data-my-act="kalender"]').click();expect(page.locator('#kalender')).to_have_class('page active')
   page.clock.set_fixed_time('2026-12-22T11:00:00Z');page.evaluate('async()=>{__t.showPage("zeiten");await __t.regularWeek.selectWeek("2026-12-21")}')
   expect(page.locator('#regularWeekCard')).to_be_visible();expect(page.locator('.regular-row')).to_have_count(3);holiday=page.locator('.regular-disabled');expect(holiday).to_contain_text('Feiertag · 2 Stunden gutgeschrieben');assert all(x.is_disabled() for x in holiday.locator('input').all())
-  page.locator('[data-slot-hours="2026-12-23"]').fill('1,5');page.locator('[data-slot-appts="2026-12-23"]').fill('3');page.locator('[data-slot-note="2026-12-23"]').fill('Telefoniert')
+  page.locator('[data-slot-hours="2026-12-23"]').fill('1:20');page.locator('[data-slot-appts="2026-12-23"]').fill('3');page.locator('[data-slot-note="2026-12-23"]').fill('Telefoniert')
   page.evaluate('__t.regularWeek.flush()');expect(page.locator('#regularStatus')).to_contain_text('Gespeichert')
-  assert api.saved[-1]=={'slot':'2026-12-23','minutes':90,'appointments':3,'note':'Telefoniert'}
+  assert api.saved[-1]=={'slot':'2026-12-23','minutes':80,'appointments':3,'note':'Telefoniert'}
   expect(page.locator('#timeCard')).not_to_be_visible();page.evaluate('async()=>{await __t.regularWeek.load()}')
-  expect(page.locator('[data-slot-hours="2026-12-23"]')).to_have_value('1,5');expect(page.locator('[data-slot-note="2026-12-23"]')).to_have_value('Telefoniert')
+  expect(page.locator('[data-slot-hours="2026-12-23"]')).to_have_value('1:20');expect(page.locator('[data-slot-note="2026-12-23"]')).to_have_value('Telefoniert')
   check_width(page);page.screenshot(path=f'/workspace/scratch/calendar-week-{width}.png',full_page=True)
   with page.expect_download() as dl:
    page.evaluate('__t.downloadAddendumPdf(__t.state.addendum)')
@@ -115,6 +115,6 @@ with sync_playwright() as pw:
   page.evaluate('''()=>{__t.state.role='boss';document.body.dataset.officeRole='boss';__t.state.selectedUserId='sasi';__t.state.employees=[{clerk_user_id:'sasi',display_name:'Saskia Test'}];__t.showPage('boss-dashboard');__t.renderDashboardWidgets()}''')
   page.evaluate('__t.loadLeavePayrollSummary()');expect(page.locator('#boss-dashboard [data-workdays-summary]')).to_contain_text('Montag');expect(page.locator('#boss-dashboard [data-workdays-summary]')).to_contain_text('Mittwoch');expect(page.locator('#boss-dashboard [data-workdays-summary]')).to_contain_text('Freitag');
   expect(page.locator('[data-widget="kalender"]')).to_be_visible();expect(page.locator('#bossQuickAccess [data-page="einsatz"]')).to_be_visible();page.locator('#bossQuickAccess [data-page="einsatz"]').click();expect(page.locator('#einsatz')).to_have_class('page active');expect(page.locator('#einsatz [data-workdays-summary]')).to_contain_text('Mittwoch');assert not errors,errors
-  print(f'PASS {width}: guided intro → real canvas signature → mandatory 3-day choice; both widgets; grey holiday; direct 1.5h / 3 appointments / note autosave, no invented clocks, Monday rollover; vacation off-days blocked; multi-page signed PDF; Friday submit freezes drafts')
+  print(f'PASS {width}: guided intro → real canvas signature → mandatory 3-day choice; both widgets; grey holiday; direct 1:20h / 3 appointments / note autosave, no invented clocks, Monday rollover; vacation off-days blocked; multi-page signed PDF; Friday submit freezes drafts')
   ctx.close()
  browser.close();server.shutdown()
