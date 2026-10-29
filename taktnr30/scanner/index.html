@@ -104,7 +104,7 @@
     box.innerHTML = `<div class="big">${title}</div>
       ${r.name ? `<div class="name">${esc(r.name)}</div>` : ""}
       ${color === "green" && r.kind ? `<div class="kind">${esc(r.kind)}</div>` : ""}
-      ${color === "green" && r.drinks ? `<div class="drinks">${r.drinks} Getränkemarken ausgeben</div>` : ""}
+      ${color === "green" && r.drinks ? `<div class="drinks">${r.drinks} Getränkemarken ausgeben${r.shot ? "<br>+ Begrüßungsshot" : ""}</div>` : ""}
       ${color !== "green" ? `<div class="reason">${esc(r.reason || "")}</div>` : (() => { const b = bands[r.band || r.category] || { label: "", color: "#ffffff" }; return `<div class="band" style="margin-top:22px;display:inline-flex;align-items:center;gap:14px;background:rgba(0,0,0,.28);padding:12px 20px;border-radius:99px"><span style="width:34px;height:34px;border-radius:50%;background:${esc(b.color)};border:2px solid #fff"></span><span style="font-size:24px">Bändchen: <strong>${esc(b.label)}</strong></span></div>${b.note ? `<div class="meta">${esc(b.note)}</div>` : ""}`; })()}
       ${sub ? `<div class="meta">${esc(sub)}</div>` : ""}
       ${color === "yellow" ? `<div class="reason" style="font-weight:400">NICHT einlassen – erneut scannen</div>` : ""}

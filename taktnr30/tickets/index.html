@@ -191,7 +191,7 @@
     if (mine) html = `<a class="btn btn-uv btn-block" href="#tickets">Deine Tickets ansehen</a>`;
     else if (!s.open) html = `<div class="soon">Verkauf startet bald</div>`;
     else if (s.sold_out) html = `<div class="soon">Ausverkauft</div>`;
-    else html = `<a class="btn btn-uv btn-block" href="#tickets">Ticket sichern – ${euro(s.prices.one)}</a><div class="plain mono">2 TICKETS – ${euro(s.prices.two)}${s.vip && s.vip.available > 0 ? ` · VIP – ${euro(s.prices.vip_one)} INKL. ${s.vip.drinks} DRINKS` : ""}</div>`;
+    else html = `<a class="btn btn-uv btn-block" href="#tickets">Ticket sichern – ${euro(s.prices.one)}</a><div class="plain mono">2 TICKETS – ${euro(s.prices.two)}${s.vip && s.vip.available > 0 ? ` · VIP – ${euro(s.prices.vip_one)} INKL. SHOT + ${s.vip.drinks} DRINKS` : ""}</div>`;
     $("#heroCta").innerHTML = html;
   }
 
@@ -229,7 +229,7 @@
       ["Kann ich ohne Ticket erscheinen?", "Nein. TAKT Nr. 30 ist eine geschlossene Gesellschaft – es gibt keine Abendkasse und keine Tickets für spontane Besucher."],
       ["Was passiert bei verlorenem Ticket?", "Melde dich einfach. Wir stellen dir einen neuen QR-Code aus, der alte wird dabei ungültig."],
       ["Kann ich mein Ticket zurückgeben?", "Nein, eine Erstattung gibt es nicht – dein Ticket ist mein Geburtstagsgeschenk."],
-      ["Was ist ein VIP-Ticket?", `VIP kostet ${euro(ev.sale.prices.vip_one)} (2 VIP-Tickets ${euro(ev.sale.prices.vip_two)}). Dafür bekommst du am Einlass ein lila VIP-Bändchen und ${ev.sale.vip ? ev.sale.vip.drinks : 3} Getränkemarken für die Bar – die darfst du auch verschenken. Es gibt höchstens ${ev.sale.vip ? ev.sale.vip.cap : 20} VIP-Tickets. Bei 2 Tickets kannst du für jede Person einzeln wählen.`],
+      ["Was ist ein VIP-Ticket?", `VIP kostet ${euro(ev.sale.prices.vip_one)} (2 VIP-Tickets ${euro(ev.sale.prices.vip_two)}). Dafür bekommst du am Einlass ein lila VIP-Bändchen, einen Begrüßungsshot und ${ev.sale.vip ? ev.sale.vip.drinks : 3} Getränkemarken für die Bar – die darfst du auch verschenken. Es gibt höchstens ${ev.sale.vip ? ev.sale.vip.cap : 20} VIP-Tickets. Bei 2 Tickets kannst du für jede Person einzeln wählen.`],
       ["Wie werde ich Helfer?", "Über deinen Einladungslink: „Als Helfer mitmachen“ wählen, Aufgabe aussuchen (z. B. Bar, Einlass oder Security), und du bekommst ein kostenloses Helfer-Ticket mit eigenem QR-Code."],
       ["An wen kann ich mich wenden?", `${c.name}${c.phone ? ` – ${c.phone}` : ""}${c.email ? ` – ${c.email}` : ""}`]
     ];
@@ -360,7 +360,7 @@
         <p class="note mono" style="margin:0 0 10px">${n > 1 ? `TICKET ${i + 1}${i ? " · BEGLEITUNG" : " · DU"}` : "NAME AUF DEM TICKET"}</p>
         <div class="tier" role="radiogroup" aria-label="Ticketart ${i + 1}">
           <label><span><span><input type="radio" name="tier_${i}" value="regular" ${oldTier[i] !== "vip" ? "checked" : ""}> Ticket</span><b>${euro(ev.sale.prices.one)}</b></span><small>Eintritt</small></label>
-          <label><span><span><input type="radio" name="tier_${i}" value="vip" ${oldTier[i] === "vip" && vipLeft > 0 ? "checked" : ""} ${vipLeft > 0 ? "" : "disabled"}> VIP</span><b>${euro(ev.sale.prices.vip_one)}</b></span><small>${vipLeft > 0 ? `Lila Bändchen + ${drinks} Freigetränke` : "ausverkauft"}</small></label>
+          <label><span><span><input type="radio" name="tier_${i}" value="vip" ${oldTier[i] === "vip" && vipLeft > 0 ? "checked" : ""} ${vipLeft > 0 ? "" : "disabled"}> VIP</span><b>${euro(ev.sale.prices.vip_one)}</b></span><small>${vipLeft > 0 ? `Lila Bändchen, Begrüßungsshot + ${drinks} Freigetränke` : "ausverkauft"}</small></label>
         </div>
         <div class="row2"><label class="field"><span>Vorname</span><input class="input" name="first_${i}" autocomplete="${i ? "off" : "given-name"}" required maxlength="60" value="${esc(old[i * 2] ?? (i ? "" : invite.first_name || ""))}"></label>
         <label class="field"><span>Nachname</span><input class="input" name="last_${i}" autocomplete="${i ? "off" : "family-name"}" required maxlength="60" value="${esc(old[i * 2 + 1] ?? "")}"></label></div></div>`).join("");

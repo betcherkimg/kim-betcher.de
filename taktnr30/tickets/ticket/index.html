@@ -84,7 +84,7 @@
         <div><dt>DATUM</dt><dd>${esc(dateDe(event.event_date))}</dd></div>
         <div><dt>EINLASS · START</dt><dd>${esc(event.doors_time)} · ${esc(event.start_time)}</dd></div>
         <div class="addr"><dt>ORT</dt><dd>${esc(event.venue_name)}<br><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue_address)}" rel="noopener" target="_blank">${esc(event.venue_address)}</a></dd></div>
-        ${t.tier === "vip" && t.drinks ? `<div class="addr"><dt>VIP</dt><dd class="uv">Lila VIP-Bändchen + ${+t.drinks} Getränkemarken am Einlass</dd></div>` : ""}
+        ${t.tier === "vip" && t.drinks ? `<div class="addr"><dt>VIP</dt><dd class="uv">Lila VIP-Bändchen, Begrüßungsshot + ${+t.drinks} Getränkemarken am Einlass</dd></div>` : ""}
         ${t.checked_in_at ? `<div class="addr"><dt>EINGECHECKT</dt><dd>${esc(dateDe(t.checked_in_at))} ${esc(timeDe(t.checked_in_at))}</dd></div>` : ""}
       </dl>
       <div class="stub"></div>

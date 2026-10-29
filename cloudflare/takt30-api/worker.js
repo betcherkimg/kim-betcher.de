@@ -21,8 +21,8 @@ const PAPER_PRICE = { free: 3500, regular: 2500 };   // Reserve-Papiertickets ve
 // Was der Scanner zeigt: Ticketart, Bändchen-Schlüssel, Freigetränke
 function ticketKind(t) {
   if (t.category === "helper") return { kind: "Helfer", band: "helper", drinks: 0 };
-  if (t.category === "free") return { kind: "VIP · 2TAKT", band: "free", drinks: PAPER_VIP_DRINKS };
-  if (t.tier === "vip") return { kind: "VIP online", band: "vip", drinks: VIP_DRINKS };
+  if (t.category === "free") return { kind: "VIP · 2TAKT", band: "free", drinks: PAPER_VIP_DRINKS, shot: true };
+  if (t.tier === "vip") return { kind: "VIP online", band: "vip", drinks: VIP_DRINKS, shot: true };
   if (t.paper) return { kind: "Freiticket", band: "regular", drinks: 0 };
   if (!t.order_id) return { kind: "Freiticket", band: "regular", drinks: 0 };
   return { kind: "Ticket", band: "regular", drinks: 0 };
@@ -847,7 +847,7 @@ function vipBlock(vip, total) {
   const who = total > 1 && vip.length < total ? ` für ${vip.map(v => esc(v.name)).join(" und ")}` : "";
   return `<div style="border:1px solid #9d4dff;border-radius:6px;padding:16px 18px;margin:0 0 22px;background:#16101f">
 <p style="letter-spacing:3px;font-size:12px;color:#b98cff;margin:0 0 8px">VIP${who.toUpperCase()}</p>
-<p style="font-size:15px;line-height:1.6;color:#f2f2f4;margin:0">Am Einlass bekommst du dein <strong>lila VIP-Bändchen</strong> und <strong>${VIP_DRINKS} Getränkemarken</strong> – einzulösen an jeder Bar für ein Getränk deiner Wahl.</p></div>`;
+<p style="font-size:15px;line-height:1.6;color:#f2f2f4;margin:0">Am Einlass bekommst du dein <strong>lila VIP-Bändchen</strong>, einen <strong>Begrüßungsshot</strong> und <strong>${VIP_DRINKS} Getränkemarken</strong> – einzulösen an jeder Bar für ein Getränk deiner Wahl.</p></div>`;
 }
 
 function mailHtml(s, intro, rows, extra = "") {

@@ -648,7 +648,7 @@ test("VIP online: Preise 30/55/50 €, max. 20 aus den 60, VIP-Mail, Scanner zei
   assert.equal(c.data.amount_cents, 5000);
   assert.equal((await buyAs("e@x.org", [guest("R", "2"), guest("R", "3")], "1.0.0.4")).data.amount_cents, 3500);
   const mail = t.mails.find(m => m.to[0] === "b@x.org");
-  assert.match(mail.subject, /VIP-Ticket/); assert.match(mail.html, /3 Getränkemarken/); assert.match(mail.html, /lila VIP-Bändchen/);
+  assert.match(mail.subject, /VIP-Ticket/); assert.match(mail.html, /3 Getränkemarken/); assert.match(mail.html, /lila VIP-Bändchen/); assert.match(mail.html, /Begrüßungsshot/);
   assert.match(t.mails.find(m => m.to[0] === "c@x.org").subject, /inkl\. VIP/);
   assert.doesNotMatch(t.mails.find(m => m.to[0] === "a@x.org").html, /undefined/);
   // VIP bis 20 voll machen: bisher 4 VIP
@@ -661,7 +661,7 @@ test("VIP online: Preise 30/55/50 €, max. 20 aus den 60, VIP-Mail, Scanner zei
   const key = (await t.admin("POST", "/admin/scanners", { name: "Tür" })).data.url.split("#k=")[1];
   const scan = async sql => (await t.call("POST", "/scan/check", { code: t.db.prepare(sql).get().code }, { scanner: key })).data;
   let s1 = await scan(`SELECT code FROM tickets WHERE tier = 'vip' LIMIT 1`);
-  assert.equal(s1.result, "green"); assert.equal(s1.kind, "VIP online"); assert.equal(s1.drinks, 3); assert.equal(s1.band, "vip");
+  assert.equal(s1.result, "green"); assert.equal(s1.kind, "VIP online"); assert.equal(s1.drinks, 3); assert.equal(s1.band, "vip"); assert.equal(s1.shot, true);
   s1 = await scan(`SELECT code FROM tickets WHERE tier = 'regular' AND order_id IS NOT NULL LIMIT 1`);
   assert.equal(s1.kind, "Ticket"); assert.equal(s1.drinks, 0); assert.equal(s1.band, "regular");
   s1 = await scan(`SELECT code FROM tickets WHERE paper = 1 AND category = 'free' LIMIT 1`);

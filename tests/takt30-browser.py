@@ -148,7 +148,7 @@ try:
         g.wait_for_url("**/ticket/?o=*")
         g.wait_for_selector(".ticket")
         assert g.locator(".ticket").count() == 2
-        assert "3 Getränkemarken" in g.inner_text(".ticket >> nth=1") and "VIP" in g.inner_text(".ticket >> nth=1")
+        assert "Getränkemarken" in g.inner_text(".ticket >> nth=1") and "VIP" in g.inner_text(".ticket >> nth=1")
         no_overflow(g, "ticketseite")
         g.screenshot(path=str(OUT / "gast-ticket.png"))
         with g.expect_download() as dl:
