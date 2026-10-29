@@ -14,9 +14,9 @@
 <link rel="stylesheet" href="/taktnr30/assets/takt.css?v=1">
 <style>
   body { font-size: 16px; }
-  .layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); min-height: 100vh; }
+  .layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); min-height: 100vh; }
   aside { border-right: 1px solid var(--line); padding: 24px 14px; position: sticky; top: 0; height: 100vh; overflow: auto; }
-  aside .brand { display: flex; gap: 12px; align-items: center; padding: 0 8px 22px; min-width: 0; } aside .brand > div { min-width: 0; overflow: hidden; } aside .brand small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: .06em; }
+  aside .brand { display: flex; gap: 12px; align-items: center; padding: 0 8px 22px; min-width: 0; } aside .brand > div { min-width: 0; overflow: hidden; } aside .brand > #userBtn { flex: none; overflow: visible; min-width: 32px; } aside .brand small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: .06em; }
   aside .brand img { width: 40px; }
   aside .brand small { display: block; font-family: var(--mono); font-size: 11px; color: var(--dim); letter-spacing: .12em; }
   nav button { display: block; width: 100%; text-align: left; background: none; border: 0; border-radius: var(--radius); padding: 11px 12px; font-size: 15px; color: var(--muted); cursor: pointer; }
@@ -834,7 +834,7 @@
       }
       if (me.role === "scanner") { location.href = "/taktnr30/scanner/"; return; }
       $("#login").hidden = true; $("#app").hidden = false;
-      $("#who").textContent = me.role_label;
+      $("#who").textContent = { main: "Hauptadmin", tickets: "Tickets", scanner: "Einlass" }[me.role] || me.role_label;
       Clerk.mountUserButton($("#userBtn"));
       const h = location.hash.slice(1); if (PAGES.some(p => p[0] === h)) page = h;
       renderNav(); render();
