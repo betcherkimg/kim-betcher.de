@@ -168,7 +168,8 @@
     $("#count").innerHTML = s.sold_out ? "AUSVERKAUFT" : `<span class="dot pulse" aria-hidden="true"></span>NOCH ${s.available} VON ${s.cap} TICKETS`;
     $("#when").innerHTML = `${esc(dateDe(ev.event_date))}<br>EINLASS ${esc(ev.doors_time)} · START ${esc(ev.start_time)}`;
     $("#where").textContent = ev.place_public;
-    $("#testbar").hidden = s.mode !== "test";
+    $("#testbar").hidden = !(s.mode === "test" || s.sandbox);
+    if (s.sandbox) $("#testbar").textContent = "PAYPAL-TESTMODUS (SANDBOX) · nur Spielgeld · Testtickets gelten nicht am Einlass";
     const mine = myTickets().length;
     let html = "";
     if (mine) html = `<a class="btn btn-uv btn-block" href="#tickets">Deine Tickets ansehen</a>`;

@@ -381,3 +381,23 @@ test("Testmail: nur Hauptadmin, Fehler von Resend werden verständlich gemeldet"
   const bad = await t2.admin("POST", "/admin/test-mail", { to: "kim@example.org" });
   assert.equal(bad.status, 502); assert.match(bad.data.error, /not verified/);
 });
+
+test("PayPal-Sandbox: Käufe sind Testtickets und zählen nicht als Umsatz", async () => {
+  const handler = async (url) => {
+    if (url.endsWith("/v1/oauth2/token")) return new Response(JSON.stringify({ access_token: "tok" }));
+    if (url.endsWith("/v2/checkout/orders")) return new Response(JSON.stringify({ id: "PP-S", status: "CREATED" }), { status: 201 });
+    if (url.endsWith("/capture")) return new Response(JSON.stringify({ purchase_units: [{ custom_id: globalThis.__no, payments: { captures: [{ id: "CAP-S", status: "COMPLETED", custom_id: globalThis.__no, amount: { value: "20.00", currency_code: "EUR" } }] } }] }), { status: 201 });
+    throw new Error(url);
+  };
+  const t = await setup({ PAYPAL_CLIENT_ID: "c", PAYPAL_SECRET: "s", PAYPAL_ENV: "sandbox" }, handler);
+  await t.admin("PUT", "/admin/settings", { sale_mode: "live" });
+  assert.equal((await t.call("GET", "/public/event")).data.sale.sandbox, true);
+  const co = await buy(t, await invite(t));
+  globalThis.__no = co.data.order_no;
+  const cap = await t.call("POST", "/public/paypal/capture", { access_key: co.data.access_key });
+  assert.equal(cap.data.is_test, true); assert.equal(cap.data.tickets[0].is_test, 1);
+  const d = (await t.admin("GET", "/admin/dashboard")).data.counts;
+  assert.equal(d.revenue_cents, 0); assert.equal(d.test_revenue_cents, 2000);
+  const key = (await t.admin("POST", "/admin/scanners", { name: "Tür" })).data.url.split("#k=")[1];
+  assert.equal((await t.call("POST", "/scan/check", { code: cap.data.tickets[0].code }, { scanner: key })).data.result, "green");
+});

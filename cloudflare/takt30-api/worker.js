@@ -272,7 +272,7 @@ function publicEvent(s, c, env, jobCounts = {}) {
     intro_title: s.intro_title, intro_text: s.intro_text, lineup, lineup_note: s.lineup_note,
     contact: { name: s.contact_name, phone: s.contact_phone, email: s.contact_email },
     show_countdown: s.show_countdown === "1",
-    sale: { mode, open: mode !== "closed", sold_out: c.available <= 0, available: c.available, cap: REGULAR_CAP, sold: c.regular_issued, prices: { one: PRICE_CENTS[1], two: PRICE_CENTS[2] } },
+    sale: { mode, sandbox: mode === "live" && env.PAYPAL_ENV !== "live", open: mode !== "closed", sold_out: c.available <= 0, available: c.available, cap: REGULAR_CAP, sold: c.regular_issued, prices: { one: PRICE_CENTS[1], two: PRICE_CENTS[2] } },
     helpers: {
       open: s.helper_signup === "1" && (c.helper_available ?? 1) > 0,
       available: c.helper_available,
@@ -387,11 +387,12 @@ async function checkout(env, request, ctx) {
   const accessKey = randomCode(26);
   const amount = PRICE_CENTS[quantity];
   const provider = mode === "test" ? "test" : "paypal";
+  const isTest = provider === "test" || env.PAYPAL_ENV !== "live";   // Sandbox = Spielgeld = Testticket
   const email = String(body.email).trim().toLowerCase();
 
   const ins = await run(env, `INSERT INTO orders (order_no, access_key, invitation_id, email, buyer_first, buyer_last, quantity, amount_cents, provider, is_test, status, consent_at, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)`,
-    orderNo, accessKey, inv.id, email, cleanName(guests[0].first_name), cleanName(guests[0].last_name), quantity, amount, provider, provider === "test" ? 1 : 0, iso(t), iso(t), iso(t));
+    orderNo, accessKey, inv.id, email, cleanName(guests[0].first_name), cleanName(guests[0].last_name), quantity, amount, provider, isTest ? 1 : 0, iso(t), iso(t), iso(t));
   const orderId = ins.meta.last_row_id;
   await env.DB.batch(guests.map((g, i) => env.DB.prepare(`INSERT INTO guests (order_id, position, first_name, last_name) VALUES (?, ?, ?, ?)`)
     .bind(orderId, i + 1, cleanName(g.first_name), cleanName(g.last_name))));
@@ -740,7 +741,8 @@ async function scan(env, request, who) {
   if (t.status === "blocked") { await log(t.id, "blocked"); return json({ ...base, result: "red", reason: "Ticket gesperrt" }); }
   if (t.status === "cancelled") { await log(t.id, "cancelled"); return json({ ...base, result: "red", reason: "Ticket storniert" }); }
   const s = await getSettings(env);
-  if (t.is_test && s.sale_mode !== "test") { await log(t.id, "test"); return json({ ...base, result: "red", reason: "Testticket – kein Zutritt" }); }
+  const testPhase = s.sale_mode === "test" || (s.sale_mode === "live" && env.PAYPAL_ENV !== "live");
+  if (t.is_test && !testPhase) { await log(t.id, "test"); return json({ ...base, result: "red", reason: "Testticket – kein Zutritt" }); }
   // Atomar einchecken – bei gleichzeitigen Scans gewinnt genau einer.
   const r = await run(env, `UPDATE tickets SET checked_in_at = ?, checked_in_by = ?, updated_at = ? WHERE id = ? AND status = 'valid' AND checked_in_at IS NULL`, at, who.name, at, t.id);
   if (changes(r)) { await log(t.id, "admitted"); return json({ ...base, result: "green", checked_in_at: at }); }
