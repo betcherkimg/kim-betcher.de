@@ -145,7 +145,7 @@
           ${c.test_tickets ? `<span class="chip warn">${c.test_tickets} Testtickets</span>` : ""}
         </div>
         <div class="kpis">
-          ${kpi("Tickets verkauft", `${c.regular_issued}<small> / ${c.regular_cap}</small>`)}
+          ${kpi("Tickets vergeben", `${c.regular_issued}<small> / ${c.regular_cap}</small>`, c.regular_comp ? `${c.regular_issued - c.regular_comp} verkauft · ${c.regular_comp} kostenlos` : "")}
           ${kpi("Verfügbar", c.available, c.reserved || c.test_tickets ? `${c.test_tickets ? c.test_tickets + " Test" : ""}${c.test_tickets && c.reserved ? " + " : ""}${c.reserved ? c.reserved + " reserviert" : ""} belegen gerade Plätze` : "")}
           ${kpi("Offene Reservierungen", c.reserved, "laufende Bezahlvorgänge")}
           ${kpi("2TAKT vergeben", `${c.free_issued}<small> / ${c.free_cap}</small>`, `${c.free_assigned} mit Namen`)}
@@ -215,7 +215,34 @@
       $("#q").oninput = rows; $("#f").onchange = rows; rows();
     },
 
-    async guests(m) { await ticketTable(m, "", "Gäste & Tickets"); },
+    async guests(m) {
+      const [invites, dash] = await Promise.all([call("/admin/invitations"), call("/admin/dashboard")]);
+      m.innerHTML = `<h1>Gäste & Tickets</h1>
+        <h2 style="margin-top:0">Kostenloses Ticket aus den 70</h2>
+        <p class="note">Belegt einen der 70 regulären Plätze (noch ${dash.counts.available} frei), kostet nichts und zählt nicht zum Umsatz.</p>
+        <form class="card form" id="compForm">
+          <label class="field"><span>Vorname</span><input class="input sm" name="first" required maxlength="60"></label>
+          <label class="field"><span>Nachname</span><input class="input sm" name="last" required maxlength="60"></label>
+          <label class="field"><span>E-Mail (optional)</span><input class="input sm" type="email" name="email"></label>
+          <label class="field"><span>Zu Einladung (optional)</span><select class="input sm" name="inv"><option value="">–</option>${invites.filter(i => i.status === "active").map(i => `<option value="${i.id}">${esc(i.name)} (${i.issued}/${i.max_tickets})</option>`).join("")}</select></label>
+          <label class="check field" style="align-self:center"><input type="checkbox" name="mail"><span>Gleich per Mail schicken</span></label>
+          <div class="field"><button class="btn btn-uv btn-small">Ticket erstellen</button></div>
+        </form>
+        <div id="compDone"></div>
+        <h2>Alle Tickets</h2><div id="tbl"></div>`;
+      $("#compForm").onsubmit = async e => {
+        e.preventDefault(); const f = e.target;
+        const r = await act(() => call("/admin/comp-tickets", { method: "POST", body: { first_name: f.first.value, last_name: f.last.value, email: f.email.value || null, invitation_id: f.inv.value || null, send_mail: f.mail.checked } }));
+        const name = f.first.value; const url = `${SITE}ticket/?k=${r.view_key}`;
+        await VIEWS.guests(m);
+        const text = `Hey ${name}, hier ist dein Ticket für TAKT Nr. 30 – Private Birthday Rave. QR-Code am Einlass zeigen, gilt einmal und nur für dich: ${url}`;
+        $("#compDone").innerHTML = `<div class="linkbox"><code>${esc(r.number)} · ${esc(url)}</code><div class="acts"><button id="cwa">WhatsApp</button><button id="ccp">Kopieren</button></div></div>${r.mail ? `<p class="note">${r.mail === "sent" ? "Mail verschickt." : "Mail konnte nicht verschickt werden."}</p>` : ""}`;
+        $("#cwa").onclick = () => window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+        $("#ccp").onclick = () => copy(url);
+        toast(`Ticket ${r.number} erstellt`);
+      };
+      await ticketTable($("#tbl"), "", null);
+    },
 
     async free(m) {
       const all = await call("/admin/tickets?category=free");

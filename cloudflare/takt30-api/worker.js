@@ -147,6 +147,7 @@ async function counts(env, settings) {
       (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND status != 'cancelled') AS free_issued,
       (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND status != 'cancelled' AND first_name IS NOT NULL) AS free_assigned,
       (SELECT COUNT(*) FROM tickets WHERE category = 'helper' AND status != 'cancelled') AS helper_issued,
+      (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND order_id IS NULL AND status != 'cancelled') AS regular_comp,
       (SELECT COUNT(*) FROM tickets WHERE checked_in_at IS NOT NULL AND status != 'cancelled') AS checked_in,
       (SELECT COUNT(*) FROM tickets WHERE status = 'valid') AS expected,
       (SELECT COALESCE(SUM(amount_cents), 0) FROM orders WHERE status = 'paid' AND is_test = 0) AS revenue_cents,
@@ -887,6 +888,34 @@ async function createFreeTicket(env, request, who) {
   return json({ created: created.length, ids: created }, 201);
 }
 
+// Kostenloses Ticket aus dem regulären Kontingent (zählt zu den 70, kein Umsatz)
+async function createCompTicket(env, request, who) {
+  const b = await readJson(request) || {};
+  const fn = cleanName(b.first_name), ln = cleanName(b.last_name);
+  if (!nameOk(fn) || !nameOk(ln)) return fail("Bitte Vor- und Nachnamen angeben.");
+  const email = b.email ? String(b.email).trim().toLowerCase() : null;
+  if (email && !emailOk(email)) return fail("E-Mail-Adresse ungültig.");
+  const invId = b.invitation_id ? Number(b.invitation_id) : null;
+  if (invId && !(await first(env, `SELECT 1 FROM invitations WHERE id = ?`, invId))) return fail("Einladung nicht gefunden.");
+  const t = nowMs();
+  const r = await run(env, `INSERT INTO tickets (number, category, code, view_key, invitation_id, first_name, last_name, email, status, is_test, note, created_at, updated_at)
+    SELECT printf('T30-%03d', COALESCE((SELECT MAX(CAST(substr(number, 5) AS INTEGER)) FROM tickets WHERE category = 'regular'), 0) + 1), 'regular', ?, ?, ?, ?, ?, ?, 'valid', 0, 'kostenlos (Admin)', ?, ?
+    WHERE ${SQL_REGULAR_TAKEN()} + 1 <= ?
+      AND (? IS NULL OR (SELECT COUNT(*) FROM tickets tk LEFT JOIN orders o ON o.id = tk.order_id WHERE COALESCE(o.invitation_id, tk.invitation_id) = ? AND tk.status != 'cancelled')
+        + (SELECT COALESCE(SUM(quantity), 0) FROM reservations WHERE invitation_id = ? AND state = 'active' AND expires_at > ?) + 1
+        <= (SELECT max_tickets FROM invitations WHERE id = ?))`,
+    randomCode(26), randomCode(26), invId, fn, ln, email, iso(t), iso(t), t, REGULAR_CAP, invId, invId, invId, t, invId);
+  if (!changes(r)) {
+    const c = await counts(env);
+    return c.available <= 0 ? fail("Alle 70 Plätze sind vergeben.", 409, "SOLD_OUT") : fail("Diese Einladung hat schon 2 Plätze.", 409, "INVITE_EXHAUSTED");
+  }
+  const ticket = await first(env, `SELECT * FROM tickets WHERE id = ?`, r.meta.last_row_id);
+  await audit(env, who, "ticket.comp", ticket.number, { first_name: fn, last_name: ln, invitation_id: invId });
+  let mail = null;
+  if (email && b.send_mail) mail = (await sendTicketMail(env, ticket)).ok ? "sent" : "failed";
+  return json({ id: ticket.id, number: ticket.number, view_key: ticket.view_key, mail }, 201);
+}
+
 async function updateTicket(env, request, who, id) {
   const b = await readJson(request) || {};
   const t = await first(env, `SELECT * FROM tickets WHERE id = ?`, id);
@@ -1150,6 +1179,7 @@ async function route(request, env, ctx) {
   if (m === "PUT" && /^\/admin\/invitations\/\d+$/.test(path)) return updateInvitation(env, request, who, id);
   if (m === "GET" && path === "/admin/tickets") return listTickets(env, url);
   if (m === "POST" && path === "/admin/free-tickets") return createFreeTicket(env, request, who);
+  if (m === "POST" && path === "/admin/comp-tickets") return createCompTicket(env, request, who);
   if (m === "POST" && /^\/admin\/tickets\/\d+$/.test(path)) return updateTicket(env, request, who, id);
   if (m === "GET" && path === "/admin/orders") return listOrders(env);
   if (m === "POST" && /^\/admin\/orders\/\d+$/.test(path)) return orderAction(env, request, who, id);

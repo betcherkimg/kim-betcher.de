@@ -426,3 +426,23 @@ test("Helfer-Standard: 13 Plätze, 8 Bar und 5 Ticketscan; alte Standard-Aufgabe
   t2.db.prepare("INSERT INTO event_settings VALUES ('helper_jobs', ?, '', 'system')").run(JSON.stringify([{ name: "Bar", slots: 0 }, { name: "Ticketscanner", slots: 0 }]));
   assert.deepEqual((await t2.call("GET", "/public/event")).data.helpers.jobs.map(j => j.slots), [8, 5]);
 });
+
+test("Kostenlose Tickets aus den 70: belegen Platz, kein Umsatz, Einladungslimit, nie über 70", async () => {
+  const t = await setup(); await openTestSale(t);
+  const code = await invite(t, "Lisa");
+  const invId = (await t.admin("GET", "/admin/invitations")).data[0].id;
+  const r = await t.admin("POST", "/admin/comp-tickets", { first_name: "Gratis", last_name: "Gast", invitation_id: invId });
+  assert.equal(r.status, 201); assert.equal(r.data.number, "T30-001");
+  const ev = (await t.call("GET", "/public/event")).data;
+  assert.equal(ev.sale.available, 69);
+  assert.equal((await t.admin("GET", "/admin/dashboard")).data.counts.revenue_cents, 0);
+  assert.equal((await t.call("GET", `/public/invite/${code}`)).data.remaining, 1);
+  assert.equal((await buy(t, code, [guest(), guest("B", "B")])).data.code, "INVITE_EXHAUSTED");
+  await t.admin("POST", "/admin/comp-tickets", { first_name: "Zwei", last_name: "Gast", invitation_id: invId });
+  assert.equal((await t.admin("POST", "/admin/comp-tickets", { first_name: "Drei", last_name: "Gast", invitation_id: invId })).data.code, "INVITE_EXHAUSTED");
+  for (let i = 0; i < 68; i++) assert.equal((await t.admin("POST", "/admin/comp-tickets", { first_name: "G", last_name: `${i}` })).status, 201);
+  assert.equal((await t.admin("POST", "/admin/comp-tickets", { first_name: "Zu", last_name: "Viel" })).data.code, "SOLD_OUT");
+  const tk = (await t.call("GET", `/public/ticket?k=${r.data.view_key}`)).data;
+  assert.equal(tk.first_name, "Gratis");
+  assert.equal((await t.call("POST", "/admin/comp-tickets", { first_name: "x", last_name: "y" }, { user: STRANGER })).status, 403);
+});

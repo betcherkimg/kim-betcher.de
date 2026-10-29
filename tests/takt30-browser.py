@@ -83,6 +83,11 @@ try:
         admin.fill("#freeForm [name=first]", "Max"); admin.fill("#freeForm [name=last]", "Frei"); admin.click("#freeForm button")
         admin.wait_for_selector("#trows td:has-text('Max Frei')")
         admin.screenshot(path=str(OUT / "admin-freitickets.png"))
+        admin.click("nav button[data-p=guests]"); admin.wait_for_selector("#compForm")
+        admin.fill("#compForm [name=first]", "Gratis"); admin.fill("#compForm [name=last]", "Gast"); admin.click("#compForm button")
+        admin.wait_for_selector("#compDone code:has-text('T30-001')")
+        admin.wait_for_selector("#trows td:has-text('Gratis Gast')")
+        admin.screenshot(path=str(OUT / "admin-kostenlos.png"))
 
         # ---------- Gast am Handy ----------
         for width in (360, 390):
@@ -148,7 +153,7 @@ try:
         assert h.locator("input[name=qty][value='2']").count() == 0
 
         # ---------- Einlass mit echtem QR-Code über Fake-Kamera ----------
-        code = sql("SELECT code FROM tickets WHERE number = 'T30-001'")[0]["code"]
+        code = sql("SELECT code FROM tickets WHERE first_name = 'Lisa' AND category = 'regular'")[0]["code"]
         y4m = OUT / "qr.y4m"
         subprocess.run(["node", "-e", f"""
 const fs=require('fs');const vm=require('vm');const c={{}};vm.runInNewContext(fs.readFileSync('{ROOT}/taktnr30/assets/vendor/qrcode.js','utf8')+';this.q=qrcode',c);
@@ -215,7 +220,7 @@ fs.writeFileSync('{OUT}/qr.pgm',Buffer.concat([Buffer.from('P5\\n'+W+' '+H+'\\n2
         admin.click("nav button[data-p=overview]")
         admin.wait_for_selector(".kpi")
         txt = admin.inner_text("#main")
-        assert "Tickets verkauft\n2" in txt.replace(" / 70", "") or "2 / 70" in txt, txt[:400]
+        assert "3 / 70" in txt and "2 verkauft · 1 kostenlos" in txt, txt[:400]
         admin.screenshot(path=str(OUT / "admin-uebersicht-nach-tests.png"), full_page=True)
         admin.click("nav button[data-p=guests]"); admin.wait_for_selector("#trows tr")
         admin.screenshot(path=str(OUT / "admin-gaeste.png"))
