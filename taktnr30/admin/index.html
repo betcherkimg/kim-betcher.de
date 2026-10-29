@@ -151,9 +151,14 @@
   }
   function go(p) { page = p; renderNav(); render(); history.replaceState(null, "", `#${p}`); }
   // Link mit vorausgefüllten Vertragsdaten (#contracts?d=…): Daten merken, bevor die Adresse bereinigt wird
-  let prefill = null;
-  const grabHash = () => { const [h, q] = location.hash.slice(1).split("?"); const d = new URLSearchParams(q || "").get("d"); if (d) prefill = d; return h; };
-  window.addEventListener("hashchange", () => { const h = grabHash(); if (me && prefill && h === "contracts") go("contracts"); });
+  // Sofort beim Laden sichern – der Login (Clerk) überschreibt sonst die Adresse samt Daten
+  const PREFILL_KEY = "takt30.prefill";
+  const keep = d => { try { localStorage.setItem(PREFILL_KEY, d); } catch {} };
+  const takePrefill = () => { let d = null; try { d = localStorage.getItem(PREFILL_KEY); localStorage.removeItem(PREFILL_KEY); } catch {} return d; };
+  const hasPrefill = () => { try { return !!localStorage.getItem(PREFILL_KEY); } catch { return false; } };
+  const grabHash = () => { const [h, q] = location.hash.slice(1).split("?"); const d = new URLSearchParams(q || "").get("d"); if (d) keep(d); return h; };
+  grabHash();
+  window.addEventListener("hashchange", () => { const h = grabHash(); if (me && hasPrefill() && h === "contracts") go("contracts"); });
 
   async function render() {
     const m = $("#main");
@@ -421,7 +426,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
       $("#eqAdd").onclick = () => { $("#eqRows").insertAdjacentHTML("beforeend", eqRow()); eqBind(); };
       // Vorausgefüllter Vertrag über den Link (#contracts?d=…) – die Daten stehen nur im Link, nicht auf der Website
       try {
-        const q = prefill; prefill = null;
+        const q = takePrefill();
         if (q) {
           const d = JSON.parse(decodeURIComponent(escape(atob(q.replace(/-/g, "+").replace(/_/g, "/")))));
           ["name", "addr", "phone", "email", "artist", "start", "duration", "value", "fee", "owner_addr"].forEach(n => { if (d[n] != null && f[n]) f[n].value = d[n]; });
@@ -429,7 +434,8 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
             $("#eqRows").innerHTML = d.eq.map(eqRow).join(""); eqBind();
             $$("#eqRows > div").forEach((r, i) => { r.querySelector("[data-eq=item]").value = d.eq[i].item || ""; r.querySelector("[data-eq=value]").value = d.eq[i].value || ""; });
           }
-          toast("Vertragsdaten übernommen – prüfen und „Vertrag erstellen“");
+          toast(`Vertrag für ${d.name || "den DJ"} ist vorbereitet – prüfen und unterschreiben`);
+          setTimeout(() => $("#cGen").click(), 50);
         }
       } catch { toast("Link mit Vertragsdaten konnte nicht gelesen werden"); }
       const preview = () => { $("#cPreview").innerHTML = TAKT_CONTRACT.renderHtml($("#cBody").value); };
@@ -1076,6 +1082,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
       $("#who").textContent = { main: "Hauptadmin", tickets: "Tickets", scanner: "Einlass" }[me.role] || me.role_label;
       Clerk.mountUserButton($("#userBtn"));
       const h = grabHash(); if (PAGES.some(p => p[0] === h)) page = h;
+      if (hasPrefill() && me.role === "main") page = "contracts";
       renderNav(); render();
     };
     Clerk.addListener(({ user }) => { if (!!user !== !!me) update(); });

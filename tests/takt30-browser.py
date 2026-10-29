@@ -262,6 +262,11 @@ fs.writeFileSync('{OUT}/qr.pgm',Buffer.concat([Buffer.from('P5\\n'+W+' '+H+'\\n2
         admin.goto("https://kim-betcher.de/taktnr30/admin/#contracts?d=" + pre); admin.wait_for_selector("#cForm")
         admin.wait_for_function("document.querySelector('#cForm [name=name]').value === 'Julian Vorab'")
         assert admin.locator("#eqRows [data-eq=item]").input_value() == "XDJ-AZ" and "?d=" not in admin.url
+        admin.wait_for_selector("#cPreview h2")   # Vertrag liegt direkt fertig zum Unterschreiben da
+        # Login dazwischen (Adresse ohne Daten): gespeicherte Daten werden trotzdem übernommen
+        admin.evaluate("localStorage.setItem('takt30.prefill', arguments[0])".replace("arguments[0]", json.dumps(pre)))
+        admin.goto("https://kim-betcher.de/taktnr30/admin/"); admin.reload()
+        admin.wait_for_selector("#cPreview h2"); assert "Julian Vorab" in admin.inner_text("#cPreview")
         admin.fill("#cForm [name=name]", "Julian Test"); admin.fill("#cForm [name=addr]", "Teststraße 1, 89522 Heidenheim")
         admin.fill("#cForm [name=email]", "dj@example.org")
         admin.fill("#eqRows [data-eq=item]", "Alpha Theta XDJ-AZ"); admin.fill("#eqRows [data-eq=value]", "2.989")
