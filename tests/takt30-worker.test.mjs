@@ -693,3 +693,40 @@ test("Reserve-Papiertickets verkaufen: Preis automatisch, zählt in Abrechnung u
   await t.admin("POST", "/admin/admins", { user_id: HELPER, role: "tickets", name: "Franzi" });
   assert.equal((await t.call("POST", "/admin/paper/sell", { number: "FK-22" }, { user: HELPER })).status, 403);
 });
+
+test("Verträge: Veranstalter unterschreibt zuerst, Partner per Link, Text gesichert, nur einmal, Mails", async () => {
+  const t = await setup({ RESEND_API_KEY: "re_x", MAIL_FROM: "tickets@kim-betcher.de" });
+  const sig = "data:image/png;base64," + "A".repeat(400);
+  const body = "# DJ-Vereinbarung\n\n## § 1\n\n1. Der DJ legt auf.\n\n## Anlage 1: Equipmentliste\n\nGeräte folgen.";
+  assert.equal((await t.admin("POST", "/admin/contracts", { title: "DJ X", party_name: "Julian P", body })).status, 400); // ohne eigene Unterschrift
+  const c = await t.admin("POST", "/admin/contracts", { title: "DJ-Vereinbarung Julian", party_name: "Julian Pajtak", party_email: "dj@example.org", body, owner_sig: sig });
+  assert.equal(c.status, 201); const k = c.data.view_key;
+  assert.match(c.data.url, /taktnr30\/vertrag\/\?k=/);
+  const pub = (await t.call("GET", `/public/contract?k=${k}`)).data;
+  assert.equal(pub.body, body); assert.ok(pub.owner_signed_at); assert.equal(pub.party_signed_at, null); assert.equal(pub.owner_name, "Kim Betcher");
+  assert.equal((await t.call("POST", "/public/contract/sign", { k, sig, accept: true, body_sha: "falsch" })).status, 409);
+  assert.equal((await t.call("POST", "/public/contract/sign", { k, sig: "x", accept: true, body_sha: pub.body_sha })).status, 400);
+  const s = await t.call("POST", "/public/contract/sign", { k, sig, accept: true, body_sha: pub.body_sha, annex: [{ item: "Pioneer DJM-900", serial: "AB1", value: "1.200" }, { item: "" }] });
+  assert.equal(s.status, 200); assert.equal(s.data.final_sha.length, 64);
+  assert.equal((await t.call("POST", "/public/contract/sign", { k, sig, accept: true, body_sha: pub.body_sha })).status, 409);
+  const after = (await t.call("GET", `/public/contract?k=${k}`)).data;
+  assert.equal(after.status, "signed"); assert.equal(after.annex.length, 1); assert.equal(after.final_sha, s.data.final_sha);
+  assert.ok(t.mails.some(m => m.to[0] === "dj@example.org" && /unterschriebener Vertrag/.test(m.subject)));
+  assert.ok(t.mails.some(m => m.to[0] === "betcherkimg@gmail.com" && /Unterschrieben/.test(m.subject)));
+  assert.equal((await t.admin("DELETE", `/admin/contracts/${c.data.id}`)).status, 409); // unterschrieben = bleibt
+  // Zurückziehen eines offenen Vertrags
+  const c2 = await t.admin("POST", "/admin/contracts", { title: "Test", party_name: "Max M", body, owner_sig: sig });
+  assert.equal((await t.admin("DELETE", `/admin/contracts/${c2.data.id}`)).status, 200);
+  assert.equal((await t.call("GET", `/public/contract?k=${c2.data.view_key}`)).status, 404);
+  assert.equal((await t.admin("GET", "/admin/contracts")).data.length, 2);
+  // Rechte
+  await t.admin("POST", "/admin/admins", { user_id: HELPER, role: "tickets", name: "Franzi" });
+  assert.equal((await t.call("GET", "/admin/contracts", undefined, { user: HELPER })).status, 403);
+  // Versicherungen
+  const ins = await t.admin("POST", "/admin/insurances", { kind: "Technikversicherung DJ", provider: "Eventversicherungen", premium: "118,00", file_data: "data:application/pdf;base64,JVBERi0=", file_name: "police.pdf" });
+  assert.equal(ins.status, 201);
+  const li = (await t.admin("GET", "/admin/insurances")).data;
+  assert.equal(li[0].premium_cents, 11800); assert.equal(li[0].file_data, undefined);
+  assert.equal((await t.admin("GET", `/admin/insurances/${ins.data.id}`)).data.file_name, "police.pdf");
+  assert.equal((await t.admin("POST", "/admin/insurances", { kind: "x", file_data: "data:text/html;base64,PGI+" })).status, 400);
+});

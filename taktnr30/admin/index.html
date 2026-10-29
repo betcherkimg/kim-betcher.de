@@ -66,6 +66,14 @@
   .todo .tt small { display: block; color: var(--muted); font-size: 14px; margin-top: 2px; }
   .todo.done { background: transparent; }
   .todo.done .tt { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--uv); }
+  .paper { background: #fbfaf7; color: #16161c; border-radius: 10px; padding: 22px 26px; font-family: Georgia, "Times New Roman", serif; font-size: 15.5px; line-height: 1.55; max-height: 460px; overflow: auto; }
+  .paper h1 { font-family: var(--sans); font-size: 21px; font-weight: 600; margin: 0 0 12px; } .paper h2 { font-family: var(--sans); font-size: 16px; font-weight: 600; margin: 18px 0 6px; }
+  .paper p { margin: 0 0 8px; } .paper ol, .paper ul { margin: 0 0 8px; padding-left: 22px; }
+  .padwrap { background: #fbfaf7; border-radius: 10px; position: relative; max-width: 560px; }
+  .padwrap canvas { display: block; width: 100%; height: 170px; border-radius: 10px; cursor: crosshair; }
+  .padwrap .base { position: absolute; left: 18px; right: 18px; bottom: 40px; border-bottom: 1.5px solid #9a9aa6; pointer-events: none; }
+  .padwrap .hint { position: absolute; left: 18px; bottom: 14px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; color: #8a8a96; pointer-events: none; }
+  textarea.input { min-height: 320px; font-family: var(--mono); font-size: 13px; line-height: 1.5; }
   .todo-add { display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 8px; margin-top: 10px; }
   @media (max-width: 760px) { .todo-add { grid-template-columns: 1fr auto; } .todo-add .input:first-child { grid-column: 1 / -1; } }
   .linkbox { display: grid; grid-template-columns: 1fr auto; gap: 8px; background: var(--uv-deep); border: 1px solid var(--uv); border-radius: var(--radius); padding: 12px; margin: 12px 0; }
@@ -111,12 +119,13 @@
 <script defer src="/taktnr30/assets/vendor/fflate.min.js"></script>
 <script defer src="/taktnr30/assets/vendor/jspdf.umd.min.js"></script>
 <script src="/taktnr30/assets/takt.js?v=2"></script>
+<script src="/taktnr30/assets/contract.js?v=1"></script>
 <script defer crossorigin="anonymous" src="https://clerk.kim-betcher.de/npm/@clerk/ui@1/dist/ui.browser.js"></script>
 <script defer crossorigin="anonymous" data-clerk-publishable-key="pk_live_Y2xlcmsua2ltLWJldGNoZXIuZGUk" src="https://clerk.kim-betcher.de/npm/@clerk/clerk-js@6/dist/clerk.browser.js"></script>
 <script>
 (function () {
   "use strict";
-  const { esc, $, $$, dateDe, timeDe, euro, ApiError, API, categoryLabel } = TAKT;
+  const { esc, $, $$, dateDe, weekdayDe, timeDe, euro, ApiError, API, categoryLabel } = TAKT;
   const SITE = "https://kim-betcher.de/taktnr30/tickets/";
   let me = null, page = "overview", cache = {};
 
@@ -134,7 +143,7 @@
 
   const PAGES = [
     ["overview", "Übersicht"], ["prep", "Vorbereitung"], ["guests", "Gäste & Tickets"], ["orders", "Bestellungen"], ["helpers", "Helfer"],
-    ["paper", "Papiertickets", "main"], ["content", "Inhalte & Line-up"], ["entry", "Einlass"], ["money", "Abrechnung", "main"], ["settings", "Einstellungen", "main"]
+    ["paper", "Papiertickets", "main"], ["content", "Inhalte & Line-up"], ["entry", "Einlass"], ["money", "Abrechnung", "main"], ["contracts", "Verträge & Versicherungen", "main"], ["settings", "Einstellungen", "main"]
   ];
   function renderNav() {
     $("#nav").innerHTML = PAGES.filter(p => !p[2] || isMain()).map(([id, label]) => `<button data-p="${id}" ${id === page ? 'aria-current="page"' : ""}>${label}</button>`).join("");
@@ -269,7 +278,175 @@
     k.finish("TAKT30-GEMA-Rechnungslegung.pdf");
   }
 
+  /* -------- Verträge (Unterschrift per Finger) & Versicherungen -------- */
+  function djContract(v, s) {
+    const owner = `${s.contact_name}${v.owner_addr ? `, ${v.owner_addr}` : ""} · Telefon ${s.contact_phone} · ${s.contact_email}`;
+    const party = [`${v.name}${v.addr ? `, ${v.addr}` : ""}`, v.phone && `Telefon ${v.phone}`, v.email].filter(Boolean).join(" · ");
+    const extras = [v.ticket && "ein **kostenloses Ticket** für die gesamte Feier", v.drinks && "den ganzen Abend **Getränke kostenlos**", v.food && "den ganzen Abend **Essen kostenlos**"].filter(Boolean);
+    return `# DJ-Vereinbarung – TAKT Nr. 30
+
+**Veranstalter:** ${owner}
+
+**DJ:** ${party}${v.artist ? `\n\nKünstlername: ${v.artist}` : ""}
+
+## § 1 Veranstaltung und Leistung
+
+1. Der DJ legt bei der privaten Geburtstagsfeier TAKT Nr. 30 am **${weekdayDe(s.event_date)}, ${dateDe(s.event_date)}**, in der ${s.venue_name}, ${s.venue_address}, auf.
+2. Das Set beginnt voraussichtlich um **${v.start} Uhr** und dauert **ca. ${v.duration}**. Die genaue Uhrzeit stimmen beide bis eine Woche vor der Feier ab.
+3. Der DJ legt Techno nach eigener Auswahl auf, auch eigene Remixe.
+4. Der DJ bringt sein eigenes Equipment mit (Anlage 1). Lautsprecheranlage und Strom stellt der Veranstalter.
+5. Der DJ ist rechtzeitig vor Setbeginn vor Ort, damit Aufbau und Soundcheck ohne Zeitdruck möglich sind.
+
+## § 2 Gegenleistung
+
+1. Der DJ verlangt **${v.fee ? `ein Honorar von ${v.fee} €` : "kein Honorar"}**${v.fee ? "" : " und keine Fahrtkosten. Er tritt aus Gefälligkeit auf"}.
+${extras.map((x, i) => `${i + 2}. Der DJ bekommt ${x}.`).join("\n")}
+${extras.length + 2}. Weitere Vergütungen oder Kostenerstattungen gibt es nicht.
+
+## § 3 Equipment und Absicherung
+
+1. Das Equipment des DJ hat einen Gesamtwert von **ca. ${v.value} €**. Die einzelnen Geräte stehen in Anlage 1.
+2. Der Veranstalter schließt für die Veranstaltung eine **Technikversicherung** ab. Sie deckt das Equipment des DJ gegen Beschädigung, Zerstörung und Diebstahl ab, und zwar am Veranstaltungsort vom Aufbau bis zum Abbau.
+3. Zahlt die Versicherung einen Schaden nicht oder nicht ganz, etwa wegen Selbstbeteiligung, ersetzt der Veranstalter den Rest selbst, höchstens bis zum Wiederbeschaffungswert und insgesamt bis **${v.value} €**.
+4. Nicht ersetzt werden Schäden, die der DJ selbst vorsätzlich oder grob fahrlässig verursacht, sowie normaler Verschleiß.
+5. Der Veranstalter sorgt für einen abgegrenzten DJ-Bereich ohne Getränke direkt am Pult und eine sichere Ablage für Taschen und Cases.
+6. Beide prüfen das Equipment beim Aufbau kurz gemeinsam, gern mit Fotos. Einen Schaden meldet der DJ dem Veranstalter noch am selben Abend.
+
+## § 4 Ausfall
+
+1. Kann der DJ nicht auflegen, etwa wegen Krankheit, sagt er so früh wie möglich Bescheid. Daraus entstehen keine Ansprüche.
+2. Fällt die Feier aus oder wird sie verschoben, entstehen dem DJ daraus ebenfalls keine Ansprüche.
+
+## § 5 GEMA und Nennung
+
+1. Der Veranstalter meldet die Feier bei der GEMA an und trägt die Gebühren. Für den DJ entstehen dabei keine Kosten.
+2. Der Veranstalter darf den DJ mit seinem Künstlernamen im Line-up auf der Ticketseite und in Nachrichten an die Gäste nennen.
+
+## § 6 Einlass
+
+Der Einlass ist ab 18 Jahren. Der DJ bringt seinen Ausweis mit.
+
+## § 7 Schlussbestimmungen
+
+1. Änderungen gelten nur, wenn beide sie schriftlich festhalten (E-Mail oder WhatsApp genügt).
+2. Ist eine Regelung unwirksam, bleiben die übrigen gültig.
+3. Beide unterschreiben elektronisch per Finger. Jeder bekommt das unterschriebene PDF.
+
+## Anlage 1: Equipmentliste
+
+Der DJ trägt seine Geräte beim Unterschreiben ein:`;
+  }
+
+  async function downloadData(dataUrl, name) {
+    const a = document.createElement("a"); a.href = dataUrl; a.download = name; a.click();
+  }
+
   const VIEWS = {
+    async contracts(m) {
+      const [list, ins, s] = await Promise.all([call("/admin/contracts"), call("/admin/insurances"), call("/admin/settings")]);
+      const pf = moneyPrefs();
+      const st = c => c.status === "signed" ? `<span class="st-valid">unterschrieben</span><span class="sub">${fmtDT(c.party_signed_at)}</span>` : c.status === "revoked" ? `<span class="dim">zurückgezogen</span>` : `<span class="st-pending">wartet auf Unterschrift</span>`;
+      const link = c => `${location.origin}/taktnr30/vertrag/?k=${c.view_key}`;
+      m.innerHTML = `<h1>Verträge &amp; Versicherungen</h1>
+        <h2 style="margin-top:0">Verträge</h2>
+        <div class="tablewrap"><table><thead><tr><th>Vertrag</th><th>Status</th><th></th></tr></thead><tbody>
+        ${list.map(c => `<tr><td>${esc(c.title)}<span class="sub">${esc(c.party_name)} · erstellt ${fmtDT(c.created_at)}</span></td><td>${st(c)}</td><td><div class="acts">
+          ${c.status !== "revoked" ? `<button data-cl="${c.id}">Link kopieren</button><button data-cw="${c.id}">WhatsApp</button><button data-cp="${c.id}">PDF</button>` : ""}
+          ${c.status === "open" ? `<button class="danger" data-cr="${c.id}">Zurückziehen</button>` : ""}</div></td></tr>`).join("") || `<tr><td colspan="3" class="dim">Noch keine Verträge.</td></tr>`}
+        </tbody></table></div>
+        <h2>Neuer Vertrag: DJ-Vereinbarung</h2>
+        <form class="card form" id="cForm">
+          <label class="field"><span>Name des DJ</span><input class="input sm" name="name" required maxlength="80"></label>
+          <label class="field"><span>Anschrift</span><input class="input sm" name="addr" maxlength="160" placeholder="Straße, PLZ Ort"></label>
+          <label class="field"><span>Telefon</span><input class="input sm" name="phone" maxlength="40"></label>
+          <label class="field"><span>E-Mail (bekommt das PDF)</span><input class="input sm" name="email" type="email" maxlength="160"></label>
+          <label class="field"><span>Künstlername (optional)</span><input class="input sm" name="artist" maxlength="60"></label>
+          <label class="field"><span>Setbeginn (Uhr)</span><input class="input sm" name="start" value="02:00" maxlength="20"></label>
+          <label class="field"><span>Dauer</span><input class="input sm" name="duration" value="1,5 bis 2 Stunden" maxlength="40"></label>
+          <label class="field"><span>Equipmentwert (€)</span><input class="input sm" name="value" value="3.000" maxlength="12"></label>
+          <label class="field"><span>Honorar (€, leer = keins)</span><input class="input sm" name="fee" maxlength="12"></label>
+          <label class="field"><span>Deine Anschrift</span><input class="input sm" name="owner_addr" value="${esc(pf.addr || "")}" placeholder="Straße, PLZ Ort" maxlength="160"></label>
+          <div class="field"><label class="check"><input type="checkbox" name="ticket" checked><span>Freies Ticket</span></label><label class="check"><input type="checkbox" name="drinks" checked><span>Getränke frei</span></label><label class="check"><input type="checkbox" name="food" checked><span>Essen frei</span></label></div>
+          <div class="field"><button class="btn btn-small" type="button" id="cGen">Vertrag erstellen</button></div>
+        </form>
+        <div id="cDraft" hidden>
+          <p class="note">So sieht der Vertrag aus. Du kannst den Text unten noch ändern – danach unterschreibst du als Erster und bekommst den Link für den DJ.</p>
+          <div class="paper" id="cPreview"></div>
+          <details style="margin-top:10px"><summary class="note" style="cursor:pointer">Text bearbeiten</summary><textarea class="input" id="cBody" style="margin-top:8px"></textarea></details>
+          <h2>Deine Unterschrift</h2>
+          <div class="padwrap"><canvas id="cPad" aria-label="Unterschriftenfeld"></canvas><div class="base"></div><div class="hint">HIER UNTERSCHREIBEN · ${esc(String(s.contact_name).toUpperCase())}</div></div>
+          <div class="acts" style="margin-top:10px"><button type="button" id="cClear">Löschen</button></div>
+          <button class="btn btn-uv btn-small" id="cSign" style="margin-top:14px">Unterschreiben &amp; Link erzeugen</button>
+          <div id="cDone"></div>
+        </div>
+        <h2>Versicherungen</h2>
+        <div class="tablewrap"><table><thead><tr><th>Versicherung</th><th class="hide-sm">Deckung</th><th>Beitrag</th><th></th></tr></thead><tbody>
+        ${ins.map(i => `<tr><td>${esc(i.kind)}<span class="sub">${esc([i.provider, i.policy_no && "Nr. " + i.policy_no, i.note].filter(Boolean).join(" · "))}</span></td><td class="hide-sm dim">${esc(i.coverage || "")}</td><td class="mono">${i.premium_cents != null ? e2(i.premium_cents) : "–"}</td><td><div class="acts">${i.file_name ? `<button data-if="${i.id}">Police</button>` : ""}<button class="danger" data-id-del="${i.id}">✕</button></div></td></tr>`).join("") || `<tr><td colspan="4" class="dim">Noch keine Versicherung eingetragen.</td></tr>`}
+        </tbody></table></div>
+        <form class="card form" id="iForm" style="margin-top:12px">
+          <label class="field"><span>Art</span><input class="input sm" name="kind" required maxlength="80" placeholder="z. B. Technikversicherung DJ"></label>
+          <label class="field"><span>Anbieter</span><input class="input sm" name="provider" maxlength="80"></label>
+          <label class="field"><span>Policen-Nr.</span><input class="input sm" name="policy_no" maxlength="60"></label>
+          <label class="field"><span>Deckung</span><input class="input sm" name="coverage" maxlength="200" placeholder="z. B. Equipment Julian bis 3.000 €"></label>
+          <label class="field"><span>Beitrag (€)</span><input class="input sm" name="premium" inputmode="decimal"></label>
+          <label class="field"><span>Police (PDF/Bild, optional)</span><input class="input sm" name="file" type="file" accept="application/pdf,image/png,image/jpeg"></label>
+          <label class="field"><span>Notiz</span><input class="input sm" name="note" maxlength="300"></label>
+          <div class="field"><button class="btn btn-uv btn-small">Speichern</button></div>
+        </form>
+        <p class="note">Den Beitrag zusätzlich unter „Abrechnung“ als Beleg (Gebühren &amp; Versicherung) erfassen.</p>`;
+
+      // Verträge
+      const byId = id => list.find(c => c.id == id);
+      $$("[data-cl]", m).forEach(b => b.onclick = () => copy(link(byId(b.dataset.cl))));
+      $$("[data-cw]", m).forEach(b => b.onclick = () => { const c = byId(b.dataset.cw); window.open(`https://wa.me/?text=${encodeURIComponent(`Hey ${c.party_name.split(" ")[0]}, hier ist unser Vertrag für TAKT Nr. 30 – bitte durchlesen und direkt mit dem Finger unterschreiben. Danach kannst du ihn als PDF speichern: ${link(c)}`)}`, "_blank", "noopener"); });
+      $$("[data-cp]", m).forEach(b => b.onclick = async () => {
+        if (!window.jspdf) return toast("PDF-Werkzeug wird noch geladen – bitte gleich nochmal");
+        const c = await call(`/admin/contracts/${b.dataset.cp}`);
+        await TAKT_CONTRACT.pdf({ ...c, annex: c.annex ? JSON.parse(c.annex) : [], owner_name: s.contact_name }, `${c.title.replace(/[^\wäöüÄÖÜß -]/g, "").trim().replace(/\s+/g, "-")}.pdf`);
+      });
+      $$("[data-cr]", m).forEach(b => b.onclick = async () => { if (!confirm("Vertrag zurückziehen? Der Link funktioniert dann nicht mehr.")) return; await act(() => call(`/admin/contracts/${b.dataset.cr}`, { method: "DELETE" }), "Zurückgezogen"); render(); });
+      let pad = null;
+      const f = $("#cForm");
+      const preview = () => { $("#cPreview").innerHTML = TAKT_CONTRACT.renderHtml($("#cBody").value); };
+      $("#cGen").onclick = () => {
+        if (!f.name.value.trim()) return toast("Bitte den Namen des DJ eintragen");
+        const v = Object.fromEntries(["name", "addr", "phone", "email", "artist", "start", "duration", "value", "fee", "owner_addr"].map(n => [n, f[n].value.trim()]));
+        ["ticket", "drinks", "food"].forEach(n => v[n] = f[n].checked);
+        if (v.owner_addr) saveMoneyPrefs({ addr: v.owner_addr });
+        $("#cBody").value = djContract(v, s); preview();
+        $("#cDraft").hidden = false; $("#cDone").innerHTML = "";
+        if (!pad) pad = TAKT_CONTRACT.SignPad($("#cPad")); else pad.clear();
+        $("#cDraft").scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+      $("#cBody").oninput = preview;
+      $("#cClear").onclick = () => pad && pad.clear();
+      $("#cSign").onclick = async () => {
+        const sig = pad && !pad.empty() ? pad.toDataURL() : null;
+        if (!sig) return toast("Bitte zuerst im weißen Feld unterschreiben");
+        const name = f.name.value.trim();
+        const r = await act(() => call("/admin/contracts", { method: "POST", body: { title: `DJ-Vereinbarung ${name} – TAKT Nr. 30`, party_name: name, party_email: f.email.value.trim() || null, body: $("#cBody").value, owner_sig: sig } }), "Unterschrieben – jetzt den Link schicken");
+        $("#cDone").innerHTML = `<div class="linkbox" style="margin-top:14px"><code>${esc(r.url)}</code><div class="acts"><button id="cCopy">Kopieren</button><button id="cWa">WhatsApp</button></div></div>`;
+        $("#cCopy").onclick = () => copy(r.url);
+        $("#cWa").onclick = () => window.open(`https://wa.me/?text=${encodeURIComponent(`Hey ${name.split(" ")[0]}, hier ist unser Vertrag für TAKT Nr. 30 – bitte durchlesen und direkt mit dem Finger unterschreiben. Danach kannst du ihn als PDF speichern: ${r.url}`)}`, "_blank", "noopener");
+        $("#cSign").disabled = true;
+        setTimeout(() => render(), 60000);
+      };
+
+      // Versicherungen
+      $("#iForm").onsubmit = async e => {
+        e.preventDefault(); const g = e.target; const body = Object.fromEntries(["kind", "provider", "policy_no", "coverage", "premium", "note"].map(n => [n, g[n].value.trim()]));
+        const file = g.file.files[0];
+        if (file) {
+          if (file.size > 650_000) return toast("Datei zu groß – höchstens ca. 650 KB (PDF verkleinern oder Foto)");
+          body.file_data = await new Promise(res => { const rd = new FileReader(); rd.onload = () => res(rd.result); rd.readAsDataURL(file); });
+          body.file_name = file.name;
+        }
+        await act(() => call("/admin/insurances", { method: "POST", body }), "Gespeichert"); render();
+      };
+      $$("[data-if]", m).forEach(b => b.onclick = async () => { const r = await call(`/admin/insurances/${b.dataset.if}`); downloadData(r.file_data, r.file_name); });
+      $$("[data-id-del]", m).forEach(b => b.onclick = async () => { if (!confirm("Eintrag löschen?")) return; await act(() => call(`/admin/insurances/${b.dataset.idDel}`, { method: "DELETE" }), "Gelöscht"); render(); });
+    },
+
     async money(m) {
       const r = await call("/admin/report"); const S = sums(r); const pf = moneyPrefs();
       const today = new Date().toISOString().slice(0, 10);

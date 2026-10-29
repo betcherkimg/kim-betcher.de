@@ -251,9 +251,39 @@ fs.writeFileSync('{OUT}/qr.pgm',Buffer.concat([Buffer.from('P5\\n'+W+' '+H+'\\n2
         admin.screenshot(path=str(OUT / "admin-uebersicht-nach-tests.png"), full_page=True)
         admin.click("nav button[data-p=guests]"); admin.wait_for_selector("#trows tr")
         admin.screenshot(path=str(OUT / "admin-gaeste.png"))
+        # ---------- Vertrag: Kim unterschreibt im Admin, DJ per Link am Handy ----------
+        def scribble(pg, sel):
+            b = pg.locator(sel).bounding_box()
+            pg.mouse.move(b["x"] + 30, b["y"] + 100); pg.mouse.down()
+            for i in range(12): pg.mouse.move(b["x"] + 40 + i * 18, b["y"] + 60 + (i % 3) * 25, steps=3)
+            pg.mouse.up()
+        admin.click("nav button[data-p=contracts]"); admin.wait_for_selector("#cForm")
+        admin.fill("#cForm [name=name]", "Julian Test"); admin.fill("#cForm [name=addr]", "Teststraße 1, 89522 Heidenheim")
+        admin.fill("#cForm [name=email]", "dj@example.org"); admin.click("#cGen")
+        admin.wait_for_selector("#cPreview h2")
+        assert "kein Honorar" in admin.inner_text("#cPreview") and "Essen kostenlos" in admin.inner_text("#cPreview")
+        admin.wait_for_timeout(900)   # sanftes Scrollen abwarten
+        scribble(admin, "#cPad"); admin.click("#cSign")
+        admin.wait_for_selector("#cDone code")
+        clink = admin.inner_text("#cDone code"); assert "/taktnr30/vertrag/?k=" in clink
+        admin.screenshot(path=str(OUT / "admin-vertrag.png"), full_page=True)
+        dctx = browser.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True, accept_downloads=True)
+        wire(dctx); d = dctx.new_page(); watch(d, "vertrag")
+        d.goto(clink); d.wait_for_selector(".paper h2")
+        d.locator("#annex input >> nth=0").fill("Pioneer DJM-900NXS2"); d.locator("#annex input >> nth=2").fill("1.200")
+        d.click("#sign"); assert "gelesen" in d.inner_text("#err")
+        d.check("#accept"); d.click("#sign"); assert "unterschreiben" in d.inner_text("#err")
+        scribble(d, "#pad"); no_overflow(d, "vertrag")
+        d.screenshot(path=str(OUT / "vertrag-vor-unterschrift.png"), full_page=True)
+        d.click("#sign"); d.wait_for_selector(".done")
+        with d.expect_download() as dl: d.click("#dl")
+        vp = OUT / "Vertrag.pdf"; dl.value.save_as(str(vp)); assert vp.read_bytes()[:5] == b"%PDF-"
+        d.screenshot(path=str(OUT / "vertrag-unterschrieben.png"), full_page=True)
+        dctx.close()
+        admin.click("nav button[data-p=overview]"); admin.click("nav button[data-p=contracts]"); admin.wait_for_selector("text=unterschrieben")
         # Handy-Admin ohne Überbreite
         admin.set_viewport_size({"width": 390, "height": 844})
-        for pg in ["overview", "prep", "money", "guests", "orders", "helpers", "paper", "content", "entry", "settings"]:
+        for pg in ["overview", "prep", "money", "contracts", "guests", "orders", "helpers", "paper", "content", "entry", "settings"]:
             admin.evaluate(f"document.querySelector('nav button[data-p={pg}]').click()")
             admin.wait_for_timeout(250)
             assert not admin.is_visible("#main .err"), f"admin {pg}: " + admin.inner_text("#main")[:200]

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0a0a0c">
+<title>Vertrag – TAKT Nr. 30</title>
+<link rel="icon" href="/taktnr30/assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/taktnr30/assets/takt.css?v=1">
+<style>
+  body { padding: 28px 0 64px; }
+  .top { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+  .top img { width: 44px; }
+  .top span { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; color: var(--dim); }
+  .paper { background: #fbfaf7; color: #16161c; border-radius: 10px; padding: clamp(20px, 5vw, 40px); font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: 16.5px; line-height: 1.6; }
+  .paper h1 { font-family: var(--sans); font-weight: 600; font-size: 24px; line-height: 1.25; margin: 0 0 14px; text-wrap: balance; }
+  .paper h2 { font-family: var(--sans); font-weight: 600; font-size: 17px; margin: 24px 0 6px; }
+  .paper p { margin: 0 0 10px; }
+  .paper ol, .paper ul { margin: 0 0 10px; padding-left: 24px; }
+  .paper li { margin: 0 0 6px; }
+  .paper strong { font-weight: 700; }
+  .step { margin-top: 28px; }
+  .step h2 { font-weight: 400; font-size: 20px; margin: 0 0 6px; }
+  .annex { display: grid; gap: 8px; }
+  .annex .r { display: grid; grid-template-columns: 1.6fr 1fr 90px 34px; gap: 6px; }
+  .annex input { min-height: 44px; font-size: 15px; padding: 8px 10px; }
+  .annex .x { background: none; border: 1px solid var(--line-2); color: var(--muted); border-radius: var(--radius); cursor: pointer; }
+  @media (max-width: 560px) { .annex .r { grid-template-columns: 1fr 1fr; } .annex .r input:first-child { grid-column: 1 / -1; } }
+  .padwrap { background: #fbfaf7; border-radius: 10px; position: relative; margin-top: 10px; }
+  .padwrap canvas { display: block; width: 100%; height: 190px; border-radius: 10px; cursor: crosshair; }
+  .padwrap .base { position: absolute; left: 20px; right: 20px; bottom: 44px; border-bottom: 1.5px solid #9a9aa6; pointer-events: none; }
+  .padwrap .hint { position: absolute; left: 20px; bottom: 16px; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; color: #8a8a96; pointer-events: none; }
+  .sigs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+  .sig { background: #fbfaf7; color: #16161c; border-radius: 10px; padding: 14px; min-width: 0; }
+  .sig small { display: block; font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; color: #6d6d78; text-transform: uppercase; }
+  .sig img { height: 64px; width: auto; max-width: 100%; margin: 8px 0; object-fit: contain; }
+  .sig b { display: block; font-family: var(--sans); font-weight: 600; }
+  .sig span { font-size: 13px; color: #55555f; }
+  @media (max-width: 480px) { .sigs { grid-template-columns: 1fr; } }
+  .acts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  .done { border: 1px solid var(--ok); border-radius: 10px; padding: 16px 18px; margin-top: 22px; }
+  .sha { font-family: var(--mono); font-size: 11px; color: var(--dim); word-break: break-all; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><img src="/taktnr30/assets/logo.svg" alt=""><span>TAKT NR. 30 · VERTRAG</span></div>
+  <div id="box"><p class="muted">Vertrag wird geladen …</p></div>
+</div>
+<script src="/taktnr30/assets/takt.js?v=2"></script>
+<script defer src="/taktnr30/assets/vendor/jspdf.umd.min.js"></script>
+<script src="/taktnr30/assets/contract.js?v=1"></script>
+<script>
+(function () {
+  "use strict";
+  const { api, esc, $ } = TAKT;
+  const { renderHtml, SignPad, pdf, dtDe } = TAKT_CONTRACT;
+  const key = (new URLSearchParams(location.search).get("k") || "").replace(/[^A-Za-z0-9]/g, "");
+  let c = null;
+  const fileName = () => `${c.title.replace(/[^\wäöüÄÖÜß -]/g, "").trim().replace(/\s+/g, "-")}.pdf`;
+
+  function sigCard(label, name, sig, at) {
+    return `<div class="sig"><small>${label}</small>${sig ? `<img src="${esc(sig)}" alt="Unterschrift ${esc(name)}">` : `<div style="height:64px"></div>`}<b>${esc(name)}</b><span>${at ? "unterschrieben am " + esc(dtDe(at)) : "noch offen"}</span></div>`;
+  }
+
+  function render() {
+    const signed = !!c.party_signed_at;
+    const hasAnnex = /Anlage 1/.test(c.body);
+    $("#box").innerHTML = `<article class="paper">${renderHtml(c.body)}</article>
+      ${signed ? `
+        <div class="done"><strong>Unterschrieben.</strong> Der Vertrag ist von beiden Seiten unterschrieben. Lade dir das PDF für deine Unterlagen herunter.</div>
+        <div class="sigs">${sigCard("Veranstalter", c.owner_name, c.owner_sig, c.owner_signed_at)}${sigCard("Vertragspartner", c.party_name, c.party_sig, c.party_signed_at)}</div>
+        <div class="acts"><button class="btn btn-uv" id="dl">PDF herunterladen</button></div>
+        <p class="sha">Prüfsumme (SHA-256): ${esc(c.final_sha || "")}</p>` : `
+        <div class="sigs">${sigCard("Veranstalter", c.owner_name, c.owner_sig, c.owner_signed_at)}${sigCard("Vertragspartner", c.party_name, null, null)}</div>
+        ${hasAnnex ? `<section class="step"><h2>Anlage 1: dein Equipment</h2><p class="note">Für die Versicherung: Gerät, Seriennummer und ungefährer Wert. Kommt mit ins PDF.</p>
+          <div class="annex" id="annex"></div><div class="acts"><button class="btn btn-small" id="addRow" type="button">+ Gerät</button></div></section>` : ""}
+        <section class="step"><h2>Unterschreiben</h2>
+          <label class="check"><input type="checkbox" id="accept"><span>Ich habe den Vertrag gelesen und bin einverstanden.</span></label>
+          <div class="padwrap"><canvas id="pad" aria-label="Unterschriftenfeld"></canvas><div class="base"></div><div class="hint">HIER MIT DEM FINGER UNTERSCHREIBEN · ${esc(c.party_name.toUpperCase())}</div></div>
+          <div class="acts"><button class="btn btn-small" id="clear" type="button">Löschen</button></div>
+          <p class="err" id="err" role="alert" hidden></p>
+          <button class="btn btn-uv btn-block" id="sign" style="margin-top:16px">Verbindlich unterschreiben</button>
+        </section>`}`;
+    if (signed) { $("#dl").onclick = download; return; }
+    if (hasAnnex) {
+      const row = (a = {}) => `<div class="r"><input class="input" placeholder="Gerät (z. B. Pioneer DJM-900)" value="${esc(a.item || "")}" maxlength="80" aria-label="Gerät"><input class="input" placeholder="Seriennummer" value="${esc(a.serial || "")}" maxlength="60" aria-label="Seriennummer"><input class="input" placeholder="Wert €" inputmode="decimal" value="${esc(a.value || "")}" maxlength="12" aria-label="Wert in Euro"><button class="x" type="button" aria-label="Zeile entfernen">✕</button></div>`;
+      const bind = () => $("#annex").querySelectorAll(".x").forEach(b => b.onclick = () => b.parentElement.remove());
+      $("#annex").innerHTML = [row(), row(), row()].join(""); bind();
+      $("#addRow").onclick = () => { $("#annex").insertAdjacentHTML("beforeend", row()); bind(); };
+    }
+    const pad = SignPad($("#pad"));
+    $("#clear").onclick = () => pad.clear();
+    $("#sign").onclick = async () => {
+      const err = $("#err"); err.hidden = true;
+      const fail = m => { err.textContent = m; err.hidden = false; };
+      if (!$("#accept").checked) return fail("Bitte bestätige, dass du den Vertrag gelesen hast.");
+      const sig = pad.empty() ? null : pad.toDataURL();
+      if (!sig) return fail("Bitte im weißen Feld unterschreiben.");
+      const annex = hasAnnex ? [...$("#annex").querySelectorAll(".r")].map(r => { const i = r.querySelectorAll("input"); return { item: i[0].value.trim(), serial: i[1].value.trim(), value: i[2].value.trim() }; }).filter(a => a.item) : [];
+      const btn = $("#sign"); btn.disabled = true; btn.textContent = "Wird gespeichert …";
+      try {
+        const r = await api("/public/contract/sign", { method: "POST", body: { k: key, sig, accept: true, body_sha: c.body_sha, annex } });
+        c = { ...c, party_sig: sig, party_signed_at: r.party_signed_at, final_sha: r.final_sha, annex };
+        render(); window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+      } catch (e) { fail(e.message); btn.disabled = false; btn.textContent = "Verbindlich unterschreiben"; }
+    };
+  }
+
+  async function download() {
+    try { await pdf(c, fileName()); } catch (e) { alert(e.message); }
+  }
+
+  (async () => {
+    if (!key) { $("#box").innerHTML = `<p class="err">Der Link ist unvollständig. Bitte den ganzen Link aus der Nachricht öffnen.</p>`; return; }
+    try { c = await api(`/public/contract?k=${encodeURIComponent(key)}`); document.title = `${c.title} – TAKT Nr. 30`; render(); }
+    catch (e) { $("#box").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  })();
+})();
+</script>
+</body>
+</html>

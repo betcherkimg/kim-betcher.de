@@ -127,6 +127,8 @@ const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS audit_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, actor TEXT NOT NULL, actor_name TEXT, action TEXT NOT NULL, target TEXT, detail TEXT, at TEXT NOT NULL)`,
   `CREATE TABLE IF NOT EXISTS rate_limits (bucket TEXT PRIMARY KEY, count INTEGER NOT NULL, reset_at INTEGER NOT NULL)`,
   `CREATE TABLE IF NOT EXISTS ledger (id INTEGER PRIMARY KEY AUTOINCREMENT, kind TEXT NOT NULL CHECK (kind IN ('expense','income')), booked_on TEXT NOT NULL, party TEXT, purpose TEXT NOT NULL, category TEXT NOT NULL, amount_cents INTEGER NOT NULL CHECK (amount_cents > 0), receipt_no TEXT, note TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, created_by TEXT)`,
+  `CREATE TABLE IF NOT EXISTS contracts (id INTEGER PRIMARY KEY AUTOINCREMENT, view_key TEXT NOT NULL UNIQUE, title TEXT NOT NULL, party_name TEXT NOT NULL, party_email TEXT, body TEXT NOT NULL, body_sha TEXT NOT NULL, owner_sig TEXT, owner_signed_at TEXT, party_sig TEXT, party_signed_at TEXT, party_ua TEXT, annex TEXT, final_sha TEXT, status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open','signed','revoked')), created_at TEXT NOT NULL, created_by TEXT, updated_at TEXT NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS insurances (id INTEGER PRIMARY KEY AUTOINCREMENT, kind TEXT NOT NULL, provider TEXT, policy_no TEXT, coverage TEXT, premium_cents INTEGER, note TEXT, file_name TEXT, file_data TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)`,
   `CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, phase TEXT NOT NULL, title TEXT NOT NULL, note TEXT, position INTEGER NOT NULL DEFAULT 0, done_at TEXT, done_by TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)`
 ];
 
@@ -212,6 +214,117 @@ async function report(env) {
     gema: { rate: 0.1189, base_cents: gross + paperCents, fee_cents: Math.round((gross + paperCents) * 0.1189), highest_price_cents: Math.max(PRICE_BY_MIX.v, paperSold.length ? Math.max(...paperSold.map(x => x.sold_cents)) : 0) },
     orders, ledger, categories: LEDGER_CATS
   });
+}
+
+/* ================= Verträge mit Unterschrift per Finger ================= */
+
+const SIG_MAX = 250_000;   // Unterschrift als PNG-Data-URL
+const sigOk = v => typeof v === "string" && v.startsWith("data:image/png;base64,") && v.length > 200 && v.length <= SIG_MAX;
+function annexClean(list) {
+  if (!Array.isArray(list)) return [];
+  return list.slice(0, 15).map(r => ({ item: String(r?.item || "").trim().slice(0, 80), serial: String(r?.serial || "").trim().slice(0, 60), value: String(r?.value || "").trim().slice(0, 12) })).filter(r => r.item);
+}
+const contractFinalText = c => `${c.body}\n\nANLAGE:${c.annex || "[]"}\nVERANSTALTER:${c.owner_signed_at}\nPARTNER:${c.party_signed_at}`;
+
+async function listContracts(env) {
+  return json(await all(env, `SELECT id, view_key, title, party_name, party_email, body_sha, owner_signed_at, party_signed_at, status, created_at FROM contracts ORDER BY id DESC`));
+}
+async function getContractAdmin(env, id) {
+  const c = await first(env, `SELECT * FROM contracts WHERE id = ?`, id);
+  return c ? json(c) : fail("Vertrag nicht gefunden.", 404);
+}
+async function createContract(env, request, who) {
+  const b = await readJson(request) || {};
+  const title = String(b.title || "").trim().slice(0, 120), body = String(b.body || "").trim();
+  const party_name = cleanName(b.party_name || "").slice(0, 80);
+  const party_email = b.party_email ? String(b.party_email).trim().toLowerCase() : null;
+  if (!title || !party_name) return fail("Titel und Name des Vertragspartners fehlen.");
+  if (body.length < 50 || body.length > 30000) return fail("Vertragstext fehlt oder ist zu lang.");
+  if (party_email && !emailOk(party_email)) return fail("E-Mail-Adresse ungültig.");
+  if (!sigOk(b.owner_sig)) return fail("Bitte zuerst selbst unterschreiben.");
+  const key = randomCode(26), t = iso();
+  const r = await run(env, `INSERT INTO contracts (view_key, title, party_name, party_email, body, body_sha, owner_sig, owner_signed_at, created_at, created_by, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    key, title, party_name, party_email, body, await sha256Hex(body), b.owner_sig, t, t, who.actor, t);
+  await audit(env, who, "contract.create", title, { party: party_name });
+  return json({ id: r.meta.last_row_id, view_key: key, url: `${APP_ORIGIN}/taktnr30/vertrag/?k=${key}` }, 201);
+}
+async function revokeContract(env, who, id) {
+  const r = await run(env, `UPDATE contracts SET status = 'revoked', updated_at = ? WHERE id = ? AND status = 'open'`, iso(), id);
+  if (!changes(r)) return fail("Nur noch nicht unterschriebene Verträge lassen sich zurückziehen.", 409);
+  await audit(env, who, "contract.revoke", String(id), null);
+  return json({ ok: true });
+}
+async function getContractPublic(env, request, url) {
+  if (await limited(env, `ct:${await clientKey(request, env)}`, 60, 60_000)) return fail("Zu viele Anfragen.", 429);
+  const c = await first(env, `SELECT title, party_name, body, body_sha, owner_sig, owner_signed_at, party_sig, party_signed_at, annex, final_sha, status FROM contracts WHERE view_key = ?`, cleanCode(url.searchParams.get("k"), 40));
+  if (!c || c.status === "revoked") return fail("Diesen Vertrag gibt es nicht (mehr). Bitte beim Veranstalter melden.", 404);
+  const s = await getSettings(env);
+  return json({ ...c, annex: c.annex ? JSON.parse(c.annex) : [], owner_name: s.contact_name });
+}
+async function signContractPublic(env, request, ctx) {
+  if (await limited(env, `cs:${await clientKey(request, env)}`, 10, 10 * 60_000)) return fail("Zu viele Versuche. Bitte später erneut probieren.", 429);
+  const b = await readJson(request) || {};
+  const c = await first(env, `SELECT * FROM contracts WHERE view_key = ?`, cleanCode(b.k, 40));
+  if (!c || c.status === "revoked") return fail("Diesen Vertrag gibt es nicht (mehr).", 404);
+  if (c.party_signed_at) return fail("Dieser Vertrag ist bereits unterschrieben.", 409);
+  if (b.accept !== true) return fail("Bitte bestätige, dass du den Vertrag gelesen hast.");
+  if (b.body_sha !== c.body_sha) return fail("Der Vertragstext hat sich geändert. Bitte Seite neu laden.", 409);
+  if (!sigOk(b.sig)) return fail("Bitte im Feld unterschreiben.");
+  const annex = JSON.stringify(annexClean(b.annex));
+  const t = iso();
+  const finalSha = await sha256Hex(contractFinalText({ ...c, annex, party_signed_at: t }));
+  const r = await run(env, `UPDATE contracts SET party_sig = ?, party_signed_at = ?, party_ua = ?, annex = ?, final_sha = ?, status = 'signed', updated_at = ? WHERE id = ? AND party_signed_at IS NULL AND status = 'open'`,
+    b.sig, t, String(request.headers.get("User-Agent") || "").slice(0, 200), annex, finalSha, t, c.id);
+  if (!changes(r)) return fail("Dieser Vertrag ist bereits unterschrieben.", 409);
+  await audit(env, { actor: `contract:${c.id}`, name: c.party_name }, "contract.signed", c.title, { sha: finalSha });
+  const s = await getSettings(env);
+  const link = `${APP_ORIGIN}/taktnr30/vertrag/?k=${c.view_key}`;
+  const note = (intro) => `<!doctype html><html><body style="margin:0;background:#0a0a0c;color:#f2f2f4;font-family:Helvetica,Arial,sans-serif"><div style="max-width:520px;margin:0 auto;padding:32px 24px">
+<p style="letter-spacing:4px;font-size:13px;color:#b98cff;margin:0 0 6px">TAKT NR. 30</p><h1 style="font-weight:300;font-size:24px;margin:0 0 18px">${esc(intro)}</h1>
+<p style="font-size:15px;line-height:1.6;color:#c9c9d1">${esc(c.title)} – unterschrieben von ${esc(s.contact_name)} und ${esc(c.party_name)}.</p>
+<a href="${esc(link)}" style="display:block;background:#9d4dff;color:#0a0a0c;text-decoration:none;padding:14px 18px;border-radius:4px;margin:18px 0;font-size:15px">Vertrag ansehen und als PDF speichern</a></div></body></html>`;
+  const jobs = [sendMail(env, s.contact_email, `Unterschrieben: ${c.title}`, note("Vertrag unterschrieben."))];
+  if (c.party_email) jobs.push(sendMail(env, c.party_email, `Dein unterschriebener Vertrag – ${c.title}`, note("Danke – der Vertrag ist unterschrieben.")));
+  const job = Promise.all(jobs).catch(() => {});
+  if (ctx?.waitUntil) ctx.waitUntil(job); else await job;
+  return json({ ok: true, party_signed_at: t, final_sha: finalSha });
+}
+
+// Versicherungen: Eckdaten + optional die Police als PDF (klein genug für eine D1-Zeile)
+const FILE_MAX = 900_000;
+function insuranceInput(b) {
+  const kind = String(b.kind || "").trim().slice(0, 80);
+  if (!kind) return { error: "Bitte angeben, welche Versicherung." };
+  const premium = b.premium === "" || b.premium == null ? null : Math.round(Number(String(b.premium).replace(",", ".")) * 100);
+  if (premium != null && !(premium >= 0)) return { error: "Beitrag ungültig." };
+  let file_name = null, file_data = null;
+  if (b.file_data) {
+    if (typeof b.file_data !== "string" || !/^data:(application\/pdf|image\/(png|jpeg));base64,/.test(b.file_data) || b.file_data.length > FILE_MAX) return { error: "Datei: PDF oder Bild, höchstens ca. 650 KB." };
+    file_data = b.file_data; file_name = String(b.file_name || "Police").slice(0, 100);
+  }
+  return { kind, provider: String(b.provider || "").trim().slice(0, 80) || null, policy_no: String(b.policy_no || "").trim().slice(0, 60) || null,
+    coverage: String(b.coverage || "").trim().slice(0, 200) || null, premium, note: String(b.note || "").trim().slice(0, 300) || null, file_name, file_data };
+}
+async function listInsurances(env) {
+  return json(await all(env, `SELECT id, kind, provider, policy_no, coverage, premium_cents, note, file_name, created_at FROM insurances ORDER BY id`));
+}
+async function createInsurance(env, request, who) {
+  const v = insuranceInput(await readJson(request) || {});
+  if (v.error) return fail(v.error);
+  const r = await run(env, `INSERT INTO insurances (kind, provider, policy_no, coverage, premium_cents, note, file_name, file_data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    v.kind, v.provider, v.policy_no, v.coverage, v.premium, v.note, v.file_name, v.file_data, iso(), iso());
+  await audit(env, who, "insurance.create", v.kind, { provider: v.provider });
+  return json({ id: r.meta.last_row_id }, 201);
+}
+async function getInsuranceFile(env, id) {
+  const r = await first(env, `SELECT file_name, file_data FROM insurances WHERE id = ?`, id);
+  return r?.file_data ? json(r) : fail("Keine Datei hinterlegt.", 404);
+}
+async function deleteInsurance(env, who, id) {
+  const r = await run(env, `DELETE FROM insurances WHERE id = ?`, id);
+  if (!changes(r)) return fail("Nicht gefunden.", 404);
+  await audit(env, who, "insurance.delete", String(id), null);
+  return json({ ok: true });
 }
 
 /* ================= Vorbereitung (Aufgabenliste im Admin) ================= */
@@ -1567,6 +1680,8 @@ async function route(request, env, ctx) {
   if (m === "POST" && path === "/public/order/resend") return resendOrder(env, request);
   if (m === "GET" && path === "/public/ticket") return getTicket(env, request, url);
   if (m === "GET" && path === "/health") return json({ ok: true });
+  if (m === "GET" && path === "/public/contract") return getContractPublic(env, request, url);
+  if (m === "POST" && path === "/public/contract/sign") return signContractPublic(env, request, ctx);
 
   // Ab hier: angemeldet
   const who = await identify(request, env);
@@ -1613,6 +1728,14 @@ async function route(request, env, ctx) {
   if ((denied = need("main"))) return denied;
   if (m === "GET" && path === "/admin/audit") return listAudit(env);
   if (m === "GET" && path === "/admin/report") return report(env);
+  if (m === "GET" && path === "/admin/contracts") return listContracts(env);
+  if (m === "GET" && path === "/admin/insurances") return listInsurances(env);
+  if (m === "POST" && path === "/admin/insurances") return createInsurance(env, request, who);
+  if (m === "GET" && /^\/admin\/insurances\/\d+$/.test(path)) return getInsuranceFile(env, id);
+  if (m === "DELETE" && /^\/admin\/insurances\/\d+$/.test(path)) return deleteInsurance(env, who, id);
+  if (m === "POST" && path === "/admin/contracts") return createContract(env, request, who);
+  if (m === "GET" && /^\/admin\/contracts\/\d+$/.test(path)) return getContractAdmin(env, id);
+  if (m === "DELETE" && /^\/admin\/contracts\/\d+$/.test(path)) return revokeContract(env, who, id);
   if (m === "GET" && path === "/admin/ledger") return listLedger(env);
   if (m === "POST" && path === "/admin/ledger") return createLedger(env, request, who);
   if (m === "PUT" && /^\/admin\/ledger\/\d+$/.test(path)) return updateLedger(env, request, who, id);
