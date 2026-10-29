@@ -88,7 +88,7 @@
         ${t.checked_in_at ? `<div class="addr"><dt>EINGECHECKT</dt><dd>${esc(dateDe(t.checked_in_at))} ${esc(timeDe(t.checked_in_at))}</dd></div>` : ""}
       </dl>
       <div class="stub"></div>
-      <div class="stubtext">Einmalig gültig · persönlich</div>
+      <div class="stubtext">Einmalig gültig · persönlich · ab 18 · Ausweis mitbringen</div>
     </article>`;
   }
 
@@ -139,7 +139,7 @@
       lab("TICKET", t.number, 14, 141); lab("KATEGORIE", categoryLabel(t), 56, 141);
       lab("DATUM", dateDe(event.event_date), 14, 151); lab("EINLASS · START", `${event.doors_time} · ${event.start_time}`, 56, 151);
       doc.setFontSize(6.5); doc.setTextColor(130, 130, 142); doc.text("ORT", 14, 161); doc.setFontSize(8.5); doc.setTextColor(242, 242, 244); doc.text([event.venue_name, event.venue_address], 14, 165);
-      doc.setFontSize(6.5); doc.setTextColor(180, 180, 190); doc.text("EINMALIG GÜLTIG · PERSÖNLICH" + (t.is_test ? " · TESTTICKET" : ""), 52.5, 176, { align: "center" });
+      doc.setFontSize(6.5); doc.setTextColor(180, 180, 190); doc.text("EINMALIG GÜLTIG · PERSÖNLICH · AB 18 · AUSWEIS MITBRINGEN" + (t.is_test ? " · TESTTICKET" : ""), 52.5, 176, { align: "center" });
     });
     doc.save(tickets.length > 1 ? "TAKT-Nr-30-Tickets.pdf" : `TAKT-Nr-30-${tickets[0].number}.pdf`);
   }

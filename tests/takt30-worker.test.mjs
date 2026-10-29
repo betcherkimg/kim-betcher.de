@@ -674,3 +674,22 @@ test("VIP online: Preise 30/55/50 €, max. 20 aus den 60, VIP-Mail, Scanner zei
   const r = (await t.admin("GET", "/admin/report")).data;
   assert.equal(r.gema.highest_price_cents, 3000);
 });
+
+test("Reserve-Papiertickets verkaufen: Preis automatisch, zählt in Abrechnung und GEMA, rückgängig", async () => {
+  const t = await setup();
+  await t.admin("GET", "/admin/paper");
+  let r = await t.admin("POST", "/admin/paper/sell", { number: "2t-31", via: "bar", first_name: "Max", last_name: "Mo" });
+  assert.equal(r.status, 200); assert.equal(r.data.sold_cents, 3500);
+  r = await t.admin("POST", "/admin/paper/sell", { number: "FK-21", via: "paypal" });
+  assert.equal(r.data.sold_cents, 2500);
+  assert.equal((await t.admin("POST", "/admin/paper/sell", { number: "FK-21" })).status, 409);
+  assert.equal((await t.admin("POST", "/admin/paper/sell", { number: "XX-99" })).status, 404);
+  const rep = (await t.admin("GET", "/admin/report")).data;
+  assert.equal(rep.paper.count, 2); assert.equal(rep.paper.cents, 6000); assert.equal(rep.paper.vip, 1);
+  assert.equal(rep.gema.base_cents, 6000); assert.equal(rep.gema.highest_price_cents, 3500);
+  assert.equal(t.db.prepare("SELECT first_name FROM tickets WHERE number = '2T-31'").get().first_name, "Max");
+  await t.admin("POST", "/admin/paper/sell", { number: "FK-21", undo: true });
+  assert.equal((await t.admin("GET", "/admin/report")).data.paper.count, 1);
+  await t.admin("POST", "/admin/admins", { user_id: HELPER, role: "tickets", name: "Franzi" });
+  assert.equal((await t.call("POST", "/admin/paper/sell", { number: "FK-22" }, { user: HELPER })).status, 403);
+});

@@ -17,6 +17,7 @@ const PRICE_CENTS = { 1: 2000, 2: 3500 };   // 1 Ticket 20 €, 2 Tickets 35 €
 const VIP_CAP = 20;              // davon höchstens 20 als VIP (zählen in die 60)
 const VIP_DRINKS = 3;            // Freigetränke für VIP online
 const PAPER_VIP_DRINKS = 5;      // Freigetränke für VIP-Papiertickets (2TAKT)
+const PAPER_PRICE = { free: 3500, regular: 2500 };   // Reserve-Papiertickets verkauft: VIP 35 €, normal 25 €
 // Was der Scanner zeigt: Ticketart, Bändchen-Schlüssel, Freigetränke
 function ticketKind(t) {
   if (t.category === "helper") return { kind: "Helfer", band: "helper", drinks: 0 };
@@ -197,14 +198,18 @@ async function report(env) {
   const gross = paid.reduce((a, o) => a + o.amount_cents, 0);
   const fees = orders.reduce((a, o) => a + (o.fee_cents || 0), 0);
   const ledger = await all(env, `SELECT * FROM ledger ORDER BY booked_on, id`);
+  const paperSold = await all(env, `SELECT number, category, first_name, last_name, sold_cents, sold_at, sold_via FROM tickets WHERE paper = 1 AND sold_cents IS NOT NULL AND status != 'cancelled' ORDER BY sold_at, number`);
+  const paperCents = paperSold.reduce((a, x) => a + x.sold_cents, 0);
   return json({
     generated_at: iso(),
     event: { name: "TAKT Nr. 30", date: s.event_date, doors: s.doors_time, start: s.start_time, venue: s.venue_name, address: s.venue_address, organizer: s.contact_name, phone: s.contact_phone, email: s.contact_email },
     prices: { one: PRICE_CENTS[1], two: PRICE_CENTS[2], vip_one: PRICE_BY_MIX.v, vip_two: PRICE_BY_MIX.vv, mixed: PRICE_BY_MIX.rv, vip_drinks: VIP_DRINKS },
     tickets: { ...t, orders_paid: paid.length, singles: paid.filter(o => o.quantity === 1).length, pairs: paid.filter(o => o.quantity === 2).length,
       mix: Object.fromEntries(Object.keys(PRICE_BY_MIX).map(k => [k, paid.filter(o => (o.quantity === 1 ? (o.vip_quantity ? "v" : "r") : ["rr", "rv", "vv"][o.vip_quantity || 0]) === k).length])) },
-    money: { ticket_gross_cents: gross, paypal_fee_cents: fees, fee_missing: orders.reduce((a, o) => a + (o.fee_missing || 0), 0), refunded_cents: orders.reduce((a, o) => a + (o.refunded_cents || 0), 0) },
-    gema: { rate: 0.1189, base_cents: gross, fee_cents: Math.round(gross * 0.1189), highest_price_cents: PRICE_BY_MIX.v },
+    paper_sold: paperSold,
+    paper: { count: paperSold.length, vip: paperSold.filter(x => x.category === "free").length, own: paperSold.filter(x => x.category === "regular").length, cents: paperCents, prices: PAPER_PRICE, vip_drinks: PAPER_VIP_DRINKS },
+    money: { ticket_gross_cents: gross, paper_cents: paperCents, paypal_fee_cents: fees, fee_missing: orders.reduce((a, o) => a + (o.fee_missing || 0), 0), refunded_cents: orders.reduce((a, o) => a + (o.refunded_cents || 0), 0) },
+    gema: { rate: 0.1189, base_cents: gross + paperCents, fee_cents: Math.round((gross + paperCents) * 0.1189), highest_price_cents: Math.max(PRICE_BY_MIX.v, paperSold.length ? Math.max(...paperSold.map(x => x.sold_cents)) : 0) },
     orders, ledger, categories: LEDGER_CATS
   });
 }
@@ -333,7 +338,10 @@ async function ensureSchema(env) {
     `ALTER TABLE tickets ADD COLUMN tier TEXT NOT NULL DEFAULT 'regular'`,
     `ALTER TABLE guests ADD COLUMN tier TEXT NOT NULL DEFAULT 'regular'`,
     `ALTER TABLE orders ADD COLUMN vip_quantity INTEGER NOT NULL DEFAULT 0`,
-    `ALTER TABLE reservations ADD COLUMN vip_quantity INTEGER NOT NULL DEFAULT 0`
+    `ALTER TABLE reservations ADD COLUMN vip_quantity INTEGER NOT NULL DEFAULT 0`,
+    `ALTER TABLE tickets ADD COLUMN sold_cents INTEGER`,
+    `ALTER TABLE tickets ADD COLUMN sold_at TEXT`,
+    `ALTER TABLE tickets ADD COLUMN sold_via TEXT`
   ]) await run(env, sql).catch(() => {});
   // Bändchen: VIP online ergänzen, 2TAKT-Hinweis auf 3 Getränkemarken (nur wenn noch der alte Standard drinsteht)
   const bandRow = await first(env, `SELECT value FROM event_settings WHERE key = 'bands'`);
@@ -850,6 +858,7 @@ function mailHtml(s, intro, rows, extra = "") {
 <p style="font-size:15px;line-height:1.6;color:#c9c9d1;margin:0 0 22px">${esc(dateDe(s.event_date))} · Einlass ab ${esc(s.doors_time)} · Beginn ${esc(s.start_time)}<br>${esc(s.venue_name)}<br>${esc(s.venue_address)}</p>
 ${extra}${rows.map(r => `<a href="${esc(r.url)}" style="display:block;background:#9d4dff;color:#0a0a0c;text-decoration:none;padding:14px 18px;border-radius:4px;margin:0 0 10px;font-size:15px">${r.vip ? "VIP-" : ""}Ticket ${esc(r.number)} · ${esc(r.name)} öffnen</a>`).join("")}
 <p style="font-size:13px;line-height:1.6;color:#8a8a96;margin:22px 0 0">Auf der Ticketseite kannst du dein Ticket als PDF speichern. Jeder QR-Code ist persönlich und nur einmal gültig. Geschlossene Gesellschaft – ohne Ticket kein Einlass.</p>
+<p style="font-size:14px;line-height:1.6;color:#f2f2f4;margin:14px 0 0"><strong>Einlass erst ab 18 – bitte Ausweis mitbringen.</strong></p>
 <p style="font-size:13px;line-height:1.6;color:#8a8a96;margin:14px 0 0">Fragen? ${esc(s.contact_name)} · ${esc(s.contact_phone)} · ${esc(s.contact_email)}</p>
 </div></body></html>`;
 }
@@ -1222,8 +1231,31 @@ async function paperSetup(env, who) {
 }
 async function paperList(env, who) {
   const c = await paperSetup(env, who);
-  const rows = await all(env, `SELECT number, category, code, status, checked_in_at FROM tickets WHERE paper = 1 AND status != 'cancelled' ORDER BY category DESC, number`);
-  return json({ vip: rows.filter(r => r.category === "free"), own: rows.filter(r => r.category === "regular"), counts: c, event: eventForTicket(await getSettings(env)) });
+  const rows = await all(env, `SELECT number, category, code, status, checked_in_at, first_name, last_name, sold_cents, sold_at, sold_via FROM tickets WHERE paper = 1 AND status != 'cancelled' ORDER BY category DESC, number`);
+  return json({ vip: rows.filter(r => r.category === "free"), own: rows.filter(r => r.category === "regular"), counts: c, prices: PAPER_PRICE, event: eventForTicket(await getSettings(env)) });
+}
+
+// Reserve-Papierticket verkauft (bar oder PayPal an Kim) – zählt als Eintritt für Abrechnung und GEMA
+async function paperSell(env, request, who) {
+  const b = await readJson(request) || {};
+  const number = String(b.number || "").trim().toUpperCase();
+  const t = await first(env, `SELECT id, category, sold_cents FROM tickets WHERE paper = 1 AND number = ? AND status != 'cancelled'`, number);
+  if (!t) return fail("Papierticket mit dieser Nummer nicht gefunden.", 404);
+  if (b.undo) {
+    await run(env, `UPDATE tickets SET sold_cents = NULL, sold_at = NULL, sold_via = NULL, updated_at = ? WHERE id = ?`, iso(), t.id);
+    await audit(env, who, "paper.sell_undo", number, {});
+    return json({ ok: true, number, sold: false });
+  }
+  if (t.sold_cents != null) return fail(`${number} ist schon als verkauft eingetragen.`, 409);
+  const cents = b.price != null && b.price !== "" ? Math.round(Number(String(b.price).replace(",", ".")) * 100) : PAPER_PRICE[t.category];
+  if (!(cents >= 0) || cents > 100000) return fail("Preis ungültig.");
+  const via = b.via === "paypal" ? "paypal" : "bar";
+  const fn = b.first_name ? cleanName(b.first_name) : null, ln = b.last_name ? cleanName(b.last_name) : null;
+  if ((fn || ln) && (!nameOk(fn) || !nameOk(ln))) return fail("Bitte Vor- und Nachnamen vollständig angeben oder beides leer lassen.");
+  await run(env, `UPDATE tickets SET sold_cents = ?, sold_at = ?, sold_via = ?, first_name = COALESCE(?, first_name), last_name = COALESCE(?, last_name), updated_at = ? WHERE id = ?`,
+    cents, iso(), via, fn, ln, iso(), t.id);
+  await audit(env, who, "paper.sell", number, { price: euro(cents), via });
+  return json({ ok: true, number, sold_cents: cents, via });
 }
 async function paperBlock(env, request, who) {
   const b = await readJson(request) || {};
@@ -1590,6 +1622,7 @@ async function route(request, env, ctx) {
   if (m === "POST" && path === "/admin/reset") return resetAll(env, request, who);
   if (m === "GET" && path === "/admin/paper") return paperList(env, who);
   if (m === "POST" && path === "/admin/paper/block") return paperBlock(env, request, who);
+  if (m === "POST" && path === "/admin/paper/sell") return paperSell(env, request, who);
   if (m === "POST" && path === "/admin/anonymize") return anonymize(env, request, who);
   if (m === "GET" && path === "/admin/admins") return listAdmins(env);
   if (m === "POST" && path === "/admin/admins") return upsertAdmin(env, request, who);

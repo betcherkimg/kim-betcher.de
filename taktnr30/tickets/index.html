@@ -24,6 +24,8 @@
   .sub { margin-top: 18px; font-size: 13px; color: var(--muted); }
   .when { margin-top: 18px; font-size: 14px; line-height: 1.9; }
   .where { margin-top: 6px; font-size: 12px; color: var(--dim); letter-spacing: .1em; max-width: 340px; }
+  .age { display: inline-block; margin-top: 14px; padding: 6px 14px; border: 2px solid var(--uv); border-radius: 99px; font-family: var(--mono); font-weight: 700; font-size: 13px; letter-spacing: .16em; color: var(--ink); }
+  .agebox { border: 2px solid var(--uv); border-radius: var(--radius); padding: 12px 14px; margin: 0 0 18px; font-size: 15px; }
   .cta { margin-top: 30px; width: min(100%, 360px); display: grid; gap: 10px; }
   .cta .plain { font-size: 13px; color: var(--dim); }
   .soon { border: 1px solid var(--line-2); color: var(--muted); min-height: 52px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius); font-size: 14px; letter-spacing: .24em; text-transform: uppercase; }
@@ -111,6 +113,7 @@
   <div class="sub caps">Private Birthday Rave</div>
   <div class="when mono" id="when"></div>
   <div class="where caps" id="where"></div>
+  <div class="age">EINLASS AB 18</div>
   <div class="cta" id="heroCta"></div>
   <div class="scroll-hint" aria-hidden="true"></div>
 </header>
@@ -200,7 +203,7 @@
       ["Einlass", `ab ${ev.doors_time} Uhr`],
       ["Beginn", `${ev.start_time} Uhr`],
       ["Ort", ev.place_public],
-      ["Zutritt", "Nur mit persönlichem Ticket"]
+      ["Zutritt", "Nur mit persönlichem Ticket · ab 18 Jahren"]
     ].map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("");
     if (ev.show_countdown) {
       const start = eventStart(ev.event_date, ev.start_time);
@@ -222,6 +225,7 @@
     const faq = [
       ["Wo finde ich mein Ticket?", "Direkt nach dem Kauf auf der Bestätigungsseite und zusätzlich per E-Mail. Dieses Gerät merkt sich deine Tickets – öffne einfach wieder den Einladungslink. Auf der Ticketseite kannst du es als PDF speichern."],
       ["Wie funktioniert der QR-Code-Einlass?", "Zeig am Eingang deinen QR-Code auf dem Handy oder ausgedruckt. Er wird online geprüft, danach bekommst du ein Einlassbändchen. Jeder Code gilt genau einmal und nur für die Person, deren Name auf dem Ticket steht."],
+      ["Darf ich unter 18 kommen?", "Nein. Einlass ist erst ab 18 Jahren – bitte bring deinen Ausweis mit, am Einlass kann kontrolliert werden. Ausnahmen gibt es nur, wenn Kim es vorher ausdrücklich erlaubt hat."],
       ["Kann ich ohne Ticket erscheinen?", "Nein. TAKT Nr. 30 ist eine geschlossene Gesellschaft – es gibt keine Abendkasse und keine Tickets für spontane Besucher."],
       ["Was passiert bei verlorenem Ticket?", "Melde dich einfach. Wir stellen dir einen neuen QR-Code aus, der alte wird dabei ungültig."],
       ["Kann ich mein Ticket zurückgeben?", "Nein, eine Erstattung gibt es nicht – dein Ticket ist mein Geburtstagsgeschenk."],
@@ -311,13 +315,14 @@
     f.onsubmit = e => { e.preventDefault(); const c = $("#codeInput").value.toUpperCase().replace(/[^A-Z0-9]/g, ""); if (c) location.search = `?e=${c}`; };
   }
 
-  const consent = `<label class="check"><input type="checkbox" name="accept" required><span>Ich habe die <a href="datenschutz/" target="_blank">Datenschutzhinweise</a> und <a href="bedingungen/" target="_blank">Teilnahmebedingungen</a> gelesen und bin einverstanden.</span></label>`;
+  const consent = `<label class="check"><input type="checkbox" name="accept" required><span>Ich habe die <a href="datenschutz/" target="_blank">Datenschutzhinweise</a> und <a href="bedingungen/" target="_blank">Teilnahmebedingungen</a> gelesen und bin einverstanden. <strong>Alle Personen auf den Tickets sind mindestens 18 Jahre alt.</strong></span></label>`;
 
   function renderForm() {
     const host = $("#formHost");
     if (tab === "help") return renderHelper(host);
     const two = invite.remaining >= 2 && ev.sale.available >= 2;
     host.innerHTML = `<form id="buyForm" novalidate>
+      <p class="agebox"><strong>Einlass erst ab 18 Jahren.</strong> Bitte Ausweis mitbringen – ohne Nachweis kein Einlass. Ausnahmen nur mit ausdrücklicher Erlaubnis von Kim.</p>
       <div class="qty" role="radiogroup" aria-label="Anzahl">
         <label><span><input type="radio" name="qty" value="1" checked> 1 Ticket</span><span class="p">ab ${euro(ev.sale.prices.one)}</span></label>
         ${two ? `<label><span><input type="radio" name="qty" value="2"> 2 Tickets</span><span class="p">ab ${euro(ev.sale.prices.two)}</span></label>` : ""}

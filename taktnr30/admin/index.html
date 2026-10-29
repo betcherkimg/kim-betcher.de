@@ -163,7 +163,7 @@
   function sums(r) {
     const exp = r.ledger.filter(l => l.kind === "expense"), inc = r.ledger.filter(l => l.kind === "income");
     const byCat = (rows, cats) => cats.map(c => [c, rows.filter(l => l.category === c).reduce((a, l) => a + l.amount_cents, 0)]).filter(x => x[1]);
-    const incomeTotal = r.money.ticket_gross_cents + inc.reduce((a, l) => a + l.amount_cents, 0);
+    const incomeTotal = r.money.ticket_gross_cents + (r.money.paper_cents || 0) + inc.reduce((a, l) => a + l.amount_cents, 0);
     const expenseTotal = exp.reduce((a, l) => a + l.amount_cents, 0) + r.money.paypal_fee_cents;
     return { exp, inc, expCats: byCat(exp, r.categories.expense), incCats: byCat(inc, r.categories.income), incomeTotal, expenseTotal, result: incomeTotal - expenseTotal };
   }
@@ -211,6 +211,7 @@
     k.p("Alle Beträge wie gezahlt (brutto). Online-Tickets wurden ausschließlich über PayPal bezahlt; Testkäufe sind nicht enthalten.", 9);
     k.h("Ergebnis");
     k.row(`Ticketverkauf online (${r.tickets.orders_paid} Bestellungen, ${t.sold} Tickets)`, e2(r.money.ticket_gross_cents));
+    if (r.paper.count) k.row(`Papiertickets aus der Reserve verkauft (${r.paper.vip} VIP, ${r.paper.own} normal)`, e2(r.paper.cents));
     S.incCats.forEach(([c, v]) => k.row(c, e2(v)));
     k.rule(); k.row("Summe Einnahmen", e2(S.incomeTotal), true); k.y += 3;
     S.expCats.forEach(([c, v]) => k.row(c, e2(v)));
@@ -220,11 +221,16 @@
     if (r.money.refunded_cents) k.p(`Hinweis: Erstattungen an Käufer über PayPal: ${e2(r.money.refunded_cents)} (nicht in den Ticketeinnahmen enthalten).`, 9);
     k.h("Tickets und Gäste");
     [["Verkaufte Online-Tickets", `${t.sold}, davon ${t.sold_vip} VIP`], ...mixRows(r),
-     ["Kostenlose Online-Tickets", String(t.comp)], ["Papiertickets VIP · 2TAKT (kostenlos)", String(t.paper_vip)], ["Freitickets Papier (kostenlos)", String(t.paper_own)],
+     ["Kostenlose Online-Tickets", String(t.comp)], ["Papiertickets VIP · 2TAKT", `${t.paper_vip}${r.paper.vip ? `, davon ${r.paper.vip} verkauft` : " (kostenlos)"}`], ["Freitickets Papier", `${t.paper_own}${r.paper.own ? `, davon ${r.paper.own} verkauft` : " (kostenlos)"}`],
      ["Helfer", String(t.helpers)], ["Am Einlass eingecheckt", String(t.checked_in)]].forEach(([a, b]) => k.row(a, b));
     k.h("Belege");
     k.table([["Datum", 18], ["Art", 37, "l", 18], ["Kategorie", 56, "l", 32], ["Wofür / Firma", 90, "l", 64], ["Beleg-Nr.", 156, "l", 18], ["Betrag", 192, "r"]],
       r.ledger.map(l => [dDe(l.booked_on), l.kind === "income" ? "Einnahme" : "Ausgabe", l.category, [l.purpose, l.party].filter(Boolean).join(" – "), l.receipt_no || "", (l.kind === "income" ? "" : "– ") + e2(l.amount_cents)]));
+    if (r.paper.count) {
+      k.h("Verkaufte Papiertickets (Reserve)");
+      k.table([["Ticket", 18], ["Art", 45, "l", 40], ["Verkauft am", 90], ["Bezahlt", 125, "l", 30], ["Betrag", 192, "r"]],
+        r.paper_sold.map(x => [x.number, x.category === "free" ? "VIP · 2TAKT" : "normal", dDe(x.sold_at), x.sold_via === "paypal" ? "PayPal" : "bar", e2(x.sold_cents)]));
+    }
     k.h("Ticketeinnahmen (Einzelaufstellung)");
     k.table([["Bestellung", 18], ["Bezahlt am", 52], ["Anzahl", 92, "r"], ["Status", 100, "l", 40], ["Betrag", 160, "r"], ["PayPal-Gebühr", 192, "r"]],
       r.orders.map(o => [o.order_no, dDe(o.paid_at), `${o.quantity}${o.vip_quantity ? ` (${o.vip_quantity} VIP)` : ""}`, { paid: "bezahlt", refunded: "erstattet", refund_required: "Erstattung offen" }[o.status] || o.status, e2(o.amount_cents), o.fee_cents == null ? "–" : e2(o.fee_cents)]));
@@ -242,18 +248,22 @@
      ["Musik", "Tanzmusik, Wiedergabe von Tonträgern durch DJs"], ["Raumgröße", f.sqm ? `${f.sqm} m²` : "_____ m²"]].forEach(([a, b]) => k.row(a, b));
     k.h("Eintrittsgelder");
     [["Eintrittspreis 1 Ticket", e2(r.prices.one)], ["Eintrittspreis 2 Tickets", `${e2(r.prices.two)} (${e2(r.prices.two / 2)} je Person)`],
+     ...(r.paper.count ? [["Papierticket VIP (Reserve)", `${e2(r.paper.prices.free)} inkl. ${r.paper.vip_drinks} Getränke`], ["Papierticket normal (Reserve)", e2(r.paper.prices.regular)], ["Verkaufte Papiertickets", `${r.paper.count} (${r.paper.vip} VIP, ${r.paper.own} normal) = ${e2(r.paper.cents)}`]] : []),
      ["Eintrittspreis 1 VIP-Ticket", `${e2(r.prices.vip_one)} inkl. ${r.prices.vip_drinks} Getränke`], ["Eintrittspreis 2 VIP-Tickets", `${e2(r.prices.vip_two)} inkl. je ${r.prices.vip_drinks} Getränke`], ["1 Ticket + 1 VIP-Ticket", e2(r.prices.mixed)],
-     ["Verkaufte Tickets", `${t.sold}, davon ${t.sold_vip} VIP (${t.singles} Einzel-, ${t.pairs} Doppelbestellungen)`], ["Gäste ohne Eintrittsgeld", `${t.comp + t.paper_vip + t.paper_own} (geladene Gäste, Freitickets) + ${t.helpers} Helfer`]].forEach(([a, b]) => k.row(a, b));
-    const drinkCents = Math.round((parseFloat(String(f.drink || "").replace(",", ".")) || 0) * 100) * r.prices.vip_drinks * t.sold_vip;
+     ["Verkaufte Tickets", `${t.sold}, davon ${t.sold_vip} VIP (${t.singles} Einzel-, ${t.pairs} Doppelbestellungen)`], ["Gäste ohne Eintrittsgeld", `${t.comp + t.paper_vip + t.paper_own - r.paper.count} (geladene Gäste, Freitickets) + ${t.helpers} Helfer`]].forEach(([a, b]) => k.row(a, b));
+    const drinkPrice = Math.round((parseFloat(String(f.drink || "").replace(",", ".")) || 0) * 100);
+    const drinkCount = r.prices.vip_drinks * t.sold_vip + r.paper.vip_drinks * r.paper.vip;
+    const drinkCents = drinkPrice * drinkCount;
     const base = Math.max(0, g.base_cents - drinkCents);
     k.rule(); k.row("Summe Eintrittsgelder (ohne Umsatzsteuerausweis)", e2(g.base_cents), !drinkCents);
-    if (drinkCents) { k.row(`abzüglich Getränkeanteil VIP (${t.sold_vip} × ${r.prices.vip_drinks} Getränke × ${e2(drinkCents / t.sold_vip / r.prices.vip_drinks)})`, `– ${e2(drinkCents)}`); k.row("Netto-Eintrittsgelder für die Berechnung", e2(base), true); }
+    if (drinkCents) { k.row(`abzüglich Getränkeanteil VIP (${drinkCount} Getränke × ${e2(drinkPrice)})`, `– ${e2(drinkCents)}`); k.row("Netto-Eintrittsgelder für die Berechnung", e2(base), true); }
     k.row("Vergütung 11,89 %", e2(Math.round(base * g.rate)), true);
     k.p("Die Vergütung kann die Mindestvergütung nach Abschnitt II (ggf. zzgl. Zeitzuschlag) nicht unterschreiten.", 8.5);
     if (r.money.refunded_cents) k.p(`Erstattete Eintrittsgelder (nicht enthalten): ${e2(r.money.refunded_cents)}`, 9);
-    k.h("Einzelaufstellung der Eintrittsgelder (PayPal)");
+    k.h("Einzelaufstellung der Eintrittsgelder");
     k.table([["Bestellung", 18], ["Bezahlt am", 60], ["Tickets", 110, "r"], ["Betrag", 192, "r"]],
-      r.orders.filter(o => o.status === "paid").map(o => [o.order_no, dDe(o.paid_at), `${o.quantity}${o.vip_quantity ? ` (${o.vip_quantity} VIP)` : ""}`, e2(o.amount_cents)]));
+      [...r.orders.filter(o => o.status === "paid").map(o => [o.order_no, dDe(o.paid_at), `${o.quantity}${o.vip_quantity ? ` (${o.vip_quantity} VIP)` : ""}`, e2(o.amount_cents)]),
+       ...r.paper_sold.map(x => [`${x.number} (Papier, ${x.sold_via === "paypal" ? "PayPal" : "bar"})`, dDe(x.sold_at), x.category === "free" ? "1 (VIP)" : "1", e2(x.sold_cents)])]);
     k.y += 4; k.p("Ich bestätige die Richtigkeit und Vollständigkeit dieser Rechnungslegung. Als Nachweis liegt der PayPal-Kontoauszug für den Verkaufszeitraum bei.");
     k.sign(f.place ? `${f.place}, ${new Date().toLocaleDateString("de-DE")}` : "");
     k.finish("TAKT30-GEMA-Rechnungslegung.pdf");
@@ -264,7 +274,7 @@
       const r = await call("/admin/report"); const S = sums(r); const pf = moneyPrefs();
       const today = new Date().toISOString().slice(0, 10);
       m.innerHTML = `<h1>Abrechnung</h1>
-        <div class="kpis">${kpi("Tickets online", e2(r.money.ticket_gross_cents), `${r.tickets.sold} verkauft`)}${kpi("Einnahmen gesamt", e2(S.incomeTotal), "Tickets + Belege")}${kpi("Ausgaben gesamt", e2(S.expenseTotal), `inkl. ${e2(r.money.paypal_fee_cents)} PayPal`)}${kpi(S.result >= 0 ? "Überschuss" : "Fehlbetrag", e2(Math.abs(S.result)))}</div>
+        <div class="kpis">${kpi("Tickets", e2(r.money.ticket_gross_cents + (r.money.paper_cents || 0)), `${r.tickets.sold} online${r.paper.count ? ` + ${r.paper.count} Papier` : ""}`)}${kpi("Einnahmen gesamt", e2(S.incomeTotal), "Tickets + Belege")}${kpi("Ausgaben gesamt", e2(S.expenseTotal), `inkl. ${e2(r.money.paypal_fee_cents)} PayPal`)}${kpi(S.result >= 0 ? "Überschuss" : "Fehlbetrag", e2(Math.abs(S.result)))}</div>
         ${r.money.fee_missing ? `<p class="note">Für ${r.money.fee_missing} frühere Zahlung(en) hat PayPal die Gebühr nicht übermittelt – die stehen in deinem PayPal-Auszug.</p>` : ""}
         <h2>Exportieren</h2>
         <div class="acts" style="flex-wrap:wrap"><button id="pdfAll">Abrechnung (PDF) – für den Steuerberater</button><button id="pdfGema">GEMA-Rechnungslegung (PDF)</button><button data-xc="orders">Bestellungen (CSV)</button><button data-xc="ledger">Belege (CSV)</button></div>
@@ -505,6 +515,16 @@
       m.innerHTML = `<h1>Papiertickets</h1>
         <div class="kpis">${kpi("VIP · 2TAKT (Fynn)", p.vip.length, `${p.vip.filter(t => t.checked_in_at).length} eingecheckt`)}${kpi("Freitickets (Kim)", p.own.length, `${p.own.filter(t => t.checked_in_at).length} eingecheckt`)}${kpi("Gesperrt", [...p.vip, ...p.own].filter(t => t.status === "blocked").length)}</div>
         <p class="note">Jedes Papierticket hat einen eigenen QR-Code und gilt genau einmal. Die Codes sind im Scanner hinterlegt, damit kopierte Tickets am Einlass auffallen. Sie zählen nicht zu den ${c.regular_cap} Online-Tickets.</p>
+        <h2>Reserve verkauft</h2>
+        <p class="note">Wenn du ein Papierticket aus der Reserve verkaufst, hier eintragen – es zählt dann in der Abrechnung und im GEMA-PDF als Eintritt. Preise: VIP ${euro(p.prices.free)}, normal ${euro(p.prices.regular)}.</p>
+        <form class="card form" id="sellForm">
+          <label class="field"><span>Ticketnummer</span><input class="input sm mono" name="no" required maxlength="8" placeholder="2T-31 oder FK-21"></label>
+          <label class="field"><span>Bezahlt</span><select class="input sm" name="via"><option value="bar">bar</option><option value="paypal">PayPal an mich</option></select></label>
+          <label class="field"><span>Preis (€)</span><input class="input sm" name="price" inputmode="decimal" placeholder="automatisch"></label>
+          <label class="field"><span>Vorname (optional)</span><input class="input sm" name="fn" maxlength="60"></label>
+          <label class="field"><span>Nachname (optional)</span><input class="input sm" name="ln" maxlength="60"></label>
+          <div class="field"><button class="btn btn-uv btn-small">Als verkauft eintragen</button></div></form>
+        ${(() => { const sold = [...p.vip, ...p.own].filter(t => t.sold_cents != null); return sold.length ? `<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Ticket</th><th>Name</th><th>Preis</th><th></th></tr></thead><tbody>${sold.map(t => `<tr><td class="mono">${esc(t.number)}<span class="sub">${t.category === "free" ? "VIP · 2TAKT" : "Freiticket"}</span></td><td>${esc([t.first_name, t.last_name].filter(Boolean).join(" ")) || '<span class="dim">–</span>'}<span class="sub">${fmtDT(t.sold_at)}</span></td><td class="mono">${euro(t.sold_cents)}<span class="sub">${t.sold_via === "paypal" ? "PayPal" : "bar"}</span></td><td><div class="acts"><button data-unsell="${esc(t.number)}">Rückgängig</button></div></td></tr>`).join("")}</tbody></table></div><p class="note">${sold.length} verkauft · ${euro(sold.reduce((a, t) => a + t.sold_cents, 0))}</p>` : ""; })()}
         <h2>Verlorenes Ticket sperren</h2>
         <form class="card form" id="blockForm"><label class="field"><span>Ticketnummer (z. B. 2T-07 oder FK-03)</span><input class="input sm mono" name="no" required maxlength="8"></label>
           <div class="field acts"><button class="btn btn-small" name="b">Sperren</button><button class="btn btn-small" name="u" type="button" id="unblockBtn">Entsperren</button></div></form>
@@ -523,6 +543,14 @@
       $("#pdfBtn").onclick = () => paperPdf(p, state).catch(e => state("Fehler: " + e.message));
       const block = async unblock => { const no = $("#blockForm").no.value.trim(); if (!no) return; await act(() => call("/admin/paper/block", { method: "POST", body: { number: no, unblock } }), unblock ? "Entsperrt" : "Gesperrt – dieses Ticket wird am Einlass abgelehnt"); VIEWS.paper(m); };
       $("#blockForm").onsubmit = e => { e.preventDefault(); block(false); };
+      $("#sellForm").onsubmit = async e => {
+        e.preventDefault(); const f = e.target;
+        await act(() => call("/admin/paper/sell", { method: "POST", body: { number: f.no.value.trim(), via: f.via.value, price: f.price.value.trim(), first_name: f.fn.value.trim(), last_name: f.ln.value.trim() } }), "Als verkauft eingetragen"); VIEWS.paper(m);
+      };
+      $$("[data-unsell]", m).forEach(b => b.onclick = async () => {
+        if (!confirm(`Verkauf von ${b.dataset.unsell} zurücknehmen?`)) return;
+        await act(() => call("/admin/paper/sell", { method: "POST", body: { number: b.dataset.unsell, undo: true } }), "Zurückgenommen"); VIEWS.paper(m);
+      });
       $("#unblockBtn").onclick = () => block(true);
     },
 
