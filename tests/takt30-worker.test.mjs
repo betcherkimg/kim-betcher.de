@@ -630,3 +630,47 @@ test("Vorbereitung: bestehende Liste aus v12 bekommt die Ergänzungen genau einm
   list = (await t.admin("GET", "/admin/todos")).data;
   assert.equal(list.length, n);
 });
+
+test("VIP online: Preise 30/55/50 €, max. 20 aus den 60, VIP-Mail, Scanner zeigt Art + Freigetränke", async () => {
+  const t = await setup({ RESEND_API_KEY: "re_x", MAIL_FROM: "tickets@kim-betcher.de" }); await openTestSale(t);
+  const d = (await t.admin("GET", "/admin/dashboard")).data;
+  const code = d.group_link.url.split("?e=")[1];
+  const vip = (f, l) => ({ ...guest(f, l), tier: "vip" });
+  const buyAs = (email, guests, ip) => t.call("POST", "/public/checkout", { invite: code, guests, email, accept: true }, { ip });
+  const pay = async r => { assert.equal(r.status, 201, JSON.stringify(r.data)); await t.call("POST", "/public/test-pay", { access_key: r.data.access_key }); return r; };
+  let ev = (await t.call("GET", "/public/event")).data;
+  assert.equal(ev.sale.vip.available, 20); assert.equal(ev.sale.prices.vip_one, 3000); assert.equal(ev.sale.vip.drinks, 3);
+  const a = await pay(await buyAs("a@x.org", [vip("Vera", "Ip")], "1.0.0.1"));
+  assert.equal(a.data.amount_cents, 3000);
+  const b = await pay(await buyAs("b@x.org", [vip("V", "1"), vip("V", "2")], "1.0.0.2"));
+  assert.equal(b.data.amount_cents, 5500);
+  const c = await pay(await buyAs("c@x.org", [guest("R", "1"), vip("V", "3")], "1.0.0.3"));
+  assert.equal(c.data.amount_cents, 5000);
+  assert.equal((await buyAs("e@x.org", [guest("R", "2"), guest("R", "3")], "1.0.0.4")).data.amount_cents, 3500);
+  const mail = t.mails.find(m => m.to[0] === "b@x.org");
+  assert.match(mail.subject, /VIP-Ticket/); assert.match(mail.html, /3 Getränkemarken/); assert.match(mail.html, /lila VIP-Bändchen/);
+  assert.match(t.mails.find(m => m.to[0] === "c@x.org").subject, /inkl\. VIP/);
+  assert.doesNotMatch(t.mails.find(m => m.to[0] === "a@x.org").html, /undefined/);
+  // VIP bis 20 voll machen: bisher 4 VIP
+  for (let i = 0; i < 8; i++) await pay(await buyAs(`v${i}@x.org`, [vip("V", `a${i}`), vip("V", `b${i}`)], `2.0.0.${i}`));
+  ev = (await t.call("GET", "/public/event")).data;
+  assert.equal(ev.sale.vip.available, 0);
+  assert.equal((await buyAs("z@x.org", [vip("Z", "Z")], "3.0.0.1")).data.code, "VIP_SOLD_OUT");
+  assert.equal((await buyAs("y@x.org", [guest("Y", "Y")], "3.0.0.2")).status, 201);   // normale gehen weiter
+  // Scanner
+  const key = (await t.admin("POST", "/admin/scanners", { name: "Tür" })).data.url.split("#k=")[1];
+  const scan = async sql => (await t.call("POST", "/scan/check", { code: t.db.prepare(sql).get().code }, { scanner: key })).data;
+  let s1 = await scan(`SELECT code FROM tickets WHERE tier = 'vip' LIMIT 1`);
+  assert.equal(s1.result, "green"); assert.equal(s1.kind, "VIP online"); assert.equal(s1.drinks, 3); assert.equal(s1.band, "vip");
+  s1 = await scan(`SELECT code FROM tickets WHERE tier = 'regular' AND order_id IS NOT NULL LIMIT 1`);
+  assert.equal(s1.kind, "Ticket"); assert.equal(s1.drinks, 0); assert.equal(s1.band, "regular");
+  s1 = await scan(`SELECT code FROM tickets WHERE paper = 1 AND category = 'free' LIMIT 1`);
+  assert.equal(s1.kind, "VIP · 2TAKT"); assert.equal(s1.drinks, 5); assert.equal(s1.band, "free");
+  s1 = await scan(`SELECT code FROM tickets WHERE paper = 1 AND category = 'regular' LIMIT 1`);
+  assert.equal(s1.kind, "Freiticket"); assert.equal(s1.drinks, 0);
+  const bands = JSON.parse((await t.admin("GET", "/admin/settings")).data.bands);
+  assert.equal(bands.vip.label, "Lila");
+  // Bericht
+  const r = (await t.admin("GET", "/admin/report")).data;
+  assert.equal(r.gema.highest_price_cents, 3000);
+});

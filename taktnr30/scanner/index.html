@@ -32,6 +32,8 @@
   .result.green { background: #0e7a4a; color: #fff; } .result.red { background: #b3172a; color: #fff; } .result.yellow { background: #ffc23d; color: #1a1300; }
   .result .big { font-family: var(--mono); font-size: clamp(40px, 13vw, 72px); letter-spacing: .06em; line-height: 1; }
   .result .name { font-size: clamp(30px, 9vw, 48px); margin-top: 22px; line-height: 1.15; }
+  .result .kind { display: inline-block; margin-top: 16px; font-family: var(--mono); font-size: 20px; letter-spacing: .14em; text-transform: uppercase; padding: 6px 14px; border: 2px solid currentColor; border-radius: 6px; }
+  .result .drinks { margin-top: 16px; font-size: clamp(24px, 7vw, 34px); font-weight: 600; background: rgba(0,0,0,.35); padding: 10px 18px; border-radius: 10px; display: inline-block; }
   .result .reason { font-size: 21px; margin-top: 14px; }
   .result .meta { font-family: var(--mono); font-size: 14px; margin-top: 10px; opacity: .85; }
   .result .btn { margin-top: 34px; border-color: currentColor; color: inherit; min-width: 220px; }
@@ -72,7 +74,7 @@
 <div id="result" hidden></div>
 <canvas id="canvas" hidden></canvas>
 
-<script src="/taktnr30/assets/takt.js?v=1"></script>
+<script src="/taktnr30/assets/takt.js?v=2"></script>
 <script src="/taktnr30/assets/vendor/jsQR.js"></script>
 <script>
 (function () {
@@ -97,11 +99,13 @@
     const box = $("#result");
     const color = r.result;
     const title = color === "green" ? "EINLASS" : color === "red" ? "STOPP" : "PRÜFUNG NICHT MÖGLICH";
-    const sub = color === "green" ? `${r.number} · ${r.category ? categoryLabel(r) : ""}` : color === "red" ? (r.number ? `${r.number}${r.checked_in_at ? ` · eingelöst ${timeDe(r.checked_in_at)}${r.checked_in_by ? " · " + r.checked_in_by : ""}` : ""}` : "") : "";
+    const sub = color === "green" ? `${r.number}` : color === "red" ? (r.number ? `${r.number}${r.checked_in_at ? ` · eingelöst ${timeDe(r.checked_in_at)}${r.checked_in_by ? " · " + r.checked_in_by : ""}` : ""}` : "") : "";
     box.className = `result ${color}`;
     box.innerHTML = `<div class="big">${title}</div>
       ${r.name ? `<div class="name">${esc(r.name)}</div>` : ""}
-      ${color !== "green" ? `<div class="reason">${esc(r.reason || "")}</div>` : (() => { const b = bands[r.category] || { label: "", color: "#ffffff" }; return `<div class="band" style="margin-top:22px;display:inline-flex;align-items:center;gap:14px;background:rgba(0,0,0,.28);padding:12px 20px;border-radius:99px"><span style="width:34px;height:34px;border-radius:50%;background:${esc(b.color)};border:2px solid #fff"></span><span style="font-size:24px">Bändchen: <strong>${esc(b.label)}</strong></span></div>${b.note ? `<div class="meta">${esc(b.note)}</div>` : ""}`; })()}
+      ${color === "green" && r.kind ? `<div class="kind">${esc(r.kind)}</div>` : ""}
+      ${color === "green" && r.drinks ? `<div class="drinks">${r.drinks} Getränkemarken ausgeben</div>` : ""}
+      ${color !== "green" ? `<div class="reason">${esc(r.reason || "")}</div>` : (() => { const b = bands[r.band || r.category] || { label: "", color: "#ffffff" }; return `<div class="band" style="margin-top:22px;display:inline-flex;align-items:center;gap:14px;background:rgba(0,0,0,.28);padding:12px 20px;border-radius:99px"><span style="width:34px;height:34px;border-radius:50%;background:${esc(b.color)};border:2px solid #fff"></span><span style="font-size:24px">Bändchen: <strong>${esc(b.label)}</strong></span></div>${b.note ? `<div class="meta">${esc(b.note)}</div>` : ""}`; })()}
       ${sub ? `<div class="meta">${esc(sub)}</div>` : ""}
       ${color === "yellow" ? `<div class="reason" style="font-weight:400">NICHT einlassen – erneut scannen</div>` : ""}
       <button class="btn" id="next">Weiter</button>`;
@@ -180,7 +184,7 @@
         ${t.status !== "valid" ? `<span class="no">${t.status === "blocked" ? "gesperrt" : "storniert"}</span>` : t.checked_in_at ? `<span class="no">drin seit ${timeDe(t.checked_in_at)}</span>` : `<button class="btn btn-small btn-uv" data-id="${t.id}" data-n="${esc(guestName(t))}">Einchecken</button>`}</div>`).join("") || `<p class="note">Kein Treffer.</p>`;
       $$("#hits [data-id]").forEach(b => b.onclick = async () => {
         if (!confirm(`${b.dataset.n} ohne QR-Code einchecken? Nur nach Prüfung des Namens.`)) return;
-        try { await call(`/scan/checkin/${b.dataset.id}`, { method: "POST" }); showResult({ result: "green", name: b.dataset.n, number: "manuell" }); search(); }
+        try { const res = await call(`/scan/checkin/${b.dataset.id}`, { method: "POST" }); showResult({ ...res, result: "green", name: b.dataset.n, number: "manuell" }); search(); }
         catch (e) { showResult({ result: e.status === 409 ? "red" : "yellow", name: b.dataset.n, reason: e.message }); }
       });
     } catch (e) { $("#hits").innerHTML = `<p class="err">${esc(e.message)}</p>`; }

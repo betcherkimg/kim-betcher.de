@@ -14,6 +14,21 @@ const HELPER_CAP_MAX = 50;       // Obergrenze für das einstellbare Helfer-Kont
 const helperCap = s => Math.min(Math.max(Number(s?.helper_cap) || 0, 0), HELPER_CAP_MAX);
 const MAX_PER_INVITE = 2;        // nie mehr als 2 Tickets je Einladung
 const PRICE_CENTS = { 1: 2000, 2: 3500 };   // 1 Ticket 20 €, 2 Tickets 35 €
+const VIP_CAP = 20;              // davon höchstens 20 als VIP (zählen in die 60)
+const VIP_DRINKS = 3;            // Freigetränke für VIP online
+const PAPER_VIP_DRINKS = 5;      // Freigetränke für VIP-Papiertickets (2TAKT)
+// Was der Scanner zeigt: Ticketart, Bändchen-Schlüssel, Freigetränke
+function ticketKind(t) {
+  if (t.category === "helper") return { kind: "Helfer", band: "helper", drinks: 0 };
+  if (t.category === "free") return { kind: "VIP · 2TAKT", band: "free", drinks: PAPER_VIP_DRINKS };
+  if (t.tier === "vip") return { kind: "VIP online", band: "vip", drinks: VIP_DRINKS };
+  if (t.paper) return { kind: "Freiticket", band: "regular", drinks: 0 };
+  if (!t.order_id) return { kind: "Freiticket", band: "regular", drinks: 0 };
+  return { kind: "Ticket", band: "regular", drinks: 0 };
+}
+// Preis nach Zusammensetzung: r = Regular, v = VIP (gemischt ohne Rabatt)
+const PRICE_BY_MIX = { r: 2000, v: 3000, rr: 3500, rv: 5000, vv: 5500 };
+const priceOf = tiers => PRICE_BY_MIX[tiers.map(x => x === "vip" ? "v" : "r").sort().join("")];
 const RESERVATION_MS = 15 * 60 * 1000;      // Bezahlfenster
 const CAPTURE_HOLD_MS = 10 * 60 * 1000;     // Halten während der Zahlungsbestätigung
 const CLOCK_TOLERANCE_S = 60;
@@ -40,13 +55,13 @@ const DEFAULT_SETTINGS = {
   show_countdown: "1",
   helper_signup: "1",
   helper_cap: "13",
-  bands: JSON.stringify({ regular: { label: "Weiß", color: "#ffffff" }, free: { label: "Lila", color: "#9d4dff", note: "VIP · Getränke laut Absprache" }, helper: { label: "Neongrün", color: "#39ff14" } }),
+  bands: JSON.stringify({ regular: { label: "Weiß", color: "#ffffff" }, free: { label: "Lila", color: "#9d4dff", note: "" }, vip: { label: "Lila", color: "#9d4dff", note: "" }, helper: { label: "Neongrün", color: "#39ff14" } }),
   helper_jobs: JSON.stringify([{ name: "Bar", slots: 8 }, { name: "Ticketscan", slots: 5 }])
 };
 const SETTING_LIMITS = {
   event_date: 10, doors_time: 5, start_time: 5, place_public: 120, venue_name: 120, venue_address: 160,
   intro_title: 120, intro_text: 600, lineup: 4000, lineup_note: 80, contact_name: 80, contact_phone: 40,
-  contact_email: 120, sale_mode: 6, show_countdown: 1, helper_signup: 1, helper_cap: 2, helper_jobs: 2000, bands: 600
+  contact_email: 120, sale_mode: 6, show_countdown: 1, helper_signup: 1, helper_cap: 2, helper_jobs: 2000, bands: 900
 };
 
 /* ================= Antworten ================= */
@@ -165,13 +180,14 @@ async function deleteLedger(env, who, id) {
 // Alles, was für Steuerberater und GEMA-Rechnungslegung gebraucht wird – nur echte (keine Test-)Zahlungen.
 async function report(env) {
   const s = await getSettings(env);
-  const orders = await all(env, `SELECT o.order_no, o.status, o.quantity, o.amount_cents, o.paid_at, o.buyer_first, o.buyer_last, o.email,
+  const orders = await all(env, `SELECT o.order_no, o.status, o.quantity, o.vip_quantity, o.amount_cents, o.paid_at, o.buyer_first, o.buyer_last, o.email,
       (SELECT SUM(fee_cents) FROM payments p WHERE p.order_id = o.id AND p.kind = 'capture') AS fee_cents,
       (SELECT COUNT(*) FROM payments p WHERE p.order_id = o.id AND p.kind = 'capture' AND p.fee_cents IS NULL) AS fee_missing,
       (SELECT COALESCE(SUM(amount_cents), 0) FROM payments p WHERE p.order_id = o.id AND p.kind = 'refund') AS refunded_cents
     FROM orders o WHERE o.is_test = 0 AND o.provider = 'paypal' AND o.status IN ('paid','refund_required','refunded') ORDER BY o.paid_at, o.id`);
   const t = await first(env, `SELECT
       (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 0 AND order_id IS NOT NULL AND is_test = 0 AND status != 'cancelled') AS sold,
+      (SELECT COUNT(*) FROM tickets WHERE tier = 'vip' AND paper = 0 AND order_id IS NOT NULL AND is_test = 0 AND status != 'cancelled') AS sold_vip,
       (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 0 AND order_id IS NULL AND status != 'cancelled') AS comp,
       (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND paper = 1 AND status != 'cancelled') AS paper_vip,
       (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 1 AND status != 'cancelled') AS paper_own,
@@ -184,10 +200,11 @@ async function report(env) {
   return json({
     generated_at: iso(),
     event: { name: "TAKT Nr. 30", date: s.event_date, doors: s.doors_time, start: s.start_time, venue: s.venue_name, address: s.venue_address, organizer: s.contact_name, phone: s.contact_phone, email: s.contact_email },
-    prices: { one: PRICE_CENTS[1], two: PRICE_CENTS[2] },
-    tickets: { ...t, orders_paid: paid.length, singles: paid.filter(o => o.quantity === 1).length, pairs: paid.filter(o => o.quantity === 2).length },
+    prices: { one: PRICE_CENTS[1], two: PRICE_CENTS[2], vip_one: PRICE_BY_MIX.v, vip_two: PRICE_BY_MIX.vv, mixed: PRICE_BY_MIX.rv, vip_drinks: VIP_DRINKS },
+    tickets: { ...t, orders_paid: paid.length, singles: paid.filter(o => o.quantity === 1).length, pairs: paid.filter(o => o.quantity === 2).length,
+      mix: Object.fromEntries(Object.keys(PRICE_BY_MIX).map(k => [k, paid.filter(o => (o.quantity === 1 ? (o.vip_quantity ? "v" : "r") : ["rr", "rv", "vv"][o.vip_quantity || 0]) === k).length])) },
     money: { ticket_gross_cents: gross, paypal_fee_cents: fees, fee_missing: orders.reduce((a, o) => a + (o.fee_missing || 0), 0), refunded_cents: orders.reduce((a, o) => a + (o.refunded_cents || 0), 0) },
-    gema: { rate: 0.1189, base_cents: gross, fee_cents: Math.round(gross * 0.1189), highest_price_cents: PRICE_CENTS[1] },
+    gema: { rate: 0.1189, base_cents: gross, fee_cents: Math.round(gross * 0.1189), highest_price_cents: PRICE_BY_MIX.v },
     orders, ledger, categories: LEDGER_CATS
   });
 }
@@ -312,8 +329,20 @@ async function ensureSchema(env) {
     `ALTER TABLE orders ADD COLUMN holder TEXT`,
     `ALTER TABLE reservations ADD COLUMN holder TEXT`,
     `ALTER TABLE tickets ADD COLUMN holder TEXT`,
-    `ALTER TABLE payments ADD COLUMN fee_cents INTEGER`
+    `ALTER TABLE payments ADD COLUMN fee_cents INTEGER`,
+    `ALTER TABLE tickets ADD COLUMN tier TEXT NOT NULL DEFAULT 'regular'`,
+    `ALTER TABLE guests ADD COLUMN tier TEXT NOT NULL DEFAULT 'regular'`,
+    `ALTER TABLE orders ADD COLUMN vip_quantity INTEGER NOT NULL DEFAULT 0`,
+    `ALTER TABLE reservations ADD COLUMN vip_quantity INTEGER NOT NULL DEFAULT 0`
   ]) await run(env, sql).catch(() => {});
+  // Bändchen: VIP online ergänzen, 2TAKT-Hinweis auf 3 Getränkemarken (nur wenn noch der alte Standard drinsteht)
+  const bandRow = await first(env, `SELECT value FROM event_settings WHERE key = 'bands'`);
+  try {
+    const b = JSON.parse(bandRow?.value || "{}"); let dirty = false;
+    if (!b.vip) { b.vip = { label: (b.free && b.free.label) || "Lila", color: (b.free && b.free.color) || "#9d4dff", note: "" }; dirty = true; }
+    if (b.free && b.free.note === "VIP · Getränke laut Absprache") { b.free.note = ""; dirty = true; }  // Freigetränke zeigt der Scanner jetzt selbst
+    if (dirty) await run(env, `UPDATE event_settings SET value = ?, updated_at = ? WHERE key = 'bands'`, JSON.stringify(b), iso());
+  } catch { /* ungültig gespeichert – bleibt, Admin kann neu speichern */ }
   // „holder“ = wer zählt fürs 2er-Limit: persönliche Einladung → i<ID>, gemeinsamer Link → i<ID>:<E-Mail>
   await env.DB.batch([
     `UPDATE orders SET holder = 'i' || invitation_id WHERE holder IS NULL`,
@@ -343,6 +372,11 @@ const SQL_REGULAR_TAKEN = (alias = "") => `(
   (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 0 AND status != 'cancelled')
   + (SELECT COALESCE(SUM(quantity), 0) FROM reservations r${alias} WHERE r${alias}.state = 'active' AND r${alias}.expires_at > ?))`;
 
+// VIP-Kontingent (Teil der 60): ausgestellte VIP-Tickets + laufende VIP-Reservierungen
+const SQL_VIP_TAKEN = `(
+  (SELECT COUNT(*) FROM tickets WHERE tier = 'vip' AND paper = 0 AND status != 'cancelled')
+  + (SELECT COALESCE(SUM(vip_quantity), 0) FROM reservations WHERE state = 'active' AND expires_at > ?))`;
+
 // Belegte Plätze eines „holders“ (Tickets + laufende Reservierungen) und sein Limit
 const SQL_USED = `((SELECT COUNT(*) FROM tickets WHERE holder = ? AND status != 'cancelled') + (SELECT COALESCE(SUM(quantity), 0) FROM reservations WHERE holder = ? AND state = 'active' AND expires_at > ?))`;
 const SQL_LIMIT = `(SELECT CASE WHEN status = 'active' THEN CASE WHEN kind = 'group' THEN ${MAX_PER_INVITE} ELSE max_tickets END END FROM invitations WHERE id = ?)`;
@@ -362,6 +396,8 @@ async function counts(env, settings) {
   const t = nowMs();
   const row = await first(env, `SELECT
       (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 0 AND status != 'cancelled') AS regular_issued,
+      (SELECT COUNT(*) FROM tickets WHERE tier = 'vip' AND paper = 0 AND status != 'cancelled') AS vip_issued,
+      (SELECT COALESCE(SUM(vip_quantity), 0) FROM reservations WHERE state = 'active' AND expires_at > ?) AS vip_reserved,
       (SELECT COALESCE(SUM(quantity), 0) FROM reservations WHERE state = 'active' AND expires_at > ?) AS reserved,
       (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND status != 'cancelled') AS free_issued,
       (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND status != 'cancelled' AND first_name IS NOT NULL) AS free_assigned,
@@ -378,9 +414,10 @@ async function counts(env, settings) {
       (SELECT COALESCE(SUM(amount_cents), 0) FROM orders WHERE status = 'paid' AND is_test = 1) AS test_revenue_cents,
       (SELECT COUNT(*) FROM tickets WHERE is_test = 1) AS test_tickets,
       (SELECT COUNT(*) FROM orders WHERE status = 'refund_required') AS refund_required,
-      (SELECT COUNT(*) FROM orders WHERE status = 'refunded') AS refunded`, t);
+      (SELECT COUNT(*) FROM orders WHERE status = 'refunded') AS refunded`, t, t);
   const available = Math.max(0, REGULAR_CAP - row.regular_issued - row.reserved);
-  return { ...row, regular_cap: REGULAR_CAP, free_cap: FREE_CAP, helper_cap: cap, helper_available: Math.max(0, cap - row.helper_issued), available };
+  const vip_available = Math.min(available, Math.max(0, VIP_CAP - row.vip_issued - row.vip_reserved));
+  return { ...row, regular_cap: REGULAR_CAP, free_cap: FREE_CAP, helper_cap: cap, helper_available: Math.max(0, cap - row.helper_issued), available, vip_cap: VIP_CAP, vip_available };
 }
 
 /* ================= Rate Limiting & Turnstile ================= */
@@ -502,7 +539,8 @@ function publicEvent(s, c, env, jobCounts = {}) {
     intro_title: s.intro_title, intro_text: s.intro_text, lineup, lineup_note: s.lineup_note,
     contact: { name: s.contact_name, phone: s.contact_phone, email: s.contact_email },
     show_countdown: s.show_countdown === "1",
-    sale: { mode, sandbox: mode === "live" && env.PAYPAL_ENV !== "live", open: mode !== "closed", sold_out: c.available <= 0, available: c.available, cap: REGULAR_CAP, sold: c.regular_issued, prices: { one: PRICE_CENTS[1], two: PRICE_CENTS[2] } },
+    sale: { mode, sandbox: mode === "live" && env.PAYPAL_ENV !== "live", open: mode !== "closed", sold_out: c.available <= 0, available: c.available, cap: REGULAR_CAP, sold: c.regular_issued, prices: { one: PRICE_CENTS[1], two: PRICE_CENTS[2], vip_one: PRICE_BY_MIX.v, vip_two: PRICE_BY_MIX.vv, mixed: PRICE_BY_MIX.rv },
+      vip: { cap: VIP_CAP, available: c.vip_available ?? VIP_CAP, sold: c.vip_issued ?? 0, drinks: VIP_DRINKS } },
     helpers: {
       open: s.helper_signup === "1" && (c.helper_available ?? 1) > 0,
       available: c.helper_available,
@@ -604,6 +642,8 @@ async function checkout(env, request, ctx) {
   const quantity = guests.length;
   if (quantity < 1 || quantity > MAX_PER_INVITE) return fail("Pro Person sind 1 oder 2 Tickets möglich.");
   for (const g of guests) if (!nameOk(g?.first_name) || !nameOk(g?.last_name)) return fail("Bitte für jedes Ticket Vor- und Nachnamen angeben.");
+  const tiers = guests.map(g => g?.tier === "vip" ? "vip" : "regular");
+  const vipQty = tiers.filter(x => x === "vip").length;
   if (!emailOk(body.email)) return fail("Bitte eine gültige E-Mail-Adresse angeben.");
   const email = String(body.email).trim().toLowerCase();
 
@@ -622,35 +662,36 @@ async function checkout(env, request, ctx) {
   const t = nowMs();
   const orderNo = `T30-${new Date(t).toISOString().slice(2, 10).replace(/-/g, "")}-${randomCode(5)}`;
   const accessKey = randomCode(26);
-  const amount = PRICE_CENTS[quantity];
+  const amount = priceOf(tiers);
   const provider = mode === "test" ? "test" : "paypal";
   const isTest = provider === "test" || env.PAYPAL_ENV !== "live";   // Sandbox = Spielgeld = Testticket
 
-  const ins = await run(env, `INSERT INTO orders (order_no, access_key, invitation_id, holder, email, buyer_first, buyer_last, quantity, amount_cents, provider, is_test, status, consent_at, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)`,
-    orderNo, accessKey, inv.id, inv.holder, email, cleanName(guests[0].first_name), cleanName(guests[0].last_name), quantity, amount, provider, isTest ? 1 : 0, iso(t), iso(t), iso(t));
+  const ins = await run(env, `INSERT INTO orders (order_no, access_key, invitation_id, holder, email, buyer_first, buyer_last, quantity, vip_quantity, amount_cents, provider, is_test, status, consent_at, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)`,
+    orderNo, accessKey, inv.id, inv.holder, email, cleanName(guests[0].first_name), cleanName(guests[0].last_name), quantity, vipQty, amount, provider, isTest ? 1 : 0, iso(t), iso(t), iso(t));
   const orderId = ins.meta.last_row_id;
-  await env.DB.batch(guests.map((g, i) => env.DB.prepare(`INSERT INTO guests (order_id, position, first_name, last_name) VALUES (?, ?, ?, ?)`)
-    .bind(orderId, i + 1, cleanName(g.first_name), cleanName(g.last_name))));
+  await env.DB.batch(guests.map((g, i) => env.DB.prepare(`INSERT INTO guests (order_id, position, first_name, last_name, tier) VALUES (?, ?, ?, ?, ?)`)
+    .bind(orderId, i + 1, cleanName(g.first_name), cleanName(g.last_name), tiers[i])));
 
-  // Atomar: nur reservieren, wenn Online-Kontingent UND 2er-Limit des Käufers reichen.
-  const res = await run(env, `INSERT INTO reservations (order_id, invitation_id, holder, quantity, expires_at, state, created_at)
-    SELECT ?, ?, ?, ?, ?, 'active', ?
+  // Atomar: nur reservieren, wenn Online-Kontingent, VIP-Kontingent UND 2er-Limit des Käufers reichen.
+  const res = await run(env, `INSERT INTO reservations (order_id, invitation_id, holder, quantity, vip_quantity, expires_at, state, created_at)
+    SELECT ?, ?, ?, ?, ?, ?, 'active', ?
     WHERE ${SQL_REGULAR_TAKEN()} + ? <= ?
+      AND ${SQL_VIP_TAKEN} + ? <= ?
       AND ${SQL_USED} + ? <= ${SQL_LIMIT}`,
-    orderId, inv.id, inv.holder, quantity, t + RESERVATION_MS, iso(t), t, quantity, REGULAR_CAP, inv.holder, inv.holder, t, quantity, inv.id);
+    orderId, inv.id, inv.holder, quantity, vipQty, t + RESERVATION_MS, iso(t), t, quantity, REGULAR_CAP, t, vipQty, VIP_CAP, inv.holder, inv.holder, t, quantity, inv.id);
   if (!changes(res)) {
     await run(env, `UPDATE orders SET status = 'failed', updated_at = ? WHERE id = ?`, iso(), orderId);
     const c = await counts(env);
-    return c.available < quantity
-      ? fail(c.available ? `Es ist nur noch ${c.available} Ticket verfügbar.` : "Ausverkauft – es sind keine Tickets mehr verfügbar.", 409, "SOLD_OUT")
-      : fail("Für dich ist gerade schon ein Kauf in Bearbeitung oder es sind bereits 2 Tickets vergeben.", 409, "INVITE_EXHAUSTED");
+    if (c.available < quantity) return fail(c.available ? `Es ist nur noch ${c.available} Ticket verfügbar.` : "Ausverkauft – es sind keine Tickets mehr verfügbar.", 409, "SOLD_OUT");
+    if (c.vip_available < vipQty) return fail(c.vip_available ? `Es ist nur noch ${c.vip_available} VIP-Ticket verfügbar.` : "VIP ist ausverkauft – normale Tickets gibt es noch.", 409, "VIP_SOLD_OUT");
+    return fail("Für dich ist gerade schon ein Kauf in Bearbeitung oder es sind bereits 2 Tickets vergeben.", 409, "INVITE_EXHAUSTED");
   }
 
-  const out = { order_no: orderNo, access_key: accessKey, amount_cents: amount, quantity, provider, expires_at: t + RESERVATION_MS };
+  const out = { order_no: orderNo, access_key: accessKey, amount_cents: amount, quantity, vip_quantity: vipQty, provider, expires_at: t + RESERVATION_MS };
   if (provider === "paypal") {
     try {
-      const pp = await paypalCreateOrder(env, { orderNo, amount, quantity });
+      const pp = await paypalCreateOrder(env, { orderNo, amount, quantity, vipQty });
       await run(env, `UPDATE orders SET paypal_order_id = ?, updated_at = ? WHERE id = ?`, pp.id, iso(), orderId);
       out.paypal_order_id = pp.id;
     } catch (e) {
@@ -714,9 +755,12 @@ async function settleOrder(env, order, payment, ctx) {
           AND ((SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 0 AND status != 'cancelled')
              + (SELECT COALESCE(SUM(quantity), 0) FROM reservations WHERE state = 'active' AND expires_at > ? AND order_id != ?)
              + quantity) <= ?
+          AND ((SELECT COUNT(*) FROM tickets WHERE tier = 'vip' AND paper = 0 AND status != 'cancelled')
+             + (SELECT COALESCE(SUM(vip_quantity), 0) FROM reservations WHERE state = 'active' AND expires_at > ? AND order_id != ?)
+             + vip_quantity) <= ?
           AND ((SELECT COUNT(*) FROM tickets tk WHERE tk.holder = reservations.holder AND tk.status != 'cancelled')
              + (SELECT COALESCE(SUM(quantity), 0) FROM reservations r2 WHERE r2.holder = reservations.holder AND r2.state = 'active' AND r2.expires_at > ? AND r2.order_id != reservations.order_id)
-             + quantity) <= (SELECT CASE WHEN kind = 'group' THEN ${MAX_PER_INVITE} ELSE max_tickets END FROM invitations WHERE id = reservations.invitation_id)`, t + CAPTURE_HOLD_MS, order.id, t, order.id, REGULAR_CAP, t));
+             + quantity) <= (SELECT CASE WHEN kind = 'group' THEN ${MAX_PER_INVITE} ELSE max_tickets END FROM invitations WHERE id = reservations.invitation_id)`, t + CAPTURE_HOLD_MS, order.id, t, order.id, REGULAR_CAP, t, order.id, VIP_CAP, t));
   }
   if (!held) {
     await env.DB.batch([
@@ -731,11 +775,11 @@ async function settleOrder(env, order, payment, ctx) {
     return { ok: false, status: "refund_required" };
   }
 
-  const guests = await all(env, `SELECT position, first_name, last_name FROM guests WHERE order_id = ? ORDER BY position`, order.id);
-  const ins = guests.map(g => env.DB.prepare(`INSERT INTO tickets (number, category, code, view_key, order_id, holder, guest_position, first_name, last_name, email, status, is_test, created_at, updated_at)
-      SELECT printf('T30-%03d', COALESCE((SELECT MAX(CAST(substr(number, 5) AS INTEGER)) FROM tickets WHERE category = 'regular' AND number LIKE 'T30-%'), 0) + 1), 'regular', ?, ?, ?, ?, ?, ?, ?, ?, 'valid', ?, ?, ?
+  const guests = await all(env, `SELECT position, first_name, last_name, tier FROM guests WHERE order_id = ? ORDER BY position`, order.id);
+  const ins = guests.map(g => env.DB.prepare(`INSERT INTO tickets (number, category, tier, code, view_key, order_id, holder, guest_position, first_name, last_name, email, status, is_test, created_at, updated_at)
+      SELECT printf('T30-%03d', COALESCE((SELECT MAX(CAST(substr(number, 5) AS INTEGER)) FROM tickets WHERE category = 'regular' AND number LIKE 'T30-%'), 0) + 1), 'regular', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'valid', ?, ?, ?
       WHERE NOT EXISTS (SELECT 1 FROM tickets WHERE order_id = ? AND guest_position = ?)`)
-    .bind(randomCode(26), randomCode(26), order.id, order.holder, g.position, g.first_name, g.last_name, order.email, order.is_test, iso(), iso(), order.id, g.position));
+    .bind(g.tier === "vip" ? "vip" : "regular", randomCode(26), randomCode(26), order.id, order.holder, g.position, g.first_name, g.last_name, order.email, order.is_test, iso(), iso(), order.id, g.position));
   await env.DB.batch([
     ...ins,
     env.DB.prepare(`UPDATE reservations SET state = 'converted' WHERE order_id = ?`).bind(order.id),
@@ -750,12 +794,12 @@ async function settleOrder(env, order, payment, ctx) {
 async function orderView(env, order) {
   const s = await getSettings(env);
   const tickets = order.status === "paid"
-    ? await all(env, `SELECT number, category, first_name, last_name, view_key, code, status, checked_in_at, is_test FROM tickets WHERE order_id = ? ORDER BY guest_position`, order.id)
+    ? await all(env, `SELECT number, category, tier, first_name, last_name, view_key, code, status, checked_in_at, is_test FROM tickets WHERE order_id = ? ORDER BY guest_position`, order.id)
     : [];
   return {
-    order_no: order.order_no, status: order.status, quantity: order.quantity, amount_cents: order.amount_cents,
+    order_no: order.order_no, status: order.status, quantity: order.quantity, vip_quantity: order.vip_quantity || 0, vip_drinks: VIP_DRINKS, amount_cents: order.amount_cents,
     email: order.email, is_test: !!order.is_test, mail_status: order.mail_status,
-    tickets,
+    tickets: tickets.map(t => ({ ...t, drinks: t.tier === "vip" ? VIP_DRINKS : 0 })),
     event: order.status === "paid" ? eventForTicket(s) : null
   };
 }
@@ -771,9 +815,10 @@ async function getOrder(env, request, url) {
 async function getTicket(env, request, url) {
   if (await limited(env, `tk:${await clientKey(request, env)}`, 150, 60_000)) return fail("Zu viele Anfragen.", 429);
   const k = cleanCode(url.searchParams.get("k"), 40);
-  const t = await first(env, `SELECT number, category, helper_job, first_name, last_name, code, status, checked_in_at, is_test FROM tickets WHERE view_key = ?`, k);
+  const t = await first(env, `SELECT number, category, tier, helper_job, first_name, last_name, code, status, checked_in_at, is_test, paper, order_id FROM tickets WHERE view_key = ?`, k);
   if (!t) return fail("Dieses Ticket gibt es nicht (mehr). Wurde es ersetzt, nutze bitte den neuen Link.", 404);
-  return json({ ...t, event: eventForTicket(await getSettings(env)) });
+  const { paper, order_id, ...pub } = t;
+  return json({ ...pub, drinks: ticketKind(t).drinks, event: eventForTicket(await getSettings(env)) });
 }
 
 async function resendOrder(env, request) {
@@ -790,13 +835,20 @@ async function resendOrder(env, request) {
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const dateDe = d => { const [y, m, dd] = String(d).split("-"); return `${dd}.${m}.${y}`; };
 
-function mailHtml(s, intro, rows) {
+function vipBlock(vip, total) {
+  const who = total > 1 && vip.length < total ? ` für ${vip.map(v => esc(v.name)).join(" und ")}` : "";
+  return `<div style="border:1px solid #9d4dff;border-radius:6px;padding:16px 18px;margin:0 0 22px;background:#16101f">
+<p style="letter-spacing:3px;font-size:12px;color:#b98cff;margin:0 0 8px">VIP${who.toUpperCase()}</p>
+<p style="font-size:15px;line-height:1.6;color:#f2f2f4;margin:0">Am Einlass bekommst du dein <strong>lila VIP-Bändchen</strong> und <strong>${VIP_DRINKS} Getränkemarken</strong> – einzulösen an jeder Bar für ein Getränk deiner Wahl.</p></div>`;
+}
+
+function mailHtml(s, intro, rows, extra = "") {
   return `<!doctype html><html><body style="margin:0;background:#0a0a0c;color:#f2f2f4;font-family:Helvetica,Arial,sans-serif">
 <div style="max-width:520px;margin:0 auto;padding:32px 24px">
 <p style="letter-spacing:4px;font-size:13px;color:#b98cff;margin:0 0 6px">TAKT NR. 30</p>
 <h1 style="font-weight:300;font-size:26px;margin:0 0 18px">${esc(intro)}</h1>
 <p style="font-size:15px;line-height:1.6;color:#c9c9d1;margin:0 0 22px">${esc(dateDe(s.event_date))} · Einlass ab ${esc(s.doors_time)} · Beginn ${esc(s.start_time)}<br>${esc(s.venue_name)}<br>${esc(s.venue_address)}</p>
-${rows.map(r => `<a href="${esc(r.url)}" style="display:block;background:#9d4dff;color:#0a0a0c;text-decoration:none;padding:14px 18px;border-radius:4px;margin:0 0 10px;font-size:15px">Ticket ${esc(r.number)} · ${esc(r.name)} öffnen</a>`).join("")}
+${extra}${rows.map(r => `<a href="${esc(r.url)}" style="display:block;background:#9d4dff;color:#0a0a0c;text-decoration:none;padding:14px 18px;border-radius:4px;margin:0 0 10px;font-size:15px">${r.vip ? "VIP-" : ""}Ticket ${esc(r.number)} · ${esc(r.name)} öffnen</a>`).join("")}
 <p style="font-size:13px;line-height:1.6;color:#8a8a96;margin:22px 0 0">Auf der Ticketseite kannst du dein Ticket als PDF speichern. Jeder QR-Code ist persönlich und nur einmal gültig. Geschlossene Gesellschaft – ohne Ticket kein Einlass.</p>
 <p style="font-size:13px;line-height:1.6;color:#8a8a96;margin:14px 0 0">Fragen? ${esc(s.contact_name)} · ${esc(s.contact_phone)} · ${esc(s.contact_email)}</p>
 </div></body></html>`;
@@ -819,10 +871,12 @@ async function sendMail(env, to, subject, html) {
 async function sendOrderMail(env, orderId) {
   const order = await first(env, `SELECT * FROM orders WHERE id = ?`, orderId);
   const s = await getSettings(env);
-  const tickets = await all(env, `SELECT number, first_name, last_name, view_key FROM tickets WHERE order_id = ? AND status != 'cancelled' ORDER BY guest_position`, orderId);
-  const rows = tickets.map(t => ({ number: t.number, name: `${t.first_name} ${t.last_name}`, url: `${APP_URL}ticket/?k=${t.view_key}` }));
-  const r = await sendMail(env, order.email, `Dein Ticket für TAKT Nr. 30${order.is_test ? " (TEST)" : ""}`,
-    mailHtml(s, tickets.length > 1 ? "Ihr seid dabei." : "Du bist dabei.", rows));
+  const tickets = await all(env, `SELECT number, first_name, last_name, view_key, tier FROM tickets WHERE order_id = ? AND status != 'cancelled' ORDER BY guest_position`, orderId);
+  const rows = tickets.map(t => ({ number: t.number, name: `${t.first_name} ${t.last_name}`, url: `${APP_URL}ticket/?k=${t.view_key}`, vip: t.tier === "vip" }));
+  const vip = rows.filter(r => r.vip);
+  const subject = vip.length === rows.length && vip.length ? `Dein VIP-Ticket für TAKT Nr. 30` : vip.length ? "Deine Tickets für TAKT Nr. 30 (inkl. VIP)" : "Dein Ticket für TAKT Nr. 30";
+  const intro = vip.length ? (rows.length > 1 && vip.length === rows.length ? "Ihr seid VIP." : vip.length === rows.length ? "Du bist VIP." : "Ihr seid dabei – mit VIP.") : rows.length > 1 ? "Ihr seid dabei." : "Du bist dabei.";
+  const r = await sendMail(env, order.email, `${subject}${order.is_test ? " (TEST)" : ""}`, mailHtml(s, intro, rows, vip.length ? vipBlock(vip, rows.length) : ""));
   await run(env, `UPDATE orders SET mail_status = ?, mail_error = ?, mail_sent_at = CASE WHEN ? THEN ? ELSE mail_sent_at END WHERE id = ?`,
     r.ok ? "sent" : "failed", r.ok ? null : r.error, r.ok ? 1 : 0, iso(), orderId);
   return r.ok ? "sent" : "failed";
@@ -860,7 +914,10 @@ async function paypalFetch(env, path, { method = "POST", body, requestId } = {})
   const data = await res.json().catch(() => ({}));
   return { ok: res.ok, status: res.status, data };
 }
-async function paypalCreateOrder(env, { orderNo, amount, quantity }) {
+async function paypalCreateOrder(env, { orderNo, amount, quantity, vipQty = 0 }) {
+  const itemName = quantity === 2
+    ? (vipQty === 2 ? "TAKT Nr. 30 – 2 VIP-Tickets" : vipQty === 1 ? "TAKT Nr. 30 – 1 Ticket + 1 VIP-Ticket" : "TAKT Nr. 30 – 2 Tickets")
+    : (vipQty ? "TAKT Nr. 30 – VIP-Ticket" : "TAKT Nr. 30 – Ticket");
   const value = euro(amount);
   const r = await paypalFetch(env, "/v2/checkout/orders", {
     requestId: `create-${orderNo}`,
@@ -870,7 +927,7 @@ async function paypalCreateOrder(env, { orderNo, amount, quantity }) {
         reference_id: orderNo, custom_id: orderNo, invoice_id: orderNo,
         description: "TAKT Nr. 30 – Ticket",
         amount: { currency_code: "EUR", value, breakdown: { item_total: { currency_code: "EUR", value } } },
-        items: [{ name: quantity === 2 ? "TAKT Nr. 30 – 2 Tickets" : "TAKT Nr. 30 – Ticket", quantity: "1", category: "DIGITAL_GOODS", unit_amount: { currency_code: "EUR", value } }]
+        items: [{ name: itemName, quantity: "1", category: "DIGITAL_GOODS", unit_amount: { currency_code: "EUR", value } }]
       }],
       payment_source: { paypal: { experience_context: { brand_name: "TAKT Nr. 30", shipping_preference: "NO_SHIPPING", user_action: "PAY_NOW", locale: "de-DE" } } }
     }
@@ -971,13 +1028,13 @@ async function scan(env, request, who) {
   const at = iso();
   const log = (ticketId, result, detail) => run(env, `INSERT INTO checkins (ticket_id, action, result, actor, at, detail) VALUES (?, 'scan', ?, ?, ?, ?)`, ticketId, result, who.name, at, detail || null);
   if (code.length < 20) { await log(null, "unknown", raw.slice(0, 60)); return json({ result: "red", reason: "QR-Code unbekannt" }); }
-  const t = await first(env, `SELECT id, number, category, helper_job, first_name, last_name, status, checked_in_at, checked_in_by, is_test, paper FROM tickets WHERE code = ?`, code);
+  const t = await first(env, `SELECT id, number, category, tier, helper_job, first_name, last_name, status, checked_in_at, checked_in_by, is_test, paper, order_id FROM tickets WHERE code = ?`, code);
   if (!t) {
     const old = await first(env, `SELECT t.number, t.first_name, t.last_name FROM retired_codes r JOIN tickets t ON t.id = r.ticket_id WHERE r.code = ?`, code);
     await log(null, old ? "replaced" : "unknown", code);
     return json(old ? { result: "red", reason: "Ersetzter QR-Code – ungültig", number: old.number, name: `${old.first_name || ""} ${old.last_name || ""}`.trim() } : { result: "red", reason: "QR-Code unbekannt" });
   }
-  const base = { number: t.number, category: t.category, helper_job: t.helper_job, name: `${t.first_name || ""} ${t.last_name || ""}`.trim() || (t.category === "free" ? "VIP · 2TAKT" : t.paper ? "Freiticket" : "") };
+  const base = { number: t.number, category: t.category, tier: t.tier, ...ticketKind(t), helper_job: t.helper_job, name: `${t.first_name || ""} ${t.last_name || ""}`.trim() || (t.category === "free" ? "VIP · 2TAKT" : t.paper ? "Freiticket" : "") };
   if (t.status === "blocked") { await log(t.id, "blocked"); return json({ ...base, result: "red", reason: "Ticket gesperrt" }); }
   if (t.status === "cancelled") { await log(t.id, "cancelled"); return json({ ...base, result: "red", reason: "Ticket storniert" }); }
   const s = await getSettings(env);
@@ -995,8 +1052,9 @@ async function scanSearch(env, url) {
   const q = String(url.searchParams.get("q") || "").trim().slice(0, 40);
   if (q.length < 2) return json([]);
   const like = `%${q.replace(/[%_]/g, "")}%`;
-  return json(await all(env, `SELECT id, number, category, helper_job, first_name, last_name, status, checked_in_at, checked_in_by, is_test FROM tickets
-     WHERE (COALESCE(first_name, '') || ' ' || COALESCE(last_name, '') LIKE ? OR number LIKE ?) ORDER BY last_name IS NULL, last_name, first_name, number LIMIT 25`, like, like));
+  const rows = await all(env, `SELECT id, number, category, tier, paper, order_id, helper_job, first_name, last_name, status, checked_in_at, checked_in_by, is_test FROM tickets
+     WHERE (COALESCE(first_name, '') || ' ' || COALESCE(last_name, '') LIKE ? OR number LIKE ?) ORDER BY last_name IS NULL, last_name, first_name, number LIMIT 25`, like, like);
+  return json(rows.map(({ paper, order_id, ...r }) => ({ ...r, ...ticketKind({ ...r, paper, order_id }) })));
 }
 
 async function manualCheckin(env, who, id) {
@@ -1004,7 +1062,8 @@ async function manualCheckin(env, who, id) {
   const r = await run(env, `UPDATE tickets SET checked_in_at = ?, checked_in_by = ?, updated_at = ? WHERE id = ? AND status = 'valid' AND checked_in_at IS NULL`, at, `${who.name} (manuell)`, at, id);
   await run(env, `INSERT INTO checkins (ticket_id, action, result, actor, at) VALUES (?, 'manual', ?, ?, ?)`, id, changes(r) ? "admitted" : "rejected", who.name, at);
   if (!changes(r)) return fail("Nicht möglich – Ticket ist bereits eingecheckt, gesperrt oder storniert.", 409);
-  return json({ result: "green", checked_in_at: at });
+  const t = await first(env, `SELECT category, tier, paper, order_id FROM tickets WHERE id = ?`, id);
+  return json({ result: "green", checked_in_at: at, category: t?.category, ...(t ? ticketKind(t) : {}) });
 }
 
 async function undoCheckin(env, request, who, id) {
@@ -1101,7 +1160,7 @@ async function updateInvitation(env, request, who, id) {
 async function listTickets(env, url) {
   const cat = url.searchParams.get("category");
   const where = ["free", "regular", "helper"].includes(cat) ? `WHERE t.paper = 0 AND t.category = '${cat}'` : "WHERE t.paper = 0";
-  return json(await all(env, `SELECT t.id, t.number, t.category, t.helper_job, hi.name AS helper_invitation, t.first_name, t.last_name, t.email, t.status, t.is_test, t.checked_in_at, t.checked_in_by, t.view_key, t.version, t.mail_status, t.note, t.created_at,
+  return json(await all(env, `SELECT t.id, t.number, t.category, t.tier, t.helper_job, hi.name AS helper_invitation, t.first_name, t.last_name, t.email, t.status, t.is_test, t.checked_in_at, t.checked_in_by, t.view_key, t.version, t.mail_status, t.note, t.created_at,
       o.order_no, o.id AS order_id, i.name AS invitation_name
     FROM tickets t LEFT JOIN orders o ON o.id = t.order_id LEFT JOIN invitations i ON i.id = o.invitation_id LEFT JOIN invitations hi ON hi.id = t.invitation_id ${where}
     ORDER BY t.category DESC, t.id`));
@@ -1296,7 +1355,7 @@ async function updateSettings(env, request, who) {
     if (k === "bands") {
       let b; try { b = JSON.parse(val); } catch { return fail("Bändchen ungültig."); }
       const clean = {};
-      for (const cat of ["regular", "free", "helper"]) {
+      for (const cat of ["regular", "free", "vip", "helper"]) {
         const x = b?.[cat] || {};
         const color = /^#[0-9a-fA-F]{6}$/.test(x.color || "") ? x.color : "#ffffff";
         clean[cat] = { label: cleanName(x.label).slice(0, 20) || "–", color, note: String(x.note || "").slice(0, 60) };

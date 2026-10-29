@@ -110,7 +110,7 @@
 <script src="/taktnr30/assets/vendor/qrcode.js"></script>
 <script defer src="/taktnr30/assets/vendor/fflate.min.js"></script>
 <script defer src="/taktnr30/assets/vendor/jspdf.umd.min.js"></script>
-<script src="/taktnr30/assets/takt.js?v=1"></script>
+<script src="/taktnr30/assets/takt.js?v=2"></script>
 <script defer crossorigin="anonymous" src="https://clerk.kim-betcher.de/npm/@clerk/ui@1/dist/ui.browser.js"></script>
 <script defer crossorigin="anonymous" data-clerk-publishable-key="pk_live_Y2xlcmsua2ltLWJldGNoZXIuZGUk" src="https://clerk.kim-betcher.de/npm/@clerk/clerk-js@6/dist/clerk.browser.js"></script>
 <script>
@@ -201,6 +201,9 @@
     return k;
   }
 
+  const MIX = [["r", "1 Ticket", "one"], ["rr", "2 Tickets", "two"], ["v", "1 VIP-Ticket", "vip_one"], ["vv", "2 VIP-Tickets", "vip_two"], ["rv", "1 Ticket + 1 VIP", "mixed"]];
+  const mixRows = r => MIX.filter(([k]) => r.tickets.mix?.[k]).map(([k, label, p]) => [`  ${label} zu ${e2(r.prices[p])}`, `${r.tickets.mix[k]} Bestellung(en) = ${e2(r.tickets.mix[k] * r.prices[p])}`]);
+
   function settlementPdf(r) {
     const S = sums(r), k = pdfKit("Abrechnung TAKT Nr. 30"), ev = r.event, t = r.tickets;
     k.title("Abrechnung TAKT Nr. 30", `Private Geburtstagsfeier am ${dDe(ev.date)} · ${ev.venue}, ${ev.address}`);
@@ -216,7 +219,7 @@
     k.rule(); k.row(S.result >= 0 ? "Überschuss" : "Fehlbetrag (Kosten über Einnahmen)", e2(Math.abs(S.result)), true);
     if (r.money.refunded_cents) k.p(`Hinweis: Erstattungen an Käufer über PayPal: ${e2(r.money.refunded_cents)} (nicht in den Ticketeinnahmen enthalten).`, 9);
     k.h("Tickets und Gäste");
-    [["Verkaufte Online-Tickets", `${t.sold} (${t.singles} × 1 Ticket zu ${e2(r.prices.one)}, ${t.pairs} × 2 Tickets zu ${e2(r.prices.two)})`],
+    [["Verkaufte Online-Tickets", `${t.sold}, davon ${t.sold_vip} VIP`], ...mixRows(r),
      ["Kostenlose Online-Tickets", String(t.comp)], ["Papiertickets VIP · 2TAKT (kostenlos)", String(t.paper_vip)], ["Freitickets Papier (kostenlos)", String(t.paper_own)],
      ["Helfer", String(t.helpers)], ["Am Einlass eingecheckt", String(t.checked_in)]].forEach(([a, b]) => k.row(a, b));
     k.h("Belege");
@@ -224,7 +227,7 @@
       r.ledger.map(l => [dDe(l.booked_on), l.kind === "income" ? "Einnahme" : "Ausgabe", l.category, [l.purpose, l.party].filter(Boolean).join(" – "), l.receipt_no || "", (l.kind === "income" ? "" : "– ") + e2(l.amount_cents)]));
     k.h("Ticketeinnahmen (Einzelaufstellung)");
     k.table([["Bestellung", 18], ["Bezahlt am", 52], ["Anzahl", 92, "r"], ["Status", 100, "l", 40], ["Betrag", 160, "r"], ["PayPal-Gebühr", 192, "r"]],
-      r.orders.map(o => [o.order_no, dDe(o.paid_at), o.quantity, { paid: "bezahlt", refunded: "erstattet", refund_required: "Erstattung offen" }[o.status] || o.status, e2(o.amount_cents), o.fee_cents == null ? "–" : e2(o.fee_cents)]));
+      r.orders.map(o => [o.order_no, dDe(o.paid_at), `${o.quantity}${o.vip_quantity ? ` (${o.vip_quantity} VIP)` : ""}`, { paid: "bezahlt", refunded: "erstattet", refund_required: "Erstattung offen" }[o.status] || o.status, e2(o.amount_cents), o.fee_cents == null ? "–" : e2(o.fee_cents)]));
     k.finish("TAKT30-Abrechnung.pdf");
   }
 
@@ -239,14 +242,18 @@
      ["Musik", "Tanzmusik, Wiedergabe von Tonträgern durch DJs"], ["Raumgröße", f.sqm ? `${f.sqm} m²` : "_____ m²"]].forEach(([a, b]) => k.row(a, b));
     k.h("Eintrittsgelder");
     [["Eintrittspreis 1 Ticket", e2(r.prices.one)], ["Eintrittspreis 2 Tickets", `${e2(r.prices.two)} (${e2(r.prices.two / 2)} je Person)`],
-     ["Verkaufte Tickets", `${t.sold} (${t.singles} Einzel-, ${t.pairs} Doppelbestellungen)`], ["Gäste ohne Eintrittsgeld", `${t.comp + t.paper_vip + t.paper_own} (geladene Gäste, Freitickets) + ${t.helpers} Helfer`]].forEach(([a, b]) => k.row(a, b));
-    k.rule(); k.row("Summe Eintrittsgelder (ohne Umsatzsteuerausweis)", e2(g.base_cents), true);
-    k.row("Vergütung 11,89 %", e2(g.fee_cents), true);
+     ["Eintrittspreis 1 VIP-Ticket", `${e2(r.prices.vip_one)} inkl. ${r.prices.vip_drinks} Getränke`], ["Eintrittspreis 2 VIP-Tickets", `${e2(r.prices.vip_two)} inkl. je ${r.prices.vip_drinks} Getränke`], ["1 Ticket + 1 VIP-Ticket", e2(r.prices.mixed)],
+     ["Verkaufte Tickets", `${t.sold}, davon ${t.sold_vip} VIP (${t.singles} Einzel-, ${t.pairs} Doppelbestellungen)`], ["Gäste ohne Eintrittsgeld", `${t.comp + t.paper_vip + t.paper_own} (geladene Gäste, Freitickets) + ${t.helpers} Helfer`]].forEach(([a, b]) => k.row(a, b));
+    const drinkCents = Math.round((parseFloat(String(f.drink || "").replace(",", ".")) || 0) * 100) * r.prices.vip_drinks * t.sold_vip;
+    const base = Math.max(0, g.base_cents - drinkCents);
+    k.rule(); k.row("Summe Eintrittsgelder (ohne Umsatzsteuerausweis)", e2(g.base_cents), !drinkCents);
+    if (drinkCents) { k.row(`abzüglich Getränkeanteil VIP (${t.sold_vip} × ${r.prices.vip_drinks} Getränke × ${e2(drinkCents / t.sold_vip / r.prices.vip_drinks)})`, `– ${e2(drinkCents)}`); k.row("Netto-Eintrittsgelder für die Berechnung", e2(base), true); }
+    k.row("Vergütung 11,89 %", e2(Math.round(base * g.rate)), true);
     k.p("Die Vergütung kann die Mindestvergütung nach Abschnitt II (ggf. zzgl. Zeitzuschlag) nicht unterschreiten.", 8.5);
     if (r.money.refunded_cents) k.p(`Erstattete Eintrittsgelder (nicht enthalten): ${e2(r.money.refunded_cents)}`, 9);
     k.h("Einzelaufstellung der Eintrittsgelder (PayPal)");
     k.table([["Bestellung", 18], ["Bezahlt am", 60], ["Tickets", 110, "r"], ["Betrag", 192, "r"]],
-      r.orders.filter(o => o.status === "paid").map(o => [o.order_no, dDe(o.paid_at), o.quantity, e2(o.amount_cents)]));
+      r.orders.filter(o => o.status === "paid").map(o => [o.order_no, dDe(o.paid_at), `${o.quantity}${o.vip_quantity ? ` (${o.vip_quantity} VIP)` : ""}`, e2(o.amount_cents)]));
     k.y += 4; k.p("Ich bestätige die Richtigkeit und Vollständigkeit dieser Rechnungslegung. Als Nachweis liegt der PayPal-Kontoauszug für den Verkaufszeitraum bei.");
     k.sign(f.place ? `${f.place}, ${new Date().toLocaleDateString("de-DE")}` : "");
     k.finish("TAKT30-GEMA-Rechnungslegung.pdf");
@@ -267,7 +274,8 @@
             <label class="field"><span>Raumgröße (m²)</span><input class="input sm" name="sqm" inputmode="numeric" value="${esc(pf.sqm || "")}"></label>
             <label class="field"><span>GEMA-Rechnungsnummer</span><input class="input sm" name="inv" value="${esc(pf.inv || "")}" placeholder="steht auf der Rechnung"></label>
             <label class="field"><span>Ort für die Unterschrift</span><input class="input sm" name="place" value="${esc(pf.place || "Heidenheim")}"></label>
-          </form><p class="note">Wird nur auf diesem Gerät gemerkt. Antrag spätestens 6 Wochen nach Eingang der GEMA-Rechnung schicken, PDF unterschreiben und PayPal-Auszug beilegen.</p></details>
+            <label class="field"><span>Barpreis je Freigetränk (€)</span><input class="input sm" name="drink" inputmode="decimal" value="${esc(pf.drink || "")}" placeholder="z. B. 3,00"></label>
+          </form><p class="note">Wird nur auf diesem Gerät gemerkt. Antrag spätestens 6 Wochen nach Eingang der GEMA-Rechnung schicken, PDF unterschreiben und PayPal-Auszug beilegen. Der Barpreis je Freigetränk zieht den Getränkeanteil der VIP-Tickets vom Eintritt ab – das senkt die GEMA-Gebühr (Getränkepreisliste beilegen).</p></details>
         <h2>Beleg erfassen</h2>
         <form class="card form" id="ledForm">
           <label class="field"><span>Art</span><select class="input sm" name="kind"><option value="expense">Ausgabe</option><option value="income">Einnahme</option></select></label>
@@ -307,7 +315,7 @@
         if (!confirm(`Beleg „${l.purpose}“ (${e2(l.amount_cents)}) löschen?`)) return;
         await act(() => call(`/admin/ledger/${l.id}`, { method: "DELETE" }), "Gelöscht"); render();
       });
-      const gf = $("#gemaForm"); gf.oninput = () => saveMoneyPrefs(Object.fromEntries(["addr", "sqm", "inv", "place"].map(n => [n, gf[n].value.trim()])));
+      const gf = $("#gemaForm"); gf.oninput = () => saveMoneyPrefs(Object.fromEntries(["addr", "sqm", "inv", "place", "drink"].map(n => [n, gf[n].value.trim()])));
       const needPdf = () => { if (!window.jspdf) { toast("PDF-Werkzeug wird noch geladen – bitte gleich nochmal"); return false; } return true; };
       $("#pdfAll").onclick = async () => { if (!needPdf()) return; settlementPdf(await call("/admin/report")); };
       $("#pdfGema").onclick = async () => { if (!needPdf()) return; gemaPdf(await call("/admin/report"), moneyPrefs()); };
@@ -387,6 +395,7 @@
         </div>
         <div class="kpis">
           ${kpi("Online-Tickets", `${c.regular_issued}<small> / ${c.regular_cap}</small>`, c.regular_comp ? `${c.regular_issued - c.regular_comp} verkauft · ${c.regular_comp} kostenlos` : "")}
+          ${kpi("VIP online", `${c.vip_issued}<small> / ${c.vip_cap}</small>`, `${c.vip_available} noch frei · zählen in die ${c.regular_cap}`)}
           ${kpi("Verfügbar", c.available, c.reserved || c.test_tickets ? `${c.test_tickets ? c.test_tickets + " Test" : ""}${c.test_tickets && c.reserved ? " + " : ""}${c.reserved ? c.reserved + " reserviert" : ""} belegen gerade Plätze` : "")}
           ${kpi("Offene Reservierungen", c.reserved, "laufende Bezahlvorgänge")}
           ${kpi("Papiertickets", `${c.paper_vip + c.paper_own}`, `${c.paper_vip} VIP · ${c.paper_own} Freitickets · ${c.paper_checked_in} drin`)}
@@ -559,8 +568,8 @@
       const bandRow = (cat, label) => { const b = bands[cat] || {}; return `<div class="lineup-row" style="grid-template-columns:150px 64px 1fr 1.4fr"><span style="align-self:center">${label}</span><input class="input sm" type="color" name="c_${cat}" value="${esc(b.color || "#ffffff")}" aria-label="Farbe ${label}"><input class="input sm" name="l_${cat}" value="${esc(b.label || "")}" placeholder="Farbname" maxlength="20" aria-label="Farbname ${label}"><input class="input sm note-in" name="n_${cat}" value="${esc(b.note || "")}" placeholder="Hinweis am Einlass (optional)" maxlength="60" aria-label="Hinweis ${label}"></div>`; };
       m.innerHTML = `<h1>Einlass</h1>
         <h2 style="margin-top:0">Bändchen</h2>
-        <p class="note">Der Scanner zeigt nach jedem grünen Scan an, welches Bändchen ausgegeben wird.</p>
-        <form id="bandForm">${bandRow("regular", "Gäste & Freitickets")}${bandRow("free", "VIP · 2TAKT")}${bandRow("helper", "Helfer")}<button class="btn btn-uv btn-small" style="margin-top:6px">Speichern</button></form>
+        <p class="note">Der Scanner zeigt nach jedem grünen Scan Ticketart, Bändchen und Freigetränke an. Freigetränke: VIP · 2TAKT (Papier) 5 · VIP online 3 · alle anderen keine.</p>
+        <form id="bandForm">${bandRow("regular", "Gäste & Freitickets")}${bandRow("free", "VIP · 2TAKT (Papier)")}${bandRow("vip", "VIP online")}${bandRow("helper", "Helfer")}<button class="btn btn-uv btn-small" style="margin-top:6px">Speichern</button></form>
         <h2>Scanner-Zugänge</h2>
         <p class="muted">Der Scanner ist eine eigene App unter <a href="/taktnr30/scanner/" target="_blank">kim-betcher.de/taktnr30/scanner</a> – am Handy über „Zum Home-Bildschirm“ installieren. Für jeden Einlasshelfer erzeugst du hier einen persönlichen Zugang; er funktioniert ohne Konto und lässt sich jederzeit sperren. Du selbst meldest dich im Scanner mit deinem Login an.</p>
         <div class="acts" style="margin-bottom:18px"><a class="btn btn-small" href="/taktnr30/scanner/" target="_blank">Scanner öffnen</a></div>
@@ -571,7 +580,7 @@
         </tbody></table></div>`;
       $("#bandForm").onsubmit = async e => {
         e.preventDefault(); const f = e.target, out = {};
-        for (const cat of ["regular", "free", "helper"]) out[cat] = { color: f[`c_${cat}`].value, label: f[`l_${cat}`].value, note: f[`n_${cat}`].value };
+        for (const cat of ["regular", "free", "vip", "helper"]) out[cat] = { color: f[`c_${cat}`].value, label: f[`l_${cat}`].value, note: f[`n_${cat}`].value };
         await act(() => call("/admin/settings", { method: "PUT", body: { bands: JSON.stringify(out) } }), "Gespeichert – der Scanner übernimmt es beim nächsten Aktualisieren");
       };
       $("#scForm").onsubmit = async e => {

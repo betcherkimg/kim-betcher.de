@@ -57,6 +57,16 @@
   .qty label:has(input:checked) { border-color: var(--uv); background: var(--uv-deep); }
   .qty .p { font-family: var(--mono); }
   .guest { padding: 16px 0 0; border-top: 1px solid var(--line); margin-top: 6px; }
+  .tier { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 14px; }
+  .tier label { display: grid; gap: 2px; padding: 12px 14px; border: 1px solid var(--line-2); border-radius: var(--radius); cursor: pointer; }
+  .tier label > span { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .tier input { accent-color: var(--uv); width: 18px; height: 18px; margin: 0; }
+  .tier label:has(input:checked) { border-color: var(--uv); background: var(--uv-deep); }
+  .tier label:has(input:disabled) { opacity: .45; cursor: not-allowed; }
+  .tier small { color: var(--muted); font-size: 12.5px; line-height: 1.35; }
+  .tier b { font-family: var(--mono); font-weight: 400; }
+  .total { display: flex; justify-content: space-between; font-family: var(--mono); padding: 14px 0; border-top: 1px solid var(--line); margin: 4px 0 14px; }
+  @media (max-width: 380px) { .tier { grid-template-columns: 1fr; } }
   .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   @media (max-width: 420px) { .row2 { grid-template-columns: 1fr; gap: 0; } }
   .jobs { display: grid; gap: 10px; margin: 0 0 20px; }
@@ -151,7 +161,7 @@
 </footer>
 
 <script src="/taktnr30/assets/vendor/qrcode.js"></script>
-<script src="/taktnr30/assets/takt.js?v=1"></script>
+<script src="/taktnr30/assets/takt.js?v=2"></script>
 <script>
 (function () {
   "use strict";
@@ -178,7 +188,7 @@
     if (mine) html = `<a class="btn btn-uv btn-block" href="#tickets">Deine Tickets ansehen</a>`;
     else if (!s.open) html = `<div class="soon">Verkauf startet bald</div>`;
     else if (s.sold_out) html = `<div class="soon">Ausverkauft</div>`;
-    else html = `<a class="btn btn-uv btn-block" href="#tickets">Ticket sichern – ${euro(s.prices.one)}</a><div class="plain mono">2 TICKETS – ${euro(s.prices.two)}</div>`;
+    else html = `<a class="btn btn-uv btn-block" href="#tickets">Ticket sichern – ${euro(s.prices.one)}</a><div class="plain mono">2 TICKETS – ${euro(s.prices.two)}${s.vip && s.vip.available > 0 ? ` · VIP – ${euro(s.prices.vip_one)} INKL. ${s.vip.drinks} DRINKS` : ""}</div>`;
     $("#heroCta").innerHTML = html;
   }
 
@@ -215,6 +225,7 @@
       ["Kann ich ohne Ticket erscheinen?", "Nein. TAKT Nr. 30 ist eine geschlossene Gesellschaft – es gibt keine Abendkasse und keine Tickets für spontane Besucher."],
       ["Was passiert bei verlorenem Ticket?", "Melde dich einfach. Wir stellen dir einen neuen QR-Code aus, der alte wird dabei ungültig."],
       ["Kann ich mein Ticket zurückgeben?", "Nein, eine Erstattung gibt es nicht – dein Ticket ist mein Geburtstagsgeschenk."],
+      ["Was ist ein VIP-Ticket?", `VIP kostet ${euro(ev.sale.prices.vip_one)} (2 VIP-Tickets ${euro(ev.sale.prices.vip_two)}). Dafür bekommst du am Einlass ein lila VIP-Bändchen und ${ev.sale.vip ? ev.sale.vip.drinks : 3} Getränkemarken für die Bar. Es gibt höchstens ${ev.sale.vip ? ev.sale.vip.cap : 20} VIP-Tickets. Bei 2 Tickets kannst du für jede Person einzeln wählen.`],
       ["Wie werde ich Helfer?", "Über deinen Einladungslink: „Als Helfer mitmachen“ wählen, Aufgabe aussuchen (Bar oder Ticketscan), und du bekommst ein kostenloses Helfer-Ticket mit eigenem QR-Code."],
       ["An wen kann ich mich wenden?", `${c.name}${c.phone ? ` – ${c.phone}` : ""}${c.email ? ` – ${c.email}` : ""}`]
     ];
@@ -308,10 +319,12 @@
     const two = invite.remaining >= 2 && ev.sale.available >= 2;
     host.innerHTML = `<form id="buyForm" novalidate>
       <div class="qty" role="radiogroup" aria-label="Anzahl">
-        <label><span><input type="radio" name="qty" value="1" checked> 1 Ticket</span><span class="p">${euro(ev.sale.prices.one)}</span></label>
-        ${two ? `<label><span><input type="radio" name="qty" value="2"> 2 Tickets</span><span class="p">${euro(ev.sale.prices.two)}</span></label>` : ""}
+        <label><span><input type="radio" name="qty" value="1" checked> 1 Ticket</span><span class="p">ab ${euro(ev.sale.prices.one)}</span></label>
+        ${two ? `<label><span><input type="radio" name="qty" value="2"> 2 Tickets</span><span class="p">ab ${euro(ev.sale.prices.two)}</span></label>` : ""}
       </div>
       <div id="guests"></div>
+      <div class="total"><span id="totalLabel">Summe</span><span id="totalSum"></span></div>
+      <p class="note" id="vipNote" hidden></p>
       <label class="field"><span>E-Mail für die Tickets</span><input class="input" type="email" name="email" autocomplete="email" required maxlength="160"></label>
       ${consent}
       <div id="ts" style="margin-top:16px"></div>
@@ -319,16 +332,37 @@
       <button class="btn btn-uv btn-block" style="margin-top:18px" type="submit" id="buyBtn">Weiter zur Zahlung</button>
       <p class="note" style="margin-top:12px">Jedes Ticket ist persönlich und nur mit dem Namen darauf gültig. Keine Erstattung.</p>
     </form><div id="payHost"></div>`;
+    const vipLeft = ev.sale.vip ? ev.sale.vip.available : 0, drinks = ev.sale.vip ? ev.sale.vip.drinks : 3;
+    const tierOf = i => host.querySelector(`input[name=tier_${i}]:checked`)?.value || "regular";
+    const updateTotal = () => {
+      const n = +host.querySelector("input[name=qty]:checked").value;
+      const tiers = Array.from({ length: n }, (_, i) => tierOf(i));
+      const v = tiers.filter(x => x === "vip").length, p = ev.sale.prices;
+      const sum = n === 1 ? (v ? p.vip_one : p.one) : v === 2 ? p.vip_two : v === 1 ? p.mixed : p.two;
+      $("#totalLabel").textContent = `Summe · ${n} ${n > 1 ? "Tickets" : "Ticket"}${v ? ` (${v === n ? (n > 1 ? "beide " : "") + "VIP" : "1 VIP"})` : ""}`;
+      $("#totalSum").textContent = euro(sum);
+      // Nicht mehr VIP wählen als noch da sind
+      for (let i = 0; i < n; i++) { const r = host.querySelector(`input[name=tier_${i}][value=vip]`); if (r) r.disabled = !r.checked && v >= vipLeft; }
+      const note = $("#vipNote");
+      note.hidden = !(vipLeft > 0 && vipLeft < 2 && n === 2);
+      note.textContent = "Es ist nur noch 1 VIP-Ticket verfügbar.";
+    };
     const guests = () => {
       const n = +host.querySelector("input[name=qty]:checked").value;
-      const old = [...host.querySelectorAll("#guests input")].map(i => i.value);
+      const old = [...host.querySelectorAll("#guests input.input")].map(i => i.value);
+      const oldTier = [0, 1].map(tierOf);
       $("#guests").innerHTML = Array.from({ length: n }, (_, i) => `<div class="${i ? "guest" : ""}">
         <p class="note mono" style="margin:0 0 10px">${n > 1 ? `TICKET ${i + 1}${i ? " · BEGLEITUNG" : " · DU"}` : "NAME AUF DEM TICKET"}</p>
+        <div class="tier" role="radiogroup" aria-label="Ticketart ${i + 1}">
+          <label><span><span><input type="radio" name="tier_${i}" value="regular" ${oldTier[i] !== "vip" ? "checked" : ""}> Ticket</span><b>${euro(ev.sale.prices.one)}</b></span><small>Eintritt</small></label>
+          <label><span><span><input type="radio" name="tier_${i}" value="vip" ${oldTier[i] === "vip" && vipLeft > 0 ? "checked" : ""} ${vipLeft > 0 ? "" : "disabled"}> VIP</span><b>${euro(ev.sale.prices.vip_one)}</b></span><small>${vipLeft > 0 ? `Lila Bändchen + ${drinks} Freigetränke` : "ausverkauft"}</small></label>
+        </div>
         <div class="row2"><label class="field"><span>Vorname</span><input class="input" name="first_${i}" autocomplete="${i ? "off" : "given-name"}" required maxlength="60" value="${esc(old[i * 2] ?? (i ? "" : invite.first_name || ""))}"></label>
         <label class="field"><span>Nachname</span><input class="input" name="last_${i}" autocomplete="${i ? "off" : "family-name"}" required maxlength="60" value="${esc(old[i * 2 + 1] ?? "")}"></label></div></div>`).join("");
     };
-    host.querySelectorAll("input[name=qty]").forEach(r => r.onchange = guests);
-    guests();
+    host.querySelectorAll("input[name=qty]").forEach(r => r.onchange = () => { guests(); updateTotal(); });
+    $("#guests").addEventListener("change", e => { if (e.target.name?.startsWith("tier_")) updateTotal(); });
+    guests(); updateTotal();
     setupTurnstile();
     $("#buyForm").onsubmit = submitBuy;
   }
@@ -341,7 +375,7 @@
   function readBuy() {
     const f = $("#buyForm");
     const n = +f.qty.value;
-    const guests = Array.from({ length: n }, (_, i) => ({ first_name: f[`first_${i}`].value.trim(), last_name: f[`last_${i}`].value.trim() }));
+    const guests = Array.from({ length: n }, (_, i) => ({ first_name: f[`first_${i}`].value.trim(), last_name: f[`last_${i}`].value.trim(), tier: f.querySelector(`input[name=tier_${i}]:checked`)?.value === "vip" ? "vip" : "regular" }));
     if (guests.some(g => !g.first_name || !g.last_name)) throw new Error("Bitte für jedes Ticket Vor- und Nachnamen angeben.");
     const email = f.email.value.trim();
     if (!/^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(email)) throw new Error("Bitte eine gültige E-Mail-Adresse angeben.");
@@ -369,7 +403,7 @@
   function showTestPay(o) {
     $("#buyForm").hidden = true;
     $("#payHost").innerHTML = `<div class="pay">
-      <div class="sum"><span>${o.quantity} ${o.quantity > 1 ? "Tickets" : "Ticket"}</span><span>${euro(o.amount_cents)}</span></div>
+      <div class="sum"><span>${o.quantity} ${o.quantity > 1 ? "Tickets" : "Ticket"}${o.vip_quantity ? ` (${o.vip_quantity} VIP)` : ""}</span><span>${euro(o.amount_cents)}</span></div>
       <p class="note">Bestellung ${esc(o.order_no)} · Plätze 15 Minuten reserviert.</p>
       <p style="background:var(--warn);color:#1a1300;padding:10px 12px;border-radius:4px;font-size:14px">Testmodus: Es wird kein Geld abgebucht. Die Tickets sind als TEST markiert und gelten nicht am Einlass.</p>
       <p class="err" id="payErr" role="alert" hidden></p>
@@ -409,8 +443,9 @@
   async function startPayPal(payload) {
     let current = null;
     $("#buyForm").hidden = true;
-    const amount = payload.guests.length === 2 ? ev.sale.prices.two : ev.sale.prices.one;
-    $("#payHost").innerHTML = `<div class="pay"><div class="sum"><span>${payload.guests.length} ${payload.guests.length > 1 ? "Tickets" : "Ticket"}</span><span>${euro(amount)}</span></div>
+    const n = payload.guests.length, v = payload.guests.filter(g => g.tier === "vip").length, p = ev.sale.prices;
+    const amount = n === 1 ? (v ? p.vip_one : p.one) : v === 2 ? p.vip_two : v === 1 ? p.mixed : p.two;
+    $("#payHost").innerHTML = `<div class="pay"><div class="sum"><span>${n} ${n > 1 ? "Tickets" : "Ticket"}${v ? ` (${v} VIP)` : ""}</span><span>${euro(amount)}</span></div>
       <div id="ppButtons"></div><p class="err" id="payErr" role="alert" hidden></p><button class="btn btn-block" style="margin-top:10px" id="back">Zurück</button></div>`;
     $("#back").onclick = async () => { if (current) await cancel(current.access_key); else { $("#payHost").innerHTML = ""; $("#buyForm").hidden = false; } };
     try {
