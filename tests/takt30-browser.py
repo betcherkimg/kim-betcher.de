@@ -74,7 +74,7 @@ try:
         admin.click("#addLu"); admin.fill("#lu .lineup-row:last-child [name=lt]", "22:00"); admin.fill("#lu .lineup-row:last-child [name=ln]", "Testact")
         admin.click("#cForm button.btn-uv"); admin.wait_for_selector("#toast:has-text('Gespeichert')")
         admin.click("#lu .lineup-row:last-child [data-del]"); admin.click("#cForm button.btn-uv"); admin.wait_for_timeout(300)
-        admin.click("nav button[data-p=paper]"); admin.wait_for_selector("#zipBtn")
+        admin.click("nav button[data-p=paper]"); admin.wait_for_selector("#blockForm")
         assert admin.inner_text(".kpis").count("50") >= 2
         admin.click("details summary:has-text('Nachdruck')")
         with admin.expect_download(timeout=60000) as dz: admin.click("#zipBtn")
