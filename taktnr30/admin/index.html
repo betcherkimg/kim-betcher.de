@@ -257,17 +257,13 @@
       m.innerHTML = `<h1>Papiertickets</h1>
         <div class="kpis">${kpi("VIP · 2TAKT (Fynn)", p.vip.length, `${p.vip.filter(t => t.checked_in_at).length} eingecheckt`)}${kpi("Freitickets (Kim)", p.own.length, `${p.own.filter(t => t.checked_in_at).length} eingecheckt`)}${kpi("Gesperrt", [...p.vip, ...p.own].filter(t => t.status === "blocked").length)}</div>
         <p class="note">Jedes Papierticket hat einen eigenen QR-Code und gilt genau einmal. Die Codes sind im Scanner hinterlegt, damit kopierte Tickets am Einlass auffallen. Sie zählen nicht zu den ${c.regular_cap} Online-Tickets.</p>
-        <h2>Drucken bei MOO (empfohlen)</h2>
-        <ol class="muted" style="padding-left:20px;line-height:1.8">
-          <li><button class="btn btn-uv btn-small" id="zipBtn">Druckdateien herunterladen (ZIP)</button> – 1 Vorderseite + ${p.vip.length + p.own.length} Rückseiten, je 1038 × 696 px.</li>
-          <li>moo.com/de → Visitenkarten → Format <strong>MOO (84 × 55 mm)</strong>, Menge <strong>50</strong>, Papier z. B. „Super“ oder „Luxe“.</li>
-          <li>„Eigenes Design hochladen“: Vorderseite = <code>00_Vorderseite.png</code> (für alle gleich).</li>
-          <li>Rückseite: <strong>„Verschiedene Designs“</strong> (Printfinity) wählen und alle übrigen Bilder aus dem ZIP hochladen – jede Karte bekommt ihren eigenen QR-Code.</li>
-          <li>Vor dem Bestellen in der Vorschau prüfen, dass jede Rückseite genau einmal vorkommt.</li>
-        </ol>
+        <h2>Druckerei</h2>
+        <p class="note">Format 210 × 70 mm wie ein Konzertticket, rechts ein Abriss mit QR-Code und Nummer. Die Druckdaten enthalten beide Varianten: Vorlagen plus Code-Listen (die Druckerei setzt die QR-Codes ein) und alle Tickets fertig mit QR-Code. Die Maße für die Druckerei stehen in der LIESMICH-Datei.</p>
+        <div class="acts" style="margin-bottom:10px"><button class="btn btn-uv btn-small" id="zipBtn">Druckdaten herunterladen (ZIP)</button></div>
+        <p class="note">Geeignet z. B. <a href="https://www.myticketprinting.eu/de/Codierte-Eintrittskarten" target="_blank" rel="noopener">myticketprinting.eu – Codierte Eintrittskarten 210 × 70 mm</a> oder <a href="https://www.myflyer.de/postkarten-karten/eintrittskarten.html" target="_blank" rel="noopener">myflyer.de – Eintrittskarten</a> (freies Format, Perforation, QR-Codes aus Excel).</p>
         <h2>Selbst drucken</h2>
-        <p class="note">A4-Bögen mit je 10 Karten (84 × 55 mm) und Schnittmarken. Doppelseitig drucken, „an langer Kante wenden“, möglichst auf 250–300 g Karton, dann ausschneiden.</p>
-        <div class="acts"><button id="pdfBtn">PDF zum Selberdrucken</button></div>
+        <p class="note">4 Tickets pro A4-Bogen mit Schnittmarken. Doppelseitig drucken („an langer Kante wenden“), möglichst auf 250–300 g Karton, dann schneiden.</p>
+        <div class="acts"><button id="pdfBtn">A4-PDF zum Selberdrucken</button></div>
         <p class="note" id="printState" aria-live="polite"></p>
         <h2>Verlorenes Ticket sperren</h2>
         <form class="card form" id="blockForm"><label class="field"><span>Ticketnummer (z. B. 2T-07 oder FK-03)</span><input class="input sm mono" name="no" required maxlength="8"></label>
@@ -384,88 +380,128 @@
     }
   };
 
-  /* -------- Druckvorlagen Papiertickets (84 × 55 mm + Beschnitt, 300 dpi) -------- */
-  const CW = 1038, CH = 696, BLEED = 23;
+  /* -------- Druckvorlagen Papiertickets: 210 × 70 mm + 2 mm Beschnitt, 300 dpi -------- */
+  const MM = 300 / 25.4, BL = 2, TW = 210, TH = 70;
+  const PW = Math.round((TW + 2 * BL) * MM), PH = Math.round((TH + 2 * BL) * MM);
+  const STUB = 150;                                   // Perforation bei 150 mm
+  const QR = { x: 163, y: 18, size: 34 };              // QR-Feld (mm ab oberer linker Ecke des Endformats)
   const loadImg = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
   async function printAssets() {
     await Promise.all(['300 30px "Josefin Sans"', '400 30px "Josefin Sans"', '300 30px "JetBrains Mono"', '400 30px "JetBrains Mono"'].map(f => document.fonts.load(f)));
     const [logo, wm] = await Promise.all([loadImg("/taktnr30/assets/logo.svg"), loadImg("/taktnr30/assets/wordmark.svg")]);
     return { logo, wm };
   }
-  function txt(ctx, s, x, y, font, color, spacing = 0, align = "left") {
-    ctx.font = font; ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = "alphabetic";
-    try { ctx.letterSpacing = `${spacing}px`; } catch {}
-    ctx.fillText(s, x, y);
+  const X = mm => Math.round((mm + BL) * MM);           // mm im Endformat → Pixel im Bild mit Beschnitt
+  function txt(ctx, s, xmm, ymm, sizeMm, weight, family, color, spacingMm = 0, align = "left") {
+    ctx.font = `${weight} ${Math.round(sizeMm * MM)}px "${family}"`; ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = "alphabetic";
+    try { ctx.letterSpacing = `${Math.round(spacingMm * MM)}px`; } catch {}
+    ctx.fillText(s, X(xmm), X(ymm));
     try { ctx.letterSpacing = "0px"; } catch {}
   }
-  function drawFront(a, ev) {
-    const c = document.createElement("canvas"); c.width = CW; c.height = CH; const x = c.getContext("2d");
-    x.fillStyle = "#0a0a0c"; x.fillRect(0, 0, CW, CH);
-    x.drawImage(a.logo, 82, (CH - 400) / 2, 400, 400);
-    const L = 540;
-    x.drawImage(a.wm, L, 205, 420, 420 * a.wm.naturalHeight / a.wm.naturalWidth);
-    txt(x, "PRIVATE BIRTHDAY RAVE", L, 318, '300 25px "Josefin Sans"', "#c9c9d1", 6);
-    x.fillStyle = "#9d4dff"; x.fillRect(L, 352, 110, 3);
-    txt(x, TAKT.dateDe(ev.event_date), L, 425, '300 40px "JetBrains Mono"', "#f2f2f4", 2);
-    txt(x, `EINLASS ${ev.doors_time} · START ${ev.start_time}`, L, 472, '300 23px "JetBrains Mono"', "#f2f2f4", 1);
-    txt(x, "HEIDENHEIM", L, 516, '300 20px "JetBrains Mono"', "#82828e", 3);
-    return c;
-  }
-  function drawBack(a, ev, t, kind) {
-    const c = document.createElement("canvas"); c.width = CW; c.height = CH; const x = c.getContext("2d");
-    const accent = kind === "vip" ? "#9d4dff" : "#f2f2f4";
-    x.fillStyle = "#0a0a0c"; x.fillRect(0, 0, CW, CH);
-    x.fillStyle = accent; x.fillRect(0, 0, BLEED + 22, CH);
-    // QR auf weißem Feld
-    const m = TAKT.qrMatrix("T30." + t.code), n = m.length, box = 410, q = 2, cell = Math.floor(box / (n + q * 2)), size = cell * (n + q * 2);
-    const qx = 100, qy = Math.round((CH - size) / 2);
-    x.fillStyle = "#ffffff"; x.beginPath(); x.roundRect ? x.roundRect(qx, qy, size, size, 14) : x.rect(qx, qy, size, size); x.fill();
-    x.fillStyle = "#000000";
-    for (let r = 0; r < n; r++) for (let col = 0; col < n; col++) if (m[r][col]) x.fillRect(qx + (col + q) * cell, qy + (r + q) * cell, cell, cell);
-    const L = 560;
-    if (kind === "vip") {
-      txt(x, "VIP", L, 250, '300 120px "Josefin Sans"', "#9d4dff", 8);
-      txt(x, "2TAKT", L + 4, 300, '400 26px "JetBrains Mono"', "#c09bff", 10);
-    } else {
-      txt(x, "FREITICKET", L, 222, '300 58px "Josefin Sans"', "#f2f2f4", 5);
-      txt(x, "VON KIM", L + 2, 272, '400 24px "JetBrains Mono"', "#b4b4be", 8);
+  // kind: "vip" | "own"; t: Ticket oder null (= Vorlage ohne Code für die Druckerei)
+  function drawTicket(a, ev, kind, t) {
+    const c = document.createElement("canvas"); c.width = PW; c.height = PH; const x = c.getContext("2d");
+    const accent = kind === "vip" ? "#9d4dff" : "#f2f2f4", soft = kind === "vip" ? "#c09bff" : "#b4b4be";
+    x.fillStyle = "#0a0a0c"; x.fillRect(0, 0, PW, PH);
+    x.fillStyle = accent; x.fillRect(0, 0, X(4), PH);                                      // Farbkante links
+    x.drawImage(a.logo, X(11), X(13), X(44) - X(0), X(44) - X(0));                          // Rundes Logo
+    const L = 62;
+    x.drawImage(a.wm, X(L), X(12), X(70) - X(0), (X(70) - X(0)) * a.wm.naturalHeight / a.wm.naturalWidth);
+    txt(x, "PRIVATE BIRTHDAY RAVE", L, 28, 3.1, 300, "Josefin Sans", "#c9c9d1", 0.7);
+    x.fillStyle = accent; x.fillRect(X(L), X(32), X(14) - X(0), Math.max(3, Math.round(0.35 * MM)));
+    txt(x, TAKT.dateDe(ev.event_date), L, 42.5, 5.6, 300, "JetBrains Mono", "#f2f2f4", 0.25);
+    txt(x, `EINLASS ${ev.doors_time} · START ${ev.start_time}`, L, 49, 2.9, 300, "JetBrains Mono", "#f2f2f4", 0.1);
+    txt(x, ev.venue_name, L, 57, 2.7, 300, "Josefin Sans", "#b4b4be");
+    txt(x, ev.venue_address, L, 61.5, 2.7, 300, "Josefin Sans", "#b4b4be");
+    // Perforationslinie
+    x.strokeStyle = "#4a4a55"; x.lineWidth = Math.max(2, Math.round(0.25 * MM)); x.setLineDash([Math.round(1.2 * MM), Math.round(1 * MM)]);
+    x.beginPath(); x.moveTo(X(STUB), X(0)); x.lineTo(X(STUB), X(TH)); x.stroke(); x.setLineDash([]);
+    // Abriss: Kategorie, QR, Nummer
+    const mid = (STUB + TW) / 2;
+    txt(x, kind === "vip" ? "VIP · 2TAKT" : "FREITICKET", mid, 13.5, 3.6, 400, "JetBrains Mono", accent, 0.5, "center");
+    x.fillStyle = "#ffffff"; x.beginPath(); const r = Math.round(1.5 * MM);
+    x.roundRect ? x.roundRect(X(QR.x) - r, X(QR.y) - r, X(QR.size) - X(0) + 2 * r, X(QR.size) - X(0) + 2 * r, r) : x.rect(X(QR.x) - r, X(QR.y) - r, X(QR.size) - X(0) + 2 * r, X(QR.size) - X(0) + 2 * r);
+    x.fill();
+    if (t) {
+      const m = TAKT.qrMatrix("T30." + t.code), n = m.length, px = (X(QR.size) - X(0)) / n;
+      x.fillStyle = "#000000";
+      for (let rr = 0; rr < n; rr++) for (let cc = 0; cc < n; cc++) if (m[rr][cc]) x.fillRect(Math.floor(X(QR.x) + cc * px), Math.floor(X(QR.y) + rr * px), Math.ceil(px), Math.ceil(px));
+      txt(x, t.number, mid, 61, 4.4, 400, "JetBrains Mono", "#f2f2f4", 0.4, "center");
     }
-    txt(x, t.number, L, 378, '400 46px "JetBrains Mono"', "#f2f2f4", 3);
-    txt(x, `TAKT NR. 30 · ${TAKT.dateDe(ev.event_date)}`, L, 438, '300 20px "JetBrains Mono"', "#b4b4be", 1);
-    txt(x, `Einlass ab ${ev.doors_time} · Start ${ev.start_time}`, L, 474, '300 21px "Josefin Sans"', "#b4b4be");
-    txt(x, "In den Seewiesen 84, 89520 Heidenheim", L, 504, '300 21px "Josefin Sans"', "#b4b4be");
-    txt(x, "EINMALIG GÜLTIG", L, 590, '400 18px "JetBrains Mono"', accent, 6);
+    txt(x, "EINMALIG GÜLTIG", mid, 66.5, 2.2, 400, "JetBrains Mono", soft, 0.5, "center");
     return c;
   }
-  const toBytes = c => new Promise(res => c.toBlob(b => b.arrayBuffer().then(buf => res(new Uint8Array(buf))), "image/png"));
-  function save(blob, name) { const u = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = u; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(u), 3000); }
+  function drawBack(a) {
+    const c = document.createElement("canvas"); c.width = PW; c.height = PH; const x = c.getContext("2d");
+    x.fillStyle = "#0a0a0c"; x.fillRect(0, 0, PW, PH);
+    x.globalAlpha = 0.12; x.drawImage(a.logo, X(120), X(-12), X(94) - X(0), X(94) - X(0)); x.globalAlpha = 1;
+    x.drawImage(a.wm, X(14), X(14), X(80) - X(0), (X(80) - X(0)) * a.wm.naturalHeight / a.wm.naturalWidth);
+    txt(x, "Geschlossene Gesellschaft – Einlass nur mit diesem Ticket.", 14, 36, 3.2, 300, "Josefin Sans", "#c9c9d1");
+    txt(x, "Der QR-Code wird am Eingang geprüft und gilt genau einmal.", 14, 42, 3.2, 300, "Josefin Sans", "#c9c9d1");
+    txt(x, "Danach gibt's dein Einlassbändchen.", 14, 48, 3.2, 300, "Josefin Sans", "#c9c9d1");
+    txt(x, "KIM-BETCHER.DE/TAKTNR30/TICKETS", 14, 61, 2.4, 400, "JetBrains Mono", "#82828e", 0.4);
+    return c;
+  }
+  const jpg = c => c.toDataURL("image/jpeg", 0.95);
   const paperList = p => [...p.vip.map(t => [t, "vip"]), ...p.own.map(t => [t, "own"])];
+  function save(blob, name) { const u = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = u; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(u), 3000); }
+  function ticketPdf(pages) {   // Seiten im Druckformat 214 × 74 mm (mit Beschnitt)
+    const { jsPDF } = window.jspdf, doc = new jsPDF({ unit: "mm", format: [TW + 2 * BL, TH + 2 * BL], orientation: "landscape" });
+    pages.forEach((c, i) => { if (i) doc.addPage([TW + 2 * BL, TH + 2 * BL], "landscape"); doc.addImage(jpg(c), "JPEG", 0, 0, TW + 2 * BL, TH + 2 * BL); });
+    return new Uint8Array(doc.output("arraybuffer"));
+  }
+  const csv = rows => new TextEncoder().encode("﻿" + ["Nummer;QR-Code"].concat(rows.map(t => `${t.number};T30.${t.code}`)).join("\r\n"));
   async function paperZip(p, state) {
-    if (!window.fflate) throw new Error("wird noch geladen – bitte gleich nochmal");
-    state("Erstelle Druckdateien …");
-    const a = await printAssets(), files = { "00_Vorderseite.png": await toBytes(drawFront(a, p.event)) };
-    for (const [t, kind] of paperList(p)) files[`${kind === "vip" ? "VIP" : "Freiticket"}_${t.number}.png`] = await toBytes(drawBack(a, p.event, t, kind));
-    save(new Blob([fflate.zipSync(files, { level: 0 })], { type: "application/zip" }), "TAKT30-Papiertickets-MOO.zip");
-    state(`Fertig: 1 Vorderseite + ${Object.keys(files).length - 1} Rückseiten.`);
+    if (!window.fflate || !window.jspdf) throw new Error("wird noch geladen – bitte gleich nochmal");
+    state("Erstelle Druckdaten … (dauert ein paar Sekunden)");
+    const a = await printAssets(), ev = p.event, back = drawBack(a);
+    const files = {
+      "1_VIP_Vorlage_ohne_Code.pdf": ticketPdf([drawTicket(a, ev, "vip", null), back]),
+      "2_Freiticket_Vorlage_ohne_Code.pdf": ticketPdf([drawTicket(a, ev, "own", null), back]),
+      "3_VIP_Codes.csv": csv(p.vip),
+      "4_Freiticket_Codes.csv": csv(p.own)
+    };
+    state("Erstelle alle Tickets mit fertigem QR-Code …");
+    files["5_Alle_Tickets_mit_QR_Vorderseiten.pdf"] = ticketPdf(paperList(p).map(([t, kind]) => drawTicket(a, ev, kind, t)));
+    files["6_Rueckseite_fuer_alle.pdf"] = ticketPdf([back]);
+    files["LIESMICH.txt"] = new TextEncoder().encode([
+      "TAKT Nr. 30 – Papiertickets",
+      "",
+      `Format: ${TW} × ${TH} mm (Querformat), Dateien mit ${BL} mm Beschnitt (${TW + 2 * BL} × ${TH + 2 * BL} mm), 4/4-farbig.`,
+      `Perforation (optional): senkrecht bei ${STUB} mm von links.`,
+      "",
+      "Variante A – Druckerei setzt die Codes ein (z. B. myticketprinting.eu, myflyer.de):",
+      "  Vorlage 1 bzw. 2 (Seite 1 = vorne, Seite 2 = hinten) + Code-Liste 3 bzw. 4 hochladen.",
+      `  QR-Code: ${QR.size} × ${QR.size} mm, linke obere Ecke bei x = ${QR.x} mm, y = ${QR.y} mm (ab oberer linker Ecke des Endformats).`,
+      `  Ticketnummer (Spalte „Nummer“) mittig unter dem QR-Code, Mitte x = ${(STUB + TW) / 2} mm, Grundlinie y = 61 mm, weiß, ca. 12 pt.`,
+      `  ${p.vip.length} VIP-Tickets und ${p.own.length} Freitickets – zwei Sorten.`,
+      "",
+      "Variante B – Druckerei druckt fertige Seiten (personalisiertes PDF):",
+      "  Datei 5 = alle Vorderseiten mit QR-Code (eine Seite pro Ticket), Datei 6 = Rückseite für alle.",
+      "",
+      "Jeder QR-Code gilt am Einlass genau einmal. Codes nicht veröffentlichen."
+    ].join("\r\n"));
+    save(new Blob([fflate.zipSync(files, { level: 0 })], { type: "application/zip" }), "TAKT30-Papiertickets-Druckdaten.zip");
+    state(`Fertig: Vorlagen, Code-Listen und ${p.vip.length + p.own.length} fertige Tickets.`);
   }
   async function paperPdf(p, state) {
     if (!window.jspdf) throw new Error("wird noch geladen – bitte gleich nochmal");
-    state("Erstelle PDF …");
+    state("Erstelle A4-PDF …");
     const a = await printAssets(), { jsPDF } = window.jspdf, doc = new jsPDF({ unit: "mm", format: "a4" });
-    const trim = c => { const t = document.createElement("canvas"); t.width = CW - 2 * BLEED; t.height = CH - 2 * BLEED; t.getContext("2d").drawImage(c, -BLEED, -BLEED); return t.toDataURL("image/jpeg", 0.93); };
-    const front = trim(drawFront(a, p.event)), list = paperList(p), W = 84, H = 55, X0 = (210 - 2 * W) / 2, Y0 = (297 - 5 * H) / 2;
-    const marks = () => { doc.setDrawColor(150); doc.setLineWidth(0.1); for (let i = 0; i <= 2; i++) { const x = X0 + i * W; doc.line(x, Y0 - 6, x, Y0 - 2); doc.line(x, Y0 + 5 * H + 2, x, Y0 + 5 * H + 6); } for (let j = 0; j <= 5; j++) { const y = Y0 + j * H; doc.line(X0 - 6, y, X0 - 2, y); doc.line(X0 + 2 * W + 2, y, X0 + 2 * W + 6, y); } };
-    for (let s = 0; s < list.length; s += 10) {
-      const chunk = list.slice(s, s + 10);
+    const trim = c => { const t = document.createElement("canvas"); t.width = PW - 2 * X(0); t.height = PH - 2 * X(0); t.getContext("2d").drawImage(c, -X(0), -X(0)); return jpg(t); };
+    const list = paperList(p), back = trim(drawBack(a)), X0 = 0, Y0 = (297 - 4 * TH) / 2;
+    const marks = () => { doc.setDrawColor(150); doc.setLineWidth(0.1); for (let j = 0; j <= 4; j++) { const y = Y0 + j * TH; doc.line(0, y, 3, y); doc.line(207, y, 210, y); } };
+    for (let s = 0; s < list.length; s += 4) {
+      const chunk = list.slice(s, s + 4);
       if (s) doc.addPage();
-      chunk.forEach((_, i) => doc.addImage(front, "JPEG", X0 + (i % 2) * W, Y0 + Math.floor(i / 2) * H, W, H));
+      chunk.forEach(([t, kind], i) => doc.addImage(trim(drawTicket(a, p.event, kind, t)), "JPEG", X0, Y0 + i * TH, TW, TH));
       marks(); doc.addPage();
-      chunk.forEach(([t, kind], i) => doc.addImage(trim(drawBack(a, p.event, t, kind)), "JPEG", X0 + (1 - i % 2) * W, Y0 + Math.floor(i / 2) * H, W, H));   // gespiegelt für Wenden an der langen Kante
+      chunk.forEach((_, i) => doc.addImage(back, "JPEG", X0, Y0 + i * TH, TW, TH));
       marks();
-      state(`Erstelle PDF … ${Math.min(s + 10, list.length)} / ${list.length}`);
+      state(`Erstelle A4-PDF … ${Math.min(s + 4, list.length)} / ${list.length}`);
     }
-    doc.save("TAKT30-Papiertickets-A4.pdf");
-    state(`Fertig: ${list.length} Karten auf ${Math.ceil(list.length / 10)} Bögen (Vorder- und Rückseite).`);
+    doc.save("TAKT30-Papiertickets-A4-selbst-drucken.pdf");
+    state(`Fertig: ${list.length} Tickets auf ${Math.ceil(list.length / 4)} A4-Bögen (Vorder- und Rückseite).`);
   }
 
   const kpi = (label, value, sub = "") => `<div class="kpi"><span>${label}</span><b>${value}</b>${sub ? `<small>${esc(sub)}</small>` : ""}</div>`;
