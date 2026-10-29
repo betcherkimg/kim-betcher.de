@@ -181,8 +181,10 @@ async function counts(env, settings) {
       (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND status != 'cancelled' AND first_name IS NOT NULL) AS free_assigned,
       (SELECT COUNT(*) FROM tickets WHERE category = 'helper' AND status != 'cancelled') AS helper_issued,
       (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND order_id IS NULL AND paper = 0 AND status != 'cancelled') AS regular_comp,
-      (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 1 AND status != 'cancelled') AS paper_own,
-      (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND paper = 1 AND status != 'cancelled') AS paper_vip,
+      (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 1 AND status = 'valid') AS paper_own,
+      (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND paper = 1 AND status = 'valid') AS paper_vip,
+      (SELECT COUNT(*) FROM tickets WHERE paper = 1 AND status = 'blocked') AS paper_blocked,
+      (SELECT COUNT(*) FROM tickets WHERE paper = 1 AND status != 'cancelled') AS paper_total,
       (SELECT COUNT(*) FROM tickets WHERE paper = 1 AND checked_in_at IS NOT NULL AND status != 'cancelled') AS paper_checked_in,
       (SELECT COUNT(*) FROM tickets WHERE checked_in_at IS NOT NULL AND status != 'cancelled') AS checked_in,
       (SELECT COUNT(*) FROM tickets WHERE status = 'valid') AS expected,
@@ -924,20 +926,26 @@ async function createFreeTicket(env, request, who) {
 }
 
 // Papiertickets: 30 VIP (2TAKT) + 20 eigene Freitickets – beide zusätzlich zu den 60 online. Idempotent.
-const PAPER_VIP = 30, PAPER_OWN = 20;
+const PAPER_VIP_TOTAL = 50, PAPER_OWN_TOTAL = 50; // gedruckt (Mindestmenge der Druckerei 100), alle sofort gültig
+const PAPER_VIP = PAPER_VIP_TOTAL, PAPER_OWN = PAPER_OWN_TOTAL;
 async function paperSetup(env, who) {
   const t = nowMs();
   await run(env, `UPDATE tickets SET paper = 1, updated_at = ? WHERE category = 'free' AND status != 'cancelled' AND paper = 0`, iso(t));
-  for (let i = 0; i < PAPER_VIP; i++) {
-    const r = await run(env, `INSERT INTO tickets (number, category, code, view_key, status, is_test, paper, created_at, updated_at)
-      SELECT printf('2T-%02d', COALESCE((SELECT MAX(CAST(substr(number, 4) AS INTEGER)) FROM tickets WHERE category = 'free'), 0) + 1), 'free', ?, ?, 'valid', 0, 1, ?, ?
-      WHERE (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND status != 'cancelled') < ?`, randomCode(26), randomCode(26), iso(t), iso(t), Math.min(FREE_CAP, PAPER_VIP));
+  // Alle Papiertickets sind gültig (Sperren nur einzeln bei Verlust)
+  for (let i = 0; i < PAPER_VIP_TOTAL; i++) {
+    const r = await run(env, `INSERT INTO tickets (number, category, code, view_key, status, is_test, paper, note, created_at, updated_at)
+      SELECT printf('2T-%02d', COALESCE((SELECT MAX(CAST(substr(number, 4) AS INTEGER)) FROM tickets WHERE category = 'free'), 0) + 1), 'free', ?, ?,
+        CASE WHEN (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND status != 'cancelled') < ? THEN 'valid' ELSE 'blocked' END, 0, 1,
+        CASE WHEN (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND status != 'cancelled') < ? THEN 'VIP (Papier)' ELSE 'VIP (Papier)' END, ?, ?
+      WHERE (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND status != 'cancelled') < ?`, randomCode(26), randomCode(26), PAPER_VIP, PAPER_VIP, iso(t), iso(t), PAPER_VIP_TOTAL);
     if (!changes(r)) break;
   }
-  for (let i = 0; i < PAPER_OWN; i++) {
+  for (let i = 0; i < PAPER_OWN_TOTAL; i++) {
     const r = await run(env, `INSERT INTO tickets (number, category, code, view_key, status, is_test, paper, note, created_at, updated_at)
-      SELECT printf('FK-%02d', COALESCE((SELECT MAX(CAST(substr(number, 4) AS INTEGER)) FROM tickets WHERE number LIKE 'FK-%'), 0) + 1), 'regular', ?, ?, 'valid', 0, 1, 'Freiticket Kim (Papier)', ?, ?
-      WHERE (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 1 AND status != 'cancelled') < ?`, randomCode(26), randomCode(26), iso(t), iso(t), PAPER_OWN);
+      SELECT printf('FK-%02d', COALESCE((SELECT MAX(CAST(substr(number, 4) AS INTEGER)) FROM tickets WHERE number LIKE 'FK-%'), 0) + 1), 'regular', ?, ?,
+        CASE WHEN (SELECT COUNT(*) FROM tickets WHERE number LIKE 'FK-%' AND status != 'cancelled') < ? THEN 'valid' ELSE 'blocked' END, 0, 1,
+        CASE WHEN (SELECT COUNT(*) FROM tickets WHERE number LIKE 'FK-%' AND status != 'cancelled') < ? THEN 'Freiticket Kim (Papier)' ELSE 'Freiticket Kim (Papier)' END, ?, ?
+      WHERE (SELECT COUNT(*) FROM tickets WHERE number LIKE 'FK-%' AND status != 'cancelled') < ?`, randomCode(26), randomCode(26), PAPER_OWN, PAPER_OWN, iso(t), iso(t), PAPER_OWN_TOTAL);
     if (!changes(r)) break;
   }
   const c = await counts(env);

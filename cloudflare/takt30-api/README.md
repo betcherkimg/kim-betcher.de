@@ -8,10 +8,10 @@ Die Oberfläche (GitHub Pages): `taktnr30/tickets/` (Startseite, `ticket/`, `bed
 
 - 60 Online-Tickets: 1 Ticket 20 €, 2 Tickets 35 €. Höchstens 2 pro Person – bei persönlichen Einladungen pro Einladung,
   beim gemeinsamen Ticket-Link pro E-Mail-Adresse (Spalte `holder`). Kostenlose Online-Tickets vergibt der Admin aus denselben 60.
-- Papiertickets (Spalte `paper`): 30 VIP · 2TAKT (`2T-01…`) und 20 Freitickets Kim (`FK-01…`), zusätzlich zu den 60,
+- Papiertickets (Spalte `paper`): 50 VIP · 2TAKT (`2T-01…`) und 50 Freitickets Kim (`FK-01…`), alle gültig, zusätzlich zu den 60,
   nicht in der Admin-Ticketliste. Druckdateien (MOO-ZIP, A4-PDF) erzeugt der Admin im Browser; sperrbar per Nummer.
 - Helfer-Tickets: eigenes Kontingent (Standard 13: 8 Bar, 5 Ticketscan; im Admin einstellbar).
-- Maximal 110 Gäste + 13 Helfer.
+- Maximal 160 Gäste + 13 Helfer.
 - Reservierung 15 Minuten, atomar geprüft. Ein neuer Kaufversuch desselben Käufers gibt seinen unbezahlten alten frei.
   Eine verspätete Zahlung ohne freien Platz führt zu automatischer Erstattung (PayPal) bzw. „Erstattung nötig“.
 

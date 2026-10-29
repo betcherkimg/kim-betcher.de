@@ -75,7 +75,7 @@ try:
         admin.click("#cForm button.btn-uv"); admin.wait_for_selector("#toast:has-text('Gespeichert')")
         admin.click("#lu .lineup-row:last-child [data-del]"); admin.click("#cForm button.btn-uv"); admin.wait_for_timeout(300)
         admin.click("nav button[data-p=paper]"); admin.wait_for_selector("#zipBtn")
-        assert "30" in admin.inner_text(".kpis") and "20" in admin.inner_text(".kpis")
+        assert admin.inner_text(".kpis").count("50") >= 2
         with admin.expect_download(timeout=60000) as dz: admin.click("#zipBtn")
         dz.value.save_as(str(OUT / "TAKT30-Papiertickets-Druckdaten.zip"))
         with admin.expect_download(timeout=120000) as dp: admin.click("#pdfBtn")
@@ -218,7 +218,7 @@ fs.writeFileSync('{OUT}/qr.pgm',Buffer.concat([Buffer.from('P5\\n'+W+' '+H+'\\n2
         admin.click("nav button[data-p=overview]")
         admin.wait_for_selector(".kpi")
         txt = admin.inner_text("#main")
-        assert "3 / 60" in txt and "2 verkauft · 1 kostenlos" in txt and "30 VIP · 20 Freitickets" in txt, txt[:500]
+        assert "3 / 60" in txt and "2 verkauft · 1 kostenlos" in txt and "50 VIP · 49 Freitickets" in txt, txt[:500]
         admin.screenshot(path=str(OUT / "admin-uebersicht-nach-tests.png"), full_page=True)
         admin.click("nav button[data-p=guests]"); admin.wait_for_selector("#trows tr")
         admin.screenshot(path=str(OUT / "admin-gaeste.png"))

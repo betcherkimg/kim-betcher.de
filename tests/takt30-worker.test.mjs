@@ -481,9 +481,10 @@ test("Papiertickets: 30 VIP + 20 eigene, zusätzlich zu den 60, nicht in der Adm
   const t = await setup(); await openTestSale(t);
   await t.admin("POST", "/admin/free-tickets", { count: 5 });           // vorhandene Freitickets werden übernommen
   const p = await t.admin("GET", "/admin/paper");
-  assert.equal(p.data.vip.length, 30); assert.equal(p.data.own.length, 20);
+  assert.equal(p.data.vip.length, 50); assert.equal(p.data.own.length, 50);
+  assert.ok([...p.data.vip, ...p.data.own].every(x => x.status === "valid")); assert.equal(p.data.own[49].number, "FK-50");
   assert.equal(p.data.own[0].number, "FK-01"); assert.equal(p.data.vip[0].number, "2T-01");
-  assert.equal((await t.admin("GET", "/admin/paper")).data.vip.length, 30);   // idempotent
+  assert.equal((await t.admin("GET", "/admin/paper")).data.vip.length, 50);   // idempotent
   assert.equal((await t.call("GET", "/public/event")).data.sale.available, 60);
   assert.equal((await t.admin("GET", "/admin/tickets")).data.length, 0);
   const key = (await t.admin("POST", "/admin/scanners", { name: "Tür" })).data.url.split("#k=")[1];
@@ -493,7 +494,9 @@ test("Papiertickets: 30 VIP + 20 eigene, zusätzlich zu den 60, nicht in der Adm
   await t.admin("POST", "/admin/paper/block", { number: "2t-05" });
   assert.equal((await t.call("POST", "/scan/check", { code: p.data.vip[4].code }, { scanner: key })).data.reason, "Ticket gesperrt");
   const c = (await t.admin("GET", "/admin/dashboard")).data.counts;
-  assert.equal(c.paper_vip, 30); assert.equal(c.paper_own, 20); assert.equal(c.paper_checked_in, 1);
+  assert.equal(c.paper_vip, 49); assert.equal(c.paper_own, 50); assert.equal(c.paper_checked_in, 1); assert.equal(c.paper_blocked, 1);
+  await t.admin("POST", "/admin/paper/block", { number: "2T-05", unblock: true });
+  assert.equal((await t.call("POST", "/scan/check", { code: p.data.vip[4].code }, { scanner: key })).data.result, "green");
   // Online-Verkauf trotzdem voll 60, Ticketnummern T30-001 …
   const co = await buy(t, await invite(t));
   await t.call("POST", "/public/test-pay", { access_key: co.data.access_key });
