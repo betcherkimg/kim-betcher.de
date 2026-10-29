@@ -510,8 +510,10 @@ test("Alles zurücksetzen: nur Hauptadmin, nur ohne echte Zahlungen, Ticket-Link
   await t.admin("POST", "/admin/free-tickets", { count: 30 });
   const link = (await t.admin("GET", "/admin/dashboard")).data.group_link.url;
   assert.equal((await t.admin("POST", "/admin/reset", { confirm: "ja" })).status, 400);
+  const paperBefore = t.db.prepare("SELECT code FROM tickets WHERE paper = 1 ORDER BY number").all().map(r => r.code);
   assert.equal((await t.admin("POST", "/admin/reset", { confirm: "ALLES LÖSCHEN" })).status, 200);
-  assert.equal(t.db.prepare("SELECT COUNT(*) n FROM tickets").get().n, 0);
+  assert.equal(t.db.prepare("SELECT COUNT(*) n FROM tickets WHERE paper = 0").get().n, 0);
+  assert.deepEqual(t.db.prepare("SELECT code FROM tickets WHERE paper = 1 ORDER BY number").all().map(r => r.code), paperBefore);
   assert.equal(t.db.prepare("SELECT COUNT(*) n FROM invitations").get().n, 1);
   assert.equal((await t.admin("GET", "/admin/dashboard")).data.group_link.url, link);
   assert.equal((await t.call("GET", "/public/event")).data.sale.available, 60);

@@ -363,7 +363,7 @@
         <p class="note">${d.mail_ready ? "Eingerichtet. Schick dir zur Kontrolle eine Testmail." : "Noch nicht eingerichtet – es fehlen RESEND_API_KEY und MAIL_FROM im Worker."}</p>
         <form class="card form" id="mailForm"><label class="field"><span>Empfänger</span><input class="input sm" type="email" name="to" required placeholder="du@beispiel.de"></label><div class="field"><button class="btn btn-uv btn-small" ${d.mail_ready ? "" : "disabled"}>Testmail senden</button></div></form>
         <h2>Alles zurücksetzen</h2>
-        <p class="note">Löscht alle Tickets, Bestellungen, Reservierungen und persönlichen Einladungen – für einen sauberen Start vor dem echten Verkauf. Der Ticket-Link, Texte und Einstellungen bleiben. Gesperrt, sobald es echte bezahlte Bestellungen gibt. Die Papiertickets werden danach neu erzeugt – bereits gedruckte wären dann ungültig.</p>
+        <p class="note">Löscht alle Tickets, Bestellungen, Reservierungen und persönlichen Einladungen – für einen sauberen Start vor dem echten Verkauf. Der Ticket-Link, Texte und Einstellungen bleiben. Gesperrt, sobald es echte bezahlte Bestellungen gibt. Die Papiertickets bleiben dabei immer erhalten – die gedruckten Codes gelten weiter.</p>
         <div class="acts"><button class="danger" id="resetAll">Alles zurücksetzen</button></div>
         <h2>Export</h2><div class="acts"><button data-x="guests">Gästeliste (CSV)</button><button data-x="orders">Bestellungen (CSV)</button><button data-x="invitations">Einladungen (CSV)</button></div>
         <h2>Testdaten</h2><p class="note">Löscht alle Testbestellungen und Testtickets (${d.counts.test_tickets}). Vorher den Testmodus beenden.</p>

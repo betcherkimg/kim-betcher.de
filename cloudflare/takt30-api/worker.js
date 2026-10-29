@@ -1138,14 +1138,17 @@ async function purgeTestData(env, who) {
   return json({ ok: true, orders: list.length });
 }
 
-// Alles zurücksetzen (vor dem echten Verkauf): löscht alle Tickets, Bestellungen und persönlichen Einladungen.
+// Alles zurücksetzen (vor dem echten Verkauf): löscht Online-/Helfer-Tickets, Bestellungen und persönlichen Einladungen. Papiertickets bleiben.
 async function resetAll(env, request, who) {
   const b = await readJson(request) || {};
   if (b.confirm !== "ALLES LÖSCHEN") return fail("Bitte zur Bestätigung ALLES LÖSCHEN eingeben.");
   const real = await first(env, `SELECT COUNT(*) AS n FROM orders WHERE status = 'paid' AND is_test = 0`);
   if (real.n) return fail(`Es gibt ${real.n} echte, bezahlte Bestellungen – Zurücksetzen ist gesperrt.`, 409);
   await env.DB.batch([
-    `DELETE FROM checkins`, `DELETE FROM retired_codes`, `DELETE FROM tickets`, `DELETE FROM reservations`,
+    // Papiertickets sind gedruckt – sie bleiben immer erhalten (nur ihre Check-ins werden zurückgesetzt)
+    `DELETE FROM checkins`, `DELETE FROM retired_codes WHERE ticket_id NOT IN (SELECT id FROM tickets WHERE paper = 1)`,
+    `UPDATE tickets SET checked_in_at = NULL, checked_in_by = NULL WHERE paper = 1`,
+    `DELETE FROM tickets WHERE paper = 0`, `DELETE FROM reservations`,
     `DELETE FROM payments`, `DELETE FROM guests`, `DELETE FROM orders`, `DELETE FROM webhook_events`,
     `DELETE FROM invitations WHERE kind != 'group'`
   ].map(q => env.DB.prepare(q)));
