@@ -66,6 +66,9 @@
   .jobs input { accent-color: var(--uv); width: 20px; height: 20px; }
   .jobs small { display: block; color: var(--dim); font-size: 13px; }
   .pay { margin-top: 18px; }
+  /* PayPal-Buttons: helle Zahlkarte statt weißem Kasten; color-scheme light, damit der PayPal-Rahmen nicht deckend weiß wird */
+  #ppButtons { color-scheme: light; background: #fff; border-radius: 10px; padding: 16px 16px 6px; box-shadow: 0 0 0 1px rgba(157,77,255,.35), 0 12px 40px -12px rgba(157,77,255,.45); }
+  #ppButtons:empty { display: none; }
   .pay .sum { display: flex; justify-content: space-between; font-family: var(--mono); padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 0 0 16px; }
   .mine { display: grid; gap: 10px; }
   .mine a.tk { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px; border: 1px solid var(--uv); border-radius: var(--radius); text-decoration: none; color: var(--ink); background: var(--uv-deep); }
@@ -413,7 +416,7 @@
     try {
       const paypal = await loadPayPal();
       await paypal.Buttons({
-        style: { layout: "vertical", color: "white", shape: "rect", label: "pay" },
+        style: { layout: "vertical", color: "black", shape: "rect", label: "pay", height: 48 },
         createOrder: async () => {
           showErr("#payErr", "");
           current = await api("/public/checkout", { method: "POST", body: payload });
