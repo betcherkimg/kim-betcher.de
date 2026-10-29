@@ -2552,7 +2552,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
               <label for="callSort">Sortieren</label>
               <div class="sort-pair">
                 <select id="callSort">
-                  <option value="">Eingang</option>
+                  <option value="">Zuletzt hinzugefügt</option>
                   <option value="last">Nachname</option>
                   <option value="first">Vorname</option>
                   <option value="employee">Mitarbeiter</option>
@@ -7726,7 +7726,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   // Filter: „Zu klären“ (gehaltene Kontakte) oder ein Skript-Thema
   const FILTER_TOPICS = TOPIC_KEYS.map(key => [key, key === "eigenes_skript" ? "Eigenes Skript" : CALL_TOPICS[key].label]);
-  const CALL_VIEW_KEY = "smartadm.office.callView.v1";
+  const CALL_VIEW_KEY = "smartadm.office.callView.v2";
+  const CALL_VIEW_KEY_OLD = "smartadm.office.callView.v1"; // v1-Sortierung wird nicht übernommen: Standard ist jetzt „Zuletzt hinzugefügt“
 
   const topicOptions = () => `<optgroup label="Skript">${FILTER_TOPICS.map(([key, label]) => `<option value="topic:${key}">${esc(label)}</option>`).join("")}
       <option value="topic:none">Thema fehlt</option></optgroup>`;
@@ -7755,6 +7756,25 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   };
   const employeeOf = c => c.display_name || c.email || "";
   const compareDe = (a, b) => String(a).localeCompare(String(b), "de", { sensitivity: "base" });
+
+  // „In Bearbeitung“: zuletzt (wieder) zugewiesene Kontakte oben. Erneut zugewiesene Kontakte
+  // (Kundenarchiv, Rückläufer, Kein-Kontakt) zählen ab dem Zeitpunkt, an dem sie wieder offen wurden –
+  // abgelesen am Office-Verlauf; ohne Verlauf gilt das Anlagedatum.
+  function assignedAt(c, entries) {
+    let at = c.created_at || "", prevOpen = null;
+    for (const h of entries) {
+      const isOpen = h.contact?.status === "open";
+      if (isOpen && prevOpen === false) at = h.recorded_at || at;
+      prevOpen = isOpen;
+    }
+    return at;
+  }
+  function newestAssignedFirst(items) {
+    const byId = new Map();
+    asArray(state.contactHistory).forEach(h => { if (h.source === "call") (byId.get(String(h.source_id)) || byId.set(String(h.source_id), []).get(String(h.source_id))).push(h); });
+    const at = new Map(items.map(c => [c.id, assignedAt(c, byId.get(String(c.id)) || [])]));
+    return [...items].sort((a, b) => String(at.get(b.id)).localeCompare(String(at.get(a.id))) || b.id - a.id);
+  }
 
   function sortCalls(items, prefix = "call") {
     const field = $(prefix + "Sort").value;
@@ -7796,8 +7816,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function restoreCallView() {
     renderCallFilterOptions();
     let saved = {};
-    try { saved = JSON.parse(localStorage.getItem(CALL_VIEW_KEY) || "{}"); } catch { /* Standardansicht */ }
-    if (saved && "filter" in saved) saved = { call: saved }; // frühere Speicherform
+    try {
+      const current = localStorage.getItem(CALL_VIEW_KEY);
+      saved = JSON.parse(current || localStorage.getItem(CALL_VIEW_KEY_OLD) || "{}");
+      if (saved && "filter" in saved) saved = { call: saved }; // frühere Speicherform
+      if (!current && saved?.call) saved.call = { ...saved.call, sort: "", dir: "asc" };
+    } catch { /* Standardansicht */ }
     VIEW_PREFIXES.forEach(prefix => {
       const view = saved?.[prefix] || {};
       $(prefix + "Filter").value = view.filter || "";
@@ -7840,9 +7864,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function renderAdminCalls() {
     const query = nameQuery("callSearch");
     const filter = $("callFilter").value;
-    const found = items => sortCalls(items.filter(c => matchesName(c, query) && matchesFilter(c, filter)));
+    const found = (items, scope) => {
+      const sorted = sortCalls(items.filter(c => matchesName(c, query) && matchesFilter(c, filter)));
+      return scope === "open" && !$("callSort").value ? newestAssignedFirst(sorted) : sorted;
+    };
     const narrowed = hasQuery(query) || filter;
-    const hits = Object.fromEntries(ADMIN_SCOPES.map(([scope]) => [scope, found(state.adminCalls[scope])]));
+    const hits = Object.fromEntries(ADMIN_SCOPES.map(([scope]) => [scope, found(state.adminCalls[scope], scope)]));
     const list = (scope, row, empty) => hits[scope].length
       ? hits[scope].map(row).join("")
       : `<div class="notice">${narrowed ? "Kein Treffer." : empty}</div>`;
