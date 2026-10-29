@@ -276,7 +276,7 @@ test("Rechte: anonym, fremdes Konto, Ticketverwaltung, Scanner-Zugang", async ()
 
 test("Helfer: eigenes Kontingent von 20, Aufgabe wählbar, zählt zum Einladungslimit, nicht zu den 70", async () => {
   const t = await setup(); await openTestSale(t);
-  await t.admin("PUT", "/admin/settings", { helper_jobs: JSON.stringify([{ name: "Bar", slots: 1 }, { name: "Ticketscanner", slots: 0 }]) });
+  await t.admin("PUT", "/admin/settings", { helper_cap: "20", helper_jobs: JSON.stringify([{ name: "Bar", slots: 1 }, { name: "Ticketscanner", slots: 0 }]) });
   const code = await invite(t);
   const h = await t.call("POST", "/public/helper", { invite: code, first_name: "Lisa", last_name: "Muster", email: "l@example.org", job: "Bar", accept: true });
   assert.equal(h.status, 201); assert.equal(h.data.number, "H-01");
@@ -406,4 +406,23 @@ test("PayPal-Sandbox: Käufe sind Testtickets und zählen nicht als Umsatz", asy
   assert.equal(d.revenue_cents, 0); assert.equal(d.test_revenue_cents, 2000);
   const key = (await t.admin("POST", "/admin/scanners", { name: "Tür" })).data.url.split("#k=")[1];
   assert.equal((await t.call("POST", "/scan/check", { code: cap.data.tickets[0].code }, { scanner: key })).data.result, "green");
+});
+
+test("Helfer-Standard: 13 Plätze, 8 Bar und 5 Ticketscan; alte Standard-Aufgaben werden übernommen", async () => {
+  const t = await setup();
+  const ev = (await t.call("GET", "/public/event")).data;
+  assert.equal(ev.helpers.available, 13);
+  assert.deepEqual(ev.helpers.jobs.map(j => [j.name, j.slots]), [["Bar", 8], ["Ticketscan", 5]]);
+  for (let i = 0; i < 5; i++) {
+    const r = await t.call("POST", "/public/helper", { invite: await invite(t, `S${i}`), first_name: "S", last_name: `${i}`, email: "s@example.org", job: "Ticketscan", accept: true }, { ip: `6.6.${i}.6` });
+    assert.equal(r.status, 201);
+  }
+  const full = await t.call("POST", "/public/helper", { invite: await invite(t, "S6"), first_name: "S", last_name: "6", email: "s@example.org", job: "Ticketscan", accept: true }, { ip: "6.6.9.6" });
+  assert.equal(full.data.code, "JOB_FULL");
+  assert.equal((await t.admin("PUT", "/admin/settings", { helper_cap: "4" })).status, 409);
+  // Bestand mit den alten Standard-Aufgaben (0 Plätze) wird beim Start umgestellt
+  const t2 = await setup();
+  t2.db.exec(`CREATE TABLE event_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT, updated_by TEXT)`);
+  t2.db.prepare("INSERT INTO event_settings VALUES ('helper_jobs', ?, '', 'system')").run(JSON.stringify([{ name: "Bar", slots: 0 }, { name: "Ticketscanner", slots: 0 }]));
+  assert.deepEqual((await t2.call("GET", "/public/event")).data.helpers.jobs.map(j => j.slots), [8, 5]);
 });

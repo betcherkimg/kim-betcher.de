@@ -242,16 +242,18 @@
 
     async helpers(m) {
       const [list, s] = await Promise.all([call("/admin/tickets?category=helper"), call("/admin/settings")]);
+      const cap = +s.helper_cap || 0;
       let jobs = []; try { jobs = JSON.parse(s.helper_jobs); } catch {}
       const by = {}; list.filter(t => t.status !== "cancelled").forEach(t => (by[t.helper_job] ||= []).push(t));
       m.innerHTML = `<h1>Helfer</h1>
-        <div class="kpis">${jobs.map(j => kpi(j.name, `${(by[j.name] || []).length}<small>${j.slots ? " / " + j.slots : ""}</small>`)).join("")}${kpi("Gesamt", `${list.filter(t => t.status !== "cancelled").length}<small> / 20</small>`)}</div>
+        <div class="kpis">${jobs.map(j => kpi(j.name, `${(by[j.name] || []).length}<small>${j.slots ? " / " + j.slots : ""}</small>`)).join("")}${kpi("Gesamt", `${list.filter(t => t.status !== "cancelled").length}<small> / ${cap}</small>`)}</div>
         <h2>Aufgaben</h2>
         <form id="jobForm"><div id="jobRows"></div>
         <div class="acts" style="margin:6px 0 14px"><button type="button" id="addJob">+ Aufgabe</button></div>
+        <label class="field" style="max-width:220px"><span>Helferplätze gesamt</span><input class="input sm" type="number" name="cap" min="0" max="50" value="${cap}"></label>
         <label class="check" style="margin-bottom:14px"><input type="checkbox" name="open" ${s.helper_signup === "1" ? "checked" : ""}><span>Helfer-Anmeldung über Einladungslinks ist offen</span></label>
         <button class="btn btn-uv btn-small">Speichern</button></form>
-        <p class="note">Plätze 0 = ohne Begrenzung (insgesamt gibt es 20 Helfer-Tickets).</p>
+        <p class="note">Plätze je Aufgabe: 0 = ohne eigene Grenze. Helfer-Tickets kommen zusätzlich zu den 70 Tickets und 30 Freitickets.</p>
         <h2>Eingetragene Helfer</h2><div id="tbl"></div>`;
       const rowHtml = j => `<div class="lineup-row"><input class="input sm" name="slots" type="number" min="0" max="20" value="${+j.slots || 0}" aria-label="Plätze"><input class="input sm" name="jname" value="${esc(j.name)}" placeholder="Aufgabe" maxlength="40" aria-label="Aufgabe"><input class="input sm note-in" name="info" value="${esc(j.info || "")}" placeholder="Info (optional)" maxlength="120" aria-label="Info"><button type="button" class="lnk" data-del>✕</button></div>`;
       $("#jobRows").innerHTML = jobs.map(rowHtml).join("");
@@ -261,7 +263,7 @@
       $("#jobForm").onsubmit = async e => {
         e.preventDefault();
         const list = $$("#jobRows .lineup-row").map(r => ({ name: r.querySelector("[name=jname]").value.trim(), slots: +r.querySelector("[name=slots]").value || 0, info: r.querySelector("[name=info]").value.trim() })).filter(j => j.name);
-        await act(() => call("/admin/settings", { method: "PUT", body: { helper_jobs: JSON.stringify(list), helper_signup: e.target.open.checked ? "1" : "0" } }), "Gespeichert"); render();
+        await act(() => call("/admin/settings", { method: "PUT", body: { helper_jobs: JSON.stringify(list), helper_cap: String(e.target.cap.value || 0), helper_signup: e.target.open.checked ? "1" : "0" } }), "Gespeichert"); render();
       };
       await ticketTable($("#tbl"), "helper", null, list);
     },

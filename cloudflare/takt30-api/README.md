@@ -8,7 +8,7 @@ Die Oberfläche (GitHub Pages): `taktnr30/tickets/` (Startseite, `ticket/`, `bed
 
 - 70 reguläre Tickets: 1 Ticket 20 €, 2 Tickets 35 €. Höchstens 2 Plätze je Einladung, auch über mehrere Käufe.
 - 30 2TAKT-Freitickets, nur vom Admin. Nie mehr als 30 gleichzeitig gültig.
-- 20 Helfer-Tickets, eigenes Kontingent. Anmeldung über den Einladungslink; ein Helferplatz zählt zum
+- Helfer-Tickets, eigenes Kontingent (Standard 13: 8 Bar, 5 Ticketscan; im Admin einstellbar). Anmeldung über den Einladungslink; ein Helferplatz zählt zum
   2er-Limit der Einladung. Aufgaben und Plätze je Aufgabe pflegt der Admin.
 - Reservierung 15 Minuten. Gesamt- und Einladungskontingent werden in einer atomaren SQL-Anweisung geprüft.
   Eine verspätete Zahlung ohne freien Platz führt zu automatischer Erstattung (PayPal) bzw. „Erstattung nötig“.

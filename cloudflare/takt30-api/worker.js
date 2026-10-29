@@ -10,7 +10,8 @@ const CLERK_JWKS_URL = `${CLERK_ISSUER}/.well-known/jwks.json`;
 
 const REGULAR_CAP = 70;          // reguläres Kontingent
 const FREE_CAP = 30;             // 2TAKT-Freitickets
-const HELPER_CAP = 20;           // Helfer-Tickets (eigenes Kontingent)
+const HELPER_CAP_MAX = 50;       // Obergrenze für das einstellbare Helfer-Kontingent
+const helperCap = s => Math.min(Math.max(Number(s?.helper_cap) || 0, 0), HELPER_CAP_MAX);
 const MAX_PER_INVITE = 2;        // nie mehr als 2 Tickets je Einladung
 const PRICE_CENTS = { 1: 2000, 2: 3500 };   // 1 Ticket 20 €, 2 Tickets 35 €
 const RESERVATION_MS = 15 * 60 * 1000;      // Bezahlfenster
@@ -38,12 +39,13 @@ const DEFAULT_SETTINGS = {
   sale_mode: "closed",            // closed | test | live
   show_countdown: "1",
   helper_signup: "1",
-  helper_jobs: JSON.stringify([{ name: "Bar", slots: 0 }, { name: "Ticketscanner", slots: 0 }])
+  helper_cap: "13",
+  helper_jobs: JSON.stringify([{ name: "Bar", slots: 8 }, { name: "Ticketscan", slots: 5 }])
 };
 const SETTING_LIMITS = {
   event_date: 10, doors_time: 5, start_time: 5, place_public: 120, venue_name: 120, venue_address: 160,
   intro_title: 120, intro_text: 600, lineup: 4000, lineup_note: 80, contact_name: 80, contact_phone: 40,
-  contact_email: 120, sale_mode: 6, show_countdown: 1, helper_signup: 1, helper_jobs: 2000
+  contact_email: 120, sale_mode: 6, show_countdown: 1, helper_signup: 1, helper_cap: 2, helper_jobs: 2000
 };
 
 /* ================= Antworten ================= */
@@ -118,6 +120,8 @@ async function ensureSchema(env) {
   const rows = Object.entries(DEFAULT_SETTINGS).map(([k, v]) =>
     env.DB.prepare(`INSERT OR IGNORE INTO event_settings (key, value, updated_at, updated_by) VALUES (?, ?, ?, 'system')`).bind(k, v, iso()));
   await env.DB.batch(rows);
+  await run(env, `UPDATE event_settings SET value = ?, updated_at = ?, updated_by = 'system' WHERE key = 'helper_jobs' AND value = ?`,
+    DEFAULT_SETTINGS.helper_jobs, iso(), JSON.stringify([{ name: "Bar", slots: 0 }, { name: "Ticketscanner", slots: 0 }]));
   schemaReady = true;
 }
 
@@ -134,7 +138,8 @@ const SQL_REGULAR_TAKEN = (alias = "") => `(
   (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND status != 'cancelled')
   + (SELECT COALESCE(SUM(quantity), 0) FROM reservations r${alias} WHERE r${alias}.state = 'active' AND r${alias}.expires_at > ?))`;
 
-async function counts(env) {
+async function counts(env, settings) {
+  const cap = helperCap(settings || await getSettings(env));
   const t = nowMs();
   const row = await first(env, `SELECT
       (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND status != 'cancelled') AS regular_issued,
@@ -150,7 +155,7 @@ async function counts(env) {
       (SELECT COUNT(*) FROM orders WHERE status = 'refund_required') AS refund_required,
       (SELECT COUNT(*) FROM orders WHERE status = 'refunded') AS refunded`, t);
   const available = Math.max(0, REGULAR_CAP - row.regular_issued - row.reserved);
-  return { ...row, regular_cap: REGULAR_CAP, free_cap: FREE_CAP, helper_cap: HELPER_CAP, helper_available: Math.max(0, HELPER_CAP - row.helper_issued), available };
+  return { ...row, regular_cap: REGULAR_CAP, free_cap: FREE_CAP, helper_cap: cap, helper_available: Math.max(0, cap - row.helper_issued), available };
 }
 
 /* ================= Rate Limiting & Turnstile ================= */
@@ -323,7 +328,7 @@ async function helperSignup(env, request, ctx) {
         <= (SELECT max_tickets FROM invitations WHERE id = ? AND status = 'active')
       AND NOT EXISTS (SELECT 1 FROM tickets WHERE invitation_id = ? AND helper_job IS NOT NULL AND status != 'cancelled')`,
     code, view, inv.id, job.name, cleanName(b.first_name), cleanName(b.last_name), String(b.email).trim().toLowerCase(), iso(t), iso(t),
-    HELPER_CAP, job.slots, job.name, job.slots, inv.id, inv.id, t, inv.id, inv.id).catch(() => null);
+    helperCap(s), job.slots, job.name, job.slots, inv.id, inv.id, t, inv.id, inv.id).catch(() => null);
   if (!r || !changes(r)) {
     const c = await counts(env);
     if (c.helper_available <= 0) return fail("Alle Helferplätze sind schon vergeben – danke trotzdem!", 409, "HELPER_FULL");
@@ -965,10 +970,16 @@ async function updateSettings(env, request, who) {
     if (k === "helper_jobs") {
       let list; try { list = JSON.parse(val); } catch { return fail("Helfer-Aufgaben ungültig."); }
       if (!Array.isArray(list) || list.length > 15) return fail("Helfer-Aufgaben ungültig.");
-      list = list.map(x => ({ name: cleanName(x?.name).slice(0, 40), slots: Math.min(Math.max(Number(x?.slots) || 0, 0), HELPER_CAP), info: String(x?.info || "").slice(0, 120) })).filter(x => x.name);
+      list = list.map(x => ({ name: cleanName(x?.name).slice(0, 40), slots: Math.min(Math.max(Number(x?.slots) || 0, 0), HELPER_CAP_MAX), info: String(x?.info || "").slice(0, 120) })).filter(x => x.name);
       val = JSON.stringify(list);
     }
     if (k === "helper_signup" && !["0", "1"].includes(val)) return fail("Wert ungültig.");
+    if (k === "helper_cap") {
+      const n = Number(val);
+      if (!Number.isInteger(n) || n < 0 || n > HELPER_CAP_MAX) return fail(`Helferplätze: 0 bis ${HELPER_CAP_MAX}.`);
+      const used = (await first(env, `SELECT COUNT(*) AS n FROM tickets WHERE category = 'helper' AND status != 'cancelled'`)).n;
+      if (n < used) return fail(`Es sind schon ${used} Helfer eingetragen – weniger Plätze geht nicht.`, 409);
+    }
     if (["event_date"].includes(k) && !/^\d{4}-\d{2}-\d{2}$/.test(val)) return fail("Datum im Format JJJJ-MM-TT.");
     if (["doors_time", "start_time"].includes(k) && !/^\d{2}:\d{2}$/.test(val)) return fail("Uhrzeit im Format HH:MM.");
     if (k === "contact_email" && val && !emailOk(val)) return fail("Kontakt-E-Mail ungültig.");
