@@ -477,6 +477,23 @@ test("Gemeinsamer Ticket-Link: höchstens 2 pro E-Mail, viele Käufer, Helfer je
   assert.equal((await buyAs("z@example.org", [guest("Z", "Z")], "4.4.4.4")).data.code, "INVITE_DISABLED");
 });
 
+test("Ticket-Link erneuern: alter Code ungültig, Käufe und 2er-Limit bleiben, nur Hauptadmin", async () => {
+  const t = await setup(); await openTestSale(t);
+  const d = (await t.admin("GET", "/admin/dashboard")).data;
+  const oldCode = d.group_link.url.split("?e=")[1];
+  const a = await t.call("POST", "/public/checkout", { invite: oldCode, guests: [guest("A", "A"), guest("B", "B")], email: "a@example.org", accept: true }, { ip: "1.1.1.1" });
+  await t.call("POST", "/public/test-pay", { access_key: a.data.access_key });
+  await t.admin("POST", "/admin/admins", { user_id: HELPER, role: "tickets", name: "Franzi" });
+  assert.equal((await t.call("PUT", `/admin/invitations/${d.group_link.id}`, { new_code: true }, { user: HELPER })).status, 403);
+  const r = await t.admin("PUT", `/admin/invitations/${d.group_link.id}`, { new_code: true });
+  assert.equal(r.status, 200); assert.notEqual(r.data.code, oldCode);
+  assert.equal((await t.admin("GET", "/admin/dashboard")).data.group_link.url.split("?e=")[1], r.data.code);
+  assert.equal((await t.call("GET", `/public/invite/${oldCode}`)).status, 404);
+  assert.equal((await t.call("GET", `/public/invite/${r.data.code}`)).status, 200);
+  assert.equal((await t.call("POST", "/public/checkout", { invite: r.data.code, guests: [guest("C", "C")], email: "a@example.org", accept: true }, { ip: "1.1.1.2" })).data.code, "INVITE_EXHAUSTED");
+  assert.equal((await t.call("GET", `/public/order?key=${a.data.access_key}`)).data.status, "paid");
+});
+
 test("Papiertickets: 30 VIP + 20 eigene, zusätzlich zu den 60, nicht in der Admin-Liste, scannbar, sperrbar", async () => {
   const t = await setup(); await openTestSale(t);
   await t.admin("POST", "/admin/free-tickets", { count: 5 });           // vorhandene Freitickets werden übernommen

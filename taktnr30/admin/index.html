@@ -148,7 +148,7 @@
         <div class="card" style="margin:0 0 18px">
           <p class="mono dim" style="font-size:11px;letter-spacing:.14em;margin:0 0 8px">DEIN TICKET-LINK ZUM TEILEN${d.group_link.status !== "active" ? " · GESPERRT" : ""}</p>
           <div class="linkbox" style="margin:0"><code>${esc(d.group_link.url)}</code><div class="acts"><button id="glCopy">Kopieren</button><button id="glWa">WhatsApp</button>${navigator.share ? `<button id="glShare">Teilen</button>` : ""}</div></div>
-          <p class="note" style="margin:10px 0 0">Wer den Link hat, kann bis zu 2 Tickets kaufen (pro E-Mail-Adresse) oder sich als Helfer eintragen.${isMain() ? ` <button class="lnk" id="glToggle">${d.group_link.status === "active" ? "Link sperren" : "Link wieder freigeben"}</button>` : ""}</p>
+          <p class="note" style="margin:10px 0 0">Wer den Link hat, kann bis zu 2 Tickets kaufen (pro E-Mail-Adresse) oder sich als Helfer eintragen.${isMain() ? ` <button class="lnk" id="glToggle">${d.group_link.status === "active" ? "Link sperren" : "Link wieder freigeben"}</button> · <button class="lnk" id="glNew">Neuen Link erzeugen</button>` : ""}</p>
         </div>
         <div class="kpis">
           ${kpi("Online-Tickets", `${c.regular_issued}<small> / ${c.regular_cap}</small>`, c.regular_comp ? `${c.regular_issued - c.regular_comp} verkauft · ${c.regular_comp} kostenlos` : "")}
@@ -171,6 +171,10 @@
         const off = d.group_link.status === "active";
         if (off && !confirm("Ticket-Link sperren? Dann kann niemand mehr darüber kaufen.")) return;
         await act(() => call(`/admin/invitations/${d.group_link.id}`, { method: "PUT", body: { status: off ? "disabled" : "active" } }), "Gespeichert"); render();
+      };
+      if ($("#glNew")) $("#glNew").onclick = async () => {
+        if (!confirm("Neuen Ticket-Link erzeugen? Der bisherige Link funktioniert dann nicht mehr. Gekaufte Tickets bleiben gültig.")) return;
+        await act(() => call(`/admin/invitations/${d.group_link.id}`, { method: "PUT", body: { new_code: true } }), "Neuer Link erzeugt"); render();
       };
       $$("#modeBtns button").forEach(b => b.onclick = async () => {
         if (b.dataset.m === "live" && d.paypal_env === "live" && !confirm("Verkauf jetzt live öffnen? Ab dann wird über PayPal echt bezahlt.")) return;

@@ -879,6 +879,19 @@ async function updateInvitation(env, request, who, id) {
   const b = await readJson(request) || {};
   const inv = await first(env, `SELECT * FROM invitations WHERE id = ?`, id);
   if (!inv) return fail("Einladung nicht gefunden.", 404);
+  if (b.new_code === true) {
+    // Neuer Code für den Link: alter Link wird ungültig, Käufe/Limits hängen an der ID und bleiben erhalten
+    if (who.role !== "main") return fail("Nur der Hauptadministrator darf den Link erneuern.", 403);
+    for (let i = 0; i < 5; i++) {
+      const code = randomCode(8);
+      const r = await run(env, `UPDATE OR IGNORE invitations SET code = ?, updated_at = ? WHERE id = ?`, code, iso(), id);
+      if (changes(r)) {
+        await audit(env, who, "invitation.new_code", code, { old: inv.code });
+        return json({ ok: true, code, url: `${APP_URL}?e=${code}` });
+      }
+    }
+    return fail("Code konnte nicht erzeugt werden – bitte erneut versuchen.", 500);
+  }
   const next = {
     name: b.name != null ? cleanName(b.name) : inv.name,
     note: b.note != null ? String(b.note).slice(0, 300) : inv.note,
