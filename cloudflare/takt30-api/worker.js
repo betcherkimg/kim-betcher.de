@@ -569,9 +569,12 @@ async function sendMail(env, to, subject, html) {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: env.MAIL_FROM, to: [to], subject, html, reply_to: env.MAIL_REPLY_TO || undefined })
+    body: JSON.stringify({ from: env.MAIL_FROM, to: [to], subject, html, reply_to: env.MAIL_REPLY_TO || (await getSettings(env)).contact_email || undefined })
   });
-  if (!res.ok) return { ok: false, error: `Mailserver antwortet ${res.status}` };
+  if (!res.ok) {
+    const detail = await res.json().catch(() => ({}));
+    return { ok: false, error: `Mailserver antwortet ${res.status}${detail.message ? `: ${String(detail.message).slice(0, 160)}` : ""}` };
+  }
   return { ok: true };
 }
 
@@ -1002,6 +1005,16 @@ async function anonymize(env, request, who) {
   return json({ ok: true });
 }
 
+async function testMail(env, request, who) {
+  const b = await readJson(request) || {};
+  const s = await getSettings(env);
+  const to = String(b.to || s.contact_email || "").trim();
+  if (!emailOk(to)) return fail("Bitte eine gültige Empfängeradresse angeben.");
+  const r = await sendMail(env, to, "Testmail – TAKT Nr. 30", mailHtml(s, "Der Mailversand funktioniert.", [{ number: "TEST", name: "Beispielticket", url: APP_URL }]));
+  await audit(env, who, "mail.test", to, { ok: r.ok, error: r.error });
+  return r.ok ? json({ ok: true, to }) : fail(r.error || "Versand fehlgeschlagen.", 502);
+}
+
 async function listAudit(env) {
   return json(await all(env, `SELECT id, actor_name, action, target, detail, at FROM audit_logs ORDER BY id DESC LIMIT 300`));
 }
@@ -1122,6 +1135,7 @@ async function route(request, env, ctx) {
 
   if ((denied = need("main"))) return denied;
   if (m === "GET" && path === "/admin/audit") return listAudit(env);
+  if (m === "POST" && path === "/admin/test-mail") return testMail(env, request, who);
   if (m === "POST" && path === "/admin/purge-test") return purgeTestData(env, who);
   if (m === "POST" && path === "/admin/anonymize") return anonymize(env, request, who);
   if (m === "GET" && path === "/admin/admins") return listAdmins(env);

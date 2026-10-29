@@ -347,6 +347,9 @@
     async settings(m) {
       const [d, admins] = await Promise.all([call("/admin/dashboard"), call("/admin/admins")]);
       m.innerHTML = `<h1>Einstellungen</h1>
+        <h2>E-Mail-Versand</h2>
+        <p class="note">${d.mail_ready ? "Eingerichtet. Schick dir zur Kontrolle eine Testmail." : "Noch nicht eingerichtet – es fehlen RESEND_API_KEY und MAIL_FROM im Worker."}</p>
+        <form class="card form" id="mailForm"><label class="field"><span>Empfänger</span><input class="input sm" type="email" name="to" required placeholder="du@beispiel.de"></label><div class="field"><button class="btn btn-uv btn-small" ${d.mail_ready ? "" : "disabled"}>Testmail senden</button></div></form>
         <h2>Export</h2><div class="acts"><button data-x="guests">Gästeliste (CSV)</button><button data-x="orders">Bestellungen (CSV)</button><button data-x="invitations">Einladungen (CSV)</button></div>
         <h2>Testdaten</h2><p class="note">Löscht alle Testbestellungen und Testtickets (${d.counts.test_tickets}). Vorher den Testmodus beenden.</p>
         <div class="acts"><button class="danger" id="purge" ${d.counts.test_tickets ? "" : "disabled"}>Testdaten löschen</button></div>
@@ -362,6 +365,7 @@
         if (!res.ok) return toast("Export fehlgeschlagen");
         const url = URL.createObjectURL(await res.blob()); const a = document.createElement("a"); a.href = url; a.download = `takt30-${b.dataset.x}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 2000);
       });
+      $("#mailForm").onsubmit = async e => { e.preventDefault(); const r = await act(() => call("/admin/test-mail", { method: "POST", body: { to: e.target.to.value } })); toast(`Testmail an ${r.to} verschickt – Posteingang und Spam prüfen`); };
       $("#purge").onclick = async () => { if (!confirm("Alle Testdaten endgültig löschen?")) return; await act(() => call("/admin/purge-test", { method: "POST" }), "Testdaten gelöscht"); render(); };
       $("#anon").onclick = async () => { const c = prompt("Zur Bestätigung ANONYMISIEREN eingeben:"); if (!c) return; await act(() => call("/admin/anonymize", { method: "POST", body: { confirm: c } }), "Anonymisiert"); };
       $("#admForm").onsubmit = async e => { e.preventDefault(); const f = e.target; await act(() => call("/admin/admins", { method: "POST", body: { user_id: f.uid.value.trim(), name: f.name.value, role: f.role.value } }), "Gespeichert"); render(); };

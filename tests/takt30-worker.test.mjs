@@ -369,3 +369,15 @@ test("Ticketnummern bleiben eindeutig, auch wenn Testtickets später gelöscht w
   const nums = t.db.prepare("SELECT number FROM tickets ORDER BY number").all().map(r => r.number);
   assert.deepEqual(nums, ["T30-002", "T30-003"]);
 });
+
+test("Testmail: nur Hauptadmin, Fehler von Resend werden verständlich gemeldet", async () => {
+  const t = await setup({ RESEND_API_KEY: "k", MAIL_FROM: "TAKT Nr. 30 <tickets@kim-betcher.de>" });
+  const ok = await t.admin("POST", "/admin/test-mail", { to: "kim@example.org" });
+  assert.equal(ok.status, 200); assert.equal(t.mails.at(-1).to[0], "kim@example.org"); assert.equal(t.mails.at(-1).reply_to, "betcherkimg@gmail.com");
+  await t.admin("POST", "/admin/admins", { user_id: HELPER, role: "tickets" });
+  assert.equal((await t.call("POST", "/admin/test-mail", { to: "x@example.org" }, { user: HELPER })).status, 403);
+  const t2 = await setup({ RESEND_API_KEY: "k", MAIL_FROM: "x@kim-betcher.de" });
+  globalThis.fetch = (orig => async (url, init) => String(url).startsWith("https://api.resend.com") ? new Response(JSON.stringify({ message: "The kim-betcher.de domain is not verified." }), { status: 403 }) : orig(url, init))(globalThis.fetch);
+  const bad = await t2.admin("POST", "/admin/test-mail", { to: "kim@example.org" });
+  assert.equal(bad.status, 502); assert.match(bad.data.error, /not verified/);
+});
