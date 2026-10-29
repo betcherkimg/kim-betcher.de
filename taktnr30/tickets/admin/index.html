@@ -152,10 +152,10 @@
           ${kpi("Einladungen", d.invites.total || 0, `${d.invites.active || 0} aktiv`)}
         </div>
         ${isMain() ? `<h2>Ticketverkauf</h2><div class="acts" id="modeBtns">
-          ${[["closed", "Schließen"], ["test", "Testmodus", d.test_allowed], ["live", "Live öffnen", d.paypal_ready]].map(([k, l, ok = true]) => `<button data-m="${k}" ${ok ? "" : "disabled"} aria-pressed="${d.sale_mode === k}" style="${d.sale_mode === k ? "border-color:var(--uv);color:var(--ink);background:var(--uv-deep)" : ""}">${l}</button>`).join("")}</div>
+          ${[["closed", "Schließen"], ["test", "Testmodus", d.test_allowed], ["live", d.paypal_env === "live" ? "Live öffnen (echtes Geld)" : "PayPal-Sandbox öffnen (Spielgeld)", d.paypal_ready]].map(([k, l, ok = true]) => `<button data-m="${k}" ${ok ? "" : "disabled"} aria-pressed="${d.sale_mode === k}" style="${d.sale_mode === k ? "border-color:var(--uv);color:var(--ink);background:var(--uv-deep)" : ""}">${l}</button>`).join("")}</div>
           <p class="note">Testmodus: Käufe werden simuliert, Tickets sind als TEST markiert. Live geht erst, wenn PayPal eingerichtet ist.</p>` : ""}`;
       $$("#modeBtns button").forEach(b => b.onclick = async () => {
-        if (b.dataset.m === "live" && !confirm("Verkauf jetzt live öffnen? Ab dann wird über PayPal echt bezahlt.")) return;
+        if (b.dataset.m === "live" && d.paypal_env === "live" && !confirm("Verkauf jetzt live öffnen? Ab dann wird über PayPal echt bezahlt.")) return;
         await act(() => call("/admin/settings", { method: "PUT", body: { sale_mode: b.dataset.m } }), "Gespeichert"); render();
       });
     },
