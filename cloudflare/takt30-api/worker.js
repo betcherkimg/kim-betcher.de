@@ -110,15 +110,93 @@ const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS checkins (id INTEGER PRIMARY KEY AUTOINCREMENT, ticket_id INTEGER, action TEXT NOT NULL, result TEXT NOT NULL, actor TEXT NOT NULL, at TEXT NOT NULL, detail TEXT)`,
   `CREATE TABLE IF NOT EXISTS audit_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, actor TEXT NOT NULL, actor_name TEXT, action TEXT NOT NULL, target TEXT, detail TEXT, at TEXT NOT NULL)`,
   `CREATE TABLE IF NOT EXISTS rate_limits (bucket TEXT PRIMARY KEY, count INTEGER NOT NULL, reset_at INTEGER NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS ledger (id INTEGER PRIMARY KEY AUTOINCREMENT, kind TEXT NOT NULL CHECK (kind IN ('expense','income')), booked_on TEXT NOT NULL, party TEXT, purpose TEXT NOT NULL, category TEXT NOT NULL, amount_cents INTEGER NOT NULL CHECK (amount_cents > 0), receipt_no TEXT, note TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, created_by TEXT)`,
   `CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, phase TEXT NOT NULL, title TEXT NOT NULL, note TEXT, position INTEGER NOT NULL DEFAULT 0, done_at TEXT, done_by TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)`
 ];
+
+/* ================= Abrechnung (Belege, Ticketeinnahmen, GEMA) ================= */
+
+const LEDGER_CATS = {
+  expense: ["Getränke", "Technik & Licht", "Halle, Heizung & Strom", "Toiletten & Reinigung", "Druck & Material", "Deko", "Gebühren & Versicherung", "Essen & Helfer", "Sonstiges"],
+  income: ["Getränkeverkauf (Bar)", "Sonstige Einnahmen"]
+};
+
+function ledgerInput(b) {
+  const kind = b.kind === "income" ? "income" : "expense";
+  const booked_on = String(b.booked_on || "");
+  const amount = Math.round(Number(String(b.amount ?? "").replace(",", ".")) * 100);
+  const purpose = String(b.purpose || "").trim().slice(0, 160);
+  const category = String(b.category || "");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(booked_on)) return { error: "Bitte ein Datum angeben." };
+  if (!purpose) return { error: "Bitte angeben, wofür." };
+  if (!LEDGER_CATS[kind].includes(category)) return { error: "Kategorie ungültig." };
+  if (!(amount > 0) || amount > 10000000) return { error: "Bitte einen Betrag über 0 € angeben." };
+  return { kind, booked_on, amount, purpose, category, party: String(b.party || "").trim().slice(0, 120) || null, receipt_no: String(b.receipt_no || "").trim().slice(0, 40) || null, note: String(b.note || "").trim().slice(0, 300) || null };
+}
+
+async function listLedger(env) {
+  return json({ categories: LEDGER_CATS, rows: await all(env, `SELECT * FROM ledger ORDER BY booked_on, id`) });
+}
+async function createLedger(env, request, who) {
+  const v = ledgerInput(await readJson(request) || {});
+  if (v.error) return fail(v.error);
+  const r = await run(env, `INSERT INTO ledger (kind, booked_on, party, purpose, category, amount_cents, receipt_no, note, created_at, updated_at, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    v.kind, v.booked_on, v.party, v.purpose, v.category, v.amount, v.receipt_no, v.note, iso(), iso(), who.actor);
+  await audit(env, who, "ledger.create", v.purpose, { kind: v.kind, amount: euro(v.amount) });
+  return json({ id: r.meta.last_row_id }, 201);
+}
+async function updateLedger(env, request, who, id) {
+  const v = ledgerInput(await readJson(request) || {});
+  if (v.error) return fail(v.error);
+  const r = await run(env, `UPDATE ledger SET kind = ?, booked_on = ?, party = ?, purpose = ?, category = ?, amount_cents = ?, receipt_no = ?, note = ?, updated_at = ? WHERE id = ?`,
+    v.kind, v.booked_on, v.party, v.purpose, v.category, v.amount, v.receipt_no, v.note, iso(), id);
+  if (!changes(r)) return fail("Beleg nicht gefunden.", 404);
+  await audit(env, who, "ledger.update", v.purpose, { kind: v.kind, amount: euro(v.amount) });
+  return json({ ok: true });
+}
+async function deleteLedger(env, who, id) {
+  const row = await first(env, `SELECT purpose, amount_cents FROM ledger WHERE id = ?`, id);
+  if (!row) return fail("Beleg nicht gefunden.", 404);
+  await run(env, `DELETE FROM ledger WHERE id = ?`, id);
+  await audit(env, who, "ledger.delete", row.purpose, { amount: euro(row.amount_cents) });
+  return json({ ok: true });
+}
+
+// Alles, was für Steuerberater und GEMA-Rechnungslegung gebraucht wird – nur echte (keine Test-)Zahlungen.
+async function report(env) {
+  const s = await getSettings(env);
+  const orders = await all(env, `SELECT o.order_no, o.status, o.quantity, o.amount_cents, o.paid_at, o.buyer_first, o.buyer_last, o.email,
+      (SELECT SUM(fee_cents) FROM payments p WHERE p.order_id = o.id AND p.kind = 'capture') AS fee_cents,
+      (SELECT COUNT(*) FROM payments p WHERE p.order_id = o.id AND p.kind = 'capture' AND p.fee_cents IS NULL) AS fee_missing,
+      (SELECT COALESCE(SUM(amount_cents), 0) FROM payments p WHERE p.order_id = o.id AND p.kind = 'refund') AS refunded_cents
+    FROM orders o WHERE o.is_test = 0 AND o.provider = 'paypal' AND o.status IN ('paid','refund_required','refunded') ORDER BY o.paid_at, o.id`);
+  const t = await first(env, `SELECT
+      (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 0 AND order_id IS NOT NULL AND is_test = 0 AND status != 'cancelled') AS sold,
+      (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 0 AND order_id IS NULL AND status != 'cancelled') AS comp,
+      (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND paper = 1 AND status != 'cancelled') AS paper_vip,
+      (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 1 AND status != 'cancelled') AS paper_own,
+      (SELECT COUNT(*) FROM tickets WHERE category = 'helper' AND is_test = 0 AND status != 'cancelled') AS helpers,
+      (SELECT COUNT(*) FROM tickets WHERE checked_in_at IS NOT NULL AND is_test = 0 AND status != 'cancelled') AS checked_in`);
+  const paid = orders.filter(o => o.status === "paid");
+  const gross = paid.reduce((a, o) => a + o.amount_cents, 0);
+  const fees = orders.reduce((a, o) => a + (o.fee_cents || 0), 0);
+  const ledger = await all(env, `SELECT * FROM ledger ORDER BY booked_on, id`);
+  return json({
+    generated_at: iso(),
+    event: { name: "TAKT Nr. 30", date: s.event_date, doors: s.doors_time, start: s.start_time, venue: s.venue_name, address: s.venue_address, organizer: s.contact_name, phone: s.contact_phone, email: s.contact_email },
+    prices: { one: PRICE_CENTS[1], two: PRICE_CENTS[2] },
+    tickets: { ...t, orders_paid: paid.length, singles: paid.filter(o => o.quantity === 1).length, pairs: paid.filter(o => o.quantity === 2).length },
+    money: { ticket_gross_cents: gross, paypal_fee_cents: fees, fee_missing: orders.reduce((a, o) => a + (o.fee_missing || 0), 0), refunded_cents: orders.reduce((a, o) => a + (o.refunded_cents || 0), 0) },
+    gema: { rate: 0.1189, base_cents: gross, fee_cents: Math.round(gross * 0.1189), highest_price_cents: PRICE_CENTS[1] },
+    orders, ledger, categories: LEDGER_CATS
+  });
+}
 
 /* ================= Vorbereitung (Aufgabenliste im Admin) ================= */
 
 const TODO_PHASES = ["januar", "februar", "woche", "danach"];
 const DEFAULT_TODOS = [
   ["januar", "Anzeige ans Bürgeramt schicken", "buergeramt@heidenheim.de · mind. 2 Wochen vorher", true],
-  ["januar", "GEMA klären", "Anrufen oder online anmelden – Nachmelden wird teurer"],
   ["januar", "Halle mit Kai durchgehen", "Strom, Heizung, Toiletten, was raus muss, Notausgänge, Aufbauzeit, Versicherung der Halle"],
   ["januar", "Getränkehändler festmachen", "Kommission, Kühlung, Zapfanlage, Theken, Stehtische, Becher, Eis – Freigetränke für VIPs einplanen"],
   ["januar", "Heizung reservieren", "Heizkanonen + Brennstoff – im März schnell vergriffen"],
@@ -134,13 +212,15 @@ const DEFAULT_TODOS = [
   ["februar", "Licht & Deko", "Schwarzlicht, Nebel"],
   ["februar", "Sicherheit vorbereiten", "Feuerlöscher, Erste-Hilfe-Kasten, beleuchtete Notausgänge"],
   ["februar", "Nüchterne Ansprechperson festlegen", "Bleibt den Abend über nüchtern und ansprechbar"],
+  ["woche", "GEMA anmelden (Tarif M-V)", "Vor der Party anmelden – sonst doppelter Preis. Rechnung erst zahlen, wenn der Antrag nach V. B durch ist"],
   ["woche", "Wechselgeld bei der Bank bestellen und holen", "ca. 350 €: 2 Rollen 1 €, 2 Rollen 2 €, 20 × 5 €, 10 × 10 €"],
   ["woche", "Kassen vorbereiten", "Kassen, Wechselgeld aufteilen, eventuell Kartenleser"],
   ["woche", "Rundmail an alle Gäste", "Anfahrt, Parken, Einlass, Garderobe, Heimweg/Taxi"],
   ["woche", "Aufbau", "Getränke, Technik, Theken, Licht, Garderobe, Einlass"],
   ["danach", "Abbau, Müll, Reinigung", null],
   ["danach", "Ungeöffnete Getränke zurückgeben", null],
-  ["danach", "Abrechnung machen", "Einnahmen (PayPal-Auszug, Bar) gegen alle Belege"]
+  ["danach", "Abrechnung machen", "Einnahmen (PayPal-Auszug, Bar) gegen alle Belege"],
+  ["danach", "GEMA: Antrag nach Abschnitt V. B stellen", "Spätestens 6 Wochen nach Rechnung · 11,89 % der Ticketeinnahmen · Aufstellung + PayPal-Auszug unterschrieben beilegen"]
 ];
 
 async function seedTodos(env) {
@@ -207,7 +287,8 @@ async function ensureSchema(env) {
     `ALTER TABLE invitations ADD COLUMN kind TEXT NOT NULL DEFAULT 'personal'`,
     `ALTER TABLE orders ADD COLUMN holder TEXT`,
     `ALTER TABLE reservations ADD COLUMN holder TEXT`,
-    `ALTER TABLE tickets ADD COLUMN holder TEXT`
+    `ALTER TABLE tickets ADD COLUMN holder TEXT`,
+    `ALTER TABLE payments ADD COLUMN fee_cents INTEGER`
   ]) await run(env, sql).catch(() => {});
   // „holder“ = wer zählt fürs 2er-Limit: persönliche Einladung → i<ID>, gemeinsamer Link → i<ID>:<E-Mail>
   await env.DB.batch([
@@ -587,6 +668,7 @@ async function testPay(env, request, ctx) {
 
 // Zahlung bestätigt → Plätze sichern → Tickets erzeugen (idempotent).
 async function settleOrder(env, order, payment, ctx) {
+  if (payment.fee != null) await run(env, `UPDATE payments SET fee_cents = ? WHERE provider_ref = ? AND kind = 'capture' AND fee_cents IS NULL`, payment.fee, payment.ref);
   if (order.status === "paid") return { ok: true, status: "paid", already: true };
   if (["refunded", "refund_required"].includes(order.status)) return { ok: false, status: order.status };
   if (payment.amount !== order.amount_cents || payment.currency !== "EUR") {
@@ -594,8 +676,8 @@ async function settleOrder(env, order, payment, ctx) {
     await audit(env, null, "payment.amount_mismatch", order.order_no, payment);
     return { ok: false, status: "refund_required" };
   }
-  await run(env, `INSERT OR IGNORE INTO payments (order_id, provider, kind, provider_ref, status, amount_cents, currency, created_at) VALUES (?, ?, 'capture', ?, 'completed', ?, ?, ?)`,
-    order.id, order.provider, payment.ref, payment.amount, payment.currency, iso());
+  await run(env, `INSERT OR IGNORE INTO payments (order_id, provider, kind, provider_ref, status, amount_cents, currency, created_at, fee_cents) VALUES (?, ?, 'capture', ?, 'completed', ?, ?, ?, ?)`,
+    order.id, order.provider, payment.ref, payment.amount, payment.currency, iso(), payment.fee ?? null);
 
   const t = nowMs();
   // Platz sichern: laufende Reservierung verlängern oder – falls abgelaufen – neu belegen, wenn noch Platz ist.
@@ -775,7 +857,11 @@ async function paypalCreateOrder(env, { orderNo, amount, quantity }) {
 function captureFrom(data) {
   const unit = data?.purchase_units?.[0];
   const cap = unit?.payments?.captures?.[0];
-  return cap ? { id: cap.id, status: cap.status, amount: Math.round(Number(cap.amount?.value) * 100), currency: cap.amount?.currency_code, custom_id: cap.custom_id || unit?.custom_id } : null;
+  return cap ? { id: cap.id, status: cap.status, amount: Math.round(Number(cap.amount?.value) * 100), currency: cap.amount?.currency_code, custom_id: cap.custom_id || unit?.custom_id, fee: feeOf(cap) } : null;
+}
+function feeOf(cap) {
+  const v = cap?.seller_receivable_breakdown?.paypal_fee?.value;
+  return v == null || !isFinite(Number(v)) ? null : Math.round(Number(v) * 100);
 }
 async function paypalRefund(env, captureId, order) {
   const r = await paypalFetch(env, `/v2/payments/captures/${encodeURIComponent(captureId)}/refund`, {
@@ -814,7 +900,7 @@ async function paypalCapture(env, request, ctx) {
   if (!cap || cap.custom_id !== order.order_no) return fail("Die Zahlung konnte nicht zugeordnet werden.", 502);
   if (cap.status === "PENDING") return json({ ...(await orderView(env, order)), payment_pending: true }, 202);
   if (cap.status !== "COMPLETED") return fail("Die Zahlung wurde nicht abgeschlossen. Es wurde kein Ticket ausgestellt.", 402);
-  const result = await settleOrder(env, order, { ref: cap.id, capture_id: cap.id, amount: cap.amount, currency: cap.currency }, ctx);
+  const result = await settleOrder(env, order, { ref: cap.id, capture_id: cap.id, amount: cap.amount, currency: cap.currency, fee: cap.fee }, ctx);
   const fresh = await first(env, `SELECT * FROM orders WHERE id = ?`, order.id);
   return json(await orderView(env, fresh), result.ok ? 200 : 409);
 }
@@ -839,7 +925,7 @@ async function handleWebhookEvent(env, event, ctx) {
   if (event.event_type === "PAYMENT.CAPTURE.COMPLETED") {
     const order = await first(env, `SELECT * FROM orders WHERE order_no = ?`, String(res.custom_id || ""));
     if (order) {
-      const r = await settleOrder(env, order, { ref: res.id, capture_id: res.id, amount: Math.round(Number(res.amount?.value) * 100), currency: res.amount?.currency_code }, ctx);
+      const r = await settleOrder(env, order, { ref: res.id, capture_id: res.id, amount: Math.round(Number(res.amount?.value) * 100), currency: res.amount?.currency_code, fee: feeOf(res) }, ctx);
       result = r.status;
     }
   } else if (event.event_type === "PAYMENT.CAPTURE.REFUNDED" || event.event_type === "PAYMENT.CAPTURE.REVERSED") {
@@ -1322,9 +1408,16 @@ async function exportCsv(env, url) {
   const kind = url.searchParams.get("kind") || "guests";
   let rows, head;
   if (kind === "orders") {
-    head = ["Bestellnummer", "Status", "Test", "Käufer", "E-Mail", "Anzahl", "Betrag €", "Einladung", "Bestellt", "Bezahlt"];
-    rows = (await all(env, `SELECT o.*, i.name AS inv FROM orders o LEFT JOIN invitations i ON i.id = o.invitation_id WHERE o.status IN ('paid','refund_required','refunded') ORDER BY o.id`))
-      .map(o => [o.order_no, o.status, o.is_test ? "ja" : "", `${o.buyer_first} ${o.buyer_last}`, o.email, o.quantity, euro(o.amount_cents).replace(".", ","), o.inv, o.created_at, o.paid_at]);
+    head = ["Bestellnummer", "Status", "Test", "Käufer", "E-Mail", "Anzahl", "Betrag €", "PayPal-Gebühr €", "Erstattet €", "Einladung", "Bestellt", "Bezahlt"];
+    rows = (await all(env, `SELECT o.*, i.name AS inv,
+        (SELECT SUM(fee_cents) FROM payments p WHERE p.order_id = o.id AND p.kind = 'capture') AS fee,
+        (SELECT SUM(amount_cents) FROM payments p WHERE p.order_id = o.id AND p.kind = 'refund') AS refunded
+      FROM orders o LEFT JOIN invitations i ON i.id = o.invitation_id WHERE o.status IN ('paid','refund_required','refunded') ORDER BY o.id`))
+      .map(o => [o.order_no, o.status, o.is_test ? "ja" : "", `${o.buyer_first} ${o.buyer_last}`, o.email, o.quantity, euro(o.amount_cents).replace(".", ","), o.fee == null ? "" : euro(o.fee).replace(".", ","), o.refunded ? euro(o.refunded).replace(".", ",") : "", o.inv, o.created_at, o.paid_at]);
+  } else if (kind === "ledger") {
+    head = ["Datum", "Art", "Kategorie", "Wofür", "Firma/Person", "Beleg-Nr.", "Betrag €", "Notiz"];
+    rows = (await all(env, `SELECT * FROM ledger ORDER BY booked_on, id`))
+      .map(l => [l.booked_on, l.kind === "income" ? "Einnahme" : "Ausgabe", l.category, l.purpose, l.party, l.receipt_no, (l.kind === "income" ? "" : "-") + euro(l.amount_cents).replace(".", ","), l.note]);
   } else if (kind === "invitations") {
     head = ["Name", "Code", "Link", "Max", "Status", "Notiz", "Erstellt"];
     rows = (await all(env, `SELECT * FROM invitations ORDER BY id`)).map(i => [i.name, i.code, `${APP_URL}?e=${i.code}`, i.max_tickets, i.status, i.note, i.created_at]);
@@ -1393,7 +1486,7 @@ async function route(request, env, ctx) {
   if (m === "POST" && /^\/admin\/tickets\/\d+$/.test(path)) return updateTicket(env, request, who, id);
   if (m === "GET" && path === "/admin/orders") return listOrders(env);
   if (m === "POST" && /^\/admin\/orders\/\d+$/.test(path)) return orderAction(env, request, who, id);
-  if (m === "GET" && path === "/admin/export") return exportCsv(env, url);
+  if (m === "GET" && path === "/admin/export") { if (url.searchParams.get("kind") === "ledger" && (denied = need("main"))) return denied; return exportCsv(env, url); }
   if (m === "GET" && path === "/admin/scanners") return listScanners(env);
   if (m === "POST" && path === "/admin/scanners") return createScanner(env, request, who);
   if (m === "DELETE" && /^\/admin\/scanners\/\d+$/.test(path)) return revokeScanner(env, who, id);
@@ -1404,6 +1497,11 @@ async function route(request, env, ctx) {
 
   if ((denied = need("main"))) return denied;
   if (m === "GET" && path === "/admin/audit") return listAudit(env);
+  if (m === "GET" && path === "/admin/report") return report(env);
+  if (m === "GET" && path === "/admin/ledger") return listLedger(env);
+  if (m === "POST" && path === "/admin/ledger") return createLedger(env, request, who);
+  if (m === "PUT" && /^\/admin\/ledger\/\d+$/.test(path)) return updateLedger(env, request, who, id);
+  if (m === "DELETE" && /^\/admin\/ledger\/\d+$/.test(path)) return deleteLedger(env, who, id);
   if (m === "POST" && path === "/admin/test-mail") return testMail(env, request, who);
   if (m === "POST" && path === "/admin/purge-test") return purgeTestData(env, who);
   if (m === "POST" && path === "/admin/reset") return resetAll(env, request, who);

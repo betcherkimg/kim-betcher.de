@@ -553,10 +553,11 @@ test("Vorbereitung: Liste einmalig vorbefüllt, abhaken, ändern, löschen, nur 
   assert.equal((await t.call("GET", "/admin/todos")).status, 401);
   assert.equal((await t.call("GET", "/admin/todos", undefined, { user: STRANGER })).status, 403);
   let list = (await t.admin("GET", "/admin/todos")).data;
-  assert.equal(list.length, 24);
+  assert.equal(list.length, 25);
   assert.ok(list.find(x => x.title === "Anzeige ans Bürgeramt schicken").done_at);
   assert.equal(list.filter(x => x.done_at).length, 1);
-  const gema = list.find(x => x.title === "GEMA klären");
+  const gema = list.find(x => x.title === "GEMA anmelden (Tarif M-V)");
+  assert.equal(gema.phase, "woche");
   assert.equal((await t.admin("PUT", `/admin/todos/${gema.id}`, { done: true })).status, 200);
   assert.equal((await t.admin("PUT", `/admin/todos/${gema.id}`, { title: "GEMA angemeldet", note: "" })).status, 200);
   const add = await t.admin("POST", "/admin/todos", { title: "Müllcontainer bestellen", phase: "woche" });
@@ -565,9 +566,46 @@ test("Vorbereitung: Liste einmalig vorbefüllt, abhaken, ändern, löschen, nur 
   list = (await t.admin("GET", "/admin/todos")).data;
   const g = list.find(x => x.id === gema.id);
   assert.equal(g.title, "GEMA angemeldet"); assert.equal(g.note, null); assert.ok(g.done_at);
-  assert.equal(list.length, 25);
+  assert.equal(list.length, 26);
   for (const x of list) assert.equal((await t.admin("DELETE", `/admin/todos/${x.id}`)).status, 200);
   assert.equal((await t.admin("GET", "/admin/todos")).data.length, 0); // kein erneutes Vorbefüllen
   await t.admin("POST", "/admin/admins", { user_id: HELPER, role: "tickets", name: "Franzi" });
   assert.equal((await t.call("GET", "/admin/todos", undefined, { user: HELPER })).status, 200);
+});
+
+test("Abrechnung: PayPal-Gebühr wird gespeichert, Belege, Bericht und CSV nur für Hauptadmin", async () => {
+  const handler = async url => {
+    if (url.endsWith("/v1/oauth2/token")) return new Response(JSON.stringify({ access_token: "tok" }));
+    if (url.endsWith("/v2/checkout/orders")) return new Response(JSON.stringify({ id: "PP-2", status: "CREATED" }), { status: 201 });
+    if (url.endsWith("/capture")) {
+      const n = globalThis.__orderNo2;
+      return new Response(JSON.stringify({ id: "PP-2", status: "COMPLETED", purchase_units: [{ custom_id: n, payments: { captures: [{ id: "CAP-2", status: "COMPLETED", custom_id: n, amount: { value: "35.00", currency_code: "EUR" }, seller_receivable_breakdown: { paypal_fee: { value: "1.22", currency_code: "EUR" } } }] } }] }), { status: 201 });
+    }
+    throw new Error("unexpected " + url);
+  };
+  const t = await setup({ PAYPAL_CLIENT_ID: "cid", PAYPAL_SECRET: "sec", PAYPAL_ENV: "live", ALLOW_LIVE_PAYMENTS: "true", PAYPAL_WEBHOOK_ID: "WH" }, handler);
+  assert.equal((await t.admin("PUT", "/admin/settings", { sale_mode: "live" })).status, 200);
+  const code = await invite(t);
+  const co = await buy(t, code, [guest(), guest("Ben", "M")]);
+  globalThis.__orderNo2 = co.data.order_no;
+  assert.equal((await t.call("POST", "/public/paypal/capture", { access_key: co.data.access_key })).data.status, "paid");
+  assert.equal((await t.admin("POST", "/admin/ledger", { kind: "expense", booked_on: "2027-02-01", category: "Getränke", purpose: "Bier", amount: "250,50", receipt_no: "B1" })).status, 201);
+  assert.equal((await t.admin("POST", "/admin/ledger", { kind: "income", booked_on: "2027-03-07", category: "Getränkeverkauf (Bar)", purpose: "Bar", amount: "400" })).status, 201);
+  assert.equal((await t.admin("POST", "/admin/ledger", { kind: "expense", booked_on: "2027-02-01", category: "Quatsch", purpose: "x", amount: "1" })).status, 400);
+  assert.equal((await t.admin("POST", "/admin/ledger", { kind: "expense", booked_on: "2027-02-01", category: "Deko", purpose: "x", amount: "0" })).status, 400);
+  const r = (await t.admin("GET", "/admin/report")).data;
+  assert.equal(r.money.ticket_gross_cents, 3500); assert.equal(r.money.paypal_fee_cents, 122); assert.equal(r.money.fee_missing, 0);
+  assert.equal(r.tickets.sold, 2); assert.equal(r.tickets.pairs, 1); assert.equal(r.gema.fee_cents, 416);
+  assert.equal(r.ledger.length, 2); assert.equal(r.ledger[0].amount_cents, 25050);
+  const id = r.ledger[0].id;
+  assert.equal((await t.admin("PUT", `/admin/ledger/${id}`, { kind: "expense", booked_on: "2027-02-02", category: "Getränke", purpose: "Bier + Cola", amount: "260" })).status, 200);
+  const csv = await (await import(`${workerUrl}?i=${instance}`)).default.fetch(new Request("https://api.test/admin/export?kind=ledger", { headers: { Authorization: `Bearer ${await token(MAIN)}` } }), t.env, {});
+  const text = await csv.text();
+  assert.ok(text.includes("Bier + Cola") && text.includes("-260,00") && text.includes("400,00"));
+  const ord = await (await import(`${workerUrl}?i=${instance}`)).default.fetch(new Request("https://api.test/admin/export?kind=orders", { headers: { Authorization: `Bearer ${await token(MAIN)}` } }), t.env, {});
+  assert.ok((await ord.text()).includes("1,22"));
+  await t.admin("POST", "/admin/admins", { user_id: HELPER, role: "tickets", name: "Franzi" });
+  assert.equal((await t.call("GET", "/admin/report", undefined, { user: HELPER })).status, 403);
+  assert.equal((await t.call("GET", "/admin/export?kind=ledger", undefined, { user: HELPER })).status, 403);
+  assert.equal((await t.admin("DELETE", `/admin/ledger/${id}`)).status, 200);
 });

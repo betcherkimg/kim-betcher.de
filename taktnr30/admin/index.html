@@ -134,7 +134,7 @@
 
   const PAGES = [
     ["overview", "Übersicht"], ["prep", "Vorbereitung"], ["guests", "Gäste & Tickets"], ["orders", "Bestellungen"], ["helpers", "Helfer"],
-    ["paper", "Papiertickets", "main"], ["content", "Inhalte & Line-up"], ["entry", "Einlass"], ["settings", "Einstellungen", "main"]
+    ["paper", "Papiertickets", "main"], ["content", "Inhalte & Line-up"], ["entry", "Einlass"], ["money", "Abrechnung", "main"], ["settings", "Einstellungen", "main"]
   ];
   function renderNav() {
     $("#nav").innerHTML = PAGES.filter(p => !p[2] || isMain()).map(([id, label]) => `<button data-p="${id}" ${id === page ? 'aria-current="page"' : ""}>${label}</button>`).join("");
@@ -153,7 +153,172 @@
     ["woche", "In der Woche davor", "2027-03-05"], ["danach", "Nach der Party", "2027-03-15"]
   ];
 
+  /* -------- Abrechnung: Belege, Exporte für Steuerberater und GEMA -------- */
+  const e2 = c => (c / 100).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+  const dDe = d => d ? String(d).slice(0, 10).split("-").reverse().join(".") : "";
+  const MONEY_STORE = "takt30.money.v1";
+  const moneyPrefs = () => { try { return JSON.parse(localStorage.getItem(MONEY_STORE) || "{}"); } catch { return {}; } };
+  const saveMoneyPrefs = v => { try { localStorage.setItem(MONEY_STORE, JSON.stringify({ ...moneyPrefs(), ...v })); } catch {} };
+
+  function sums(r) {
+    const exp = r.ledger.filter(l => l.kind === "expense"), inc = r.ledger.filter(l => l.kind === "income");
+    const byCat = (rows, cats) => cats.map(c => [c, rows.filter(l => l.category === c).reduce((a, l) => a + l.amount_cents, 0)]).filter(x => x[1]);
+    const incomeTotal = r.money.ticket_gross_cents + inc.reduce((a, l) => a + l.amount_cents, 0);
+    const expenseTotal = exp.reduce((a, l) => a + l.amount_cents, 0) + r.money.paypal_fee_cents;
+    return { exp, inc, expCats: byCat(exp, r.categories.expense), incCats: byCat(inc, r.categories.income), incomeTotal, expenseTotal, result: incomeTotal - expenseTotal };
+  }
+
+  function pdfKit(title) {
+    const { jsPDF } = window.jspdf; const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const L = 18, R = 192; let y = 20;
+    const pageBreak = need => { if (y + need > 278) { doc.addPage(); y = 20; } };
+    const k = {
+      doc,
+      get y() { return y; }, set y(v) { y = v; },
+      title(t, sub) { doc.setFont("helvetica", "bold"); doc.setFontSize(17); doc.text(t, L, y); y += 7; if (sub) { doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(90); doc.text(sub, L, y); doc.setTextColor(0); y += 8; } },
+      h(t) { pageBreak(14); y += 4; doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.text(t, L, y); y += 2; doc.setDrawColor(157, 77, 255); doc.setLineWidth(.4); doc.line(L, y, R, y); y += 6; },
+      p(t, size = 10) { doc.setFont("helvetica", "normal"); doc.setFontSize(size); const lines = doc.splitTextToSize(t, R - L); pageBreak(lines.length * 4.6); doc.text(lines, L, y); y += lines.length * 4.6 + 1.5; },
+      row(label, value, bold) { pageBreak(6); doc.setFont("helvetica", bold ? "bold" : "normal"); doc.setFontSize(10); doc.text(label, L, y); doc.text(value, R, y, { align: "right" }); y += 5.4; },
+      rule() { doc.setDrawColor(180); doc.setLineWidth(.2); doc.line(L, y - 3.4, R, y - 3.4); y += 1; },
+      table(cols, rows) {
+        const head = () => { pageBreak(8); doc.setFont("helvetica", "bold"); doc.setFontSize(8.5); cols.forEach(c => doc.text(c[0], c[2] === "r" ? c[1] : c[1], y, { align: c[2] === "r" ? "right" : "left" })); y += 1.6; doc.setDrawColor(180); doc.setLineWidth(.2); doc.line(L, y, R, y); y += 4; doc.setFont("helvetica", "normal"); };
+        head();
+        rows.forEach(r => {
+          const cells = r.map((v, i) => { const c = cols[i]; const w = c[3] || 40; return c[2] === "r" ? [String(v ?? "")] : doc.splitTextToSize(String(v ?? ""), w); });
+          const h = Math.max(...cells.map(c => c.length)) * 3.9 + 1.4;
+          if (y + h > 278) { doc.addPage(); y = 20; head(); }
+          doc.setFontSize(8.5); cells.forEach((c, i) => doc.text(c, cols[i][1], y, { align: cols[i][2] === "r" ? "right" : "left" })); y += h;
+        });
+        if (!rows.length) { doc.setFontSize(9); doc.setTextColor(110); doc.text("Keine Einträge.", L, y); doc.setTextColor(0); y += 5; }
+      },
+      sign(place) { pageBreak(30); y += 14; doc.setDrawColor(0); doc.setLineWidth(.2); doc.line(L, y, L + 70, y); doc.line(L + 90, y, R, y); doc.setFontSize(8.5); doc.text("Ort, Datum", L, y + 4); doc.text("Unterschrift", L + 90, y + 4); if (place) { doc.setFontSize(10); doc.text(place, L, y - 2); } y += 10; },
+      finish(file) {
+        const n = doc.getNumberOfPages();
+        for (let i = 1; i <= n; i++) { doc.setPage(i); doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(120); doc.text(`${title} · Seite ${i} von ${n}`, L, 290); doc.text(`erstellt ${new Date().toLocaleString("de-DE")}`, R, 290, { align: "right" }); doc.setTextColor(0); }
+        doc.save(file);
+      }
+    };
+    return k;
+  }
+
+  function settlementPdf(r) {
+    const S = sums(r), k = pdfKit("Abrechnung TAKT Nr. 30"), ev = r.event, t = r.tickets;
+    k.title("Abrechnung TAKT Nr. 30", `Private Geburtstagsfeier am ${dDe(ev.date)} · ${ev.venue}, ${ev.address}`);
+    k.p(`Veranstalter: ${ev.organizer} · ${ev.phone} · ${ev.email}`);
+    k.p("Alle Beträge wie gezahlt (brutto). Online-Tickets wurden ausschließlich über PayPal bezahlt; Testkäufe sind nicht enthalten.", 9);
+    k.h("Ergebnis");
+    k.row(`Ticketverkauf online (${r.tickets.orders_paid} Bestellungen, ${t.sold} Tickets)`, e2(r.money.ticket_gross_cents));
+    S.incCats.forEach(([c, v]) => k.row(c, e2(v)));
+    k.rule(); k.row("Summe Einnahmen", e2(S.incomeTotal), true); k.y += 3;
+    S.expCats.forEach(([c, v]) => k.row(c, e2(v)));
+    k.row(`PayPal-Gebühren${r.money.fee_missing ? ` (für ${r.money.fee_missing} Zahlung(en) nicht übermittelt – siehe PayPal-Auszug)` : ""}`, e2(r.money.paypal_fee_cents));
+    k.rule(); k.row("Summe Ausgaben", e2(S.expenseTotal), true); k.y += 3;
+    k.rule(); k.row(S.result >= 0 ? "Überschuss" : "Fehlbetrag (Kosten über Einnahmen)", e2(Math.abs(S.result)), true);
+    if (r.money.refunded_cents) k.p(`Hinweis: Erstattungen an Käufer über PayPal: ${e2(r.money.refunded_cents)} (nicht in den Ticketeinnahmen enthalten).`, 9);
+    k.h("Tickets und Gäste");
+    [["Verkaufte Online-Tickets", `${t.sold} (${t.singles} × 1 Ticket zu ${e2(r.prices.one)}, ${t.pairs} × 2 Tickets zu ${e2(r.prices.two)})`],
+     ["Kostenlose Online-Tickets", String(t.comp)], ["Papiertickets VIP · 2TAKT (kostenlos)", String(t.paper_vip)], ["Freitickets Papier (kostenlos)", String(t.paper_own)],
+     ["Helfer", String(t.helpers)], ["Am Einlass eingecheckt", String(t.checked_in)]].forEach(([a, b]) => k.row(a, b));
+    k.h("Belege");
+    k.table([["Datum", 18], ["Art", 37, "l", 18], ["Kategorie", 56, "l", 32], ["Wofür / Firma", 90, "l", 64], ["Beleg-Nr.", 156, "l", 18], ["Betrag", 192, "r"]],
+      r.ledger.map(l => [dDe(l.booked_on), l.kind === "income" ? "Einnahme" : "Ausgabe", l.category, [l.purpose, l.party].filter(Boolean).join(" – "), l.receipt_no || "", (l.kind === "income" ? "" : "– ") + e2(l.amount_cents)]));
+    k.h("Ticketeinnahmen (Einzelaufstellung)");
+    k.table([["Bestellung", 18], ["Bezahlt am", 52], ["Anzahl", 92, "r"], ["Status", 100, "l", 40], ["Betrag", 160, "r"], ["PayPal-Gebühr", 192, "r"]],
+      r.orders.map(o => [o.order_no, dDe(o.paid_at), o.quantity, { paid: "bezahlt", refunded: "erstattet", refund_required: "Erstattung offen" }[o.status] || o.status, e2(o.amount_cents), o.fee_cents == null ? "–" : e2(o.fee_cents)]));
+    k.finish("TAKT30-Abrechnung.pdf");
+  }
+
+  function gemaPdf(r, f) {
+    const k = pdfKit("GEMA-Rechnungslegung TAKT Nr. 30"), ev = r.event, t = r.tickets, g = r.gema;
+    k.title("Antrag auf angemessene Vergütung", "Tarif M-V, Abschnitt V. B – Rechnungslegung über die Veranstaltung");
+    k.p(`Veranstalter: ${ev.organizer}${f.addr ? `, ${f.addr}` : ""} · ${ev.phone} · ${ev.email}`);
+    if (f.inv) k.p(`GEMA-Rechnungs-/Kundennummer: ${f.inv}`);
+    k.p(`Hiermit beantrage ich für die unten genannte Veranstaltung die Berechnung der Vergütung nach Tarif M-V, Abschnitt V. B (11,89 % der Netto-Eintrittsgelder), da die Pauschalvergütung nach Abschnitt II in grobem Missverhältnis zu den Einnahmen aus Eintrittsgeldern steht. Weitere Entgelte wie Sponsorengelder, Spenden, Werbeeinnahmen oder Zuschüsse gab es nicht.`);
+    k.h("Veranstaltung");
+    [["Bezeichnung", "TAKT Nr. 30 – private Geburtstagsfeier (geschlossene Gesellschaft)"], ["Datum", `${dDe(ev.date)}, Einlass ${ev.doors} Uhr, Beginn ${ev.start} Uhr`], ["Ort", `${ev.venue}, ${ev.address}`],
+     ["Musik", "Tanzmusik, Wiedergabe von Tonträgern durch DJs"], ["Raumgröße", f.sqm ? `${f.sqm} m²` : "_____ m²"]].forEach(([a, b]) => k.row(a, b));
+    k.h("Eintrittsgelder");
+    [["Eintrittspreis 1 Ticket", e2(r.prices.one)], ["Eintrittspreis 2 Tickets", `${e2(r.prices.two)} (${e2(r.prices.two / 2)} je Person)`],
+     ["Verkaufte Tickets", `${t.sold} (${t.singles} Einzel-, ${t.pairs} Doppelbestellungen)`], ["Gäste ohne Eintrittsgeld", `${t.comp + t.paper_vip + t.paper_own} (geladene Gäste, Freitickets) + ${t.helpers} Helfer`]].forEach(([a, b]) => k.row(a, b));
+    k.rule(); k.row("Summe Eintrittsgelder (ohne Umsatzsteuerausweis)", e2(g.base_cents), true);
+    k.row("Vergütung 11,89 %", e2(g.fee_cents), true);
+    k.p("Die Vergütung kann die Mindestvergütung nach Abschnitt II (ggf. zzgl. Zeitzuschlag) nicht unterschreiten.", 8.5);
+    if (r.money.refunded_cents) k.p(`Erstattete Eintrittsgelder (nicht enthalten): ${e2(r.money.refunded_cents)}`, 9);
+    k.h("Einzelaufstellung der Eintrittsgelder (PayPal)");
+    k.table([["Bestellung", 18], ["Bezahlt am", 60], ["Tickets", 110, "r"], ["Betrag", 192, "r"]],
+      r.orders.filter(o => o.status === "paid").map(o => [o.order_no, dDe(o.paid_at), o.quantity, e2(o.amount_cents)]));
+    k.y += 4; k.p("Ich bestätige die Richtigkeit und Vollständigkeit dieser Rechnungslegung. Als Nachweis liegt der PayPal-Kontoauszug für den Verkaufszeitraum bei.");
+    k.sign(f.place ? `${f.place}, ${new Date().toLocaleDateString("de-DE")}` : "");
+    k.finish("TAKT30-GEMA-Rechnungslegung.pdf");
+  }
+
   const VIEWS = {
+    async money(m) {
+      const r = await call("/admin/report"); const S = sums(r); const pf = moneyPrefs();
+      const today = new Date().toISOString().slice(0, 10);
+      m.innerHTML = `<h1>Abrechnung</h1>
+        <div class="kpis">${kpi("Tickets online", e2(r.money.ticket_gross_cents), `${r.tickets.sold} verkauft`)}${kpi("Einnahmen gesamt", e2(S.incomeTotal), "Tickets + Belege")}${kpi("Ausgaben gesamt", e2(S.expenseTotal), `inkl. ${e2(r.money.paypal_fee_cents)} PayPal`)}${kpi(S.result >= 0 ? "Überschuss" : "Fehlbetrag", e2(Math.abs(S.result)))}</div>
+        ${r.money.fee_missing ? `<p class="note">Für ${r.money.fee_missing} frühere Zahlung(en) hat PayPal die Gebühr nicht übermittelt – die stehen in deinem PayPal-Auszug.</p>` : ""}
+        <h2>Exportieren</h2>
+        <div class="acts" style="flex-wrap:wrap"><button id="pdfAll">Abrechnung (PDF) – für den Steuerberater</button><button id="pdfGema">GEMA-Rechnungslegung (PDF)</button><button data-xc="orders">Bestellungen (CSV)</button><button data-xc="ledger">Belege (CSV)</button></div>
+        <details class="card" style="margin-top:12px"><summary style="cursor:pointer">Angaben für die GEMA-Rechnungslegung</summary>
+          <form class="form" id="gemaForm" style="margin-top:14px">
+            <label class="field"><span>Deine Anschrift</span><input class="input sm" name="addr" value="${esc(pf.addr || "")}" placeholder="Straße, PLZ Ort"></label>
+            <label class="field"><span>Raumgröße (m²)</span><input class="input sm" name="sqm" inputmode="numeric" value="${esc(pf.sqm || "")}"></label>
+            <label class="field"><span>GEMA-Rechnungsnummer</span><input class="input sm" name="inv" value="${esc(pf.inv || "")}" placeholder="steht auf der Rechnung"></label>
+            <label class="field"><span>Ort für die Unterschrift</span><input class="input sm" name="place" value="${esc(pf.place || "Heidenheim")}"></label>
+          </form><p class="note">Wird nur auf diesem Gerät gemerkt. Antrag spätestens 6 Wochen nach Eingang der GEMA-Rechnung schicken, PDF unterschreiben und PayPal-Auszug beilegen.</p></details>
+        <h2>Beleg erfassen</h2>
+        <form class="card form" id="ledForm">
+          <label class="field"><span>Art</span><select class="input sm" name="kind"><option value="expense">Ausgabe</option><option value="income">Einnahme</option></select></label>
+          <label class="field"><span>Datum</span><input class="input sm" type="date" name="booked_on" value="${today}" required></label>
+          <label class="field"><span>Kategorie</span><select class="input sm" name="category"></select></label>
+          <label class="field"><span>Wofür</span><input class="input sm" name="purpose" maxlength="160" required placeholder="z. B. Bier, 10 Fässer"></label>
+          <label class="field"><span>Firma / Person</span><input class="input sm" name="party" maxlength="120"></label>
+          <label class="field"><span>Beleg-Nr.</span><input class="input sm" name="receipt_no" maxlength="40"></label>
+          <label class="field"><span>Betrag (€)</span><input class="input sm" name="amount" inputmode="decimal" required placeholder="0,00"></label>
+          <label class="field"><span>Notiz</span><input class="input sm" name="note" maxlength="300"></label>
+          <div class="field"><input type="hidden" name="id"><button class="btn btn-uv btn-small" id="ledSave">Beleg speichern</button> <button type="button" class="lnk" id="ledCancel" hidden>Abbrechen</button></div>
+        </form>
+        <p class="note">Den Getränkeverkauf an der Bar nach der Party als „Einnahme“ eintragen. Papierbelege nummerieren und die Nummer hier mit erfassen.</p>
+        <h2>Belege</h2>
+        <div class="tablewrap"><table><thead><tr><th>Datum</th><th>Wofür</th><th class="hide-sm">Kategorie</th><th>Betrag</th><th></th></tr></thead><tbody>
+        ${r.ledger.map(l => `<tr><td class="mono">${dDe(l.booked_on)}</td><td>${esc(l.purpose)}<span class="sub">${esc([l.party, l.receipt_no && "Beleg " + l.receipt_no, l.note].filter(Boolean).join(" · "))}</span></td><td class="hide-sm dim">${esc(l.category)}</td><td class="mono" style="white-space:nowrap">${l.kind === "income" ? "+" : "–"} ${e2(l.amount_cents)}</td><td><div class="acts"><button data-le="${l.id}">Ändern</button><button data-ld="${l.id}">✕</button></div></td></tr>`).join("") || `<tr><td colspan="5" class="dim">Noch keine Belege.</td></tr>`}
+        </tbody></table></div>`;
+      const f = $("#ledForm");
+      const cats = () => { const cur = f.category.value; f.category.innerHTML = r.categories[f.kind.value].map(c => `<option>${esc(c)}</option>`).join(""); if (r.categories[f.kind.value].includes(cur)) f.category.value = cur; };
+      f.kind.onchange = cats; cats();
+      const resetForm = () => { f.reset(); f.booked_on.value = today; f.id.value = ""; cats(); $("#ledSave").textContent = "Beleg speichern"; $("#ledCancel").hidden = true; };
+      $("#ledCancel").onclick = resetForm;
+      f.onsubmit = async e => {
+        e.preventDefault();
+        const body = Object.fromEntries(["kind", "booked_on", "category", "purpose", "party", "receipt_no", "amount", "note"].map(n => [n, f[n].value]));
+        const id = f.id.value;
+        await act(() => call(id ? `/admin/ledger/${id}` : "/admin/ledger", { method: id ? "PUT" : "POST", body }), "Beleg gespeichert"); render();
+      };
+      $$("[data-le]", m).forEach(b => b.onclick = () => {
+        const l = r.ledger.find(x => x.id == b.dataset.le);
+        f.kind.value = l.kind; cats(); ["booked_on", "category", "purpose", "party", "receipt_no", "note"].forEach(n => f[n].value = l[n] || "");
+        f.amount.value = (l.amount_cents / 100).toFixed(2).replace(".", ","); f.id.value = l.id;
+        $("#ledSave").textContent = "Änderung speichern"; $("#ledCancel").hidden = false; f.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+      $$("[data-ld]", m).forEach(b => b.onclick = async () => {
+        const l = r.ledger.find(x => x.id == b.dataset.ld);
+        if (!confirm(`Beleg „${l.purpose}“ (${e2(l.amount_cents)}) löschen?`)) return;
+        await act(() => call(`/admin/ledger/${l.id}`, { method: "DELETE" }), "Gelöscht"); render();
+      });
+      const gf = $("#gemaForm"); gf.oninput = () => saveMoneyPrefs(Object.fromEntries(["addr", "sqm", "inv", "place"].map(n => [n, gf[n].value.trim()])));
+      const needPdf = () => { if (!window.jspdf) { toast("PDF-Werkzeug wird noch geladen – bitte gleich nochmal"); return false; } return true; };
+      $("#pdfAll").onclick = async () => { if (!needPdf()) return; settlementPdf(await call("/admin/report")); };
+      $("#pdfGema").onclick = async () => { if (!needPdf()) return; gemaPdf(await call("/admin/report"), moneyPrefs()); };
+      $$("[data-xc]", m).forEach(b => b.onclick = async () => {
+        const token = await Clerk.session.getToken();
+        const res = await fetch(`${API}/admin/export?kind=${b.dataset.xc}`, { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) return toast("Export fehlgeschlagen");
+        const url = URL.createObjectURL(await res.blob()); const a = document.createElement("a"); a.href = url; a.download = `takt30-${b.dataset.xc}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+      });
+    },
+
     async prep(m) {
       const list = await call("/admin/todos");
       const done = list.filter(t => t.done_at).length;
@@ -188,7 +353,10 @@
         const t = list.find(x => x.id == b.dataset.edit);
         const title = prompt("Aufgabe:", t.title); if (title === null || !title.trim()) return;
         const note = prompt("Notiz (leer lassen = keine):", t.note || ""); if (note === null) return;
-        await act(() => call(`/admin/todos/${t.id}`, { method: "PUT", body: { title, note } }), "Gespeichert"); render();
+        const cur = PREP_PHASES.findIndex(p => p[0] === t.phase) + 1;
+        const ph = prompt(`Abschnitt:\n${PREP_PHASES.map((p, i) => `${i + 1} = ${p[1]}`).join("\n")}`, String(cur)); if (ph === null) return;
+        const phase = (PREP_PHASES[+ph - 1] || PREP_PHASES[cur - 1])[0];
+        await act(() => call(`/admin/todos/${t.id}`, { method: "PUT", body: { title, note, phase } }), "Gespeichert"); render();
       });
       $$("[data-del]").forEach(b => b.onclick = async () => {
         const t = list.find(x => x.id == b.dataset.del);
@@ -446,7 +614,7 @@
         <form class="card form" id="admForm"><label class="field"><span>Benutzer-ID</span><input class="input sm mono" name="uid" placeholder="user_…" required></label><label class="field"><span>Name</span><input class="input sm" name="name"></label><label class="field"><span>Rolle</span><select class="input sm" name="role"><option value="tickets">Ticketverwaltung</option><option value="scanner">Einlass</option></select></label><div class="field"><button class="btn btn-uv btn-small">Speichern</button></div></form>
         <div class="tablewrap" style="margin-top:12px"><table><tbody>${admins.map(a => `<tr><td>${esc(a.name || "")}<span class="sub">${esc(a.user_id)}</span></td><td>${a.role === "tickets" ? "Ticketverwaltung" : "Einlass"}</td><td>${a.active ? "aktiv" : "deaktiviert"}</td><td><div class="acts"><button data-u="${esc(a.user_id)}" data-r="${a.role}" data-n="${esc(a.name || "")}" data-on="${a.active}">${a.active ? "Deaktivieren" : "Aktivieren"}</button></div></td></tr>`).join("") || `<tr><td class="dim">Nur du.</td></tr>`}</tbody></table></div>
         <h2>Protokoll</h2><p class="note">Wer hat wann was geändert.</p><div class="acts"><button id="showAudit">Protokoll anzeigen</button></div>
-        <h2>Nach der Feier</h2><p class="note">Ersetzt alle Namen und E-Mail-Adressen durch Platzhalter (Datenschutz). Zahlen und Statistik bleiben. Erst nach dem Veranstaltungstag möglich.</p>
+        <h2>Nach der Feier</h2><p class="note">Ersetzt alle Namen und E-Mail-Adressen durch Platzhalter (Datenschutz). Zahlen, Belege und Statistik bleiben. Erst nach dem Veranstaltungstag möglich. Tipp: vorher unter „Abrechnung“ die Bestellungen als CSV sichern.</p>
         <div class="acts"><button class="danger" id="anon">Gästedaten anonymisieren</button></div>`;
       $$("[data-x]", m).forEach(b => b.onclick = async () => {
         const token = await Clerk.session.getToken();

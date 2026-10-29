@@ -67,12 +67,23 @@ try:
         admin.screenshot(path=str(OUT / "admin-uebersicht-test.png"))
         admin.click("nav button[data-p=prep]")
         admin.wait_for_selector(".todo")
-        assert admin.locator(".todo").count() == 24 and admin.locator(".todo.done").count() == 1
+        assert admin.locator(".todo").count() == 25 and admin.locator(".todo.done").count() == 1
         admin.click(".todo:not(.done) input[type=checkbox] >> nth=0")
         admin.wait_for_function("document.querySelectorAll('.todo.done').length === 2")
         admin.fill("#todoAdd [name=ttl]", "Müllcontainer bestellen"); admin.select_option("#todoAdd [name=phase]", "woche"); admin.click("#todoAdd button")
         admin.wait_for_selector(".todo:has-text('Müllcontainer bestellen')")
         admin.screenshot(path=str(OUT / "admin-vorbereitung.png"), full_page=True)
+        admin.click("nav button[data-p=money]"); admin.wait_for_selector("#ledForm")
+        admin.fill("#ledForm [name=purpose]", "Bier, 10 Fässer"); admin.fill("#ledForm [name=party]", "Getränke Müller")
+        admin.fill("#ledForm [name=amount]", "480,50"); admin.fill("#ledForm [name=receipt_no]", "B-1"); admin.click("#ledSave")
+        admin.wait_for_selector("td:has-text('Bier, 10 Fässer')")
+        admin.click("#gemaForm >> xpath=..//summary"); admin.fill("#gemaForm [name=sqm]", "300")
+        for btn, name in [("#pdfAll", "TAKT30-Abrechnung.pdf"), ("#pdfGema", "TAKT30-GEMA-Rechnungslegung.pdf")]:
+            with admin.expect_download() as dl: admin.click(btn)
+            path = OUT / name; dl.value.save_as(str(path)); assert path.stat().st_size > 2000, name
+        with admin.expect_download() as dl: admin.click("[data-xc=ledger]")
+        p2 = OUT / "belege.csv"; dl.value.save_as(str(p2)); assert "Bier, 10 Fässer" in p2.read_text(encoding="utf-8-sig")
+        admin.screenshot(path=str(OUT / "admin-abrechnung.png"), full_page=True)
         admin.click("nav button[data-p=entry]")
         admin.fill("#scForm [name=name]", "Tür 1"); admin.click("#scForm button")
         admin.wait_for_selector("#newLink code")
@@ -233,7 +244,7 @@ fs.writeFileSync('{OUT}/qr.pgm',Buffer.concat([Buffer.from('P5\\n'+W+' '+H+'\\n2
         admin.screenshot(path=str(OUT / "admin-gaeste.png"))
         # Handy-Admin ohne Überbreite
         admin.set_viewport_size({"width": 390, "height": 844})
-        for pg in ["overview", "prep", "guests", "orders", "helpers", "paper", "content", "entry", "settings"]:
+        for pg in ["overview", "prep", "money", "guests", "orders", "helpers", "paper", "content", "entry", "settings"]:
             admin.evaluate(f"document.querySelector('nav button[data-p={pg}]').click()")
             admin.wait_for_timeout(250)
             assert not admin.is_visible("#main .err"), f"admin {pg}: " + admin.inner_text("#main")[:200]
