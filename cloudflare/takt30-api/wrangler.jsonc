@@ -1,0 +1,18 @@
+{
+  // TAKT Nr. 30 – eigener Worker mit eigener Datenbank (unabhängig von SmartADM/Office)
+  "name": "takt30-api",
+  "main": "worker.js",
+  "account_id": "3b7413caedf94b7f9ed165fc04566866",
+  "compatibility_date": "2026-09-15",
+  "observability": { "enabled": true, "logs": { "enabled": true, "invocation_logs": true, "persist": true }, "redact_query_string": true },
+  "vars": {
+    "MAIN_ADMIN_ID": "user_3JMu8X64anaxeyWQBKl9OQz6Q5G",
+    "ALLOW_TEST_PAYMENTS": "true",
+    "PAYPAL_ENV": "sandbox",
+    "MAIL_FROM": "TAKT Nr. 30 <tickets@kim-betcher.de>"
+  },
+  // database_id nach dem Anlegen der D1-Datenbank „takt30“ eintragen
+  "d1_databases": [{ "binding": "DB", "database_name": "takt30", "database_id": "REPLACE_WITH_TAKT30_D1_ID" }]
+  // Geheimnisse (nie hier eintragen): PAYPAL_CLIENT_ID, PAYPAL_SECRET, PAYPAL_WEBHOOK_ID,
+  // RESEND_API_KEY, TURNSTILE_SITE_KEY, TURNSTILE_SECRET, IP_SALT, später ALLOW_LIVE_PAYMENTS=true
+}

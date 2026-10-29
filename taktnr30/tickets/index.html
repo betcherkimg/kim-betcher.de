@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0a0a0c">
+<title>TAKT Nr. 30 – Private Birthday Rave</title>
+<meta name="description" content="TAKT Nr. 30 – Private Birthday Rave. Geschlossene Gesellschaft, Tickets nur mit persönlicher Einladung.">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/josefin-sans-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/takt.css?v=1">
+<style>
+  .hero { min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 48px 20px 40px; }
+  .ring { position: relative; width: min(78vw, 340px); aspect-ratio: 1; }
+  .ring > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .ring .seg { stroke: #2a2a33; transition: stroke .6s; }
+  .ring .seg.on { stroke: var(--uv); }
+  .ring .logo { position: absolute; inset: 14%; width: 72%; height: 72%; }
+  .count { margin-top: 18px; font-size: 13px; color: var(--uv-soft); min-height: 1.4em; }
+  .count .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--uv); margin-right: 8px; vertical-align: 1px; }
+  .wordmark { width: min(82vw, 400px); margin: 30px auto 0; }
+  .sub { margin-top: 18px; font-size: 13px; color: var(--muted); }
+  .when { margin-top: 18px; font-size: 14px; line-height: 1.9; }
+  .where { margin-top: 6px; font-size: 12px; color: var(--dim); letter-spacing: .1em; max-width: 340px; }
+  .cta { margin-top: 30px; width: min(100%, 360px); display: grid; gap: 10px; }
+  .cta .plain { font-size: 13px; color: var(--dim); }
+  .soon { border: 1px solid var(--line-2); color: var(--muted); min-height: 52px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius); font-size: 14px; letter-spacing: .24em; text-transform: uppercase; }
+  .scroll-hint { margin-top: 34px; width: 1px; height: 40px; background: linear-gradient(var(--line-2), transparent); }
+
+  section { padding: 64px 0; border-top: 1px solid var(--line); }
+  .kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .3em; text-transform: uppercase; color: var(--uv-soft); margin: 0 0 18px; }
+  h2 { font-weight: 300; font-size: clamp(28px, 7vw, 40px); line-height: 1.2; margin: 0 0 16px; }
+  .intro p { white-space: pre-line; color: var(--muted); margin: 0; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 18px 24px; margin: 34px 0 0; }
+  .facts dt { font-family: var(--mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--dim); }
+  .facts dd { margin: 4px 0 0; font-size: 18px; }
+  .countdown { display: flex; gap: 22px; margin-top: 34px; }
+  .countdown div { min-width: 64px; }
+  .countdown b { display: block; font-family: var(--mono); font-weight: 300; font-size: clamp(30px, 9vw, 44px); line-height: 1; }
+  .countdown span { font-family: var(--mono); font-size: 11px; letter-spacing: .18em; color: var(--dim); text-transform: uppercase; }
+
+  .lineup { list-style: none; margin: 0; padding: 0; }
+  .lineup li { display: grid; grid-template-columns: 92px 1fr; gap: 16px; align-items: baseline; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .lineup .t { font-family: var(--mono); font-size: 14px; color: var(--dim); }
+  .lineup .n { font-size: clamp(22px, 6vw, 30px); }
+  .lineup .x { display: block; font-size: 14px; color: var(--dim); }
+  .lineup-empty { font-size: clamp(22px, 6vw, 30px); color: var(--dim); }
+
+  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line-2); border-radius: var(--radius); overflow: hidden; margin: 0 0 22px; }
+  .tabs button { min-height: 48px; background: transparent; border: 0; font-size: 13px; letter-spacing: .18em; text-transform: uppercase; cursor: pointer; color: var(--muted); }
+  .tabs button[aria-selected="true"] { background: var(--uv); color: var(--on-uv); }
+  .qty { display: grid; gap: 10px; margin: 0 0 20px; }
+  .qty label { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px; border: 1px solid var(--line-2); border-radius: var(--radius); cursor: pointer; }
+  .qty input { accent-color: var(--uv); width: 20px; height: 20px; }
+  .qty label:has(input:checked) { border-color: var(--uv); background: var(--uv-deep); }
+  .qty .p { font-family: var(--mono); }
+  .guest { padding: 16px 0 0; border-top: 1px solid var(--line); margin-top: 6px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 420px) { .row2 { grid-template-columns: 1fr; gap: 0; } }
+  .jobs { display: grid; gap: 10px; margin: 0 0 20px; }
+  .jobs label { display: flex; gap: 12px; align-items: center; padding: 14px 16px; border: 1px solid var(--line-2); border-radius: var(--radius); cursor: pointer; }
+  .jobs label:has(input:checked) { border-color: var(--uv); background: var(--uv-deep); }
+  .jobs label.full { opacity: .45; cursor: not-allowed; }
+  .jobs input { accent-color: var(--uv); width: 20px; height: 20px; }
+  .jobs small { display: block; color: var(--dim); font-size: 13px; }
+  .pay { margin-top: 18px; }
+  .pay .sum { display: flex; justify-content: space-between; font-family: var(--mono); padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 0 0 16px; }
+  .mine { display: grid; gap: 10px; }
+  .mine a.tk { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px; border: 1px solid var(--uv); border-radius: var(--radius); text-decoration: none; color: var(--ink); background: var(--uv-deep); }
+  .mine .tk small { display: block; font-family: var(--mono); font-size: 12px; color: var(--uv-soft); }
+  .codeform { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 18px; }
+  .greet { font-size: clamp(24px, 6.5vw, 32px); margin: 0 0 8px; }
+
+  details { border-bottom: 1px solid var(--line); }
+  summary { list-style: none; cursor: pointer; padding: 18px 34px 18px 0; position: relative; font-size: 19px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; position: absolute; right: 4px; top: 14px; font-family: var(--mono); font-size: 22px; color: var(--uv-soft); }
+  details[open] summary::after { content: "–"; }
+  details p { margin: 0 0 18px; color: var(--muted); }
+
+  footer { border-top: 1px solid var(--line); padding: 40px 0 56px; font-size: 14px; color: var(--dim); }
+  footer .links { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 14px; }
+  footer img { width: 54px; margin-bottom: 18px; opacity: .8; }
+</style>
+</head>
+<body>
+<div id="testbar" class="testbar" hidden>TESTMODUS · es wird kein Geld abgebucht · Testtickets gelten nicht am Einlass</div>
+
+<header class="hero">
+  <div class="ring ringbeat" id="ring">
+    <img class="logo" src="assets/logo.svg" alt="TAKT Nr. 30 Logo" width="300" height="300">
+  </div>
+  <div class="count mono" id="count" aria-live="polite"></div>
+  <h1 class="sr-only">TAKT Nr. 30</h1>
+  <img class="wordmark" src="assets/wordmark.svg" alt="" width="400" height="58">
+  <div class="sub caps">Private Birthday Rave</div>
+  <div class="when mono" id="when"></div>
+  <div class="where caps" id="where"></div>
+  <div class="cta" id="heroCta"></div>
+  <div class="scroll-hint" aria-hidden="true"></div>
+</header>
+
+<main>
+  <section id="info">
+    <div class="wrap intro">
+      <p class="kicker">Die Nacht</p>
+      <h2 id="introTitle"></h2>
+      <p id="introText"></p>
+      <dl class="facts" id="facts"></dl>
+      <div class="countdown" id="countdown" hidden aria-label="Countdown bis zum Beginn"></div>
+    </div>
+  </section>
+
+  <section id="lineup">
+    <div class="wrap">
+      <p class="kicker">Line-up</p>
+      <div id="lineupBox"></div>
+    </div>
+  </section>
+
+  <section id="tickets">
+    <div class="wrap">
+      <p class="kicker">Tickets</p>
+      <div id="ticketBox" aria-live="polite"><p class="muted">Lädt …</p></div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <p class="kicker">FAQ</p>
+      <div id="faqBox"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <img src="assets/logo.svg" alt="" width="54" height="54">
+    <div id="contact"></div>
+    <div class="links">
+      <a href="bedingungen/">Teilnahmebedingungen</a>
+      <a href="datenschutz/">Datenschutz</a>
+      <a href="/impressum.html">Impressum</a>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/vendor/qrcode.js"></script>
+<script src="assets/takt.js?v=1"></script>
+<script>
+(function () {
+  "use strict";
+  const { api, esc, $, dateDe, weekdayDe, euro, eventStart, ringSvg, store } = TAKT;
+  const params = new URLSearchParams(location.search);
+  let ev = null, invite = null, inviteCode = null, tab = "buy", ts = null;
+
+  // Einladungscode aus dem Link merken (das Gerät erinnert sich)
+  const fromUrl = (params.get("e") || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (fromUrl) store.set("invite", fromUrl);
+  inviteCode = fromUrl || store.get("invite", null);
+
+  function renderHero() {
+    const s = ev.sale;
+    $("#ring > svg")?.remove();
+    $("#ring").insertAdjacentHTML("afterbegin", ringSvg(s.cap, s.sold));
+    $("#count").innerHTML = s.sold_out ? "AUSVERKAUFT" : `<span class="dot pulse" aria-hidden="true"></span>NOCH ${s.available} VON ${s.cap} TICKETS`;
+    $("#when").innerHTML = `${esc(dateDe(ev.event_date))}<br>EINLASS ${esc(ev.doors_time)} · START ${esc(ev.start_time)}`;
+    $("#where").textContent = ev.place_public;
+    $("#testbar").hidden = s.mode !== "test";
+    const mine = myTickets().length;
+    let html = "";
+    if (mine) html = `<a class="btn btn-uv btn-block" href="#tickets">Deine Tickets ansehen</a>`;
+    else if (!s.open) html = `<div class="soon">Verkauf startet bald</div>`;
+    else if (s.sold_out) html = `<div class="soon">Ausverkauft</div>`;
+    else html = `<a class="btn btn-uv btn-block" href="#tickets">Ticket sichern – ${euro(s.prices.one)}</a><div class="plain mono">2 TICKETS – ${euro(s.prices.two)}</div>`;
+    $("#heroCta").innerHTML = html;
+  }
+
+  function renderInfo() {
+    $("#introTitle").textContent = ev.intro_title;
+    $("#introText").textContent = ev.intro_text;
+    $("#facts").innerHTML = [
+      ["Datum", `${weekdayDe(ev.event_date)}, ${dateDe(ev.event_date)}`],
+      ["Einlass", `ab ${ev.doors_time} Uhr`],
+      ["Beginn", `${ev.start_time} Uhr`],
+      ["Ort", ev.place_public],
+      ["Zutritt", "Nur mit persönlichem Ticket"]
+    ].map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("");
+    if (ev.show_countdown) {
+      const start = eventStart(ev.event_date, ev.start_time);
+      const tick = () => {
+        const ms = start - Date.now();
+        if (ms <= 0) { $("#countdown").hidden = true; return; }
+        const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60;
+        $("#countdown").hidden = false;
+        $("#countdown").innerHTML = [[d, "Tage"], [h, "Std"], [m, "Min"]].map(([n, l]) => `<div><b>${String(n).padStart(2, "0")}</b><span>${l}</span></div>`).join("");
+      };
+      tick(); setInterval(tick, 30000);
+    }
+    $("#lineupBox").innerHTML = ev.lineup.length
+      ? `<ul class="lineup">${ev.lineup.map(x => `<li><span class="t">${esc(x.time)}</span><span class="n">${esc(x.name)}${x.note ? `<span class="x">${esc(x.note)}</span>` : ""}</span></li>`).join("")}</ul>`
+      : `<p class="lineup-empty">${esc(ev.lineup_note || "Line-up folgt")}</p>`;
+    const c = ev.contact;
+    const contactLine = [c.name, c.phone && `<a href="tel:${esc(c.phone.replace(/[^+\d]/g, ""))}">${esc(c.phone)}</a>`, c.email && `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`].filter(Boolean);
+    $("#contact").innerHTML = `Kontakt: ${contactLine.map(x => x === c.name ? esc(x) : x).join(" · ")}`;
+    const faq = [
+      ["Wo finde ich mein Ticket?", "Direkt nach dem Kauf auf der Bestätigungsseite und zusätzlich per E-Mail. Dieses Gerät merkt sich deine Tickets – öffne einfach wieder deinen Einladungslink. Auf der Ticketseite kannst du es als PDF speichern."],
+      ["Wie funktioniert der QR-Code-Einlass?", "Zeig am Eingang deinen QR-Code auf dem Handy oder ausgedruckt. Er wird online geprüft, danach bekommst du ein Einlassbändchen. Jeder Code gilt genau einmal und nur für die Person, deren Name auf dem Ticket steht."],
+      ["Kann ich ohne Ticket erscheinen?", "Nein. TAKT Nr. 30 ist eine geschlossene Gesellschaft – es gibt keine Abendkasse und keine Tickets für spontane Besucher."],
+      ["Was passiert bei verlorenem Ticket?", "Melde dich einfach. Wir stellen dir einen neuen QR-Code aus, der alte wird dabei ungültig."],
+      ["Kann ich mein Ticket zurückgeben?", "Nein, eine Erstattung gibt es nicht – dein Ticket ist mein Geburtstagsgeschenk."],
+      ["Wie werde ich Helfer?", "Über deinen Einladungslink: „Als Helfer mitmachen“ wählen, Aufgabe aussuchen, und du bekommst ein kostenloses Helfer-Ticket mit eigenem QR-Code."],
+      ["An wen kann ich mich wenden?", `${c.name}${c.phone ? ` – ${c.phone}` : ""}${c.email ? ` – ${c.email}` : ""}`]
+    ];
+    $("#faqBox").innerHTML = faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("");
+  }
+
+  /* -------- eigene Tickets (auf diesem Gerät gemerkt) -------- */
+  function myTickets() { return store.get("mine", []); }
+  function remember(entry) {
+    const list = myTickets().filter(x => !(x.type === entry.type && x.key === entry.key));
+    list.unshift(entry); store.set("mine", list.slice(0, 10));
+  }
+  async function loadMine() {
+    const list = myTickets();
+    const out = [];
+    for (const e of list) {
+      try {
+        if (e.type === "order") {
+          const o = await api(`/public/order?key=${encodeURIComponent(e.key)}`);
+          if (o.status === "paid") for (const t of o.tickets) out.push({ ...t, order: e.key, test: o.is_test });
+          else if (o.status === "pending") out.push({ pending: true, order: e.key });
+        } else if (e.type === "ticket") {
+          const t = await api(`/public/ticket?k=${encodeURIComponent(e.key)}`);
+          out.push({ ...t, view_key: e.key });
+        }
+      } catch (err) { if (err.status === 404) store.set("mine", myTickets().filter(x => x.key !== e.key)); }
+    }
+    return out;
+  }
+  function mineHtml(items) {
+    const ok = items.filter(x => !x.pending);
+    if (!ok.length) return "";
+    return `<h2 class="greet">Du bist dabei.</h2><p class="muted">Deine Tickets auf diesem Gerät:</p><div class="mine">${ok.map(t => `
+      <a class="tk" href="ticket/?k=${encodeURIComponent(t.view_key)}"><span>${esc(t.first_name)} ${esc(t.last_name)}<small>${esc(t.number)} · ${esc(TAKT.categoryLabel(t))}${t.is_test ? " · TEST" : ""}${t.status !== "valid" ? " · " + (t.status === "blocked" ? "GESPERRT" : "STORNIERT") : ""}</small></span><span class="mono uv" aria-hidden="true">→</span></a>`).join("")}</div>`;
+  }
+
+  /* -------- Ticketbereich -------- */
+  async function renderTickets() {
+    const box = $("#ticketBox");
+    const mine = await loadMine();
+    let html = mineHtml(mine);
+
+    if (!inviteCode) {
+      html += `${html ? '<div style="height:36px"></div>' : ""}<h2>Nur mit persönlicher Einladung.</h2>
+        <p class="muted">Tickets gibt es ausschließlich über deinen persönlichen Einladungslink. Du hast einen Code bekommen? Gib ihn hier ein.</p>
+        <form class="codeform" id="codeForm"><label class="sr-only" for="codeInput">Einladungscode</label>
+        <input class="input mono" id="codeInput" autocomplete="off" autocapitalize="characters" placeholder="EINLADUNGSCODE" maxlength="20" required>
+        <button class="btn" type="submit">Öffnen</button></form>`;
+      box.innerHTML = html; bindCode(); return;
+    }
+    try { invite = await api(`/public/invite/${encodeURIComponent(inviteCode)}`); }
+    catch (e) {
+      if (e.status === 404) store.del("invite");
+      box.innerHTML = html + `<h2>Einladung nicht gefunden.</h2><p class="muted">${esc(e.message)}</p>
+        <form class="codeform" id="codeForm"><input class="input mono" id="codeInput" autocomplete="off" placeholder="EINLADUNGSCODE" maxlength="20" required aria-label="Einladungscode"><button class="btn" type="submit">Öffnen</button></form>`;
+      bindCode(); return;
+    }
+    if (!invite.valid) { box.innerHTML = html + `<h2>Diese Einladung ist nicht mehr gültig.</h2><p class="muted">Bei Fragen melde dich bei ${esc(ev.contact.name)}.</p>`; return; }
+
+    const canBuy = ev.sale.open && !ev.sale.sold_out && invite.remaining > 0;
+    const canHelp = ev.helpers.open && !invite.helper_job && invite.remaining > 0;
+    if (!html) html = `<h2 class="greet">Hey ${esc(invite.first_name)} – du bist eingeladen.</h2>`;
+    else html += `<div style="height:28px"></div>`;
+
+    if (!canBuy && !canHelp) {
+      let msg;
+      if (invite.remaining <= 0) msg = "Mit deiner Einladung sind alle Plätze vergeben.";
+      else if (ev.sale.sold_out) msg = "Alle Tickets sind verkauft.";
+      else msg = "Der Ticketverkauf startet bald. Schau einfach später wieder über deinen Link vorbei.";
+      box.innerHTML = html + `<p class="muted">${esc(msg)}</p>`; return;
+    }
+    if (!canBuy) tab = "help"; if (!canHelp) tab = "buy";
+    const tabs = canBuy && canHelp ? `<div class="tabs" role="tablist">
+        <button type="button" role="tab" data-tab="buy" aria-selected="${tab === "buy"}">Ticket kaufen</button>
+        <button type="button" role="tab" data-tab="help" aria-selected="${tab === "help"}">Als Helfer mitmachen</button></div>` : "";
+    box.innerHTML = html + `<div class="card">${tabs}<div id="formHost"></div></div>`;
+    box.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { tab = b.dataset.tab; box.querySelectorAll("[data-tab]").forEach(x => x.setAttribute("aria-selected", x === b)); renderForm(); });
+    renderForm();
+  }
+
+  function bindCode() {
+    const f = $("#codeForm"); if (!f) return;
+    f.onsubmit = e => { e.preventDefault(); const c = $("#codeInput").value.toUpperCase().replace(/[^A-Z0-9]/g, ""); if (c) location.search = `?e=${c}`; };
+  }
+
+  const consent = `<label class="check"><input type="checkbox" name="accept" required><span>Ich habe die <a href="datenschutz/" target="_blank">Datenschutzhinweise</a> und <a href="bedingungen/" target="_blank">Teilnahmebedingungen</a> gelesen und bin einverstanden.</span></label>`;
+
+  function renderForm() {
+    const host = $("#formHost");
+    if (tab === "help") return renderHelper(host);
+    const two = invite.remaining >= 2 && ev.sale.available >= 2;
+    host.innerHTML = `<form id="buyForm" novalidate>
+      <div class="qty" role="radiogroup" aria-label="Anzahl">
+        <label><span><input type="radio" name="qty" value="1" checked> 1 Ticket</span><span class="p">${euro(ev.sale.prices.one)}</span></label>
+        ${two ? `<label><span><input type="radio" name="qty" value="2"> 2 Tickets</span><span class="p">${euro(ev.sale.prices.two)}</span></label>` : ""}
+      </div>
+      <div id="guests"></div>
+      <label class="field"><span>E-Mail für die Tickets</span><input class="input" type="email" name="email" autocomplete="email" required maxlength="160"></label>
+      ${consent}
+      <div id="ts" style="margin-top:16px"></div>
+      <p class="err" id="buyErr" role="alert" hidden></p>
+      <button class="btn btn-uv btn-block" style="margin-top:18px" type="submit" id="buyBtn">Weiter zur Zahlung</button>
+      <p class="note" style="margin-top:12px">Jedes Ticket ist persönlich und nur mit dem Namen darauf gültig. Keine Erstattung.</p>
+    </form><div id="payHost"></div>`;
+    const guests = () => {
+      const n = +host.querySelector("input[name=qty]:checked").value;
+      const old = [...host.querySelectorAll("#guests input")].map(i => i.value);
+      $("#guests").innerHTML = Array.from({ length: n }, (_, i) => `<div class="${i ? "guest" : ""}">
+        <p class="note mono" style="margin:0 0 10px">${n > 1 ? `TICKET ${i + 1}${i ? " · BEGLEITUNG" : " · DU"}` : "NAME AUF DEM TICKET"}</p>
+        <div class="row2"><label class="field"><span>Vorname</span><input class="input" name="first_${i}" autocomplete="${i ? "off" : "given-name"}" required maxlength="60" value="${esc(old[i * 2] ?? (i ? "" : invite.first_name))}"></label>
+        <label class="field"><span>Nachname</span><input class="input" name="last_${i}" autocomplete="${i ? "off" : "family-name"}" required maxlength="60" value="${esc(old[i * 2 + 1] ?? "")}"></label></div></div>`).join("");
+    };
+    host.querySelectorAll("input[name=qty]").forEach(r => r.onchange = guests);
+    guests();
+    setupTurnstile();
+    $("#buyForm").onsubmit = submitBuy;
+  }
+
+  async function setupTurnstile() {
+    const el = $("#ts"); if (!el || !ev.turnstile_site_key) return;
+    try { ts = await TAKT.turnstile(ev.turnstile_site_key, el); } catch { ts = null; }
+  }
+
+  function readBuy() {
+    const f = $("#buyForm");
+    const n = +f.qty.value;
+    const guests = Array.from({ length: n }, (_, i) => ({ first_name: f[`first_${i}`].value.trim(), last_name: f[`last_${i}`].value.trim() }));
+    if (guests.some(g => !g.first_name || !g.last_name)) throw new Error("Bitte für jedes Ticket Vor- und Nachnamen angeben.");
+    const email = f.email.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(email)) throw new Error("Bitte eine gültige E-Mail-Adresse angeben.");
+    if (!f.accept.checked) throw new Error("Bitte Datenschutzhinweise und Teilnahmebedingungen bestätigen.");
+    if (ev.turnstile_site_key && !(ts && ts.get())) throw new Error("Bitte kurz die Sicherheitsprüfung abschließen.");
+    return { invite: inviteCode, guests, email, accept: true, turnstile: ts && ts.get() };
+  }
+  const showErr = (id, msg) => { const e = $(id); e.textContent = msg; e.hidden = !msg; };
+
+  async function submitBuy(e) {
+    e.preventDefault();
+    showErr("#buyErr", "");
+    let payload;
+    try { payload = readBuy(); } catch (err) { return showErr("#buyErr", err.message); }
+    if (ev.sale.mode === "live") return startPayPal(payload);
+    const btn = $("#buyBtn"); btn.disabled = true; btn.textContent = "Reserviere …";
+    try {
+      const o = await api("/public/checkout", { method: "POST", body: payload });
+      remember({ type: "pending", key: o.access_key });
+      showTestPay(o);
+    } catch (err) { showErr("#buyErr", err.message); ts && ts.reset(); }
+    finally { btn.disabled = false; btn.textContent = "Weiter zur Zahlung"; }
+  }
+
+  function showTestPay(o) {
+    $("#buyForm").hidden = true;
+    $("#payHost").innerHTML = `<div class="pay">
+      <div class="sum"><span>${o.quantity} ${o.quantity > 1 ? "Tickets" : "Ticket"}</span><span>${euro(o.amount_cents)}</span></div>
+      <p class="note">Bestellung ${esc(o.order_no)} · Plätze 15 Minuten reserviert.</p>
+      <p style="background:var(--warn);color:#1a1300;padding:10px 12px;border-radius:4px;font-size:14px">Testmodus: Es wird kein Geld abgebucht. Die Tickets sind als TEST markiert und gelten nicht am Einlass.</p>
+      <p class="err" id="payErr" role="alert" hidden></p>
+      <button class="btn btn-uv btn-block" id="testPay">Testzahlung abschließen</button>
+      <button class="btn btn-block" style="margin-top:10px" id="cancelPay">Abbrechen</button></div>`;
+    $("#testPay").onclick = async () => {
+      $("#testPay").disabled = true;
+      try { await api("/public/test-pay", { method: "POST", body: { access_key: o.access_key } }); done(o.access_key); }
+      catch (err) { showErr("#payErr", err.message + " Du kannst es erneut versuchen."); $("#testPay").disabled = false; }
+    };
+    $("#cancelPay").onclick = () => cancel(o.access_key);
+  }
+
+  async function cancel(key) {
+    try { await api("/public/cancel", { method: "POST", body: { access_key: key } }); } catch {}
+    store.set("mine", myTickets().filter(x => x.key !== key));
+    $("#payHost").innerHTML = ""; $("#buyForm").hidden = false;
+  }
+
+  function done(key) {
+    store.set("mine", myTickets().filter(x => x.key !== key));
+    remember({ type: "order", key });
+    location.href = `ticket/?o=${encodeURIComponent(key)}`;
+  }
+
+  /* -------- PayPal (Live- bzw. Sandbox-Modus) -------- */
+  let paypalLoaded = null;
+  function loadPayPal() {
+    paypalLoaded ||= new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(ev.paypal.client_id)}&currency=EUR&intent=capture&locale=de_DE&components=buttons`;
+      s.onload = () => resolve(window.paypal); s.onerror = () => reject(new Error("PayPal konnte nicht geladen werden."));
+      document.head.appendChild(s);
+    });
+    return paypalLoaded;
+  }
+  async function startPayPal(payload) {
+    let current = null;
+    $("#buyForm").hidden = true;
+    const amount = payload.guests.length === 2 ? ev.sale.prices.two : ev.sale.prices.one;
+    $("#payHost").innerHTML = `<div class="pay"><div class="sum"><span>${payload.guests.length} ${payload.guests.length > 1 ? "Tickets" : "Ticket"}</span><span>${euro(amount)}</span></div>
+      <div id="ppButtons"></div><p class="err" id="payErr" role="alert" hidden></p><button class="btn btn-block" style="margin-top:10px" id="back">Zurück</button></div>`;
+    $("#back").onclick = async () => { if (current) await cancel(current.access_key); else { $("#payHost").innerHTML = ""; $("#buyForm").hidden = false; } };
+    try {
+      const paypal = await loadPayPal();
+      await paypal.Buttons({
+        style: { layout: "vertical", color: "white", shape: "rect", label: "pay" },
+        createOrder: async () => {
+          showErr("#payErr", "");
+          current = await api("/public/checkout", { method: "POST", body: payload });
+          remember({ type: "pending", key: current.access_key });
+          return current.paypal_order_id;
+        },
+        onApprove: async () => {
+          for (let i = 0; i < 8; i++) {
+            const r = await api("/public/paypal/capture", { method: "POST", body: { access_key: current.access_key } }).catch(err => ({ error: err }));
+            if (r.error) { showErr("#payErr", r.error.message); return; }
+            if (r.status === "paid") return done(current.access_key);
+            if (r.status === "refund_required" || r.status === "refunded") { showErr("#payErr", "Leider war das letzte Ticket gerade weg. Du bekommst dein Geld automatisch vollständig zurück."); return; }
+            await new Promise(res => setTimeout(res, 2500));
+          }
+          showErr("#payErr", "Die Zahlung wird noch geprüft. Dein Ticket erscheint hier, sobald PayPal bestätigt – du bekommst es auch per E-Mail.");
+        },
+        onCancel: async () => { if (current) { try { await api("/public/cancel", { method: "POST", body: { access_key: current.access_key } }); } catch {} } showErr("#payErr", "Zahlung abgebrochen – es wurde nichts abgebucht. Du kannst es erneut versuchen."); },
+        onError: err => showErr("#payErr", (err && err.message) || "Bei der Zahlung ist ein Fehler aufgetreten. Es wurde kein Ticket ausgestellt – bitte erneut versuchen.")
+      }).render("#ppButtons");
+    } catch (err) { showErr("#payErr", err.message); }
+  }
+
+  /* -------- Helfer -------- */
+  function renderHelper(host) {
+    const jobs = ev.helpers.jobs;
+    host.innerHTML = `<form id="helpForm" novalidate>
+      <p class="muted" style="margin-top:0">Hilf mit und du bist kostenlos dabei. Such dir aus, wo du anpacken willst – du bekommst ein eigenes Helfer-Ticket mit QR-Code.</p>
+      <p class="note mono">NOCH ${ev.helpers.available} HELFERPLÄTZE</p>
+      <div class="jobs" role="radiogroup" aria-label="Aufgabe">${jobs.map((j, i) => `
+        <label class="${j.full ? "full" : ""}"><input type="radio" name="job" value="${esc(j.name)}" ${j.full ? "disabled" : ""}>
+        <span>${esc(j.name)}<small>${j.full ? "schon voll" : j.slots ? `${j.slots - j.taken} von ${j.slots} frei` : ""}${j.info ? (j.full || j.slots ? " · " : "") + esc(j.info) : ""}</small></span></label>`).join("")}</div>
+      <div class="row2"><label class="field"><span>Vorname</span><input class="input" name="first" autocomplete="given-name" required maxlength="60" value="${esc(invite.first_name)}"></label>
+      <label class="field"><span>Nachname</span><input class="input" name="last" autocomplete="family-name" required maxlength="60"></label></div>
+      <label class="field"><span>E-Mail</span><input class="input" type="email" name="email" autocomplete="email" required maxlength="160"></label>
+      ${consent}
+      <div id="ts" style="margin-top:16px"></div>
+      <p class="err" id="helpErr" role="alert" hidden></p>
+      <button class="btn btn-uv btn-block" style="margin-top:18px" id="helpBtn">Als Helfer eintragen</button>
+      ${invite.remaining > 1 ? `<p class="note" style="margin-top:12px">Du kannst danach noch 1 Ticket für eine Begleitung kaufen.</p>` : ""}
+    </form>`;
+    setupTurnstile();
+    $("#helpForm").onsubmit = async e => {
+      e.preventDefault(); showErr("#helpErr", "");
+      const f = e.target;
+      const job = f.job.value;
+      if (!job) return showErr("#helpErr", "Bitte eine Aufgabe auswählen.");
+      if (!f.first.value.trim() || !f.last.value.trim()) return showErr("#helpErr", "Bitte Vor- und Nachnamen angeben.");
+      if (!/^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(f.email.value.trim())) return showErr("#helpErr", "Bitte eine gültige E-Mail-Adresse angeben.");
+      if (!f.accept.checked) return showErr("#helpErr", "Bitte Datenschutzhinweise und Teilnahmebedingungen bestätigen.");
+      if (ev.turnstile_site_key && !(ts && ts.get())) return showErr("#helpErr", "Bitte kurz die Sicherheitsprüfung abschließen.");
+      const btn = $("#helpBtn"); btn.disabled = true; btn.textContent = "Trage ein …";
+      try {
+        const r = await api("/public/helper", { method: "POST", body: { invite: inviteCode, job, first_name: f.first.value.trim(), last_name: f.last.value.trim(), email: f.email.value.trim(), accept: true, turnstile: ts && ts.get() } });
+        remember({ type: "ticket", key: r.view_key });
+        location.href = `ticket/?k=${encodeURIComponent(r.view_key)}`;
+      } catch (err) { showErr("#helpErr", err.message); ts && ts.reset(); btn.disabled = false; btn.textContent = "Als Helfer eintragen"; }
+    };
+  }
+
+  /* -------- Start -------- */
+  async function start() {
+    try { ev = await api("/public/event"); }
+    catch (e) {
+      $("#ticketBox").innerHTML = `<p class="err">${esc(e.message)}</p><button class="btn" onclick="location.reload()">Erneut laden</button>`;
+      $("#count").textContent = ""; return;
+    }
+    renderHero(); renderInfo();
+    await renderTickets();
+    renderHero();   // „Deine Tickets“ erst nach dem Laden bekannt
+  }
+  start();
+})();
+</script>
+</body>
+</html>

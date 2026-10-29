@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TAKT Nr. 30">
+<title>Dein Ticket – TAKT Nr. 30</title>
+<link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/takt.css?v=1">
+<style>
+  body { padding: 28px 0 56px; }
+  .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .top a { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-decoration: none; color: var(--dim); }
+  .tickets { display: grid; gap: 28px; }
+  .ticket { max-width: 380px; width: 100%; margin: 0 auto; background: var(--bg-2); border: 1px solid var(--line); border-radius: 18px; padding: 26px 24px 0; text-align: center; position: relative; overflow: hidden; }
+  .ticket.cat-free { border-top: 3px solid var(--uv-soft); }
+  .ticket.cat-helper { border-top: 3px solid var(--ok); }
+  .ticket .logo { width: 64px; margin: 0 auto; }
+  .ticket .wm { width: 190px; margin: 12px auto 0; }
+  .qrwrap { margin: 22px auto 0; width: 236px; height: 236px; border-radius: 50%; border: 1px solid var(--uv); display: flex; align-items: center; justify-content: center; }
+  .qrwrap .qr { width: 150px; height: 150px; padding: 8px; background: #fff; border-radius: 6px; }
+  .ticket .name { margin-top: 22px; font-size: 24px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 10px; text-align: left; margin-top: 20px; }
+  .grid dt { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; color: var(--dim); }
+  .grid dd { margin: 2px 0 0; font-family: var(--mono); font-size: 14px; }
+  .addr { grid-column: 1 / -1; }
+  .stubtext { padding: 16px 0 20px; font-family: var(--mono); font-size: 11px; letter-spacing: .26em; color: var(--muted); text-transform: uppercase; }
+  .ticket .stub { margin: 22px -24px 0; }
+  .ticket .stub::before, .ticket .stub::after { background: var(--bg); }
+  .flag { position: absolute; top: 16px; right: -36px; transform: rotate(35deg); width: 150px; padding: 4px 0; font-family: var(--mono); font-size: 11px; letter-spacing: .14em; }
+  .flag.test { background: var(--warn); color: #1a1300; }
+  .flag.bad { background: var(--bad); color: #fff; }
+  .flag.in { background: var(--ok); color: #04210f; }
+  .void .qrwrap { opacity: .25; filter: grayscale(1); }
+  .actions { max-width: 380px; margin: 18px auto 0; display: grid; gap: 10px; }
+  .hint { max-width: 380px; margin: 26px auto 0; font-size: 14px; color: var(--dim); text-align: center; }
+  @media print { body { background: #fff; } .actions, .hint, .top { display: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a href="../">← TAKT NR. 30</a><span class="mono dim" id="orderNo" style="font-size:12px"></span></div>
+  <div id="box" aria-live="polite"><p class="muted">Lädt …</p></div>
+  <p class="hint" id="hint" hidden>Tipp: Speichere diese Seite auf deinem Home-Bildschirm oder als PDF – dann hast du dein Ticket am Eingang sofort griffbereit.</p>
+</div>
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/takt.js?v=1"></script>
+<script defer src="../assets/vendor/jspdf.umd.min.js"></script>
+<script>
+(function () {
+  "use strict";
+  const { api, esc, $, dateDe, timeDe, qrSvg, qrMatrix, store, categoryLabel } = TAKT;
+  const q = new URLSearchParams(location.search);
+  const k = q.get("k"), o = q.get("o");
+  let tickets = [], event = null, order = null;
+
+  function remember(entry) {
+    const list = store.get("mine", []).filter(x => !(x.type === entry.type && x.key === entry.key));
+    list.unshift(entry); store.set("mine", list.slice(0, 10));
+  }
+
+  function card(t, i) {
+    const name = `${t.first_name} ${t.last_name}`;
+    let flag = "";
+    if (t.status === "blocked") flag = `<div class="flag bad">GESPERRT</div>`;
+    else if (t.status === "cancelled") flag = `<div class="flag bad">STORNIERT</div>`;
+    else if (t.checked_in_at) flag = `<div class="flag in">EINGECHECKT</div>`;
+    else if (t.is_test) flag = `<div class="flag test">TEST</div>`;
+    const void_ = t.status !== "valid";
+    return `<article class="ticket cat-${esc(t.category)} ${void_ ? "void" : ""}" aria-label="Ticket ${esc(t.number)}">
+      ${flag}
+      <img class="logo" src="../assets/logo.svg" alt="" width="64" height="64">
+      <img class="wm" src="../assets/wordmark.svg" alt="TAKT Nr. 30" width="190" height="28">
+      <div class="qrwrap"><div class="qr">${qrSvg("T30." + t.code, { label: `QR-Code für Ticket ${t.number}` })}</div></div>
+      <div class="name">${esc(name)}</div>
+      <dl class="grid">
+        <div><dt>TICKET</dt><dd>${esc(t.number)}</dd></div>
+        <div><dt>KATEGORIE</dt><dd class="uv">${esc(categoryLabel(t))}</dd></div>
+        <div><dt>DATUM</dt><dd>${esc(dateDe(event.event_date))}</dd></div>
+        <div><dt>EINLASS · START</dt><dd>${esc(event.doors_time)} · ${esc(event.start_time)}</dd></div>
+        <div class="addr"><dt>ORT</dt><dd>${esc(event.venue_name)}<br><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue_address)}" rel="noopener" target="_blank">${esc(event.venue_address)}</a></dd></div>
+        ${t.checked_in_at ? `<div class="addr"><dt>EINGECHECKT</dt><dd>${esc(dateDe(t.checked_in_at))} ${esc(timeDe(t.checked_in_at))}</dd></div>` : ""}
+      </dl>
+      <div class="stub"></div>
+      <div class="stubtext">Einmalig gültig · persönlich</div>
+    </article>`;
+  }
+
+  function render() {
+    $("#box").innerHTML = `<div class="tickets">${tickets.map(card).join("")}</div>
+      <div class="actions">
+        <button class="btn btn-uv btn-block" id="pdf">${tickets.length > 1 ? "Tickets als PDF speichern" : "Als PDF speichern"}</button>
+        ${order ? `<button class="btn btn-block" id="resend">Erneut per E-Mail senden</button><p class="note" id="mailInfo" style="text-align:center;margin:0">${order.mail_status === "sent" ? `Per E-Mail an ${esc(order.email)} geschickt.` : order.mail_status === "failed" ? "Die E-Mail konnte noch nicht verschickt werden – dein Ticket ist trotzdem gültig." : ""}</p>` : ""}
+      </div>`;
+    $("#hint").hidden = false;
+    $("#pdf").onclick = () => pdf().catch(e => alert("PDF konnte nicht erstellt werden: " + e.message));
+    if (order) $("#resend").onclick = async () => {
+      const b = $("#resend"); b.disabled = true;
+      try { const r = await api("/public/order/resend", { method: "POST", body: { access_key: o } }); $("#mailInfo").textContent = r.mail_status === "sent" ? `Gesendet an ${order.email}.` : "Versand gerade nicht möglich – bitte später erneut versuchen."; }
+      catch (e) { $("#mailInfo").textContent = e.message; }
+      b.disabled = false;
+    };
+  }
+
+  // SVG → PNG für das PDF
+  function raster(src, w) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => { const c = document.createElement("canvas"); c.width = w; c.height = Math.round(w * img.naturalHeight / img.naturalWidth); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); resolve({ data: c.toDataURL("image/png"), ratio: c.height / c.width }); };
+      img.onerror = reject; img.src = src;
+    });
+  }
+
+  async function pdf() {
+    if (!window.jspdf) throw new Error("wird noch geladen – bitte kurz erneut tippen");
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: "mm", format: [105, 180] });
+    const logo = await raster("../assets/logo.svg", 600), wm = await raster("../assets/wordmark.svg", 1200);
+    tickets.forEach((t, i) => {
+      if (i) doc.addPage([105, 180]);
+      doc.setFillColor(10, 10, 12); doc.rect(0, 0, 105, 180, "F");
+      doc.addImage(logo.data, "PNG", 40, 10, 25, 25);
+      doc.addImage(wm.data, "PNG", 22.5, 40, 60, 60 * wm.ratio);
+      // QR
+      const m = qrMatrix("T30." + t.code), n = m.length, size = 52, cell = size / (n + 4), x0 = (105 - size) / 2, y0 = 60;
+      doc.setDrawColor(157, 77, 255); doc.setLineWidth(0.3); doc.circle(52.5, y0 + size / 2, size / 2 + 8, "S");
+      doc.setFillColor(255, 255, 255); doc.roundedRect(x0, y0, size, size, 1.5, 1.5, "F");
+      doc.setFillColor(0, 0, 0);
+      for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (m[y][x]) doc.rect(x0 + (x + 2) * cell, y0 + (y + 2) * cell, cell + 0.02, cell + 0.02, "F");
+      doc.setTextColor(242, 242, 244); doc.setFont("helvetica", "normal"); doc.setFontSize(16);
+      doc.text(`${t.first_name} ${t.last_name}`, 52.5, 133, { align: "center" });
+      const lab = (l, v, x, y) => { doc.setFontSize(6.5); doc.setTextColor(130, 130, 142); doc.text(l, x, y); doc.setFontSize(9.5); doc.setTextColor(242, 242, 244); doc.text(v, x, y + 4.5); };
+      lab("TICKET", t.number, 14, 141); lab("KATEGORIE", categoryLabel(t), 56, 141);
+      lab("DATUM", dateDe(event.event_date), 14, 151); lab("EINLASS · START", `${event.doors_time} · ${event.start_time}`, 56, 151);
+      doc.setFontSize(6.5); doc.setTextColor(130, 130, 142); doc.text("ORT", 14, 161); doc.setFontSize(8.5); doc.setTextColor(242, 242, 244); doc.text([event.venue_name, event.venue_address], 14, 165);
+      doc.setFontSize(6.5); doc.setTextColor(180, 180, 190); doc.text("EINMALIG GÜLTIG · PERSÖNLICH" + (t.is_test ? " · TESTTICKET" : ""), 52.5, 176, { align: "center" });
+    });
+    doc.save(tickets.length > 1 ? "TAKT-Nr-30-Tickets.pdf" : `TAKT-Nr-30-${tickets[0].number}.pdf`);
+  }
+
+  async function load() {
+    try {
+      if (o) {
+        order = await api(`/public/order?key=${encodeURIComponent(o)}`);
+        $("#orderNo").textContent = order.order_no;
+        if (order.status === "pending") { $("#box").innerHTML = `<h2 style="font-weight:300">Zahlung noch nicht abgeschlossen.</h2><p class="muted">Sobald die Zahlung bestätigt ist, erscheinen deine Tickets hier. Seite lädt automatisch neu.</p>`; setTimeout(load, 5000); return; }
+        if (order.status !== "paid") { $("#box").innerHTML = `<h2 style="font-weight:300">Für diese Bestellung gibt es keine gültigen Tickets.</h2><p class="muted">${order.status === "refund_required" || order.status === "refunded" ? "Das letzte Ticket war leider schon vergeben – du bekommst dein Geld vollständig zurück." : "Die Bestellung wurde abgebrochen. Es wurde nichts abgebucht."}</p>`; return; }
+        remember({ type: "order", key: o });
+        tickets = order.tickets; event = order.event;
+      } else if (k) {
+        const t = await api(`/public/ticket?k=${encodeURIComponent(k)}`);
+        remember({ type: "ticket", key: k });
+        tickets = [t]; event = t.event;
+      } else { $("#box").innerHTML = `<p class="muted">Kein Ticket angegeben.</p>`; return; }
+      render();
+    } catch (e) {
+      $("#box").innerHTML = `<p class="err">${esc(e.message)}</p>${e.status === 0 ? `<button class="btn" onclick="location.reload()">Erneut versuchen</button>` : ""}`;
+    }
+  }
+  load();
+})();
+</script>
+</body>
+</html>
