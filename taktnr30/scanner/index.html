@@ -78,6 +78,7 @@
 (function () {
   "use strict";
   const { esc, $, $$, timeDe, categoryLabel, guestName } = TAKT;
+  let bands = {};
   let scannerKey = null, mode = null, stream = null, scanning = false, busy = false, lastCode = "", lastAt = 0, wake = null;
 
   // Scanner-Link: Schlüssel aus #k=… übernehmen und aus der Adresse entfernen
@@ -100,7 +101,7 @@
     box.className = `result ${color}`;
     box.innerHTML = `<div class="big">${title}</div>
       ${r.name ? `<div class="name">${esc(r.name)}</div>` : ""}
-      ${color !== "green" ? `<div class="reason">${esc(r.reason || "")}</div>` : `<div class="reason">Bändchen ausgeben</div>`}
+      ${color !== "green" ? `<div class="reason">${esc(r.reason || "")}</div>` : (() => { const b = bands[r.category] || { label: "", color: "#ffffff" }; return `<div class="band" style="margin-top:22px;display:inline-flex;align-items:center;gap:14px;background:rgba(0,0,0,.28);padding:12px 20px;border-radius:99px"><span style="width:34px;height:34px;border-radius:50%;background:${esc(b.color)};border:2px solid #fff"></span><span style="font-size:24px">Bändchen: <strong>${esc(b.label)}</strong></span></div>${b.note ? `<div class="meta">${esc(b.note)}</div>` : ""}`; })()}
       ${sub ? `<div class="meta">${esc(sub)}</div>` : ""}
       ${color === "yellow" ? `<div class="reason" style="font-weight:400">NICHT einlassen – erneut scannen</div>` : ""}
       <button class="btn" id="next">Weiter</button>`;
@@ -187,7 +188,7 @@
   async function refresh() {
     try {
       const s = await call("/scan/stats");
-      $("#cin").textContent = s.checked_in; $("#cexp").textContent = s.expected;
+      $("#cin").textContent = s.checked_in; $("#cexp").textContent = s.expected; bands = s.bands || bands;
       const lbl = { admitted: ["Eingelassen", "ok"], already: ["Schon drin", "no"], unknown: ["Unbekannt", "no"], replaced: ["Ersetzt", "no"], blocked: ["Gesperrt", "no"], cancelled: ["Storniert", "no"], test: ["Testticket", "no"], unassigned: ["Ohne Namen", "no"], rejected: ["Abgelehnt", "no"], reset: ["Zurückgesetzt", "no"] };
       $("#recent").innerHTML = s.recent.map(r => { const [l, c] = lbl[r.result] || [r.result, ""]; return `<div class="item"><div class="who">${r.number ? esc(guestName(r)) : "–"}<small>${timeDe(r.at)} · ${esc(r.number || "")} · ${esc(r.actor)}</small></div><span class="${c}">${l}</span></div>`; }).join("") || `<p class="note">Noch keine Scans.</p>`;
     } catch {}

@@ -313,8 +313,14 @@
     },
 
     async entry(m) {
-      const list = await call("/admin/scanners");
+      const [list, st] = await Promise.all([call("/admin/scanners"), call("/admin/settings")]);
+      let bands = {}; try { bands = JSON.parse(st.bands); } catch {}
+      const bandRow = (cat, label) => { const b = bands[cat] || {}; return `<div class="lineup-row" style="grid-template-columns:150px 64px 1fr 1.4fr"><span style="align-self:center">${label}</span><input class="input sm" type="color" name="c_${cat}" value="${esc(b.color || "#ffffff")}" aria-label="Farbe ${label}"><input class="input sm" name="l_${cat}" value="${esc(b.label || "")}" placeholder="Farbname" maxlength="20" aria-label="Farbname ${label}"><input class="input sm note-in" name="n_${cat}" value="${esc(b.note || "")}" placeholder="Hinweis am Einlass (optional)" maxlength="60" aria-label="Hinweis ${label}"></div>`; };
       m.innerHTML = `<h1>Einlass</h1>
+        <h2 style="margin-top:0">Bändchen</h2>
+        <p class="note">Der Scanner zeigt nach jedem grünen Scan an, welches Bändchen ausgegeben wird.</p>
+        <form id="bandForm">${bandRow("regular", "Gäste & Freitickets")}${bandRow("free", "VIP · 2TAKT")}${bandRow("helper", "Helfer")}<button class="btn btn-uv btn-small" style="margin-top:6px">Speichern</button></form>
+        <h2>Scanner-Zugänge</h2>
         <p class="muted">Der Scanner ist eine eigene App unter <a href="/taktnr30/scanner/" target="_blank">kim-betcher.de/taktnr30/scanner</a> – am Handy über „Zum Home-Bildschirm“ installieren. Für jeden Einlasshelfer erzeugst du hier einen persönlichen Zugang; er funktioniert ohne Konto und lässt sich jederzeit sperren. Du selbst meldest dich im Scanner mit deinem Login an.</p>
         <div class="acts" style="margin-bottom:18px"><a class="btn btn-small" href="/taktnr30/scanner/" target="_blank">Scanner öffnen</a></div>
         <form class="card form" id="scForm"><label class="field"><span>Name des Helfers</span><input class="input sm" name="name" required maxlength="40"></label><div class="field"><button class="btn btn-uv btn-small">Scanner-Link erzeugen</button></div></form>
@@ -322,6 +328,11 @@
         <div class="tablewrap" style="margin-top:18px"><table><thead><tr><th>Helfer</th><th>Erstellt</th><th>Zuletzt genutzt</th><th></th></tr></thead><tbody>
         ${list.map(s => `<tr><td>${esc(s.name)}${s.revoked_at ? ' <span class="tag">gesperrt</span>' : ""}</td><td class="mono dim">${fmtDT(s.created_at)}</td><td class="mono dim">${fmtDT(s.last_used_at) || "–"}</td><td>${s.revoked_at ? "" : `<div class="acts"><button class="danger" data-id="${s.id}">Sperren</button></div>`}</td></tr>`).join("") || `<tr><td colspan="4" class="dim">Noch keine Scanner-Links.</td></tr>`}
         </tbody></table></div>`;
+      $("#bandForm").onsubmit = async e => {
+        e.preventDefault(); const f = e.target, out = {};
+        for (const cat of ["regular", "free", "helper"]) out[cat] = { color: f[`c_${cat}`].value, label: f[`l_${cat}`].value, note: f[`n_${cat}`].value };
+        await act(() => call("/admin/settings", { method: "PUT", body: { bands: JSON.stringify(out) } }), "Gespeichert – der Scanner übernimmt es beim nächsten Aktualisieren");
+      };
       $("#scForm").onsubmit = async e => {
         e.preventDefault();
         const r = await act(() => call("/admin/scanners", { method: "POST", body: { name: e.target.name.value } }), "Scanner-Link erzeugt");

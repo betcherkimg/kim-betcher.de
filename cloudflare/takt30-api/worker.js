@@ -40,12 +40,13 @@ const DEFAULT_SETTINGS = {
   show_countdown: "1",
   helper_signup: "1",
   helper_cap: "13",
+  bands: JSON.stringify({ regular: { label: "Weiß", color: "#ffffff" }, free: { label: "Lila", color: "#9d4dff", note: "VIP · Getränke laut Absprache" }, helper: { label: "Neongrün", color: "#39ff14" } }),
   helper_jobs: JSON.stringify([{ name: "Bar", slots: 8 }, { name: "Ticketscan", slots: 5 }])
 };
 const SETTING_LIMITS = {
   event_date: 10, doors_time: 5, start_time: 5, place_public: 120, venue_name: 120, venue_address: 160,
   intro_title: 120, intro_text: 600, lineup: 4000, lineup_note: 80, contact_name: 80, contact_phone: 40,
-  contact_email: 120, sale_mode: 6, show_countdown: 1, helper_signup: 1, helper_cap: 2, helper_jobs: 2000
+  contact_email: 120, sale_mode: 6, show_countdown: 1, helper_signup: 1, helper_cap: 2, helper_jobs: 2000, bands: 600
 };
 
 /* ================= Antworten ================= */
@@ -825,9 +826,10 @@ async function undoCheckin(env, request, who, id) {
 }
 
 async function scanStats(env) {
-  const c = await counts(env);
+  const [c, s] = await Promise.all([counts(env), getSettings(env)]);
+  let bands = {}; try { bands = JSON.parse(s.bands); } catch {}
   const recent = await all(env, `SELECT c.at, c.result, c.actor, t.number, t.first_name, t.last_name FROM checkins c LEFT JOIN tickets t ON t.id = c.ticket_id ORDER BY c.id DESC LIMIT 15`);
-  return json({ checked_in: c.checked_in, expected: c.expected, recent });
+  return json({ checked_in: c.checked_in, expected: c.expected, recent, bands });
 }
 
 /* ================= Admin ================= */
@@ -1079,6 +1081,16 @@ async function updateSettings(env, request, who) {
       val = JSON.stringify(list);
     }
     if (k === "helper_signup" && !["0", "1"].includes(val)) return fail("Wert ungültig.");
+    if (k === "bands") {
+      let b; try { b = JSON.parse(val); } catch { return fail("Bändchen ungültig."); }
+      const clean = {};
+      for (const cat of ["regular", "free", "helper"]) {
+        const x = b?.[cat] || {};
+        const color = /^#[0-9a-fA-F]{6}$/.test(x.color || "") ? x.color : "#ffffff";
+        clean[cat] = { label: cleanName(x.label).slice(0, 20) || "–", color, note: String(x.note || "").slice(0, 60) };
+      }
+      val = JSON.stringify(clean);
+    }
     if (k === "helper_cap") {
       const n = Number(val);
       if (!Number.isInteger(n) || n < 0 || n > HELPER_CAP_MAX) return fail(`Helferplätze: 0 bis ${HELPER_CAP_MAX}.`);

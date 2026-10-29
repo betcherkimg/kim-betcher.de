@@ -515,3 +515,13 @@ test("Alles zurücksetzen: nur Hauptadmin, nur ohne echte Zahlungen, Ticket-Link
   t.db.prepare("INSERT INTO orders (order_no, access_key, invitation_id, email, buyer_first, buyer_last, quantity, amount_cents, provider, is_test, status, consent_at, created_at, updated_at) VALUES ('X','Y',?,'e','a','b',1,2000,'paypal',0,'paid','','','')").run(t.db.prepare("SELECT id FROM invitations").get().id);
   assert.equal((await t.admin("POST", "/admin/reset", { confirm: "ALLES LÖSCHEN" })).status, 409);
 });
+
+test("Bändchen: Standardfarben, Scanner bekommt sie, Admin kann sie ändern (ungültige Farbe wird ersetzt)", async () => {
+  const t = await setup();
+  const key = (await t.admin("POST", "/admin/scanners", { name: "Tür" })).data.url.split("#k=")[1];
+  const b = (await t.call("GET", "/scan/stats", undefined, { scanner: key })).data.bands;
+  assert.equal(b.free.label, "Lila"); assert.equal(b.helper.color, "#39ff14");
+  await t.admin("PUT", "/admin/settings", { bands: JSON.stringify({ regular: { label: "Gelb", color: "#ffff00" }, free: { label: "Gold", color: "javascript:x" }, helper: { label: "Rot", color: "#ff0000" } }) });
+  const b2 = (await t.call("GET", "/scan/stats", undefined, { scanner: key })).data.bands;
+  assert.equal(b2.regular.label, "Gelb"); assert.equal(b2.free.color, "#ffffff");
+});
