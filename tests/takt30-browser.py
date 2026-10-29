@@ -257,7 +257,11 @@ fs.writeFileSync('{OUT}/qr.pgm',Buffer.concat([Buffer.from('P5\\n'+W+' '+H+'\\n2
             pg.mouse.move(b["x"] + 30, b["y"] + 100); pg.mouse.down()
             for i in range(12): pg.mouse.move(b["x"] + 40 + i * 18, b["y"] + 60 + (i % 3) * 25, steps=3)
             pg.mouse.up()
-        admin.click("nav button[data-p=contracts]"); admin.wait_for_selector("#cForm")
+        import base64 as _b64
+        pre = _b64.urlsafe_b64encode(json.dumps({"name": "Julian Vorab", "eq": [{"item": "XDJ-AZ", "value": "2.989"}]}).encode()).decode().rstrip("=")
+        admin.goto("https://kim-betcher.de/taktnr30/admin/#contracts?d=" + pre); admin.wait_for_selector("#cForm")
+        admin.wait_for_function("document.querySelector('#cForm [name=name]').value === 'Julian Vorab'")
+        assert admin.locator("#eqRows [data-eq=item]").input_value() == "XDJ-AZ" and "?d=" not in admin.url
         admin.fill("#cForm [name=name]", "Julian Test"); admin.fill("#cForm [name=addr]", "Teststraße 1, 89522 Heidenheim")
         admin.fill("#cForm [name=email]", "dj@example.org")
         admin.fill("#eqRows [data-eq=item]", "Alpha Theta XDJ-AZ"); admin.fill("#eqRows [data-eq=value]", "2.989")
