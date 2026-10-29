@@ -90,7 +90,7 @@
     del(key) { try { localStorage.removeItem(`takt30.${key}`); } catch {} }
   };
 
-  const guestName = t => `${t.first_name || ""} ${t.last_name || ""}`.trim() || (t.category === "free" ? "2TAKT-Gast" : "Gast");
+  const guestName = t => `${t.first_name || ""} ${t.last_name || ""}`.trim() || (t.category === "free" ? "VIP · 2TAKT" : "Freiticket");
   const categoryLabel = (t) => t.category === "free" ? "2TAKT" : t.category === "helper" ? `Helfer${t.helper_job ? " · " + t.helper_job : ""}` : "Ticket";
 
   // Turnstile nur laden, wenn ein Site-Key konfiguriert ist

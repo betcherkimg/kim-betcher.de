@@ -207,12 +207,12 @@
     const contactLine = [c.name, c.phone && `<a href="tel:${esc(c.phone.replace(/[^+\d]/g, ""))}">${esc(c.phone)}</a>`, c.email && `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`].filter(Boolean);
     $("#contact").innerHTML = `Kontakt: ${contactLine.map(x => x === c.name ? esc(x) : x).join(" · ")}`;
     const faq = [
-      ["Wo finde ich mein Ticket?", "Direkt nach dem Kauf auf der Bestätigungsseite und zusätzlich per E-Mail. Dieses Gerät merkt sich deine Tickets – öffne einfach wieder deinen Einladungslink. Auf der Ticketseite kannst du es als PDF speichern."],
+      ["Wo finde ich mein Ticket?", "Direkt nach dem Kauf auf der Bestätigungsseite und zusätzlich per E-Mail. Dieses Gerät merkt sich deine Tickets – öffne einfach wieder den Einladungslink. Auf der Ticketseite kannst du es als PDF speichern."],
       ["Wie funktioniert der QR-Code-Einlass?", "Zeig am Eingang deinen QR-Code auf dem Handy oder ausgedruckt. Er wird online geprüft, danach bekommst du ein Einlassbändchen. Jeder Code gilt genau einmal und nur für die Person, deren Name auf dem Ticket steht."],
       ["Kann ich ohne Ticket erscheinen?", "Nein. TAKT Nr. 30 ist eine geschlossene Gesellschaft – es gibt keine Abendkasse und keine Tickets für spontane Besucher."],
       ["Was passiert bei verlorenem Ticket?", "Melde dich einfach. Wir stellen dir einen neuen QR-Code aus, der alte wird dabei ungültig."],
       ["Kann ich mein Ticket zurückgeben?", "Nein, eine Erstattung gibt es nicht – dein Ticket ist mein Geburtstagsgeschenk."],
-      ["Wie werde ich Helfer?", "Über deinen Einladungslink: „Als Helfer mitmachen“ wählen, Aufgabe aussuchen, und du bekommst ein kostenloses Helfer-Ticket mit eigenem QR-Code."],
+      ["Wie werde ich Helfer?", "Über deinen Einladungslink: „Als Helfer mitmachen“ wählen, Aufgabe aussuchen (Bar oder Ticketscan), und du bekommst ein kostenloses Helfer-Ticket mit eigenem QR-Code."],
       ["An wen kann ich mich wenden?", `${c.name}${c.phone ? ` – ${c.phone}` : ""}${c.email ? ` – ${c.email}` : ""}`]
     ];
     $("#faqBox").innerHTML = faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("");
@@ -256,7 +256,7 @@
 
     if (!inviteCode) {
       html += `${html ? '<div style="height:36px"></div>' : ""}<h2>Nur mit persönlicher Einladung.</h2>
-        <p class="muted">Tickets gibt es ausschließlich über deinen persönlichen Einladungslink. Du hast einen Code bekommen? Gib ihn hier ein.</p>
+        <p class="muted">Tickets gibt es nur über den Einladungslink. Du hast einen Code bekommen? Gib ihn hier ein.</p>
         <form class="codeform" id="codeForm"><label class="sr-only" for="codeInput">Einladungscode</label>
         <input class="input mono" id="codeInput" autocomplete="off" autocapitalize="characters" placeholder="EINLADUNGSCODE" maxlength="20" required>
         <button class="btn" type="submit">Öffnen</button></form>`;
@@ -273,12 +273,12 @@
 
     const canBuy = ev.sale.open && !ev.sale.sold_out && invite.remaining > 0;
     const canHelp = ev.helpers.open && !invite.helper_job && invite.remaining > 0;
-    if (!html) html = `<h2 class="greet">Hey ${esc(invite.first_name)} – du bist eingeladen.</h2>`;
+    if (!html) html = `<h2 class="greet">${invite.first_name ? `Hey ${esc(invite.first_name)} – du bist eingeladen.` : "Du bist eingeladen."}</h2>`;
     else html += `<div style="height:28px"></div>`;
 
     if (!canBuy && !canHelp) {
       let msg;
-      if (invite.remaining <= 0) msg = "Mit deiner Einladung sind alle Plätze vergeben.";
+      if (invite.remaining <= 0) msg = "Für dich sind alle Plätze vergeben.";
       else if (ev.sale.sold_out) msg = "Alle Tickets sind verkauft.";
       else msg = "Der Ticketverkauf startet bald. Schau einfach später wieder über deinen Link vorbei.";
       box.innerHTML = html + `<p class="muted">${esc(msg)}</p>`; return;
@@ -321,7 +321,7 @@
       const old = [...host.querySelectorAll("#guests input")].map(i => i.value);
       $("#guests").innerHTML = Array.from({ length: n }, (_, i) => `<div class="${i ? "guest" : ""}">
         <p class="note mono" style="margin:0 0 10px">${n > 1 ? `TICKET ${i + 1}${i ? " · BEGLEITUNG" : " · DU"}` : "NAME AUF DEM TICKET"}</p>
-        <div class="row2"><label class="field"><span>Vorname</span><input class="input" name="first_${i}" autocomplete="${i ? "off" : "given-name"}" required maxlength="60" value="${esc(old[i * 2] ?? (i ? "" : invite.first_name))}"></label>
+        <div class="row2"><label class="field"><span>Vorname</span><input class="input" name="first_${i}" autocomplete="${i ? "off" : "given-name"}" required maxlength="60" value="${esc(old[i * 2] ?? (i ? "" : invite.first_name || ""))}"></label>
         <label class="field"><span>Nachname</span><input class="input" name="last_${i}" autocomplete="${i ? "off" : "family-name"}" required maxlength="60" value="${esc(old[i * 2 + 1] ?? "")}"></label></div></div>`).join("");
     };
     host.querySelectorAll("input[name=qty]").forEach(r => r.onchange = guests);
@@ -445,7 +445,7 @@
       <div class="jobs" role="radiogroup" aria-label="Aufgabe">${jobs.map((j, i) => `
         <label class="${j.full ? "full" : ""}"><input type="radio" name="job" value="${esc(j.name)}" ${j.full ? "disabled" : ""}>
         <span>${esc(j.name)}<small>${j.full ? "schon voll" : j.slots ? `${j.slots - j.taken} von ${j.slots} frei` : ""}${j.info ? (j.full || j.slots ? " · " : "") + esc(j.info) : ""}</small></span></label>`).join("")}</div>
-      <div class="row2"><label class="field"><span>Vorname</span><input class="input" name="first" autocomplete="given-name" required maxlength="60" value="${esc(invite.first_name)}"></label>
+      <div class="row2"><label class="field"><span>Vorname</span><input class="input" name="first" autocomplete="given-name" required maxlength="60" value="${esc(invite.first_name || "")}"></label>
       <label class="field"><span>Nachname</span><input class="input" name="last" autocomplete="family-name" required maxlength="60"></label></div>
       <label class="field"><span>E-Mail</span><input class="input" type="email" name="email" autocomplete="email" required maxlength="160"></label>
       ${consent}

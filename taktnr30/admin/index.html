@@ -93,6 +93,8 @@
 <div id="toast" class="toast" role="status" hidden></div>
 
 <script src="/taktnr30/assets/vendor/qrcode.js"></script>
+<script defer src="/taktnr30/assets/vendor/fflate.min.js"></script>
+<script defer src="/taktnr30/assets/vendor/jspdf.umd.min.js"></script>
 <script src="/taktnr30/assets/takt.js?v=1"></script>
 <script defer crossorigin="anonymous" src="https://clerk.kim-betcher.de/npm/@clerk/ui@1/dist/ui.browser.js"></script>
 <script defer crossorigin="anonymous" data-clerk-publishable-key="pk_live_Y2xlcmsua2ltLWJldGNoZXIuZGUk" src="https://clerk.kim-betcher.de/npm/@clerk/clerk-js@6/dist/clerk.browser.js"></script>
@@ -116,9 +118,8 @@
   const isMain = () => me.role === "main";
 
   const PAGES = [
-    ["overview", "Übersicht"], ["invites", "Einladungen"], ["guests", "Gäste & Tickets"], ["free", "2TAKT-Freitickets"],
-    ["helpers", "Helfer"], ["orders", "Bestellungen"], ["content", "Inhalte & Line-up"], ["entry", "Einlass"],
-    ["audit", "Protokoll", "main"], ["settings", "Einstellungen", "main"]
+    ["overview", "Übersicht"], ["guests", "Gäste & Tickets"], ["orders", "Bestellungen"], ["helpers", "Helfer"],
+    ["paper", "Papiertickets", "main"], ["content", "Inhalte & Line-up"], ["entry", "Einlass"], ["settings", "Einstellungen", "main"]
   ];
   function renderNav() {
     $("#nav").innerHTML = PAGES.filter(p => !p[2] || isMain()).map(([id, label]) => `<button data-p="${id}" ${id === page ? 'aria-current="page"' : ""}>${label}</button>`).join("");
@@ -144,87 +145,48 @@
           <span class="chip ${d.turnstile_ready ? "ok" : ""}">Turnstile ${d.turnstile_ready ? "aktiv" : "aus"}</span>
           ${c.test_tickets ? `<span class="chip warn">${c.test_tickets} Testtickets</span>` : ""}
         </div>
+        <div class="card" style="margin:0 0 18px">
+          <p class="mono dim" style="font-size:11px;letter-spacing:.14em;margin:0 0 8px">DEIN TICKET-LINK ZUM TEILEN${d.group_link.status !== "active" ? " · GESPERRT" : ""}</p>
+          <div class="linkbox" style="margin:0"><code>${esc(d.group_link.url)}</code><div class="acts"><button id="glCopy">Kopieren</button><button id="glWa">WhatsApp</button>${navigator.share ? `<button id="glShare">Teilen</button>` : ""}</div></div>
+          <p class="note" style="margin:10px 0 0">Wer den Link hat, kann bis zu 2 Tickets kaufen (pro E-Mail-Adresse) oder sich als Helfer eintragen.${isMain() ? ` <button class="lnk" id="glToggle">${d.group_link.status === "active" ? "Link sperren" : "Link wieder freigeben"}</button>` : ""}</p>
+        </div>
         <div class="kpis">
-          ${kpi("Tickets vergeben", `${c.regular_issued}<small> / ${c.regular_cap}</small>`, c.regular_comp ? `${c.regular_issued - c.regular_comp} verkauft · ${c.regular_comp} kostenlos` : "")}
+          ${kpi("Online-Tickets", `${c.regular_issued}<small> / ${c.regular_cap}</small>`, c.regular_comp ? `${c.regular_issued - c.regular_comp} verkauft · ${c.regular_comp} kostenlos` : "")}
           ${kpi("Verfügbar", c.available, c.reserved || c.test_tickets ? `${c.test_tickets ? c.test_tickets + " Test" : ""}${c.test_tickets && c.reserved ? " + " : ""}${c.reserved ? c.reserved + " reserviert" : ""} belegen gerade Plätze` : "")}
           ${kpi("Offene Reservierungen", c.reserved, "laufende Bezahlvorgänge")}
-          ${kpi("2TAKT vergeben", `${c.free_issued}<small> / ${c.free_cap}</small>`, `${c.free_assigned} mit Namen`)}
+          ${kpi("Papiertickets", `${c.paper_vip + c.paper_own}`, `${c.paper_vip} VIP · ${c.paper_own} Freitickets · ${c.paper_checked_in} drin`)}
           ${kpi("Helfer", `${c.helper_issued}<small> / ${c.helper_cap}</small>`)}
           ${kpi("Eingecheckt", `${c.checked_in}<small> / ${c.expected}</small>`, "erwartete Gäste")}
           ${kpi("Umsatz", euro(c.revenue_cents), c.test_revenue_cents ? `Test: ${euro(c.test_revenue_cents)}` : "")}
           ${kpi("Erstattungen", c.refunded, c.refund_required ? `${c.refund_required} offen – bitte prüfen` : "")}
-          ${kpi("Einladungen", d.invites.total || 0, `${d.invites.active || 0} aktiv`)}
         </div>
         ${isMain() ? `<h2>Ticketverkauf</h2><div class="acts" id="modeBtns">
           ${[["closed", "Schließen"], ["test", "Testmodus", d.test_allowed], ["live", d.paypal_env === "live" ? "Live öffnen (echtes Geld)" : "PayPal-Sandbox öffnen (Spielgeld)", d.paypal_ready]].map(([k, l, ok = true]) => `<button data-m="${k}" ${ok ? "" : "disabled"} aria-pressed="${d.sale_mode === k}" style="${d.sale_mode === k ? "border-color:var(--uv);color:var(--ink);background:var(--uv-deep)" : ""}">${l}</button>`).join("")}</div>
           <p class="note">Testmodus: Kauf ohne PayPal, nur simuliert. ${d.paypal_env === "live" ? "Live: echte Zahlungen über PayPal." : "PayPal-Sandbox: echter PayPal-Ablauf mit Spielgeld."} In beiden Testarten sind die Tickets als TEST markiert und belegen Plätze, bis du sie unter Einstellungen löschst. Abgebrochene Käufe geben ihren Platz nach spätestens 15 Minuten frei.</p>` : ""}`;
+      const glText = `TAKT Nr. 30 – Private Birthday Rave · 06.03.2027. Hier gibt's die Tickets (max. 2 pro Person, bitte nicht weiterleiten): ${d.group_link.url}`;
+      $("#glCopy").onclick = () => copy(d.group_link.url);
+      $("#glWa").onclick = () => window.open(`https://wa.me/?text=${encodeURIComponent(glText)}`, "_blank", "noopener");
+      if ($("#glShare")) $("#glShare").onclick = () => navigator.share({ title: "TAKT Nr. 30", text: glText }).catch(() => {});
+      if ($("#glToggle")) $("#glToggle").onclick = async () => {
+        const off = d.group_link.status === "active";
+        if (off && !confirm("Ticket-Link sperren? Dann kann niemand mehr darüber kaufen.")) return;
+        await act(() => call(`/admin/invitations/${d.group_link.id}`, { method: "PUT", body: { status: off ? "disabled" : "active" } }), "Gespeichert"); render();
+      };
       $$("#modeBtns button").forEach(b => b.onclick = async () => {
         if (b.dataset.m === "live" && d.paypal_env === "live" && !confirm("Verkauf jetzt live öffnen? Ab dann wird über PayPal echt bezahlt.")) return;
         await act(() => call("/admin/settings", { method: "PUT", body: { sale_mode: b.dataset.m } }), "Gespeichert"); render();
       });
     },
 
-    async invites(m) {
-      const list = await call("/admin/invitations"); cache.invites = list;
-      m.innerHTML = `<h1>Einladungen</h1>
-        <form class="card form" id="invForm">
-          <label class="field"><span>Name</span><input class="input sm" name="name" required maxlength="80" placeholder="Vor- und Nachname"></label>
-          <label class="field"><span>Plätze</span><select class="input sm" name="max"><option value="2">2 (mit Begleitung)</option><option value="1">1</option></select></label>
-          <label class="field"><span>Vermittelt durch (Freund von)</span><select class="input sm" name="ref"><option value="">–</option>${list.map(i => `<option value="${i.id}">${esc(i.name)}</option>`).join("")}</select></label>
-          <label class="field"><span>Notiz (intern)</span><input class="input sm" name="note" maxlength="300"></label>
-          <div class="field"><button class="btn btn-uv btn-small">Einladung erstellen</button></div>
-        </form>
-        <div id="newLink"></div>
-        <div class="toolbar" style="margin-top:20px"><input class="input" id="q" placeholder="Suchen …" aria-label="Suchen"><select class="input" id="f"><option value="">Alle</option><option value="open">Noch offen</option><option value="used">Ausgeschöpft</option><option value="disabled">Gesperrt</option><option value="helper">Helfer</option></select><span class="dim mono" id="n" style="font-size:12px"></span></div>
-        <div class="tablewrap"><table><thead><tr><th>Name</th><th>Plätze</th><th>Helfer</th><th class="hide-sm">Erstellt</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>`;
-      $("#invForm").onsubmit = async e => {
-        e.preventDefault(); const f = e.target;
-        const r = await act(() => call("/admin/invitations", { method: "POST", body: { name: f.name.value, max_tickets: +f.max.value, referred_by: f.ref.value || null, note: f.note.value } }), "Einladung erstellt");
-        const name = f.name.value; f.reset();
-        cache.invites = await call("/admin/invitations"); rows();
-        $("#newLink").innerHTML = `<div class="linkbox"><code>${esc(r.url)}</code><div class="acts"><button id="cp">Kopieren</button><button id="wa">WhatsApp</button>${navigator.share ? `<button id="sh">Teilen</button>` : ""}</div></div>`;
-        const text = `Hey ${name.split(" ")[0]}, du bist eingeladen: TAKT Nr. 30 – Private Birthday Rave. Dein persönlicher Link: ${r.url}`;
-        $("#cp").onclick = () => copy(r.url);
-        $("#wa").onclick = () => window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener");
-        if ($("#sh")) $("#sh").onclick = () => navigator.share({ title: "TAKT Nr. 30", text }).catch(() => {});
-      };
-      const rows = () => {
-        const q = $("#q").value.toLowerCase(), f = $("#f").value;
-        const l = cache.invites.filter(i => (!q || `${i.name} ${i.code} ${i.note || ""}`.toLowerCase().includes(q))
-          && (!f || (f === "disabled" ? i.status === "disabled" : f === "used" ? i.issued >= i.max_tickets : f === "open" ? i.status === "active" && i.issued < i.max_tickets : f === "helper" ? i.helper_job : true)));
-        $("#n").textContent = `${l.length} von ${cache.invites.length}`;
-        $("#rows").innerHTML = l.map(i => `<tr>
-          <td>${esc(i.name)}${i.status === "disabled" ? ' <span class="tag">gesperrt</span>' : ""}<span class="sub">${esc(i.code)}${i.referred_by_name ? ` · über ${esc(i.referred_by_name)}` : ""}${i.note ? ` · ${esc(i.note)}` : ""}</span></td>
-          <td class="mono">${i.issued}${i.reserved ? `+${i.reserved}` : ""} / ${i.max_tickets}</td>
-          <td>${i.helper_job ? esc(i.helper_job) : ""}</td>
-          <td class="hide-sm mono dim">${dateDe(i.created_at)}</td>
-          <td><div class="acts">
-            <button data-a="copy" data-id="${i.id}">Link</button>
-            <button data-a="max" data-id="${i.id}">${i.max_tickets === 2 ? "Auf 1" : "Auf 2"}</button>
-            <button data-a="toggle" data-id="${i.id}" class="${i.status === "active" ? "danger" : ""}">${i.status === "active" ? "Sperren" : "Aktivieren"}</button>
-          </div></td></tr>`).join("") || `<tr><td colspan="5" class="dim">Keine Einladungen.</td></tr>`;
-        $$("#rows button").forEach(b => b.onclick = async () => {
-          const i = cache.invites.find(x => x.id == b.dataset.id);
-          if (b.dataset.a === "copy") return copy(inviteUrl(i.code));
-          const body = b.dataset.a === "max" ? { max_tickets: i.max_tickets === 2 ? 1 : 2 } : { status: i.status === "active" ? "disabled" : "active" };
-          if (body.status === "disabled" && !confirm(`Einladung von ${i.name} sperren? Mit dem Link kann dann niemand mehr kaufen. Bereits gekaufte Tickets bleiben gültig.`)) return;
-          await act(() => call(`/admin/invitations/${i.id}`, { method: "PUT", body }), "Gespeichert");
-          cache.invites = await call("/admin/invitations"); rows();
-        });
-      };
-      $("#q").oninput = rows; $("#f").onchange = rows; rows();
-    },
-
     async guests(m) {
-      const [invites, dash] = await Promise.all([call("/admin/invitations"), call("/admin/dashboard")]);
+      const dash = await call("/admin/dashboard");
       m.innerHTML = `<h1>Gäste & Tickets</h1>
-        <h2 style="margin-top:0">Kostenloses Ticket aus den 70</h2>
-        <p class="note">Belegt einen der 70 regulären Plätze (noch ${dash.counts.available} frei), kostet nichts und zählt nicht zum Umsatz.</p>
+        <h2 style="margin-top:0">Kostenloses Online-Ticket</h2>
+        <p class="note">Belegt einen der ${dash.counts.regular_cap} Online-Plätze (noch ${dash.counts.available} frei), kostet nichts und zählt nicht zum Umsatz.</p>
         <form class="card form" id="compForm">
           <label class="field"><span>Vorname</span><input class="input sm" name="first" required maxlength="60"></label>
           <label class="field"><span>Nachname</span><input class="input sm" name="last" required maxlength="60"></label>
           <label class="field"><span>E-Mail (optional)</span><input class="input sm" type="email" name="email"></label>
-          <label class="field"><span>Zu Einladung (optional)</span><select class="input sm" name="inv"><option value="">–</option>${invites.filter(i => i.status === "active").map(i => `<option value="${i.id}">${esc(i.name)} (${i.issued}/${i.max_tickets})</option>`).join("")}</select></label>
           <label class="check field" style="align-self:center"><input type="checkbox" name="mail"><span>Gleich per Mail schicken</span></label>
           <div class="field"><button class="btn btn-uv btn-small">Ticket erstellen</button></div>
         </form>
@@ -232,7 +194,7 @@
         <h2>Alle Tickets</h2><div id="tbl"></div>`;
       $("#compForm").onsubmit = async e => {
         e.preventDefault(); const f = e.target;
-        const r = await act(() => call("/admin/comp-tickets", { method: "POST", body: { first_name: f.first.value, last_name: f.last.value, email: f.email.value || null, invitation_id: f.inv.value || null, send_mail: f.mail.checked } }));
+        const r = await act(() => call("/admin/comp-tickets", { method: "POST", body: { first_name: f.first.value, last_name: f.last.value, email: f.email.value || null, send_mail: f.mail.checked } }));
         const name = f.first.value; const url = `${SITE}ticket/?k=${r.view_key}`;
         await VIEWS.guests(m);
         const text = `Hey ${name}, hier ist dein Ticket für TAKT Nr. 30 – Private Birthday Rave. QR-Code am Einlass zeigen, gilt einmal und nur für dich: ${url}`;
@@ -242,34 +204,6 @@
         toast(`Ticket ${r.number} erstellt`);
       };
       await ticketTable($("#tbl"), "", null);
-    },
-
-    async free(m) {
-      const all = await call("/admin/tickets?category=free");
-      const valid = all.filter(t => t.status !== "cancelled");
-      m.innerHTML = `<h1>2TAKT-Freitickets</h1>
-        <div class="slots" aria-label="${valid.length} von 30 Freitickets angelegt">${Array.from({ length: 30 }, (_, i) => { const t = valid[i]; return `<i class="${!t ? "" : t.checked_in_at ? "c" : t.first_name ? "a" : "u"}" title="${t ? esc(t.number + (t.first_name ? " · " + t.first_name + " " + t.last_name : " · frei")) : "noch nicht angelegt"}"></i>`; }).join("")}</div>
-        <p class="note">Violett = mit Namen · umrandet = ohne Namen (gültig) · grün = eingecheckt. Höchstens 30 gleichzeitig gültig.</p>
-        <form class="card form" id="freeForm">
-          <label class="field"><span>Vorname</span><input class="input sm" name="first"></label>
-          <label class="field"><span>Nachname</span><input class="input sm" name="last"></label>
-          <label class="field"><span>E-Mail (optional)</span><input class="input sm" name="email" type="email"></label>
-          <div class="field"><button class="btn btn-uv btn-small">Freiticket anlegen</button></div>
-        </form>
-        <div class="acts" style="margin:12px 0 0">
-          ${valid.length < 30 ? `<button id="bulk">Restliche ${30 - valid.length} anlegen</button>` : ""}
-          ${valid.filter(t => t.status === "valid").length ? `<a class="lnk" id="allPdf" target="_blank" rel="noopener" href="${SITE}ticket/?ks=${valid.filter(t => t.status === "valid").map(t => t.view_key).join(",")}">Alle ${valid.filter(t => t.status === "valid").length} öffnen / als PDF</a><button id="allLinks">Alle Links kopieren</button>` : ""}
-        </div>
-        <p class="note">Namen sind optional – jedes Freiticket hat seinen eigenen QR-Code und gilt genau einmal. Am Einlass erscheint „2TAKT-Gast“ mit der Ticketnummer.</p>
-        <div id="tbl" style="margin-top:20px"></div>`;
-      $("#freeForm").onsubmit = async e => {
-        e.preventDefault(); const f = e.target;
-        await act(() => call("/admin/free-tickets", { method: "POST", body: { first_name: f.first.value || null, last_name: f.last.value || null, email: f.email.value || null } }), "Freiticket angelegt");
-        render();
-      };
-      if ($("#allLinks")) $("#allLinks").onclick = () => copy(valid.filter(t => t.status === "valid").map(t => `${t.number}: ${ticketUrl(t)}`).join("\n"), "Alle Links kopiert");
-      if ($("#bulk")) $("#bulk").onclick = async () => { if (!confirm(`${30 - valid.length} Freitickets ohne Namen anlegen?`)) return; await act(() => call("/admin/free-tickets", { method: "POST", body: { count: 30 - valid.length } }), "Angelegt"); render(); };
-      await ticketTable($("#tbl"), "free", null, all);
     },
 
     async helpers(m) {
@@ -316,6 +250,34 @@
         if (b.dataset.a === "mark_refunded" && !confirm("Als erstattet markieren? Die Tickets dieser Bestellung werden storniert und gelten nicht mehr. Die Rückzahlung selbst machst du in PayPal.")) return;
         await act(() => call(`/admin/orders/${b.dataset.id}`, { method: "POST", body: { action: b.dataset.a } }), "Erledigt"); render();
       });
+    },
+
+    async paper(m) {
+      const p = await call("/admin/paper"); const c = p.counts;
+      m.innerHTML = `<h1>Papiertickets</h1>
+        <div class="kpis">${kpi("VIP · 2TAKT (Fynn)", p.vip.length, `${p.vip.filter(t => t.checked_in_at).length} eingecheckt`)}${kpi("Freitickets (Kim)", p.own.length, `${p.own.filter(t => t.checked_in_at).length} eingecheckt`)}${kpi("Gesperrt", [...p.vip, ...p.own].filter(t => t.status === "blocked").length)}</div>
+        <p class="note">Jedes Papierticket hat einen eigenen QR-Code und gilt genau einmal. Die Codes sind im Scanner hinterlegt, damit kopierte Tickets am Einlass auffallen. Sie zählen nicht zu den ${c.regular_cap} Online-Tickets.</p>
+        <h2>Drucken bei MOO (empfohlen)</h2>
+        <ol class="muted" style="padding-left:20px;line-height:1.8">
+          <li><button class="btn btn-uv btn-small" id="zipBtn">Druckdateien herunterladen (ZIP)</button> – 1 Vorderseite + ${p.vip.length + p.own.length} Rückseiten, je 1038 × 696 px.</li>
+          <li>moo.com/de → Visitenkarten → Format <strong>MOO (84 × 55 mm)</strong>, Menge <strong>50</strong>, Papier z. B. „Super“ oder „Luxe“.</li>
+          <li>„Eigenes Design hochladen“: Vorderseite = <code>00_Vorderseite.png</code> (für alle gleich).</li>
+          <li>Rückseite: <strong>„Verschiedene Designs“</strong> (Printfinity) wählen und alle übrigen Bilder aus dem ZIP hochladen – jede Karte bekommt ihren eigenen QR-Code.</li>
+          <li>Vor dem Bestellen in der Vorschau prüfen, dass jede Rückseite genau einmal vorkommt.</li>
+        </ol>
+        <h2>Selbst drucken</h2>
+        <p class="note">A4-Bögen mit je 10 Karten (84 × 55 mm) und Schnittmarken. Doppelseitig drucken, „an langer Kante wenden“, möglichst auf 250–300 g Karton, dann ausschneiden.</p>
+        <div class="acts"><button id="pdfBtn">PDF zum Selberdrucken</button></div>
+        <p class="note" id="printState" aria-live="polite"></p>
+        <h2>Verlorenes Ticket sperren</h2>
+        <form class="card form" id="blockForm"><label class="field"><span>Ticketnummer (z. B. 2T-07 oder FK-03)</span><input class="input sm mono" name="no" required maxlength="8"></label>
+          <div class="field acts"><button class="btn btn-small" name="b">Sperren</button><button class="btn btn-small" name="u" type="button" id="unblockBtn">Entsperren</button></div></form>`;
+      const state = t => $("#printState").textContent = t;
+      $("#zipBtn").onclick = () => paperZip(p, state).catch(e => state("Fehler: " + e.message));
+      $("#pdfBtn").onclick = () => paperPdf(p, state).catch(e => state("Fehler: " + e.message));
+      const block = async unblock => { const no = $("#blockForm").no.value.trim(); if (!no) return; await act(() => call("/admin/paper/block", { method: "POST", body: { number: no, unblock } }), unblock ? "Entsperrt" : "Gesperrt – dieses Ticket wird am Einlass abgelehnt"); VIEWS.paper(m); };
+      $("#blockForm").onsubmit = e => { e.preventDefault(); block(false); };
+      $("#unblockBtn").onclick = () => block(true);
     },
 
     async content(m) {
@@ -393,6 +355,9 @@
         <h2>E-Mail-Versand</h2>
         <p class="note">${d.mail_ready ? "Eingerichtet. Schick dir zur Kontrolle eine Testmail." : "Noch nicht eingerichtet – es fehlen RESEND_API_KEY und MAIL_FROM im Worker."}</p>
         <form class="card form" id="mailForm"><label class="field"><span>Empfänger</span><input class="input sm" type="email" name="to" required placeholder="du@beispiel.de"></label><div class="field"><button class="btn btn-uv btn-small" ${d.mail_ready ? "" : "disabled"}>Testmail senden</button></div></form>
+        <h2>Alles zurücksetzen</h2>
+        <p class="note">Löscht alle Tickets, Bestellungen, Reservierungen und persönlichen Einladungen – für einen sauberen Start vor dem echten Verkauf. Der Ticket-Link, Texte und Einstellungen bleiben. Gesperrt, sobald es echte bezahlte Bestellungen gibt. Die Papiertickets werden danach neu erzeugt – bereits gedruckte wären dann ungültig.</p>
+        <div class="acts"><button class="danger" id="resetAll">Alles zurücksetzen</button></div>
         <h2>Export</h2><div class="acts"><button data-x="guests">Gästeliste (CSV)</button><button data-x="orders">Bestellungen (CSV)</button><button data-x="invitations">Einladungen (CSV)</button></div>
         <h2>Testdaten</h2><p class="note">Löscht alle Testbestellungen und Testtickets (${d.counts.test_tickets}). Vorher den Testmodus beenden.</p>
         <div class="acts"><button class="danger" id="purge" ${d.counts.test_tickets ? "" : "disabled"}>Testdaten löschen</button></div>
@@ -400,6 +365,7 @@
         <p class="note">Optional. Person braucht ein Konto im Login von kim-betcher.de; trag hier die Benutzer-ID ein (sie sieht sie nach dem Anmelden auf dieser Seite).</p>
         <form class="card form" id="admForm"><label class="field"><span>Benutzer-ID</span><input class="input sm mono" name="uid" placeholder="user_…" required></label><label class="field"><span>Name</span><input class="input sm" name="name"></label><label class="field"><span>Rolle</span><select class="input sm" name="role"><option value="tickets">Ticketverwaltung</option><option value="scanner">Einlass</option></select></label><div class="field"><button class="btn btn-uv btn-small">Speichern</button></div></form>
         <div class="tablewrap" style="margin-top:12px"><table><tbody>${admins.map(a => `<tr><td>${esc(a.name || "")}<span class="sub">${esc(a.user_id)}</span></td><td>${a.role === "tickets" ? "Ticketverwaltung" : "Einlass"}</td><td>${a.active ? "aktiv" : "deaktiviert"}</td><td><div class="acts"><button data-u="${esc(a.user_id)}" data-r="${a.role}" data-n="${esc(a.name || "")}" data-on="${a.active}">${a.active ? "Deaktivieren" : "Aktivieren"}</button></div></td></tr>`).join("") || `<tr><td class="dim">Nur du.</td></tr>`}</tbody></table></div>
+        <h2>Protokoll</h2><p class="note">Wer hat wann was geändert.</p><div class="acts"><button id="showAudit">Protokoll anzeigen</button></div>
         <h2>Nach der Feier</h2><p class="note">Ersetzt alle Namen und E-Mail-Adressen durch Platzhalter (Datenschutz). Zahlen und Statistik bleiben. Erst nach dem Veranstaltungstag möglich.</p>
         <div class="acts"><button class="danger" id="anon">Gästedaten anonymisieren</button></div>`;
       $$("[data-x]", m).forEach(b => b.onclick = async () => {
@@ -409,12 +375,98 @@
         const url = URL.createObjectURL(await res.blob()); const a = document.createElement("a"); a.href = url; a.download = `takt30-${b.dataset.x}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 2000);
       });
       $("#mailForm").onsubmit = async e => { e.preventDefault(); const r = await act(() => call("/admin/test-mail", { method: "POST", body: { to: e.target.to.value } })); toast(`Testmail an ${r.to} verschickt – Posteingang und Spam prüfen`); };
+      $("#resetAll").onclick = async () => { const c = prompt("Wirklich alles löschen? Zur Bestätigung ALLES LÖSCHEN eingeben:"); if (!c) return; await act(() => call("/admin/reset", { method: "POST", body: { confirm: c } }), "Alles zurückgesetzt"); render(); };
       $("#purge").onclick = async () => { if (!confirm("Alle Testdaten endgültig löschen?")) return; await act(() => call("/admin/purge-test", { method: "POST" }), "Testdaten gelöscht"); render(); };
+      $("#showAudit").onclick = () => VIEWS.audit(m);
       $("#anon").onclick = async () => { const c = prompt("Zur Bestätigung ANONYMISIEREN eingeben:"); if (!c) return; await act(() => call("/admin/anonymize", { method: "POST", body: { confirm: c } }), "Anonymisiert"); };
       $("#admForm").onsubmit = async e => { e.preventDefault(); const f = e.target; await act(() => call("/admin/admins", { method: "POST", body: { user_id: f.uid.value.trim(), name: f.name.value, role: f.role.value } }), "Gespeichert"); render(); };
       $$("[data-u]", m).forEach(b => b.onclick = async () => { await act(() => call("/admin/admins", { method: "POST", body: { user_id: b.dataset.u, role: b.dataset.r, name: b.dataset.n, active: b.dataset.on !== "1" } }), "Gespeichert"); render(); });
     }
   };
+
+  /* -------- Druckvorlagen Papiertickets (84 × 55 mm + Beschnitt, 300 dpi) -------- */
+  const CW = 1038, CH = 696, BLEED = 23;
+  const loadImg = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+  async function printAssets() {
+    await Promise.all(['300 30px "Josefin Sans"', '400 30px "Josefin Sans"', '300 30px "JetBrains Mono"', '400 30px "JetBrains Mono"'].map(f => document.fonts.load(f)));
+    const [logo, wm] = await Promise.all([loadImg("/taktnr30/assets/logo.svg"), loadImg("/taktnr30/assets/wordmark.svg")]);
+    return { logo, wm };
+  }
+  function txt(ctx, s, x, y, font, color, spacing = 0, align = "left") {
+    ctx.font = font; ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = "alphabetic";
+    try { ctx.letterSpacing = `${spacing}px`; } catch {}
+    ctx.fillText(s, x, y);
+    try { ctx.letterSpacing = "0px"; } catch {}
+  }
+  function drawFront(a, ev) {
+    const c = document.createElement("canvas"); c.width = CW; c.height = CH; const x = c.getContext("2d");
+    x.fillStyle = "#0a0a0c"; x.fillRect(0, 0, CW, CH);
+    x.drawImage(a.logo, 82, (CH - 400) / 2, 400, 400);
+    const L = 540;
+    x.drawImage(a.wm, L, 205, 420, 420 * a.wm.naturalHeight / a.wm.naturalWidth);
+    txt(x, "PRIVATE BIRTHDAY RAVE", L, 318, '300 25px "Josefin Sans"', "#c9c9d1", 6);
+    x.fillStyle = "#9d4dff"; x.fillRect(L, 352, 110, 3);
+    txt(x, TAKT.dateDe(ev.event_date), L, 425, '300 40px "JetBrains Mono"', "#f2f2f4", 2);
+    txt(x, `EINLASS ${ev.doors_time} · START ${ev.start_time}`, L, 472, '300 23px "JetBrains Mono"', "#f2f2f4", 1);
+    txt(x, "HEIDENHEIM", L, 516, '300 20px "JetBrains Mono"', "#82828e", 3);
+    return c;
+  }
+  function drawBack(a, ev, t, kind) {
+    const c = document.createElement("canvas"); c.width = CW; c.height = CH; const x = c.getContext("2d");
+    const accent = kind === "vip" ? "#9d4dff" : "#f2f2f4";
+    x.fillStyle = "#0a0a0c"; x.fillRect(0, 0, CW, CH);
+    x.fillStyle = accent; x.fillRect(0, 0, BLEED + 22, CH);
+    // QR auf weißem Feld
+    const m = TAKT.qrMatrix("T30." + t.code), n = m.length, box = 410, q = 2, cell = Math.floor(box / (n + q * 2)), size = cell * (n + q * 2);
+    const qx = 100, qy = Math.round((CH - size) / 2);
+    x.fillStyle = "#ffffff"; x.beginPath(); x.roundRect ? x.roundRect(qx, qy, size, size, 14) : x.rect(qx, qy, size, size); x.fill();
+    x.fillStyle = "#000000";
+    for (let r = 0; r < n; r++) for (let col = 0; col < n; col++) if (m[r][col]) x.fillRect(qx + (col + q) * cell, qy + (r + q) * cell, cell, cell);
+    const L = 560;
+    if (kind === "vip") {
+      txt(x, "VIP", L, 250, '300 120px "Josefin Sans"', "#9d4dff", 8);
+      txt(x, "2TAKT", L + 4, 300, '400 26px "JetBrains Mono"', "#c09bff", 10);
+    } else {
+      txt(x, "FREITICKET", L, 222, '300 58px "Josefin Sans"', "#f2f2f4", 5);
+      txt(x, "VON KIM", L + 2, 272, '400 24px "JetBrains Mono"', "#b4b4be", 8);
+    }
+    txt(x, t.number, L, 378, '400 46px "JetBrains Mono"', "#f2f2f4", 3);
+    txt(x, `TAKT NR. 30 · ${TAKT.dateDe(ev.event_date)}`, L, 438, '300 20px "JetBrains Mono"', "#b4b4be", 1);
+    txt(x, `Einlass ab ${ev.doors_time} · Start ${ev.start_time}`, L, 474, '300 21px "Josefin Sans"', "#b4b4be");
+    txt(x, "In den Seewiesen 84, 89520 Heidenheim", L, 504, '300 21px "Josefin Sans"', "#b4b4be");
+    txt(x, "EINMALIG GÜLTIG", L, 590, '400 18px "JetBrains Mono"', accent, 6);
+    return c;
+  }
+  const toBytes = c => new Promise(res => c.toBlob(b => b.arrayBuffer().then(buf => res(new Uint8Array(buf))), "image/png"));
+  function save(blob, name) { const u = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = u; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(u), 3000); }
+  const paperList = p => [...p.vip.map(t => [t, "vip"]), ...p.own.map(t => [t, "own"])];
+  async function paperZip(p, state) {
+    if (!window.fflate) throw new Error("wird noch geladen – bitte gleich nochmal");
+    state("Erstelle Druckdateien …");
+    const a = await printAssets(), files = { "00_Vorderseite.png": await toBytes(drawFront(a, p.event)) };
+    for (const [t, kind] of paperList(p)) files[`${kind === "vip" ? "VIP" : "Freiticket"}_${t.number}.png`] = await toBytes(drawBack(a, p.event, t, kind));
+    save(new Blob([fflate.zipSync(files, { level: 0 })], { type: "application/zip" }), "TAKT30-Papiertickets-MOO.zip");
+    state(`Fertig: 1 Vorderseite + ${Object.keys(files).length - 1} Rückseiten.`);
+  }
+  async function paperPdf(p, state) {
+    if (!window.jspdf) throw new Error("wird noch geladen – bitte gleich nochmal");
+    state("Erstelle PDF …");
+    const a = await printAssets(), { jsPDF } = window.jspdf, doc = new jsPDF({ unit: "mm", format: "a4" });
+    const trim = c => { const t = document.createElement("canvas"); t.width = CW - 2 * BLEED; t.height = CH - 2 * BLEED; t.getContext("2d").drawImage(c, -BLEED, -BLEED); return t.toDataURL("image/jpeg", 0.93); };
+    const front = trim(drawFront(a, p.event)), list = paperList(p), W = 84, H = 55, X0 = (210 - 2 * W) / 2, Y0 = (297 - 5 * H) / 2;
+    const marks = () => { doc.setDrawColor(150); doc.setLineWidth(0.1); for (let i = 0; i <= 2; i++) { const x = X0 + i * W; doc.line(x, Y0 - 6, x, Y0 - 2); doc.line(x, Y0 + 5 * H + 2, x, Y0 + 5 * H + 6); } for (let j = 0; j <= 5; j++) { const y = Y0 + j * H; doc.line(X0 - 6, y, X0 - 2, y); doc.line(X0 + 2 * W + 2, y, X0 + 2 * W + 6, y); } };
+    for (let s = 0; s < list.length; s += 10) {
+      const chunk = list.slice(s, s + 10);
+      if (s) doc.addPage();
+      chunk.forEach((_, i) => doc.addImage(front, "JPEG", X0 + (i % 2) * W, Y0 + Math.floor(i / 2) * H, W, H));
+      marks(); doc.addPage();
+      chunk.forEach(([t, kind], i) => doc.addImage(trim(drawBack(a, p.event, t, kind)), "JPEG", X0 + (1 - i % 2) * W, Y0 + Math.floor(i / 2) * H, W, H));   // gespiegelt für Wenden an der langen Kante
+      marks();
+      state(`Erstelle PDF … ${Math.min(s + 10, list.length)} / ${list.length}`);
+    }
+    doc.save("TAKT30-Papiertickets-A4.pdf");
+    state(`Fertig: ${list.length} Karten auf ${Math.ceil(list.length / 10)} Bögen (Vorder- und Rückseite).`);
+  }
 
   const kpi = (label, value, sub = "") => `<div class="kpi"><span>${label}</span><b>${value}</b>${sub ? `<small>${esc(sub)}</small>` : ""}</div>`;
 

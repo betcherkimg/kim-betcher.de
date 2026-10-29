@@ -8,7 +8,7 @@ const APP_URL = `${APP_ORIGIN}/taktnr30/tickets/`;
 const CLERK_ISSUER = "https://clerk.kim-betcher.de";
 const CLERK_JWKS_URL = `${CLERK_ISSUER}/.well-known/jwks.json`;
 
-const REGULAR_CAP = 70;          // reguläres Kontingent
+const REGULAR_CAP = 60;          // online verkaufbares Kontingent (Papiertickets zählen nicht dazu)
 const FREE_CAP = 30;             // 2TAKT-Freitickets
 const HELPER_CAP_MAX = 50;       // Obergrenze für das einstellbare Helfer-Kontingent
 const helperCap = s => Math.min(Math.max(Number(s?.helper_cap) || 0, 0), HELPER_CAP_MAX);
@@ -104,7 +104,6 @@ const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS payments (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id INTEGER NOT NULL REFERENCES orders(id), provider TEXT NOT NULL, kind TEXT NOT NULL CHECK (kind IN ('capture','refund')), provider_ref TEXT NOT NULL UNIQUE, status TEXT NOT NULL, amount_cents INTEGER NOT NULL, currency TEXT NOT NULL, created_at TEXT NOT NULL)`,
   `CREATE TABLE IF NOT EXISTS webhook_events (event_id TEXT PRIMARY KEY, event_type TEXT NOT NULL, received_at TEXT NOT NULL, processed_at TEXT, result TEXT)`,
   `CREATE TABLE IF NOT EXISTS tickets (id INTEGER PRIMARY KEY AUTOINCREMENT, number TEXT NOT NULL UNIQUE, category TEXT NOT NULL CHECK (category IN ('regular','free','helper')), code TEXT NOT NULL UNIQUE, view_key TEXT NOT NULL UNIQUE, order_id INTEGER REFERENCES orders(id), invitation_id INTEGER REFERENCES invitations(id), helper_job TEXT, guest_position INTEGER, first_name TEXT, last_name TEXT, email TEXT, status TEXT NOT NULL DEFAULT 'valid' CHECK (status IN ('valid','blocked','cancelled')), is_test INTEGER NOT NULL DEFAULT 0, checked_in_at TEXT, checked_in_by TEXT, version INTEGER NOT NULL DEFAULT 1, mail_status TEXT NOT NULL DEFAULT 'none', note TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, UNIQUE (order_id, guest_position))`,
-  `CREATE UNIQUE INDEX IF NOT EXISTS tickets_one_helper ON tickets(invitation_id) WHERE helper_job IS NOT NULL AND status != 'cancelled'`,
   `CREATE INDEX IF NOT EXISTS tickets_category ON tickets(category, status)`,
   `CREATE TABLE IF NOT EXISTS retired_codes (code TEXT PRIMARY KEY, ticket_id INTEGER NOT NULL, retired_at TEXT NOT NULL, reason TEXT)`,
   `CREATE TABLE IF NOT EXISTS checkins (id INTEGER PRIMARY KEY AUTOINCREMENT, ticket_id INTEGER, action TEXT NOT NULL, result TEXT NOT NULL, actor TEXT NOT NULL, at TEXT NOT NULL, detail TEXT)`,
@@ -120,6 +119,25 @@ async function ensureSchema(env) {
   const rows = Object.entries(DEFAULT_SETTINGS).map(([k, v]) =>
     env.DB.prepare(`INSERT OR IGNORE INTO event_settings (key, value, updated_at, updated_by) VALUES (?, ?, ?, 'system')`).bind(k, v, iso()));
   await env.DB.batch(rows);
+  // Ergänzungen für bestehende Datenbanken (Fehler = Spalte gibt es schon)
+  for (const sql of [
+    `ALTER TABLE tickets ADD COLUMN paper INTEGER NOT NULL DEFAULT 0`,
+    `ALTER TABLE invitations ADD COLUMN kind TEXT NOT NULL DEFAULT 'personal'`,
+    `ALTER TABLE orders ADD COLUMN holder TEXT`,
+    `ALTER TABLE reservations ADD COLUMN holder TEXT`,
+    `ALTER TABLE tickets ADD COLUMN holder TEXT`
+  ]) await run(env, sql).catch(() => {});
+  // „holder“ = wer zählt fürs 2er-Limit: persönliche Einladung → i<ID>, gemeinsamer Link → i<ID>:<E-Mail>
+  await env.DB.batch([
+    `UPDATE orders SET holder = 'i' || invitation_id WHERE holder IS NULL`,
+    `UPDATE reservations SET holder = 'i' || invitation_id WHERE holder IS NULL`,
+    `UPDATE tickets SET holder = (SELECT holder FROM orders WHERE orders.id = tickets.order_id) WHERE holder IS NULL AND order_id IS NOT NULL`,
+    `UPDATE tickets SET holder = 'i' || invitation_id WHERE holder IS NULL AND invitation_id IS NOT NULL`,
+    `DROP INDEX IF EXISTS tickets_one_helper`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS tickets_one_helper_holder ON tickets(holder) WHERE helper_job IS NOT NULL AND status != 'cancelled'`,
+    `CREATE INDEX IF NOT EXISTS tickets_holder ON tickets(holder)`,
+    `CREATE INDEX IF NOT EXISTS reservations_holder ON reservations(holder, state)`
+  ].map(q => env.DB.prepare(q)));
   await run(env, `UPDATE event_settings SET value = ?, updated_at = ?, updated_by = 'system' WHERE key = 'helper_jobs' AND value = ?`,
     DEFAULT_SETTINGS.helper_jobs, iso(), JSON.stringify([{ name: "Bar", slots: 0 }, { name: "Ticketscanner", slots: 0 }]));
   schemaReady = true;
@@ -135,19 +153,36 @@ async function getSettings(env) {
 /* ================= Kontingent ================= */
 
 const SQL_REGULAR_TAKEN = (alias = "") => `(
-  (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND status != 'cancelled')
+  (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 0 AND status != 'cancelled')
   + (SELECT COALESCE(SUM(quantity), 0) FROM reservations r${alias} WHERE r${alias}.state = 'active' AND r${alias}.expires_at > ?))`;
+
+// Belegte Plätze eines „holders“ (Tickets + laufende Reservierungen) und sein Limit
+const SQL_USED = `((SELECT COUNT(*) FROM tickets WHERE holder = ? AND status != 'cancelled') + (SELECT COALESCE(SUM(quantity), 0) FROM reservations WHERE holder = ? AND state = 'active' AND expires_at > ?))`;
+const SQL_LIMIT = `(SELECT CASE WHEN status = 'active' THEN CASE WHEN kind = 'group' THEN ${MAX_PER_INVITE} ELSE max_tickets END END FROM invitations WHERE id = ?)`;
+const holderOf = (inv, email) => inv.kind === "group" ? (email ? `i${inv.id}:${String(email).trim().toLowerCase()}` : null) : `i${inv.id}`;
+
+async function ensureGroupInvite(env) {
+  let g = await first(env, `SELECT id, code, status FROM invitations WHERE kind = 'group' ORDER BY id LIMIT 1`);
+  if (!g) {
+    await run(env, `INSERT OR IGNORE INTO invitations (code, name, max_tickets, status, kind, created_at, created_by, updated_at) VALUES (?, 'Gemeinsamer Ticket-Link', 2, 'active', 'group', ?, 'system', ?)`, randomCode(8), iso(), iso());
+    g = await first(env, `SELECT id, code, status FROM invitations WHERE kind = 'group' ORDER BY id LIMIT 1`);
+  }
+  return g;
+}
 
 async function counts(env, settings) {
   const cap = helperCap(settings || await getSettings(env));
   const t = nowMs();
   const row = await first(env, `SELECT
-      (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND status != 'cancelled') AS regular_issued,
+      (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 0 AND status != 'cancelled') AS regular_issued,
       (SELECT COALESCE(SUM(quantity), 0) FROM reservations WHERE state = 'active' AND expires_at > ?) AS reserved,
       (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND status != 'cancelled') AS free_issued,
       (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND status != 'cancelled' AND first_name IS NOT NULL) AS free_assigned,
       (SELECT COUNT(*) FROM tickets WHERE category = 'helper' AND status != 'cancelled') AS helper_issued,
-      (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND order_id IS NULL AND status != 'cancelled') AS regular_comp,
+      (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND order_id IS NULL AND paper = 0 AND status != 'cancelled') AS regular_comp,
+      (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 1 AND status != 'cancelled') AS paper_own,
+      (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND paper = 1 AND status != 'cancelled') AS paper_vip,
+      (SELECT COUNT(*) FROM tickets WHERE paper = 1 AND checked_in_at IS NOT NULL AND status != 'cancelled') AS paper_checked_in,
       (SELECT COUNT(*) FROM tickets WHERE checked_in_at IS NOT NULL AND status != 'cancelled') AS checked_in,
       (SELECT COUNT(*) FROM tickets WHERE status = 'valid') AS expected,
       (SELECT COALESCE(SUM(amount_cents), 0) FROM orders WHERE status = 'paid' AND is_test = 0) AS revenue_cents,
@@ -299,7 +334,7 @@ async function getEvent(env) {
   return json(publicEvent(s, c, env, jc));
 }
 
-// Helfer-Anmeldung über den persönlichen Einladungslink → kostenloses Helfer-Ticket
+// Helfer-Anmeldung über einen Einladungslink → kostenloses Helfer-Ticket
 async function helperSignup(env, request, ctx) {
   if (await limited(env, `hp:${await clientKey(request, env)}`, 8, 10 * 60_000)) return fail("Zu viele Versuche. Bitte in ein paar Minuten erneut probieren.", 429);
   const b = await readJson(request);
@@ -308,28 +343,27 @@ async function helperSignup(env, request, ctx) {
   if (s.helper_signup !== "1") return fail("Die Helfer-Anmeldung ist gerade geschlossen.", 409, "HELPER_CLOSED");
   if (!(await turnstileOk(env, b.turnstile, request))) return fail("Die Sicherheitsprüfung ist fehlgeschlagen. Bitte erneut versuchen.", 400, "TURNSTILE");
   if (b.accept !== true) return fail("Bitte bestätige Datenschutzhinweise und Teilnahmebedingungen.");
-  const inv = await inviteState(env, cleanCode(b.invite));
-  if (!inv) return fail("Diese Einladung kennen wir nicht.", 404, "INVITE_UNKNOWN");
-  if (inv.status !== "active") return fail("Diese Einladung ist nicht mehr gültig.", 409, "INVITE_DISABLED");
-  if (inv.helper_job) return fail("Mit dieser Einladung ist schon jemand als Helfer eingetragen.", 409, "HELPER_EXISTS");
-  if (inv.remaining < 1) return fail("Mit dieser Einladung sind bereits alle Plätze vergeben.", 409, "INVITE_EXHAUSTED");
   if (!nameOk(b.first_name) || !nameOk(b.last_name)) return fail("Bitte Vor- und Nachnamen angeben.");
   if (!emailOk(b.email)) return fail("Bitte eine gültige E-Mail-Adresse angeben.");
+  const email = String(b.email).trim().toLowerCase();
+  const inv = await inviteState(env, cleanCode(b.invite), email);
+  if (!inv) return fail("Diese Einladung kennen wir nicht.", 404, "INVITE_UNKNOWN");
+  if (inv.status !== "active") return fail("Diese Einladung ist nicht mehr gültig.", 409, "INVITE_DISABLED");
+  if (inv.helper_job) return fail(inv.kind === "group" ? "Mit dieser E-Mail ist schon jemand als Helfer eingetragen." : "Mit dieser Einladung ist schon jemand als Helfer eingetragen.", 409, "HELPER_EXISTS");
+  if (inv.remaining < 1) return fail("Für dich sind bereits alle Plätze vergeben.", 409, "INVITE_EXHAUSTED");
   const job = helperJobs(s).find(j => j.name === b.job);
   if (!job) return fail("Bitte eine Aufgabe auswählen.");
   const t = nowMs();
-  const code = randomCode(26), view = randomCode(26);
-  // Atomar: Helferkontingent, Aufgaben-Plätze und Einladungskontingent in einem Schritt prüfen
-  const r = await run(env, `INSERT INTO tickets (number, category, code, view_key, invitation_id, helper_job, first_name, last_name, email, status, is_test, created_at, updated_at)
-    SELECT printf('H-%02d', COALESCE((SELECT MAX(CAST(substr(number, 3) AS INTEGER)) FROM tickets WHERE category = 'helper'), 0) + 1), 'helper', ?, ?, ?, ?, ?, ?, ?, 'valid', 0, ?, ?
+  const holder = holderOf(inv, email);
+  // Atomar: Helferkontingent, Aufgaben-Plätze und 2er-Limit in einem Schritt prüfen
+  const r = await run(env, `INSERT INTO tickets (number, category, code, view_key, invitation_id, holder, helper_job, first_name, last_name, email, status, is_test, created_at, updated_at)
+    SELECT printf('H-%02d', COALESCE((SELECT MAX(CAST(substr(number, 3) AS INTEGER)) FROM tickets WHERE category = 'helper'), 0) + 1), 'helper', ?, ?, ?, ?, ?, ?, ?, ?, 'valid', 0, ?, ?
     WHERE (SELECT COUNT(*) FROM tickets WHERE category = 'helper' AND status != 'cancelled') < ?
       AND (? = 0 OR (SELECT COUNT(*) FROM tickets WHERE category = 'helper' AND helper_job = ? AND status != 'cancelled') < ?)
-      AND (SELECT COUNT(*) FROM tickets tk LEFT JOIN orders o ON o.id = tk.order_id WHERE COALESCE(o.invitation_id, tk.invitation_id) = ? AND tk.status != 'cancelled')
-        + (SELECT COALESCE(SUM(quantity), 0) FROM reservations WHERE invitation_id = ? AND state = 'active' AND expires_at > ?) + 1
-        <= (SELECT max_tickets FROM invitations WHERE id = ? AND status = 'active')
-      AND NOT EXISTS (SELECT 1 FROM tickets WHERE invitation_id = ? AND helper_job IS NOT NULL AND status != 'cancelled')`,
-    code, view, inv.id, job.name, cleanName(b.first_name), cleanName(b.last_name), String(b.email).trim().toLowerCase(), iso(t), iso(t),
-    helperCap(s), job.slots, job.name, job.slots, inv.id, inv.id, t, inv.id, inv.id).catch(() => null);
+      AND ${SQL_USED} + 1 <= ${SQL_LIMIT}
+      AND NOT EXISTS (SELECT 1 FROM tickets WHERE holder = ? AND helper_job IS NOT NULL AND status != 'cancelled')`,
+    randomCode(26), randomCode(26), inv.id, holder, job.name, cleanName(b.first_name), cleanName(b.last_name), email, iso(t), iso(t),
+    helperCap(s), job.slots, job.name, job.slots, holder, holder, t, inv.id, holder).catch(() => null);
   if (!r || !changes(r)) {
     const c = await counts(env);
     if (c.helper_available <= 0) return fail("Alle Helferplätze sind schon vergeben – danke trotzdem!", 409, "HELPER_FULL");
@@ -338,30 +372,32 @@ async function helperSignup(env, request, ctx) {
     return fail("Die Anmeldung war gerade nicht möglich. Bitte erneut versuchen.", 409);
   }
   const ticket = await first(env, `SELECT * FROM tickets WHERE id = ?`, r.meta.last_row_id);
-  await audit(env, { actor: `invite:${inv.id}`, name: inv.name }, "helper.signup", ticket.number, { job: job.name });
+  await audit(env, { actor: `invite:${inv.id}`, name: inv.kind === "group" ? `Ticket-Link (${email})` : inv.name }, "helper.signup", ticket.number, { job: job.name });
   const mail = sendTicketMail(env, ticket).catch(() => {});
   if (ctx?.waitUntil) ctx.waitUntil(mail); else await mail;
   return json({ number: ticket.number, view_key: ticket.view_key, job: job.name }, 201);
 }
 
-async function inviteState(env, code) {
-  const inv = await first(env, `SELECT id, name, max_tickets, status FROM invitations WHERE code = ?`, code);
+async function inviteState(env, code, email) {
+  const inv = await first(env, `SELECT id, name, max_tickets, status, kind FROM invitations WHERE code = ?`, code);
   if (!inv) return null;
+  const max = inv.kind === "group" ? MAX_PER_INVITE : inv.max_tickets;
+  const holder = holderOf(inv, email);
+  if (!holder) return { ...inv, max, issued: 0, reserved: 0, remaining: max, helper_job: null };
   const t = nowMs();
   const used = await first(env, `SELECT
-     (SELECT COUNT(*) FROM tickets tk LEFT JOIN orders o ON o.id = tk.order_id WHERE COALESCE(o.invitation_id, tk.invitation_id) = ? AND tk.status != 'cancelled') AS issued,
-     (SELECT COALESCE(SUM(quantity), 0) FROM reservations WHERE invitation_id = ? AND state = 'active' AND expires_at > ?) AS reserved`, inv.id, inv.id, t);
-  const remaining = Math.max(0, inv.max_tickets - used.issued - used.reserved);
-  const helper = await first(env, `SELECT helper_job FROM tickets WHERE invitation_id = ? AND helper_job IS NOT NULL AND status != 'cancelled'`, inv.id);
-  return { ...inv, issued: used.issued, reserved: used.reserved, remaining, helper_job: helper?.helper_job || null };
+     (SELECT COUNT(*) FROM tickets WHERE holder = ? AND status != 'cancelled') AS issued,
+     (SELECT COALESCE(SUM(quantity), 0) FROM reservations WHERE holder = ? AND state = 'active' AND expires_at > ?) AS reserved,
+     (SELECT helper_job FROM tickets WHERE holder = ? AND helper_job IS NOT NULL AND status != 'cancelled') AS helper_job`, holder, holder, t, holder);
+  return { ...inv, max, holder, issued: used.issued, reserved: used.reserved, remaining: Math.max(0, max - used.issued - used.reserved), helper_job: used.helper_job || null };
 }
 
 async function getInvite(env, request, code) {
   if (await limited(env, `inv:${await clientKey(request, env)}`, 40, 60_000)) return fail("Zu viele Anfragen. Bitte kurz warten.", 429);
   const st = await inviteState(env, cleanCode(code));
   if (!st) return fail("Diese Einladung kennen wir nicht. Bitte prüfe den Link.", 404, "INVITE_UNKNOWN");
-  const first_name = st.name.split(" ")[0];
-  return json({ valid: st.status === "active", status: st.status, first_name, max: st.max_tickets, issued: st.issued, reserved: st.reserved, remaining: st.remaining, helper_job: st.helper_job });
+  const first_name = st.kind === "group" ? null : st.name.split(" ")[0];
+  return json({ valid: st.status === "active", status: st.status, kind: st.kind, first_name, max: st.max, issued: st.issued, reserved: st.reserved, remaining: st.remaining, helper_job: st.helper_job });
 }
 
 async function checkout(env, request, ctx) {
@@ -375,27 +411,24 @@ async function checkout(env, request, ctx) {
   if (!(await turnstileOk(env, body.turnstile, request))) return fail("Die Sicherheitsprüfung ist fehlgeschlagen. Bitte erneut versuchen.", 400, "TURNSTILE");
   if (body.accept !== true) return fail("Bitte bestätige Datenschutzhinweise und Teilnahmebedingungen.");
 
-  const inv = await inviteState(env, cleanCode(body.invite));
-  if (!inv) return fail("Diese Einladung kennen wir nicht.", 404, "INVITE_UNKNOWN");
-  if (inv.status !== "active") return fail("Diese Einladung ist nicht mehr gültig.", 409, "INVITE_DISABLED");
-
   const guests = Array.isArray(body.guests) ? body.guests.slice(0, 3) : [];
   const quantity = guests.length;
-  if (quantity < 1 || quantity > MAX_PER_INVITE) return fail("Pro Einladung sind 1 oder 2 Tickets möglich.");
+  if (quantity < 1 || quantity > MAX_PER_INVITE) return fail("Pro Person sind 1 oder 2 Tickets möglich.");
   for (const g of guests) if (!nameOk(g?.first_name) || !nameOk(g?.last_name)) return fail("Bitte für jedes Ticket Vor- und Nachnamen angeben.");
   if (!emailOk(body.email)) return fail("Bitte eine gültige E-Mail-Adresse angeben.");
-  if (quantity > inv.max_tickets - inv.issued) {
-    inv.remaining = inv.max_tickets - inv.issued;
-    return fail(inv.remaining ? `Mit dieser Einladung ist noch ${inv.remaining} Ticket möglich.` : "Mit dieser Einladung wurden bereits alle Tickets gekauft.", 409, "INVITE_EXHAUSTED");
-  }
+  const email = String(body.email).trim().toLowerCase();
 
-  // Gleiche Einladung startet neu → alten, unbezahlten Versuch sofort freigeben (z. B. Abbruch am Handy, neuer Versuch am PC)
+  const inv = await inviteState(env, cleanCode(body.invite), email);
+  if (!inv) return fail("Diese Einladung kennen wir nicht.", 404, "INVITE_UNKNOWN");
+  if (inv.status !== "active") return fail("Diese Einladung ist nicht mehr gültig.", 409, "INVITE_DISABLED");
+  const exhausted = n => fail(n > 0 ? `Für dich ist noch ${n} Ticket möglich.` : "Du hast bereits 2 Tickets – mehr gehen pro Person nicht.", 409, "INVITE_EXHAUSTED");
+  if (quantity > inv.max - inv.issued) return exhausted(inv.max - inv.issued);
+
+  // Derselbe Käufer startet neu → alten, unbezahlten Versuch sofort freigeben (z. B. Abbruch am Handy, neuer Versuch am PC)
   await env.DB.batch([
-    env.DB.prepare(`UPDATE orders SET status = 'cancelled', updated_at = ? WHERE invitation_id = ? AND status = 'pending'`).bind(iso(), inv.id),
-    env.DB.prepare(`UPDATE reservations SET state = 'released' WHERE invitation_id = ? AND state = 'active'`).bind(inv.id)
+    env.DB.prepare(`UPDATE orders SET status = 'cancelled', updated_at = ? WHERE holder = ? AND status = 'pending'`).bind(iso(), inv.holder),
+    env.DB.prepare(`UPDATE reservations SET state = 'released' WHERE holder = ? AND state = 'active'`).bind(inv.holder)
   ]);
-  inv.remaining = inv.max_tickets - inv.issued;
-  if (quantity > inv.remaining) return fail("Mit dieser Einladung wurden bereits alle Tickets gekauft.", 409, "INVITE_EXHAUSTED");
 
   const t = nowMs();
   const orderNo = `T30-${new Date(t).toISOString().slice(2, 10).replace(/-/g, "")}-${randomCode(5)}`;
@@ -403,29 +436,26 @@ async function checkout(env, request, ctx) {
   const amount = PRICE_CENTS[quantity];
   const provider = mode === "test" ? "test" : "paypal";
   const isTest = provider === "test" || env.PAYPAL_ENV !== "live";   // Sandbox = Spielgeld = Testticket
-  const email = String(body.email).trim().toLowerCase();
 
-  const ins = await run(env, `INSERT INTO orders (order_no, access_key, invitation_id, email, buyer_first, buyer_last, quantity, amount_cents, provider, is_test, status, consent_at, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)`,
-    orderNo, accessKey, inv.id, email, cleanName(guests[0].first_name), cleanName(guests[0].last_name), quantity, amount, provider, isTest ? 1 : 0, iso(t), iso(t), iso(t));
+  const ins = await run(env, `INSERT INTO orders (order_no, access_key, invitation_id, holder, email, buyer_first, buyer_last, quantity, amount_cents, provider, is_test, status, consent_at, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)`,
+    orderNo, accessKey, inv.id, inv.holder, email, cleanName(guests[0].first_name), cleanName(guests[0].last_name), quantity, amount, provider, isTest ? 1 : 0, iso(t), iso(t), iso(t));
   const orderId = ins.meta.last_row_id;
   await env.DB.batch(guests.map((g, i) => env.DB.prepare(`INSERT INTO guests (order_id, position, first_name, last_name) VALUES (?, ?, ?, ?)`)
     .bind(orderId, i + 1, cleanName(g.first_name), cleanName(g.last_name))));
 
-  // Atomar: nur reservieren, wenn Gesamtkontingent UND Einladungskontingent reichen.
-  const res = await run(env, `INSERT INTO reservations (order_id, invitation_id, quantity, expires_at, state, created_at)
-    SELECT ?, ?, ?, ?, 'active', ?
+  // Atomar: nur reservieren, wenn Online-Kontingent UND 2er-Limit des Käufers reichen.
+  const res = await run(env, `INSERT INTO reservations (order_id, invitation_id, holder, quantity, expires_at, state, created_at)
+    SELECT ?, ?, ?, ?, ?, 'active', ?
     WHERE ${SQL_REGULAR_TAKEN()} + ? <= ?
-      AND (SELECT COUNT(*) FROM tickets tk LEFT JOIN orders o ON o.id = tk.order_id WHERE COALESCE(o.invitation_id, tk.invitation_id) = ? AND tk.status != 'cancelled')
-        + (SELECT COALESCE(SUM(quantity), 0) FROM reservations WHERE invitation_id = ? AND state = 'active' AND expires_at > ?) + ?
-        <= (SELECT max_tickets FROM invitations WHERE id = ? AND status = 'active')`,
-    orderId, inv.id, quantity, t + RESERVATION_MS, iso(t), t, quantity, REGULAR_CAP, inv.id, inv.id, t, quantity, inv.id);
+      AND ${SQL_USED} + ? <= ${SQL_LIMIT}`,
+    orderId, inv.id, inv.holder, quantity, t + RESERVATION_MS, iso(t), t, quantity, REGULAR_CAP, inv.holder, inv.holder, t, quantity, inv.id);
   if (!changes(res)) {
     await run(env, `UPDATE orders SET status = 'failed', updated_at = ? WHERE id = ?`, iso(), orderId);
     const c = await counts(env);
     return c.available < quantity
       ? fail(c.available ? `Es ist nur noch ${c.available} Ticket verfügbar.` : "Ausverkauft – es sind keine Tickets mehr verfügbar.", 409, "SOLD_OUT")
-      : fail("Mit dieser Einladung ist gerade ein Kauf in Bearbeitung oder sie ist ausgeschöpft.", 409, "INVITE_EXHAUSTED");
+      : fail("Für dich ist gerade schon ein Kauf in Bearbeitung oder es sind bereits 2 Tickets vergeben.", 409, "INVITE_EXHAUSTED");
   }
 
   const out = { order_no: orderNo, access_key: accessKey, amount_cents: amount, quantity, provider, expires_at: t + RESERVATION_MS };
@@ -491,12 +521,12 @@ async function settleOrder(env, order, payment, ctx) {
     if (st?.state === "converted") held = 1;
     else held = changes(await run(env, `UPDATE reservations SET state = 'active', expires_at = ?
         WHERE order_id = ? AND state != 'converted'
-          AND ((SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND status != 'cancelled')
+          AND ((SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 0 AND status != 'cancelled')
              + (SELECT COALESCE(SUM(quantity), 0) FROM reservations WHERE state = 'active' AND expires_at > ? AND order_id != ?)
              + quantity) <= ?
-          AND ((SELECT COUNT(*) FROM tickets tk LEFT JOIN orders o ON o.id = tk.order_id WHERE COALESCE(o.invitation_id, tk.invitation_id) = reservations.invitation_id AND tk.status != 'cancelled')
-             + (SELECT COALESCE(SUM(quantity), 0) FROM reservations r2 WHERE r2.invitation_id = reservations.invitation_id AND r2.state = 'active' AND r2.expires_at > ? AND r2.order_id != reservations.order_id)
-             + quantity) <= (SELECT max_tickets FROM invitations WHERE id = reservations.invitation_id)`, t + CAPTURE_HOLD_MS, order.id, t, order.id, REGULAR_CAP, t));
+          AND ((SELECT COUNT(*) FROM tickets tk WHERE tk.holder = reservations.holder AND tk.status != 'cancelled')
+             + (SELECT COALESCE(SUM(quantity), 0) FROM reservations r2 WHERE r2.holder = reservations.holder AND r2.state = 'active' AND r2.expires_at > ? AND r2.order_id != reservations.order_id)
+             + quantity) <= (SELECT CASE WHEN kind = 'group' THEN ${MAX_PER_INVITE} ELSE max_tickets END FROM invitations WHERE id = reservations.invitation_id)`, t + CAPTURE_HOLD_MS, order.id, t, order.id, REGULAR_CAP, t));
   }
   if (!held) {
     await env.DB.batch([
@@ -512,10 +542,10 @@ async function settleOrder(env, order, payment, ctx) {
   }
 
   const guests = await all(env, `SELECT position, first_name, last_name FROM guests WHERE order_id = ? ORDER BY position`, order.id);
-  const ins = guests.map(g => env.DB.prepare(`INSERT INTO tickets (number, category, code, view_key, order_id, guest_position, first_name, last_name, email, status, is_test, created_at, updated_at)
-      SELECT printf('T30-%03d', COALESCE((SELECT MAX(CAST(substr(number, 5) AS INTEGER)) FROM tickets WHERE category = 'regular'), 0) + 1), 'regular', ?, ?, ?, ?, ?, ?, ?, 'valid', ?, ?, ?
+  const ins = guests.map(g => env.DB.prepare(`INSERT INTO tickets (number, category, code, view_key, order_id, holder, guest_position, first_name, last_name, email, status, is_test, created_at, updated_at)
+      SELECT printf('T30-%03d', COALESCE((SELECT MAX(CAST(substr(number, 5) AS INTEGER)) FROM tickets WHERE category = 'regular' AND number LIKE 'T30-%'), 0) + 1), 'regular', ?, ?, ?, ?, ?, ?, ?, ?, 'valid', ?, ?, ?
       WHERE NOT EXISTS (SELECT 1 FROM tickets WHERE order_id = ? AND guest_position = ?)`)
-    .bind(randomCode(26), randomCode(26), order.id, g.position, g.first_name, g.last_name, order.email, order.is_test, iso(), iso(), order.id, g.position));
+    .bind(randomCode(26), randomCode(26), order.id, order.holder, g.position, g.first_name, g.last_name, order.email, order.is_test, iso(), iso(), order.id, g.position));
   await env.DB.batch([
     ...ins,
     env.DB.prepare(`UPDATE reservations SET state = 'converted' WHERE order_id = ?`).bind(order.id),
@@ -747,13 +777,13 @@ async function scan(env, request, who) {
   const at = iso();
   const log = (ticketId, result, detail) => run(env, `INSERT INTO checkins (ticket_id, action, result, actor, at, detail) VALUES (?, 'scan', ?, ?, ?, ?)`, ticketId, result, who.name, at, detail || null);
   if (code.length < 20) { await log(null, "unknown", raw.slice(0, 60)); return json({ result: "red", reason: "QR-Code unbekannt" }); }
-  const t = await first(env, `SELECT id, number, category, helper_job, first_name, last_name, status, checked_in_at, checked_in_by, is_test FROM tickets WHERE code = ?`, code);
+  const t = await first(env, `SELECT id, number, category, helper_job, first_name, last_name, status, checked_in_at, checked_in_by, is_test, paper FROM tickets WHERE code = ?`, code);
   if (!t) {
     const old = await first(env, `SELECT t.number, t.first_name, t.last_name FROM retired_codes r JOIN tickets t ON t.id = r.ticket_id WHERE r.code = ?`, code);
     await log(null, old ? "replaced" : "unknown", code);
     return json(old ? { result: "red", reason: "Ersetzter QR-Code – ungültig", number: old.number, name: `${old.first_name || ""} ${old.last_name || ""}`.trim() } : { result: "red", reason: "QR-Code unbekannt" });
   }
-  const base = { number: t.number, category: t.category, helper_job: t.helper_job, name: `${t.first_name || ""} ${t.last_name || ""}`.trim() || (t.category === "free" ? "2TAKT-Gast" : "") };
+  const base = { number: t.number, category: t.category, helper_job: t.helper_job, name: `${t.first_name || ""} ${t.last_name || ""}`.trim() || (t.category === "free" ? "VIP · 2TAKT" : t.paper ? "Freiticket" : "") };
   if (t.status === "blocked") { await log(t.id, "blocked"); return json({ ...base, result: "red", reason: "Ticket gesperrt" }); }
   if (t.status === "cancelled") { await log(t.id, "cancelled"); return json({ ...base, result: "red", reason: "Ticket storniert" }); }
   const s = await getSettings(env);
@@ -804,17 +834,21 @@ async function scanStats(env) {
 
 async function dashboard(env) {
   const [c, s] = await Promise.all([counts(env), getSettings(env)]);
-  const invites = await first(env, `SELECT COUNT(*) AS total, SUM(status = 'active') AS active FROM invitations`);
-  return json({ counts: c, invites, sale_mode: s.sale_mode, paypal_ready: paypalConfigured(env), paypal_env: env.PAYPAL_ENV === "live" ? "live" : "sandbox", test_allowed: env.ALLOW_TEST_PAYMENTS === "true", mail_ready: !!(env.RESEND_API_KEY && env.MAIL_FROM), turnstile_ready: !!(env.TURNSTILE_SECRET && env.TURNSTILE_SITE_KEY) });
+  const group = await ensureGroupInvite(env);
+  await paperSetup(env, { actor: "system", name: "System" });
+  const invites = await first(env, `SELECT COUNT(*) AS total, SUM(status = 'active') AS active FROM invitations WHERE kind = 'personal'`);
+  return json({ counts: c, invites, group_link: { id: group.id, url: `${APP_URL}?e=${group.code}`, status: group.status }, sale_mode: s.sale_mode, paypal_ready: paypalConfigured(env), paypal_env: env.PAYPAL_ENV === "live" ? "live" : "sandbox", test_allowed: env.ALLOW_TEST_PAYMENTS === "true", mail_ready: !!(env.RESEND_API_KEY && env.MAIL_FROM), turnstile_ready: !!(env.TURNSTILE_SECRET && env.TURNSTILE_SITE_KEY) });
 }
 
 async function listInvitations(env) {
   const t = nowMs();
-  return json(await all(env, `SELECT i.id, i.code, i.name, i.note, i.max_tickets, i.status, i.created_at, i.referred_by, ref.name AS referred_by_name,
-      (SELECT COUNT(*) FROM tickets tk LEFT JOIN orders o ON o.id = tk.order_id WHERE COALESCE(o.invitation_id, tk.invitation_id) = i.id AND tk.status != 'cancelled') AS issued,
-      (SELECT helper_job FROM tickets tk WHERE tk.invitation_id = i.id AND tk.helper_job IS NOT NULL AND tk.status != 'cancelled') AS helper_job,
+  await ensureGroupInvite(env);
+  return json(await all(env, `SELECT i.id, i.code, i.name, i.note, i.max_tickets, i.status, i.kind, i.created_at, i.referred_by, ref.name AS referred_by_name,
+      (SELECT COUNT(*) FROM tickets tk WHERE tk.invitation_id = i.id AND tk.status != 'cancelled')
+        + (SELECT COUNT(*) FROM tickets tk JOIN orders o ON o.id = tk.order_id WHERE o.invitation_id = i.id AND tk.invitation_id IS NULL AND tk.status != 'cancelled') AS issued,
+      (SELECT GROUP_CONCAT(helper_job, ', ') FROM tickets tk WHERE tk.invitation_id = i.id AND tk.helper_job IS NOT NULL AND tk.status != 'cancelled') AS helper_job,
       (SELECT COALESCE(SUM(quantity), 0) FROM reservations WHERE invitation_id = i.id AND state = 'active' AND expires_at > ?) AS reserved
-    FROM invitations i LEFT JOIN invitations ref ON ref.id = i.referred_by ORDER BY i.created_at DESC, i.id DESC`, t));
+    FROM invitations i LEFT JOIN invitations ref ON ref.id = i.referred_by ORDER BY i.kind = 'group' DESC, i.created_at DESC, i.id DESC`, t));
 }
 
 async function createInvitation(env, request, who) {
@@ -849,6 +883,7 @@ async function updateInvitation(env, request, who, id) {
   };
   if (!next.name || next.name.length > 80) return fail("Name ungültig.");
   if (![1, 2].includes(next.max_tickets)) return fail("Erlaubt sind 1 oder 2 Tickets.");
+  if (inv.kind === "group") next.max_tickets = MAX_PER_INVITE;
   if (!["active", "disabled"].includes(next.status)) return fail("Status ungültig.");
   await run(env, `UPDATE invitations SET name = ?, note = ?, max_tickets = ?, status = ?, updated_at = ? WHERE id = ?`, next.name, next.note, next.max_tickets, next.status, iso(), id);
   await audit(env, who, "invitation.update", inv.code, next);
@@ -857,7 +892,7 @@ async function updateInvitation(env, request, who, id) {
 
 async function listTickets(env, url) {
   const cat = url.searchParams.get("category");
-  const where = ["free", "regular", "helper"].includes(cat) ? `WHERE t.category = '${cat}'` : "";
+  const where = ["free", "regular", "helper"].includes(cat) ? `WHERE t.paper = 0 AND t.category = '${cat}'` : "WHERE t.paper = 0";
   return json(await all(env, `SELECT t.id, t.number, t.category, t.helper_job, hi.name AS helper_invitation, t.first_name, t.last_name, t.email, t.status, t.is_test, t.checked_in_at, t.checked_in_by, t.view_key, t.version, t.mail_status, t.note, t.created_at,
       o.order_no, o.id AS order_id, i.name AS invitation_name
     FROM tickets t LEFT JOIN orders o ON o.id = t.order_id LEFT JOIN invitations i ON i.id = o.invitation_id LEFT JOIN invitations hi ON hi.id = t.invitation_id ${where}
@@ -886,7 +921,49 @@ async function createFreeTicket(env, request, who) {
   return json({ created: created.length, ids: created }, 201);
 }
 
-// Kostenloses Ticket aus dem regulären Kontingent (zählt zu den 70, kein Umsatz)
+// Papiertickets: 30 VIP (2TAKT) + 20 eigene Freitickets – beide zusätzlich zu den 60 online. Idempotent.
+const PAPER_VIP = 30, PAPER_OWN = 20;
+async function paperSetup(env, who) {
+  const t = nowMs();
+  await run(env, `UPDATE tickets SET paper = 1, updated_at = ? WHERE category = 'free' AND status != 'cancelled' AND paper = 0`, iso(t));
+  for (let i = 0; i < PAPER_VIP; i++) {
+    const r = await run(env, `INSERT INTO tickets (number, category, code, view_key, status, is_test, paper, created_at, updated_at)
+      SELECT printf('2T-%02d', COALESCE((SELECT MAX(CAST(substr(number, 4) AS INTEGER)) FROM tickets WHERE category = 'free'), 0) + 1), 'free', ?, ?, 'valid', 0, 1, ?, ?
+      WHERE (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND status != 'cancelled') < ?`, randomCode(26), randomCode(26), iso(t), iso(t), Math.min(FREE_CAP, PAPER_VIP));
+    if (!changes(r)) break;
+  }
+  for (let i = 0; i < PAPER_OWN; i++) {
+    const r = await run(env, `INSERT INTO tickets (number, category, code, view_key, status, is_test, paper, note, created_at, updated_at)
+      SELECT printf('FK-%02d', COALESCE((SELECT MAX(CAST(substr(number, 4) AS INTEGER)) FROM tickets WHERE number LIKE 'FK-%'), 0) + 1), 'regular', ?, ?, 'valid', 0, 1, 'Freiticket Kim (Papier)', ?, ?
+      WHERE (SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND paper = 1 AND status != 'cancelled') < ?`, randomCode(26), randomCode(26), iso(t), iso(t), PAPER_OWN);
+    if (!changes(r)) break;
+  }
+  const c = await counts(env);
+  if (paperSetup.last !== `${c.paper_vip}/${c.paper_own}`) {
+    const prev = await first(env, `SELECT detail FROM audit_logs WHERE action = 'paper.setup' ORDER BY id DESC LIMIT 1`);
+    const now = JSON.stringify({ vip: c.paper_vip, own: c.paper_own });
+    if (!prev || prev.detail !== now) await audit(env, who, "paper.setup", null, { vip: c.paper_vip, own: c.paper_own });
+    paperSetup.last = `${c.paper_vip}/${c.paper_own}`;
+  }
+  return c;
+}
+async function paperList(env, who) {
+  const c = await paperSetup(env, who);
+  const rows = await all(env, `SELECT number, category, code, status, checked_in_at FROM tickets WHERE paper = 1 AND status != 'cancelled' ORDER BY category DESC, number`);
+  return json({ vip: rows.filter(r => r.category === "free"), own: rows.filter(r => r.category === "regular"), counts: c, event: eventForTicket(await getSettings(env)) });
+}
+async function paperBlock(env, request, who) {
+  const b = await readJson(request) || {};
+  const number = String(b.number || "").trim().toUpperCase();
+  const t = await first(env, `SELECT id, status FROM tickets WHERE paper = 1 AND number = ?`, number);
+  if (!t) return fail("Papierticket mit dieser Nummer nicht gefunden.", 404);
+  const status = b.unblock ? "valid" : "blocked";
+  await run(env, `UPDATE tickets SET status = ?, updated_at = ? WHERE id = ? AND status != 'cancelled'`, status, iso(), t.id);
+  await audit(env, who, b.unblock ? "paper.unblock" : "paper.block", number, {});
+  return json({ ok: true, number, status });
+}
+
+// Kostenloses Ticket aus dem Online-Kontingent (zählt zu den 60, kein Umsatz)
 async function createCompTicket(env, request, who) {
   const b = await readJson(request) || {};
   const fn = cleanName(b.first_name), ln = cleanName(b.last_name);
@@ -894,18 +971,19 @@ async function createCompTicket(env, request, who) {
   const email = b.email ? String(b.email).trim().toLowerCase() : null;
   if (email && !emailOk(email)) return fail("E-Mail-Adresse ungültig.");
   const invId = b.invitation_id ? Number(b.invitation_id) : null;
-  if (invId && !(await first(env, `SELECT 1 FROM invitations WHERE id = ?`, invId))) return fail("Einladung nicht gefunden.");
+  const inv = invId ? await first(env, `SELECT id, kind FROM invitations WHERE id = ?`, invId) : null;
+  if (invId && !inv) return fail("Einladung nicht gefunden.");
+  if (inv && inv.kind === "group") return fail("Ein Ticket lässt sich nur einer persönlichen Einladung zuordnen.");
+  const holder = inv ? holderOf(inv) : null;
   const t = nowMs();
-  const r = await run(env, `INSERT INTO tickets (number, category, code, view_key, invitation_id, first_name, last_name, email, status, is_test, note, created_at, updated_at)
-    SELECT printf('T30-%03d', COALESCE((SELECT MAX(CAST(substr(number, 5) AS INTEGER)) FROM tickets WHERE category = 'regular'), 0) + 1), 'regular', ?, ?, ?, ?, ?, ?, 'valid', 0, 'kostenlos (Admin)', ?, ?
+  const r = await run(env, `INSERT INTO tickets (number, category, code, view_key, invitation_id, holder, first_name, last_name, email, status, is_test, note, created_at, updated_at)
+    SELECT printf('T30-%03d', COALESCE((SELECT MAX(CAST(substr(number, 5) AS INTEGER)) FROM tickets WHERE category = 'regular' AND number LIKE 'T30-%'), 0) + 1), 'regular', ?, ?, ?, ?, ?, ?, ?, 'valid', 0, 'kostenlos (Admin)', ?, ?
     WHERE ${SQL_REGULAR_TAKEN()} + 1 <= ?
-      AND (? IS NULL OR (SELECT COUNT(*) FROM tickets tk LEFT JOIN orders o ON o.id = tk.order_id WHERE COALESCE(o.invitation_id, tk.invitation_id) = ? AND tk.status != 'cancelled')
-        + (SELECT COALESCE(SUM(quantity), 0) FROM reservations WHERE invitation_id = ? AND state = 'active' AND expires_at > ?) + 1
-        <= (SELECT max_tickets FROM invitations WHERE id = ?))`,
-    randomCode(26), randomCode(26), invId, fn, ln, email, iso(t), iso(t), t, REGULAR_CAP, invId, invId, invId, t, invId);
+      AND (? IS NULL OR ${SQL_USED} + 1 <= ${SQL_LIMIT})`,
+    randomCode(26), randomCode(26), invId, holder, fn, ln, email, iso(t), iso(t), t, REGULAR_CAP, holder, holder, holder, t, invId);
   if (!changes(r)) {
     const c = await counts(env);
-    return c.available <= 0 ? fail("Alle 70 Plätze sind vergeben.", 409, "SOLD_OUT") : fail("Diese Einladung hat schon 2 Plätze.", 409, "INVITE_EXHAUSTED");
+    return c.available <= 0 ? fail(`Alle ${REGULAR_CAP} Online-Plätze sind vergeben.`, 409, "SOLD_OUT") : fail("Diese Einladung hat schon 2 Plätze.", 409, "INVITE_EXHAUSTED");
   }
   const ticket = await first(env, `SELECT * FROM tickets WHERE id = ?`, r.meta.last_row_id);
   await audit(env, who, "ticket.comp", ticket.number, { first_name: fn, last_name: ln, invitation_id: invId });
@@ -1040,6 +1118,21 @@ async function purgeTestData(env, who) {
   return json({ ok: true, orders: list.length });
 }
 
+// Alles zurücksetzen (vor dem echten Verkauf): löscht alle Tickets, Bestellungen und persönlichen Einladungen.
+async function resetAll(env, request, who) {
+  const b = await readJson(request) || {};
+  if (b.confirm !== "ALLES LÖSCHEN") return fail("Bitte zur Bestätigung ALLES LÖSCHEN eingeben.");
+  const real = await first(env, `SELECT COUNT(*) AS n FROM orders WHERE status = 'paid' AND is_test = 0`);
+  if (real.n) return fail(`Es gibt ${real.n} echte, bezahlte Bestellungen – Zurücksetzen ist gesperrt.`, 409);
+  await env.DB.batch([
+    `DELETE FROM checkins`, `DELETE FROM retired_codes`, `DELETE FROM tickets`, `DELETE FROM reservations`,
+    `DELETE FROM payments`, `DELETE FROM guests`, `DELETE FROM orders`, `DELETE FROM webhook_events`,
+    `DELETE FROM invitations WHERE kind != 'group'`
+  ].map(q => env.DB.prepare(q)));
+  await audit(env, who, "reset.all", null, {});
+  return json({ ok: true });
+}
+
 // Datenschutz: nach der Veranstaltung Personendaten entfernen (Statistik bleibt).
 async function anonymize(env, request, who) {
   const b = await readJson(request) || {};
@@ -1050,7 +1143,9 @@ async function anonymize(env, request, who) {
   await env.DB.batch([
     env.DB.prepare(`UPDATE tickets SET first_name = 'Gast', last_name = number, email = NULL, note = NULL`),
     env.DB.prepare(`UPDATE guests SET first_name = 'Gast', last_name = '-'`),
-    env.DB.prepare(`UPDATE orders SET email = 'geloescht@invalid', buyer_first = 'Gast', buyer_last = '-'`),
+    env.DB.prepare(`UPDATE orders SET email = 'geloescht@invalid', buyer_first = 'Gast', buyer_last = '-', holder = 'anon'`),
+    env.DB.prepare(`UPDATE tickets SET holder = 'anon' WHERE holder LIKE '%:%'`),
+    env.DB.prepare(`UPDATE reservations SET holder = 'anon' WHERE holder LIKE '%:%'`),
     env.DB.prepare(`UPDATE invitations SET name = 'Einladung ' || id, note = NULL`)
   ]);
   await audit(env, who, "privacy.anonymize", null, {});
@@ -1190,6 +1285,9 @@ async function route(request, env, ctx) {
   if (m === "GET" && path === "/admin/audit") return listAudit(env);
   if (m === "POST" && path === "/admin/test-mail") return testMail(env, request, who);
   if (m === "POST" && path === "/admin/purge-test") return purgeTestData(env, who);
+  if (m === "POST" && path === "/admin/reset") return resetAll(env, request, who);
+  if (m === "GET" && path === "/admin/paper") return paperList(env, who);
+  if (m === "POST" && path === "/admin/paper/block") return paperBlock(env, request, who);
   if (m === "POST" && path === "/admin/anonymize") return anonymize(env, request, who);
   if (m === "GET" && path === "/admin/admins") return listAdmins(env);
   if (m === "POST" && path === "/admin/admins") return upsertAdmin(env, request, who);

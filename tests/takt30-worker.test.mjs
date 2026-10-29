@@ -89,7 +89,7 @@ test("Verkauf geschlossen: kein Kauf möglich, Event ohne Adresse", async () => 
   const t = await setup();
   const ev = await t.call("GET", "/public/event");
   assert.equal(ev.data.sale.mode, "closed");
-  assert.equal(ev.data.sale.available, 70);
+  assert.equal(ev.data.sale.available, 60);
   assert.equal(JSON.stringify(ev.data).includes("Seewiesen"), false);
   const code = await invite(t);
   assert.equal((await buy(t, code)).data.code, "SALE_CLOSED");
@@ -121,7 +121,7 @@ test("Testkauf: 2 Tickets für 35 €, Tickets mit QR, Adresse nur nach Kauf, Ma
   // Einladung ausgeschöpft
   const again = await buy(t, code);
   assert.equal(again.data.code, "INVITE_EXHAUSTED");
-  assert.equal((await t.call("GET", "/public/event")).data.sale.available, 68);
+  assert.equal((await t.call("GET", "/public/event")).data.sale.available, 58);
 });
 
 test("1 Ticket kostet 20 €, nie mehr als 2 pro Einladung, auch über mehrere Käufe", async () => {
@@ -147,18 +147,18 @@ test("Abgebrochene Zahlung: kein Ticket, Platz sofort wieder frei; Reservierung 
   const t = await setup(); await openTestSale(t);
   const code = await invite(t);
   const co = await buy(t, code, [guest(), guest("Ben", "M")]);
-  assert.equal((await t.call("GET", "/public/event")).data.sale.available, 68);
+  assert.equal((await t.call("GET", "/public/event")).data.sale.available, 58);
   await t.call("POST", "/public/cancel", { access_key: co.data.access_key });
-  assert.equal((await t.call("GET", "/public/event")).data.sale.available, 70);
+  assert.equal((await t.call("GET", "/public/event")).data.sale.available, 60);
   assert.equal(t.db.prepare("SELECT COUNT(*) n FROM tickets").get().n, 0);
   const co2 = await buy(t, code);
   t.db.prepare("UPDATE reservations SET expires_at = 1 WHERE order_id = (SELECT id FROM orders WHERE access_key = ?)").run(co2.data.access_key);
-  assert.equal((await t.call("GET", "/public/event")).data.sale.available, 70);
+  assert.equal((await t.call("GET", "/public/event")).data.sale.available, 60);
 });
 
-test("Ausverkauf bei genau 70 und gleichzeitiger Kauf des letzten Tickets", async () => {
+test("Ausverkauf bei genau 60 und gleichzeitiger Kauf des letzten Tickets", async () => {
   const t = await setup(); await openTestSale(t);
-  for (let i = 0; i < 34; i++) {
+  for (let i = 0; i < 29; i++) {
     const c = await invite(t, `Gast ${i}`);
     const co = await buy(t, c, [guest(`A${i}`, "X"), guest(`B${i}`, "X")], `10.0.${i}.1`);
     assert.equal(co.status, 201, JSON.stringify(co.data));
@@ -174,7 +174,7 @@ test("Ausverkauf bei genau 70 und gleichzeitiger Kauf des letzten Tickets", asyn
   await t.call("POST", "/public/test-pay", { access_key: winner.data.access_key });
   const ev = (await t.call("GET", "/public/event")).data;
   assert.equal(ev.sale.available, 0); assert.equal(ev.sale.sold_out, true);
-  assert.equal(t.db.prepare("SELECT COUNT(*) n FROM tickets WHERE category='regular'").get().n, 70);
+  assert.equal(t.db.prepare("SELECT COUNT(*) n FROM tickets WHERE category='regular'").get().n, 60);
   assert.equal((await buy(t, c2, [guest()], "10.7.0.1")).data.code, "SOLD_OUT");
 });
 
@@ -183,14 +183,14 @@ test("Verspätete Zahlung nach abgelaufener Reservierung bei Ausverkauf → Erst
   const late = await invite(t, "Spät");
   const co = await buy(t, late, [guest("Spät", "Zahler")], "9.9.9.9");
   t.db.prepare("UPDATE reservations SET expires_at = 1").run();
-  for (let i = 0; i < 35; i++) {
+  for (let i = 0; i < 30; i++) {
     const c = await invite(t, `Gast ${i}`);
     const r = await buy(t, c, [guest(`A${i}`, "X"), guest(`B${i}`, "X")], `10.1.${i}.1`);
     await t.call("POST", "/public/test-pay", { access_key: r.data.access_key });
   }
   const pay = await t.call("POST", "/public/test-pay", { access_key: co.data.access_key });
   assert.equal(pay.data.status, "refund_required");
-  assert.equal(t.db.prepare("SELECT COUNT(*) n FROM tickets WHERE category='regular'").get().n, 70);
+  assert.equal(t.db.prepare("SELECT COUNT(*) n FROM tickets WHERE category='regular'").get().n, 60);
   const d = await t.admin("GET", "/admin/dashboard"); assert.equal(d.data.counts.refund_required, 1);
 });
 
@@ -199,7 +199,7 @@ test("Genau 30 Freitickets, nicht aus dem Verkaufskontingent; Ersetzen macht alt
   const r = await t.admin("POST", "/admin/free-tickets", { count: 30 });
   assert.equal(r.data.created, 30);
   assert.equal((await t.admin("POST", "/admin/free-tickets", { first_name: "Zu", last_name: "Viel" })).data.code, "FREE_FULL");
-  assert.equal((await t.call("GET", "/public/event")).data.sale.available, 70);
+  assert.equal((await t.call("GET", "/public/event")).data.sale.available, 60);
   const list = (await t.admin("GET", "/admin/tickets?category=free")).data;
   assert.equal(list.filter(x => !x.first_name).length, 30);
   const tk = list[0];
@@ -209,7 +209,7 @@ test("Genau 30 Freitickets, nicht aus dem Verkaufskontingent; Ersetzen macht alt
   const codeOf = id => t.db.prepare("SELECT code FROM tickets WHERE id = ?").get(id).code;
   assert.equal((await t.call("GET", `/public/ticket?k=${list[5].view_key}`)).status, 200);
   const anon = await t.call("POST", "/scan/check", { code: codeOf(list[5].id) }, { scanner: key });
-  assert.equal(anon.data.result, "green"); assert.equal(anon.data.name, "2TAKT-Gast");
+  assert.equal(anon.data.result, "green"); assert.equal(anon.data.name, "VIP · 2TAKT");
   await t.admin("POST", `/admin/tickets/${tk.id}`, { action: "assign", first_name: "Max", last_name: "Frei" });
   const oldCode = codeOf(tk.id);
   await t.admin("POST", `/admin/tickets/${tk.id}`, { action: "replace", reason: "verloren" });
@@ -276,7 +276,7 @@ test("Rechte: anonym, fremdes Konto, Ticketverwaltung, Scanner-Zugang", async ()
   assert.ok(audit.some(a => a.action === "admin.upsert" && a.actor_name === "Hauptadministrator"));
 });
 
-test("Helfer: eigenes Kontingent von 20, Aufgabe wählbar, zählt zum Einladungslimit, nicht zu den 70", async () => {
+test("Helfer: eigenes Kontingent, Aufgabe wählbar, zählt zum 2er-Limit, nicht zu den 60", async () => {
   const t = await setup(); await openTestSale(t);
   await t.admin("PUT", "/admin/settings", { helper_cap: "20", helper_jobs: JSON.stringify([{ name: "Bar", slots: 1 }, { name: "Ticketscanner", slots: 0 }]) });
   const code = await invite(t);
@@ -288,7 +288,7 @@ test("Helfer: eigenes Kontingent von 20, Aufgabe wählbar, zählt zum Einladungs
   assert.equal((await buy(t, code, [guest("Ben", "M"), guest("Eva", "M")])).data.code, "INVITE_EXHAUSTED");
   assert.equal((await buy(t, code, [guest("Ben", "M")])).status, 201);
   const ev = (await t.call("GET", "/public/event")).data;
-  assert.equal(ev.sale.available, 69);
+  assert.equal(ev.sale.available, 59);
   assert.equal(ev.helpers.available, 19);
   assert.equal(ev.helpers.jobs.find(j => j.name === "Bar").full, true);
   const c2 = await invite(t, "Zweite");
@@ -309,7 +309,7 @@ test("Helfer: eigenes Kontingent von 20, Aufgabe wählbar, zählt zum Einladungs
 test("Gesperrte Einladung und Rate Limit", async () => {
   const t = await setup(); await openTestSale(t);
   const code = await invite(t);
-  const id = (await t.admin("GET", "/admin/invitations")).data[0].id;
+  const id = (await t.admin("GET", "/admin/invitations")).data.find(i => i.kind === "personal").id;
   await t.admin("PUT", `/admin/invitations/${id}`, { status: "disabled" });
   assert.equal((await buy(t, code)).data.code, "INVITE_DISABLED");
   let last;
@@ -353,7 +353,7 @@ test("PayPal: Erstellen, Capture, doppelter Webhook ohne Duplikate, Erstattung s
   const key = (await t.admin("POST", "/admin/scanners", { name: "Tür" })).data.url.split("#k=")[1];
   const c = t.db.prepare("SELECT code FROM tickets LIMIT 1").get().code;
   assert.equal((await t.call("POST", "/scan/check", { code: c }, { scanner: key })).data.reason, "Ticket storniert");
-  assert.equal((await t.call("GET", "/public/event")).data.sale.available, 70);
+  assert.equal((await t.call("GET", "/public/event")).data.sale.available, 60);
   // Echte Zahlungen bleiben gesperrt ohne ausdrückliche Freigabe
   t.env.PAYPAL_ENV = "live";
   assert.equal((await t.admin("PUT", "/admin/settings", { sale_mode: "live" })).status, 409);
@@ -429,22 +429,89 @@ test("Helfer-Standard: 13 Plätze, 8 Bar und 5 Ticketscan; alte Standard-Aufgabe
   assert.deepEqual((await t2.call("GET", "/public/event")).data.helpers.jobs.map(j => j.slots), [8, 5]);
 });
 
-test("Kostenlose Tickets aus den 70: belegen Platz, kein Umsatz, Einladungslimit, nie über 70", async () => {
+test("Kostenlose Tickets aus den 60: belegen Platz, kein Umsatz, Einladungslimit, nie über 60", async () => {
   const t = await setup(); await openTestSale(t);
   const code = await invite(t, "Lisa");
-  const invId = (await t.admin("GET", "/admin/invitations")).data[0].id;
+  const invId = (await t.admin("GET", "/admin/invitations")).data.find(i => i.kind === "personal").id;
   const r = await t.admin("POST", "/admin/comp-tickets", { first_name: "Gratis", last_name: "Gast", invitation_id: invId });
   assert.equal(r.status, 201); assert.equal(r.data.number, "T30-001");
   const ev = (await t.call("GET", "/public/event")).data;
-  assert.equal(ev.sale.available, 69);
+  assert.equal(ev.sale.available, 59);
   assert.equal((await t.admin("GET", "/admin/dashboard")).data.counts.revenue_cents, 0);
   assert.equal((await t.call("GET", `/public/invite/${code}`)).data.remaining, 1);
   assert.equal((await buy(t, code, [guest(), guest("B", "B")])).data.code, "INVITE_EXHAUSTED");
   await t.admin("POST", "/admin/comp-tickets", { first_name: "Zwei", last_name: "Gast", invitation_id: invId });
   assert.equal((await t.admin("POST", "/admin/comp-tickets", { first_name: "Drei", last_name: "Gast", invitation_id: invId })).data.code, "INVITE_EXHAUSTED");
-  for (let i = 0; i < 68; i++) assert.equal((await t.admin("POST", "/admin/comp-tickets", { first_name: "G", last_name: `${i}` })).status, 201);
+  for (let i = 0; i < 58; i++) assert.equal((await t.admin("POST", "/admin/comp-tickets", { first_name: "G", last_name: `${i}` })).status, 201);
   assert.equal((await t.admin("POST", "/admin/comp-tickets", { first_name: "Zu", last_name: "Viel" })).data.code, "SOLD_OUT");
   const tk = (await t.call("GET", `/public/ticket?k=${r.data.view_key}`)).data;
   assert.equal(tk.first_name, "Gratis");
   assert.equal((await t.call("POST", "/admin/comp-tickets", { first_name: "x", last_name: "y" }, { user: STRANGER })).status, 403);
+});
+
+test("Gemeinsamer Ticket-Link: höchstens 2 pro E-Mail, viele Käufer, Helfer je E-Mail", async () => {
+  const t = await setup(); await openTestSale(t);
+  const d = (await t.admin("GET", "/admin/dashboard")).data;
+  const code = d.group_link.url.split("?e=")[1];
+  const inv = (await t.call("GET", `/public/invite/${code}`)).data;
+  assert.equal(inv.kind, "group"); assert.equal(inv.first_name, null); assert.equal(inv.remaining, 2);
+  const buyAs = (email, guests, ip) => t.call("POST", "/public/checkout", { invite: code, guests, email, accept: true }, { ip });
+  const a = await buyAs("a@example.org", [guest("A", "A"), guest("B", "B")], "1.1.1.1");
+  assert.equal(a.status, 201); await t.call("POST", "/public/test-pay", { access_key: a.data.access_key });
+  assert.equal((await buyAs("a@example.org", [guest("C", "C")], "1.1.1.2")).data.code, "INVITE_EXHAUSTED");
+  assert.equal((await buyAs("A@Example.org", [guest("C", "C")], "1.1.1.3")).data.code, "INVITE_EXHAUSTED");
+  for (let i = 0; i < 5; i++) {
+    const r = await buyAs(`p${i}@example.org`, [guest("P", `${i}`)], `2.2.2.${i}`);
+    assert.equal(r.status, 201); await t.call("POST", "/public/test-pay", { access_key: r.data.access_key });
+  }
+  const h1 = await t.call("POST", "/public/helper", { invite: code, first_name: "H", last_name: "1", email: "h1@example.org", job: "Bar", accept: true }, { ip: "3.3.3.1" });
+  const h2 = await t.call("POST", "/public/helper", { invite: code, first_name: "H", last_name: "2", email: "h2@example.org", job: "Bar", accept: true }, { ip: "3.3.3.2" });
+  assert.equal(h1.status, 201); assert.equal(h2.status, 201);
+  assert.equal((await t.call("POST", "/public/helper", { invite: code, first_name: "H", last_name: "1", email: "h1@example.org", job: "Bar", accept: true }, { ip: "3.3.3.3" })).data.code, "HELPER_EXISTS");
+  // Helfer mit Begleitung: noch 1 Ticket, 2 nicht
+  assert.equal((await buyAs("h1@example.org", [guest("X", "X"), guest("Y", "Y")], "3.3.3.4")).data.code, "INVITE_EXHAUSTED");
+  assert.equal((await buyAs("h1@example.org", [guest("X", "X")], "3.3.3.5")).status, 201);
+  assert.equal((await t.call("GET", "/public/event")).data.sale.available, 60 - 7 - 1);
+  // Link sperren stoppt alles
+  await t.admin("PUT", `/admin/invitations/${d.group_link.id}`, { status: "disabled" });
+  assert.equal((await buyAs("z@example.org", [guest("Z", "Z")], "4.4.4.4")).data.code, "INVITE_DISABLED");
+});
+
+test("Papiertickets: 30 VIP + 20 eigene, zusätzlich zu den 60, nicht in der Admin-Liste, scannbar, sperrbar", async () => {
+  const t = await setup(); await openTestSale(t);
+  await t.admin("POST", "/admin/free-tickets", { count: 5 });           // vorhandene Freitickets werden übernommen
+  const p = await t.admin("GET", "/admin/paper");
+  assert.equal(p.data.vip.length, 30); assert.equal(p.data.own.length, 20);
+  assert.equal(p.data.own[0].number, "FK-01"); assert.equal(p.data.vip[0].number, "2T-01");
+  assert.equal((await t.admin("GET", "/admin/paper")).data.vip.length, 30);   // idempotent
+  assert.equal((await t.call("GET", "/public/event")).data.sale.available, 60);
+  assert.equal((await t.admin("GET", "/admin/tickets")).data.length, 0);
+  const key = (await t.admin("POST", "/admin/scanners", { name: "Tür" })).data.url.split("#k=")[1];
+  const s1 = await t.call("POST", "/scan/check", { code: p.data.own[3].code }, { scanner: key });
+  assert.equal(s1.data.result, "green"); assert.equal(s1.data.name, "Freiticket");
+  assert.equal((await t.call("POST", "/scan/check", { code: p.data.own[3].code }, { scanner: key })).data.reason, "Bereits eingelöst");
+  await t.admin("POST", "/admin/paper/block", { number: "2t-05" });
+  assert.equal((await t.call("POST", "/scan/check", { code: p.data.vip[4].code }, { scanner: key })).data.reason, "Ticket gesperrt");
+  const c = (await t.admin("GET", "/admin/dashboard")).data.counts;
+  assert.equal(c.paper_vip, 30); assert.equal(c.paper_own, 20); assert.equal(c.paper_checked_in, 1);
+  // Online-Verkauf trotzdem voll 60, Ticketnummern T30-001 …
+  const co = await buy(t, await invite(t));
+  await t.call("POST", "/public/test-pay", { access_key: co.data.access_key });
+  assert.equal((await t.call("GET", `/public/order?key=${co.data.access_key}`)).data.tickets[0].number, "T30-001");
+  assert.equal((await t.call("GET", "/admin/paper", undefined, { user: STRANGER })).status, 403);
+});
+
+test("Alles zurücksetzen: nur Hauptadmin, nur ohne echte Zahlungen, Ticket-Link bleibt", async () => {
+  const t = await setup(); await openTestSale(t);
+  const co = await buy(t, await invite(t)); await t.call("POST", "/public/test-pay", { access_key: co.data.access_key });
+  await t.admin("POST", "/admin/free-tickets", { count: 30 });
+  const link = (await t.admin("GET", "/admin/dashboard")).data.group_link.url;
+  assert.equal((await t.admin("POST", "/admin/reset", { confirm: "ja" })).status, 400);
+  assert.equal((await t.admin("POST", "/admin/reset", { confirm: "ALLES LÖSCHEN" })).status, 200);
+  assert.equal(t.db.prepare("SELECT COUNT(*) n FROM tickets").get().n, 0);
+  assert.equal(t.db.prepare("SELECT COUNT(*) n FROM invitations").get().n, 1);
+  assert.equal((await t.admin("GET", "/admin/dashboard")).data.group_link.url, link);
+  assert.equal((await t.call("GET", "/public/event")).data.sale.available, 60);
+  t.db.prepare("INSERT INTO orders (order_no, access_key, invitation_id, email, buyer_first, buyer_last, quantity, amount_cents, provider, is_test, status, consent_at, created_at, updated_at) VALUES ('X','Y',?,'e','a','b',1,2000,'paypal',0,'paid','','','')").run(t.db.prepare("SELECT id FROM invitations").get().id);
+  assert.equal((await t.admin("POST", "/admin/reset", { confirm: "ALLES LÖSCHEN" })).status, 409);
 });

@@ -62,14 +62,9 @@ try:
         admin.screenshot(path=str(OUT / "admin-uebersicht-geschlossen.png"))
         admin.click("#modeBtns button[data-m=test]")
         admin.wait_for_selector(".chip.warn:has-text('Testmodus aktiv')")
-        admin.click("nav button[data-p=invites]")
-        admin.fill("#invForm [name=name]", "Lisa Muster"); admin.click("#invForm button")
-        admin.wait_for_selector(".linkbox code")
-        invite1 = admin.inner_text(".linkbox code")
-        admin.fill("#invForm [name=name]", "Ben Helfer"); admin.click("#invForm button")
-        admin.wait_for_function("document.querySelector('.linkbox code').textContent !== %s" % json.dumps(invite1))
-        invite2 = admin.inner_text(".linkbox code")
-        admin.screenshot(path=str(OUT / "admin-einladungen.png"))
+        invite1 = invite2 = admin.inner_text(".linkbox code")     # gemeinsamer Ticket-Link
+        assert "?e=" in invite1
+        admin.screenshot(path=str(OUT / "admin-uebersicht-test.png"))
         admin.click("nav button[data-p=entry]")
         admin.fill("#scForm [name=name]", "Tür 1"); admin.click("#scForm button")
         admin.wait_for_selector("#newLink code")
@@ -79,15 +74,15 @@ try:
         admin.click("#addLu"); admin.fill("#lu .lineup-row:last-child [name=lt]", "22:00"); admin.fill("#lu .lineup-row:last-child [name=ln]", "Testact")
         admin.click("#cForm button.btn-uv"); admin.wait_for_selector("#toast:has-text('Gespeichert')")
         admin.click("#lu .lineup-row:last-child [data-del]"); admin.click("#cForm button.btn-uv"); admin.wait_for_timeout(300)
-        admin.click("nav button[data-p=free]"); admin.wait_for_selector("#freeForm")
-        admin.fill("#freeForm [name=first]", "Max"); admin.fill("#freeForm [name=last]", "Frei"); admin.click("#freeForm button")
-        admin.wait_for_selector("#trows td:has-text('Max Frei')")
-        admin.once("dialog", lambda d: d.accept()); admin.click("#bulk"); admin.wait_for_selector("#allPdf")
-        with admin.expect_popup() as pop: admin.click("#allPdf")
-        allp = pop.value; watch(allp, "alle-freitickets"); allp.wait_for_selector(".ticket >> nth=29", timeout=20000)
-        assert allp.locator(".ticket").count() == 30 and "2TAKT-Gast" in allp.inner_text(".ticket >> nth=1")
-        allp.close()
-        admin.screenshot(path=str(OUT / "admin-freitickets.png"))
+        admin.click("nav button[data-p=paper]"); admin.wait_for_selector("#zipBtn")
+        assert "30" in admin.inner_text(".kpis") and "20" in admin.inner_text(".kpis")
+        with admin.expect_download(timeout=60000) as dz: admin.click("#zipBtn")
+        dz.value.save_as(str(OUT / "TAKT30-Papiertickets-MOO.zip"))
+        with admin.expect_download(timeout=120000) as dp: admin.click("#pdfBtn")
+        dp.value.save_as(str(OUT / "TAKT30-Papiertickets-A4.pdf"))
+        admin.fill("#blockForm [name=no]", "fk-03"); admin.click("#blockForm button[name=b]")
+        admin.wait_for_selector(".kpi:has-text('Gesperrt') b:has-text('1')")
+        admin.screenshot(path=str(OUT / "admin-papiertickets.png"))
         admin.click("nav button[data-p=guests]"); admin.wait_for_selector("#compForm")
         admin.fill("#compForm [name=first]", "Gratis"); admin.fill("#compForm [name=last]", "Gast"); admin.click("#compForm button")
         admin.wait_for_selector("#compDone code:has-text('T30-001')")
@@ -107,11 +102,11 @@ try:
         gctx = browser.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True, accept_downloads=True)
         wire(gctx); g = gctx.new_page(); watch(g, "gast")
         g.goto(invite1)
-        g.wait_for_selector("text=Hey Lisa – du bist eingeladen.")
+        g.wait_for_selector("text=Du bist eingeladen.")
         assert g.is_visible("#testbar")
         g.locator("#tickets").scroll_into_view_if_needed()
         g.check("input[name=qty][value='2']")
-        g.fill("[name=last_0]", "Muster"); g.fill("[name=first_1]", "Ben"); g.fill("[name=last_1]", "Muster")
+        g.fill("[name=first_0]", "Lisa"); g.fill("[name=last_0]", "Muster"); g.fill("[name=first_1]", "Ben"); g.fill("[name=last_1]", "Muster")
         g.fill("[name=email]", "lisa@example.org")
         g.click("#buyBtn")
         assert "bestätigen" in g.inner_text("#buyErr")
@@ -135,7 +130,6 @@ try:
         g.goto(BASE)
         g.wait_for_selector("text=Du bist dabei.")
         assert g.locator(".mine a.tk").count() == 2
-        assert "alle Plätze vergeben" in g.inner_text("#ticketBox")
         g.screenshot(path=str(OUT / "gast-du-bist-dabei.png"), full_page=True)
 
         # ---------- Helfer ----------
@@ -145,7 +139,7 @@ try:
         h.wait_for_selector("[data-tab=help]")
         h.click("[data-tab=help]")
         h.check("input[name=job][value='Bar']")
-        h.fill("[name=last]", "Helfer"); h.fill("[name=email]", "ben@example.org"); h.check("[name=accept]")
+        h.fill("[name=first]", "Ben"); h.fill("[name=last]", "Helfer"); h.fill("[name=email]", "ben@example.org"); h.check("[name=accept]")
         no_overflow(h, "helferformular")
         h.screenshot(path=str(OUT / "helfer-formular.png"))
         h.click("#helpBtn")
@@ -154,8 +148,7 @@ try:
         assert "Helfer · Bar" in h.inner_text(".ticket")
         h.screenshot(path=str(OUT / "helfer-ticket.png"))
         h.goto(BASE); h.wait_for_selector("text=Du bist dabei.")
-        assert h.is_visible("#buyForm"), "Begleitung sollte noch 1 Ticket kaufen können"
-        assert h.locator("input[name=qty][value='2']").count() == 0
+        assert h.is_visible("#buyForm")
 
         # ---------- Einlass mit echtem QR-Code über Fake-Kamera ----------
         code = sql("SELECT code FROM tickets WHERE first_name = 'Lisa' AND category = 'regular'")[0]["code"]
@@ -225,13 +218,13 @@ fs.writeFileSync('{OUT}/qr.pgm',Buffer.concat([Buffer.from('P5\\n'+W+' '+H+'\\n2
         admin.click("nav button[data-p=overview]")
         admin.wait_for_selector(".kpi")
         txt = admin.inner_text("#main")
-        assert "3 / 70" in txt and "2 verkauft · 1 kostenlos" in txt, txt[:400]
+        assert "3 / 60" in txt and "2 verkauft · 1 kostenlos" in txt and "30 VIP · 20 Freitickets" in txt, txt[:500]
         admin.screenshot(path=str(OUT / "admin-uebersicht-nach-tests.png"), full_page=True)
         admin.click("nav button[data-p=guests]"); admin.wait_for_selector("#trows tr")
         admin.screenshot(path=str(OUT / "admin-gaeste.png"))
         # Handy-Admin ohne Überbreite
         admin.set_viewport_size({"width": 390, "height": 844})
-        for pg in ["overview", "invites", "guests", "free", "helpers", "orders", "content", "entry", "audit", "settings"]:
+        for pg in ["overview", "guests", "orders", "helpers", "paper", "content", "entry", "settings"]:
             admin.evaluate(f"document.querySelector('nav button[data-p={pg}]').click()")
             admin.wait_for_timeout(250)
             assert not admin.is_visible("#main .err"), f"admin {pg}: " + admin.inner_text("#main")[:200]
