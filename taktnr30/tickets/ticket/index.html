@@ -54,9 +54,9 @@
 <script>
 (function () {
   "use strict";
-  const { api, esc, $, dateDe, timeDe, qrSvg, qrMatrix, store, categoryLabel } = TAKT;
+  const { api, esc, $, dateDe, timeDe, qrSvg, qrMatrix, store, categoryLabel, guestName } = TAKT;
   const q = new URLSearchParams(location.search);
-  const k = q.get("k"), o = q.get("o");
+  const k = q.get("k"), o = q.get("o"), ks = (q.get("ks") || "").split(",").filter(Boolean).slice(0, 40);
   let tickets = [], event = null, order = null;
 
   function remember(entry) {
@@ -65,7 +65,7 @@
   }
 
   function card(t, i) {
-    const name = `${t.first_name} ${t.last_name}`;
+    const name = guestName(t);
     let flag = "";
     if (t.status === "blocked") flag = `<div class="flag bad">GESPERRT</div>`;
     else if (t.status === "cancelled") flag = `<div class="flag bad">STORNIERT</div>`;
@@ -133,7 +133,7 @@
       doc.setFillColor(0, 0, 0);
       for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (m[y][x]) doc.rect(x0 + (x + 2) * cell, y0 + (y + 2) * cell, cell + 0.02, cell + 0.02, "F");
       doc.setTextColor(242, 242, 244); doc.setFont("helvetica", "normal"); doc.setFontSize(16);
-      doc.text(`${t.first_name} ${t.last_name}`, 52.5, 133, { align: "center" });
+      doc.text(guestName(t), 52.5, 133, { align: "center" });
       const lab = (l, v, x, y) => { doc.setFontSize(6.5); doc.setTextColor(130, 130, 142); doc.text(l, x, y); doc.setFontSize(9.5); doc.setTextColor(242, 242, 244); doc.text(v, x, y + 4.5); };
       lab("TICKET", t.number, 14, 141); lab("KATEGORIE", categoryLabel(t), 56, 141);
       lab("DATUM", dateDe(event.event_date), 14, 151); lab("EINLASS · START", `${event.doors_time} · ${event.start_time}`, 56, 151);
@@ -152,6 +152,11 @@
         if (order.status !== "paid") { $("#box").innerHTML = `<h2 style="font-weight:300">Für diese Bestellung gibt es keine gültigen Tickets.</h2><p class="muted">${order.status === "refund_required" || order.status === "refunded" ? "Das letzte Ticket war leider schon vergeben – du bekommst dein Geld vollständig zurück." : "Die Bestellung wurde abgebrochen. Es wurde nichts abgebucht."}</p>`; return; }
         remember({ type: "order", key: o });
         tickets = order.tickets; event = order.event;
+      } else if (ks.length) {
+        // Sammelansicht (z. B. alle 2TAKT-Freitickets) – wird nicht auf dem Gerät gemerkt
+        $("#box").innerHTML = `<p class="muted">Lädt ${ks.length} Tickets …</p>`;
+        for (const key of ks) { const t = await api(`/public/ticket?k=${encodeURIComponent(key)}`); tickets.push(t); event = t.event; }
+        $("#orderNo").textContent = `${tickets.length} TICKETS`;
       } else if (k) {
         const t = await api(`/public/ticket?k=${encodeURIComponent(k)}`);
         remember({ type: "ticket", key: k });

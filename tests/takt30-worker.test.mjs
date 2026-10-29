@@ -203,11 +203,13 @@ test("Genau 30 Freitickets, nicht aus dem Verkaufskontingent; Ersetzen macht alt
   const list = (await t.admin("GET", "/admin/tickets?category=free")).data;
   assert.equal(list.filter(x => !x.first_name).length, 30);
   const tk = list[0];
-  // nicht zugeordnet → kein Zutritt
+  // ohne Namen gültig: grün als 2TAKT-Gast, Ticketseite abrufbar
   const sc = await t.admin("POST", "/admin/scanners", { name: "Tür" });
   const key = sc.data.url.split("#k=")[1];
   const codeOf = id => t.db.prepare("SELECT code FROM tickets WHERE id = ?").get(id).code;
-  assert.equal((await t.call("POST", "/scan/check", { code: codeOf(tk.id) }, { scanner: key })).data.reason, "Freiticket keinem Gast zugeordnet");
+  assert.equal((await t.call("GET", `/public/ticket?k=${list[5].view_key}`)).status, 200);
+  const anon = await t.call("POST", "/scan/check", { code: codeOf(list[5].id) }, { scanner: key });
+  assert.equal(anon.data.result, "green"); assert.equal(anon.data.name, "2TAKT-Gast");
   await t.admin("POST", `/admin/tickets/${tk.id}`, { action: "assign", first_name: "Max", last_name: "Frei" });
   const oldCode = codeOf(tk.id);
   await t.admin("POST", `/admin/tickets/${tk.id}`, { action: "replace", reason: "verloren" });

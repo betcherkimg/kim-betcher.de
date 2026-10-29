@@ -77,7 +77,7 @@
 <script>
 (function () {
   "use strict";
-  const { esc, $, $$, timeDe, categoryLabel } = TAKT;
+  const { esc, $, $$, timeDe, categoryLabel, guestName } = TAKT;
   let scannerKey = null, mode = null, stream = null, scanning = false, busy = false, lastCode = "", lastAt = 0, wake = null;
 
   // Scanner-Link: Schlüssel aus #k=… übernehmen und aus der Adresse entfernen
@@ -175,8 +175,8 @@
     if (q.length < 2) { $("#hits").innerHTML = ""; return; }
     try {
       const list = await call(`/scan/search?q=${encodeURIComponent(q)}`);
-      $("#hits").innerHTML = list.map(t => `<div class="item"><div class="who">${esc(t.first_name)} ${esc(t.last_name)}<small>${esc(t.number)} · ${esc(categoryLabel(t))}${t.is_test ? " · TEST" : ""}</small></div>
-        ${t.status !== "valid" ? `<span class="no">${t.status === "blocked" ? "gesperrt" : "storniert"}</span>` : t.checked_in_at ? `<span class="no">drin seit ${timeDe(t.checked_in_at)}</span>` : `<button class="btn btn-small btn-uv" data-id="${t.id}" data-n="${esc(t.first_name + " " + t.last_name)}">Einchecken</button>`}</div>`).join("") || `<p class="note">Kein Treffer.</p>`;
+      $("#hits").innerHTML = list.map(t => `<div class="item"><div class="who">${esc(guestName(t))}<small>${esc(t.number)} · ${esc(categoryLabel(t))}${t.is_test ? " · TEST" : ""}</small></div>
+        ${t.status !== "valid" ? `<span class="no">${t.status === "blocked" ? "gesperrt" : "storniert"}</span>` : t.checked_in_at ? `<span class="no">drin seit ${timeDe(t.checked_in_at)}</span>` : `<button class="btn btn-small btn-uv" data-id="${t.id}" data-n="${esc(guestName(t))}">Einchecken</button>`}</div>`).join("") || `<p class="note">Kein Treffer.</p>`;
       $$("#hits [data-id]").forEach(b => b.onclick = async () => {
         if (!confirm(`${b.dataset.n} ohne QR-Code einchecken? Nur nach Prüfung des Namens.`)) return;
         try { await call(`/scan/checkin/${b.dataset.id}`, { method: "POST" }); showResult({ result: "green", name: b.dataset.n, number: "manuell" }); search(); }
@@ -189,7 +189,7 @@
       const s = await call("/scan/stats");
       $("#cin").textContent = s.checked_in; $("#cexp").textContent = s.expected;
       const lbl = { admitted: ["Eingelassen", "ok"], already: ["Schon drin", "no"], unknown: ["Unbekannt", "no"], replaced: ["Ersetzt", "no"], blocked: ["Gesperrt", "no"], cancelled: ["Storniert", "no"], test: ["Testticket", "no"], unassigned: ["Ohne Namen", "no"], rejected: ["Abgelehnt", "no"], reset: ["Zurückgesetzt", "no"] };
-      $("#recent").innerHTML = s.recent.map(r => { const [l, c] = lbl[r.result] || [r.result, ""]; return `<div class="item"><div class="who">${r.first_name ? esc(r.first_name + " " + r.last_name) : "–"}<small>${timeDe(r.at)} · ${esc(r.number || "")} · ${esc(r.actor)}</small></div><span class="${c}">${l}</span></div>`; }).join("") || `<p class="note">Noch keine Scans.</p>`;
+      $("#recent").innerHTML = s.recent.map(r => { const [l, c] = lbl[r.result] || [r.result, ""]; return `<div class="item"><div class="who">${r.number ? esc(guestName(r)) : "–"}<small>${timeDe(r.at)} · ${esc(r.number || "")} · ${esc(r.actor)}</small></div><span class="${c}">${l}</span></div>`; }).join("") || `<p class="note">Noch keine Scans.</p>`;
     } catch {}
   }
 

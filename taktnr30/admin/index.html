@@ -249,21 +249,26 @@
       const valid = all.filter(t => t.status !== "cancelled");
       m.innerHTML = `<h1>2TAKT-Freitickets</h1>
         <div class="slots" aria-label="${valid.length} von 30 Freitickets angelegt">${Array.from({ length: 30 }, (_, i) => { const t = valid[i]; return `<i class="${!t ? "" : t.checked_in_at ? "c" : t.first_name ? "a" : "u"}" title="${t ? esc(t.number + (t.first_name ? " · " + t.first_name + " " + t.last_name : " · frei")) : "noch nicht angelegt"}"></i>`; }).join("")}</div>
-        <p class="note">Violett = zugeordnet · umrandet = angelegt, noch ohne Namen · grün = eingecheckt. Höchstens 30 gleichzeitig gültig.</p>
+        <p class="note">Violett = mit Namen · umrandet = ohne Namen (gültig) · grün = eingecheckt. Höchstens 30 gleichzeitig gültig.</p>
         <form class="card form" id="freeForm">
           <label class="field"><span>Vorname</span><input class="input sm" name="first"></label>
           <label class="field"><span>Nachname</span><input class="input sm" name="last"></label>
           <label class="field"><span>E-Mail (optional)</span><input class="input sm" name="email" type="email"></label>
           <div class="field"><button class="btn btn-uv btn-small">Freiticket anlegen</button></div>
         </form>
-        <div class="acts" style="margin:12px 0 0"><button id="bulk" ${valid.length >= 30 ? "disabled" : ""}>Restliche ${30 - valid.length} ohne Namen anlegen</button></div>
+        <div class="acts" style="margin:12px 0 0">
+          ${valid.length < 30 ? `<button id="bulk">Restliche ${30 - valid.length} anlegen</button>` : ""}
+          ${valid.filter(t => t.status === "valid").length ? `<a class="lnk" id="allPdf" target="_blank" rel="noopener" href="${SITE}ticket/?ks=${valid.filter(t => t.status === "valid").map(t => t.view_key).join(",")}">Alle ${valid.filter(t => t.status === "valid").length} öffnen / als PDF</a><button id="allLinks">Alle Links kopieren</button>` : ""}
+        </div>
+        <p class="note">Namen sind optional – jedes Freiticket hat seinen eigenen QR-Code und gilt genau einmal. Am Einlass erscheint „2TAKT-Gast“ mit der Ticketnummer.</p>
         <div id="tbl" style="margin-top:20px"></div>`;
       $("#freeForm").onsubmit = async e => {
         e.preventDefault(); const f = e.target;
         await act(() => call("/admin/free-tickets", { method: "POST", body: { first_name: f.first.value || null, last_name: f.last.value || null, email: f.email.value || null } }), "Freiticket angelegt");
         render();
       };
-      $("#bulk").onclick = async () => { if (!confirm(`${30 - valid.length} Freitickets ohne Namen anlegen?`)) return; await act(() => call("/admin/free-tickets", { method: "POST", body: { count: 30 - valid.length } }), "Angelegt"); render(); };
+      if ($("#allLinks")) $("#allLinks").onclick = () => copy(valid.filter(t => t.status === "valid").map(t => `${t.number}: ${ticketUrl(t)}`).join("\n"), "Alle Links kopiert");
+      if ($("#bulk")) $("#bulk").onclick = async () => { if (!confirm(`${30 - valid.length} Freitickets ohne Namen anlegen?`)) return; await act(() => call("/admin/free-tickets", { method: "POST", body: { count: 30 - valid.length } }), "Angelegt"); render(); };
       await ticketTable($("#tbl"), "free", null, all);
     },
 
@@ -427,11 +432,11 @@
       $("#tn").textContent = `${l.length} von ${list.length}`;
       $("#trows").innerHTML = l.map(t => `<tr>
         <td class="mono">${esc(t.number)}${t.is_test ? ' <span class="tag test">TEST</span>' : ""}<span class="sub">${esc(categoryLabel(t))}</span></td>
-        <td>${t.first_name ? `${esc(t.first_name)} ${esc(t.last_name)}` : '<span class="dim">noch nicht zugeordnet</span>'}<span class="sub">${esc(t.email || "")}${t.note ? " · " + esc(t.note) : ""}</span></td>
+        <td>${t.first_name ? `${esc(t.first_name)} ${esc(t.last_name)}` : '<span class="dim">ohne Namen (gültig)</span>'}<span class="sub">${esc(t.email || "")}${t.note ? " · " + esc(t.note) : ""}</span></td>
         <td><span class="st-${t.status}">${{ valid: "gültig", blocked: "gesperrt", cancelled: "storniert" }[t.status]}</span>${t.checked_in_at ? `<span class="sub">drin seit ${timeDe(t.checked_in_at)}</span>` : ""}${t.version > 1 ? `<span class="sub">ersetzt (${t.version}.)</span>` : ""}</td>
         <td class="hide-sm dim">${t.order_no ? `${esc(t.order_no)}<span class="sub">Einl. ${esc(t.invitation_name || "")}</span>` : t.helper_invitation ? `Einl. ${esc(t.helper_invitation)}` : "Admin"}</td>
         <td><div class="acts">
-          ${t.first_name && t.status === "valid" ? `<button data-a="wa" data-id="${t.id}">WhatsApp</button>` : ""}${t.first_name ? `<button data-a="link" data-id="${t.id}">Link</button><a class="lnk" href="${esc(ticketUrl(t))}" target="_blank" rel="noopener">Ansehen/PDF</a>` : ""}
+          ${t.status === "valid" && (t.first_name || t.category === "free") ? `<button data-a="wa" data-id="${t.id}">WhatsApp</button>` : ""}${t.first_name || t.category === "free" ? `<button data-a="link" data-id="${t.id}">Link</button><a class="lnk" href="${esc(ticketUrl(t))}" target="_blank" rel="noopener">Ansehen/PDF</a>` : ""}
           ${t.status !== "cancelled" && !t.checked_in_at ? `<button data-a="assign" data-id="${t.id}">${t.first_name ? "Name ändern" : "Zuordnen"}</button>` : ""}
           ${t.email && t.first_name && t.status === "valid" ? `<button data-a="mail" data-id="${t.id}">Mail</button>` : ""}
           ${t.status === "valid" ? `<button data-a="block" data-id="${t.id}">Sperren</button>` : t.status === "blocked" ? `<button data-a="unblock" data-id="${t.id}">Entsperren</button>` : ""}
@@ -448,7 +453,7 @@
     if (a === "link") return copy(ticketUrl(t));
     if (a === "wa") {
       const kind = t.category === "free" ? "dein 2TAKT-Freiticket" : t.category === "helper" ? "dein Helfer-Ticket" : "dein Ticket";
-      const text = `Hey ${t.first_name}, hier ist ${kind} für TAKT Nr. 30 – Private Birthday Rave. QR-Code am Einlass zeigen, gilt einmal und nur für dich: ${ticketUrl(t)}`;
+      const text = `Hey${t.first_name ? " " + t.first_name : ""}, hier ist ${kind} für TAKT Nr. 30 – Private Birthday Rave. QR-Code am Einlass zeigen, gilt einmal und nur für dich: ${ticketUrl(t)}`;
       return window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener");
     }
     let body = { action: a };

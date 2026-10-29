@@ -549,11 +549,10 @@ async function getOrder(env, request, url) {
 }
 
 async function getTicket(env, request, url) {
-  if (await limited(env, `tk:${await clientKey(request, env)}`, 60, 60_000)) return fail("Zu viele Anfragen.", 429);
+  if (await limited(env, `tk:${await clientKey(request, env)}`, 150, 60_000)) return fail("Zu viele Anfragen.", 429);
   const k = cleanCode(url.searchParams.get("k"), 40);
   const t = await first(env, `SELECT number, category, helper_job, first_name, last_name, code, status, checked_in_at, is_test FROM tickets WHERE view_key = ?`, k);
   if (!t) return fail("Dieses Ticket gibt es nicht (mehr). Wurde es ersetzt, nutze bitte den neuen Link.", 404);
-  if (!t.first_name) return fail("Dieses Freiticket ist noch keinem Gast zugeordnet.", 409);
   return json({ ...t, event: eventForTicket(await getSettings(env)) });
 }
 
@@ -754,8 +753,7 @@ async function scan(env, request, who) {
     await log(null, old ? "replaced" : "unknown", code);
     return json(old ? { result: "red", reason: "Ersetzter QR-Code – ungültig", number: old.number, name: `${old.first_name || ""} ${old.last_name || ""}`.trim() } : { result: "red", reason: "QR-Code unbekannt" });
   }
-  const base = { number: t.number, category: t.category, helper_job: t.helper_job, name: `${t.first_name || ""} ${t.last_name || ""}`.trim() };
-  if (!t.first_name) { await log(t.id, "unassigned"); return json({ ...base, result: "red", reason: "Freiticket keinem Gast zugeordnet" }); }
+  const base = { number: t.number, category: t.category, helper_job: t.helper_job, name: `${t.first_name || ""} ${t.last_name || ""}`.trim() || (t.category === "free" ? "2TAKT-Gast" : "") };
   if (t.status === "blocked") { await log(t.id, "blocked"); return json({ ...base, result: "red", reason: "Ticket gesperrt" }); }
   if (t.status === "cancelled") { await log(t.id, "cancelled"); return json({ ...base, result: "red", reason: "Ticket storniert" }); }
   const s = await getSettings(env);
@@ -774,12 +772,12 @@ async function scanSearch(env, url) {
   if (q.length < 2) return json([]);
   const like = `%${q.replace(/[%_]/g, "")}%`;
   return json(await all(env, `SELECT id, number, category, helper_job, first_name, last_name, status, checked_in_at, checked_in_by, is_test FROM tickets
-     WHERE first_name IS NOT NULL AND (first_name || ' ' || last_name LIKE ? OR number LIKE ?) ORDER BY last_name, first_name LIMIT 25`, like, like));
+     WHERE (COALESCE(first_name, '') || ' ' || COALESCE(last_name, '') LIKE ? OR number LIKE ?) ORDER BY last_name IS NULL, last_name, first_name, number LIMIT 25`, like, like));
 }
 
 async function manualCheckin(env, who, id) {
   const at = iso();
-  const r = await run(env, `UPDATE tickets SET checked_in_at = ?, checked_in_by = ?, updated_at = ? WHERE id = ? AND status = 'valid' AND checked_in_at IS NULL AND first_name IS NOT NULL`, at, `${who.name} (manuell)`, at, id);
+  const r = await run(env, `UPDATE tickets SET checked_in_at = ?, checked_in_by = ?, updated_at = ? WHERE id = ? AND status = 'valid' AND checked_in_at IS NULL`, at, `${who.name} (manuell)`, at, id);
   await run(env, `INSERT INTO checkins (ticket_id, action, result, actor, at) VALUES (?, 'manual', ?, ?, ?)`, id, changes(r) ? "admitted" : "rejected", who.name, at);
   if (!changes(r)) return fail("Nicht möglich – Ticket ist bereits eingecheckt, gesperrt oder storniert.", 409);
   return json({ result: "green", checked_in_at: at });
