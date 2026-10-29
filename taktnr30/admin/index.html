@@ -364,6 +364,8 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
           <label class="field"><span>Setbeginn (Uhr)</span><input class="input sm" name="start" value="02:00" maxlength="20"></label>
           <label class="field"><span>Dauer</span><input class="input sm" name="duration" value="1,5 bis 2 Stunden" maxlength="40"></label>
           <label class="field"><span>Equipmentwert (€)</span><input class="input sm" name="value" value="3.000" maxlength="12"></label>
+          <div class="field" style="grid-column:1/-1"><span class="mono dim" style="font-size:11px;letter-spacing:.14em">EQUIPMENT DES DJ (VORAUSFÜLLEN, ER ERGÄNZT SERIENNUMMERN)</span>
+            <div id="eqRows" style="display:grid;gap:6px;margin-top:6px"></div><div class="acts" style="margin-top:6px"><button type="button" id="eqAdd">+ Gerät</button></div></div>
           <label class="field"><span>Honorar (€, leer = keins)</span><input class="input sm" name="fee" maxlength="12"></label>
           <label class="field"><span>Deine Anschrift</span><input class="input sm" name="owner_addr" value="${esc(pf.addr || "")}" placeholder="Straße, PLZ Ort" maxlength="160"></label>
           <div class="field"><label class="check"><input type="checkbox" name="ticket" checked><span>Freies Ticket</span></label><label class="check"><input type="checkbox" name="drinks" checked><span>Getränke frei</span></label><label class="check"><input type="checkbox" name="food" checked><span>Essen frei</span></label></div>
@@ -407,6 +409,12 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
       $$("[data-cr]", m).forEach(b => b.onclick = async () => { if (!confirm("Vertrag zurückziehen? Der Link funktioniert dann nicht mehr.")) return; await act(() => call(`/admin/contracts/${b.dataset.cr}`, { method: "DELETE" }), "Zurückgezogen"); render(); });
       let pad = null;
       const f = $("#cForm");
+      const eqRow = () => `<div style="display:grid;grid-template-columns:1fr 120px 34px;gap:6px"><input class="input sm" data-eq="item" placeholder="Gerät, z. B. Alpha Theta XDJ-AZ" maxlength="80"><input class="input sm" data-eq="value" placeholder="Wert €" inputmode="decimal" maxlength="12"><button type="button" class="lnk" data-eqdel>✕</button></div>`;
+      const eqBind = () => { $$("#eqRows [data-eqdel]").forEach(b => b.onclick = () => b.parentElement.remove()); $$("#eqRows [data-eq=value]").forEach(i => i.oninput = eqSum); };
+      const eqList = () => $$("#eqRows > div").map(r => ({ item: r.querySelector("[data-eq=item]").value.trim(), value: r.querySelector("[data-eq=value]").value.trim() })).filter(a => a.item);
+      const eqSum = () => { const sum = eqList().reduce((a, x) => a + (parseFloat(x.value.replace(/\./g, "").replace(",", ".")) || 0), 0); if (sum) f.value.value = sum.toLocaleString("de-DE", { maximumFractionDigits: 2 }); };
+      $("#eqRows").innerHTML = eqRow(); eqBind();
+      $("#eqAdd").onclick = () => { $("#eqRows").insertAdjacentHTML("beforeend", eqRow()); eqBind(); };
       const preview = () => { $("#cPreview").innerHTML = TAKT_CONTRACT.renderHtml($("#cBody").value); };
       $("#cGen").onclick = () => {
         if (!f.name.value.trim()) return toast("Bitte den Namen des DJ eintragen");
@@ -424,7 +432,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
         const sig = pad && !pad.empty() ? pad.toDataURL() : null;
         if (!sig) return toast("Bitte zuerst im weißen Feld unterschreiben");
         const name = f.name.value.trim();
-        const r = await act(() => call("/admin/contracts", { method: "POST", body: { title: `DJ-Vereinbarung ${name} – TAKT Nr. 30`, party_name: name, party_email: f.email.value.trim() || null, body: $("#cBody").value, owner_sig: sig } }), "Unterschrieben – jetzt den Link schicken");
+        const r = await act(() => call("/admin/contracts", { method: "POST", body: { title: `DJ-Vereinbarung ${name} – TAKT Nr. 30`, party_name: name, party_email: f.email.value.trim() || null, body: $("#cBody").value, owner_sig: sig, annex: eqList() } }), "Unterschrieben – jetzt den Link schicken");
         $("#cDone").innerHTML = `<div class="linkbox" style="margin-top:14px"><code>${esc(r.url)}</code><div class="acts"><button id="cCopy">Kopieren</button><button id="cWa">WhatsApp</button></div></div>`;
         $("#cCopy").onclick = () => copy(r.url);
         $("#cWa").onclick = () => window.open(`https://wa.me/?text=${encodeURIComponent(`Hey ${name.split(" ")[0]}, hier ist unser Vertrag für TAKT Nr. 30 – bitte durchlesen und direkt mit dem Finger unterschreiben. Danach kannst du ihn als PDF speichern: ${r.url}`)}`, "_blank", "noopener");

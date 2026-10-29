@@ -243,8 +243,9 @@ async function createContract(env, request, who) {
   if (party_email && !emailOk(party_email)) return fail("E-Mail-Adresse ungültig.");
   if (!sigOk(b.owner_sig)) return fail("Bitte zuerst selbst unterschreiben.");
   const key = randomCode(26), t = iso();
-  const r = await run(env, `INSERT INTO contracts (view_key, title, party_name, party_email, body, body_sha, owner_sig, owner_signed_at, created_at, created_by, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    key, title, party_name, party_email, body, await sha256Hex(body), b.owner_sig, t, t, who.actor, t);
+  const annex = annexClean(b.annex);   // vorausgefüllte Geräteliste – der Partner ergänzt/bestätigt sie beim Unterschreiben
+  const r = await run(env, `INSERT INTO contracts (view_key, title, party_name, party_email, body, body_sha, owner_sig, owner_signed_at, annex, created_at, created_by, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    key, title, party_name, party_email, body, await sha256Hex(body), b.owner_sig, t, annex.length ? JSON.stringify(annex) : null, t, who.actor, t);
   await audit(env, who, "contract.create", title, { party: party_name });
   return json({ id: r.meta.last_row_id, view_key: key, url: `${APP_ORIGIN}/taktnr30/vertrag/?k=${key}` }, 201);
 }

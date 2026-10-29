@@ -27,11 +27,16 @@
   .annex .r { display: grid; grid-template-columns: 1.6fr 1fr 90px 34px; gap: 6px; }
   .annex input { min-height: 44px; font-size: 15px; padding: 8px 10px; }
   .annex .x { background: none; border: 1px solid var(--line-2); color: var(--muted); border-radius: var(--radius); cursor: pointer; }
-  @media (max-width: 560px) { .annex .r { grid-template-columns: 1fr 1fr; } .annex .r input:first-child { grid-column: 1 / -1; } }
+  @media (max-width: 560px) {
+    .annex .r { grid-template-columns: 1fr 1fr 40px; grid-template-areas: "item item x" "serial value value"; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+    .annex .r input:nth-child(1) { grid-area: item; } .annex .r input:nth-child(2) { grid-area: serial; } .annex .r input:nth-child(3) { grid-area: value; } .annex .r .x { grid-area: x; }
+  }
+  .eqtable { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 15px; }
+  .eqtable td, .eqtable th { text-align: left; padding: 6px 4px; border-bottom: 1px solid #e3e1db; } .eqtable th { font-family: var(--sans); font-size: 12px; letter-spacing: .08em; color: #6d6d78; } .eqtable .v { text-align: right; white-space: nowrap; }
   .padwrap { background: #fbfaf7; border-radius: 10px; position: relative; margin-top: 10px; }
   .padwrap canvas { display: block; width: 100%; height: 190px; border-radius: 10px; cursor: crosshair; }
-  .padwrap .base { position: absolute; left: 20px; right: 20px; bottom: 44px; border-bottom: 1.5px solid #9a9aa6; pointer-events: none; }
-  .padwrap .hint { position: absolute; left: 20px; bottom: 16px; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; color: #8a8a96; pointer-events: none; }
+  .padwrap .base { position: absolute; left: 20px; right: 20px; bottom: 46px; border-bottom: 1.5px solid #9a9aa6; pointer-events: none; }
+  .padwrap .hint { position: absolute; left: 20px; right: 20px; bottom: 18px; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: #8a8a96; pointer-events: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sigs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
   .sig { background: #fbfaf7; color: #16161c; border-radius: 10px; padding: 14px; min-width: 0; }
   .sig small { display: block; font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; color: #6d6d78; text-transform: uppercase; }
@@ -68,27 +73,30 @@
   function render() {
     const signed = !!c.party_signed_at;
     const hasAnnex = /Anlage 1/.test(c.body);
-    $("#box").innerHTML = `<article class="paper">${renderHtml(c.body)}</article>
+    const annexDone = signed && Array.isArray(c.annex) && c.annex.length
+      ? `<table class="eqtable"><thead><tr><th>Gerät</th><th>Seriennr.</th><th class="v">Wert €</th></tr></thead><tbody>${c.annex.map(a => `<tr><td>${esc(a.item)}</td><td>${esc(a.serial || "–")}</td><td class="v">${esc(a.value || "")}</td></tr>`).join("")}</tbody></table>` : "";
+    $("#box").innerHTML = `<article class="paper">${renderHtml(c.body)}${annexDone}</article>
       ${signed ? `
         <div class="done"><strong>Unterschrieben.</strong> Der Vertrag ist von beiden Seiten unterschrieben. Lade dir das PDF für deine Unterlagen herunter.</div>
         <div class="sigs">${sigCard("Veranstalter", c.owner_name, c.owner_sig, c.owner_signed_at)}${sigCard("Vertragspartner", c.party_name, c.party_sig, c.party_signed_at)}</div>
         <div class="acts"><button class="btn btn-uv" id="dl">PDF herunterladen</button></div>
         <p class="sha">Prüfsumme (SHA-256): ${esc(c.final_sha || "")}</p>` : `
         <div class="sigs">${sigCard("Veranstalter", c.owner_name, c.owner_sig, c.owner_signed_at)}${sigCard("Vertragspartner", c.party_name, null, null)}</div>
-        ${hasAnnex ? `<section class="step"><h2>Anlage 1: dein Equipment</h2><p class="note">Für die Versicherung: Gerät, Seriennummer und ungefährer Wert. Kommt mit ins PDF.</p>
+        ${hasAnnex ? `<section class="step"><h2>Anlage 1: dein Equipment</h2><p class="note">Für die Versicherung: Gerät, Seriennummer und ungefährer Wert. Bitte prüfen, ergänzen (z. B. Laptop) und die Seriennummer eintragen. Kommt mit ins PDF.</p>
           <div class="annex" id="annex"></div><div class="acts"><button class="btn btn-small" id="addRow" type="button">+ Gerät</button></div></section>` : ""}
         <section class="step"><h2>Unterschreiben</h2>
           <label class="check"><input type="checkbox" id="accept"><span>Ich habe den Vertrag gelesen und bin einverstanden.</span></label>
-          <div class="padwrap"><canvas id="pad" aria-label="Unterschriftenfeld"></canvas><div class="base"></div><div class="hint">HIER MIT DEM FINGER UNTERSCHREIBEN · ${esc(c.party_name.toUpperCase())}</div></div>
+          <div class="padwrap"><canvas id="pad" aria-label="Unterschriftenfeld"></canvas><div class="base"></div><div class="hint">MIT DEM FINGER · ${esc(c.party_name.toUpperCase())}</div></div>
           <div class="acts"><button class="btn btn-small" id="clear" type="button">Löschen</button></div>
           <p class="err" id="err" role="alert" hidden></p>
-          <button class="btn btn-uv btn-block" id="sign" style="margin-top:16px">Verbindlich unterschreiben</button>
+          <button class="btn btn-uv btn-block" id="sign" style="margin-top:16px">Unterschreiben</button>
         </section>`}`;
     if (signed) { $("#dl").onclick = download; return; }
     if (hasAnnex) {
       const row = (a = {}) => `<div class="r"><input class="input" placeholder="Gerät (z. B. Pioneer DJM-900)" value="${esc(a.item || "")}" maxlength="80" aria-label="Gerät"><input class="input" placeholder="Seriennummer" value="${esc(a.serial || "")}" maxlength="60" aria-label="Seriennummer"><input class="input" placeholder="Wert €" inputmode="decimal" value="${esc(a.value || "")}" maxlength="12" aria-label="Wert in Euro"><button class="x" type="button" aria-label="Zeile entfernen">✕</button></div>`;
       const bind = () => $("#annex").querySelectorAll(".x").forEach(b => b.onclick = () => b.parentElement.remove());
-      $("#annex").innerHTML = [row(), row(), row()].join(""); bind();
+      const pre = Array.isArray(c.annex) ? c.annex : [];
+      $("#annex").innerHTML = [...pre.map(a => row(a)), ...Array.from({ length: Math.max(1, 3 - pre.length) }, () => row())].join(""); bind();
       $("#addRow").onclick = () => { $("#annex").insertAdjacentHTML("beforeend", row()); bind(); };
     }
     const pad = SignPad($("#pad"));
@@ -105,7 +113,7 @@
         const r = await api("/public/contract/sign", { method: "POST", body: { k: key, sig, accept: true, body_sha: c.body_sha, annex } });
         c = { ...c, party_sig: sig, party_signed_at: r.party_signed_at, final_sha: r.final_sha, annex };
         render(); window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-      } catch (e) { fail(e.message); btn.disabled = false; btn.textContent = "Verbindlich unterschreiben"; }
+      } catch (e) { fail(e.message); btn.disabled = false; btn.textContent = "Unterschreiben"; }
     };
   }
 
