@@ -547,3 +547,27 @@ test("Bändchen: Standardfarben, Scanner bekommt sie, Admin kann sie ändern (un
   const b2 = (await t.call("GET", "/scan/stats", undefined, { scanner: key })).data.bands;
   assert.equal(b2.regular.label, "Gelb"); assert.equal(b2.free.color, "#ffffff");
 });
+
+test("Vorbereitung: Liste einmalig vorbefüllt, abhaken, ändern, löschen, nur Admins", async () => {
+  const t = await setup();
+  assert.equal((await t.call("GET", "/admin/todos")).status, 401);
+  assert.equal((await t.call("GET", "/admin/todos", undefined, { user: STRANGER })).status, 403);
+  let list = (await t.admin("GET", "/admin/todos")).data;
+  assert.equal(list.length, 24);
+  assert.ok(list.find(x => x.title === "Anzeige ans Bürgeramt schicken").done_at);
+  assert.equal(list.filter(x => x.done_at).length, 1);
+  const gema = list.find(x => x.title === "GEMA klären");
+  assert.equal((await t.admin("PUT", `/admin/todos/${gema.id}`, { done: true })).status, 200);
+  assert.equal((await t.admin("PUT", `/admin/todos/${gema.id}`, { title: "GEMA angemeldet", note: "" })).status, 200);
+  const add = await t.admin("POST", "/admin/todos", { title: "Müllcontainer bestellen", phase: "woche" });
+  assert.equal(add.status, 201);
+  assert.equal((await t.admin("POST", "/admin/todos", { title: "x", phase: "irgendwann" })).status, 400);
+  list = (await t.admin("GET", "/admin/todos")).data;
+  const g = list.find(x => x.id === gema.id);
+  assert.equal(g.title, "GEMA angemeldet"); assert.equal(g.note, null); assert.ok(g.done_at);
+  assert.equal(list.length, 25);
+  for (const x of list) assert.equal((await t.admin("DELETE", `/admin/todos/${x.id}`)).status, 200);
+  assert.equal((await t.admin("GET", "/admin/todos")).data.length, 0); // kein erneutes Vorbefüllen
+  await t.admin("POST", "/admin/admins", { user_id: HELPER, role: "tickets", name: "Franzi" });
+  assert.equal((await t.call("GET", "/admin/todos", undefined, { user: HELPER })).status, 200);
+});

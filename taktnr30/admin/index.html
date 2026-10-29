@@ -53,6 +53,21 @@
   .st-valid { color: #6fe2ae; } .st-blocked, .st-cancelled, .st-failed, .st-refund_required { color: #ff8b97; } .st-pending { color: var(--warn); }
   .tag { font-family: var(--mono); font-size: 11px; padding: 2px 6px; border-radius: 3px; background: var(--bg-3); color: var(--muted); }
   .tag.test { background: var(--warn); color: #1a1300; }
+  .prog { height: 6px; background: var(--bg-3); border-radius: 3px; overflow: hidden; margin: 4px 0 26px; }
+  .prog > i { display: block; height: 100%; background: linear-gradient(90deg, var(--uv), var(--uv-soft)); transition: width .3s; }
+  .phase { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 28px 0 10px; }
+  .phase h2 { margin: 0; }
+  .phase .due { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; color: var(--muted); text-transform: uppercase; }
+  .phase .due.late { color: #ff8b97; } .phase .due.done { color: #6fe2ae; }
+  .todos { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .todo { display: grid; grid-template-columns: 26px 1fr auto; gap: 12px; align-items: start; padding: 12px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px; }
+  .todo input[type=checkbox] { width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--uv); cursor: pointer; }
+  .todo .tt { min-width: 0; cursor: pointer; }
+  .todo .tt small { display: block; color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .todo.done { background: transparent; }
+  .todo.done .tt { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--uv); }
+  .todo-add { display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 8px; margin-top: 10px; }
+  @media (max-width: 760px) { .todo-add { grid-template-columns: 1fr auto; } .todo-add .input:first-child { grid-column: 1 / -1; } }
   .linkbox { display: grid; grid-template-columns: 1fr auto; gap: 8px; background: var(--uv-deep); border: 1px solid var(--uv); border-radius: var(--radius); padding: 12px; margin: 12px 0; }
   .linkbox code { font-family: var(--mono); font-size: 13px; overflow-wrap: anywhere; }
   .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 6px; font-size: 14px; z-index: 50; max-width: 90vw; }
@@ -118,7 +133,7 @@
   const isMain = () => me.role === "main";
 
   const PAGES = [
-    ["overview", "Übersicht"], ["guests", "Gäste & Tickets"], ["orders", "Bestellungen"], ["helpers", "Helfer"],
+    ["overview", "Übersicht"], ["prep", "Vorbereitung"], ["guests", "Gäste & Tickets"], ["orders", "Bestellungen"], ["helpers", "Helfer"],
     ["paper", "Papiertickets", "main"], ["content", "Inhalte & Line-up"], ["entry", "Einlass"], ["settings", "Einstellungen", "main"]
   ];
   function renderNav() {
@@ -133,7 +148,59 @@
     try { await VIEWS[page](m); } catch (e) { m.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
   }
 
+  const PREP_PHASES = [
+    ["januar", "Bis Ende Januar", "2027-01-31"], ["februar", "Bis Ende Februar", "2027-02-28"],
+    ["woche", "In der Woche davor", "2027-03-05"], ["danach", "Nach der Party", "2027-03-15"]
+  ];
+
   const VIEWS = {
+    async prep(m) {
+      const list = await call("/admin/todos");
+      const done = list.filter(t => t.done_at).length;
+      const days = Math.max(0, Math.ceil((new Date("2027-03-06T19:00:00+01:00") - Date.now()) / 864e5));
+      const today = new Date().toISOString().slice(0, 10);
+      const dateDe = d => d.split("-").reverse().join(".");
+      m.innerHTML = `<h1>Vorbereitung</h1>
+        <div class="chips"><span class="chip uv">${days} Tage bis zur Party</span><span class="chip ${done === list.length && list.length ? "ok" : ""}">${done} von ${list.length} erledigt</span></div>
+        <div class="prog" aria-hidden="true"><i style="width:${list.length ? done / list.length * 100 : 0}%"></i></div>
+        ${PREP_PHASES.map(([id, title, due]) => {
+          const items = list.filter(t => t.phase === id);
+          const open = items.filter(t => !t.done_at).length;
+          const cls = items.length && !open ? "done" : open && today > due ? "late" : "";
+          return `<div class="phase"><h2>${title}</h2><span class="due ${cls}">${items.length && !open ? "Alles erledigt" : `Frist ${dateDe(due)} · ${open} offen`}</span></div>
+            <ul class="todos">${items.map(t => `<li class="todo${t.done_at ? " done" : ""}">
+              <input type="checkbox" id="td${t.id}" data-done="${t.id}" ${t.done_at ? "checked" : ""} aria-label="${esc(t.title)}">
+              <label class="tt" for="td${t.id}">${esc(t.title)}${t.note ? `<small>${esc(t.note)}</small>` : ""}</label>
+              <div class="acts"><button data-edit="${t.id}">Ändern</button><button data-del="${t.id}">✕</button></div></li>`).join("") || `<li class="dim" style="font-size:14px">Keine Aufgaben.</li>`}</ul>`;
+        }).join("")}
+        <h2 style="margin-top:34px">Aufgabe hinzufügen</h2>
+        <form class="todo-add" id="todoAdd">
+          <input class="input sm" name="ttl" maxlength="120" placeholder="z. B. Müllcontainer bestellen" required aria-label="Aufgabe">
+          <input class="input sm" name="note" maxlength="300" placeholder="Notiz (optional)" aria-label="Notiz">
+          <select class="input sm" name="phase" aria-label="Abschnitt">${PREP_PHASES.map(([id, t]) => `<option value="${id}">${t}</option>`).join("")}</select>
+          <button class="btn btn-uv btn-small">Hinzufügen</button>
+        </form>`;
+      $$("[data-done]").forEach(cb => cb.onchange = async () => {
+        try { await act(() => call(`/admin/todos/${cb.dataset.done}`, { method: "PUT", body: { done: cb.checked } })); } catch { cb.checked = !cb.checked; return; }
+        render();
+      });
+      $$("[data-edit]").forEach(b => b.onclick = async () => {
+        const t = list.find(x => x.id == b.dataset.edit);
+        const title = prompt("Aufgabe:", t.title); if (title === null || !title.trim()) return;
+        const note = prompt("Notiz (leer lassen = keine):", t.note || ""); if (note === null) return;
+        await act(() => call(`/admin/todos/${t.id}`, { method: "PUT", body: { title, note } }), "Gespeichert"); render();
+      });
+      $$("[data-del]").forEach(b => b.onclick = async () => {
+        const t = list.find(x => x.id == b.dataset.del);
+        if (!confirm(`„${t.title}“ löschen?`)) return;
+        await act(() => call(`/admin/todos/${t.id}`, { method: "DELETE" }), "Gelöscht"); render();
+      });
+      $("#todoAdd").onsubmit = async e => {
+        e.preventDefault(); const f = e.target;
+        await act(() => call("/admin/todos", { method: "POST", body: { title: f.ttl.value, note: f.note.value, phase: f.phase.value } }), "Hinzugefügt"); render();
+      };
+    },
+
     async overview(m) {
       const d = await call("/admin/dashboard"); const c = d.counts;
       const mode = { closed: ["Verkauf geschlossen", ""], test: ["Testmodus aktiv", "warn"], live: ["Verkauf live", "ok"] }[d.sale_mode];
@@ -223,7 +290,7 @@
         <label class="field" style="max-width:220px"><span>Helferplätze gesamt</span><input class="input sm" type="number" name="cap" min="0" max="50" value="${cap}"></label>
         <label class="check" style="margin-bottom:14px"><input type="checkbox" name="open" ${s.helper_signup === "1" ? "checked" : ""}><span>Helfer-Anmeldung über Einladungslinks ist offen</span></label>
         <button class="btn btn-uv btn-small">Speichern</button></form>
-        <p class="note">Plätze je Aufgabe: 0 = ohne eigene Grenze. Helfer-Tickets kommen zusätzlich zu den 70 Tickets und 30 Freitickets.</p>
+        <p class="note">Plätze je Aufgabe: 0 = ohne eigene Grenze. Helfer-Tickets kommen zusätzlich zu den 60 Online-Tickets und 100 Papiertickets.</p>
         <h2>Eingetragene Helfer</h2><div id="tbl"></div>`;
       const rowHtml = j => `<div class="lineup-row"><input class="input sm" name="slots" type="number" min="0" max="20" value="${+j.slots || 0}" aria-label="Plätze"><input class="input sm" name="jname" value="${esc(j.name)}" placeholder="Aufgabe" maxlength="40" aria-label="Aufgabe"><input class="input sm note-in" name="info" value="${esc(j.info || "")}" placeholder="Info (optional)" maxlength="120" aria-label="Info"><button type="button" class="lnk" data-del>✕</button></div>`;
       $("#jobRows").innerHTML = jobs.map(rowHtml).join("");

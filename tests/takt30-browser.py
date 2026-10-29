@@ -65,6 +65,14 @@ try:
         invite1 = invite2 = admin.inner_text(".linkbox code")     # gemeinsamer Ticket-Link
         assert "?e=" in invite1
         admin.screenshot(path=str(OUT / "admin-uebersicht-test.png"))
+        admin.click("nav button[data-p=prep]")
+        admin.wait_for_selector(".todo")
+        assert admin.locator(".todo").count() == 24 and admin.locator(".todo.done").count() == 1
+        admin.click(".todo:not(.done) input[type=checkbox] >> nth=0")
+        admin.wait_for_function("document.querySelectorAll('.todo.done').length === 2")
+        admin.fill("#todoAdd [name=ttl]", "Müllcontainer bestellen"); admin.select_option("#todoAdd [name=phase]", "woche"); admin.click("#todoAdd button")
+        admin.wait_for_selector(".todo:has-text('Müllcontainer bestellen')")
+        admin.screenshot(path=str(OUT / "admin-vorbereitung.png"), full_page=True)
         admin.click("nav button[data-p=entry]")
         admin.fill("#scForm [name=name]", "Tür 1"); admin.click("#scForm button")
         admin.wait_for_selector("#newLink code")
@@ -225,7 +233,7 @@ fs.writeFileSync('{OUT}/qr.pgm',Buffer.concat([Buffer.from('P5\\n'+W+' '+H+'\\n2
         admin.screenshot(path=str(OUT / "admin-gaeste.png"))
         # Handy-Admin ohne Überbreite
         admin.set_viewport_size({"width": 390, "height": 844})
-        for pg in ["overview", "guests", "orders", "helpers", "paper", "content", "entry", "settings"]:
+        for pg in ["overview", "prep", "guests", "orders", "helpers", "paper", "content", "entry", "settings"]:
             admin.evaluate(f"document.querySelector('nav button[data-p={pg}]').click()")
             admin.wait_for_timeout(250)
             assert not admin.is_visible("#main .err"), f"admin {pg}: " + admin.inner_text("#main")[:200]

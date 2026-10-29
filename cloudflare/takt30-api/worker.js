@@ -109,8 +109,89 @@ const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS retired_codes (code TEXT PRIMARY KEY, ticket_id INTEGER NOT NULL, retired_at TEXT NOT NULL, reason TEXT)`,
   `CREATE TABLE IF NOT EXISTS checkins (id INTEGER PRIMARY KEY AUTOINCREMENT, ticket_id INTEGER, action TEXT NOT NULL, result TEXT NOT NULL, actor TEXT NOT NULL, at TEXT NOT NULL, detail TEXT)`,
   `CREATE TABLE IF NOT EXISTS audit_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, actor TEXT NOT NULL, actor_name TEXT, action TEXT NOT NULL, target TEXT, detail TEXT, at TEXT NOT NULL)`,
-  `CREATE TABLE IF NOT EXISTS rate_limits (bucket TEXT PRIMARY KEY, count INTEGER NOT NULL, reset_at INTEGER NOT NULL)`
+  `CREATE TABLE IF NOT EXISTS rate_limits (bucket TEXT PRIMARY KEY, count INTEGER NOT NULL, reset_at INTEGER NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, phase TEXT NOT NULL, title TEXT NOT NULL, note TEXT, position INTEGER NOT NULL DEFAULT 0, done_at TEXT, done_by TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)`
 ];
+
+/* ================= Vorbereitung (Aufgabenliste im Admin) ================= */
+
+const TODO_PHASES = ["januar", "februar", "woche", "danach"];
+const DEFAULT_TODOS = [
+  ["januar", "Anzeige ans Bürgeramt schicken", "buergeramt@heidenheim.de · mind. 2 Wochen vorher", true],
+  ["januar", "GEMA klären", "Anrufen oder online anmelden – Nachmelden wird teurer"],
+  ["januar", "Halle mit Kai durchgehen", "Strom, Heizung, Toiletten, was raus muss, Notausgänge, Aufbauzeit, Versicherung der Halle"],
+  ["januar", "Getränkehändler festmachen", "Kommission, Kühlung, Zapfanlage, Theken, Stehtische, Becher, Eis – Freigetränke für VIPs einplanen"],
+  ["januar", "Heizung reservieren", "Heizkanonen + Brennstoff – im März schnell vergriffen"],
+  ["januar", "Toilettenwagen reservieren (falls nötig)", "Für ca. 180 Leute reicht ein normales WC nicht"],
+  ["januar", "Line-up fix machen", "Wer legt wann auf, wer bringt welche Technik mit (Wert notieren)"],
+  ["januar", "Versicherung nochmal entscheiden", "Nur Haftpflicht ca. 114 € – oder schriftlich: Technik auf eigenes Risiko"],
+  ["februar", "Helferplan Bar & Einlass", "8 an der Bar, 5 am Einlass – wer wann"],
+  ["februar", "Preisliste für die Bar", "Runde Preise (3 €, 4 €, 5 €) – schneller beim Wechselgeld"],
+  ["februar", "Handyempfang in der Halle testen", "Scanner braucht Internet – sonst mobilen Hotspot mitbringen"],
+  ["februar", "Scanner-Zugänge für Einlass-Helfer anlegen", "Admin → Einlass · dazu Powerbanks"],
+  ["februar", "VIP-Getränkemarken festlegen", "Wie viele pro VIP, wer gibt sie am Einlass aus"],
+  ["februar", "Garderobe organisieren", "Kleiderständer, Nummern, wer betreut sie"],
+  ["februar", "Licht & Deko", "Schwarzlicht, Nebel"],
+  ["februar", "Sicherheit vorbereiten", "Feuerlöscher, Erste-Hilfe-Kasten, beleuchtete Notausgänge"],
+  ["februar", "Nüchterne Ansprechperson festlegen", "Bleibt den Abend über nüchtern und ansprechbar"],
+  ["woche", "Wechselgeld bei der Bank bestellen und holen", "ca. 350 €: 2 Rollen 1 €, 2 Rollen 2 €, 20 × 5 €, 10 × 10 €"],
+  ["woche", "Kassen vorbereiten", "Kassen, Wechselgeld aufteilen, eventuell Kartenleser"],
+  ["woche", "Rundmail an alle Gäste", "Anfahrt, Parken, Einlass, Garderobe, Heimweg/Taxi"],
+  ["woche", "Aufbau", "Getränke, Technik, Theken, Licht, Garderobe, Einlass"],
+  ["danach", "Abbau, Müll, Reinigung", null],
+  ["danach", "Ungeöffnete Getränke zurückgeben", null],
+  ["danach", "Abrechnung machen", "Einnahmen (PayPal-Auszug, Bar) gegen alle Belege"]
+];
+
+async function seedTodos(env) {
+  // Nur einmal: danach gehört die Liste dir (auch wenn du alles löschst, kommt nichts zurück)
+  const r = await run(env, `INSERT OR IGNORE INTO event_settings (key, value, updated_at, updated_by) VALUES ('todos_seeded', '1', ?, 'system')`, iso());
+  if (!changes(r)) return;
+  const t = iso();
+  const pos = {};
+  await env.DB.batch(DEFAULT_TODOS.map(([phase, title, note, done]) => env.DB.prepare(
+    `INSERT INTO todos (phase, title, note, position, done_at, done_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
+    .bind(phase, title, note || null, (pos[phase] = (pos[phase] || 0) + 1), done ? t : null, done ? "system" : null, t, t)));
+}
+
+async function listTodos(env) {
+  return json(await all(env, `SELECT id, phase, title, note, position, done_at, created_at FROM todos ORDER BY position, id`));
+}
+
+async function createTodo(env, request, who) {
+  const b = await readJson(request) || {};
+  const title = String(b.title || "").trim().slice(0, 120), note = String(b.note || "").trim().slice(0, 300) || null;
+  if (!title) return fail("Bitte einen Titel eingeben.");
+  if (!TODO_PHASES.includes(b.phase)) return fail("Abschnitt ungültig.");
+  const max = await first(env, `SELECT COALESCE(MAX(position), 0) AS p FROM todos WHERE phase = ?`, b.phase);
+  const r = await run(env, `INSERT INTO todos (phase, title, note, position, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)`, b.phase, title, note, (max?.p || 0) + 1, iso(), iso());
+  await audit(env, who, "todo.create", title, { phase: b.phase });
+  return json({ id: r.meta.last_row_id }, 201);
+}
+
+async function updateTodo(env, request, who, id) {
+  const b = await readJson(request) || {};
+  const todo = await first(env, `SELECT * FROM todos WHERE id = ?`, id);
+  if (!todo) return fail("Aufgabe nicht gefunden.", 404);
+  const title = b.title != null ? String(b.title).trim().slice(0, 120) : todo.title;
+  const note = b.note !== undefined ? (String(b.note || "").trim().slice(0, 300) || null) : todo.note;
+  const phase = b.phase != null ? String(b.phase) : todo.phase;
+  if (!title) return fail("Bitte einen Titel eingeben.");
+  if (!TODO_PHASES.includes(phase)) return fail("Abschnitt ungültig.");
+  let done_at = todo.done_at, done_by = todo.done_by;
+  if (b.done === true && !todo.done_at) { done_at = iso(); done_by = who.actor; }
+  if (b.done === false) { done_at = null; done_by = null; }
+  await run(env, `UPDATE todos SET title = ?, note = ?, phase = ?, done_at = ?, done_by = ?, updated_at = ? WHERE id = ?`, title, note, phase, done_at, done_by, iso(), id);
+  return json({ ok: true });
+}
+
+async function deleteTodo(env, who, id) {
+  const todo = await first(env, `SELECT title FROM todos WHERE id = ?`, id);
+  if (!todo) return fail("Aufgabe nicht gefunden.", 404);
+  await run(env, `DELETE FROM todos WHERE id = ?`, id);
+  await audit(env, who, "todo.delete", todo.title, null);
+  return json({ ok: true });
+}
 
 let schemaReady = false;
 async function ensureSchema(env) {
@@ -1316,6 +1397,10 @@ async function route(request, env, ctx) {
   if (m === "GET" && path === "/admin/scanners") return listScanners(env);
   if (m === "POST" && path === "/admin/scanners") return createScanner(env, request, who);
   if (m === "DELETE" && /^\/admin\/scanners\/\d+$/.test(path)) return revokeScanner(env, who, id);
+  if (m === "GET" && path === "/admin/todos") { await seedTodos(env); return listTodos(env); }
+  if (m === "POST" && path === "/admin/todos") return createTodo(env, request, who);
+  if (m === "PUT" && /^\/admin\/todos\/\d+$/.test(path)) return updateTodo(env, request, who, id);
+  if (m === "DELETE" && /^\/admin\/todos\/\d+$/.test(path)) return deleteTodo(env, who, id);
 
   if ((denied = need("main"))) return denied;
   if (m === "GET" && path === "/admin/audit") return listAudit(env);
