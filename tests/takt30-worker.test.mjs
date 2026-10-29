@@ -698,7 +698,7 @@ test("Verträge: Veranstalter unterschreibt zuerst, Partner per Link, Text gesic
   const t = await setup({ RESEND_API_KEY: "re_x", MAIL_FROM: "tickets@kim-betcher.de" });
   const sig = "data:image/png;base64," + "A".repeat(400);
   const body = "# DJ-Vereinbarung\n\n## § 1\n\n1. Der DJ legt auf.\n\n## Anlage 1: Equipmentliste\n\nGeräte folgen.";
-  assert.equal((await t.admin("POST", "/admin/contracts", { title: "DJ X", party_name: "Julian P", body })).status, 400); // ohne eigene Unterschrift
+  assert.equal((await t.admin("POST", "/admin/contracts", { title: "DJ X", party_name: "Julian P", body, owner_sig: "kaputt" })).status, 400); // ungültige Unterschrift
   const c = await t.admin("POST", "/admin/contracts", { title: "DJ-Vereinbarung Julian", party_name: "Julian Pajtak", party_email: "dj@example.org", body, owner_sig: sig });
   assert.equal(c.status, 201); const k = c.data.view_key;
   assert.match(c.data.url, /taktnr30\/vertrag\/\?k=/);
@@ -729,4 +729,18 @@ test("Verträge: Veranstalter unterschreibt zuerst, Partner per Link, Text gesic
   assert.equal(li[0].premium_cents, 11800); assert.equal(li[0].file_data, undefined);
   assert.equal((await t.admin("GET", `/admin/insurances/${ins.data.id}`)).data.file_name, "police.pdf");
   assert.equal((await t.admin("POST", "/admin/insurances", { kind: "x", file_data: "data:text/html;base64,PGI+" })).status, 400);
+});
+
+test("Vertrag als Entwurf: ohne Unterschrift speichern, Link noch gesperrt, später unterschreiben", async () => {
+  const t = await setup();
+  const sig = "data:image/png;base64," + "A".repeat(400);
+  const body = "# DJ-Vereinbarung\n\n## § 1\n\n1. Der DJ legt auf und so weiter.";
+  const c = await t.admin("POST", "/admin/contracts", { title: "Entwurf", party_name: "Julian P", body });
+  assert.equal(c.status, 201);
+  assert.equal((await t.call("GET", `/public/contract?k=${c.data.view_key}`)).status, 404);
+  assert.equal((await t.call("POST", "/public/contract/sign", { k: c.data.view_key, sig, accept: true, body_sha: "x" })).status, 404);
+  const s = await t.admin("POST", `/admin/contracts/${c.data.id}/sign`, { sig });
+  assert.equal(s.status, 200); assert.match(s.data.url, /vertrag\/\?k=/);
+  assert.equal((await t.admin("POST", `/admin/contracts/${c.data.id}/sign`, { sig })).status, 409);
+  assert.equal((await t.call("GET", `/public/contract?k=${c.data.view_key}`)).status, 200);
 });

@@ -241,13 +241,24 @@ async function createContract(env, request, who) {
   if (!title || !party_name) return fail("Titel und Name des Vertragspartners fehlen.");
   if (body.length < 50 || body.length > 30000) return fail("Vertragstext fehlt oder ist zu lang.");
   if (party_email && !emailOk(party_email)) return fail("E-Mail-Adresse ungültig.");
-  if (!sigOk(b.owner_sig)) return fail("Bitte zuerst selbst unterschreiben.");
+  const ownerSig = b.owner_sig ? (sigOk(b.owner_sig) ? b.owner_sig : null) : null;
+  if (b.owner_sig && !ownerSig) return fail("Unterschrift ungültig – bitte neu unterschreiben.");
   const key = randomCode(26), t = iso();
   const annex = annexClean(b.annex);   // vorausgefüllte Geräteliste – der Partner ergänzt/bestätigt sie beim Unterschreiben
   const r = await run(env, `INSERT INTO contracts (view_key, title, party_name, party_email, body, body_sha, owner_sig, owner_signed_at, annex, created_at, created_by, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    key, title, party_name, party_email, body, await sha256Hex(body), b.owner_sig, t, annex.length ? JSON.stringify(annex) : null, t, who.actor, t);
+    key, title, party_name, party_email, body, await sha256Hex(body), ownerSig, ownerSig ? t : null, annex.length ? JSON.stringify(annex) : null, t, who.actor, t);
   await audit(env, who, "contract.create", title, { party: party_name });
   return json({ id: r.meta.last_row_id, view_key: key, url: `${APP_ORIGIN}/taktnr30/vertrag/?k=${key}` }, 201);
+}
+// Entwurf später unterschreiben (z. B. am Handy)
+async function signContractOwner(env, request, who, id) {
+  const b = await readJson(request) || {};
+  if (!sigOk(b.sig)) return fail("Bitte im Feld unterschreiben.");
+  const r = await run(env, `UPDATE contracts SET owner_sig = ?, owner_signed_at = ?, updated_at = ? WHERE id = ? AND owner_signed_at IS NULL AND status = 'open'`, b.sig, iso(), iso(), id);
+  if (!changes(r)) return fail("Dieser Vertrag ist schon unterschrieben oder zurückgezogen.", 409);
+  const c = await first(env, `SELECT title, view_key FROM contracts WHERE id = ?`, id);
+  await audit(env, who, "contract.owner_signed", c.title, null);
+  return json({ ok: true, url: `${APP_ORIGIN}/taktnr30/vertrag/?k=${c.view_key}` });
 }
 async function revokeContract(env, who, id) {
   const r = await run(env, `UPDATE contracts SET status = 'revoked', updated_at = ? WHERE id = ? AND status = 'open'`, iso(), id);
@@ -259,6 +270,7 @@ async function getContractPublic(env, request, url) {
   if (await limited(env, `ct:${await clientKey(request, env)}`, 60, 60_000)) return fail("Zu viele Anfragen.", 429);
   const c = await first(env, `SELECT title, party_name, body, body_sha, owner_sig, owner_signed_at, party_sig, party_signed_at, annex, final_sha, status FROM contracts WHERE view_key = ?`, cleanCode(url.searchParams.get("k"), 40));
   if (!c || c.status === "revoked") return fail("Diesen Vertrag gibt es nicht (mehr). Bitte beim Veranstalter melden.", 404);
+  if (!c.owner_signed_at) return fail("Dieser Vertrag ist noch nicht freigegeben. Bitte kurz beim Veranstalter melden.", 404);
   const s = await getSettings(env);
   return json({ ...c, annex: c.annex ? JSON.parse(c.annex) : [], owner_name: s.contact_name });
 }
@@ -266,7 +278,7 @@ async function signContractPublic(env, request, ctx) {
   if (await limited(env, `cs:${await clientKey(request, env)}`, 10, 10 * 60_000)) return fail("Zu viele Versuche. Bitte später erneut probieren.", 429);
   const b = await readJson(request) || {};
   const c = await first(env, `SELECT * FROM contracts WHERE view_key = ?`, cleanCode(b.k, 40));
-  if (!c || c.status === "revoked") return fail("Diesen Vertrag gibt es nicht (mehr).", 404);
+  if (!c || c.status === "revoked" || !c.owner_signed_at) return fail("Diesen Vertrag gibt es nicht (mehr).", 404);
   if (c.party_signed_at) return fail("Dieser Vertrag ist bereits unterschrieben.", 409);
   if (b.accept !== true) return fail("Bitte bestätige, dass du den Vertrag gelesen hast.");
   if (b.body_sha !== c.body_sha) return fail("Der Vertragstext hat sich geändert. Bitte Seite neu laden.", 409);
@@ -1737,6 +1749,7 @@ async function route(request, env, ctx) {
   if (m === "POST" && path === "/admin/contracts") return createContract(env, request, who);
   if (m === "GET" && /^\/admin\/contracts\/\d+$/.test(path)) return getContractAdmin(env, id);
   if (m === "DELETE" && /^\/admin\/contracts\/\d+$/.test(path)) return revokeContract(env, who, id);
+  if (m === "POST" && /^\/admin\/contracts\/\d+\/sign$/.test(path)) return signContractOwner(env, request, who, Number(path.split("/")[3]));
   if (m === "GET" && path === "/admin/ledger") return listLedger(env);
   if (m === "POST" && path === "/admin/ledger") return createLedger(env, request, who);
   if (m === "PUT" && /^\/admin\/ledger\/\d+$/.test(path)) return updateLedger(env, request, who, id);

@@ -154,7 +154,8 @@
   // Sofort beim Laden sichern – der Login (Clerk) überschreibt sonst die Adresse samt Daten
   const PREFILL_KEY = "takt30.prefill";
   const keep = d => { try { localStorage.setItem(PREFILL_KEY, d); } catch {} };
-  const takePrefill = () => { let d = null; try { d = localStorage.getItem(PREFILL_KEY); localStorage.removeItem(PREFILL_KEY); } catch {} return d; };
+  const takePrefill = () => { try { return localStorage.getItem(PREFILL_KEY); } catch { return null; } };
+  const dropPrefill = () => { try { localStorage.removeItem(PREFILL_KEY); } catch {} };
   const hasPrefill = () => { try { return !!localStorage.getItem(PREFILL_KEY); } catch { return false; } };
   const grabHash = () => { const [h, q] = location.hash.slice(1).split("?"); const d = new URLSearchParams(q || "").get("d"); if (d) keep(d); return h; };
   grabHash();
@@ -354,15 +355,17 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
     async contracts(m) {
       const [list, ins, s] = await Promise.all([call("/admin/contracts"), call("/admin/insurances"), call("/admin/settings")]);
       const pf = moneyPrefs();
-      const st = c => c.status === "signed" ? `<span class="st-valid">unterschrieben</span><span class="sub">${fmtDT(c.party_signed_at)}</span>` : c.status === "revoked" ? `<span class="dim">zurückgezogen</span>` : `<span class="st-pending">wartet auf Unterschrift</span>`;
+      const st = c => c.status === "open" && !c.owner_signed_at ? `<span class="st-pending">Entwurf – deine Unterschrift fehlt</span>` : c.status === "signed" ? `<span class="st-valid">unterschrieben</span><span class="sub">${fmtDT(c.party_signed_at)}</span>` : c.status === "revoked" ? `<span class="dim">zurückgezogen</span>` : `<span class="st-pending">wartet auf Unterschrift</span>`;
       const link = c => `${location.origin}/taktnr30/vertrag/?k=${c.view_key}`;
       m.innerHTML = `<h1>Verträge &amp; Versicherungen</h1>
         <h2 style="margin-top:0">Verträge</h2>
         <div class="tablewrap"><table><thead><tr><th>Vertrag</th><th>Status</th><th></th></tr></thead><tbody>
         ${list.map(c => `<tr><td>${esc(c.title)}<span class="sub">${esc(c.party_name)} · erstellt ${fmtDT(c.created_at)}</span></td><td>${st(c)}</td><td><div class="acts">
-          ${c.status !== "revoked" ? `<button data-cl="${c.id}">Link kopieren</button><button data-cw="${c.id}">WhatsApp</button><button data-cp="${c.id}">PDF</button>` : ""}
+          ${c.status === "open" && !c.owner_signed_at ? `<button style="border-color:var(--uv);color:var(--ink);background:var(--uv-deep)" data-cs="${c.id}">Unterschreiben</button>` : ""}
+          ${c.status !== "revoked" && c.owner_signed_at ? `<button data-cl="${c.id}">Link kopieren</button><button data-cw="${c.id}">WhatsApp</button><button data-cp="${c.id}">PDF</button>` : ""}
           ${c.status === "open" ? `<button class="danger" data-cr="${c.id}">Zurückziehen</button>` : ""}</div></td></tr>`).join("") || `<tr><td colspan="3" class="dim">Noch keine Verträge.</td></tr>`}
         </tbody></table></div>
+        <div id="ownerSign" hidden></div>
         <h2>Neuer Vertrag: DJ-Vereinbarung</h2>
         <form class="card form" id="cForm">
           <label class="field"><span>Name des DJ</span><input class="input sm" name="name" required maxlength="80"></label>
@@ -387,7 +390,8 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
           <h2>Deine Unterschrift</h2>
           <div class="padwrap"><canvas id="cPad" aria-label="Unterschriftenfeld"></canvas><div class="base"></div><div class="hint">HIER UNTERSCHREIBEN · ${esc(String(s.contact_name).toUpperCase())}</div></div>
           <div class="acts" style="margin-top:10px"><button type="button" id="cClear">Löschen</button></div>
-          <button class="btn btn-uv btn-small" id="cSign" style="margin-top:14px">Unterschreiben &amp; Link erzeugen</button>
+          <div class="acts" style="margin-top:14px;gap:10px"><button class="btn btn-small" id="cDraftSave" type="button">Als Entwurf speichern</button><button class="btn btn-uv btn-small" id="cSign">Unterschreiben &amp; Link erzeugen</button></div>
+          <p class="note">„Als Entwurf speichern“: Der Vertrag steht dann oben in der Liste – unterschreiben kannst du später, z. B. am Handy.</p>
           <div id="cDone"></div>
         </div>
         <h2>Versicherungen</h2>
@@ -414,6 +418,28 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
         if (!window.jspdf) return toast("PDF-Werkzeug wird noch geladen – bitte gleich nochmal");
         const c = await call(`/admin/contracts/${b.dataset.cp}`);
         await TAKT_CONTRACT.pdf({ ...c, annex: c.annex ? JSON.parse(c.annex) : [], owner_name: s.contact_name }, `${c.title.replace(/[^\wäöüÄÖÜß -]/g, "").trim().replace(/\s+/g, "-")}.pdf`);
+      });
+      const linkBox = (host, url, name) => {
+        host.innerHTML = `<div class="linkbox" style="margin-top:14px"><code>${esc(url)}</code><div class="acts"><button data-x="copy">Kopieren</button><button data-x="wa">WhatsApp</button></div></div>`;
+        host.querySelector("[data-x=copy]").onclick = () => copy(url);
+        host.querySelector("[data-x=wa]").onclick = () => window.open(`https://wa.me/?text=${encodeURIComponent(`Hey ${name.split(" ")[0]}, hier ist unser Vertrag für TAKT Nr. 30 – bitte durchlesen und direkt mit dem Finger unterschreiben. Danach kannst du ihn als PDF speichern: ${url}`)}`, "_blank", "noopener");
+      };
+      $$("[data-cs]", m).forEach(b => b.onclick = async () => {
+        const c = await call(`/admin/contracts/${b.dataset.cs}`);
+        const box = $("#ownerSign"); box.hidden = false;
+        box.innerHTML = `<h2>${esc(c.title)}</h2><div class="paper">${TAKT_CONTRACT.renderHtml(c.body)}</div>
+          <h2>Deine Unterschrift</h2><div class="padwrap"><canvas id="oPad" aria-label="Unterschriftenfeld"></canvas><div class="base"></div><div class="hint">HIER UNTERSCHREIBEN · ${esc(String(s.contact_name).toUpperCase())}</div></div>
+          <div class="acts" style="margin-top:10px"><button type="button" id="oClear">Löschen</button></div>
+          <button class="btn btn-uv btn-small" id="oSign" style="margin-top:14px">Unterschreiben &amp; Link erzeugen</button><div id="oDone"></div>`;
+        box.scrollIntoView({ behavior: "smooth", block: "start" });
+        const opad = TAKT_CONTRACT.SignPad($("#oPad"));
+        $("#oClear").onclick = () => opad.clear();
+        $("#oSign").onclick = async () => {
+          const sig = opad.empty() ? null : opad.toDataURL();
+          if (!sig) return toast("Bitte zuerst im weißen Feld unterschreiben");
+          const r = await act(() => call(`/admin/contracts/${c.id}/sign`, { method: "POST", body: { sig } }), "Unterschrieben – jetzt den Link schicken");
+          $("#oSign").disabled = true; linkBox($("#oDone"), r.url, c.party_name);
+        };
       });
       $$("[data-cr]", m).forEach(b => b.onclick = async () => { if (!confirm("Vertrag zurückziehen? Der Link funktioniert dann nicht mehr.")) return; await act(() => call(`/admin/contracts/${b.dataset.cr}`, { method: "DELETE" }), "Zurückgezogen"); render(); });
       let pad = null;
@@ -451,11 +477,18 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
       };
       $("#cBody").oninput = preview;
       $("#cClear").onclick = () => pad && pad.clear();
+      $("#cDraftSave").onclick = async () => {
+        const name = f.name.value.trim();
+        if (!name) return toast("Bitte den Namen des DJ eintragen");
+        await act(() => call("/admin/contracts", { method: "POST", body: { title: `DJ-Vereinbarung ${name} – TAKT Nr. 30`, party_name: name, party_email: f.email.value.trim() || null, body: $("#cBody").value, annex: eqList() } }), "Entwurf gespeichert – oben in der Liste");
+        dropPrefill(); render();
+      };
       $("#cSign").onclick = async () => {
         const sig = pad && !pad.empty() ? pad.toDataURL() : null;
         if (!sig) return toast("Bitte zuerst im weißen Feld unterschreiben");
         const name = f.name.value.trim();
         const r = await act(() => call("/admin/contracts", { method: "POST", body: { title: `DJ-Vereinbarung ${name} – TAKT Nr. 30`, party_name: name, party_email: f.email.value.trim() || null, body: $("#cBody").value, owner_sig: sig, annex: eqList() } }), "Unterschrieben – jetzt den Link schicken");
+        dropPrefill();
         $("#cDone").innerHTML = `<div class="linkbox" style="margin-top:14px"><code>${esc(r.url)}</code><div class="acts"><button id="cCopy">Kopieren</button><button id="cWa">WhatsApp</button></div></div>`;
         $("#cCopy").onclick = () => copy(r.url);
         $("#cWa").onclick = () => window.open(`https://wa.me/?text=${encodeURIComponent(`Hey ${name.split(" ")[0]}, hier ist unser Vertrag für TAKT Nr. 30 – bitte durchlesen und direkt mit dem Finger unterschreiben. Danach kannst du ihn als PDF speichern: ${r.url}`)}`, "_blank", "noopener");
