@@ -76,6 +76,7 @@ try:
         admin.click("#lu .lineup-row:last-child [data-del]"); admin.click("#cForm button.btn-uv"); admin.wait_for_timeout(300)
         admin.click("nav button[data-p=paper]"); admin.wait_for_selector("#zipBtn")
         assert admin.inner_text(".kpis").count("50") >= 2
+        admin.click("details summary:has-text('Nachdruck')")
         with admin.expect_download(timeout=60000) as dz: admin.click("#zipBtn")
         dz.value.save_as(str(OUT / "TAKT30-Papiertickets-Druckdaten.zip"))
         with admin.expect_download(timeout=120000) as dp: admin.click("#pdfBtn")

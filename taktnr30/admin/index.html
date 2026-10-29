@@ -257,7 +257,11 @@
       m.innerHTML = `<h1>Papiertickets</h1>
         <div class="kpis">${kpi("VIP · 2TAKT (Fynn)", p.vip.length, `${p.vip.filter(t => t.checked_in_at).length} eingecheckt`)}${kpi("Freitickets (Kim)", p.own.length, `${p.own.filter(t => t.checked_in_at).length} eingecheckt`)}${kpi("Gesperrt", [...p.vip, ...p.own].filter(t => t.status === "blocked").length)}</div>
         <p class="note">Jedes Papierticket hat einen eigenen QR-Code und gilt genau einmal. Die Codes sind im Scanner hinterlegt, damit kopierte Tickets am Einlass auffallen. Sie zählen nicht zu den ${c.regular_cap} Online-Tickets.</p>
-        <h2>Druckerei</h2>
+        <h2>Verlorenes Ticket sperren</h2>
+        <form class="card form" id="blockForm"><label class="field"><span>Ticketnummer (z. B. 2T-07 oder FK-03)</span><input class="input sm mono" name="no" required maxlength="8"></label>
+          <div class="field acts"><button class="btn btn-small" name="b">Sperren</button><button class="btn btn-small" name="u" type="button" id="unblockBtn">Entsperren</button></div></form>
+        <details style="margin-top:34px"><summary class="note" style="cursor:pointer">Nachdruck – Druckdaten erneut herunterladen</summary>
+        <h2 style="margin-top:14px">Druckerei</h2>
         <p class="note">Format 210 × 105 mm, rechts ein Abriss mit QR-Code und Nummer. Die Druckdaten enthalten beide Varianten: Vorlagen plus Code-Listen (die Druckerei setzt die QR-Codes ein) und alle Tickets fertig mit QR-Code. Die Maße für die Druckerei stehen in der LIESMICH-Datei.</p>
         <div class="acts" style="margin-bottom:10px"><button class="btn btn-uv btn-small" id="zipBtn">Druckdaten herunterladen (ZIP)</button></div>
         <p class="note">Bestellen bei <a href="https://www.myflyer.de/postkarten-karten/eintrittskarten.html" target="_blank" rel="noopener">myflyer.de – Eintrittskarten</a>: freies Format 210 × 105 mm, 4/4-farbig, Karton ab 300 g, 1 Perforation senkrecht bei 150 mm, QR-Code aus Excel, lose. Zwei Sorten: VIP 50 Stück, Freiticket 50 Stück (Mindestmenge 100).</p>
@@ -265,9 +269,7 @@
         <p class="note">2 Tickets pro A4-Bogen mit Schnittmarken. Doppelseitig drucken („an langer Kante wenden“), möglichst auf 250–300 g Karton, dann schneiden.</p>
         <div class="acts"><button id="pdfBtn">A4-PDF zum Selberdrucken</button></div>
         <p class="note" id="printState" aria-live="polite"></p>
-        <h2>Verlorenes Ticket sperren</h2>
-        <form class="card form" id="blockForm"><label class="field"><span>Ticketnummer (z. B. 2T-07 oder FK-03)</span><input class="input sm mono" name="no" required maxlength="8"></label>
-          <div class="field acts"><button class="btn btn-small" name="b">Sperren</button><button class="btn btn-small" name="u" type="button" id="unblockBtn">Entsperren</button></div></form>`;
+        </details>`;
       const state = t => $("#printState").textContent = t;
       $("#zipBtn").onclick = () => paperZip(p, state).catch(e => state("Fehler: " + e.message));
       $("#pdfBtn").onclick = () => paperPdf(p, state).catch(e => state("Fehler: " + e.message));
