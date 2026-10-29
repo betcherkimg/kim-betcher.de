@@ -553,7 +553,9 @@ test("Vorbereitung: Liste einmalig vorbefüllt, abhaken, ändern, löschen, nur 
   assert.equal((await t.call("GET", "/admin/todos")).status, 401);
   assert.equal((await t.call("GET", "/admin/todos", undefined, { user: STRANGER })).status, 403);
   let list = (await t.admin("GET", "/admin/todos")).data;
-  assert.equal(list.length, 25);
+  assert.equal(list.length, 27);
+  assert.ok(list.find(x => x.title === "Handys einrichten (Bar + Einlass)"));
+  assert.equal(list.filter(x => x.title.startsWith("GEMA")).length, 2);
   assert.ok(list.find(x => x.title === "Anzeige ans Bürgeramt schicken").done_at);
   assert.equal(list.filter(x => x.done_at).length, 1);
   const gema = list.find(x => x.title === "GEMA anmelden (Tarif M-V)");
@@ -566,7 +568,7 @@ test("Vorbereitung: Liste einmalig vorbefüllt, abhaken, ändern, löschen, nur 
   list = (await t.admin("GET", "/admin/todos")).data;
   const g = list.find(x => x.id === gema.id);
   assert.equal(g.title, "GEMA angemeldet"); assert.equal(g.note, null); assert.ok(g.done_at);
-  assert.equal(list.length, 26);
+  assert.equal(list.length, 28);
   for (const x of list) assert.equal((await t.admin("DELETE", `/admin/todos/${x.id}`)).status, 200);
   assert.equal((await t.admin("GET", "/admin/todos")).data.length, 0); // kein erneutes Vorbefüllen
   await t.admin("POST", "/admin/admins", { user_id: HELPER, role: "tickets", name: "Franzi" });
@@ -608,4 +610,23 @@ test("Abrechnung: PayPal-Gebühr wird gespeichert, Belege, Bericht und CSV nur f
   assert.equal((await t.call("GET", "/admin/report", undefined, { user: HELPER })).status, 403);
   assert.equal((await t.call("GET", "/admin/export?kind=ledger", undefined, { user: HELPER })).status, 403);
   assert.equal((await t.admin("DELETE", `/admin/ledger/${id}`)).status, 200);
+});
+
+test("Vorbereitung: bestehende Liste aus v12 bekommt die Ergänzungen genau einmal", async () => {
+  const t = await setup();
+  await t.admin("GET", "/admin/todos");
+  // Zustand wie mit Worker v12 simulieren
+  t.db.exec(`DELETE FROM event_settings WHERE key = 'todos_upgrade_1'`);
+  t.db.exec(`DELETE FROM todos WHERE title IN ('Handys besorgen (4–6 Stück)', 'Handys einrichten (Bar + Einlass)', 'GEMA: Antrag nach Abschnitt V. B stellen')`);
+  t.db.exec(`UPDATE todos SET phase = 'januar', title = 'GEMA klären', note = 'x' WHERE title = 'GEMA anmelden (Tarif M-V)'`);
+  t.db.exec(`UPDATE todos SET note = 'Strom, Heizung' WHERE title = 'Halle mit Kai durchgehen'`);
+  // Worker neu laden (Modul-Cache: neuer Import)
+  let list = (await t.admin("GET", "/admin/todos")).data;
+  const g = list.find(x => x.title === "GEMA anmelden (Tarif M-V)");
+  assert.equal(g.phase, "woche");
+  assert.ok(list.find(x => x.title === "Handys besorgen (4–6 Stück)" && x.phase === "februar"));
+  assert.ok(list.find(x => x.title === "Halle mit Kai durchgehen").note.endsWith("Strom an jeder Bar + Einlass (eigene Stromkreise)"));
+  const n = list.length;
+  list = (await t.admin("GET", "/admin/todos")).data;
+  assert.equal(list.length, n);
 });

@@ -197,7 +197,7 @@ async function report(env) {
 const TODO_PHASES = ["januar", "februar", "woche", "danach"];
 const DEFAULT_TODOS = [
   ["januar", "Anzeige ans Bürgeramt schicken", "buergeramt@heidenheim.de · mind. 2 Wochen vorher", true],
-  ["januar", "Halle mit Kai durchgehen", "Strom, Heizung, Toiletten, was raus muss, Notausgänge, Aufbauzeit, Versicherung der Halle"],
+  ["januar", "Halle mit Kai durchgehen", "Strom, Heizung, Toiletten, was raus muss, Notausgänge, Aufbauzeit, Versicherung der Halle · Strom an jeder Bar + Einlass (eigene Stromkreise)"],
   ["januar", "Getränkehändler festmachen", "Kommission, Kühlung, Zapfanlage, Theken, Stehtische, Becher, Eis – Freigetränke für VIPs einplanen"],
   ["januar", "Heizung reservieren", "Heizkanonen + Brennstoff – im März schnell vergriffen"],
   ["januar", "Toilettenwagen reservieren (falls nötig)", "Für ca. 180 Leute reicht ein normales WC nicht"],
@@ -223,7 +223,31 @@ const DEFAULT_TODOS = [
   ["danach", "GEMA: Antrag nach Abschnitt V. B stellen", "Spätestens 6 Wochen nach Rechnung · 11,89 % der Ticketeinnahmen · Aufstellung + PayPal-Auszug unterschrieben beilegen"]
 ];
 
+// Spätere Ergänzungen – jede wird genau einmal angewendet (auch auf schon bestehende Listen)
+const TODO_UPGRADES = [
+  ["todos_upgrade_1", t => [
+    [`UPDATE todos SET phase = 'woche', title = 'GEMA anmelden (Tarif M-V)', note = 'Vor der Party anmelden – sonst doppelter Preis. Rechnung erst zahlen, wenn der Antrag nach V. B durch ist', position = 0, updated_at = ? WHERE title = 'GEMA klären' AND done_at IS NULL`, t],
+    [`INSERT INTO todos (phase, title, note, position, created_at, updated_at) SELECT 'danach', 'GEMA: Antrag nach Abschnitt V. B stellen', 'Spätestens 6 Wochen nach Rechnung · 11,89 % der Ticketeinnahmen · Aufstellung + PayPal-Auszug unterschrieben beilegen', COALESCE((SELECT MAX(position) FROM todos WHERE phase = 'danach'), 0) + 1, ?, ? WHERE NOT EXISTS (SELECT 1 FROM todos WHERE title = 'GEMA: Antrag nach Abschnitt V. B stellen')`, t, t],
+    [`INSERT INTO todos (phase, title, note, position, created_at, updated_at) SELECT 'februar', 'Handys besorgen (4–6 Stück)', '2–3 für die Bar (NFC: iPhone ab XS oder Android mit NFC), 2–3 für den Einlass (Kamera reicht) · Ladekabel, Powerbanks, Mehrfachsteckdosen', COALESCE((SELECT MAX(position) FROM todos WHERE phase = 'februar'), 0) + 1, ?, ? WHERE NOT EXISTS (SELECT 1 FROM todos WHERE title = 'Handys besorgen (4–6 Stück)')`, t, t],
+    [`INSERT INTO todos (phase, title, note, position, created_at, updated_at) SELECT 'februar', 'Handys einrichten (Bar + Einlass)', 'Bar: PayPal POS mit Mitarbeiter-Zugang · Einlass: Scanner-App + Zugangs-QR · Sperre aus, beschriften, Hotspot · Testlauf: Ticket scannen + 1-€-Kartenzahlung', COALESCE((SELECT MAX(position) FROM todos WHERE phase = 'februar'), 0) + 1, ?, ? WHERE NOT EXISTS (SELECT 1 FROM todos WHERE title = 'Handys einrichten (Bar + Einlass)')`, t, t],
+    [`UPDATE todos SET note = COALESCE(note || ' · ', '') || 'Strom an jeder Bar + Einlass (eigene Stromkreise)', updated_at = ? WHERE title = 'Halle mit Kai durchgehen' AND COALESCE(note, '') NOT LIKE '%Strom an jeder Bar%'`, t]
+  ]]
+];
+
+async function upgradeTodos(env) {
+  for (const [key, build] of TODO_UPGRADES) {
+    const r = await run(env, `INSERT OR IGNORE INTO event_settings (key, value, updated_at, updated_by) VALUES (?, '1', ?, 'system')`, key, iso());
+    if (!changes(r)) continue;
+    await env.DB.batch(build(iso()).map(([sql, ...args]) => env.DB.prepare(sql).bind(...args)));
+  }
+}
+
 async function seedTodos(env) {
+  await seedTodosOnce(env);
+  await upgradeTodos(env);
+}
+
+async function seedTodosOnce(env) {
   // Nur einmal: danach gehört die Liste dir (auch wenn du alles löschst, kommt nichts zurück)
   const r = await run(env, `INSERT OR IGNORE INTO event_settings (key, value, updated_at, updated_by) VALUES ('todos_seeded', '1', ?, 'system')`, iso());
   if (!changes(r)) return;

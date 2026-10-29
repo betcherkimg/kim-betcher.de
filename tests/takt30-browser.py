@@ -67,7 +67,7 @@ try:
         admin.screenshot(path=str(OUT / "admin-uebersicht-test.png"))
         admin.click("nav button[data-p=prep]")
         admin.wait_for_selector(".todo")
-        assert admin.locator(".todo").count() == 25 and admin.locator(".todo.done").count() == 1
+        assert admin.locator(".todo").count() == 27 and admin.locator(".todo.done").count() == 1
         admin.click(".todo:not(.done) input[type=checkbox] >> nth=0")
         admin.wait_for_function("document.querySelectorAll('.todo.done').length === 2")
         admin.fill("#todoAdd [name=ttl]", "Müllcontainer bestellen"); admin.select_option("#todoAdd [name=phase]", "woche"); admin.click("#todoAdd button")
