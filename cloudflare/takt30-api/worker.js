@@ -29,7 +29,7 @@ const DEFAULT_SETTINGS = {
   place_public: "Heidenheim · Halle Kai Betcher – Bau & Holz",
   venue_name: "Halle Kai Betcher – Bau & Holz",
   venue_address: "In den Seewiesen 84, 89520 Heidenheim",
-  intro_title: "30 Jahre. 100 Gäste. 1 Halle.",
+  intro_title: "30 Jahre. 150 Gäste. 1 Halle.",
   intro_text: "Geschlossene Gesellschaft. Kein Gästelistenplatz, kein Einlass.\nEinlass ab 19:00. Der Takt beginnt um 20:00.",
   lineup: "[]",
   lineup_note: "Line-up folgt",
