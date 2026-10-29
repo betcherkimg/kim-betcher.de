@@ -1,8 +1,8 @@
 # TAKT Nr. 30 – Ticket- und Einlass-API
 
 Eigenständiger Cloudflare Worker mit eigener D1-Datenbank `takt30`. Er berührt weder SmartADM noch Office.
-Die Oberfläche liegt unter `taktnr30/tickets/` (GitHub Pages): Startseite, `ticket/`, `admin/`, `einlass/`,
-`bedingungen/`, `datenschutz/`.
+Die Oberfläche (GitHub Pages): `taktnr30/tickets/` (Startseite, `ticket/`, `bedingungen/`, `datenschutz/`),
+`taktnr30/admin/` und `taktnr30/scanner/` (installierbare Scanner-App). Alte Pfade unter `tickets/` leiten weiter.
 
 ## Kontingente (serverseitig erzwungen)
 
@@ -23,7 +23,7 @@ Testdaten lassen sich im Admin löschen, sobald der Testmodus beendet ist.
 
 - Hauptadministrator: Clerk-ID in `MAIN_ADMIN_ID`.
 - Ticketverwaltung / Einlass: weitere Clerk-Konten in `admin_users` (im Admin unter Einstellungen).
-- Einlasshelfer ohne Konto: persönlicher Scanner-Link (`einlass/#k=…`), gespeichert nur als SHA-256, sperrbar.
+- Einlasshelfer ohne Konto: persönlicher Zugang (`taktnr30/scanner/#k=…` oder Zugangs-QR), gespeichert nur als SHA-256, sperrbar.
 
 Rollen werden ausschließlich im Worker geprüft. Kritische Aktionen landen in `audit_logs`.
 

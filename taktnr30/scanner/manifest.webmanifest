@@ -1,0 +1,14 @@
+{
+  "name": "TAKT Nr. 30 – Scanner",
+  "short_name": "TAKT Scanner",
+  "start_url": "/taktnr30/scanner/",
+  "scope": "/taktnr30/scanner/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a0c",
+  "theme_color": "#0a0a0c",
+  "icons": [
+    { "src": "/taktnr30/assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/taktnr30/assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>TAKT Scanner</title>
+<link rel="icon" href="/taktnr30/assets/logo.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="/taktnr30/assets/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="TAKT Scanner">
+<link rel="stylesheet" href="/taktnr30/assets/takt.css?v=1">
+<style>
+  body { font-size: 16px; padding-bottom: 40px; }
+  header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg); z-index: 5; }
+  header img { width: 34px; }
+  header .t { font-size: 15px; line-height: 1.2; } header .t small { display: block; font-family: var(--mono); font-size: 11px; color: var(--dim); }
+  header .cnt { margin-left: auto; text-align: right; font-family: var(--mono); font-size: 22px; line-height: 1; }
+  header .cnt small { display: block; font-size: 10px; letter-spacing: .14em; color: var(--dim); }
+  .cam { position: relative; background: #000; aspect-ratio: 1; max-height: 62vh; width: 100%; overflow: hidden; }
+  .cam video { width: 100%; height: 100%; object-fit: cover; }
+  .cam .frame { position: absolute; inset: 16%; border: 2px solid rgba(157,77,255,.9); border-radius: 18px; pointer-events: none; }
+  .cam .start { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 20px; }
+  .cam .tools { position: absolute; right: 10px; bottom: 10px; display: flex; gap: 8px; }
+  .cam .tools button { background: rgba(0,0,0,.6); border: 1px solid var(--line-2); color: var(--ink); border-radius: 99px; padding: 8px 12px; font-size: 13px; }
+  .result { position: fixed; inset: 0; z-index: 40; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px 24px; animation: grow .18s ease-out; }
+  @keyframes grow { from { clip-path: circle(0% at 50% 45%); } to { clip-path: circle(150% at 50% 45%); } }
+  @media (prefers-reduced-motion: reduce) { .result { animation: none; } }
+  .result.green { background: #0e7a4a; color: #fff; } .result.red { background: #b3172a; color: #fff; } .result.yellow { background: #ffc23d; color: #1a1300; }
+  .result .big { font-family: var(--mono); font-size: clamp(40px, 13vw, 72px); letter-spacing: .06em; line-height: 1; }
+  .result .name { font-size: clamp(30px, 9vw, 48px); margin-top: 22px; line-height: 1.15; }
+  .result .reason { font-size: 21px; margin-top: 14px; }
+  .result .meta { font-family: var(--mono); font-size: 14px; margin-top: 10px; opacity: .85; }
+  .result .btn { margin-top: 34px; border-color: currentColor; color: inherit; min-width: 220px; }
+  .panel { padding: 18px 16px 0; }
+  .list { display: grid; gap: 8px; margin-top: 12px; }
+  .item { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); }
+  .item .who { flex: 1; min-width: 0; } .item small { display: block; font-family: var(--mono); font-size: 12px; color: var(--dim); }
+  .item .ok { color: #6fe2ae; } .item .no { color: #ff8b97; }
+  #auth { min-height: 100vh; display: grid; place-items: center; padding: 20px; text-align: center; }
+</style>
+</head>
+<body>
+<div id="auth" hidden><div style="width:min(420px,100%)"><img src="/taktnr30/assets/logo.svg" alt="" style="width:80px;margin:0 auto 16px">
+  <p class="caps mono dim" style="font-size:12px">Scanner</p>
+  <p class="muted" id="authMsg">Melde dich mit deinem Zugangs-QR an, den du vom Veranstalter bekommen hast.</p>
+  <div class="cam" id="authCam" hidden style="border-radius:12px;margin:0 0 14px"><video id="authVideo" playsinline muted></video><div class="frame" aria-hidden="true"></div></div>
+  <button class="btn btn-uv btn-block" id="authScan">Zugangs-QR scannen</button>
+  <form id="keyForm" style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:12px"><input class="input mono" id="keyIn" placeholder="oder Scanner-Link einfügen" autocomplete="off" aria-label="Scanner-Link"><button class="btn">OK</button></form>
+  <p class="err" id="authErr" hidden></p>
+  <details style="margin-top:26px;text-align:left"><summary class="note" style="cursor:pointer">Als Admin anmelden</summary><div id="signin" style="margin-top:12px"></div></details>
+</div></div>
+
+<div id="app" hidden>
+  <header><img src="/taktnr30/assets/logo.svg" alt=""><div class="t">Einlass<small id="whoami"></small></div><button class="lnk" id="logout" hidden style="background:none;border:1px solid var(--line-2);border-radius:4px;color:var(--dim);font-size:11px;padding:4px 8px">Abmelden</button><div class="cnt"><span id="cin">–</span><small>DRIN / ERWARTET <span id="cexp"></span></small></div></header>
+  <div class="cam" id="cam">
+    <video id="video" playsinline muted></video>
+    <div class="frame" aria-hidden="true"></div>
+    <div class="start" id="startBox"><div><button class="btn btn-uv" id="startBtn">Kamera starten</button><p class="note" style="margin-top:12px">QR-Code in den Rahmen halten.</p></div></div>
+    <div class="tools"><button id="torch" hidden>Licht</button><button id="stopBtn" hidden>Pause</button></div>
+  </div>
+  <div class="panel">
+    <label class="field" style="margin:0"><span>Gast suchen (Name oder Nummer)</span><input class="input" id="q" autocomplete="off" inputmode="search"></label>
+    <div class="list" id="hits"></div>
+    <h2 style="font-weight:400;font-size:16px;margin:24px 0 0">Letzte Scans</h2>
+    <div class="list" id="recent"></div>
+  </div>
+</div>
+<div id="result" hidden></div>
+<canvas id="canvas" hidden></canvas>
+
+<script src="/taktnr30/assets/takt.js?v=1"></script>
+<script src="/taktnr30/assets/vendor/jsQR.js"></script>
+<script>
+(function () {
+  "use strict";
+  const { esc, $, $$, timeDe, categoryLabel } = TAKT;
+  let scannerKey = null, mode = null, stream = null, scanning = false, busy = false, lastCode = "", lastAt = 0, wake = null;
+
+  // Scanner-Link: Schlüssel aus #k=… übernehmen und aus der Adresse entfernen
+  const hk = new URLSearchParams(location.hash.slice(1)).get("k");
+  if (hk) { TAKT.store.set("scannerKey", hk); history.replaceState(null, "", location.pathname); }
+  scannerKey = TAKT.store.get("scannerKey", null);
+
+  async function headers() {
+    if (mode === "key") return { "X-Scanner-Key": scannerKey };
+    return { Authorization: `Bearer ${await Clerk.session.getToken()}` };
+  }
+  async function call(path, opts = {}) { return TAKT.api(path, { ...opts, timeout: 8000, headers: await headers() }); }
+
+  /* -------- Ergebnisanzeige -------- */
+  function showResult(r) {
+    const box = $("#result");
+    const color = r.result;
+    const title = color === "green" ? "EINLASS" : color === "red" ? "STOPP" : "PRÜFUNG NICHT MÖGLICH";
+    const sub = color === "green" ? `${r.number} · ${r.category ? categoryLabel(r) : ""}` : color === "red" ? (r.number ? `${r.number}${r.checked_in_at ? ` · eingelöst ${timeDe(r.checked_in_at)}${r.checked_in_by ? " · " + r.checked_in_by : ""}` : ""}` : "") : "";
+    box.className = `result ${color}`;
+    box.innerHTML = `<div class="big">${title}</div>
+      ${r.name ? `<div class="name">${esc(r.name)}</div>` : ""}
+      ${color !== "green" ? `<div class="reason">${esc(r.reason || "")}</div>` : `<div class="reason">Bändchen ausgeben</div>`}
+      ${sub ? `<div class="meta">${esc(sub)}</div>` : ""}
+      ${color === "yellow" ? `<div class="reason" style="font-weight:400">NICHT einlassen – erneut scannen</div>` : ""}
+      <button class="btn" id="next">Weiter</button>`;
+    box.hidden = false;
+    try { navigator.vibrate?.(color === "green" ? 80 : [200, 80, 200]); } catch {}
+    beep(color);
+    const close = () => { box.hidden = true; busy = false; refresh(); };
+    $("#next").onclick = close; $("#next").focus();
+    if (color === "green") setTimeout(() => { if (!box.hidden) close(); }, 2200);
+  }
+  let audio;
+  function beep(color) {
+    try {
+      audio ||= new (window.AudioContext || window.webkitAudioContext)();
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.frequency.value = color === "green" ? 880 : 220; g.gain.value = .08;
+      o.connect(g); g.connect(audio.destination); o.start(); o.stop(audio.currentTime + (color === "green" ? .12 : .35));
+    } catch {}
+  }
+
+  async function check(code) {
+    busy = true;
+    try { showResult(await call("/scan/check", { method: "POST", body: { code } })); }
+    catch (e) {
+      if (e.status === 401 || e.status === 403) { showResult({ result: "yellow", reason: "Zugang ungültig oder gesperrt." }); return; }
+      showResult({ result: "yellow", reason: e.status === 0 ? "Keine Verbindung zum Server." : "Serverfehler – Status unklar." });
+    }
+  }
+
+  /* -------- Kamera -------- */
+  async function startCam() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 1280 } }, audio: false });
+    } catch (e) { $("#startBox").innerHTML = `<p class="err">Kamera nicht verfügbar: ${esc(e.message)}. Bitte Kamerazugriff erlauben oder die Namenssuche nutzen.</p>`; return; }
+    const v = $("#video"); v.srcObject = stream; await v.play();
+    $("#startBox").hidden = true; $("#stopBtn").hidden = false;
+    const track = stream.getVideoTracks()[0];
+    if (track.getCapabilities?.().torch) { $("#torch").hidden = false; let on = false; $("#torch").onclick = () => { on = !on; track.applyConstraints({ advanced: [{ torch: on }] }).catch(() => {}); }; }
+    try { wake = await navigator.wakeLock?.request("screen"); } catch {}
+    scanning = true; loop();
+  }
+  function stopCam() {
+    scanning = false; stream?.getTracks().forEach(t => t.stop()); stream = null;
+    $("#startBox").hidden = false; $("#stopBtn").hidden = true; $("#torch").hidden = true;
+    wake?.release?.().catch(() => {}); wake = null;
+  }
+  function loop() {
+    if (!scanning) return;
+    const v = $("#video");
+    if (!busy && v.readyState >= 2) {
+      const c = $("#canvas"), size = 640, s = Math.min(v.videoWidth, v.videoHeight);
+      c.width = c.height = size;
+      const ctx = c.getContext("2d", { willReadFrequently: true });
+      ctx.drawImage(v, (v.videoWidth - s) / 2, (v.videoHeight - s) / 2, s, s, 0, 0, size, size);
+      const hit = jsQR(ctx.getImageData(0, 0, size, size).data, size, size, { inversionAttempts: "dontInvert" });
+      if (hit && hit.data) {
+        const now = Date.now();
+        if (hit.data !== lastCode || now - lastAt > 4000) { lastCode = hit.data; lastAt = now; check(hit.data); }
+      }
+    }
+    setTimeout(() => requestAnimationFrame(loop), 120);
+  }
+  document.addEventListener("visibilitychange", async () => { if (document.visibilityState === "visible" && scanning) { try { wake = await navigator.wakeLock?.request("screen"); } catch {} } });
+
+  /* -------- Suche, Zähler, Verlauf -------- */
+  let qTimer;
+  function bindSearch() {
+    $("#q").oninput = () => { clearTimeout(qTimer); qTimer = setTimeout(search, 250); };
+  }
+  async function search() {
+    const q = $("#q").value.trim();
+    if (q.length < 2) { $("#hits").innerHTML = ""; return; }
+    try {
+      const list = await call(`/scan/search?q=${encodeURIComponent(q)}`);
+      $("#hits").innerHTML = list.map(t => `<div class="item"><div class="who">${esc(t.first_name)} ${esc(t.last_name)}<small>${esc(t.number)} · ${esc(categoryLabel(t))}${t.is_test ? " · TEST" : ""}</small></div>
+        ${t.status !== "valid" ? `<span class="no">${t.status === "blocked" ? "gesperrt" : "storniert"}</span>` : t.checked_in_at ? `<span class="no">drin seit ${timeDe(t.checked_in_at)}</span>` : `<button class="btn btn-small btn-uv" data-id="${t.id}" data-n="${esc(t.first_name + " " + t.last_name)}">Einchecken</button>`}</div>`).join("") || `<p class="note">Kein Treffer.</p>`;
+      $$("#hits [data-id]").forEach(b => b.onclick = async () => {
+        if (!confirm(`${b.dataset.n} ohne QR-Code einchecken? Nur nach Prüfung des Namens.`)) return;
+        try { await call(`/scan/checkin/${b.dataset.id}`, { method: "POST" }); showResult({ result: "green", name: b.dataset.n, number: "manuell" }); search(); }
+        catch (e) { showResult({ result: e.status === 409 ? "red" : "yellow", name: b.dataset.n, reason: e.message }); }
+      });
+    } catch (e) { $("#hits").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  }
+  async function refresh() {
+    try {
+      const s = await call("/scan/stats");
+      $("#cin").textContent = s.checked_in; $("#cexp").textContent = s.expected;
+      const lbl = { admitted: ["Eingelassen", "ok"], already: ["Schon drin", "no"], unknown: ["Unbekannt", "no"], replaced: ["Ersetzt", "no"], blocked: ["Gesperrt", "no"], cancelled: ["Storniert", "no"], test: ["Testticket", "no"], unassigned: ["Ohne Namen", "no"], rejected: ["Abgelehnt", "no"], reset: ["Zurückgesetzt", "no"] };
+      $("#recent").innerHTML = s.recent.map(r => { const [l, c] = lbl[r.result] || [r.result, ""]; return `<div class="item"><div class="who">${r.first_name ? esc(r.first_name + " " + r.last_name) : "–"}<small>${timeDe(r.at)} · ${esc(r.number || "")} · ${esc(r.actor)}</small></div><span class="${c}">${l}</span></div>`; }).join("") || `<p class="note">Noch keine Scans.</p>`;
+    } catch {}
+  }
+
+  function startApp(label) {
+    $("#auth").hidden = true; $("#app").hidden = false;
+    $("#whoami").textContent = label;
+    $("#logout").hidden = mode !== "key";
+    $("#startBtn").onclick = startCam; $("#stopBtn").onclick = stopCam;
+    bindSearch(); refresh(); setInterval(refresh, 10000);
+  }
+
+  function keyFrom(text) {
+    const t = String(text || "").trim();
+    const m = t.match(/[#&?]k=([A-Za-z0-9]{20,64})/);
+    if (m) return m[1];
+    return /^[A-Za-z0-9]{20,64}$/.test(t) ? t : null;
+  }
+  async function tryKey(k) {
+    if (!k) { $("#authErr").textContent = "Das ist kein gültiger Scanner-Zugang."; $("#authErr").hidden = false; return false; }
+    scannerKey = k; mode = "key";
+    try { await call("/scan/stats"); TAKT.store.set("scannerKey", k); stopAuthCam(); startApp("Scanner-Zugang"); return true; }
+    catch (e) { scannerKey = null; $("#authErr").textContent = e.status === 401 ? "Dieser Zugang ist ungültig oder gesperrt." : e.message; $("#authErr").hidden = false; return false; }
+  }
+  let authStream = null;
+  function stopAuthCam() { authStream?.getTracks().forEach(t => t.stop()); authStream = null; $("#authCam").hidden = true; }
+  async function authScan() {
+    $("#authErr").hidden = true;
+    try { authStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false }); }
+    catch (e) { $("#authErr").textContent = "Kamera nicht verfügbar – füge den Link stattdessen ein."; $("#authErr").hidden = false; return; }
+    const v = $("#authVideo"); v.srcObject = authStream; await v.play(); $("#authCam").hidden = false;
+    const c = $("#canvas"), ctx = c.getContext("2d", { willReadFrequently: true });
+    const tick = async () => {
+      if (!authStream) return;
+      if (v.readyState >= 2) {
+        const s = Math.min(v.videoWidth, v.videoHeight); c.width = c.height = 640;
+        ctx.drawImage(v, (v.videoWidth - s) / 2, (v.videoHeight - s) / 2, s, s, 0, 0, 640, 640);
+        const hit = jsQR(ctx.getImageData(0, 0, 640, 640).data, 640, 640, { inversionAttempts: "dontInvert" });
+        if (hit && hit.data) { const k = keyFrom(hit.data); if (k && await tryKey(k)) return; }
+      }
+      setTimeout(tick, 150);
+    };
+    tick();
+  }
+
+  async function init() {
+    $("#authScan").onclick = authScan;
+    $("#keyForm").onsubmit = e => { e.preventDefault(); tryKey(keyFrom($("#keyIn").value)); };
+    $("#logout").onclick = () => { if (!confirm("Scanner-Zugang auf diesem Gerät abmelden?")) return; TAKT.store.del("scannerKey"); location.reload(); };
+    if (scannerKey) {
+      mode = "key";
+      try { await call("/scan/stats"); startApp("Scanner-Zugang"); return; }
+      catch (e) { if (e.status === 401) { TAKT.store.del("scannerKey"); scannerKey = null; $("#authMsg").textContent = "Dieser Scanner-Link ist ungültig oder wurde gesperrt."; } else { startApp("Scanner-Zugang (offline?)"); return; } }
+    }
+    // Admin-Login über Clerk
+    $("#auth").hidden = false; mode = "clerk";
+    try { await new Promise((resolve, reject) => {
+      const ui = document.createElement("script"); ui.src = "https://clerk.kim-betcher.de/npm/@clerk/ui@1/dist/ui.browser.js"; ui.crossOrigin = "anonymous";
+      const cj = document.createElement("script"); cj.src = "https://clerk.kim-betcher.de/npm/@clerk/clerk-js@6/dist/clerk.browser.js"; cj.crossOrigin = "anonymous"; cj.dataset.clerkPublishableKey = "pk_live_Y2xlcmsua2ltLWJldGNoZXIuZGUk";
+      cj.onload = resolve; cj.onerror = reject; document.head.append(ui); ui.onload = () => document.head.append(cj);
+    });
+    await Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } }); } catch { return; }   // Zugangs-QR funktioniert auch ohne Login-Dienst
+    const go = async () => {
+      if (mode === "key") return;
+      if (!Clerk.user) { Clerk.mountSignIn($("#signin"), { routing: "hash", withSignUp: false, forceRedirectUrl: location.href.split("#")[0], appearance: { variables: { colorPrimary: "#9d4dff", colorBackground: "#111116", colorText: "#f2f2f4", colorInputBackground: "#18181f", colorInputText: "#f2f2f4" } } }); return; }
+      try { const me = await call("/me"); startApp(me.role_label); }
+      catch (e) { $("#authMsg").textContent = e.message; }
+    };
+    Clerk.addListener(({ user }) => { if (user && $("#app").hidden) go(); });
+    go();
+  }
+  init();
+})();
+</script>
+</body>
+</html>

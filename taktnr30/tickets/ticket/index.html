@@ -10,8 +10,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TAKT Nr. 30">
 <title>Dein Ticket – TAKT Nr. 30</title>
-<link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../assets/takt.css?v=1">
+<link rel="icon" href="/taktnr30/assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/taktnr30/assets/takt.css?v=1">
 <style>
   body { padding: 28px 0 56px; }
   .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
@@ -48,9 +48,9 @@
   <div id="box" aria-live="polite"><p class="muted">Lädt …</p></div>
   <p class="hint" id="hint" hidden>Tipp: Speichere diese Seite auf deinem Home-Bildschirm oder als PDF – dann hast du dein Ticket am Eingang sofort griffbereit.</p>
 </div>
-<script src="../assets/vendor/qrcode.js"></script>
-<script src="../assets/takt.js?v=1"></script>
-<script defer src="../assets/vendor/jspdf.umd.min.js"></script>
+<script src="/taktnr30/assets/vendor/qrcode.js"></script>
+<script src="/taktnr30/assets/takt.js?v=1"></script>
+<script defer src="/taktnr30/assets/vendor/jspdf.umd.min.js"></script>
 <script>
 (function () {
   "use strict";
@@ -74,8 +74,8 @@
     const void_ = t.status !== "valid";
     return `<article class="ticket cat-${esc(t.category)} ${void_ ? "void" : ""}" aria-label="Ticket ${esc(t.number)}">
       ${flag}
-      <img class="logo" src="../assets/logo.svg" alt="" width="64" height="64">
-      <img class="wm" src="../assets/wordmark.svg" alt="TAKT Nr. 30" width="190" height="28">
+      <img class="logo" src="/taktnr30/assets/logo.svg" alt="" width="64" height="64">
+      <img class="wm" src="/taktnr30/assets/wordmark.svg" alt="TAKT Nr. 30" width="190" height="28">
       <div class="qrwrap"><div class="qr">${qrSvg("T30." + t.code, { label: `QR-Code für Ticket ${t.number}` })}</div></div>
       <div class="name">${esc(name)}</div>
       <dl class="grid">
@@ -120,7 +120,7 @@
     if (!window.jspdf) throw new Error("wird noch geladen – bitte kurz erneut tippen");
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: "mm", format: [105, 180] });
-    const logo = await raster("../assets/logo.svg", 600), wm = await raster("../assets/wordmark.svg", 1200);
+    const logo = await raster("/taktnr30/assets/logo.svg", 600), wm = await raster("/taktnr30/assets/wordmark.svg", 1200);
     tickets.forEach((t, i) => {
       if (i) doc.addPage([105, 180]);
       doc.setFillColor(10, 10, 12); doc.rect(0, 0, 105, 180, "F");

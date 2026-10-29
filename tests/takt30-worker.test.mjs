@@ -134,7 +134,13 @@ test("1 Ticket kostet 20 €, nie mehr als 2 pro Einladung, auch über mehrere K
   const b = await buy(t, code, [guest("Ben", "M"), guest("Eva", "M")]);
   assert.equal(b.data.code, "INVITE_EXHAUSTED");
   const c = await buy(t, code, [guest("Ben", "M")]); assert.equal(c.status, 201);
-  const d = await buy(t, code, [guest("Eva", "M")]); assert.equal(d.data.code, "INVITE_EXHAUSTED");
+  // neuer Versuch gibt den unbezahlten alten frei – es bleibt bei höchstens 2
+  const d = await buy(t, code, [guest("Eva", "M")]); assert.equal(d.status, 201);
+  assert.equal((await t.call("GET", `/public/order?key=${c.data.access_key}`)).data.status, "cancelled");
+  // zahlt der alte Versuch trotzdem noch (z. B. in der PayPal-App), wird das Einladungslimit trotzdem eingehalten
+  await t.call("POST", "/public/test-pay", { access_key: d.data.access_key });
+  assert.equal((await t.call("POST", "/public/test-pay", { access_key: c.data.access_key })).data.status, "refund_required");
+  assert.equal(t.db.prepare("SELECT COUNT(*) n FROM tickets").get().n, 2);
 });
 
 test("Abgebrochene Zahlung: kein Ticket, Platz sofort wieder frei; Reservierung läuft ab", async () => {

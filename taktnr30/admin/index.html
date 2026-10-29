@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0a0a0c">
+<title>Admin – TAKT Nr. 30</title>
+<link rel="icon" href="/taktnr30/assets/logo.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="/taktnr30/assets/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="TAKT Admin">
+<link rel="stylesheet" href="/taktnr30/assets/takt.css?v=1">
+<style>
+  body { font-size: 16px; }
+  .layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); min-height: 100vh; }
+  aside { border-right: 1px solid var(--line); padding: 24px 14px; position: sticky; top: 0; height: 100vh; overflow: auto; }
+  aside .brand { display: flex; gap: 12px; align-items: center; padding: 0 8px 22px; min-width: 0; } aside .brand > div { min-width: 0; overflow: hidden; } aside .brand small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: .06em; }
+  aside .brand img { width: 40px; }
+  aside .brand small { display: block; font-family: var(--mono); font-size: 11px; color: var(--dim); letter-spacing: .12em; }
+  nav button { display: block; width: 100%; text-align: left; background: none; border: 0; border-radius: var(--radius); padding: 11px 12px; font-size: 15px; color: var(--muted); cursor: pointer; }
+  nav button[aria-current="page"] { background: var(--uv-deep); color: var(--ink); }
+  nav button:hover { color: var(--ink); }
+  main { padding: 28px clamp(16px, 4vw, 40px) 80px; min-width: 0; }
+  h1 { font-weight: 300; font-size: 30px; margin: 0 0 20px; }
+  h2 { font-weight: 400; font-size: 18px; margin: 28px 0 12px; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+  .kpi { background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  .kpi span { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: .14em; color: var(--dim); text-transform: uppercase; }
+  .kpi b { display: block; font-family: var(--mono); font-weight: 300; font-size: 30px; margin-top: 6px; }
+  .kpi small { color: var(--dim); font-size: 13px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; }
+  .chip { font-family: var(--mono); font-size: 12px; padding: 5px 10px; border-radius: 99px; border: 1px solid var(--line-2); color: var(--muted); }
+  .chip.ok { border-color: #1d5c3f; color: #6fe2ae; }
+  .chip.warn { border-color: #6b5413; color: var(--warn); }
+  .chip.uv { border-color: var(--uv); color: var(--uv-soft); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-family: var(--mono); font-weight: 300; font-size: 11px; letter-spacing: .12em; color: var(--dim); text-transform: uppercase; padding: 8px 10px; border-bottom: 1px solid var(--line-2); white-space: nowrap; }
+  td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td .sub { display: block; color: var(--dim); font-size: 12px; font-family: var(--mono); }
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+  .acts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .acts button, .lnk { background: none; border: 1px solid var(--line-2); border-radius: var(--radius); padding: 5px 9px; font-size: 12px; color: var(--muted); cursor: pointer; white-space: nowrap; }
+  .acts button:hover, .lnk:hover { color: var(--ink); border-color: var(--ink); }
+  .acts .danger { color: #ff8b97; border-color: #5c1e26; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 0 0 14px; }
+  .toolbar .input { max-width: 280px; min-height: 42px; padding: 8px 12px; font-size: 15px; }
+  .toolbar select.input { max-width: 200px; }
+  .form { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0 14px; align-items: end; }
+  .form .field { margin-bottom: 14px; }
+  .input.sm { min-height: 42px; padding: 8px 12px; font-size: 15px; }
+  .st-valid { color: #6fe2ae; } .st-blocked, .st-cancelled, .st-failed, .st-refund_required { color: #ff8b97; } .st-pending { color: var(--warn); }
+  .tag { font-family: var(--mono); font-size: 11px; padding: 2px 6px; border-radius: 3px; background: var(--bg-3); color: var(--muted); }
+  .tag.test { background: var(--warn); color: #1a1300; }
+  .linkbox { display: grid; grid-template-columns: 1fr auto; gap: 8px; background: var(--uv-deep); border: 1px solid var(--uv); border-radius: var(--radius); padding: 12px; margin: 12px 0; }
+  .linkbox code { font-family: var(--mono); font-size: 13px; overflow-wrap: anywhere; }
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 6px; font-size: 14px; z-index: 50; max-width: 90vw; }
+  .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(34px, 1fr)); gap: 6px; margin: 0 0 16px; }
+  .slots i { display: block; aspect-ratio: 1; border-radius: 4px; border: 1px solid var(--line-2); }
+  .slots i.a { background: var(--uv); border-color: var(--uv); } .slots i.u { background: var(--uv-deep); border-color: var(--uv); } .slots i.c { background: var(--ok); border-color: var(--ok); }
+  .lineup-row { display: grid; grid-template-columns: 110px 1fr 1fr auto; gap: 8px; margin-bottom: 8px; }
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { position: sticky; z-index: 20; height: auto; padding: 10px 10px 0; background: var(--bg); border-right: 0; border-bottom: 1px solid var(--line); }
+    aside .brand { padding: 4px 4px 8px; }
+    nav { display: flex; overflow-x: auto; gap: 4px; padding-bottom: 8px; scrollbar-width: none; }
+    nav button { white-space: nowrap; width: auto; padding: 9px 12px; font-size: 14px; }
+    .lineup-row { grid-template-columns: 90px 1fr auto; } .lineup-row .note-in { grid-column: 1 / -1; grid-row: 2; }
+    .hide-sm { display: none; }
+  }
+  #login { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
+  #login .box { width: min(420px, 100%); text-align: center; }
+  #login img { width: 90px; margin: 0 auto 18px; }
+</style>
+</head>
+<body>
+<div id="login">
+  <div class="box">
+    <img src="/taktnr30/assets/logo.svg" alt="TAKT Nr. 30">
+    <p class="caps mono dim" style="font-size:12px">Verwaltung</p>
+    <div id="signin"></div>
+    <p class="err" id="loginErr" hidden></p>
+  </div>
+</div>
+<div class="layout" id="app" hidden>
+  <aside>
+    <div class="brand"><img src="/taktnr30/assets/logo.svg" alt=""><div>TAKT Nr. 30<small id="who"></small></div><div id="userBtn" style="margin-left:auto"></div></div>
+    <nav id="nav" aria-label="Bereiche"></nav>
+  </aside>
+  <main id="main" tabindex="-1"></main>
+</div>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script src="/taktnr30/assets/vendor/qrcode.js"></script>
+<script src="/taktnr30/assets/takt.js?v=1"></script>
+<script defer crossorigin="anonymous" src="https://clerk.kim-betcher.de/npm/@clerk/ui@1/dist/ui.browser.js"></script>
+<script defer crossorigin="anonymous" data-clerk-publishable-key="pk_live_Y2xlcmsua2ltLWJldGNoZXIuZGUk" src="https://clerk.kim-betcher.de/npm/@clerk/clerk-js@6/dist/clerk.browser.js"></script>
+<script>
+(function () {
+  "use strict";
+  const { esc, $, $$, dateDe, timeDe, euro, ApiError, API, categoryLabel } = TAKT;
+  const SITE = "https://kim-betcher.de/taktnr30/tickets/";
+  let me = null, page = "overview", cache = {};
+
+  async function call(path, opts = {}) {
+    const token = await window.Clerk?.session?.getToken();
+    return TAKT.api(path, { ...opts, headers: { Authorization: `Bearer ${token}` } });
+  }
+  function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 3200); }
+  async function act(fn, ok) { try { const r = await fn(); if (ok) toast(ok); return r; } catch (e) { toast(e.message); throw e; } }
+  async function copy(text, label = "Link kopiert") { try { await navigator.clipboard.writeText(text); toast(label); } catch { prompt("Zum Kopieren:", text); } }
+  const fmtDT = s => s ? `${dateDe(s)} ${timeDe(s)}` : "";
+  const ticketUrl = t => `${SITE}ticket/?k=${t.view_key}`;
+  const inviteUrl = code => `${SITE}?e=${code}`;
+  const isMain = () => me.role === "main";
+
+  const PAGES = [
+    ["overview", "Übersicht"], ["invites", "Einladungen"], ["guests", "Gäste & Tickets"], ["free", "2TAKT-Freitickets"],
+    ["helpers", "Helfer"], ["orders", "Bestellungen"], ["content", "Inhalte & Line-up"], ["entry", "Einlass"],
+    ["audit", "Protokoll", "main"], ["settings", "Einstellungen", "main"]
+  ];
+  function renderNav() {
+    $("#nav").innerHTML = PAGES.filter(p => !p[2] || isMain()).map(([id, label]) => `<button data-p="${id}" ${id === page ? 'aria-current="page"' : ""}>${label}</button>`).join("");
+    $$("#nav button").forEach(b => b.onclick = () => go(b.dataset.p));
+  }
+  function go(p) { page = p; renderNav(); render(); history.replaceState(null, "", `#${p}`); }
+
+  async function render() {
+    const m = $("#main");
+    m.innerHTML = `<p class="muted">Lädt …</p>`;
+    try { await VIEWS[page](m); } catch (e) { m.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  }
+
+  const VIEWS = {
+    async overview(m) {
+      const d = await call("/admin/dashboard"); const c = d.counts;
+      const mode = { closed: ["Verkauf geschlossen", ""], test: ["Testmodus aktiv", "warn"], live: ["Verkauf live", "ok"] }[d.sale_mode];
+      m.innerHTML = `<h1>Übersicht</h1>
+        <div class="chips">
+          <span class="chip ${mode[1]}">${mode[0]}</span>
+          <span class="chip ${d.paypal_ready ? "ok" : "warn"}">PayPal ${d.paypal_ready ? (d.paypal_env === "live" ? "live" : "Sandbox") : "nicht eingerichtet"}</span>
+          <span class="chip ${d.mail_ready ? "ok" : "warn"}">E-Mail ${d.mail_ready ? "bereit" : "nicht eingerichtet"}</span>
+          <span class="chip ${d.turnstile_ready ? "ok" : ""}">Turnstile ${d.turnstile_ready ? "aktiv" : "aus"}</span>
+          ${c.test_tickets ? `<span class="chip warn">${c.test_tickets} Testtickets</span>` : ""}
+        </div>
+        <div class="kpis">
+          ${kpi("Tickets verkauft", `${c.regular_issued}<small> / ${c.regular_cap}</small>`)}
+          ${kpi("Verfügbar", c.available, c.reserved || c.test_tickets ? `${c.test_tickets ? c.test_tickets + " Test" : ""}${c.test_tickets && c.reserved ? " + " : ""}${c.reserved ? c.reserved + " reserviert" : ""} belegen gerade Plätze` : "")}
+          ${kpi("Offene Reservierungen", c.reserved, "laufende Bezahlvorgänge")}
+          ${kpi("2TAKT vergeben", `${c.free_issued}<small> / ${c.free_cap}</small>`, `${c.free_assigned} mit Namen`)}
+          ${kpi("Helfer", `${c.helper_issued}<small> / ${c.helper_cap}</small>`)}
+          ${kpi("Eingecheckt", `${c.checked_in}<small> / ${c.expected}</small>`, "erwartete Gäste")}
+          ${kpi("Umsatz", euro(c.revenue_cents), c.test_revenue_cents ? `Test: ${euro(c.test_revenue_cents)}` : "")}
+          ${kpi("Erstattungen", c.refunded, c.refund_required ? `${c.refund_required} offen – bitte prüfen` : "")}
+          ${kpi("Einladungen", d.invites.total || 0, `${d.invites.active || 0} aktiv`)}
+        </div>
+        ${isMain() ? `<h2>Ticketverkauf</h2><div class="acts" id="modeBtns">
+          ${[["closed", "Schließen"], ["test", "Testmodus", d.test_allowed], ["live", d.paypal_env === "live" ? "Live öffnen (echtes Geld)" : "PayPal-Sandbox öffnen (Spielgeld)", d.paypal_ready]].map(([k, l, ok = true]) => `<button data-m="${k}" ${ok ? "" : "disabled"} aria-pressed="${d.sale_mode === k}" style="${d.sale_mode === k ? "border-color:var(--uv);color:var(--ink);background:var(--uv-deep)" : ""}">${l}</button>`).join("")}</div>
+          <p class="note">Testmodus: Kauf ohne PayPal, nur simuliert. ${d.paypal_env === "live" ? "Live: echte Zahlungen über PayPal." : "PayPal-Sandbox: echter PayPal-Ablauf mit Spielgeld."} In beiden Testarten sind die Tickets als TEST markiert und belegen Plätze, bis du sie unter Einstellungen löschst. Abgebrochene Käufe geben ihren Platz nach spätestens 15 Minuten frei.</p>` : ""}`;
+      $$("#modeBtns button").forEach(b => b.onclick = async () => {
+        if (b.dataset.m === "live" && d.paypal_env === "live" && !confirm("Verkauf jetzt live öffnen? Ab dann wird über PayPal echt bezahlt.")) return;
+        await act(() => call("/admin/settings", { method: "PUT", body: { sale_mode: b.dataset.m } }), "Gespeichert"); render();
+      });
+    },
+
+    async invites(m) {
+      const list = await call("/admin/invitations"); cache.invites = list;
+      m.innerHTML = `<h1>Einladungen</h1>
+        <form class="card form" id="invForm">
+          <label class="field"><span>Name</span><input class="input sm" name="name" required maxlength="80" placeholder="Vor- und Nachname"></label>
+          <label class="field"><span>Plätze</span><select class="input sm" name="max"><option value="2">2 (mit Begleitung)</option><option value="1">1</option></select></label>
+          <label class="field"><span>Vermittelt durch (Freund von)</span><select class="input sm" name="ref"><option value="">–</option>${list.map(i => `<option value="${i.id}">${esc(i.name)}</option>`).join("")}</select></label>
+          <label class="field"><span>Notiz (intern)</span><input class="input sm" name="note" maxlength="300"></label>
+          <div class="field"><button class="btn btn-uv btn-small">Einladung erstellen</button></div>
+        </form>
+        <div id="newLink"></div>
+        <div class="toolbar" style="margin-top:20px"><input class="input" id="q" placeholder="Suchen …" aria-label="Suchen"><select class="input" id="f"><option value="">Alle</option><option value="open">Noch offen</option><option value="used">Ausgeschöpft</option><option value="disabled">Gesperrt</option><option value="helper">Helfer</option></select><span class="dim mono" id="n" style="font-size:12px"></span></div>
+        <div class="tablewrap"><table><thead><tr><th>Name</th><th>Plätze</th><th>Helfer</th><th class="hide-sm">Erstellt</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>`;
+      $("#invForm").onsubmit = async e => {
+        e.preventDefault(); const f = e.target;
+        const r = await act(() => call("/admin/invitations", { method: "POST", body: { name: f.name.value, max_tickets: +f.max.value, referred_by: f.ref.value || null, note: f.note.value } }), "Einladung erstellt");
+        const name = f.name.value; f.reset();
+        cache.invites = await call("/admin/invitations"); rows();
+        $("#newLink").innerHTML = `<div class="linkbox"><code>${esc(r.url)}</code><div class="acts"><button id="cp">Kopieren</button><button id="wa">WhatsApp</button>${navigator.share ? `<button id="sh">Teilen</button>` : ""}</div></div>`;
+        const text = `Hey ${name.split(" ")[0]}, du bist eingeladen: TAKT Nr. 30 – Private Birthday Rave. Dein persönlicher Link: ${r.url}`;
+        $("#cp").onclick = () => copy(r.url);
+        $("#wa").onclick = () => window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+        if ($("#sh")) $("#sh").onclick = () => navigator.share({ title: "TAKT Nr. 30", text }).catch(() => {});
+      };
+      const rows = () => {
+        const q = $("#q").value.toLowerCase(), f = $("#f").value;
+        const l = cache.invites.filter(i => (!q || `${i.name} ${i.code} ${i.note || ""}`.toLowerCase().includes(q))
+          && (!f || (f === "disabled" ? i.status === "disabled" : f === "used" ? i.issued >= i.max_tickets : f === "open" ? i.status === "active" && i.issued < i.max_tickets : f === "helper" ? i.helper_job : true)));
+        $("#n").textContent = `${l.length} von ${cache.invites.length}`;
+        $("#rows").innerHTML = l.map(i => `<tr>
+          <td>${esc(i.name)}${i.status === "disabled" ? ' <span class="tag">gesperrt</span>' : ""}<span class="sub">${esc(i.code)}${i.referred_by_name ? ` · über ${esc(i.referred_by_name)}` : ""}${i.note ? ` · ${esc(i.note)}` : ""}</span></td>
+          <td class="mono">${i.issued}${i.reserved ? `+${i.reserved}` : ""} / ${i.max_tickets}</td>
+          <td>${i.helper_job ? esc(i.helper_job) : ""}</td>
+          <td class="hide-sm mono dim">${dateDe(i.created_at)}</td>
+          <td><div class="acts">
+            <button data-a="copy" data-id="${i.id}">Link</button>
+            <button data-a="max" data-id="${i.id}">${i.max_tickets === 2 ? "Auf 1" : "Auf 2"}</button>
+            <button data-a="toggle" data-id="${i.id}" class="${i.status === "active" ? "danger" : ""}">${i.status === "active" ? "Sperren" : "Aktivieren"}</button>
+          </div></td></tr>`).join("") || `<tr><td colspan="5" class="dim">Keine Einladungen.</td></tr>`;
+        $$("#rows button").forEach(b => b.onclick = async () => {
+          const i = cache.invites.find(x => x.id == b.dataset.id);
+          if (b.dataset.a === "copy") return copy(inviteUrl(i.code));
+          const body = b.dataset.a === "max" ? { max_tickets: i.max_tickets === 2 ? 1 : 2 } : { status: i.status === "active" ? "disabled" : "active" };
+          if (body.status === "disabled" && !confirm(`Einladung von ${i.name} sperren? Mit dem Link kann dann niemand mehr kaufen. Bereits gekaufte Tickets bleiben gültig.`)) return;
+          await act(() => call(`/admin/invitations/${i.id}`, { method: "PUT", body }), "Gespeichert");
+          cache.invites = await call("/admin/invitations"); rows();
+        });
+      };
+      $("#q").oninput = rows; $("#f").onchange = rows; rows();
+    },
+
+    async guests(m) { await ticketTable(m, "", "Gäste & Tickets"); },
+
+    async free(m) {
+      const all = await call("/admin/tickets?category=free");
+      const valid = all.filter(t => t.status !== "cancelled");
+      m.innerHTML = `<h1>2TAKT-Freitickets</h1>
+        <div class="slots" aria-label="${valid.length} von 30 Freitickets angelegt">${Array.from({ length: 30 }, (_, i) => { const t = valid[i]; return `<i class="${!t ? "" : t.checked_in_at ? "c" : t.first_name ? "a" : "u"}" title="${t ? esc(t.number + (t.first_name ? " · " + t.first_name + " " + t.last_name : " · frei")) : "noch nicht angelegt"}"></i>`; }).join("")}</div>
+        <p class="note">Violett = zugeordnet · umrandet = angelegt, noch ohne Namen · grün = eingecheckt. Höchstens 30 gleichzeitig gültig.</p>
+        <form class="card form" id="freeForm">
+          <label class="field"><span>Vorname</span><input class="input sm" name="first"></label>
+          <label class="field"><span>Nachname</span><input class="input sm" name="last"></label>
+          <label class="field"><span>E-Mail (optional)</span><input class="input sm" name="email" type="email"></label>
+          <div class="field"><button class="btn btn-uv btn-small">Freiticket anlegen</button></div>
+        </form>
+        <div class="acts" style="margin:12px 0 0"><button id="bulk" ${valid.length >= 30 ? "disabled" : ""}>Restliche ${30 - valid.length} ohne Namen anlegen</button></div>
+        <div id="tbl" style="margin-top:20px"></div>`;
+      $("#freeForm").onsubmit = async e => {
+        e.preventDefault(); const f = e.target;
+        await act(() => call("/admin/free-tickets", { method: "POST", body: { first_name: f.first.value || null, last_name: f.last.value || null, email: f.email.value || null } }), "Freiticket angelegt");
+        render();
+      };
+      $("#bulk").onclick = async () => { if (!confirm(`${30 - valid.length} Freitickets ohne Namen anlegen?`)) return; await act(() => call("/admin/free-tickets", { method: "POST", body: { count: 30 - valid.length } }), "Angelegt"); render(); };
+      await ticketTable($("#tbl"), "free", null, all);
+    },
+
+    async helpers(m) {
+      const [list, s] = await Promise.all([call("/admin/tickets?category=helper"), call("/admin/settings")]);
+      let jobs = []; try { jobs = JSON.parse(s.helper_jobs); } catch {}
+      const by = {}; list.filter(t => t.status !== "cancelled").forEach(t => (by[t.helper_job] ||= []).push(t));
+      m.innerHTML = `<h1>Helfer</h1>
+        <div class="kpis">${jobs.map(j => kpi(j.name, `${(by[j.name] || []).length}<small>${j.slots ? " / " + j.slots : ""}</small>`)).join("")}${kpi("Gesamt", `${list.filter(t => t.status !== "cancelled").length}<small> / 20</small>`)}</div>
+        <h2>Aufgaben</h2>
+        <form id="jobForm"><div id="jobRows"></div>
+        <div class="acts" style="margin:6px 0 14px"><button type="button" id="addJob">+ Aufgabe</button></div>
+        <label class="check" style="margin-bottom:14px"><input type="checkbox" name="open" ${s.helper_signup === "1" ? "checked" : ""}><span>Helfer-Anmeldung über Einladungslinks ist offen</span></label>
+        <button class="btn btn-uv btn-small">Speichern</button></form>
+        <p class="note">Plätze 0 = ohne Begrenzung (insgesamt gibt es 20 Helfer-Tickets).</p>
+        <h2>Eingetragene Helfer</h2><div id="tbl"></div>`;
+      const rowHtml = j => `<div class="lineup-row"><input class="input sm" name="slots" type="number" min="0" max="20" value="${+j.slots || 0}" aria-label="Plätze"><input class="input sm" name="jname" value="${esc(j.name)}" placeholder="Aufgabe" maxlength="40" aria-label="Aufgabe"><input class="input sm note-in" name="info" value="${esc(j.info || "")}" placeholder="Info (optional)" maxlength="120" aria-label="Info"><button type="button" class="lnk" data-del>✕</button></div>`;
+      $("#jobRows").innerHTML = jobs.map(rowHtml).join("");
+      const bindDel = () => $$("#jobRows [data-del]").forEach(b => b.onclick = () => b.parentElement.remove());
+      bindDel();
+      $("#addJob").onclick = () => { $("#jobRows").insertAdjacentHTML("beforeend", rowHtml({ name: "", slots: 0 })); bindDel(); };
+      $("#jobForm").onsubmit = async e => {
+        e.preventDefault();
+        const list = $$("#jobRows .lineup-row").map(r => ({ name: r.querySelector("[name=jname]").value.trim(), slots: +r.querySelector("[name=slots]").value || 0, info: r.querySelector("[name=info]").value.trim() })).filter(j => j.name);
+        await act(() => call("/admin/settings", { method: "PUT", body: { helper_jobs: JSON.stringify(list), helper_signup: e.target.open.checked ? "1" : "0" } }), "Gespeichert"); render();
+      };
+      await ticketTable($("#tbl"), "helper", null, list);
+    },
+
+    async orders(m) {
+      const list = await call("/admin/orders");
+      const lbl = { pending: "offen", paid: "bezahlt", cancelled: "abgebrochen", failed: "fehlgeschlagen", refund_required: "Erstattung nötig", refunded: "erstattet" };
+      m.innerHTML = `<h1>Bestellungen</h1><p class="note">Bezahlte und erstattete Bestellungen sowie alle Vorgänge der letzten 48 Stunden.</p>
+        <div class="tablewrap"><table><thead><tr><th>Bestellung</th><th>Käufer</th><th>Betrag</th><th>Status</th><th class="hide-sm">Mail</th><th></th></tr></thead><tbody>
+        ${list.map(o => `<tr><td class="mono">${esc(o.order_no)}${o.is_test ? ' <span class="tag test">TEST</span>' : ""}<span class="sub">${fmtDT(o.paid_at || o.created_at)}</span></td>
+          <td>${esc(o.buyer_first)} ${esc(o.buyer_last)}<span class="sub">${esc(o.email)} · Einl. ${esc(o.invitation_name || "")}</span></td>
+          <td class="mono">${o.quantity}× · ${euro(o.amount_cents)}<span class="sub">${esc(o.provider)}${o.paypal_order_id ? " · " + esc(o.paypal_order_id) : ""}</span></td>
+          <td class="st-${o.status}">${lbl[o.status] || o.status}</td>
+          <td class="hide-sm">${o.mail_status === "sent" ? "gesendet" : o.mail_status === "failed" ? `<span class="st-failed" title="${esc(o.mail_error || "")}">fehlgeschlagen</span>` : "–"}</td>
+          <td><div class="acts">${o.status === "paid" ? `<button data-a="resend" data-id="${o.id}">Mail erneut</button>` : ""}${isMain() && ["paid", "refund_required"].includes(o.status) ? `<button class="danger" data-a="mark_refunded" data-id="${o.id}">Als erstattet markieren</button>` : ""}</div></td></tr>`).join("") || `<tr><td colspan="6" class="dim">Noch keine Bestellungen.</td></tr>`}
+        </tbody></table></div>`;
+      $$("button[data-a]", m).forEach(b => b.onclick = async () => {
+        if (b.dataset.a === "mark_refunded" && !confirm("Als erstattet markieren? Die Tickets dieser Bestellung werden storniert und gelten nicht mehr. Die Rückzahlung selbst machst du in PayPal.")) return;
+        await act(() => call(`/admin/orders/${b.dataset.id}`, { method: "POST", body: { action: b.dataset.a } }), "Erledigt"); render();
+      });
+    },
+
+    async content(m) {
+      const s = await call("/admin/settings");
+      let lineup = []; try { lineup = JSON.parse(s.lineup); } catch {}
+      const f = (k, label, type = "text", attrs = "") => `<label class="field"><span>${label}</span><input class="input sm" name="${k}" type="${type}" value="${esc(s[k])}" ${attrs}></label>`;
+      m.innerHTML = `<h1>Inhalte & Line-up</h1>
+        <form id="cForm">
+          <div class="form">${f("event_date", "Datum", "date")}${f("doors_time", "Einlass", "time")}${f("start_time", "Beginn", "time")}</div>
+          ${f("place_public", "Ort (öffentlich sichtbar)", "text", 'maxlength="120"')}
+          <div class="form">${f("venue_name", "Location (nur auf dem Ticket)", "text", 'maxlength="120"')}${f("venue_address", "Adresse (nur auf dem Ticket)", "text", 'maxlength="160"')}</div>
+          ${f("intro_title", "Überschrift", "text", 'maxlength="120"')}
+          <label class="field"><span>Text</span><textarea class="input" name="intro_text" maxlength="600">${esc(s.intro_text)}</textarea></label>
+          <div class="form">${f("contact_name", "Kontakt Name")}${f("contact_phone", "Kontakt Telefon")}${f("contact_email", "Kontakt E-Mail", "email")}</div>
+          <label class="check" style="margin-bottom:18px"><input type="checkbox" name="show_countdown" ${s.show_countdown === "1" ? "checked" : ""}><span>Countdown anzeigen</span></label>
+          <h2>Line-up</h2>
+          <div id="lu"></div>
+          <div class="acts" style="margin:6px 0 14px"><button type="button" id="addLu">+ Act</button></div>
+          ${f("lineup_note", "Text, solange kein Line-up eingetragen ist", "text", 'maxlength="80"')}
+          <button class="btn btn-uv btn-small">Speichern</button>
+        </form>`;
+      const row = x => `<div class="lineup-row"><input class="input sm" name="lt" value="${esc(x.time || "")}" placeholder="22:00" maxlength="20" aria-label="Zeit"><input class="input sm" name="ln" value="${esc(x.name || "")}" placeholder="Künstlername" maxlength="60" aria-label="Name"><input class="input sm note-in" name="lx" value="${esc(x.note || "")}" placeholder="Zusatz (optional)" maxlength="80" aria-label="Zusatz"><div class="acts"><button type="button" data-up>↑</button><button type="button" data-del>✕</button></div></div>`;
+      const bind = () => {
+        $$("#lu [data-del]").forEach(b => b.onclick = () => b.closest(".lineup-row").remove());
+        $$("#lu [data-up]").forEach(b => b.onclick = () => { const r = b.closest(".lineup-row"); r.previousElementSibling && r.parentNode.insertBefore(r, r.previousElementSibling); });
+      };
+      $("#lu").innerHTML = lineup.map(row).join(""); bind();
+      $("#addLu").onclick = () => { $("#lu").insertAdjacentHTML("beforeend", row({})); bind(); };
+      $("#cForm").onsubmit = async e => {
+        e.preventDefault(); const fm = e.target;
+        const body = {};
+        ["event_date", "doors_time", "start_time", "place_public", "venue_name", "venue_address", "intro_title", "intro_text", "contact_name", "contact_phone", "contact_email", "lineup_note"].forEach(k => body[k] = fm[k].value);
+        body.show_countdown = fm.show_countdown.checked ? "1" : "0";
+        body.lineup = JSON.stringify($$("#lu .lineup-row").map(r => ({ time: r.querySelector("[name=lt]").value, name: r.querySelector("[name=ln]").value, note: r.querySelector("[name=lx]").value })).filter(x => x.name.trim()));
+        await act(() => call("/admin/settings", { method: "PUT", body }), "Gespeichert – die Seite zeigt es sofort.");
+      };
+    },
+
+    async entry(m) {
+      const list = await call("/admin/scanners");
+      m.innerHTML = `<h1>Einlass</h1>
+        <p class="muted">Der Scanner ist eine eigene App unter <a href="/taktnr30/scanner/" target="_blank">kim-betcher.de/taktnr30/scanner</a> – am Handy über „Zum Home-Bildschirm“ installieren. Für jeden Einlasshelfer erzeugst du hier einen persönlichen Zugang; er funktioniert ohne Konto und lässt sich jederzeit sperren. Du selbst meldest dich im Scanner mit deinem Login an.</p>
+        <div class="acts" style="margin-bottom:18px"><a class="btn btn-small" href="/taktnr30/scanner/" target="_blank">Scanner öffnen</a></div>
+        <form class="card form" id="scForm"><label class="field"><span>Name des Helfers</span><input class="input sm" name="name" required maxlength="40"></label><div class="field"><button class="btn btn-uv btn-small">Scanner-Link erzeugen</button></div></form>
+        <div id="newLink"></div>
+        <div class="tablewrap" style="margin-top:18px"><table><thead><tr><th>Helfer</th><th>Erstellt</th><th>Zuletzt genutzt</th><th></th></tr></thead><tbody>
+        ${list.map(s => `<tr><td>${esc(s.name)}${s.revoked_at ? ' <span class="tag">gesperrt</span>' : ""}</td><td class="mono dim">${fmtDT(s.created_at)}</td><td class="mono dim">${fmtDT(s.last_used_at) || "–"}</td><td>${s.revoked_at ? "" : `<div class="acts"><button class="danger" data-id="${s.id}">Sperren</button></div>`}</td></tr>`).join("") || `<tr><td colspan="4" class="dim">Noch keine Scanner-Links.</td></tr>`}
+        </tbody></table></div>`;
+      $("#scForm").onsubmit = async e => {
+        e.preventDefault();
+        const r = await act(() => call("/admin/scanners", { method: "POST", body: { name: e.target.name.value } }), "Scanner-Link erzeugt");
+        await render();
+        $("#newLink").innerHTML = `<div class="card" style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;margin-top:14px">
+          <div style="width:150px;background:#fff;padding:8px;border-radius:6px">${TAKT.qrSvg(r.url, { label: "Zugangs-QR für den Scanner" })}</div>
+          <div><p style="margin:0 0 8px">Zugangs-QR für <strong>${esc(e.target.name.value)}</strong></p>
+          <p class="note" style="margin:0 0 10px">Am Handy des Helfers: TAKT Scanner öffnen → „Zugangs-QR scannen“. Oder den Link schicken.</p>
+          <div class="linkbox" style="margin:0"><code>${esc(r.url)}</code><div class="acts"><button id="cp">Kopieren</button></div></div></div></div>
+          <p class="note">Nur jetzt sichtbar – am besten gleich abscannen oder schicken. Wer den Link hat, kann einlassen; sperren kannst du ihn jederzeit unten.</p>`;
+        $("#cp").onclick = () => copy(r.url);
+      };
+      $$("button[data-id]", m).forEach(b => b.onclick = async () => { if (!confirm("Diesen Scanner-Zugang sperren?")) return; await act(() => call(`/admin/scanners/${b.dataset.id}`, { method: "DELETE" }), "Gesperrt"); render(); });
+    },
+
+    async audit(m) {
+      const list = await call("/admin/audit");
+      m.innerHTML = `<h1>Protokoll</h1><p class="note">Wer hat wann was geändert (die letzten 300 Einträge).</p>
+        <div class="tablewrap"><table><thead><tr><th>Zeit</th><th>Wer</th><th>Aktion</th><th>Ziel</th><th class="hide-sm">Details</th></tr></thead><tbody>
+        ${list.map(a => `<tr><td class="mono dim">${fmtDT(a.at)}</td><td>${esc(a.actor_name)}</td><td class="mono">${esc(a.action)}</td><td class="mono">${esc(a.target || "")}</td><td class="hide-sm dim" style="font-size:12px;max-width:340px;overflow-wrap:anywhere">${esc(a.detail || "")}</td></tr>`).join("")}
+        </tbody></table></div>`;
+    },
+
+    async settings(m) {
+      const [d, admins] = await Promise.all([call("/admin/dashboard"), call("/admin/admins")]);
+      m.innerHTML = `<h1>Einstellungen</h1>
+        <h2>E-Mail-Versand</h2>
+        <p class="note">${d.mail_ready ? "Eingerichtet. Schick dir zur Kontrolle eine Testmail." : "Noch nicht eingerichtet – es fehlen RESEND_API_KEY und MAIL_FROM im Worker."}</p>
+        <form class="card form" id="mailForm"><label class="field"><span>Empfänger</span><input class="input sm" type="email" name="to" required placeholder="du@beispiel.de"></label><div class="field"><button class="btn btn-uv btn-small" ${d.mail_ready ? "" : "disabled"}>Testmail senden</button></div></form>
+        <h2>Export</h2><div class="acts"><button data-x="guests">Gästeliste (CSV)</button><button data-x="orders">Bestellungen (CSV)</button><button data-x="invitations">Einladungen (CSV)</button></div>
+        <h2>Testdaten</h2><p class="note">Löscht alle Testbestellungen und Testtickets (${d.counts.test_tickets}). Vorher den Testmodus beenden.</p>
+        <div class="acts"><button class="danger" id="purge" ${d.counts.test_tickets ? "" : "disabled"}>Testdaten löschen</button></div>
+        <h2>Weitere Admins</h2>
+        <p class="note">Optional. Person braucht ein Konto im Login von kim-betcher.de; trag hier die Benutzer-ID ein (sie sieht sie nach dem Anmelden auf dieser Seite).</p>
+        <form class="card form" id="admForm"><label class="field"><span>Benutzer-ID</span><input class="input sm mono" name="uid" placeholder="user_…" required></label><label class="field"><span>Name</span><input class="input sm" name="name"></label><label class="field"><span>Rolle</span><select class="input sm" name="role"><option value="tickets">Ticketverwaltung</option><option value="scanner">Einlass</option></select></label><div class="field"><button class="btn btn-uv btn-small">Speichern</button></div></form>
+        <div class="tablewrap" style="margin-top:12px"><table><tbody>${admins.map(a => `<tr><td>${esc(a.name || "")}<span class="sub">${esc(a.user_id)}</span></td><td>${a.role === "tickets" ? "Ticketverwaltung" : "Einlass"}</td><td>${a.active ? "aktiv" : "deaktiviert"}</td><td><div class="acts"><button data-u="${esc(a.user_id)}" data-r="${a.role}" data-n="${esc(a.name || "")}" data-on="${a.active}">${a.active ? "Deaktivieren" : "Aktivieren"}</button></div></td></tr>`).join("") || `<tr><td class="dim">Nur du.</td></tr>`}</tbody></table></div>
+        <h2>Nach der Feier</h2><p class="note">Ersetzt alle Namen und E-Mail-Adressen durch Platzhalter (Datenschutz). Zahlen und Statistik bleiben. Erst nach dem Veranstaltungstag möglich.</p>
+        <div class="acts"><button class="danger" id="anon">Gästedaten anonymisieren</button></div>`;
+      $$("[data-x]", m).forEach(b => b.onclick = async () => {
+        const token = await Clerk.session.getToken();
+        const res = await fetch(`${API}/admin/export?kind=${b.dataset.x}`, { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) return toast("Export fehlgeschlagen");
+        const url = URL.createObjectURL(await res.blob()); const a = document.createElement("a"); a.href = url; a.download = `takt30-${b.dataset.x}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+      });
+      $("#mailForm").onsubmit = async e => { e.preventDefault(); const r = await act(() => call("/admin/test-mail", { method: "POST", body: { to: e.target.to.value } })); toast(`Testmail an ${r.to} verschickt – Posteingang und Spam prüfen`); };
+      $("#purge").onclick = async () => { if (!confirm("Alle Testdaten endgültig löschen?")) return; await act(() => call("/admin/purge-test", { method: "POST" }), "Testdaten gelöscht"); render(); };
+      $("#anon").onclick = async () => { const c = prompt("Zur Bestätigung ANONYMISIEREN eingeben:"); if (!c) return; await act(() => call("/admin/anonymize", { method: "POST", body: { confirm: c } }), "Anonymisiert"); };
+      $("#admForm").onsubmit = async e => { e.preventDefault(); const f = e.target; await act(() => call("/admin/admins", { method: "POST", body: { user_id: f.uid.value.trim(), name: f.name.value, role: f.role.value } }), "Gespeichert"); render(); };
+      $$("[data-u]", m).forEach(b => b.onclick = async () => { await act(() => call("/admin/admins", { method: "POST", body: { user_id: b.dataset.u, role: b.dataset.r, name: b.dataset.n, active: b.dataset.on !== "1" } }), "Gespeichert"); render(); });
+    }
+  };
+
+  const kpi = (label, value, sub = "") => `<div class="kpi"><span>${label}</span><b>${value}</b>${sub ? `<small>${esc(sub)}</small>` : ""}</div>`;
+
+  // Gemeinsame Tickettabelle
+  async function ticketTable(host, category, title, preloaded) {
+    const list = preloaded || await call(`/admin/tickets${category ? `?category=${category}` : ""}`);
+    host.innerHTML = `${title ? `<h1>${title}</h1>` : ""}
+      <div class="toolbar"><input class="input" id="tq" placeholder="Name oder Nummer …" aria-label="Suchen">
+      <select class="input" id="tf"><option value="">Alle</option><option value="in">Eingecheckt</option><option value="out">Nicht eingecheckt</option><option value="blocked">Gesperrt/Storniert</option><option value="test">Test</option></select><span class="dim mono" id="tn" style="font-size:12px"></span></div>
+      <div class="tablewrap"><table><thead><tr><th>Ticket</th><th>Gast</th><th>Status</th><th class="hide-sm">Herkunft</th><th></th></tr></thead><tbody id="trows"></tbody></table></div>`;
+    const rows = () => {
+      const q = $("#tq").value.toLowerCase(), f = $("#tf").value;
+      const l = list.filter(t => (!q || `${t.number} ${t.first_name || ""} ${t.last_name || ""} ${t.email || ""}`.toLowerCase().includes(q))
+        && (!f || (f === "in" ? t.checked_in_at : f === "out" ? !t.checked_in_at && t.status === "valid" : f === "blocked" ? t.status !== "valid" : f === "test" ? t.is_test : true)));
+      $("#tn").textContent = `${l.length} von ${list.length}`;
+      $("#trows").innerHTML = l.map(t => `<tr>
+        <td class="mono">${esc(t.number)}${t.is_test ? ' <span class="tag test">TEST</span>' : ""}<span class="sub">${esc(categoryLabel(t))}</span></td>
+        <td>${t.first_name ? `${esc(t.first_name)} ${esc(t.last_name)}` : '<span class="dim">noch nicht zugeordnet</span>'}<span class="sub">${esc(t.email || "")}${t.note ? " · " + esc(t.note) : ""}</span></td>
+        <td><span class="st-${t.status}">${{ valid: "gültig", blocked: "gesperrt", cancelled: "storniert" }[t.status]}</span>${t.checked_in_at ? `<span class="sub">drin seit ${timeDe(t.checked_in_at)}</span>` : ""}${t.version > 1 ? `<span class="sub">ersetzt (${t.version}.)</span>` : ""}</td>
+        <td class="hide-sm dim">${t.order_no ? `${esc(t.order_no)}<span class="sub">Einl. ${esc(t.invitation_name || "")}</span>` : t.helper_invitation ? `Einl. ${esc(t.helper_invitation)}` : "Admin"}</td>
+        <td><div class="acts">
+          ${t.first_name && t.status === "valid" ? `<button data-a="wa" data-id="${t.id}">WhatsApp</button>` : ""}${t.first_name ? `<button data-a="link" data-id="${t.id}">Link</button><a class="lnk" href="${esc(ticketUrl(t))}" target="_blank" rel="noopener">Ansehen/PDF</a>` : ""}
+          ${t.status !== "cancelled" && !t.checked_in_at ? `<button data-a="assign" data-id="${t.id}">${t.first_name ? "Name ändern" : "Zuordnen"}</button>` : ""}
+          ${t.email && t.first_name && t.status === "valid" ? `<button data-a="mail" data-id="${t.id}">Mail</button>` : ""}
+          ${t.status === "valid" ? `<button data-a="block" data-id="${t.id}">Sperren</button>` : t.status === "blocked" ? `<button data-a="unblock" data-id="${t.id}">Entsperren</button>` : ""}
+          ${t.status !== "cancelled" ? `<button data-a="replace" data-id="${t.id}">Ersetzen</button>` : ""}
+          ${isMain() && t.checked_in_at ? `<button data-a="undo" data-id="${t.id}">Check-in zurück</button>` : ""}
+          ${isMain() && t.status !== "cancelled" ? `<button class="danger" data-a="cancel" data-id="${t.id}">Stornieren</button>` : ""}
+        </div></td></tr>`).join("") || `<tr><td colspan="5" class="dim">Keine Tickets.</td></tr>`;
+      $$("#trows [data-a]").forEach(b => b.onclick = () => ticketAction(list.find(t => t.id == b.dataset.id), b.dataset.a));
+    };
+    $("#tq").oninput = rows; $("#tf").onchange = rows; rows();
+  }
+
+  async function ticketAction(t, a) {
+    if (a === "link") return copy(ticketUrl(t));
+    if (a === "wa") {
+      const kind = t.category === "free" ? "dein 2TAKT-Freiticket" : t.category === "helper" ? "dein Helfer-Ticket" : "dein Ticket";
+      const text = `Hey ${t.first_name}, hier ist ${kind} für TAKT Nr. 30 – Private Birthday Rave. QR-Code am Einlass zeigen, gilt einmal und nur für dich: ${ticketUrl(t)}`;
+      return window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+    }
+    let body = { action: a };
+    if (a === "assign") {
+      const fn = prompt("Vorname:", t.first_name || ""); if (fn === null) return;
+      const ln = prompt("Nachname:", t.last_name || ""); if (ln === null) return;
+      const em = prompt("E-Mail (optional):", t.email || ""); if (em === null) return;
+      body = { action: a, first_name: fn.trim() || null, last_name: ln.trim() || null, email: em.trim() || null };
+    }
+    if (a === "replace") { const r = prompt(`Ticket ${t.number} ersetzen? Der alte QR-Code wird sofort ungültig. Grund:`, "verloren"); if (r === null) return; body.reason = r; }
+    if (a === "block" && !confirm(`Ticket ${t.number} sperren? Es wird am Einlass abgelehnt.`)) return;
+    if (a === "cancel" && !confirm(`Ticket ${t.number} stornieren? Das ist endgültig.`)) return;
+    if (a === "undo") {
+      const r = prompt("Check-in zurücksetzen – Grund:"); if (!r) return;
+      await act(() => call(`/scan/undo/${t.id}`, { method: "POST", body: { reason: r } }), "Check-in zurückgesetzt"); return render();
+    }
+    await act(() => call(`/admin/tickets/${t.id}`, { method: "POST", body }), a === "mail" ? "Mail verschickt" : a === "replace" ? "Neuer QR-Code erstellt – Link neu verschicken" : a === "assign" ? "Zugeordnet – jetzt per WhatsApp, Mail oder Link verschicken" : "Gespeichert");
+    render();
+  }
+
+  /* -------- Login -------- */
+  window.addEventListener("load", async () => {
+    try {
+      await Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } });
+    } catch (e) { $("#loginErr").textContent = "Login konnte nicht geladen werden."; $("#loginErr").hidden = false; return; }
+    const update = async () => {
+      if (!(Clerk.session && Clerk.user)) {
+        me = null;
+        $("#app").hidden = true; $("#login").hidden = false;
+        Clerk.mountSignIn($("#signin"), { routing: "hash", withSignUp: false, forceRedirectUrl: location.href.split("#")[0], appearance: { variables: { colorPrimary: "#9d4dff", colorBackground: "#111116", colorText: "#f2f2f4", colorInputBackground: "#18181f", colorInputText: "#f2f2f4", borderRadius: "4px" } } });
+        return;
+      }
+      try { me = await call("/me"); }
+      catch (e) {
+        $("#loginErr").innerHTML = e.code === "NO_ROLE" ? `Dieses Konto hat keinen Zugriff.<br><span class="mono dim" style="font-size:12px">${esc(Clerk.user.id)}</span>` : esc(e.message);
+        $("#loginErr").hidden = false; Clerk.mountUserButton($("#signin")); return;
+      }
+      if (me.role === "scanner") { location.href = "/taktnr30/scanner/"; return; }
+      $("#login").hidden = true; $("#app").hidden = false;
+      $("#who").textContent = me.role_label;
+      Clerk.mountUserButton($("#userBtn"));
+      const h = location.hash.slice(1); if (PAGES.some(p => p[0] === h)) page = h;
+      renderNav(); render();
+    };
+    Clerk.addListener(({ user }) => { if (!!user !== !!me) update(); });
+    update();
+  });
+})();
+</script>
+</body>
+</html>

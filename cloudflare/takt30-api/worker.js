@@ -378,9 +378,18 @@ async function checkout(env, request, ctx) {
   if (quantity < 1 || quantity > MAX_PER_INVITE) return fail("Pro Einladung sind 1 oder 2 Tickets möglich.");
   for (const g of guests) if (!nameOk(g?.first_name) || !nameOk(g?.last_name)) return fail("Bitte für jedes Ticket Vor- und Nachnamen angeben.");
   if (!emailOk(body.email)) return fail("Bitte eine gültige E-Mail-Adresse angeben.");
-  if (quantity > inv.remaining) {
+  if (quantity > inv.max_tickets - inv.issued) {
+    inv.remaining = inv.max_tickets - inv.issued;
     return fail(inv.remaining ? `Mit dieser Einladung ist noch ${inv.remaining} Ticket möglich.` : "Mit dieser Einladung wurden bereits alle Tickets gekauft.", 409, "INVITE_EXHAUSTED");
   }
+
+  // Gleiche Einladung startet neu → alten, unbezahlten Versuch sofort freigeben (z. B. Abbruch am Handy, neuer Versuch am PC)
+  await env.DB.batch([
+    env.DB.prepare(`UPDATE orders SET status = 'cancelled', updated_at = ? WHERE invitation_id = ? AND status = 'pending'`).bind(iso(), inv.id),
+    env.DB.prepare(`UPDATE reservations SET state = 'released' WHERE invitation_id = ? AND state = 'active'`).bind(inv.id)
+  ]);
+  inv.remaining = inv.max_tickets - inv.issued;
+  if (quantity > inv.remaining) return fail("Mit dieser Einladung wurden bereits alle Tickets gekauft.", 409, "INVITE_EXHAUSTED");
 
   const t = nowMs();
   const orderNo = `T30-${new Date(t).toISOString().slice(2, 10).replace(/-/g, "")}-${randomCode(5)}`;
@@ -478,7 +487,10 @@ async function settleOrder(env, order, payment, ctx) {
         WHERE order_id = ? AND state != 'converted'
           AND ((SELECT COUNT(*) FROM tickets WHERE category = 'regular' AND status != 'cancelled')
              + (SELECT COALESCE(SUM(quantity), 0) FROM reservations WHERE state = 'active' AND expires_at > ? AND order_id != ?)
-             + quantity) <= ?`, t + CAPTURE_HOLD_MS, order.id, t, order.id, REGULAR_CAP));
+             + quantity) <= ?
+          AND ((SELECT COUNT(*) FROM tickets tk LEFT JOIN orders o ON o.id = tk.order_id WHERE COALESCE(o.invitation_id, tk.invitation_id) = reservations.invitation_id AND tk.status != 'cancelled')
+             + (SELECT COALESCE(SUM(quantity), 0) FROM reservations r2 WHERE r2.invitation_id = reservations.invitation_id AND r2.state = 'active' AND r2.expires_at > ? AND r2.order_id != reservations.order_id)
+             + quantity) <= (SELECT max_tickets FROM invitations WHERE id = reservations.invitation_id)`, t + CAPTURE_HOLD_MS, order.id, t, order.id, REGULAR_CAP, t));
   }
   if (!held) {
     await env.DB.batch([
@@ -1031,7 +1043,7 @@ async function createScanner(env, request, who) {
   const token = randomCode(32);
   const r = await run(env, `INSERT INTO scanner_access (name, token_hash, created_at, created_by) VALUES (?, ?, ?, ?)`, name, await sha256Hex(`scanner|${token}`), iso(), who.actor);
   await audit(env, who, "scanner.create", r.meta.last_row_id, { name });
-  return json({ id: r.meta.last_row_id, url: `${APP_URL}einlass/#k=${token}` }, 201);
+  return json({ id: r.meta.last_row_id, url: `${APP_ORIGIN}/taktnr30/scanner/#k=${token}` }, 201);
 }
 async function revokeScanner(env, who, id) {
   const r = await run(env, `UPDATE scanner_access SET revoked_at = ? WHERE id = ? AND revoked_at IS NULL`, iso(), id);

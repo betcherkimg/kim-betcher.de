@@ -1,0 +1,13 @@
+{
+  "name": "TAKT Nr. 30 – Admin",
+  "short_name": "TAKT Admin",
+  "start_url": "/taktnr30/admin/",
+  "scope": "/taktnr30/admin/",
+  "display": "standalone",
+  "background_color": "#0a0a0c",
+  "theme_color": "#0a0a0c",
+  "icons": [
+    { "src": "/taktnr30/assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/taktnr30/assets/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

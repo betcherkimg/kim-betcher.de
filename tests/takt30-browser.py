@@ -57,7 +57,7 @@ try:
         # ---------- Admin am PC ----------
         actx = browser.new_context(viewport={"width": 1440, "height": 900}, permissions=["clipboard-read", "clipboard-write"])
         wire(actx); admin = actx.new_page(); watch(admin, "admin")
-        admin.goto(BASE + "admin/")
+        admin.goto("https://kim-betcher.de/taktnr30/admin/")
         admin.wait_for_selector("text=Ticketverkauf")
         admin.screenshot(path=str(OUT / "admin-uebersicht-geschlossen.png"))
         admin.click("#modeBtns button[data-m=test]")
@@ -151,7 +151,7 @@ try:
         code = sql("SELECT code FROM tickets WHERE number = 'T30-001'")[0]["code"]
         y4m = OUT / "qr.y4m"
         subprocess.run(["node", "-e", f"""
-const fs=require('fs');const vm=require('vm');const c={{}};vm.runInNewContext(fs.readFileSync('{ROOT}/taktnr30/tickets/assets/vendor/qrcode.js','utf8')+';this.q=qrcode',c);
+const fs=require('fs');const vm=require('vm');const c={{}};vm.runInNewContext(fs.readFileSync('{ROOT}/taktnr30/assets/vendor/qrcode.js','utf8')+';this.q=qrcode',c);
 const qr=c.q(0,'M');qr.addData('T30.{code}');qr.make();const n=qr.getModuleCount(),s=12,q=4,W=640,H=480,img=Buffer.alloc(W*H,255);
 const off=(W-(n+2*q)*s)/2|0,offy=(H-(n+2*q)*s)/2|0;
 for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(qr.isDark(y,x))for(let dy=0;dy<s;dy++)for(let dx=0;dx<s;dx++)img[(offy+(y+q)*s+dy)*W+off+(x+q)*s+dx]=0;
@@ -160,9 +160,10 @@ fs.writeFileSync('{OUT}/qr.pgm',Buffer.concat([Buffer.from('P5\\n'+W+' '+H+'\\n2
         cam = p.chromium.launch(executable_path=CHROME, args=["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", f"--use-file-for-fake-video-capture={y4m}"])
         sctx = cam.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True, permissions=["camera"])
         wire(sctx); s = sctx.new_page(); watch(s, "scanner")
-        s.goto(scanner_link)
+        # alter Link-Pfad leitet auf die Scanner-App weiter, Schlüssel verschwindet aus der Adresse
+        s.goto(scanner_link.replace("/taktnr30/scanner/", "/taktnr30/tickets/einlass/"))
         s.wait_for_selector("#startBtn")
-        assert "#k=" not in s.url, "Scanner-Schlüssel muss aus der Adresse verschwinden"
+        assert "/taktnr30/scanner/" in s.url and "#k=" not in s.url, s.url
         s.click("#startBtn")
         s.wait_for_selector(".result.green", timeout=15000)
         assert "Lisa Muster" in s.inner_text(".result")
@@ -192,6 +193,23 @@ fs.writeFileSync('{OUT}/qr.pgm',Buffer.concat([Buffer.from('P5\\n'+W+' '+H+'\\n2
         no_overflow(s, "scanner")
         s.screenshot(path=str(OUT / "einlass-liste.png"))
         cam.close()
+
+        # ---------- Scanner-App ohne Link: Zugang per Einfügen, Abmelden ----------
+        pctx = browser.new_context(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
+        wire(pctx)
+        pctx.route("**/clerk.browser.js", lambda r: r.fulfill(content_type="application/javascript", body="window.Clerk={user:null,session:null,load:async()=>{},mountSignIn:()=>{},addListener:()=>{}};"))
+        pg = pctx.new_page(); watch(pg, "scanner-login")
+        pg.goto("https://kim-betcher.de/taktnr30/scanner/")
+        pg.wait_for_selector("#keyIn")
+        no_overflow(pg, "scanner login")
+        pg.screenshot(path=str(OUT / "scanner-login.png"))
+        pg.fill("#keyIn", "falsch-falsch-falsch-falsch"); pg.click("#keyForm button")
+        pg.wait_for_selector("#authErr:not([hidden])")
+        pg.fill("#keyIn", scanner_link); pg.click("#keyForm button")
+        pg.wait_for_selector("#startBtn")
+        assert pg.is_visible("#logout")
+        pg.reload(); pg.wait_for_selector("#startBtn")   # Gerät merkt sich den Zugang
+        pctx.close()
 
         # ---------- Admin: Zahlen stimmen ----------
         admin.click("nav button[data-p=overview]")
