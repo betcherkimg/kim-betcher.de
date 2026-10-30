@@ -12,7 +12,8 @@
     "MAIL_FROM": "TAKT Nr. 30 <tickets@kim-betcher.de>"
   },
   // database_id nach dem Anlegen der D1-Datenbank „takt30“ eintragen
-  "d1_databases": [{ "binding": "DB", "database_name": "takt30", "database_id": "REPLACE_WITH_TAKT30_D1_ID" }]
+  "d1_databases": [{ "binding": "DB", "database_name": "takt30", "database_id": "REPLACE_WITH_TAKT30_D1_ID" }],
+  "triggers": { "crons": ["0 * * * *"] }
   // Geheimnisse (nie hier eintragen): PAYPAL_CLIENT_ID, PAYPAL_SECRET, PAYPAL_WEBHOOK_ID,
   // RESEND_API_KEY, TURNSTILE_SITE_KEY, TURNSTILE_SECRET, IP_SALT, später ALLOW_LIVE_PAYMENTS=true
 }

@@ -108,6 +108,7 @@ const cleanCode = (v, max = 40) => String(v || "").toUpperCase().replace(/[^A-Z0
 /* ================= Schema (legt sich selbst an) ================= */
 
 const SCHEMA = [
+  `CREATE TABLE IF NOT EXISTS signature_requests (id INTEGER PRIMARY KEY AUTOINCREMENT, code_hash TEXT NOT NULL UNIQUE, customer_name TEXT NOT NULL, purpose TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL, signed_at TEXT, sent_at TEXT, revoked_at TEXT, png TEXT, png_hash TEXT, sending_at TEXT)`,
   `CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY CHECK (id = 1), name TEXT NOT NULL, regular_cap INTEGER NOT NULL, free_cap INTEGER NOT NULL, created_at TEXT NOT NULL)`,
   `CREATE TABLE IF NOT EXISTS event_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT, updated_by TEXT)`,
   `CREATE TABLE IF NOT EXISTS admin_users (user_id TEXT PRIMARY KEY, role TEXT NOT NULL CHECK (role IN ('main','tickets','scanner')), name TEXT, active INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL, created_by TEXT)`,
@@ -1671,6 +1672,115 @@ async function exportCsv(env, url) {
   return new Response(body, { headers: { ...baseHeaders, "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="takt30-${kind}.csv"` } });
 }
 
+/* ================= Unterschriften für Kim Betcher ================= */
+const SIGNATURE_RECIPIENT = "kim.betcher@schwaebisch-hall.de";
+const signatureCodeOk = code => /^\d{49}$/.test(String(code || ""));
+const signatureHash = code => sha256Hex(`signature-link|${code}`);
+function signatureCode() {
+  const bytes = crypto.getRandomValues(new Uint8Array(20));
+  return BigInt('0x' + [...bytes].map(b => b.toString(16).padStart(2, '0')).join('')).toString().padStart(49, '0');
+}
+async function signatureBody(request) {
+  // Bound the stream too: Content-Length alone is not trustworthy.
+  if (!request.body) return null;
+  const reader = request.body.getReader(), parts = []; let length = 0;
+  while (true) {
+    const { done, value } = await reader.read(); if (done) break;
+    length += value.length;
+    if (length > 350000) { await reader.cancel(); return null; }
+    parts.push(value);
+  }
+  const data = new Uint8Array(length); let offset = 0;
+  for (const part of parts) { data.set(part, offset); offset += part.length; }
+  try { return JSON.parse(new TextDecoder().decode(data)); } catch { return null; }
+}
+function signaturePng(value) {
+  if (typeof value !== 'string' || value.length > 300000 || !/^data:image\/png;base64,[A-Za-z0-9+/]+=*$/.test(value)) return null;
+  try {
+    const b64 = value.split(',')[1], raw = atob(b64);
+    if (raw.length < 100 || raw.slice(0, 8) !== '\x89PNG\r\n\x1a\n' || raw.slice(12, 16) !== 'IHDR' || raw.slice(-8, -4) !== 'IEND') return null;
+    const bytes = Uint8Array.from(raw, c => c.charCodeAt(0)), v = new DataView(bytes.buffer);
+    if (v.getUint32(8) !== 13 || v.getUint32(16) < 100 || v.getUint32(16) > 1600 || v.getUint32(20) < 50 || v.getUint32(20) > 800) return null;
+    return b64;
+  } catch { return null; }
+}
+async function cleanupSignatures(env) {
+  await run(env, `UPDATE signature_requests SET png = NULL, revoked_at = COALESCE(revoked_at, ?) WHERE png IS NOT NULL AND (expires_at <= ? OR signed_at <= ?)`, iso(), iso(), iso(nowMs() - 23 * 3600000));
+}
+async function listSignatureLinks(env) {
+  return json(await all(env, `SELECT id, customer_name, purpose, expires_at, signed_at, sent_at, revoked_at, png IS NOT NULL AS pending FROM signature_requests ORDER BY id DESC LIMIT 100`));
+}
+async function createSignatureLink(env, request, who) {
+  const b = await signatureBody(request);
+  const name = String(b?.customer_name || '').trim(), purpose = String(b?.purpose || '').trim();
+  if (!name || name.length > 120 || !purpose || purpose.length > 500 || /[\u0000-\u001f]/.test(name + purpose)) return fail('Bitte Name und Vorgang angeben (höchstens 120 bzw. 500 Zeichen).');
+  if (!env.RESEND_API_KEY) return fail('Mailversand ist noch nicht eingerichtet.', 503);
+  const code = signatureCode(), t = iso(), expires = iso(nowMs() + 7 * 86400000);
+  const r = await run(env, `INSERT INTO signature_requests (code_hash, customer_name, purpose, created_at, expires_at) VALUES (?, ?, ?, ?, ?)`, await signatureHash(code), name, purpose, t, expires);
+  await audit(env, who, 'signature.create', r.meta.last_row_id, { expires_at: expires });
+  return json({ id: r.meta.last_row_id, url: `${APP_ORIGIN}/unterschriften/${code}`, expires_at: expires }, 201);
+}
+async function getSignatureLink(env, code) {
+  const row = signatureCodeOk(code) && await first(env, `SELECT customer_name, purpose, expires_at, signed_at, sent_at, revoked_at, png IS NOT NULL AS pending FROM signature_requests WHERE code_hash = ?`, await signatureHash(code));
+  if (!row || row.revoked_at || row.expires_at <= iso()) return fail('Dieser Unterschriftslink ist ungültig oder abgelaufen.', 404);
+  return json({ customer_name: row.customer_name, purpose: row.purpose, recipient: SIGNATURE_RECIPIENT, sent: Boolean(row.sent_at), pending: Boolean(row.pending), expires_at: row.expires_at });
+}
+async function mailSignature(env, row) {
+  if (row.sent_at) return json({ sent: true });
+  if (!row.png || row.revoked_at || row.expires_at <= iso() || row.signed_at <= iso(nowMs() - 23 * 3600000)) return fail('Dieser Unterschriftslink ist nicht mehr verfügbar.', 409);
+  const lease = iso(), stale = iso(nowMs() - 90000);
+  const lock = await run(env, `UPDATE signature_requests SET sending_at = ? WHERE id = ? AND sent_at IS NULL AND revoked_at IS NULL AND (sending_at IS NULL OR sending_at < ?)`, lease, row.id, stale);
+  if (!changes(lock)) return fail('Die Unterschrift wird gerade versendet. Bitte kurz warten und erneut prüfen.', 409);
+  let accepted = false;
+  try {
+    const when = new Date(row.signed_at).toLocaleString('de-DE', { timeZone: 'Europe/Berlin' });
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST', signal: AbortSignal.timeout(20000),
+      headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json', 'Idempotency-Key': `signature-${row.id}-${row.png_hash}` },
+      body: JSON.stringify({ from: 'Kim Betcher <unterschriften@kim-betcher.de>', to: [SIGNATURE_RECIPIENT], reply_to: SIGNATURE_RECIPIENT,
+        subject: `Unterschrift: ${row.customer_name.replace(/[\r\n]/g, ' ')} · ${row.purpose.slice(0, 80)}`,
+        html: `<h2>Unterschrift eingegangen</h2><p><b>Name:</b> ${esc(row.customer_name)}</p><p><b>Vorgang:</b> ${esc(row.purpose)}</p><p><b>Abgesendet:</b> ${esc(when)} (Europe/Berlin)</p><p>Die Person hat bestätigt: „Ich sende meine Unterschrift zum oben genannten Vorgang an Kim Betcher.“</p><p>Die Unterschrift ist als transparente PNG-Datei angehängt.</p><p>Referenz: ${row.id}<br>SHA-256 der PNG: ${row.png_hash}</p>`,
+        attachments: [{ filename: `Unterschrift-${row.customer_name.replace(/[^\p{L}\p{N}-]/gu, '_')}-${row.id}.png`, content: row.png }]
+      })
+    });
+    if (!res.ok) throw new Error('mail rejected');
+    accepted = true;
+    await run(env, `UPDATE signature_requests SET sent_at = ?, png = NULL, sending_at = NULL WHERE id = ? AND sent_at IS NULL`, iso(), row.id);
+    return json({ sent: true });
+  } catch {
+    // Same stored PNG + provider idempotency key make retries safe, including an ambiguous timeout.
+    await run(env, `UPDATE signature_requests SET sending_at = NULL WHERE id = ? AND sending_at = ?`, row.id, lease).catch(() => {});
+    return fail(accepted ? 'Versand bestätigt, Status konnte noch nicht gespeichert werden. Bitte erneut prüfen.' : 'Mailversand hat noch nicht geklappt. Die Unterschrift bleibt für einen erneuten Versuch hinterlegt.', 503);
+  }
+}
+async function submitSignature(env, request, code) {
+  if (!signatureCodeOk(code)) return fail('Unterschriftslink ungültig.', 404);
+  let row = await first(env, `SELECT * FROM signature_requests WHERE code_hash = ?`, await signatureHash(code));
+  if (!row || row.revoked_at || row.expires_at <= iso()) return fail('Dieser Unterschriftslink ist ungültig oder abgelaufen.', 404);
+  if (row.sent_at) return json({ sent: true });
+  const b = await signatureBody(request);
+  if (!b || b.confirmed !== true) return fail('Bitte das Absenden der Unterschrift bestätigen.');
+  if (!row.png) {
+    const png = signaturePng(b.png);
+    if (!png) return fail('Bitte im Feld unterschreiben und erneut absenden.');
+    const bytes = Uint8Array.from(atob(png), c => c.charCodeAt(0));
+    const hash = [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))].map(b => b.toString(16).padStart(2, '0')).join('');
+    await run(env, `UPDATE signature_requests SET png = ?, png_hash = ?, signed_at = ? WHERE id = ? AND png IS NULL AND sent_at IS NULL AND revoked_at IS NULL`, png, hash, iso(), row.id);
+    row = await first(env, `SELECT * FROM signature_requests WHERE id = ?`, row.id);
+  }
+  return mailSignature(env, row);
+}
+async function signatureAdminAction(env, request, who, id) {
+  if (request.method === 'POST') {
+    const row = await first(env, `SELECT * FROM signature_requests WHERE id = ?`, id);
+    return row ? mailSignature(env, row) : fail('Nicht gefunden.', 404);
+  }
+  const revoked = await run(env, `UPDATE signature_requests SET revoked_at = ?, png = NULL WHERE id = ? AND sent_at IS NULL AND (sending_at IS NULL OR sending_at < ?)`, iso(), id, iso(nowMs() - 90000));
+  if (!changes(revoked)) return fail('Der Link wurde bereits verwendet oder der Versand läuft gerade.', 409);
+  await audit(env, who, 'signature.revoke', id, null);
+  return json({ ok: true });
+}
+
 /* ================= Router ================= */
 
 async function route(request, env, ctx) {
@@ -1679,6 +1789,22 @@ async function route(request, env, ctx) {
   const m = request.method;
   if (m === "OPTIONS") return new Response(null, { status: 204, headers: baseHeaders });
   await ensureSchema(env);
+
+  if (path.startsWith('/public/signatures/') || path.startsWith('/admin/signatures')) {
+    await cleanupSignatures(env);
+    const code = path.split('/')[3];
+    if (path.startsWith('/public/signatures/') && path.split('/').length === 4) {
+      if (m === 'GET') return getSignatureLink(env, code);
+      if (m === 'POST') return submitSignature(env, request, code);
+    }
+    const owner = await identify(request, env);
+    if (!owner) return fail('Nicht angemeldet.', 401);
+    if (owner.actor !== env.MAIN_ADMIN_ID) return fail('Nur Kim kann Unterschriftslinks verwalten.', 403);
+    if (path === '/admin/signatures' && m === 'GET') return listSignatureLinks(env);
+    if (path === '/admin/signatures' && m === 'POST') return createSignatureLink(env, request, owner);
+    if (/^\/admin\/signatures\/\d+$/.test(path) && ['DELETE','POST'].includes(m)) return signatureAdminAction(env, request, owner, Number(code));
+    return fail('Nicht gefunden.', 404);
+  }
 
   // Öffentlich
   if (m === "GET" && path === "/public/event") return getEvent(env);
@@ -1767,6 +1893,9 @@ async function route(request, env, ctx) {
 }
 
 export default {
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil((async () => { await ensureSchema(env); await cleanupSignatures(env); })());
+  },
   async fetch(request, env, ctx) {
     try {
       return await route(request, env, ctx);

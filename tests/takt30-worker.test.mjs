@@ -744,3 +744,54 @@ test("Vertrag als Entwurf: ohne Unterschrift speichern, Link noch gesperrt, spä
   assert.equal((await t.admin("POST", `/admin/contracts/${c.data.id}/sign`, { sig })).status, 409);
   assert.equal((await t.call("GET", `/public/contract?k=${c.data.view_key}`)).status, 200);
 });
+
+const signatureFixture = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAACWCAYAAADwkd5lAAAFHklEQVR4nO3d3XKcMAwGUNLp+79yetFJQyj7A9hYks+56UynbbZg+CyJ3V0WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/vkc/QIAovsY/QIC2oaHYwSw49foFwBATgLkJ60rgDcJkG/CA+AAAfKX8AA4SIDsWw/OhQvADgHiqSuAU2YPENUFwEmzB8iW6gPgTTMHiNYVwAWzBojWFcBFMwbIXnioPgAOmjFAth6Fh1ABeGK2ADk799DyAtiYKUCEAEBDMwXIlhYVwAWzBIhHdgEamyFAtK4AOqgeIB7ZBeikeoBsCY/aPje/Ah1VvqG2mnt8/TuVj1V2jwLDOYOOqlYgPXagdrUxPTsvzhl09Hv0C7iJnWg9wgEGq1iBeGS3ts/lectqe74FDXRSLUDcLGo7Ehzv/D3ggkoB4pHduh5VHY+CY+/3hAg0VilAtoRHfq/aVc8IEeisSoCYe9Rztl21/bNAJxUCpPeu0k3oXkfbVa8YqkMnFQJkq+cN382nnyvtqjM/C0YqsQazvw9E66qG3sHxsfMzPhv++/COEqGxljlAyp2MCd35ESRChBFK36eyBohHdnN7dlH1PI97IQItvVpfpe5TWQNkq9RJKW70Bx9uQ0QVwlWjNkTDZQwQc4+cRgfHM0KEo6YNjbVsAaL9kE/EC808hDMiruWhsv2nR1YfvhfkuMhVx7KYpfHcVPOMMzIdgNGtq/XPz3TcRogeHGuj1xWxqDIOyNLC0rrKIePFZ6hOxnUbQoYA0WbIIVPV8YoQqU9oNJAhQLac3FgqBIehen3mGR1EP2iR+tNmID9V3MGpdmupuEZDiVyBmHvEVaHq2OOd6vkJjRtFDpAtJ3+8qsGxZqiej9AYJOrBjdS6Wpv1vSCzXaBaWbGZZwQR8UBHvnhnnIPMUHXsibwOZzTbJiaFaAc++kU7U4DMGhxr0ddjdUIjuOgzEIvkfi7ab4bq97P+Eol0QqLOPdaqVyCqjn0Z1mZW5hmJRalA7PLGEhzHeDLrGlVGEVECZMsiuocL+T3eqX6dtVZQhBOXqT1QqYWl6jjOUP0YoVHc6AokW+uqwlBVcJxX4fz3ZJ4xmSifLfUlwwLLWoXYDbaTqWruzbqa2OgKZM1i60fV0dds8xChwbIs40525h1cpgpEcPSTtYI+S2jwnxEViB5yfy72/qo/mWWewUsRWlgWYluqjvtUG6rbeHDI3Ysic+vqS9QWluAYJ/O6FhqcdmcFUmmnFokbQDzRW1nWDE3ctViqDRyjfC+IqiOOyGvcPIMuRgVI9gU7uo0lOGKKFCKqDLq7o4VVLTxGclOIbfRQ3frgVr0DxNyjHVVHDnd/p7rQYJi7H+O1oI8THPm1DBHzDMK4c2dUaWHfMQOxs8yt5TzEWiCkXhWI1tU1qo78rr5TXWgQXo8AifQkSjaCo5ajQ3WhQSo9FmXl1tVay/eCuHHU9uiaMM8gtdYLdJbwWJZ2cxBVR33vViHOOam0bmGNfg4+E8Exj2fXhfNNWj2fIKp+YZytQLSr5hXlI3CgCQv5vDMBYhcKlBHh+0BmIDiAcgRIX9pVQFkCpB9VB1Cam9k1e0NRwQFMwU3tGs/3A9PSwupLcABlCZA+BAdQ3q/RL6Ag4QHA23x8CwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkNwfexr3vUwaMcwAAAAASUVORK5CYII=";
+
+async function signatureLink(t, extra = {}) {
+  const r = await t.admin('POST', '/admin/signatures', { customer_name: 'Lena Muster', purpose: 'Bausparantrag vom 30.10.2026 · Referenz 123', ...extra });
+  assert.equal(r.status, 201);assert.match(r.data.url, /^https:\/\/kim-betcher.de\/unterschriften\/\d{49}$/);
+  return { id:r.data.id, path:'/public/signatures/'+r.data.url.split('/').pop() };
+}
+test('Unterschriftslinks: nur Eigentümer erstellt/sieht Links; zufällige Codes nur gehasht gespeichert', async()=>{
+  const t=await setup({RESEND_API_KEY:'test'});
+  assert.equal((await t.call('POST','/admin/signatures',{customer_name:'X',purpose:'Y'})).status,401);
+  assert.equal((await t.call('GET','/admin/signatures',undefined,{user:STRANGER})).status,403);
+  const a=await signatureLink(t), b=await signatureLink(t);assert.notEqual(a.path,b.path);
+  const stored=t.db.prepare('SELECT * FROM signature_requests WHERE id=?').get(a.id);
+  assert.match(stored.code_hash,/^[a-f0-9]{64}$/);assert.ok(!JSON.stringify(stored).includes(a.path.split('/').pop()));
+  const info=await t.call('GET',a.path);assert.equal(info.data.customer_name,'Lena Muster');assert.equal(info.data.png,undefined);assert.equal(info.data.recipient,'kim.betcher@schwaebisch-hall.de');
+  assert.equal((await t.call('GET','/public/signatures/12345')).status,404);
+});
+test('Unterschrift: echte PNG als Anhang, fester Empfänger, Wiederholung ohne zweite Mail, Bild gelöscht',async()=>{
+  const t=await setup({RESEND_API_KEY:'test'}), l=await signatureLink(t);
+  assert.equal((await t.call('POST',l.path,{png:signatureFixture,confirmed:false})).status,400);
+  const r=await t.call('POST',l.path,{png:signatureFixture,confirmed:true,to:'attacker@example.test'});assert.equal(r.status,200);
+  assert.equal(t.mails.length,1);assert.deepEqual(t.mails[0].to,['kim.betcher@schwaebisch-hall.de']);assert.equal(t.mails[0].attachments[0].content,signatureFixture.split(',')[1]);assert.match(t.mails[0].attachments[0].filename,/\.png$/);assert.match(t.mails[0].html,/Bausparantrag/);
+  assert.equal((await t.call('POST',l.path,{png:signatureFixture,confirmed:true})).status,200);assert.equal(t.mails.length,1);
+  const stored=t.db.prepare('SELECT * FROM signature_requests WHERE id=?').get(l.id);assert.equal(stored.png,null);assert.ok(stored.sent_at);assert.match(stored.png_hash,/^[a-f0-9]{64}$/);
+});
+test('Unterschrift: Mailfehler speichert PNG, Wiederholung nutzt dieselbe PNG und Idempotency-Key',async()=>{
+  const t=await setup({RESEND_API_KEY:'test'}),l=await signatureLink(t);const fallback=globalThis.fetch;let failMail=true;const keys=[];
+  globalThis.fetch=async(url,init)=>{if(String(url).startsWith('https://api.resend.com')){keys.push(init.headers['Idempotency-Key']);if(failMail)return new Response('{}',{status:503});}return fallback(url,init);};
+  assert.equal((await t.call('POST',l.path,{png:signatureFixture,confirmed:true})).status,503);
+  assert.equal((await t.call('GET',l.path)).data.pending,true);
+  assert.equal(t.db.prepare('SELECT png FROM signature_requests WHERE id=?').get(l.id).png,signatureFixture.split(',')[1]);
+  failMail=false;assert.equal((await t.call('POST',l.path,{confirmed:true})).status,200);assert.equal(keys.length,2);assert.equal(keys[0],keys[1]);assert.equal(t.mails.length,1);
+});
+test('Unterschriftslinks: gesperrt/abgelaufen, unbrauchbare PNG und zu große Nutzlast werden abgewiesen',async()=>{
+  const t=await setup({RESEND_API_KEY:'test'}),l=await signatureLink(t);
+  for(const png of ['data:image/png;base64,'+'YQ=='.repeat(100), 'data:image/svg+xml;base64,AAAA', 'x'.repeat(360000)])assert.equal((await t.call('POST',l.path,{png,confirmed:true})).status,400);
+  assert.equal((await t.admin('DELETE','/admin/signatures/'+l.id)).status,200);assert.equal((await t.call('GET',l.path)).status,404);
+  const expired=await signatureLink(t);t.db.prepare('UPDATE signature_requests SET expires_at=? WHERE id=?').run('2000-01-01T00:00:00.000Z',expired.id);assert.equal((await t.call('POST',expired.path,{png:signatureFixture,confirmed:true})).status,404);assert.equal(t.mails.length,0);
+});
+test('Unterschrift: paralleler Versand ist gesperrt; alte offene Versandversuche werden bereinigt',async()=>{
+  const t=await setup({RESEND_API_KEY:'test'}),l=await signatureLink(t);const fallback=globalThis.fetch;let release;let entered;
+  const started=new Promise(r=>entered=r),wait=new Promise(r=>release=r);
+  globalThis.fetch=async(url,init)=>{if(String(url).startsWith('https://api.resend.com')){entered();await wait;}return fallback(url,init);};
+  const first=t.call('POST',l.path,{png:signatureFixture,confirmed:true});await started;
+  assert.equal((await t.call('POST',l.path,{png:signatureFixture,confirmed:true})).status,409);
+  assert.equal((await t.admin('DELETE','/admin/signatures/'+l.id)).status,409);
+  release();assert.equal((await first).status,200);assert.equal(t.mails.length,1);
+  const old=await signatureLink(t);t.db.prepare('UPDATE signature_requests SET png=?, signed_at=? WHERE id=?').run(signatureFixture.split(',')[1],new Date(Date.now()-24*3600000).toISOString(),old.id);
+  assert.equal((await t.call('GET',old.path)).status,404);assert.equal(t.db.prepare('SELECT png FROM signature_requests WHERE id=?').get(old.id).png,null);
+});

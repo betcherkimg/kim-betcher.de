@@ -5567,7 +5567,15 @@ const MONITORED_ASSETS = {
   "/smartadm/office/regular-week.js": "7c22ab1650f0fe110c9320dcafa24bc27f06125205b5a85230624866270220cd",
   "/smartadm/office/guided-intro.js": "f6486a67d097f46fca9cefcaeef85e8cdcffaf34233a93d75a078be95532facb",
   "/smartadm/office/vendor/xlsx-0.20.3.min.js": "cc015130aa8521e7f088f88898eba949ccdcbfb38df0bd129b44b7273c3a6f41",
-  "/smartadm/office/vendor/html2pdf.min.js": "f3e5733ad8b0547c6ad7ee6c7766277fc13d1cb584197aaacbed930ce5ce0f8f"
+  "/smartadm/office/vendor/html2pdf.min.js": "f3e5733ad8b0547c6ad7ee6c7766277fc13d1cb584197aaacbed930ce5ce0f8f",
+  "/datenschutz.html": "0db7d3ba0c2c10e4d0a6c5856b46f62aa4b025093963abfc6794d333190d9df4",
+  "/404.html": "55c733b10173a25f32c248a5cf69ebe35428f959061f8639ba20f330d6c1d91b",
+  "/unterschriften/": "47f30ce1d4116d1da32c8045f33b26a49fe5fdc3454827778b662885a884f220",
+  "/unterschriften/signatures.js": "9913bbfac46853fb44389f583e59cf4d2c8644678c9e14fbf74cbc33e2a62ba3",
+  "/unterschriften/signatures.css": "7605fb9b99de40023d212bb76b3d46e0d44391ad985ab673b631faf6784c691d",
+  "/unterschriften/schwaebisch-hall.svg": "c1ab3ed0934866e2fcfeb7cde413268a458f82f973bf3b40df947418560b53f0",
+  "/unterschriften/admin/": "427d886ac91a77562c4cd68ddad21f81b5c7769122cad47b09a7471a1a73dc3e",
+  "/unterschriften/admin/admin.js": "c6ad83780f85c005165a2bed01ab3699c6da18e675d48a2cdc2505e19228f9c8"
 };
 // END MONITORED_ASSETS
 async function monitorSecurity(env) {
