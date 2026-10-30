@@ -7905,9 +7905,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     $("kkReleaseOldestBtn").disabled = !kk;
     renderFolds({ returned: hits.returned.length, open: hits.open.length, archived: archived.length, kk: kkShown.length });
 
+    renderPoolAdmin();
+    const poolHits = state.adminPool.filter(c => matchesName(c, query) && matchesFilter(c, filter)).length;
     const parts = ADMIN_SCOPES.filter(([scope]) => hits[scope].length).map(([scope, label]) => `${hits[scope].length} × ${label}`);
+    if (poolHits) parts.unshift(`${poolHits} × in Paketen`);
     setText("callSearchResult", !narrowed
-      ? "Durchsucht Rückläufer, In Bearbeitung und das Kundenarchiv (Abgeschlossen, Kein Kontakt)."
+      ? "Durchsucht Pakete, Rückläufer, In Bearbeitung und das Kundenarchiv (Abgeschlossen, Kein Kontakt)."
       : parts.length ? `Gefunden: ${parts.join(" · ")}`
       : hasQuery(query) && !filter ? "Kein Kontakt mit diesem Namen vorhanden." : "Kein Kontakt passt zu Suche und Filter.");
     updateCallSummary();
@@ -7984,7 +7987,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       state.poolUnsupported = error.status === 404;   // Worker kennt Pakete noch nicht
       if (!state.poolUnsupported) console.error(error);
     }
-    if (state.role === "boss") renderPoolAdmin(); else renderPoolBox();
+    if (state.role === "boss") renderAdminCalls(); else renderPoolBox();
   }
 
   /* --- Mitarbeiter: Paket-Kasten über der Telefonliste --- */
@@ -8053,18 +8056,27 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       host.innerHTML = '<div class="notice">Noch keine Pakete. Über „Excel importieren“ legst du Kontakte je Filiale ab.</div>';
       return;
     }
-    host.innerHTML = `<div class="pool-admin">${state.pool.map(p => {
+    const query = nameQuery("callSearch");
+    const filter = $("callFilter").value;
+    const searching = Boolean(hasQuery(query) || filter);
+    const packs = state.pool.map(p => ({ pack: p, items: sortCalls(state.adminPool.filter(row =>
+      packKey(row) === packKey(p) && matchesName(row, query) && matchesFilter(row, filter))) }))
+      .filter(({ items }) => !searching || items.length);
+    if (!packs.length) {
+      host.innerHTML = '<div class="notice">Keine Paketkontakte passen zu Suche und Filter.</div>';
+      return;
+    }
+    host.innerHTML = `<div class="pool-admin">${packs.map(({ pack: p, items }) => {
       const key = packKey(p);
-      const open = state.poolOpen.has(key);
-      const items = state.adminPool.filter(row => packKey(row) === key);
+      const open = searching || state.poolOpen.has(key);
       return `<div class="pool-pack" data-pack="${esc(key)}">
         <div class="pool-pack-head">
           <span class="pool-name">${esc(poolName(p))}</span>
           <label class="pool-owner"><span>für</span><select data-pool-owner aria-label="Paket für">${poolOwnerOptions(p.assigned_to || "")}</select></label>
-          <span class="chip">${kontakte(p.count)}</span>
+          <span class="chip">${searching ? `${items.length} von ${kontakte(p.count)}` : kontakte(p.count)}</span>
           ${p.next_due ? `<span class="chip warn">nächste Rückholung ${esc(deDate(p.next_due))}</span>` : "<span></span>"}
           <span class="pool-pack-btns">
-            <button class="btn ghost" type="button" data-pool-toggle aria-expanded="${open}">${open ? "Zuklappen" : "Ansehen"}</button>
+            <button class="btn ghost" type="button" data-pool-toggle aria-expanded="${open}"${searching ? " disabled" : ""}>${searching ? "Suchtreffer" : open ? "Zuklappen" : "Ansehen"}</button>
             <button class="btn danger" type="button" data-pool-clear>Leeren</button>
           </span>
         </div>
