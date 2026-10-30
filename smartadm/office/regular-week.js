@@ -6,6 +6,12 @@ function parseDuration(value){
  const minutes=Number(match[1])*60+Number(match[2]||0);return minutes<=1440?minutes:null;
 }
 function formatDuration(minutes){const n=Math.max(0,Math.round(Number(minutes)||0));return Math.floor(n/60)+':'+String(n%60).padStart(2,'0');}
+function appointmentStanding(entries,adjustment=0){
+ const count=list=>list.reduce((n,e)=>n+Number(e.appointments||0),0);
+ const confirmed=entries.filter(e=>e.entryState!=='draft'),drafts=entries.filter(e=>e.entryState==='draft');
+ const total=Math.max(0,count(entries)+Number(adjustment||0)),official=Math.max(0,count(confirmed)+Number(adjustment||0));
+ return {total,official,provisional:total-official,hasDrafts:drafts.length>0};
+}
 function create(b){
  const {$,esc,api}=b,names=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
  const fmt=d=>new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',timeZone:'UTC'}).format(new Date(d+'T12:00Z'));
@@ -23,7 +29,7 @@ function create(b){
   $('planCard').hidden=true;$('legacyTimeOverview').hidden=active;$('timeCard').hidden=active&&$('timeFormWrap').hidden;$('openTimeFormBtn').hidden=active||!$('timeFormWrap').hidden;
   if(!data)return;
   $('regularWeekLabel').textContent=fmt(week)+' – '+fmt(add(week,6));
-  $('regularSummary').textContent=`${b.minutes(data.workMinutes)} erfasst + ${b.minutes(data.holidayMinutes+data.absenceMinutes)} gutgeschrieben · Noch zu arbeiten: ${b.minutes(Math.max(0,data.targetMinutes-data.workMinutes))}`;
+  $('regularSummary').textContent=`${data.appointments||0} Termine · ${data.confirmed?'Bestätigt':'Vorläufig'} · ${b.minutes(data.workMinutes)} erfasst + ${b.minutes(data.holidayMinutes+data.absenceMinutes)} gutgeschrieben · Noch zu arbeiten: ${b.minutes(Math.max(0,data.targetMinutes-data.workMinutes))}`;
   $('regularRows').innerHTML=data.slots.map(s=>{
    const entries=s.entries||[],disabled=Boolean(s.holiday||s.absence),legacy=entries.some(e=>e.record_kind!=='weekly_allocation'),sent=data.confirmed;
    const minutes=entries.reduce((n,e)=>n+e.work_minutes,0),appointments=entries.reduce((n,e)=>n+e.appointments,0),note=entries.find(e=>e.record_kind==='weekly_allocation')?.entry_note||'';
@@ -76,14 +82,16 @@ function create(b){
  async function flush(){
   clearTimeout(saveTimer);
   const work=async()=>{
+   let saved=false;
    while(pending.size){
     const [slot,draft]=pending.entries().next().value,minutes=parseDuration(draft.hours),appts=Number(draft.appointments||0);
     if(minutes===null||!Number.isInteger(appts)||appts<0){$('regularStatus').textContent='Bitte Stunden und Minuten als 1:20 sowie ganze Termine eintragen. Noch nicht gespeichert.';throw Error('Bitte Eingaben prüfen.');}
-    try{await api('/regular-week/slot','PUT',{slot,minutes,appointments:appts,note:draft.note});if(pending.get(slot)===draft)pending.delete(slot);}
+    try{await api('/regular-week/slot','PUT',{slot,minutes,appointments:appts,note:draft.note});saved=true;if(pending.get(slot)===draft)pending.delete(slot);}
     catch(error){$('regularStatus').textContent='Nicht gespeichert: '+error.message;throw error;}
    }
-   const total=[...$('regularRows').querySelectorAll('[data-week-row]:not(.regular-disabled) [data-slot-hours]')].reduce((n,x)=>n+(parseDuration(x.value)||0),0)+(data?.unassigned||[]).reduce((n,e)=>n+e.work_minutes,0);$('regularSummary').textContent=`${b.minutes(total)} erfasst + ${b.minutes((data?.holidayMinutes||0)+(data?.absenceMinutes||0))} gutgeschrieben · Noch zu arbeiten: ${b.minutes(Math.max(0,(data?.targetMinutes||0)-total))}`;
-   $('regularStatus').textContent='Gespeichert · Bis zum Absenden kannst du deine Angaben ändern.';
+   const total=[...$('regularRows').querySelectorAll('[data-week-row]:not(.regular-disabled) [data-slot-hours]')].reduce((n,x)=>n+(parseDuration(x.value)||0),0)+(data?.unassigned||[]).reduce((n,e)=>n+e.work_minutes,0);const appts=[...$('regularRows').querySelectorAll('[data-week-row]:not(.regular-disabled) [data-slot-appts]')].reduce((n,x)=>n+Number(x.value||0),0)+(data?.unassigned||[]).reduce((n,e)=>n+e.appointments,0);$('regularSummary').textContent=`${appts} Termine · ${data?.confirmed?'Bestätigt':'Vorläufig'} · ${b.minutes(total)} erfasst + ${b.minutes((data?.holidayMinutes||0)+(data?.absenceMinutes||0))} gutgeschrieben · Noch zu arbeiten: ${b.minutes(Math.max(0,(data?.targetMinutes||0)-total))}`;
+   if(saved||!data?.confirmed)$('regularStatus').textContent='Gespeichert · Vorläufig für dich und Kim sichtbar. Absenden bestätigt deinen Stand.';
+   if(saved)try{await b.onSaved?.();}catch{$('regularStatus').textContent='Gespeichert · Die Monatsübersicht konnte noch nicht aktualisiert werden. Bitte neu laden.';}
   };
   saveQueue=saveQueue.catch(()=>{}).then(work);return saveQueue;
  }
@@ -113,5 +121,5 @@ function create(b){
  $('regularOverdueGo').addEventListener('click',async()=>{week=$('regularOverdueGo').dataset.week;b.closeDialog($('regularOverdueDialog'));b.showPage('zeiten');await load();$('regularWeekCard').scrollIntoView({block:'start'});});
  return {load,onboarding,afterNotices,choose,render,get data(){return data},get patterns(){return pattern?.patterns||[]},flush,get slot(){return selectedSlot},async selectWeek(value){week=value;await load()},entrySlot(){return $('entryRegularSlot').value||null}};
 }
-root.OfficeRegularWeek={create,parseDuration,formatDuration};
+root.OfficeRegularWeek={create,parseDuration,formatDuration,appointmentStanding};
 })(typeof window!=='undefined'?window:globalThis);

@@ -53,3 +53,12 @@ Der Urlaubsanspruch basiert auch vor der ersten Regeltagswahl auf der vereinbart
 Arbeitszeiten werden als Stunden:Minuten eingegeben und angezeigt, zum Beispiel 1:20 für 80 Minuten. Die Speicherung bleibt minutengenau. Dezimalstunden und ungültige Minutenangaben werden nicht akzeptiert; beim Verlassen des Felds wird eine gültige Eingabe vereinheitlicht.
 
 Die Übergangswoche vor dem Geltungsbeginn der Regeltage verwendet die vorhandenen, nicht abgesagten Einsätze und bereits erfassten Wochenzuordnungen. Für die Woche ab 26.10.2026 sind das Montag, Donnerstag und Freitag. Die neue Regelverteilung Montag/Mittwoch/Freitag greift in der Wochenliste erst ab der Woche vom 02.11.2026. Alte Einsatzpläne erscheinen im Kalender ausdrücklich als „Geplant“, getrennt von erfasster Zeit; nach Beginn der Regelverteilung werden alte Pläne nicht zusätzlich eingeblendet. Die Abrechnung und der Wochenversand zählen ausschließlich vorhandene Arbeits-/Leistungsdatensätze, keine Planstunden.
+
+
+## Sichtbarer Terminstand vor dem Absenden
+
+Der Monatsstand zeigt für beide Rollen alle gespeicherten Termine einschließlich Entwürfen. Sobald mindestens ein Entwurf im Monat vorliegt, ist die Gesamtzahl als „Vorläufig“ gekennzeichnet; darunter stehen bestätigter und zusätzlicher vorläufiger Anteil. Termin-Korrekturen werden genau einmal berücksichtigt. Nach Absenden aller Entwürfe bleibt die Anzahl gleich und trägt „Bestätigt“. Neue Entwürfe machen den Stand wieder vorläufig.
+
+Sasi sieht den Monatsstand dauerhaft auf der Startseite und unter Arbeitszeiten, unabhängig von ausgeblendeten Widgets. Die Wochenliste zeigt außerdem ihre Terminsumme. Nach erfolgreichem automatischem Speichern werden Monatsstand und Widgets aus den gespeicherten Einträgen aktualisiert. Kim sieht den Gesamtstand im Mitarbeiter-Widget, unter Arbeitszeiten und im Lohnbereich. Beim Öffnen, Zurückkehren und während sichtbarer Arbeitgeberansichten werden die Werte aktualisiert (30 Sekunden).
+
+Für die Abrechnung zählen weiterhin bestätigte Einträge. Die Abrechnungskennzahl heißt deshalb „Bestätigte Termine“; die vorläufige Monatsübersicht steht separat darüber. Das Absenden bestätigt den vorhandenen Stand und erzeugt keine zusätzlichen Termine.

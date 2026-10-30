@@ -1843,6 +1843,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           </div>
           <button class="btn ghost" type="button" id="myEditBtn">Anpassen</button>
         </div>
+        <div class="card section-card" data-own-appointment-standing aria-live="polite"></div>
         <div class="office-shortcuts" id="employeeQuickAccess"><button type="button" class="office-shortcut" data-page="zeiten"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg><span><b>Arbeitszeiten</b><small>Stunden eintragen &amp; Woche absenden</small></span><span class="shortcut-arrow" aria-hidden="true">›</span></button><button type="button" class="office-shortcut" data-page="kalender"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span><b>Kalender &amp; Urlaub</b><small>Freie Tage planen &amp; Urlaub beantragen</small></span><span class="shortcut-arrow" aria-hidden="true">›</span></button></div>
         <div class="card shortcut" id="pushCard" hidden>
           <div><strong>Benachrichtigungen</strong><span id="pushText"></span></div>
@@ -1863,7 +1864,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card shortcut" id="regularSendNotice" hidden><div><strong>Heute bitte die Arbeitszeiten abschicken</strong><span id="regularSendNoticeText">Bitte deine Stunden und Termine prüfen und die Woche spätestens Sonntag absenden.</span></div><button class="btn primary" type="button" data-page="zeiten">Zur Wochenliste</button></div><div class="my-widgets" id="myWidgets"></div>
       </section>
 
-      <section class="page" id="zeiten" data-role="employee"><div class="card section-card" id="regularWeekCard" hidden><div class="card-head"><h2>Arbeitszeiten eintragen</h2><p>Stunden und Termine direkt neben deinen drei Tagen eintragen. Änderungen werden automatisch gespeichert. Bis Sonntag prüfen und absenden.</p></div><div class="btn-row"><button class="btn ghost" id="regularPrev" type="button" aria-label="Vorherige Woche">‹</button><b id="regularWeekLabel"></b><button class="btn ghost" id="regularNext" type="button" aria-label="Nächste Woche">›</button><button class="btn ghost" id="regularToday" type="button">Aktuelle Woche</button></div><p id="regularPhaseNotice" class="notice" hidden></p><div id="regularRows"></div><p id="regularSummary" class="notice"></p><p id="regularStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button class="btn primary" type="button" id="regularComplete">Absenden</button><button class="btn ghost" type="button" id="regularChooseDays">Regeltage ändern</button></div></div>
+      <section class="page" id="zeiten" data-role="employee"><div class="card section-card" data-own-appointment-standing aria-live="polite"></div><div class="card section-card" id="regularWeekCard" hidden><div class="card-head"><h2>Arbeitszeiten eintragen</h2><p>Stunden und Termine direkt neben deinen drei Tagen eintragen. Änderungen werden automatisch gespeichert. Bis Sonntag prüfen und absenden.</p></div><div class="btn-row"><button class="btn ghost" id="regularPrev" type="button" aria-label="Vorherige Woche">‹</button><b id="regularWeekLabel"></b><button class="btn ghost" id="regularNext" type="button" aria-label="Nächste Woche">›</button><button class="btn ghost" id="regularToday" type="button">Aktuelle Woche</button></div><p id="regularPhaseNotice" class="notice" hidden></p><div id="regularRows"></div><p id="regularSummary" class="notice"></p><p id="regularStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button class="btn primary" type="button" id="regularComplete">Absenden</button><button class="btn ghost" type="button" id="regularChooseDays">Regeltage ändern</button></div></div>
         <div class="card section-card plan-card" id="planCard" hidden>
           <div class="card-head plan-head">
             <div>
@@ -2042,6 +2043,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <p class="person-hint">Erfasste Stunden und Termine. Entwürfe sind bis zum Absenden noch nicht für die Abrechnung freigegeben.</p>
         </div>
         <div class="card section-card chosen-workdays" data-workdays-summary aria-live="polite"></div>
+        <div class="notice" data-boss-appointment-standing aria-live="polite"></div>
         <div class="grid-4">
           <div class="card kpi"><div class="kpi-label">Netto-Arbeitszeit</div><div class="kpi-value" id="bossEmpHours">0:00 h</div><div class="kpi-foot"><span>im gewählten Monat</span></div></div>
           <div class="card kpi"><div class="kpi-label">Arbeitstage</div><div class="kpi-value" id="bossEmpDays">0</div><div class="kpi-foot"><span>erfasste Tage</span></div></div>
@@ -2251,10 +2253,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
         <div class="card section-card lohn-pane" data-lohn-pane="abrechnung"><div class="lohn-block" id="calendarPayrollCheck"><h2>Abrechnung prüfen</h2><p>1. Offene Anträge entscheiden. 2. Berechnete Beträge prüfen und übernehmen. 3. Monat abschließen und den gespeicherten Lohnzettel herunterladen.</p><div id="calendarPayrollLines"></div><p id="calendarPayrollStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button class="btn ghost" type="button" id="calendarPayrollReload">Neu berechnen</button><button class="btn ghost" type="button" data-page="kalender">Offene Punkte im Kalender</button><button class="btn primary" type="button" id="calendarPayrollConfirm">Berechnung geprüft – übernehmen</button></div></div>
           <div class="lohn-block">
+            <div class="notice" data-boss-appointment-standing aria-live="polite"></div>
             <div class="quick-grid">
               <div class="quick"><span>Ist-Arbeitszeit</span><b id="payrollHours">0:00 h</b></div>
               <div class="quick"><span>Arbeitstage</span><b id="payrollDays">0</b></div>
-              <div class="quick"><span>Termine</span><div class="appt-stepper"><button class="step-btn" type="button" data-appt-adjust="-1" aria-label="Einen Termin abziehen">−</button><b id="payrollAppointments">0</b><button class="step-btn" type="button" data-appt-adjust="1" aria-label="Abzug zurücknehmen">+</button></div><small class="appt-note" data-appt-adjust-note></small></div>
+              <div class="quick"><span>Bestätigte Termine</span><div class="appt-stepper"><button class="step-btn" type="button" data-appt-adjust="-1" aria-label="Einen Termin abziehen">−</button><b id="payrollAppointments">0</b><button class="step-btn" type="button" data-appt-adjust="1" aria-label="Abzug zurücknehmen">+</button></div><small class="appt-note" data-appt-adjust-note></small></div>
               <div class="quick"><span>Urlaub / Rest</span><b id="payrollVacation">0 / 0</b></div>
               <div class="quick"><span>Krankheitstage</span><b id="payrollSickDays">0</b></div>
             </div>
@@ -3529,7 +3532,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     $$("#mobileMenu [data-page]").forEach(b => (b.dataset.page === pageId ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
     closeMobileMenu();
     if (pageId === "boss-dashboard") renderDashboardWidgets();
-    if(state.role==="boss"&&["boss-dashboard","einsatz"].includes(pageId)&&state.selectedUserId)loadLeavePayrollSummary();
+    if(state.role==="boss"&&["boss-dashboard","einsatz","lohn"].includes(pageId)&&state.selectedUserId){loadLeavePayrollSummary();refreshEmployeeProgress().catch(()=>{});}
     if(pageId==="dashboard"&&state.role==="employee"&&!state.loading)loadOwnEntries();
     if (pageId === "einstellungen") loadSecurityMonitor();
     if (pageId === "kalender") officeCalendar.load();
@@ -4070,11 +4073,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         const month = payrollMonth();
         if (!state.employees.length) return { sub: fmtMonth(month), body: widgetEmpty("Noch keine Mitarbeiter angemeldet.") };
         const p = state.selectedUserId ? currentPayroll() : { gross: 0, appts: 0, mins: 0, days: 0 };
+        const standing=appointmentStanding(inMonth(state.employeeEntries,month),adjustSum(adjustmentsFor(state.employeeAdjustments,month)));
         return {
           sub: `${employeeName(findEmployee(state.selectedUserId))} · ${fmtMonth(month)}`,
           body: `<div class="kennzahl" data-widget-gross>${esc(euro(p.gross))}</div>
-            <p class="kennzahl-text">Brutto bisher im ${esc(fmtMonth(month))}</p>
-            <div class="kennzahl-zeile"><span>Termine</span><b data-widget-appts>${p.appts}</b></div>
+            <p class="kennzahl-text">Bestätigtes Brutto bisher im ${esc(fmtMonth(month))}</p>
+            <div class="kennzahl-zeile"><span>Termine · ${standing.hasDrafts?"vorläufig":"bestätigt"}</span><b data-widget-appts>${standing.total}</b></div><p class="my-muted">${standing.official} bestätigt${standing.hasDrafts?` + ${standing.provisional} vorläufig`:""}</p>
             <div class="kennzahl-zeile"><span>Arbeitsstunden</span><b data-widget-hours>${esc(fmtMinutes(p.mins))}</b></div>
             <div class="kennzahl-zeile"><span>Arbeitstage</span><b>${p.days}</b></div>`
         };
@@ -4374,7 +4378,40 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (!input.value || input.value < min || input.value > max) input.value = max;
   }
 
+  const appointmentStanding = window.OfficeRegularWeek.appointmentStanding;
+  function appointmentStandingHtml(entries,adjustment,month){
+    const p=appointmentStanding(entries,adjustment);
+    return `<div class="kpi-label">Termine · ${esc(fmtMonth(month))}</div><div class="kpi-value">${p.total} <span class="chip ${p.hasDrafts?'warn':'good'}">${p.hasDrafts?'Vorläufig':'Bestätigt'}</span></div><p class="muted">${p.hasDrafts?`${p.official} bestätigt + ${p.provisional} vorläufig. Nach dem Absenden ist der neue Stand bestätigt.`:'Alle eingetragenen Termine sind bestätigt.'}</p>`;
+  }
+  function renderAppointmentStandings(){
+    if(state.role==='employee'){
+      const month=isoMonth(),html=appointmentStandingHtml(inMonth(state.entries,month),adjustSum(adjustmentsFor(state.ownAdjustments,month)),month);
+      $$('[data-own-appointment-standing]').forEach(el=>el.innerHTML=html);
+    }else if(state.role==='boss'){
+      const month=payrollMonth(),entries=inMonth(state.employeeEntries,month),adjustment=adjustSum(adjustmentsFor(state.employeeAdjustments,month));
+      const html=state.employeeDataError?'Terminstand konnte nicht aktualisiert werden.':state.selectedUserId?appointmentStandingHtml(entries,adjustment,month):'Bitte Mitarbeiter auswählen.';
+      $$('[data-boss-appointment-standing]').forEach(el=>el.innerHTML=html);
+      setText('bossEmpAppointments',appointmentStanding(entries,adjustment).total);
+    }
+  }
+  async function refreshOwnProgress(){
+    const owner=state.bootstrappedFor,rows=await api('/entries');
+    if(state.role!=='employee'||state.bootstrappedFor!==owner)return;
+    state.entries=toEntries(rows);renderEmployeeDashboard();renderMyStart();
+  }
+  async function refreshEmployeeProgress(){
+    const owner=state.selectedUserId;if(state.role!=='boss'||!owner||document.hidden)return;
+    const [rows,adjustments]=await Promise.all([api(forUser('/admin/entries',owner)),api(forUser('/admin/appointment-adjustments',owner))]);
+    if(state.role!=='boss'||state.selectedUserId!==owner)return;
+    const nextEntries=toEntries(rows),nextAdjustments=asArray(adjustments);
+    const changed=JSON.stringify(state.employeeEntries)!==JSON.stringify(nextEntries)||JSON.stringify(state.employeeAdjustments)!==JSON.stringify(nextAdjustments);
+    state.employeeEntries=nextEntries;state.employeeAdjustments=nextAdjustments;
+    renderAppointmentStandings();
+    if(changed&&state.payrollPreparation?.owner===owner)await loadCalendarPayroll();
+    if(state.selectedUserId===owner)renderDashboardWidgets();
+  }
   function renderEmployeeDashboard() {
+    renderAppointmentStandings();
     let {goalHours,goalAppointments,cutAppointments}=state.settings;
     const goals=state.regularGoalsByMonth?.[isoMonth()];if(goals){goalHours=(goals.baseMinutes-goals.holidayMinutes)/60;goalAppointments=goals.appointments;cutAppointments=goals.cutAppointments;}
     const month = inMonth(state.entries, isoMonth());
@@ -4445,7 +4482,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       state.entries = toEntries(entries);
       await regularWeek.load();
       state.ownAdjustments = asArray(adjustments);
-      renderEmployeeDashboard();
+      renderEmployeeDashboard();renderMyStart();
     } catch (error) {
       console.error(error);
       alert("Office-Daten konnten nicht geladen werden: " + error.message);
@@ -4729,6 +4766,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
 
   function renderEmployeeData() {
+    renderAppointmentStandings();
     applyMonthBounds();
     const month = payrollMonth();
     const list = inMonth(state.employeeEntries, month);
@@ -5672,6 +5710,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       bossEmpGross: gross,
       payrollTimePayLabel: `Grundlohn · ${decimal(p.mins / 60, 2)} Std. × ${euro(hourlyRateCents(payrollMonth()) / 100)}`,
       payrollCommissionLabel: `Provision · ${p.appts} ${p.appts === 1 ? "Termin" : "Termine"} × ${euro(COMMISSION_RATE_CENTS / 100)}`,
+      payrollAppointments:p.appts,
       payrollHours: fmtMinutes(p.mins),
       payrollDays: p.days,
       payrollVacation: `${p.vacationDays} / ${Number(vacation.remaining).toLocaleString("de-DE", { maximumFractionDigits: 2 })}`,
@@ -11417,8 +11456,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       const month = inMonth(state.entries, isoMonth());
       const { mins, appts: raw } = summarize(month);
       const appts = Math.max(0, raw + adjustSum(adjustmentsFor(state.ownAdjustments, isoMonth())));
-      if (compact) return `<div class="my-big">${appts} von ${goalAppointments}</div><p class="my-muted">Terminen im ${esc(fmtMonth(isoMonth()))}</p>`;
-      return `<div class="my-rings">
+      const standing=appointmentStanding(month,adjustSum(adjustmentsFor(state.ownAdjustments,isoMonth())));
+      const status=`<p class="my-muted">${standing.hasDrafts?`Vorläufig · ${standing.official} bestätigt + ${standing.provisional} vorläufig`:"Bestätigter Stand"}</p>`;
+      if (compact) return `${status}<div class="my-big">${appts} von ${goalAppointments}</div><p class="my-muted">Terminen im ${esc(fmtMonth(isoMonth()))}</p>`;
+      return `${status}<div class="my-rings">
         ${ring(mins / 60, goalHours, `${decimal(mins / 60)} h`, `von ${goalHours} h`)}
         ${ring(appts, goalAppointments, String(appts), `von ${goalAppointments} Terminen`)}
         ${ring(appts, cutAppointments, String(appts), `Cut bei ${cutAppointments}`)}
@@ -11603,7 +11644,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const regularWeek=window.OfficeRegularWeek.create({$,esc,api,role:()=>state.role,userId:()=>state.bootstrappedFor,today:isoDate,minutes:fmtMinutes,openDialog,closeDialog,showPage,toast,
     changed:(pattern,data)=>{state.regularPatterns=pattern.patterns||[];state.regularGoalsByMonth??={};for(const g of data.monthGoals||[])state.regularGoalsByMonth[g.month]=g;},
     openEntry:(slot,week)=>{resetForm();setTimeFormOpen(true);const date=slot>isoDate()?isoDate():slot;$("date").value=date;$("entryRegularSlot").value=slot;$("timeCard").scrollIntoView({block:"start",behavior:"smooth"});$("start").focus();},
-    editEntry,onSubmitted:loadOwnEntries,onOnboarded:async()=>{await afterEmployeeNotices();}
+    editEntry,onSaved:refreshOwnProgress,onSubmitted:loadOwnEntries,onOnboarded:async()=>{await afterEmployeeNotices();}
   });
 
   const officeCalendar=window.OfficeCalendar.create({$,esc,api,state,today:isoDate,minutes:fmtMinutes,timestamp:fmtTimestamp,openDialog,closeDialog,selectEmployee,
@@ -12290,6 +12331,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     renderDashboardWidgets();
   }
   setInterval(refreshBossDashboard, 120000);
+  const refreshVisibleProgress=()=>{if(state.role==='boss'&&document.querySelector('#boss-dashboard.active,#einsatz.active,#lohn.active'))refreshEmployeeProgress().catch(()=>{});};
+  setInterval(refreshVisibleProgress,30000);
+  document.addEventListener('visibilitychange',refreshVisibleProgress);
   document.addEventListener("visibilitychange", refreshBossDashboard);
 
   /* ================= Start & Anmeldung ================= */
