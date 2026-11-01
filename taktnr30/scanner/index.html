@@ -97,7 +97,7 @@
   "use strict";
   const { esc, $, $$, timeDe, categoryLabel, guestName } = TAKT;
   let bands = {};
-  let food = false;   // Foodtruck-Zugang: scannt Helfer-QR für 1× Essen
+  let food = false;   // Foodtruck-Zugang: scannt Ticket-QR, wenn Kim Essen dazugegeben hat
   let scannerKey = null, mode = null, stream = null, scanning = false, busy = false, lastCode = "", lastAt = 0, wake = null;
 
   // Scanner-Link: Schlüssel aus #k=… übernehmen und aus der Adresse entfernen

@@ -818,7 +818,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
       $$("[data-cp]").forEach(b => b.onclick = () => copy(shiftUrl(H(b.dataset.cp))));
       $$("[data-crew]").forEach(b => b.onclick = () => copy(H(b.dataset.crew).crew_url, "Helfer-Link kopiert – darüber kann man sich nur als Helfer eintragen"));
       $$("[data-wa]").forEach(b => b.onclick = () => { const h = H(b.dataset.wa), max = jobOf(h.helper_job).shifts;
-        const text = `Hey ${h.first_name || ""}, danke dass du bei TAKT Nr. 30 hilfst! Such dir bitte ${max > 1 ? `deine ${max} Schichten` : "deine Schicht"} aus (${h.helper_job}, ${max > 1 ? "je " : ""}rund 3 Stunden). Dafür ist dein Eintritt frei, du bekommst 5 Getränkemarken und 1× Essen, Wasser gratis: ${shiftUrl(h)}${h.crew_url ? `\n\nDu kennst Leute, die auch helfen würden? Dann schick ihnen diesen Link (nur für Helfer, keine Tickets): ${h.crew_url}` : ""}`;
+        const text = `Hey ${h.first_name || ""}, danke dass du bei TAKT Nr. 30 hilfst! Such dir bitte ${max > 1 ? `deine ${max} Schichten` : "deine Schicht"} aus (${h.helper_job}, ${max > 1 ? "je " : ""}rund 3 Stunden). Dafür ist dein Eintritt frei, du bekommst 5 Getränkemarken, Wasser gratis: ${shiftUrl(h)}${h.crew_url ? `\n\nDu kennst Leute, die auch helfen würden? Dann schick ihnen diesen Link (nur für Helfer, keine Tickets): ${h.crew_url}` : ""}`;
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener"); });
     },
 
@@ -831,7 +831,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
           <p class="note" style="margin:10px 0 0">${note}${extra}</p></div>`;
       const texts = {
         tl: [d.ticket_link.url, `TAKT Nr. 30 – Private Birthday Rave · 06.03.2027. Hier gibt's die Tickets (max. 2 pro Person, bitte nicht weiterleiten): ${d.ticket_link.url}`],
-        hl: [d.helper_link.url, `TAKT Nr. 30 sucht Helfer: eine Schicht (rund 3 Stunden), dafür Eintritt frei, 5 Getränkemarken und 1× Essen. Hier eintragen (nur Helfer, keine Tickets): ${d.helper_link.url}`],
+        hl: [d.helper_link.url, `TAKT Nr. 30 sucht Helfer: eine Schicht (rund 3 Stunden), dafür Eintritt frei und 5 Getränkemarken. Hier eintragen (nur Helfer, keine Tickets): ${d.helper_link.url}`],
         sc: [d.pages.scanner, `TAKT Nr. 30 Scanner: ${d.pages.scanner}`]
       };
       m.innerHTML = `<h1>Links</h1>
@@ -841,7 +841,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
         ${box(`HELFER-LINK${d.helper_link.status !== "active" ? " · GESPERRT" : ""}`, d.helper_link.url, `Nur Helfer-Anmeldung, kein Ticketkauf.${d.helper_link.signups ? ` Darüber angemeldet: ${d.helper_link.signups}.` : ""} Jeder Helfer hat zusätzlich seinen eigenen Link (siehe Helfer → Einteilung).`, "hl",
           isMain() ? ` <button class="lnk" id="hlToggle">${d.helper_link.status === "active" ? "Link sperren" : "Link wieder freigeben"}</button>` : "")}
         <h2>Scanner-Zugänge</h2>
-        <p class="muted">Die Scanner-App läuft unter <a href="${esc(d.pages.scanner)}" target="_blank">kim-betcher.de/taktnr30/scanner</a> – am Handy über „Zum Home-Bildschirm“ installieren. Jeder Zugang ist persönlich, braucht kein Konto und lässt sich jederzeit sperren. <strong>Einlass</strong> scannt Tickets, <strong>Foodtruck</strong> gibt nur Essen aus (Helfer und Tickets mit Essen).</p>
+        <p class="muted">Die Scanner-App läuft unter <a href="${esc(d.pages.scanner)}" target="_blank">kim-betcher.de/taktnr30/scanner</a> – am Handy über „Zum Home-Bildschirm“ installieren. Jeder Zugang ist persönlich, braucht kein Konto und lässt sich jederzeit sperren. <strong>Einlass</strong> scannt Tickets, <strong>Foodtruck</strong> gibt nur Essen aus (Tickets, denen du Essen dazugegeben hast).</p>
         <form class="card form" id="scForm"><label class="field"><span>Name</span><input class="input sm" name="name" required maxlength="40" placeholder="z. B. Lena oder Peerless"></label><label class="field"><span>Art</span><select class="input sm" name="mode"><option value="entry">Einlass (Tickets scannen)</option><option value="food">Foodtruck (Essen ausgeben)</option></select></label><div class="field"><button class="btn btn-uv btn-small">Zugang erzeugen</button></div></form>
         <div id="newLink"></div>
         <div class="tablewrap" style="margin-top:18px"><table><thead><tr><th>Zugang</th><th>Art</th><th class="hide-sm">Erstellt</th><th>Zuletzt genutzt</th><th></th></tr></thead><tbody>
@@ -873,7 +873,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
           <div><p style="margin:0 0 8px">${food ? "Foodtruck-" : ""}Zugangs-QR für <strong>${esc(e.target.name.value)}</strong></p>
           <p class="note" style="margin:0 0 10px">Am Handy: TAKT Scanner öffnen → „Zugangs-QR scannen“. Oder den Link schicken.</p>
           <div class="linkbox" style="margin:0"><code>${esc(r.url)}</code><div class="acts"><button id="cp">Kopieren</button></div></div></div></div>
-          <p class="note">Nur jetzt sichtbar – am besten gleich abscannen oder schicken. ${food ? "Dieser Zugang gibt nur Essen aus (Helfer und Tickets mit Essen), lässt aber niemanden ein." : "Wer den Link hat, kann einlassen."} Sperren kannst du ihn jederzeit unten.</p>`;
+          <p class="note">Nur jetzt sichtbar – am besten gleich abscannen oder schicken. ${food ? "Dieser Zugang gibt nur Essen aus (für Tickets, denen du Essen gegeben hast), lässt aber niemanden ein." : "Wer den Link hat, kann einlassen."} Sperren kannst du ihn jederzeit unten.</p>`;
         $("#cp").onclick = () => copy(r.url);
       };
       $$("button[data-id]", m).forEach(b => b.onclick = async () => { if (!confirm("Diesen Scanner-Zugang sperren?")) return; await act(() => call(`/admin/scanners/${b.dataset.id}`, { method: "DELETE" }), "Gesperrt"); render(); });
@@ -993,7 +993,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
       const bandRow = (cat, label) => { const b = bands[cat] || {}; return `<div class="lineup-row" style="grid-template-columns:150px 64px 1fr 1.4fr"><span style="align-self:center">${label}</span><input class="input sm" type="color" name="c_${cat}" value="${esc(b.color || "#ffffff")}" aria-label="Farbe ${label}"><input class="input sm" name="l_${cat}" value="${esc(b.label || "")}" placeholder="Farbname" maxlength="20" aria-label="Farbname ${label}"><input class="input sm note-in" name="n_${cat}" value="${esc(b.note || "")}" placeholder="Hinweis am Einlass (optional)" maxlength="60" aria-label="Hinweis ${label}"></div>`; };
       m.innerHTML = `<h1>Einlass</h1>
         <h2 style="margin-top:0">Bändchen</h2>
-        <p class="note">Der Scanner zeigt nach jedem grünen Scan Ticketart, Bändchen und Marken an. Marken: VIP · 2TAKT (Papier) 5 · VIP online 3 · Helfer 5 · alle anderen keine. Bei Helfern steht dazu, was der Einlass ihnen sagen soll. Für Peerless erzeugst du unten einen Zugang der Art „Foodtruck“.</p>
+        <p class="note">Der Scanner zeigt nach jedem grünen Scan Ticketart, Bändchen und Marken an. Marken: VIP · 2TAKT (Papier) 5 · VIP online 3 · Helfer 5 · alle anderen keine (plus Extras, die du einem Ticket gibst). Bei Helfern steht dazu, was der Einlass ihnen sagen soll.</p>
         <form id="bandForm">${bandRow("regular", "Gäste & Freitickets")}${bandRow("free", "VIP · 2TAKT (Papier)")}${bandRow("vip", "VIP online")}${bandRow("helper", "Helfer")}<button class="btn btn-uv btn-small" style="margin-top:6px">Speichern</button></form>
         <p class="note" style="margin-top:18px">Scanner-Zugänge (Einlass und Foodtruck) findest du unter <button class="lnk" id="toLinks">Links</button>.</p>`;
       $("#bandForm").onsubmit = async e => {
@@ -1240,7 +1240,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
     if (!d) { d = document.createElement("dialog"); d.id = "xDlg"; d.className = "xdlg"; document.body.append(d); }
     const row = (k, label, v, max) => `<div class="xrow"><span>${label}</span><div class="step"><button type="button" data-k="${k}" data-d="-1" aria-label="${label} weniger">−</button><b id="x_${k}">${v}</b><button type="button" data-k="${k}" data-d="1" aria-label="${label} mehr">+</button></div></div>`;
     const v = { drinks: +t.extra_drinks || 0, food: +t.extra_food || 0 };
-    const base = t.category === "helper" ? "Helfer: 5 Marken + 1× Essen sind schon dabei." : t.category === "free" ? "VIP 2TAKT: 5 Marken sind schon dabei." : t.tier === "vip" ? "VIP: 3 Marken sind schon dabei." : "";
+    const base = t.category === "helper" ? "Helfer: 5 Marken sind schon dabei, Essen nicht." : t.category === "free" ? "VIP 2TAKT: 5 Marken sind schon dabei." : t.tier === "vip" ? "VIP: 3 Marken sind schon dabei." : "";
     d.innerHTML = `<form method="dialog"><h2 style="margin:0 0 4px">Essen & Getränke</h2><p class="note" style="margin:0 0 16px">${esc(t.number)}${t.first_name ? " · " + esc(t.first_name + " " + (t.last_name || "")) : ""}${base ? "<br>" + base : ""}</p>
       ${row("drinks", "Zusätzliche Getränkemarken", v.drinks, 20)}${row("food", "Zusätzlich Essen (Foodtruck)", v.food, 5)}
       <p class="note" style="margin:12px 0 0">${t.checked_in_at ? "Schon eingecheckt – die Marken bitte selbst ausgeben. Essen gilt sofort am Foodtruck." : "Der Einlass sieht die Marken beim Scannen, der Foodtruck das Essen."}</p>

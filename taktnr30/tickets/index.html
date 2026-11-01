@@ -201,7 +201,7 @@
     if (invite && invite.kind === "crew" && !mine) {
       const h = ev.helpers;
       $("#count").innerHTML = h.open ? `<span class="dot pulse" aria-hidden="true"></span>HELFER GESUCHT · NOCH ${+h.available} PLÄTZE` : "ALLE HELFERPLÄTZE VERGEBEN";
-      $("#heroCta").innerHTML = h.open ? `<a class="btn btn-uv btn-block" href="#tickets">Als Helfer mitmachen</a><div class="plain mono">1 SCHICHT · EINTRITT FREI · 5 MARKEN + 1× ESSEN</div>` : `<div class="soon">Danke – wir sind komplett</div>`;
+      $("#heroCta").innerHTML = h.open ? `<a class="btn btn-uv btn-block" href="#tickets">Als Helfer mitmachen</a><div class="plain mono">1 SCHICHT · EINTRITT FREI · 5 GETRÄNKEMARKEN</div>` : `<div class="soon">Danke – wir sind komplett</div>`;
       $("#ticketsKicker").textContent = "Helfer";
       return;
     }
@@ -520,7 +520,7 @@
   function renderHelper(host) {
     const jobs = ev.helpers.jobs;
     host.innerHTML = `<form id="helpForm" novalidate>
-      <p class="muted" style="margin-top:0">Hilf mit: Du übernimmst <strong>eine Schicht (rund 3 Stunden)</strong> und dafür ist dein <strong>Eintritt frei</strong>, du bekommst <strong>5 Getränkemarken und 1× Essen</strong>, Wasser gratis. Such dir aus, wo du anpacken willst – du bekommst ein eigenes Helfer-Ticket mit QR-Code.</p>
+      <p class="muted" style="margin-top:0">Hilf mit: Du übernimmst <strong>eine Schicht (rund 3 Stunden)</strong> und dafür ist dein <strong>Eintritt frei</strong>, du bekommst <strong>5 Getränkemarken</strong>, Wasser gratis. Such dir aus, wo du anpacken willst – du bekommst ein eigenes Helfer-Ticket mit QR-Code.</p>
       ${invite.kind === "crew" ? `<p class="note">Über diesen Link kannst du dich nur als Helfer eintragen, Tickets gibt es darüber nicht.</p>` : ""}
       <p class="note mono">NOCH ${ev.helpers.available} HELFERPLÄTZE</p>
       <div class="jobs" role="radiogroup" aria-label="Aufgabe">${jobs.map((j, i) => `

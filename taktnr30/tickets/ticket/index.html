@@ -123,7 +123,7 @@
         <div><dt>EINLASS · START</dt><dd>${esc(event.doors_time)} · ${esc(event.start_time)}</dd></div>
         <div class="addr"><dt>ORT</dt><dd>${esc(event.venue_name)}<br><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue_address)}" rel="noopener" target="_blank">${esc(event.venue_address)}</a></dd></div>
         ${t.tier === "vip" && t.drinks ? `<div class="addr"><dt>VIP</dt><dd class="uv">Lila VIP-Bändchen, Begrüßungsshot + ${+t.drinks} Getränkemarken am Einlass</dd></div>` : ""}
-        ${t.category === "helper" ? `<div class="addr"><dt>CREW</dt><dd style="color:var(--ok)">${+t.drinks || 5} Getränkemarken am Einlass · 1× Essen am Foodtruck (diesen QR zeigen) · Wasser gratis</dd></div>` : ""}
+        ${t.category === "helper" ? `<div class="addr"><dt>CREW</dt><dd style="color:var(--ok)">${+t.drinks || 5} Getränkemarken am Einlass · Wasser gratis</dd></div>` : ""}
         ${t.checked_in_at ? `<div class="addr"><dt>EINGECHECKT</dt><dd>${esc(dateDe(t.checked_in_at))} ${esc(timeDe(t.checked_in_at))}</dd></div>` : ""}
       </dl>
       <div class="stub"></div>
@@ -186,7 +186,7 @@
     };
     host.innerHTML = `<h2>${v.max > 1 ? "Deine Schichten" : "Deine Schicht"}</h2>
       <p class="lead">${v.max > 1 ? `Such dir <b>${v.max} Schichten</b> aus – nie direkt hintereinander, damit du dazwischen feiern kannst.` : "Such dir <b>eine Schicht</b> aus (rund 3 Stunden). Den Rest der Nacht feierst du mit."}${v.info ? " " + esc(v.info) : ""}</p>
-      <div class="perk"><span>Dafür ist dein <b>Eintritt frei</b>, du bekommst <b>5 Getränkemarken und 1× Essen</b> – Wasser gibt’s den ganzen Abend gratis.</span></div>
+      <div class="perk"><span>Dafür ist dein <b>Eintritt frei</b>, du bekommst <b>5 Getränkemarken</b> – Wasser gibt’s den ganzen Abend gratis.</span></div>
       <label class="commit ${mine.length && mine.every(x => x.committed) ? "done" : ""}" id="commitBox"><input type="checkbox" id="commitChk" ${mine.length && mine.every(x => x.committed) ? "checked disabled" : ""}><span><b>Verbindliche Zusage:</b> ${esc(v.commit_text)}</span></label>
       <div class="count"><span>${esc(v.area.toUpperCase())}</span><span><b>${mine.length}</b> / ${v.max} gewählt</span></div>
       <p class="msg" id="shiftMsg">${!v.open ? '<span class="dim">Die Schichtwahl ist geschlossen. Änderungen bitte direkt mit Kim.</span>' : done ? '<span style="color:var(--ok)">Perfekt, du bist eingetragen. Danke!</span>' : ""}</p>
@@ -198,7 +198,7 @@
         <p>Du kennst Leute, die auch helfen würden? Schick ihnen deinen Helfer-Link. Darüber können sie sich nur als Helfer eintragen – Tickets gibt es darüber nicht.</p>
         <div class="row"><button class="btn btn-block" id="rcShare" style="background:var(--ok);border-color:var(--ok);color:#04210f">Link teilen</button><button class="btn" id="rcCopy" aria-label="Link kopieren">Kopieren</button></div>
         <small>NOCH ${+rc.available} HELFERPLÄTZE FREI${rc.brought ? ` · ÜBER DEINEN LINK: ${+rc.brought}` : ""}</small></div>`);
-      const text = `Hey, ich helfe bei TAKT Nr. 30 mit – hast du Lust auch? Eine Schicht (rund 3 Stunden), dafür Eintritt frei, 5 Getränkemarken und 1× Essen. Hier eintragen:`;
+      const text = `Hey, ich helfe bei TAKT Nr. 30 mit – hast du Lust auch? Eine Schicht (rund 3 Stunden), dafür Eintritt frei und 5 Getränkemarken. Hier eintragen:`;
       $("#rcShare").onclick = async () => {
         if (navigator.share) { try { await navigator.share({ title: "Helfer für TAKT Nr. 30", text, url: rc.url }); return; } catch (e) { if (e.name === "AbortError") return; } }
         window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + rc.url)}`, "_blank", "noopener");

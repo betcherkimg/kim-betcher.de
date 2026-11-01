@@ -858,12 +858,12 @@ test("Schichtplan: Standardplan, Wahl mit Pause-Regel, Maximum, Kapazität, Admi
   t.mails.length = 0;
   const hid = t.db.prepare("SELECT id FROM tickets WHERE view_key = ?").get(carsten.view_key).id;
   assert.equal((await t.admin("POST", `/admin/tickets/${hid}`, { action: "shift_mail" })).status, 200);
-  assert.equal(t.mails.length, 1); assert.match(t.mails[0].subject, /Schicht/); assert.match(t.mails[0].html, /#schichten/); assert.match(t.mails[0].html, /5 Getränkemarken und 1× Essen/);
+  assert.equal(t.mails.length, 1); assert.match(t.mails[0].subject, /Schicht/); assert.match(t.mails[0].html, /#schichten/); assert.match(t.mails[0].html, /5 Getränkemarken/); assert.doesNotMatch(t.mails[0].html, /1× Essen/);
   // Scanner zeigt die Schichten
   const key = (await t.admin("POST", "/admin/scanners", { name: "Tür" })).data.url.split("#k=")[1];
   const code = t.db.prepare("SELECT code FROM tickets WHERE id = ?").get(hid).code;
   const s = (await t.call("POST", "/scan/check", { code }, { scanner: key })).data;
-  assert.equal(s.result, "green"); assert.match(s.shifts, /19:00–22:00 Bar 1/); assert.match(s.shifts, /04:00–Ende Bar 1/); assert.match(s.hint, /Foodtruck/); assert.equal(s.extras, undefined); assert.equal(s.drinks, 5);
+  assert.equal(s.result, "green"); assert.match(s.shifts, /19:00–22:00 Bar 1/); assert.match(s.shifts, /04:00–Ende Bar 1/); assert.equal(s.hint, undefined); assert.equal(s.extras, undefined); assert.equal(s.drinks, 5);
   // eingecheckt → keine Selbständerung mehr; storniert → Platz frei
   assert.equal((await t.call("POST", "/public/shifts", { commit: true, k: carsten.view_key, shift_id: D1, take: false })).data.code, "SHIFTS_CLOSED");
   await t.admin("POST", `/admin/tickets/${ben.id}`, { action: "cancel" });
@@ -917,7 +917,7 @@ test("Helfer-Link (Crew): Freunde melden sich nur als Helfer an, kein Ticketkauf
   assert.equal((await t.call("GET", `/public/invite/${code}`)).data.valid, false);
 });
 
-test("Foodtruck-Scanner: Helfer 1× Essen per QR, nur Helfer, Zugang kann nichts anderes; Einlass weist Helfer ein", async () => {
+test("Foodtruck-Scanner: Essen nur mit Extra (auch Helfer nicht gratis), Zugang kann nichts anderes; Einlass weist Helfer ein", async () => {
   const t = await setup(); await openTestSale(t);
   await t.admin("PUT", "/admin/settings", { helper_cap: "28", helper_jobs: JSON.stringify([{ name: "Bar", slots: 20 }]) });
   const c = await invite(t, "Carsten Muster");
@@ -932,6 +932,10 @@ test("Foodtruck-Scanner: Helfer 1× Essen per QR, nur Helfer, Zugang kann nichts
   // Foodtruck darf nicht einlassen
   assert.equal((await t.call("POST", "/scan/check", { code: helperCode }, { scanner: food })).status, 403);
   assert.equal((await t.call("GET", "/scan/search?q=Lisa", undefined, { scanner: food })).status, 403);
+  // Helfer bekommen kein Gratis-Essen
+  const none = (await t.call("POST", "/scan/food", { code: helperCode }, { scanner: food })).data;
+  assert.equal(none.result, "red"); assert.match(none.reason, /Kein Essen/);
+  await t.admin("POST", "/admin/tickets/extras", { number: h.number, drinks: 0, food: 1 });
   let st = (await t.call("GET", "/scan/stats", undefined, { scanner: food })).data;
   assert.equal(st.mode, "food"); assert.equal(st.helpers, 1); assert.equal(st.eaten, 0);
   // Gast bekommt kein Gratis-Essen
@@ -946,10 +950,10 @@ test("Foodtruck-Scanner: Helfer 1× Essen per QR, nur Helfer, Zugang kann nichts
   assert.equal(st.eaten, 1); assert.equal(st.recent.length, 2);
   // Namenssuche nur Helfer
   const fs = (await t.call("GET", "/scan/food/search?q=Mus", undefined, { scanner: food })).data;
-  assert.ok(fs.every(x => x.category === "helper")); assert.ok(fs[0].food_at);
+  assert.ok(fs.every(x => x.allowed > 0)); assert.ok(fs[0].food_at);
   // Einlass: Einweisung für Helfer, nicht für Gäste; Admin sieht „gegessen“
   const d = (await t.call("POST", "/scan/check", { code: helperCode }, { scanner: door })).data;
-  assert.equal(d.result, "green"); assert.equal(d.brief.length, 4); assert.match(d.brief[1], /Foodtruck/); assert.match(d.brief[2], /noch keine Schicht/);
+  assert.equal(d.result, "green"); assert.equal(d.brief.length, 4); assert.match(d.brief[1], /1× am Foodtruck/); assert.match(d.brief[2], /noch keine Schicht/);
   assert.equal((await t.call("POST", "/scan/check", { code: guestCode }, { scanner: door })).data.brief, undefined);
   assert.ok((await t.admin("GET", "/admin/shifts")).data.helpers[0].food_at);
 });
@@ -1003,7 +1007,7 @@ test("Schicht-Zusage, Austragen-Sperre 7 Tage vorher, Erinnerungen, Extras (Esse
   assert.equal((await t.call("POST", "/scan/food", { code: gt.code }, { scanner: food })).data.result, "red");
   assert.equal((await t.admin("POST", "/admin/tickets/extras", { number: gt.number, drinks: 3, food: 0 })).status, 409);   // schon gegessen
   // Helfer mit Extra-Essen: 2× erlaubt; Einweisung nennt 2× und Kontakt
-  await t.admin("POST", "/admin/tickets/extras", { number: h.number, drinks: 2, food: 1 });
+  await t.admin("POST", "/admin/tickets/extras", { number: h.number, drinks: 2, food: 2 });
   const hc = t.db.prepare("SELECT code FROM tickets WHERE number = ?").get(h.number).code;
   const hs = (await t.call("POST", "/scan/check", { code: hc }, { scanner: door })).data;
   assert.equal(hs.drinks, 7); assert.match(hs.brief[1], /2× am Foodtruck/);

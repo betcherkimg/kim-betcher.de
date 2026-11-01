@@ -17,19 +17,19 @@ const PRICE_CENTS = { 1: 2000, 2: 3500 };   // 1 Ticket 20 €, 2 Tickets 35 €
 const VIP_CAP = 20;              // davon höchstens 20 als VIP (zählen in die 60)
 const VIP_DRINKS = 3;            // Freigetränke für VIP online
 const PAPER_VIP_DRINKS = 5;      // Freigetränke für VIP-Papiertickets (2TAKT)
-const HELPER_DRINKS = 5;         // Helfer: 5 Getränkemarken + 1× Essen, Wasser gratis
+const HELPER_DRINKS = 5;         // Helfer: 5 Getränkemarken, Wasser gratis (Essen nur, wenn Kim es einzeln dazugibt)
 const PAPER_PRICE = { free: 3500, regular: 2500 };   // Reserve-Papiertickets verkauft: VIP 35 €, normal 25 €
 // Was der Scanner zeigt: Ticketart, Bändchen-Schlüssel, Freigetränke – plus Extras, die Kim im Admin dazugibt
 function ticketKind(t) {
   const k = baseKind(t);
   const xd = Math.max(0, Number(t.extra_drinks) || 0), xf = Math.max(0, Number(t.extra_food) || 0);
   if (xd) k.drinks = (k.drinks || 0) + xd;
-  k.food = (t.category === "helper" ? 1 : 0) + xf;
-  if (xf && t.category !== "helper") k.extras = [...(k.extras || []), `${xf}× Essen am Foodtruck (QR zeigen)`];
+  k.food = xf;
+  if (xf) k.extras = [...(k.extras || []), `${xf}× Essen am Foodtruck (QR zeigen)`];
   return k;
 }
 function baseKind(t) {
-  if (t.category === "helper") return { kind: t.helper_job ? `Helfer · ${t.helper_job}` : "Helfer", band: "helper", drinks: HELPER_DRINKS, hint: "Essen: 1× am Foodtruck – dort wird der Ticket-QR gescannt", perk: "1× Essen am Foodtruck · Wasser gratis" };
+  if (t.category === "helper") return { kind: t.helper_job ? `Helfer · ${t.helper_job}` : "Helfer", band: "helper", drinks: HELPER_DRINKS, perk: "Wasser gratis" };
   if (t.category === "free") return { kind: "VIP · 2TAKT", band: "free", drinks: PAPER_VIP_DRINKS, shot: true, extras: ["Begrüßungsshot"] };
   if (t.tier === "vip") return { kind: "VIP online", band: "vip", drinks: VIP_DRINKS, shot: true, extras: ["Begrüßungsshot"] };
   if (t.paper) return { kind: "Freiticket", band: "regular", drinks: 0 };
@@ -40,7 +40,7 @@ function baseKind(t) {
 function helperBrief(shifts, band, kind, contact) {
   return [
     `Hier sind deine ${kind.drinks} Getränkemarken. Wasser ist den ganzen Abend gratis.`,
-    `Essen bekommst du ${kind.food || 1}× am Foodtruck – wann du willst. Dort einfach deinen Ticket-QR zeigen.`,
+    ...(kind.food ? [`Essen bekommst du ${kind.food}× am Foodtruck – wann du willst. Dort einfach deinen Ticket-QR zeigen.`] : []),
     shifts ? `Deine Schicht: ${shifts}. Sei bitte 10 Minuten vorher dort.` : `Du hast noch keine Schicht – such dir eine auf deiner Ticketseite aus oder melde dich unter ${contact}.`,
     `Das Helfer-Bändchen${band.label && band.label !== "–" ? ` (${band.label})` : ""} bleibt dran – daran erkennt man dich als Crew.`
   ];
@@ -1297,7 +1297,7 @@ function shiftMailHtml(s, t, v) {
 <p style="letter-spacing:4px;font-size:13px;color:#b98cff;margin:0 0 6px">TAKT NR. 30 · CREW</p>
 <h1 style="font-weight:300;font-size:26px;margin:0 0 18px">Hey ${esc(t.first_name)}, such dir deine Schicht${v.max > 1 ? "en" : ""} aus.</h1>
 ${p(`Danke, dass du am ${esc(dateDe(s.event_date))} hilfst (${esc(v.area)}). Du übernimmst <strong style="color:#f2f2f4">${v.max === 1 ? "eine Schicht (rund 3 Stunden)" : `${v.max} Schichten`}</strong>${v.max > 1 ? " – nie direkt hintereinander, damit du dazwischen feiern kannst" : ""}.`)}
-${p(`Dafür ist dein <strong style="color:#f2f2f4">Eintritt frei</strong>, du bekommst <strong style="color:#f2f2f4">${HELPER_DRINKS} Getränkemarken und 1× Essen</strong> – Wasser gibt es den ganzen Abend gratis. Den Rest der Nacht feierst du einfach mit.`)}
+${p(`Dafür ist dein <strong style="color:#f2f2f4">Eintritt frei</strong>, du bekommst <strong style="color:#f2f2f4">${HELPER_DRINKS} Getränkemarken</strong> – Wasser gibt es den ganzen Abend gratis. Den Rest der Nacht feierst du einfach mit.`)}
 ${mine.length ? p(`Schon eingetragen: ${mine.map(x => esc(`${x.starts}–${x.ends || "Ende"}${x.spot && x.spot !== v.area ? " " + x.spot : ""}`)).join(", ")}`) : ""}
 <a href="${esc(url)}" style="display:block;background:#39ff14;color:#0a0a0c;text-decoration:none;padding:14px 18px;border-radius:4px;margin:6px 0 10px;font-size:15px;text-align:center;font-weight:bold">${mine.length ? (v.max > 1 ? "Schichten ansehen" : "Schicht ansehen") : (v.max > 1 ? "Schichten auswählen" : "Schicht auswählen")}</a>
 ${v.recruit?.url && v.recruit.open ? `<div style="border:1px solid #33333d;border-radius:6px;padding:16px 18px;margin:22px 0 0;background:#111116">
@@ -1371,7 +1371,7 @@ async function sendTicketMail(env, ticket) {
   const s = await getSettings(env);
   const r = await sendMail(env, ticket.email, ticket.helper_job ? "Dein Helfer-Ticket für TAKT Nr. 30" : "Dein Ticket für TAKT Nr. 30",
     mailHtml(s, ticket.helper_job ? `Danke fürs Helfen – ${ticket.helper_job}.` : "Du bist dabei.", [{ number: ticket.number, name: `${ticket.first_name} ${ticket.last_name}`, url: `${APP_URL}ticket/?k=${ticket.view_key}` }],
-      ticket.helper_job ? `<div style="border:1px solid #39ff14;border-radius:6px;padding:16px 18px;margin:0 0 22px;background:#0f1a0c"><p style="letter-spacing:3px;font-size:12px;color:#39ff14;margin:0 0 8px">CREW</p><p style="font-size:15px;line-height:1.6;color:#f2f2f4;margin:0">Dein Eintritt ist frei, am Einlass bekommst du <strong>${HELPER_DRINKS} Getränkemarken</strong>, Wasser ist gratis. <strong>Einmal Essen</strong> holst du dir am Foodtruck, wann du willst – dort wird dein Ticket-QR gescannt. Deine Schicht wählst du auf deiner Ticketseite unter <strong>„Deine Schicht“</strong>.</p></div>` : ""));
+      ticket.helper_job ? `<div style="border:1px solid #39ff14;border-radius:6px;padding:16px 18px;margin:0 0 22px;background:#0f1a0c"><p style="letter-spacing:3px;font-size:12px;color:#39ff14;margin:0 0 8px">CREW</p><p style="font-size:15px;line-height:1.6;color:#f2f2f4;margin:0">Dein Eintritt ist frei, am Einlass bekommst du <strong>${HELPER_DRINKS} Getränkemarken</strong>, Wasser ist gratis. Deine Schicht wählst du auf deiner Ticketseite unter <strong>„Deine Schicht“</strong>.</p></div>` : ""));
   await run(env, `UPDATE tickets SET mail_status = ? WHERE id = ?`, r.ok ? "sent" : "failed", ticket.id);
   return r;
 }
@@ -1584,18 +1584,17 @@ async function setExtras(env, request, who) {
   if (t.status === "cancelled") return fail("Stornierte Tickets lassen sich nicht ändern.", 409);
   const d = Number(b.drinks), f = Number(b.food);
   if (!Number.isInteger(d) || !Number.isInteger(f) || d < 0 || f < 0 || d > 20 || f > 5) return fail("Getränke 0–20, Essen 0–5.");
-  const helperBase = (await first(env, `SELECT category FROM tickets WHERE id = ?`, t.id)).category === "helper" ? 1 : 0;
-  if (f + helperBase < t.food_used) return fail(`Es wurde schon ${t.food_used}× gegessen – weniger geht nicht.`, 409);
+  if (f < t.food_used) return fail(`Es wurde schon ${t.food_used}× gegessen – weniger geht nicht.`, 409);
   await run(env, `UPDATE tickets SET extra_drinks = ?, extra_food = ?, updated_at = ? WHERE id = ?`, d, f, iso(), t.id);
   await audit(env, who, "ticket.extras", t.number, { drinks: d, food: f });
   return json({ ok: true, checked_in: !!t.checked_in_at });
 }
 
-/* ================= Essen am Foodtruck (Helfer: 1× gratis) ================= */
+/* ================= Essen am Foodtruck (nur wenn Kim es einem Ticket dazugibt) ================= */
 async function foodGive(env, who, id, viaCode) {
   const t = await first(env, `SELECT id, number, category, helper_job, first_name, last_name, status, food_at, food_by, food_used, extra_food FROM tickets WHERE id = ?`, id);
   if (!t) return json({ result: "red", food: true, reason: "Ticket nicht gefunden" });
-  const allowed = (t.category === "helper" ? 1 : 0) + (Number(t.extra_food) || 0);
+  const allowed = Number(t.extra_food) || 0;
   const base = { food: true, number: t.number, name: `${t.first_name || ""} ${t.last_name || ""}`.trim(), kind: t.helper_job ? `Helfer · ${t.helper_job}` : t.category === "helper" ? "Helfer" : t.category === "free" ? "VIP · 2TAKT" : "Gast", allowed };
   if (!allowed) return json({ ...base, result: "red", reason: "Kein Essen hinterlegt – nur gegen Bezahlung" });
   if (t.status !== "valid") return json({ ...base, result: "red", reason: t.status === "blocked" ? "Ticket gesperrt" : "Ticket storniert" });
@@ -1619,11 +1618,11 @@ async function foodSearch(env, url) {
   if (q.length < 2) return json([]);
   const like = `%${q.replace(/[%_]/g, "")}%`;
   return json(await all(env, `SELECT id, number, category, helper_job, first_name, last_name, status, food_at, food_used,
-      (CASE WHEN category = 'helper' THEN 1 ELSE 0 END) + extra_food AS allowed FROM tickets
-    WHERE (category = 'helper' OR extra_food > 0) AND status != 'cancelled' AND (COALESCE(first_name, '') || ' ' || COALESCE(last_name, '') LIKE ? OR number LIKE ?) ORDER BY first_name LIMIT 25`, like, like));
+      extra_food AS allowed FROM tickets
+    WHERE extra_food > 0 AND status != 'cancelled' AND (COALESCE(first_name, '') || ' ' || COALESCE(last_name, '') LIKE ? OR number LIKE ?) ORDER BY first_name LIMIT 25`, like, like));
 }
 async function foodStats(env) {
-  const c = await first(env, `SELECT SUM((CASE WHEN category = 'helper' THEN 1 ELSE 0 END) + extra_food) AS helpers, SUM(food_used) AS eaten FROM tickets WHERE status = 'valid' AND (category = 'helper' OR extra_food > 0)`);
+  const c = await first(env, `SELECT SUM(extra_food) AS helpers, SUM(food_used) AS eaten FROM tickets WHERE status = 'valid' AND extra_food > 0`);
   const recent = await all(env, `SELECT c.at, c.result, c.actor, t.number, t.first_name, t.last_name FROM checkins c LEFT JOIN tickets t ON t.id = c.ticket_id WHERE c.action = 'food' ORDER BY c.id DESC LIMIT 15`);
   return json({ mode: "food", eaten: c.eaten || 0, helpers: c.helpers || 0, recent });
 }
@@ -2260,7 +2259,7 @@ async function route(request, env, ctx) {
 
   if (path.startsWith("/scan")) {
     if ((denied = need("scanner"))) return denied;
-    // Essen am Foodtruck (nur Helfer). Ein Foodtruck-Zugang darf nichts anderes.
+    // Essen am Foodtruck (nur Tickets mit Essen). Ein Foodtruck-Zugang darf nichts anderes.
     if (m === "POST" && path === "/scan/food") return foodScan(env, request, who);
     if (m === "GET" && path === "/scan/food/search") return foodSearch(env, url);
     if (m === "POST" && /^\/scan\/food\/\d+$/.test(path)) return foodGive(env, who, id, null);
