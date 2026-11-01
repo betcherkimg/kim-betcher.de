@@ -1019,3 +1019,11 @@ test("Schicht-Zusage, Austragen-Sperre 7 Tage vorher, Erinnerungen, Extras (Esse
   assert.equal(hinv.kind, "crew"); assert.equal(hinv.from, null);
   assert.equal((await t.admin("GET", "/admin/links")).data.helper_link.url, L.helper_link.url);   // bleibt stabil
 });
+
+test("Line-up: Künstlerfoto nur aus dem eigenen Ordner", async () => {
+  const t = await setup();
+  const r = await t.admin("PUT", "/admin/settings", { lineup: JSON.stringify([{ name: "TBJ", time: "", note: "", img: "/taktnr30/assets/lineup/tbj.webp" }, { name: "X", img: "https://evil.example/x.png" }]) });
+  assert.equal(r.status, 200);
+  const ev = (await t.call("GET", "/public/event")).data;
+  assert.equal(ev.lineup[0].img, "/taktnr30/assets/lineup/tbj.webp"); assert.equal(ev.lineup[1].img, undefined);
+});

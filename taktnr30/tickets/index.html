@@ -48,6 +48,9 @@
   .lineup .t { font-family: var(--mono); font-size: 14px; color: var(--dim); }
   .lineup .n { font-size: clamp(22px, 6vw, 30px); }
   .lineup .x { display: block; font-size: 14px; color: var(--dim); }
+  .lineup li.pic { grid-template-columns: 112px 1fr; align-items: center; gap: 20px; }
+  .lineup .av { width: 112px; height: 112px; border-radius: 50%; object-fit: cover; border: 1px solid var(--uv); box-shadow: 0 0 0 6px rgba(157,77,255,.08); background: var(--bg-2); }
+  .lineup li.pic .t { display: block; margin-top: 6px; }
   .lineup-empty { font-size: clamp(22px, 6vw, 30px); color: var(--dim); }
 
   .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line-2); border-radius: var(--radius); overflow: hidden; margin: 0 0 22px; }
@@ -225,7 +228,9 @@
       tick(); setInterval(tick, 30000);
     }
     $("#lineupBox").innerHTML = ev.lineup.length
-      ? `<ul class="lineup">${ev.lineup.map(x => `<li><span class="t">${esc(x.time)}</span><span class="n">${esc(x.name)}${x.note ? `<span class="x">${esc(x.note)}</span>` : ""}</span></li>`).join("")}</ul>`
+      ? `<ul class="lineup">${ev.lineup.map(x => x.img
+          ? `<li class="pic"><img class="av" src="${esc(x.img)}" alt="${esc(x.name)}" width="112" height="112" loading="lazy"><span class="n">${esc(x.name)}${x.note ? `<span class="x">${esc(x.note)}</span>` : ""}${x.time ? `<span class="t">${esc(x.time)}</span>` : ""}</span></li>`
+          : `<li><span class="t">${esc(x.time)}</span><span class="n">${esc(x.name)}${x.note ? `<span class="x">${esc(x.note)}</span>` : ""}</span></li>`).join("")}</ul>`
       : `<p class="lineup-empty">${esc(ev.lineup_note || "Line-up folgt")}</p>`;
     const c = ev.contact;
     const contactLine = [c.name, c.phone && `<a href="tel:${esc(c.phone.replace(/[^+\d]/g, ""))}">${esc(c.phone)}</a>`, c.email && `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`].filter(Boolean);

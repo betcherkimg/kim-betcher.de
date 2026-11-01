@@ -1919,7 +1919,9 @@ async function updateSettings(env, request, who) {
     if (k === "lineup") {
       let list; try { list = JSON.parse(val); } catch { return fail("Line-up ungültig."); }
       if (!Array.isArray(list) || list.length > 20) return fail("Line-up ungültig.");
-      list = list.map(x => ({ name: cleanName(x?.name).slice(0, 60), time: String(x?.time || "").slice(0, 20), note: String(x?.note || "").slice(0, 80) })).filter(x => x.name);
+      // Bild nur aus dem eigenen Ordner /taktnr30/assets/lineup/ (kein fremder Link)
+      const imgOk = v => /^\/taktnr30\/assets\/lineup\/[a-z0-9_-]{1,40}\.(webp|png|jpg)$/.test(String(v || ""));
+      list = list.map(x => ({ name: cleanName(x?.name).slice(0, 60), time: String(x?.time || "").slice(0, 20), note: String(x?.note || "").slice(0, 80), ...(imgOk(x?.img) ? { img: x.img } : {}) })).filter(x => x.name);
       val = JSON.stringify(list);
     }
     if (k === "helper_jobs") {

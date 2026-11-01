@@ -83,6 +83,7 @@
   .slots i { display: block; aspect-ratio: 1; border-radius: 4px; border: 1px solid var(--line-2); }
   .slots i.a { background: var(--uv); border-color: var(--uv); } .slots i.u { background: var(--uv-deep); border-color: var(--uv); } .slots i.c { background: var(--ok); border-color: var(--ok); }
   .lineup-row { display: grid; grid-template-columns: 110px 1fr 1fr auto; gap: 8px; margin-bottom: 8px; }
+  .lineup-row.lu5 { grid-template-columns: 90px 1fr 1fr 150px auto; }
   .tk-acts { flex-wrap: nowrap; justify-content: flex-end; }
   .tk-acts .more { background: var(--bg-3); color: var(--ink); }
   .tk-menu { position: fixed; z-index: 60; min-width: 230px; background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 10px; padding: 6px; box-shadow: 0 14px 40px rgba(0,0,0,.55); }
@@ -125,6 +126,7 @@
     nav { display: flex; overflow-x: auto; gap: 4px; padding-bottom: 8px; scrollbar-width: none; }
     nav button { white-space: nowrap; width: auto; padding: 9px 12px; font-size: 14px; }
     .lineup-row { grid-template-columns: 90px 1fr auto; } .lineup-row .note-in { grid-column: 1 / -1; grid-row: 2; }
+    .lineup-row.lu5 { grid-template-columns: 80px 1fr auto; } .lineup-row.lu5 [name=li] { grid-column: 1 / -1; grid-row: 3; }
     .hide-sm { display: none; }
   }
   #login { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
@@ -176,6 +178,8 @@
   const inviteUrl = code => `${SITE}?e=${code}`;
   const isMain = () => me.role === "main";
 
+  // Künstlerfotos liegen im Repo unter /taktnr30/assets/lineup/ (rund zugeschnitten)
+  const LINEUP_IMAGES = ["/taktnr30/assets/lineup/tbj.webp"];
   const PAGES = [
     ["overview", "Übersicht"], ["prep", "Vorbereitung"], ["guests", "Gäste & Tickets"], ["orders", "Bestellungen"], ["helpers", "Helfer"], ["links", "Links"],
     ["paper", "Papiertickets", "main"], ["content", "Inhalte & Line-up"], ["entry", "Einlass"], ["money", "Abrechnung", "main"], ["contracts", "Verträge & Versicherungen", "main"], ["settings", "Einstellungen", "main"]
@@ -966,7 +970,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
           ${f("lineup_note", "Text, solange kein Line-up eingetragen ist", "text", 'maxlength="80"')}
           <button class="btn btn-uv btn-small">Speichern</button>
         </form>`;
-      const row = x => `<div class="lineup-row"><input class="input sm" name="lt" value="${esc(x.time || "")}" placeholder="22:00" maxlength="20" aria-label="Zeit"><input class="input sm" name="ln" value="${esc(x.name || "")}" placeholder="Künstlername" maxlength="60" aria-label="Name"><input class="input sm note-in" name="lx" value="${esc(x.note || "")}" placeholder="Zusatz (optional)" maxlength="80" aria-label="Zusatz"><div class="acts"><button type="button" data-up>↑</button><button type="button" data-del>✕</button></div></div>`;
+      const row = x => `<div class="lineup-row lu5"><input class="input sm" name="lt" value="${esc(x.time || "")}" placeholder="22:00" maxlength="20" aria-label="Zeit"><input class="input sm" name="ln" value="${esc(x.name || "")}" placeholder="Künstlername" maxlength="60" aria-label="Name"><input class="input sm note-in" name="lx" value="${esc(x.note || "")}" placeholder="Zusatz (optional)" maxlength="80" aria-label="Zusatz"><select class="input sm" name="li" aria-label="Bild"><option value="">ohne Bild</option>${[...new Set([...LINEUP_IMAGES, x.img].filter(Boolean))].map(p => `<option value="${esc(p)}" ${p === x.img ? "selected" : ""}>${esc(p.split("/").pop())}</option>`).join("")}</select><div class="acts"><button type="button" data-up>↑</button><button type="button" data-del>✕</button></div></div>`;
       const bind = () => {
         $$("#lu [data-del]").forEach(b => b.onclick = () => b.closest(".lineup-row").remove());
         $$("#lu [data-up]").forEach(b => b.onclick = () => { const r = b.closest(".lineup-row"); r.previousElementSibling && r.parentNode.insertBefore(r, r.previousElementSibling); });
@@ -978,7 +982,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
         const body = {};
         ["event_date", "doors_time", "start_time", "place_public", "venue_name", "venue_address", "intro_title", "intro_text", "contact_name", "contact_phone", "contact_email", "lineup_note"].forEach(k => body[k] = fm[k].value);
         body.show_countdown = fm.show_countdown.checked ? "1" : "0";
-        body.lineup = JSON.stringify($$("#lu .lineup-row").map(r => ({ time: r.querySelector("[name=lt]").value, name: r.querySelector("[name=ln]").value, note: r.querySelector("[name=lx]").value })).filter(x => x.name.trim()));
+        body.lineup = JSON.stringify($$("#lu .lineup-row").map(r => ({ time: r.querySelector("[name=lt]").value, name: r.querySelector("[name=ln]").value, note: r.querySelector("[name=lx]").value, img: r.querySelector("[name=li]").value || undefined })).filter(x => x.name.trim()));
         await act(() => call("/admin/settings", { method: "PUT", body }), "Gespeichert – die Seite zeigt es sofort.");
       };
     },
