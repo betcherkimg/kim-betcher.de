@@ -11,7 +11,7 @@
 <link rel="icon" type="image/png" sizes="128x128" href="/smartadm/office/office-icon-128-v4.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="manifest" href="/smartadm/office/manifest.webmanifest">
 <link rel="apple-touch-icon" sizes="180x180" href="/smartadm/office/office-touch-180-v4.png">
 <meta name="theme-color" content="#F3F5F6">
@@ -479,9 +479,9 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   --ink-soft: #5D6875;
   --ink-faint: #949EAA;
   --line: #E4E8EB;
-  --accent: #3157E3;
-  --accent-hi: #1F3DAE;
-  --accent-wash: #EAEFFF;
+  --accent: #2450D8;
+  --accent-hi: #1A3BA8;
+  --accent-wash: #E9EEFC;
   --hell: #147BF9;      --hell-wash: #E4F0FE;
   --gelb: #9A6B00;      --gelb-wash: #FAF1DC;
   --gruen: #1F7A52;     --gruen-wash: #E3F2EA;
@@ -1915,116 +1915,189 @@ html[data-theme="dark"] .wk-progress{background:var(--ground)}
 html[data-theme="dark"] .btn.ghost,html[data-theme="dark"] .btn.quiet{background:transparent}
 
 /* =====================================================================
-   Design 2026-11 · Stufe 2 – spürbar moderner
-   Neue Schrift (Plus Jakarta Sans), kräftigeres Blau mit Verlauf,
-   große Seitentitel, Hero-Karten, dunkle schwebende Leiste.
+   Office 2.0 – Designsystem
+   Idee: ein ruhiges Arbeitswerkzeug fürs Handy. Flache Flächen, Listen wie
+   in iOS-Einstellungen, eine Akzentfarbe. Das eine Auffällige: die Woche als
+   fünf Balken – sie zeigt auf einen Blick, wann gearbeitet wurde.
+   Farben: Papier #F5F6F8 · Fläche #FFF · Tinte #172033 · Grau #5B6475 · Linie #E7E9EE · Blau #2450D8 · Mint #12A37C
+   Schrift: Onest (eine Familie, Gewichte 400/500/600/700)
    ===================================================================== */
 :root{
-  --ground:#EEF1F6;--surface:#fff;--ink:#0F172A;--ink-soft:#526075;--ink-faint:#8A96A8;--line:#E3E8F0;
-  --grad:linear-gradient(135deg,color-mix(in srgb,var(--accent) 78%,#7aa2ff) 0%,var(--accent) 45%,var(--accent-hi) 100%);
-  --shadow:0 1px 2px rgba(15,23,42,.04),0 8px 28px rgba(15,23,42,.07);
-  --r-card:24px;--r-ctl:14px;
+  --ground:#F5F6F8;--surface:#fff;--ink:#172033;--ink-soft:#5B6475;--ink-faint:#9AA2B1;--line:#E7E9EE;
+  --mint:#12A37C;--mint-wash:#E2F5EE;
+  --shadow:none;--r-card:18px;--r-ctl:14px;
 }
-html,body{font-family:"Plus Jakarta Sans","IBM Plex Sans",system-ui,-apple-system,sans-serif;font-feature-settings:"tnum" 1,"cv11" 1}
-body[data-my-font="klar"]{--my-head-font:"Plus Jakarta Sans",system-ui,sans-serif;--my-body-font:"Plus Jakarta Sans",system-ui,sans-serif}
+html,body{font-family:"Onest","Plus Jakarta Sans",system-ui,-apple-system,sans-serif;font-feature-settings:"tnum" 1;letter-spacing:-.005em}
+body[data-my-font="klar"]{--my-head-font:"Onest",system-ui,sans-serif;--my-body-font:"Onest",system-ui,sans-serif}
 body{background:var(--ground)}
-.card,.my-widget,.widget{border:0;box-shadow:var(--shadow);border-radius:var(--r-card)}
-.card-head h2,.my-greet,.top-title strong,.calendar-page-head h1{font-weight:800;letter-spacing:-.03em}
 
-/* Knöpfe: Verlauf, kräftig, groß */
-.btn{border-radius:var(--r-ctl);font-weight:700;min-height:48px}
-.btn.small{min-height:36px;border-radius:12px;font-weight:650}
-.btn.primary{background:var(--grad);color:#fff;border:0;box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 32%,transparent)}
-.btn.primary:hover{filter:brightness(1.05);box-shadow:0 8px 22px color-mix(in srgb,var(--accent) 40%,transparent)}
-.btn.primary:disabled{filter:saturate(.35) brightness(1.15);box-shadow:none;opacity:.75}
-.btn.ghost,.btn.quiet{background:var(--surface);border:1.5px solid var(--line);color:var(--ink)}
-.btn.good{background:#E3F7EC;color:#147A45}
-.field input,.field select,.field textarea{background:#F3F6FA;border-radius:var(--r-ctl);min-height:50px;font-weight:500}
+/* Flächen: flach, Hierarchie über Abstand statt Schatten */
+.card,.my-widget,.widget{box-shadow:none;border:1px solid var(--line);border-radius:var(--r-card)}
+.card-head h2{font-size:17px;font-weight:650;letter-spacing:-.015em}
+.my-greet,.top-title strong,.calendar-page-head h1{font-weight:700;letter-spacing:-.03em}
 
-/* Kopfzeile am Handy: großer Seitentitel statt Logo (Logo nur auf Start) */
+/* Knöpfe: eine Farbe, klare Formen */
+.btn{border-radius:var(--r-ctl);font-weight:600;min-height:48px;box-shadow:none}
+.btn.small{min-height:36px;border-radius:11px}
+.btn.primary{background:var(--accent);color:#fff;border:0;box-shadow:none}
+.btn.primary:hover{background:var(--accent-hi);box-shadow:none}
+.btn.primary:disabled{background:color-mix(in srgb,var(--accent) 30%,#fff);color:#fff;opacity:1}
+.btn.ghost,.btn.quiet{background:var(--surface);border:1px solid var(--line);color:var(--ink)}
+.btn.good{background:var(--mint-wash);color:#0B7A5B}
+.btn.link{color:var(--accent)}
+.field input,.field select,.field textarea{background:var(--ground);border:1px solid transparent;border-radius:12px;min-height:50px}
+.field input:focus,.field select:focus,.field textarea:focus{background:var(--surface);border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}
+.field label{font-size:13px;font-weight:500}
+.chip{font-weight:600}
+
+/* Kopf am Handy: großer Titel links, Logo nur auf Start */
 @media (max-width:760px){
-  .topbar{height:auto;min-height:58px;padding:10px 16px;background:color-mix(in srgb,var(--ground) 82%,transparent);border-bottom:0}
+  .topbar{height:auto;min-height:56px;padding:12px 18px 6px;background:color-mix(in srgb,var(--ground) 88%,transparent);border-bottom:0}
   body[data-current-page]:not([data-current-page="dashboard"]):not([data-current-page="boss-dashboard"]) .mobile-head{display:none}
   body[data-current-page]:not([data-current-page="dashboard"]):not([data-current-page="boss-dashboard"]) .top-title{display:block!important;min-width:0}
-  body[data-current-page]:not([data-current-page="dashboard"]):not([data-current-page="boss-dashboard"]) .top-title strong{font-size:26px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body[data-current-page]:not([data-current-page="dashboard"]):not([data-current-page="boss-dashboard"]) .top-title strong{font-size:30px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .top-title span{display:none}
-  #installAppBtn .label-mobile{display:none}#installAppBtn{padding:0;width:40px;height:40px;justify-content:center}
-  .theme-toggle{width:40px;height:40px}
+  #installAppBtn .label-mobile{display:none}#installAppBtn,.theme-toggle{width:38px;height:38px;padding:0;justify-content:center;border:0;background:var(--surface)}
   .user-name{display:none}
-  .content{padding-top:8px}
-  /* Kartentitel doppeln den Seitentitel nicht */
+  .content{padding:6px 16px calc(96px + env(safe-area-inset-bottom,0px))}
   body[data-office-role="employee"] #telefon .card-head h2,body[data-office-role="employee"] #regularWeekCard .card-head{display:none}
   .calendar-page-head h1{display:none}
 }
 
-/* Schwebende dunkle Leiste */
+/* Tab-Leiste: hell, flach, aktiver Punkt */
 @media (max-width:760px){
-  body[data-office-role="employee"] .tabbar{background:rgba(15,23,42,.94);border:0;box-shadow:0 14px 34px rgba(15,23,42,.30);border-radius:26px;left:12px;right:12px;padding:7px}
-  .tab{color:rgba(255,255,255,.62);font-weight:600}
-  .tab[aria-current="page"],.tab.is-active{background:rgba(255,255,255,.14);color:#fff}
+  body[data-office-role="employee"] .tabbar{left:0;right:0;bottom:0;border-radius:0;border:0;border-top:1px solid var(--line);box-shadow:none;
+    background:color-mix(in srgb,var(--surface) 92%,transparent);padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
+  .tab{color:var(--ink-faint);font-weight:500;font-size:10.5px;background:none!important;position:relative}
+  .tab[aria-current="page"],.tab.is-active{color:var(--accent);font-weight:600}
+  .tab[aria-current="page"]::before,.tab.is-active::before{content:"";position:absolute;top:0;left:50%;width:18px;height:3px;margin-left:-9px;border-radius:0 0 3px 3px;background:var(--accent)}
+  .more-panel{bottom:calc(74px + env(safe-area-inset-bottom,0px))}
 }
 
-/* Startseite: Begrüßung groß, Hero-Karte „Diese Woche“ */
-.my-greet{font-size:30px}
-.my-date{font-weight:500}
-.my-widget.is-hero{background:var(--grad);--w-ink:#fff;--w-soft:rgba(255,255,255,.78);--w-accent:#fff;color:#fff;box-shadow:0 14px 34px color-mix(in srgb,var(--accent) 35%,transparent)}
-.my-widget.is-hero .my-w-icon{background:rgba(255,255,255,.18);color:#fff}
-.my-widget.is-hero .my-big{font-size:40px;color:#fff}
-.my-widget.is-hero .my-bar{background:rgba(255,255,255,.25);height:10px}
-.my-widget.is-hero .my-bar>span{background:#fff}
-.my-widget.is-hero .my-muted{color:rgba(255,255,255,.85)}
-.my-widget.is-hero .btn.primary{background:#fff;color:var(--accent-hi);box-shadow:0 6px 16px rgba(0,0,0,.12)}
-.my-w-icon{border-radius:12px}
-.my-widget[data-my="telefon"]:not(.is-hero) .my-w-icon{background:#E3F7EC;color:#147A45}
-.my-widget[data-my="monat"] .my-w-icon{background:#F1EAFE;color:#6D3FD1}
-.my-widget[data-my="kalender"] .my-w-icon{background:#FFF0E0;color:#C25E00}
-.my-widget[data-my="aufgaben"] .my-w-icon{background:#E2F5F8;color:#0E7C8C}
-.my-big{font-weight:800}
+/* Start: Begrüßung, Wochen-Balken, ruhige Liste */
+#dashboard .my-head{align-items:flex-end;margin:4px 0 2px}
+.my-greet{font-size:30px;line-height:1.1}
+.my-date{order:-1;margin:0 0 4px;font-size:14px;color:var(--ink-soft)}
+.my-head>div{display:flex;flex-direction:column}
+#myEditBtn{min-height:34px;padding:6px 12px;font-size:13.5px;border:0;background:none;color:var(--accent)}
+#myWidgets{display:grid;gap:14px}
+.my-hero{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px 18px 18px;display:grid;gap:16px}
+.my-hero-top{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.my-hero-label{display:block;font-size:14px;color:var(--ink-soft);margin-bottom:2px}
+.my-hero-num{font-size:44px;line-height:1;font-weight:700;letter-spacing:-.045em}
+.my-hero-num small{font-size:17px;font-weight:500;color:var(--ink-faint);letter-spacing:-.01em}
+.my-hero-rest{font-size:14px;font-weight:600;color:var(--accent);background:var(--accent-wash);padding:6px 10px;border-radius:99px;white-space:nowrap}
+.my-hero.is-done .my-hero-rest{color:#0B7A5B;background:var(--mint-wash)}
+.my-hero .btn.primary{width:100%}
 
-.my-widget.is-hero h2,.my-widget.is-hero .my-big small{color:rgba(255,255,255,.85)!important}
-.my-widget.is-hero .my-big{color:#fff!important}
-.mini-calendar button.today{background:var(--grad)!important;color:#fff!important}
-.mm-version{padding:10px 14px 4px;font-size:12px;color:var(--ink-faint);text-align:center}
+/* Die Woche als fünf Balken */
+.wc{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;align-items:end}
+.wc-col{display:grid;justify-items:center;gap:6px}
+.wc-val{font-size:12px;font-weight:600;color:var(--ink-soft);min-height:15px}
+.wc-track{position:relative;width:100%;max-width:46px;height:84px;border-radius:12px;background:var(--ground);overflow:hidden}
+.wc-fill{position:absolute;left:0;right:0;bottom:0;border-radius:12px;background:var(--accent);transition:height .45s cubic-bezier(.2,.8,.2,1)}
+.wc-day{font-size:13px;font-weight:600;color:var(--ink-faint)}
+.wc-col.is-today .wc-day{color:var(--ink)}
+.wc-col.is-today .wc-track{box-shadow:inset 0 0 0 2px var(--accent)}
+.wc-col.is-off .wc-track{background:repeating-linear-gradient(135deg,var(--ground) 0 6px,var(--line) 6px 8px)}
+.is-done .wc-fill{background:var(--mint)}
 
-/* Arbeitszeiten: Fortschritt als Hero */
-.wk-progress{background:var(--grad);color:#fff;border-radius:20px;padding:18px}
-.wk-progress .wk-now{font-size:30px;font-weight:800}
-.wk-progress .wk-now small,.wk-progress .wk-meta{color:rgba(255,255,255,.85)}
-.wk-progress .wk-bar{background:rgba(255,255,255,.25);height:10px}
-.wk-progress .wk-bar>span{background:#fff}
-.wk-progress.is-done{background:linear-gradient(135deg,#22A866,#13784A)}
-.wk-progress.is-done .wk-bar>span{background:#fff}
-#regularRows .regular-day b{font-weight:800}
+/* Liste wie in den iPhone-Einstellungen */
+.my-group{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.my-row{display:grid;grid-template-columns:36px 1fr auto 16px;align-items:center;gap:12px;width:100%;min-height:60px;padding:10px 14px;border:0;background:none;text-align:left;font:inherit;color:var(--ink);cursor:pointer}
+.my-row+.my-row{border-top:1px solid var(--line);margin-left:0}
+.my-row:active{background:var(--ground)}
+.my-row-icon{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--accent-wash);color:var(--accent)}
+.my-row-icon svg{width:19px;height:19px}
+.my-row[data-my="telefon"] .my-row-icon{background:#E2F5EE;color:#0B7A5B}
+.my-row[data-my="monat"] .my-row-icon{background:#EFE9FD;color:#6B46C1}
+.my-row[data-my="kalender"] .my-row-icon{background:#FDEFE2;color:#B85A0B}
+.my-row[data-my="aufgaben"] .my-row-icon{background:#E3F2F6;color:#0E7489}
+.my-row-text{display:grid;min-width:0}
+.my-row-text b{font-weight:600;font-size:15.5px}
+.my-row-text small{font-size:13px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.my-row-val{font-size:15px;font-weight:600;color:var(--ink-soft);white-space:nowrap}
+.my-row-chev{width:16px;height:16px;color:var(--ink-faint)}
 
-/* Telefonliste */
-.call-card{border:0;background:var(--surface);box-shadow:0 1px 2px rgba(15,23,42,.05),0 4px 14px rgba(15,23,42,.05)}
-.call-card.is-open{box-shadow:0 10px 30px rgba(15,23,42,.12)}
-.cc-name{font-weight:750}
-.count-chip{background:var(--grad);color:#fff}
+/* Arbeitszeiten */
+#regularWeekCard{border:0;background:none;padding:0}
+.wk-nav{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px;margin:0 0 12px}
+.wk-nav .btn{border:0;background:none;min-height:40px}
+.wk-progress{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:18px;gap:14px;color:var(--ink)}
+.wk-progress .wk-now{font-size:40px;font-weight:700;letter-spacing:-.045em;line-height:1}
+.wk-progress .wk-now small{font-size:16px;color:var(--ink-faint);font-weight:500;margin-left:4px}
+.wk-progress .wk-meta{font-size:14px;font-weight:600;color:var(--accent);background:var(--accent-wash);padding:6px 10px;border-radius:99px}
+.wk-progress.is-done .wk-meta{color:#0B7A5B;background:var(--mint-wash)}
+.wk-sub{font-size:13.5px;color:var(--ink-soft)}
+#regularRows{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:4px 16px 14px;margin-top:12px}
+#regularRows .regular-day{grid-template-columns:1fr;gap:4px;padding:12px 0}
+#regularRows .regular-day b{font-weight:650}
+.wk-foot{margin-top:16px}
 
-/* Telefonliste am Handy: Kontaktkarten direkt auf dem Hintergrund */
+/* Zeit eintragen als Blatt von unten (Handy) */
 @media (max-width:760px){
-  body[data-office-role="employee"] #telefon > .card[data-role="employee"]{background:transparent;box-shadow:none;padding:0}
-  #telefon .call-list{gap:10px}
+  #timeCard.is-open{position:fixed;left:0;right:0;bottom:0;z-index:60;margin:0;border:0;border-radius:24px 24px 0 0;max-height:88dvh;overflow:auto;
+    padding:10px 18px calc(18px + env(safe-area-inset-bottom,0px));box-shadow:0 0 0 100vmax rgba(15,23,42,.38),0 -10px 30px rgba(15,23,42,.18);animation:sheet-up .25s ease}
+  #timeCard.is-open::before{content:"";display:block;width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 12px}
+  #timeCard.is-open .time-head h2{font-size:20px}
+  #timeCard.is-open .actions{display:grid;grid-template-columns:1fr 2fr;gap:10px}
 }
+@keyframes sheet-up{from{transform:translateY(30px);opacity:.6}to{transform:none;opacity:1}}
 
-html[data-theme="dark"] .btn.link{color:var(--accent);background:none;border:0}
-.regular-fix-btns{display:flex;gap:6px;flex:none}
+/* Telefonliste: Kontakte als Liste mit Initialen */
+@media (max-width:760px){
+  body[data-office-role="employee"] #telefon > .card[data-role="employee"]{background:transparent;border:0;padding:0}
+}
+.call-card{border:1px solid var(--line);box-shadow:none;border-radius:16px}
+.call-card.is-open{border-color:color-mix(in srgb,var(--accent) 40%,var(--line));box-shadow:none}
+.cc-name{font-weight:650}
+.count-chip{background:var(--accent-wash);color:var(--accent)}
+.call-toolbar .btn.ghost{background:var(--surface)}
 
-/* Kalender: Tageszahl mittig */
-.calendar-day{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;border-radius:14px}
-.calendar-date{width:100%;text-align:center;font-weight:700}
+/* Kalender */
+.calendar-day{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;border-radius:12px}
+.calendar-date{width:100%;text-align:center;font-weight:600}
 .calendar-day.today .calendar-date{color:var(--accent)}
-.calendar-day.selected{background:var(--grad)!important;color:#fff}
+.calendar-day.selected{background:var(--accent)!important;color:#fff;border-color:var(--accent)!important}
 .calendar-day.selected .calendar-date{color:#fff}
 .calendar-grid:not(.week-mode) .calendar-event{width:70%;align-self:center}
+.mini-calendar button.today{background:var(--accent)!important;color:#fff!important}
+
+
+/* Telefonliste 2.0: Initialen, ruhige Karten */
+.cc-head{display:grid;grid-template-columns:42px 1fr auto auto;align-items:center;gap:12px}
+.cc-avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--accent-wash);color:var(--accent);font-weight:700;font-size:14.5px;letter-spacing:.02em}
+.call-card.is-held .cc-avatar{background:#FDF1DC;color:#9A6200}
+.phone-flag{border:0!important;background:none!important;color:var(--ink-soft);font-weight:500;min-width:0;padding:0 6px}
+.cc-tools .btn{border:0;background:var(--ground);min-height:36px}
+.call-toolbar{margin-bottom:4px}
+
+/* Kalender 2.0: flaches Raster, Kreis für Heute/Auswahl */
+.calendar-grid{gap:2px!important}
+.calendar-day{background:none!important;border:0!important;min-height:58px;padding:6px 0 4px!important}
+.calendar-date{display:grid;place-items:center;width:34px!important;height:34px;border-radius:50%;margin:0 auto;font-size:15px}
+.calendar-day.today .calendar-date{box-shadow:inset 0 0 0 1.5px var(--accent)}
+.calendar-day.selected{background:none!important;outline:none!important;box-shadow:none!important}
+.calendar-day.selected .calendar-date{background:var(--accent);color:#fff;box-shadow:none}
+.calendar-day.other-month .calendar-date{color:var(--ink-faint)}
+.calendar-grid:not(.week-mode) .calendar-event{width:6px!important;height:6px!important;border-radius:50%!important;margin-top:4px!important;padding:0!important;font-size:0;align-self:center}
+.calendar-toolbar #calendarMonth{background:none;border:0;font-weight:700;font-size:17px;padding:0 4px;width:auto;min-height:40px}
+.calendar-toolbar .btn{min-height:40px}
+.vacation-eyebrow{text-transform:none!important;letter-spacing:0!important;font-size:13px}
+.calendar-month-card .calendar-legend{font-size:12.5px}
+
+/* Kleinteile */
+.mm-version{padding:10px 14px 4px;font-size:12px;color:var(--ink-faint);text-align:center}
+.regular-fix-btns{display:flex;gap:6px;flex:none}
+#myWidgets .my-widget{padding:18px}
 
 /* Dunkelmodus */
-html[data-theme="dark"]{--ground:#0B1018;--surface:#151C27;--line:#263142;--ink:#E8EDF5;--ink-soft:#A3AEBE}
-html[data-theme="dark"] .field :is(input,select,textarea){background:#1C2533}
-html[data-theme="dark"] .btn.primary{background:var(--grad)}
-html[data-theme="dark"] body[data-office-role="employee"] .tabbar{background:rgba(28,37,51,.96)}
-html[data-theme="dark"] .btn.good{background:#123323;color:#6CCB9B}
+html[data-theme="dark"]{--ground:#0E131B;--surface:#161D28;--line:#252F3E;--ink:#E7ECF3;--ink-soft:#A1ACBC;--ink-faint:#6F7B8D;--mint-wash:#12302A}
+html[data-theme="dark"] .btn.link{color:var(--accent);background:none;border:0}
+html[data-theme="dark"] .btn.primary{background:var(--accent-hi)}
+html[data-theme="dark"] body[data-office-role="employee"] .tabbar{background:color-mix(in srgb,var(--surface) 94%,transparent);border-top-color:var(--line)}
+html[data-theme="dark"] .my-row[data-my] .my-row-icon{background:var(--accent-wash);color:var(--accent)}
+html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav){background:var(--surface);border-color:var(--line)}
 </style>
 <link rel="stylesheet" href="../date-inputs.css">
 </head>
@@ -3466,8 +3539,8 @@ html[data-theme="dark"] .btn.good{background:#123323;color:#6CCB9B}
 <script src="../date-inputs.js"></script>
 <script src="week-planner.js"></script>
 <script src="absence-calendar.js?v=2"></script>
-<script src="regular-week.js?v=8"></script>
-<script src="guided-intro.js?v=3"></script>
+<script src="regular-week.js?v=9"></script>
+<script src="guided-intro.js?v=4"></script>
 <script>
 (() => {
   "use strict";
@@ -7410,7 +7483,9 @@ html[data-theme="dark"] .btn.good{background:#123323;color:#6CCB9B}
     const sub = held
       ? `<span class="cc-note">${esc(c.hold_note)}</span>`
       : `<span class="cc-sub">${esc(attemptText(c))}${contactRequest(c)||c.teams||c.branch_id?" · ":""}${contactRequest(c) ? `Kontaktdaten von ${esc(contactRequest(c).name)} erfragen` : esc(c.teams||c.branch_id?placeLabel(c):"")}${callScriptData(c).kind ? ` · <b>Kind ${esc(kindText(callScriptData(c).kind))}</b>` : ""}</span>`;
+    const initials = String(c.customer_name || "?").split(/[,\s]+/).filter(Boolean).slice(0, 2).reverse().map(w => w[0]).join("").toUpperCase();
     return `<button class="cc-head" type="button" data-call-toggle aria-expanded="${open}">
+      <span class="cc-avatar" aria-hidden="true">${esc(initials)}</span>
       <span class="cc-main"><span class="cc-name">${esc(c.customer_name)}</span>${sub}</span>
       ${held ? "" : attemptDots(shownAttempts(c))}
       ${CHEVRON}
@@ -11574,7 +11649,7 @@ html[data-theme="dark"] .btn.good{background:#123323;color:#6CCB9B}
   };
   // App-Farbe: Knöpfe, Leiste unten, Markierungen (immer mit weißer Schrift lesbar)
   const MY_ACCENTS = {
-    weiss:    { name: "Standard",   accent: "#3157E3", hi: "#1F3DAE", wash: "#EAEFFF" },
+    weiss:    { name: "Standard",   accent: "#2450D8", hi: "#1A3BA8", wash: "#E9EEFC" },
     himmel:   { name: "Himmelblau", accent: "#1C64B4", hi: "#154F8F", wash: "#E1EEFB" },
     mint:     { name: "Mint",       accent: "#17765A", hi: "#115C46", wash: "#DDF2EA" },
     pfirsich: { name: "Pfirsich",   accent: "#B4491F", hi: "#8F3816", wash: "#FBE6DB" },
@@ -11586,7 +11661,7 @@ html[data-theme="dark"] .btn.good{background:#123323;color:#6CCB9B}
     grafit:   { name: "Grafit",     accent: "#2B323B", hi: "#1B2026", wash: "#E7EAEE" }
   };
   const MY_FONTS = {
-    klar:    { name: "Klar",        head: '"Plus Jakarta Sans"', body: '"Plus Jakarta Sans"', css: null },
+    klar:    { name: "Klar",        head: '"Onest"', body: '"Onest"', css: null },
     rund:    { name: "Rund",        head: '"Nunito"',        body: '"Nunito"',        css: "family=Nunito:wght@400;500;600;700;800" },
     elegant: { name: "Elegant",     head: '"Fraunces"',      body: '"IBM Plex Sans"', css: "family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700" },
     hand:    { name: "Handschrift", head: '"Caveat"',        body: '"IBM Plex Sans"', css: "family=Caveat:wght@600;700" }
@@ -11864,13 +11939,48 @@ html[data-theme="dark"] .btn.good{background:#123323;color:#6CCB9B}
     </section>`;
   }
 
+  // Office 2.0: oben die Woche als Balken, darunter eine ruhige Liste – Anpassen nutzt weiter die Widgets.
+  function myWeekHero() {
+    const w = regularWeek.data, ws = mondayOfWeek(isoDate()), names = ["Mo", "Di", "Mi", "Do", "Fr"];
+    let days, soll;
+    if (w?.active && w.week === ws) {
+      days = (w.days || []).map((d, i) => ({ date: d.date, label: names[i], minutes: (d.entries || []).reduce((n, e) => n + e.work_minutes, 0), off: Boolean(d.holidayName || d.absence) }));
+      soll = w.targetMinutes || 0;
+    } else {
+      days = names.map((label, i) => { const date = addDaysIso(ws, i); return { date, label, minutes: state.entries.filter(e => e.date === date).reduce((n, e) => n + e.minutes, 0) }; });
+      const a = ownWeekAccount().weeks.find(x => x.weekStart === ws); soll = a ? a.soll : CONTRACT_WEEKLY_HOURS * 60;
+    }
+    const ist = days.reduce((n, d) => n + d.minutes, 0), rest = Math.max(0, soll - ist);
+    return `<section class="my-hero${soll && !rest ? " is-done" : ""}" data-my="einsatz">
+      <div class="my-hero-top"><div><span class="my-hero-label">Diese Woche</span><div class="my-hero-num">${esc(fmtMinutes(ist).replace(" h", ""))}<small> / ${esc(fmtMinutes(soll))}</small></div></div>
+      <span class="my-hero-rest">${rest ? `noch ${esc(fmtMinutes(rest))}` : "Ziel erreicht ✓"}</span></div>
+      ${window.OfficeRegularWeek.weekChart(days, isoDate(), fmtMinutes)}
+      <button class="btn primary" type="button" data-my-act="zeiten">Arbeitszeit eintragen</button>
+    </section>`;
+  }
+  function myRowHtml(key) {
+    const row = (act, title, value, sub = "") => `<button type="button" class="my-row" data-my="${key}" data-my-act="${act}"><span class="my-row-icon">${myIcon(key)}</span><span class="my-row-text"><b>${esc(title)}</b>${sub ? `<small>${esc(sub)}</small>` : ""}</span><span class="my-row-val">${esc(value)}</span><svg class="i my-row-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>`;
+    if (key === "telefon") { const open = (state.calls || []).filter(c => !isHeld(c)); return row("telefon", "Telefonliste", open.length ? `${open.length} offen` : "erledigt", open[0] ? `Als Nächstes: ${open[0].customer_name}` : ""); }
+    if (key === "monat") { const m = inMonth(state.entries, isoMonth()), adj = adjustSum(adjustmentsFor(state.ownAdjustments, isoMonth())), st = appointmentStanding(m, adj); return row("zeiten", `Termine im ${fmtMonth(isoMonth()).split(" ")[0]}`, `${st.total} / ${state.settings.goalAppointments}`, st.hasDrafts ? `${st.provisional} noch vorläufig` : ""); }
+    if (key === "kalender") return row("kalender", "Kalender & Urlaub", "", "Freie Tage, Urlaub beantragen");
+    if (key === "aufgaben") { const open = displayedTasks().filter(t => t.status === "open" && !isInbox(t)); return row("aufgaben", "Aufgaben", open.length ? `${open.length} offen` : "keine", open[0]?.title || ""); }
+    if (key === "meintag") { const today = isoDate(), called = (state.calls || []).filter(c => (c.attempt_log || []).some(ts => isoDate(parseTimestamp(ts)) === today)).length; return row("telefon", "Heute angerufen", String(called)); }
+    if (key === "woche") { const a = ownWeekAccount(); return row("zeiten", "Wochenkonto", a.owed > 0 ? `${fmtMinutes(a.owed)} offen` : "ausgeglichen"); }
+    if (key === "filialen") return row("termine", "Termin buchen", "", "Filiale oder Videocall");
+    return "";
+  }
+  function myStartHtml() {
+    const rows = myPrefs.widgets.filter(k => k !== "einsatz" && k !== "merkzettel").map(myRowHtml).join("");
+    return myWeekHero() + (rows ? `<div class="my-group">${rows}</div>` : "") + (myPrefs.widgets.includes("merkzettel") ? myWidgetHtml("merkzettel") : "");
+  }
+
   function renderMyStart() {
     const host = $("myWidgets");
     if (!host || state.role !== "employee") return;
     if (host.contains(document.activeElement) && document.activeElement.matches("[data-my-note]")) return; // nicht beim Tippen neu zeichnen
     const hidden = Object.keys(MY_WIDGETS).filter(k => !myPrefs.widgets.includes(k));
     host.innerHTML = (myEditing ? myAppearanceHtml() : "")
-      + myPrefs.widgets.map(myWidgetHtml).join("")
+      + (myEditing ? myPrefs.widgets.map(myWidgetHtml).join("") : myStartHtml())
       + (myEditing && hidden.length ? myPrefs.widgets.length >= MY_MAX
         ? `<section class="my-add"><h2>Widget hinzufügen</h2><p class="my-muted">Es sind schon ${MY_MAX} Widgets auf deiner Startseite. Blende eines aus (×), um ein anderes hinzuzufügen.</p></section>`
         : `<section class="my-add"><h2>Widget hinzufügen</h2><div class="my-add-list">${hidden.map(k =>
@@ -11911,6 +12021,7 @@ html[data-theme="dark"] .btn.good{background:#123323;color:#6CCB9B}
     if (act === "zeiten") return showPage("zeiten");
     if (act === "telefon") return showPage("telefon");
     if (act === "aufgaben") return showPage("organisation");
+    if (act === "termine") return showPage("termine");
     if (act === "cancel") {
       const p = (state.plans || []).find(x => String(x.id) === t.dataset.plan);
       if (p) openPlanCancel(p);

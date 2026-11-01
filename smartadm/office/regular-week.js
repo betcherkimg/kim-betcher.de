@@ -12,6 +12,12 @@ function appointmentStanding(entries,adjustment=0){
  const total=Math.max(0,count(entries)+Number(adjustment||0)),official=Math.max(0,count(confirmed)+Number(adjustment||0));
  return {total,official,provisional:total-official,hasDrafts:drafts.length>0};
 }
+// Wochenbalken Mo–Fr: Höhe = gearbeitete Zeit (2 Std. = volle Höhe), heute markiert.
+function weekChart(days,today,fmtMin){
+ const max=Math.max(120,...days.map(d=>d.minutes||0));
+ return `<div class="wc" role="img" aria-label="Arbeitszeit pro Tag">${days.map(d=>{const m=d.minutes||0,h=m?Math.max(10,Math.round(m/max*100)):0;
+  return `<div class="wc-col${d.date===today?' is-today':''}${d.off?' is-off':''}"><span class="wc-val">${m?fmtMin(m).replace(' h',''):''}</span><span class="wc-track"><span class="wc-fill" style="height:${h}%"></span></span><span class="wc-day">${d.label}</span></div>`;}).join('')}</div>`;
+}
 function create(b){
  const {$,esc,api}=b,names=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
  const fmt=d=>new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',timeZone:'UTC'}).format(new Date(d+'T12:00Z'));
@@ -32,7 +38,9 @@ function create(b){
   const actual=(data.days||[]).flatMap(d=>d.entries||[]),actualMin=actual.reduce((n,e)=>n+e.work_minutes,0),appts=actual.reduce((n,e)=>n+Number(e.appointments||0),0);
   const target=data.targetMinutes||0,rest=Math.max(0,target-actualMin),pct=target?Math.min(100,Math.round(actualMin/target*100)):0;
   $('regularSummary').classList.toggle('is-done',target>0&&rest===0);
-  $('regularSummary').innerHTML=`<div class="wk-top"><span class="wk-now">${esc(b.minutes(actualMin))} <small>von ${esc(b.minutes(target))}${data.holidayMinutes?' · Feiertagswoche':''}</small></span><span class="wk-meta">${appts} ${appts===1?'Termin':'Termine'}</span></div><div class="wk-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><span style="width:${pct}%"></span></div><div class="wk-meta">${data.confirmed?'Abgesendet ✓':rest?`Noch ${esc(b.minutes(rest))} offen`:'Wochenziel erreicht'}</div>`;
+  const short2=['','Mo','Di','Mi','Do','Fr'];
+  const chartDays=(data.days||[]).map(d=>({date:d.date,label:short2[d.weekday]||'',minutes:(d.entries||[]).reduce((n,e)=>n+e.work_minutes,0),off:Boolean(d.holidayName||d.absence)}));
+  $('regularSummary').innerHTML=`<div class="wk-top"><span class="wk-now">${esc(b.minutes(actualMin).replace(' h',''))}<small> / ${esc(b.minutes(target))}</small></span><span class="wk-meta">${data.confirmed?'Abgesendet ✓':rest?`noch ${esc(b.minutes(rest))}`:'Ziel erreicht ✓'}</span></div>${weekChart(chartDays,b.today(),b.minutes)}<div class="wk-sub">${appts} ${appts===1?'Termin':'Termine'}${data.holidayMinutes?' · Feiertagswoche':''}</div>`;
   const now=b.today(),locked=data.confirmed||week!==mon(now)&&!data.correctionOpen,absNames={vacation:'Urlaub',sick:'Krankheit',paid_leave:'Bezahlte Freistellung'};
   const old=(data.allocations||[]).filter(e=>e.entry_state==='draft'&&!e.submission_id);
   // Nur Tage mit Einträgen, offenen Altangaben, Feiertag oder Abwesenheit – keine leeren Wochentage.
@@ -129,5 +137,5 @@ function create(b){
  $('regularOverdueGo').addEventListener('click',async()=>{week=$('regularOverdueGo').dataset.week;b.closeDialog($('regularOverdueDialog'));b.showPage('zeiten');await load();$('regularWeekCard').scrollIntoView({block:'start'});});
  return {load,onboarding,afterNotices,choose,render,get data(){return data},get patterns(){return pattern?.patterns||[]},flush,get slot(){return selectedSlot},async selectWeek(value){week=value;await load()},entrySlot(){return $('entryRegularSlot').value||null}};
 }
-root.OfficeRegularWeek={create,parseDuration,formatDuration,appointmentStanding};
+root.OfficeRegularWeek={create,parseDuration,formatDuration,appointmentStanding,weekChart};
 })(typeof window!=='undefined'?window:globalThis);

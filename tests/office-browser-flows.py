@@ -86,8 +86,8 @@ with sync_playwright() as pw:
   while not page.locator('#whatsNewCheck').is_visible():page.locator('#whatsNewOk').click()
   expect(page.locator('#whatsNewOk')).to_be_disabled()
   page.locator('#whatsNewCheck').check();page.locator('#whatsNewOk').click();expect(page.locator('#planDialog')).not_to_be_visible()
-  expect(page.locator('#planCard')).not_to_be_visible();expect(page.locator('[data-my-act="zeiten"]')).to_be_visible()
-  page.locator('[data-my-act="zeiten"]').click();expect(page.locator('#zeiten')).to_have_class('page active');check_width(page)
+  expect(page.locator('#planCard')).not_to_be_visible();expect(page.locator('.my-hero [data-my-act="zeiten"]')).to_be_visible()
+  page.locator('.my-hero [data-my-act="zeiten"]').click();expect(page.locator('#zeiten')).to_have_class('page active');check_width(page)
   for date in ['2026-10-24T08:00:00Z','2026-10-25T08:00:00Z']:
    page.clock.set_fixed_time(date);page.evaluate('__t.afterEmployeeNotices()');expect(page.locator('#planDialog')).not_to_be_visible()
   # Boss configuration, script metadata round trip, and clean automatic request text.
