@@ -276,7 +276,7 @@
         $("#orderNo").textContent = `${tickets.length} TICKETS`;
       } else if (k) {
         const t = await api(`/public/ticket?k=${encodeURIComponent(k)}`);
-        if (q.get("ansicht") === "admin") $("#orderNo").textContent = "ADMIN-ANSICHT · NICHT GESPEICHERT";
+        if (q.get("ansicht") === "admin") $(".top").insertAdjacentHTML("afterend", `<p style="max-width:380px;margin:-8px auto 18px;padding:10px 14px;border:1px solid var(--uv);border-radius:10px;background:var(--uv-deep);font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-align:center">ADMIN-ANSICHT · WIRD AUF DIESEM GERÄT NICHT GESPEICHERT</p>`);
         else remember({ type: "ticket", key: k });
         tickets = [t]; event = t.event;
       } else { $("#box").innerHTML = `<p class="muted">Kein Ticket angegeben.</p>`; return; }
