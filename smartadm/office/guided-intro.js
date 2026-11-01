@@ -7,8 +7,8 @@ function create(b){
  let index=0,required=false,busy=false,rendering=false,returnPage='dashboard',raf=0;
 
  const steps=[
-  {page:'dashboard',target:'.my-widget[data-my="einsatz"]',title:'Office ist aufgeräumt',
-   text:'Neuer Look, viel weniger Text. Auf der Startseite siehst du sofort, wie viele Stunden dir diese Woche noch fehlen.'},
+  {page:'dashboard',target:'.my-widget[data-my="einsatz"]',title:'Willkommen in Office 2.0',
+   text:'Neues Design, viel weniger Text. Auf der Startseite siehst du sofort, wie viele Stunden dir diese Woche noch fehlen.'},
   {page:'zeiten',target:'#regularWeekCard',title:'Arbeitszeit mit Beginn und Ende',
    text:'Trag den Tag ein, an dem du wirklich gearbeitet hast – welcher Wochentag, ist egal. Ziel: 6 Stunden pro Woche, in einer Feiertagswoche 4.',
    example:'Dienstag 16–18 Uhr → „+ Arbeitszeit eintragen“, Beginn 16:00, Ende 18:00, Termine, Speichern.'},

@@ -11,7 +11,7 @@
 <link rel="icon" type="image/png" sizes="128x128" href="/smartadm/office/office-icon-128-v4.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="manifest" href="/smartadm/office/manifest.webmanifest">
 <link rel="apple-touch-icon" sizes="180x180" href="/smartadm/office/office-touch-180-v4.png">
 <meta name="theme-color" content="#F3F5F6">
@@ -479,9 +479,9 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   --ink-soft: #5D6875;
   --ink-faint: #949EAA;
   --line: #E4E8EB;
-  --accent: #1B4C9C;
-  --accent-hi: #133B7C;
-  --accent-wash: #E8EFFA;
+  --accent: #3157E3;
+  --accent-hi: #1F3DAE;
+  --accent-wash: #EAEFFF;
   --hell: #147BF9;      --hell-wash: #E4F0FE;
   --gelb: #9A6B00;      --gelb-wash: #FAF1DC;
   --gruen: #1F7A52;     --gruen-wash: #E3F2EA;
@@ -1913,6 +1913,115 @@ html[data-theme="dark"] :is(.card,.my-widget,.widget){border-color:var(--line)}
 html[data-theme="dark"] body[data-office-role="employee"] .tabbar{background:color-mix(in srgb,var(--surface) 88%,transparent);border-color:var(--line);box-shadow:0 10px 30px rgba(0,0,0,.45)}
 html[data-theme="dark"] .wk-progress{background:var(--ground)}
 html[data-theme="dark"] .btn.ghost,html[data-theme="dark"] .btn.quiet{background:transparent}
+
+/* =====================================================================
+   Design 2026-11 · Stufe 2 – spürbar moderner
+   Neue Schrift (Plus Jakarta Sans), kräftigeres Blau mit Verlauf,
+   große Seitentitel, Hero-Karten, dunkle schwebende Leiste.
+   ===================================================================== */
+:root{
+  --ground:#EEF1F6;--surface:#fff;--ink:#0F172A;--ink-soft:#526075;--ink-faint:#8A96A8;--line:#E3E8F0;
+  --grad:linear-gradient(135deg,color-mix(in srgb,var(--accent) 78%,#7aa2ff) 0%,var(--accent) 45%,var(--accent-hi) 100%);
+  --shadow:0 1px 2px rgba(15,23,42,.04),0 8px 28px rgba(15,23,42,.07);
+  --r-card:24px;--r-ctl:14px;
+}
+html,body{font-family:"Plus Jakarta Sans","IBM Plex Sans",system-ui,-apple-system,sans-serif;font-feature-settings:"tnum" 1,"cv11" 1}
+body[data-my-font="klar"]{--my-head-font:"Plus Jakarta Sans",system-ui,sans-serif;--my-body-font:"Plus Jakarta Sans",system-ui,sans-serif}
+body{background:var(--ground)}
+.card,.my-widget,.widget{border:0;box-shadow:var(--shadow);border-radius:var(--r-card)}
+.card-head h2,.my-greet,.top-title strong,.calendar-page-head h1{font-weight:800;letter-spacing:-.03em}
+
+/* Knöpfe: Verlauf, kräftig, groß */
+.btn{border-radius:var(--r-ctl);font-weight:700;min-height:48px}
+.btn.small{min-height:36px;border-radius:12px;font-weight:650}
+.btn.primary{background:var(--grad);color:#fff;border:0;box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 32%,transparent)}
+.btn.primary:hover{filter:brightness(1.05);box-shadow:0 8px 22px color-mix(in srgb,var(--accent) 40%,transparent)}
+.btn.primary:disabled{filter:saturate(.35) brightness(1.15);box-shadow:none;opacity:.75}
+.btn.ghost,.btn.quiet{background:var(--surface);border:1.5px solid var(--line);color:var(--ink)}
+.btn.good{background:#E3F7EC;color:#147A45}
+.field input,.field select,.field textarea{background:#F3F6FA;border-radius:var(--r-ctl);min-height:50px;font-weight:500}
+
+/* Kopfzeile am Handy: großer Seitentitel statt Logo (Logo nur auf Start) */
+@media (max-width:760px){
+  .topbar{height:auto;min-height:58px;padding:10px 16px;background:color-mix(in srgb,var(--ground) 82%,transparent);border-bottom:0}
+  body[data-page]:not([data-page="dashboard"]):not([data-page="boss-dashboard"]) .mobile-head{display:none}
+  body[data-page]:not([data-page="dashboard"]):not([data-page="boss-dashboard"]) .top-title{display:block!important;min-width:0}
+  body[data-page]:not([data-page="dashboard"]):not([data-page="boss-dashboard"]) .top-title strong{font-size:26px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .top-title span{display:none}
+  #installAppBtn .label-mobile{display:none}#installAppBtn{padding:0;width:40px;height:40px;justify-content:center}
+  .theme-toggle{width:40px;height:40px}
+  .user-name{display:none}
+  .content{padding-top:8px}
+  /* Kartentitel doppeln den Seitentitel nicht */
+  body[data-office-role="employee"] #telefon .card-head h2,body[data-office-role="employee"] #regularWeekCard .card-head{display:none}
+  .calendar-page-head h1{display:none}
+}
+
+/* Schwebende dunkle Leiste */
+@media (max-width:760px){
+  body[data-office-role="employee"] .tabbar{background:rgba(15,23,42,.94);border:0;box-shadow:0 14px 34px rgba(15,23,42,.30);border-radius:26px;left:12px;right:12px;padding:7px}
+  .tab{color:rgba(255,255,255,.62);font-weight:600}
+  .tab[aria-current="page"],.tab.is-active{background:rgba(255,255,255,.14);color:#fff}
+}
+
+/* Startseite: Begrüßung groß, Hero-Karte „Diese Woche“ */
+.my-greet{font-size:30px}
+.my-date{font-weight:500}
+.my-widget.is-hero{background:var(--grad);--w-ink:#fff;--w-soft:rgba(255,255,255,.78);--w-accent:#fff;color:#fff;box-shadow:0 14px 34px color-mix(in srgb,var(--accent) 35%,transparent)}
+.my-widget.is-hero .my-w-icon{background:rgba(255,255,255,.18);color:#fff}
+.my-widget.is-hero .my-big{font-size:40px;color:#fff}
+.my-widget.is-hero .my-bar{background:rgba(255,255,255,.25);height:10px}
+.my-widget.is-hero .my-bar>span{background:#fff}
+.my-widget.is-hero .my-muted{color:rgba(255,255,255,.85)}
+.my-widget.is-hero .btn.primary{background:#fff;color:var(--accent-hi);box-shadow:0 6px 16px rgba(0,0,0,.12)}
+.my-w-icon{border-radius:12px}
+.my-widget[data-my="telefon"]:not(.is-hero) .my-w-icon{background:#E3F7EC;color:#147A45}
+.my-widget[data-my="monat"] .my-w-icon{background:#F1EAFE;color:#6D3FD1}
+.my-widget[data-my="kalender"] .my-w-icon{background:#FFF0E0;color:#C25E00}
+.my-widget[data-my="aufgaben"] .my-w-icon{background:#E2F5F8;color:#0E7C8C}
+.my-big{font-weight:800}
+
+.my-widget.is-hero h2,.my-widget.is-hero .my-big small{color:rgba(255,255,255,.85)!important}
+.my-widget.is-hero .my-big{color:#fff!important}
+.mini-calendar button.today{background:var(--grad)!important;color:#fff!important}
+.mm-version{padding:10px 14px 4px;font-size:12px;color:var(--ink-faint);text-align:center}
+
+/* Arbeitszeiten: Fortschritt als Hero */
+.wk-progress{background:var(--grad);color:#fff;border-radius:20px;padding:18px}
+.wk-progress .wk-now{font-size:30px;font-weight:800}
+.wk-progress .wk-now small,.wk-progress .wk-meta{color:rgba(255,255,255,.85)}
+.wk-progress .wk-bar{background:rgba(255,255,255,.25);height:10px}
+.wk-progress .wk-bar>span{background:#fff}
+.wk-progress.is-done{background:linear-gradient(135deg,#22A866,#13784A)}
+.wk-progress.is-done .wk-bar>span{background:#fff}
+#regularRows .regular-day b{font-weight:800}
+
+/* Telefonliste */
+.call-card{border:0;background:var(--surface);box-shadow:0 1px 2px rgba(15,23,42,.05),0 4px 14px rgba(15,23,42,.05)}
+.call-card.is-open{box-shadow:0 10px 30px rgba(15,23,42,.12)}
+.cc-name{font-weight:750}
+.count-chip{background:var(--grad);color:#fff}
+
+/* Telefonliste am Handy: Kontaktkarten direkt auf dem Hintergrund */
+@media (max-width:760px){
+  body[data-office-role="employee"] #telefon > .card[data-role="employee"]{background:transparent;box-shadow:none;padding:0}
+  #telefon .call-list{gap:10px}
+}
+
+/* Kalender: Tageszahl mittig */
+.calendar-day{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;border-radius:14px}
+.calendar-date{width:100%;text-align:center;font-weight:700}
+.calendar-day.today .calendar-date{color:var(--accent)}
+.calendar-day.selected{background:var(--grad)!important;color:#fff}
+.calendar-day.selected .calendar-date{color:#fff}
+.calendar-grid:not(.week-mode) .calendar-event{width:70%;align-self:center}
+
+/* Dunkelmodus */
+html[data-theme="dark"]{--ground:#0B1018;--surface:#151C27;--line:#263142;--ink:#E8EDF5;--ink-soft:#A3AEBE}
+html[data-theme="dark"] .field :is(input,select,textarea){background:#1C2533}
+html[data-theme="dark"] .btn.primary{background:var(--grad)}
+html[data-theme="dark"] body[data-office-role="employee"] .tabbar{background:rgba(28,37,51,.96)}
+html[data-theme="dark"] .btn.good{background:#123323;color:#6CCB9B}
 </style>
 <link rel="stylesheet" href="../date-inputs.css">
 </head>
@@ -3355,7 +3464,7 @@ html[data-theme="dark"] .btn.ghost,html[data-theme="dark"] .btn.quiet{background
 <script src="week-planner.js"></script>
 <script src="absence-calendar.js?v=2"></script>
 <script src="regular-week.js?v=7"></script>
-<script src="guided-intro.js?v=2"></script>
+<script src="guided-intro.js?v=3"></script>
 <script>
 (() => {
   "use strict";
@@ -3694,6 +3803,7 @@ html[data-theme="dark"] .btn.ghost,html[data-theme="dark"] .btn.quiet{background
     if (pageId !== "telefon" && document.body.classList.contains("final-modus")) pageId = "telefon";
     $$(".nav button").forEach(b => b.classList.toggle("active", b.dataset.page === pageId));
     syncTabbar(pageId);
+    document.body.dataset.page = pageId;
     if (typeof closeMoreSheet === "function" && !$("moreSheet").hidden) closeMoreSheet();
     $$("#mobileMenu [data-page]").forEach(b => (b.dataset.page === pageId ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
     closeMobileMenu();
@@ -11461,7 +11571,7 @@ html[data-theme="dark"] .btn.ghost,html[data-theme="dark"] .btn.quiet{background
   };
   // App-Farbe: Knöpfe, Leiste unten, Markierungen (immer mit weißer Schrift lesbar)
   const MY_ACCENTS = {
-    weiss:    { name: "Standard",   accent: "#1B4C9C", hi: "#133B7C", wash: "#E8EFFA" },
+    weiss:    { name: "Standard",   accent: "#3157E3", hi: "#1F3DAE", wash: "#EAEFFF" },
     himmel:   { name: "Himmelblau", accent: "#1C64B4", hi: "#154F8F", wash: "#E1EEFB" },
     mint:     { name: "Mint",       accent: "#17765A", hi: "#115C46", wash: "#DDF2EA" },
     pfirsich: { name: "Pfirsich",   accent: "#B4491F", hi: "#8F3816", wash: "#FBE6DB" },
@@ -11473,7 +11583,7 @@ html[data-theme="dark"] .btn.ghost,html[data-theme="dark"] .btn.quiet{background
     grafit:   { name: "Grafit",     accent: "#2B323B", hi: "#1B2026", wash: "#E7EAEE" }
   };
   const MY_FONTS = {
-    klar:    { name: "Klar",        head: '"IBM Plex Sans"', body: '"IBM Plex Sans"', css: null },
+    klar:    { name: "Klar",        head: '"Plus Jakarta Sans"', body: '"Plus Jakarta Sans"', css: null },
     rund:    { name: "Rund",        head: '"Nunito"',        body: '"Nunito"',        css: "family=Nunito:wght@400;500;600;700;800" },
     elegant: { name: "Elegant",     head: '"Fraunces"',      body: '"IBM Plex Sans"', css: "family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700" },
     hand:    { name: "Handschrift", head: '"Caveat"',        body: '"IBM Plex Sans"', css: "family=Caveat:wght@600;700" }
@@ -11728,7 +11838,8 @@ html[data-theme="dark"] .btn.ghost,html[data-theme="dark"] .btn.quiet{background
         <div class="my-swatches" role="group" aria-label="Kartenfarbe">${Object.entries(MY_COLORS).map(([id, c]) =>
           `<button type="button" class="my-swatch" data-my-color="${id}" data-key="${key}" style="--sw:${c.bg}" aria-pressed="${(myPrefs.colors[key] || "weiss") === id}" title="${esc(c.name)}"></button>`).join("")}</div>
       </div>`;
-    return `<section class="my-widget${compact ? " is-compact" : ""}${color === MY_COLORS.grafit ? " is-dark" : ""}" data-my="${key}" style="${style}">
+    const hero = key === "einsatz" && color === MY_COLORS.weiss;
+    return `<section class="my-widget${compact ? " is-compact" : ""}${color === MY_COLORS.grafit ? " is-dark" : ""}${hero ? " is-hero" : ""}" data-my="${key}" style="${style}">
       <div class="my-w-head"><span class="my-w-icon">${myIcon(key)}</span><h2>${esc(w.title)}</h2></div>
       ${tools}
       <div class="my-w-body">${MY_BODY[key](compact)}</div>
@@ -11812,6 +11923,7 @@ html[data-theme="dark"] .btn.ghost,html[data-theme="dark"] .btn.quiet{background
   /* --- Leiste unten und „Mehr“ (Handy) --- */
 
   const TAB_PAGES = ["dashboard", "telefon", "zeiten", "kalender"];
+  const OFFICE_VERSION = "2.0.0";
   function syncTabbar(pageId) {
     $$("#tabbar [data-page]").forEach(b => (b.dataset.page === pageId ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
     $("tabMore").classList.toggle("is-active", !TAB_PAGES.includes(pageId));
@@ -11824,6 +11936,7 @@ html[data-theme="dark"] .btn.ghost,html[data-theme="dark"] .btn.quiet{background
       const active = $(el.dataset.page)?.classList.contains("active");
       return `<button class="mm-item" type="button" data-page="${esc(el.dataset.page)}"${active ? ' aria-current="page"' : ""}>${el.querySelector("svg")?.outerHTML || ""}<span>${esc(label)}</span></button>`;
     }).join("") + `<hr class="mm-sep"><button class="mm-item" type="button" id="moreCustomize"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>Startseite anpassen</span></button>`;
+    $("moreList").insertAdjacentHTML("beforeend", `<div class="mm-version">SmartADM 5 Office · Version ${OFFICE_VERSION}</div>`);
     $("moreSheet").hidden = false;
     $("tabMore").setAttribute("aria-expanded", "true");
   }
