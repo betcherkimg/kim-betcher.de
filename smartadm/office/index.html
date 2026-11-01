@@ -2114,6 +2114,68 @@ body{background:var(--ground)}
 .my-hero.is-colored .wc-col.is-today .wc-track{box-shadow:inset 0 0 0 2px var(--w-accent)}
 .my-hero.is-colored .my-hero-rest{background:color-mix(in srgb,var(--w-accent) 14%,transparent);color:var(--w-accent)}
 
+
+/* ===== Office 2.0 · Feinschliff ===== */
+/* Fenster am Handy als Blatt von unten, ruhiges Schließen-Symbol */
+.picker-close{width:34px;height:34px;padding:0;border:0;border-radius:50%;background:var(--ground);color:var(--ink-soft);font-size:0;display:grid;place-items:center}
+.picker-close span{font-size:22px;line-height:1}
+.picker-close:hover{background:var(--line);color:var(--ink)}
+html[data-theme="dark"] .picker-close{background:var(--ground);color:var(--ink-soft)}
+.picker-head{border-bottom:0;padding:16px 18px 10px}
+.picker-head strong{font-size:18px;font-weight:700;letter-spacing:-.02em}
+@media (max-width:760px){
+  body[data-office-role="employee"] :is(dialog.picker,dialog.form-dialog,dialog.note-dialog:not(#whatsNew))[open]{
+    margin:auto 0 0;width:100%;max-width:100%;max-height:90dvh;border-radius:24px 24px 0 0;
+    padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -10px 30px rgba(15,23,42,.18);animation:sheet-up .25s ease}
+  body[data-office-role="employee"] :is(dialog.picker,dialog.form-dialog,dialog.note-dialog:not(#whatsNew))[open]::before{content:"";display:block;width:40px;height:5px;border-radius:9px;background:var(--line);margin:8px auto 0;flex:none}
+  body[data-office-role="employee"] :is(dialog.picker,dialog.form-dialog,dialog.note-dialog)::backdrop{background:rgba(15,23,42,.38)}
+}
+.picker-item{background:var(--ground);border-radius:14px}
+
+/* Kopf: Symbole leise, Platz für die iPhone-Statusleiste */
+@media (max-width:760px){
+  .topbar{padding-top:calc(12px + env(safe-area-inset-top,0px))}
+  #installAppBtn,.theme-toggle{background:none!important;color:var(--ink-soft);width:36px;height:36px}
+}
+
+/* Arbeitszeiten: Wochenwahl schlicht, Monatsstand nach unten */
+#zeiten.page.active{display:flex;flex-direction:column}
+#zeiten [data-own-appointment-standing]{order:5}
+#zeiten #regularWeekCard{order:1}
+#zeiten #timeCard,#zeiten #legacyTimeOverview{order:2}
+.wk-nav{background:none!important;border:0!important;padding:0;margin:0 0 6px}
+.wk-nav b{font-size:16px;font-weight:600}
+.wk-nav .btn{width:40px;height:40px;min-height:40px;padding:0;border-radius:50%;background:var(--surface)!important;border:1px solid var(--line)!important}
+#regularRows .regular-entry .btn.small{min-height:32px;padding:4px 12px;border-radius:99px;border:0;background:var(--ground);color:var(--ink);font-size:13.5px}
+#regularRows .regular-day>div:first-child{font-size:14px;color:var(--ink-soft)}
+#regularRows .regular-day>div:first-child b{color:var(--ink);font-size:15.5px}
+
+/* Kontaktkarte: Hinweis als ruhiger Kasten */
+.cc-text{background:var(--ground);border-radius:12px;padding:10px 12px;font-size:14.5px}
+.cc-text b{display:block;font-size:12.5px;color:var(--ink-soft);font-weight:600;margin-bottom:2px}
+.call-group-title{font-size:14px;font-weight:600;color:var(--ink-soft);margin:6px 2px 8px}
+
+/* Kalender-Leiste kompakt in einer Zeile */
+@media (max-width:760px){
+  .calendar-toolbar{flex-wrap:wrap;gap:6px}
+  .calendar-toolbar .type-switch{margin:0 0 0 auto}
+  #calendarToday{order:5}
+}
+
+/* Nachricht an Kim: kurze Felder nebeneinander */
+#taskRequestForm .form-grid{grid-template-columns:1fr 1fr}
+#taskRequestForm .form-grid .full{grid-column:1/-1}
+#taskRequestForm .actions .btn{width:100%}
+
+
+/* Urlaubsauswahl wie der Kalender: Kreise statt Kästchen */
+.leave-date-choices{gap:2px}
+.leave-date-choice>span{width:42px;height:42px;min-height:42px;margin:3px auto;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--accent) 45%,transparent);background:none;font-weight:600}
+.leave-date-choice input:disabled+span{border-color:transparent;background:none;color:var(--ink-faint);font-weight:500}
+.leave-date-choice.holiday>span{background:none;border-color:transparent;color:var(--lila)}
+.leave-date-choice small{display:none}
+.picker-close:not(:has(span))::after{content:"×";font-size:22px;line-height:1}
+
 /* Kleinteile */
 .mm-version{padding:10px 14px 4px;font-size:12px;color:var(--ink-faint);text-align:center}
 .regular-fix-btns{display:flex;gap:6px;flex:none}
@@ -3466,7 +3528,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
 <dialog id="leaveRequestDialog" class="form-dialog vacation-dialog" aria-labelledby="leaveRequestTitle">
  <div class="picker-head"><strong id="leaveRequestTitle">Urlaub beantragen</strong><button class="picker-close" type="button" id="leaveRequestClose" aria-label="Urlaubsantrag schließen">×</button></div>
  <div class="form-dialog-body"><form id="leaveRequestForm">
-  <p class="vacation-intro">Tippe auf die Tage, an denen du Urlaub möchtest.</p>
+  <p class="vacation-intro">Tippe die Tage an.</p>
   <div id="leaveBalance" class="leave-balance"></div>
   <div class="field" id="leaveKindField" hidden><label for="leaveKind">Antrag</label><select id="leaveKind"><option value="vacation">Urlaub beantragen</option><option value="holiday">Feiertagsausfall prüfen lassen</option></select></div>
   <div class="leave-picker-toolbar"><button class="btn ghost" id="leavePrevMonth" type="button" aria-label="Vorheriger Urlaubsmonat">‹</button><b id="leavePickerMonth"></b><button class="btn ghost" id="leaveNextMonth" type="button" aria-label="Nächster Urlaubsmonat">›</button></div>
@@ -3476,7 +3538,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   <div id="leaveSelectionSummary" class="leave-selection-summary" aria-live="polite"></div>
   <div class="field"><label for="leaveNote">Nachricht an Kim <span class="calendar-optional">(optional)</span></label><textarea id="leaveNote" maxlength="500" rows="2" placeholder="Möchtest du etwas dazu sagen?"></textarea></div>
   <p id="leaveFormStatus" class="status-text" aria-live="polite"></p>
- </form></div><div class="leave-form-footer"><button class="btn primary" id="leaveRequestSend" type="submit" form="leaveRequestForm" disabled>Antrag absenden</button><p class="leave-submit-hint">Dein Urlaub ist genehmigt, sobald Kim den Antrag bestätigt.</p></div></dialog>
+ </form></div><div class="leave-form-footer"><button class="btn primary" id="leaveRequestSend" type="submit" form="leaveRequestForm" disabled>Antrag absenden</button><p class="leave-submit-hint">Kim bestätigt den Antrag.</p></div></dialog>
 <dialog id="leaveDecisionDialog" class="form-dialog" data-role="boss" aria-labelledby="leaveDecisionTitle"><div class="picker-head"><strong id="leaveDecisionTitle">Antrag prüfen</strong><button class="picker-close" type="button" id="leaveDecisionClose">Schließen ×</button></div><div class="form-dialog-body"><p class="notice">Vorschläge sind noch keine endgültige Abrechnung. Solltage, Referenzverdienst, Provisionskorrekturen, Zielbonus und unverschuldete Ausfälle prüfen. Keine fiktiven Kundentermine anlegen.</p><div id="leaveDecisionDays"></div><div class="field"><label for="leaveDecisionNote">Entscheidungsgrund / geprüfte Berechnungsgrundlage</label><textarea id="leaveDecisionNote" maxlength="1000" rows="3"></textarea></div><label class="check-row"><input id="leaveDecisionConfirm" type="checkbox"><span>Ich habe die tatsächlichen Solltage und die vollständige Vergütung einschließlich relevanter variabler Bestandteile geprüft.</span></label><label class="check-row"><input id="leaveAdvance" type="checkbox"><span>Falls erforderlich: freiwilligen Vorgriff auf noch nicht verfügbaren Urlaub ausdrücklich genehmigen.</span></label><label class="check-row"><input id="leaveExtraDays" type="checkbox"><span>Falls erforderlich: abweichend mehr als drei Soll-Arbeitstage in dieser Woche bestätigen.</span></label><p id="leaveDecisionStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button id="leaveApprove" class="btn primary" type="button">Geprüft genehmigen</button><button id="leaveReject" class="btn ghost" type="button">Mit Grund ablehnen</button><button id="leaveCancel" class="btn ghost" type="button">Stornierung bestätigen</button></div><div id="leavePaidWrap"><hr><label for="leavePaidDate">Tatsächlich ausgezahlt am</label><input id="leavePaidDate" type="date"><button id="leaveMarkPaid" class="btn ghost" type="button">Ausgeführte Zahlung vermerken</button><small>Dieser Vermerk löst keine Banküberweisung aus.</small></div></div></dialog>
 
 <!-- Kontaktdaten erfragen: kein Terminabschluss -->
@@ -3566,8 +3628,8 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
 
 <script src="../date-inputs.js"></script>
 <script src="week-planner.js"></script>
-<script src="absence-calendar.js?v=2"></script>
-<script src="regular-week.js?v=9"></script>
+<script src="absence-calendar.js?v=3"></script>
+<script src="regular-week.js?v=10"></script>
 <script src="guided-intro.js?v=4"></script>
 <script>
 (() => {

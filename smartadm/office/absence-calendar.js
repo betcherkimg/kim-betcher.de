@@ -129,12 +129,12 @@ function create(b){
   const source=pickerCache.get(pickerMonth),kind=$('leaveKind').value,start=monday(pickerMonth+'-01'),last=new Date(Date.UTC(Number(pickerMonth.slice(0,4)),Number(pickerMonth.slice(5)),0)).toISOString().slice(0,10),count=Math.ceil(((Date.parse(last)-Date.parse(start))/86400000+1)/7)*7;
   $('leavePickerMonth').textContent=new Date(pickerMonth+'-01T12:00Z').toLocaleDateString('de-DE',{month:'long',year:'numeric'});
   const account=source?.accounts.find(a=>a.year===Number(pickerMonth.slice(0,4)));
-  $('leaveBalance').textContent=account?`${days(account.planningRemaining)} für ${account.year} noch planbar · genehmigte und beantragte Tage sind bereits abgezogen.`:source?'Urlaubskonto für dieses Jahr mit Kim klären.':'Dein Urlaubskonto wird geladen …';
+  $('leaveBalance').textContent=account?`Noch ${days(account.planningRemaining)} für ${account.year} frei.`:source?'Urlaubskonto für dieses Jahr mit Kim klären.':'Dein Urlaubskonto wird geladen …';
   $('leaveDateChoices').innerHTML=['Mo','Di','Mi','Do','Fr','Sa','So'].map(d=>`<span class="calendar-weekday">${d}</span>`).join('')+Array.from({length:count},(_,i)=>{
    const date=add(start,i),other=date.slice(0,7)!==pickerMonth,reason=other?'Anderer Monat':leaveBlocked(date,kind,source),holiday=source?.holidays.find(h=>h.date===date),label=holiday?'Feiertag':reason==='Kein Regeltag'?'Frei':reason==='Bereits beantragt'?'Antrag':reason==='Bereits genehmigt'?'Urlaub':'';
    return `<label class="leave-date-choice${other?' other-month':''}${holiday?' holiday':''}" title="${esc(reason||'Als Urlaub auswählen')}"><input type="checkbox" data-leave-date="${date}" aria-label="${esc(fmt(date)+(reason?' · '+reason:''))}"${reason||pickerBusy||pickerSending?' disabled':''}${pickerDays.has(date)?' checked':''}><span>${Number(date.slice(-2))}${label&&!other?'<small>'+esc(label)+'</small>':''}</span></label>`;
   }).join('');
-  $('leaveFormHint').textContent=kind==='holiday'?'Wähle den Tag und beschreibe unten, warum du ohne Feiertag gearbeitet hättest.':'Auswählbar sind deine Regeltage. Freie Tage, Feiertage und bereits belegte Tage bleiben gesperrt. Tippe erneut auf einen gewählten Tag, um ihn abzuwählen.';
+  $('leaveFormHint').textContent=kind==='holiday'?'Wähle den Tag und beschreibe unten, warum du ohne Feiertag gearbeitet hättest.':'Wählbar sind deine Regeltage.';
   pickerSummary();
  }
  async function requestDays(){
