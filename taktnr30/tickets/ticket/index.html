@@ -135,11 +135,17 @@
     $("#box").innerHTML = `<div class="tickets">${tickets.map(card).join("")}</div>
       <div class="actions">
         <button class="btn btn-uv btn-block" id="pdf">${tickets.length > 1 ? "Tickets als PDF speichern" : "Als PDF speichern"}</button>
+        ${k && !o && q.get("ansicht") !== "admin" ? `<button class="lnk" id="forget" style="background:none;border:0;color:var(--dim);font-size:13px;text-decoration:underline;cursor:pointer;justify-self:center">Nicht dein Ticket? Von diesem Gerät entfernen</button>` : ""}
         ${order ? `<button class="btn btn-block" id="resend">Erneut per E-Mail senden</button><p class="note" id="mailInfo" style="text-align:center;margin:0">${order.mail_status === "sent" ? `Per E-Mail an ${esc(order.email)} geschickt.` : order.mail_status === "failed" ? "Die E-Mail konnte noch nicht verschickt werden – dein Ticket ist trotzdem gültig." : ""}</p>` : ""}
       </div>`;
     $("#hint").hidden = false;
     if (tickets.length === 1 && tickets[0].category === "helper" && k) loadShifts();
     $("#pdf").onclick = () => pdf().catch(e => alert("PDF konnte nicht erstellt werden: " + e.message));
+    if ($("#forget")) $("#forget").onclick = () => {
+      if (!confirm("Dieses Ticket von diesem Gerät entfernen? Das Ticket selbst bleibt gültig.")) return;
+      store.set("mine", store.get("mine", []).filter(x => !(x.type === "ticket" && x.key === k)));
+      location.href = "../";
+    };
     if (order) $("#resend").onclick = async () => {
       const b = $("#resend"); b.disabled = true;
       try { const r = await api("/public/order/resend", { method: "POST", body: { access_key: o } }); $("#mailInfo").textContent = r.mail_status === "sent" ? `Gesendet an ${order.email}.` : "Versand gerade nicht möglich – bitte später erneut versuchen."; }
@@ -270,7 +276,8 @@
         $("#orderNo").textContent = `${tickets.length} TICKETS`;
       } else if (k) {
         const t = await api(`/public/ticket?k=${encodeURIComponent(k)}`);
-        remember({ type: "ticket", key: k });
+        if (q.get("ansicht") === "admin") $("#orderNo").textContent = "ADMIN-ANSICHT · NICHT GESPEICHERT";
+        else remember({ type: "ticket", key: k });
         tickets = [t]; event = t.event;
       } else { $("#box").innerHTML = `<p class="muted">Kein Ticket angegeben.</p>`; return; }
       render();

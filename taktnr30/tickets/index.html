@@ -90,6 +90,9 @@
   .pay .sum { display: flex; justify-content: space-between; font-family: var(--mono); padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 0 0 16px; }
   .mine { display: grid; gap: 10px; }
   .mine a.tk { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px; border: 1px solid var(--uv); border-radius: var(--radius); text-decoration: none; color: var(--ink); background: var(--uv-deep); }
+  .mine .row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+  .mine .forget { background: none; border: 1px solid var(--line-2); border-radius: var(--radius); color: var(--dim); width: 48px; cursor: pointer; font-size: 16px; }
+  .mine .forget:hover { color: var(--ink); border-color: var(--ink); }
   .mine .tk small { display: block; font-family: var(--mono); font-size: 12px; color: var(--uv-soft); }
   .codeform { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 18px; }
   .greet { font-size: clamp(24px, 6.5vw, 32px); margin: 0 0 8px; }
@@ -286,10 +289,17 @@
     const ok = items.filter(x => !x.pending);
     if (!ok.length) return "";
     return `<h2 class="greet">Du bist dabei.</h2><p class="muted">Deine Tickets auf diesem Gerät:</p><div class="mine">${ok.map(t => `
-      <a class="tk" href="ticket/?k=${encodeURIComponent(t.view_key)}"><span>${esc(t.first_name)} ${esc(t.last_name)}<small>${esc(t.number)} · ${esc(TAKT.categoryLabel(t))}${t.is_test ? " · TEST" : ""}${t.status !== "valid" ? " · " + (t.status === "blocked" ? "GESPERRT" : "STORNIERT") : ""}</small></span><span class="mono uv" aria-hidden="true">→</span></a>`).join("")}</div>`;
+      <div class="row"><a class="tk" href="ticket/?k=${encodeURIComponent(t.view_key)}"><span>${esc(t.first_name)} ${esc(t.last_name)}<small>${esc(t.number)} · ${esc(TAKT.categoryLabel(t))}${t.is_test ? " · TEST" : ""}${t.status !== "valid" ? " · " + (t.status === "blocked" ? "GESPERRT" : "STORNIERT") : ""}</small></span><span class="mono uv" aria-hidden="true">→</span></a><button class="forget" type="button" data-forget="${esc(t.order ? "order" : "ticket")}" data-key="${esc(t.order || t.view_key)}" aria-label="${esc(t.number)} von diesem Gerät entfernen" title="Nicht meins – von diesem Gerät entfernen">✕</button></div>`).join("")}</div>`;
   }
 
   /* -------- Ticketbereich -------- */
+  // Fremdes Ticket auf diesem Gerät gemerkt (z. B. Link eines Freundes geöffnet) → entfernen
+  document.addEventListener("click", e => {
+    const b = e.target.closest("[data-forget]"); if (!b) return;
+    if (!confirm("Dieses Ticket von diesem Gerät entfernen? Das Ticket selbst bleibt gültig.")) return;
+    store.set("mine", myTickets().filter(x => !(x.type === b.dataset.forget && x.key === b.dataset.key)));
+    renderTickets().then(renderHero);
+  });
   async function renderTickets() {
     const box = $("#ticketBox");
     const mine = await loadMine();
