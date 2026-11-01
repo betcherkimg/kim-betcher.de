@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 2 }
+        with: { fetch-depth: 0 }
       - uses: actions/setup-node@v4
         with: { node-version: '24' }
       - name: Welche Worker haben sich geändert?
@@ -29,8 +29,11 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             case "${{ inputs.worker }}" in beide) list="smartadm-office-api takt30-api";; *) list="${{ inputs.worker }}";; esac
           else
+            # Alle Commits des Pushs prüfen (nicht nur den letzten), z. B. nach einem Merge.
+            base="${{ github.event.before }}"
+            git cat-file -e "$base^{commit}" 2>/dev/null || base="HEAD~1"
             for w in smartadm-office-api takt30-api; do
-              git diff --quiet HEAD~1 HEAD -- "cloudflare/$w/worker.js" || list="$list $w"
+              git diff --quiet "$base" HEAD -- "cloudflare/$w/worker.js" || list="$list $w"
             done
           fi
           echo "list=$list" >> "$GITHUB_OUTPUT"; echo "Worker: $list"
