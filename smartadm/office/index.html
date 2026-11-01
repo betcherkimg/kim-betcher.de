@@ -2086,6 +2086,34 @@ body{background:var(--ground)}
 .vacation-eyebrow{text-transform:none!important;letter-spacing:0!important;font-size:13px}
 .calendar-month-card .calendar-legend{font-size:12.5px}
 
+
+/* Start: Kacheln in Sasis Farben (Raster: Kompakt = halb, Groß = ganz) */
+.my-tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;grid-auto-flow:dense}
+.my-tile{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:120px;padding:16px;border-radius:20px;border:1px solid var(--line);
+  background:var(--w-bg,var(--surface));color:var(--w-ink,var(--ink));text-align:left;font:inherit;cursor:pointer}
+.my-tile.is-colored{border-color:transparent}
+.my-tile.is-wide,.my-tile-note{grid-column:1/-1}
+.my-tile:active{transform:scale(.985)}
+.my-tile-head{display:flex;align-items:center;gap:8px;width:100%;margin-bottom:6px}
+.my-tile-icon{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--w-wash,var(--accent-wash));color:var(--w-accent,var(--accent))}
+.my-tile.is-colored .my-tile-icon{background:color-mix(in srgb,var(--w-accent) 14%,transparent)}
+.my-tile-icon svg{width:17px;height:17px}
+.my-tile-title{font-size:14px;font-weight:600;color:var(--w-soft,var(--ink-soft));flex:1}
+.my-tile-chev{width:16px;height:16px;color:var(--w-soft,var(--ink-faint))}
+.my-tile-val{font-size:30px;font-weight:700;letter-spacing:-.04em;line-height:1.05}
+.my-tile-sub{font-size:13.5px;color:var(--w-soft,var(--ink-soft));line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.my-tile-bar{display:block;width:100%;height:6px;border-radius:99px;margin-top:8px;background:color-mix(in srgb,var(--w-soft,var(--ink-soft)) 18%,transparent);overflow:hidden}
+.my-tile-bar>span{display:block;height:100%;border-radius:inherit;background:var(--w-accent,var(--accent))}
+.my-tile .mini-calendar{width:100%;margin:2px 0 0}
+.my-tile-note .my-widget{margin:0}
+/* Hero in Sasis Farbe */
+.my-hero.is-colored{background:var(--w-bg);color:var(--w-ink);border-color:transparent}
+.my-hero.is-colored .my-hero-label,.my-hero.is-colored .my-hero-num small,.my-hero.is-colored .wc-day,.my-hero.is-colored .wc-val{color:var(--w-soft)}
+.my-hero.is-colored .wc-track{background:color-mix(in srgb,var(--w-soft) 16%,transparent)}
+.my-hero.is-colored .wc-fill{background:var(--w-accent)}
+.my-hero.is-colored .wc-col.is-today .wc-track{box-shadow:inset 0 0 0 2px var(--w-accent)}
+.my-hero.is-colored .my-hero-rest{background:color-mix(in srgb,var(--w-accent) 14%,transparent);color:var(--w-accent)}
+
 /* Kleinteile */
 .mm-version{padding:10px 14px 4px;font-size:12px;color:var(--ink-faint);text-align:center}
 .regular-fix-btns{display:flex;gap:6px;flex:none}
@@ -11951,27 +11979,34 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
       const a = ownWeekAccount().weeks.find(x => x.weekStart === ws); soll = a ? a.soll : CONTRACT_WEEKLY_HOURS * 60;
     }
     const ist = days.reduce((n, d) => n + d.minutes, 0), rest = Math.max(0, soll - ist);
-    return `<section class="my-hero${soll && !rest ? " is-done" : ""}" data-my="einsatz">
+    const heroColor = MY_COLORS[myPrefs.colors.einsatz || "weiss"];
+    return `<section class="my-hero${soll && !rest ? " is-done" : ""}${heroColor !== MY_COLORS.weiss ? " is-colored" : ""}" data-my="einsatz" style="${cardVars(heroColor)}">
       <div class="my-hero-top"><div><span class="my-hero-label">Diese Woche</span><div class="my-hero-num">${esc(fmtMinutes(ist).replace(" h", ""))}<small> / ${esc(fmtMinutes(soll))}</small></div></div>
       <span class="my-hero-rest">${rest ? `noch ${esc(fmtMinutes(rest))}` : "Ziel erreicht ✓"}</span></div>
       ${window.OfficeRegularWeek.weekChart(days, isoDate(), fmtMinutes)}
       <button class="btn primary" type="button" data-my-act="zeiten">Arbeitszeit eintragen</button>
     </section>`;
   }
-  function myRowHtml(key) {
-    const row = (act, title, value, sub = "") => `<button type="button" class="my-row" data-my="${key}" data-my-act="${act}"><span class="my-row-icon">${myIcon(key)}</span><span class="my-row-text"><b>${esc(title)}</b>${sub ? `<small>${esc(sub)}</small>` : ""}</span><span class="my-row-val">${esc(value)}</span><svg class="i my-row-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>`;
-    if (key === "telefon") { const open = (state.calls || []).filter(c => !isHeld(c)); return row("telefon", "Telefonliste", open.length ? `${open.length} offen` : "erledigt", open[0] ? `Als Nächstes: ${open[0].customer_name}` : ""); }
-    if (key === "monat") { const m = inMonth(state.entries, isoMonth()), adj = adjustSum(adjustmentsFor(state.ownAdjustments, isoMonth())), st = appointmentStanding(m, adj); return row("zeiten", `Termine im ${fmtMonth(isoMonth()).split(" ")[0]}`, `${st.total} / ${state.settings.goalAppointments}`, st.hasDrafts ? `${st.provisional} noch vorläufig` : ""); }
-    if (key === "kalender") return row("kalender", "Kalender & Urlaub", "", "Freie Tage, Urlaub beantragen");
-    if (key === "aufgaben") { const open = displayedTasks().filter(t => t.status === "open" && !isInbox(t)); return row("aufgaben", "Aufgaben", open.length ? `${open.length} offen` : "keine", open[0]?.title || ""); }
-    if (key === "meintag") { const today = isoDate(), called = (state.calls || []).filter(c => (c.attempt_log || []).some(ts => isoDate(parseTimestamp(ts)) === today)).length; return row("telefon", "Heute angerufen", String(called)); }
-    if (key === "woche") { const a = ownWeekAccount(); return row("zeiten", "Wochenkonto", a.owed > 0 ? `${fmtMinutes(a.owed)} offen` : "ausgeglichen"); }
-    if (key === "filialen") return row("termine", "Termin buchen", "", "Filiale oder Videocall");
+  // Kacheln: behalten Sasis Farben (Anpassen → Kartenfarbe) und Größen (Kompakt = halbe Breite, Groß = ganze Breite).
+  function myTileHtml(key) {
+    const size = myPrefs.sizes[key] || (["kalender", "filialen"].includes(key) ? "gross" : "kompakt");
+    const color = MY_COLORS[myPrefs.colors[key] || "weiss"], big = size !== "kompakt";
+    const tile = (act, title, value, sub = "", extra = "") => `<div role="button" tabindex="0" class="my-tile${big ? " is-wide" : ""}${color !== MY_COLORS.weiss ? " is-colored" : ""}" data-my="${key}" data-my-act="${act}" style="${cardVars(color)}">
+      <span class="my-tile-head"><span class="my-tile-icon">${myIcon(key)}</span><span class="my-tile-title">${esc(title)}</span><svg class="i my-tile-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+      ${value !== "" ? `<span class="my-tile-val">${esc(value)}</span>` : ""}${sub ? `<span class="my-tile-sub">${esc(sub)}</span>` : ""}${extra}</div>`;
+    if (key === "telefon") { const open = (state.calls || []).filter(c => !isHeld(c)); return tile("telefon", "Telefonliste", String(open.length), open.length ? (big && open[0] ? `offen · als Nächstes ${open[0].customer_name}` : "offen") : "alles erledigt"); }
+    if (key === "monat") { const m = inMonth(state.entries, isoMonth()), adj = adjustSum(adjustmentsFor(state.ownAdjustments, isoMonth())), st = appointmentStanding(m, adj), goal = state.settings.goalAppointments || 40, p = Math.min(100, Math.round(st.total / goal * 100));
+      return tile("zeiten", "Termine", `${st.total}/${goal}`, st.hasDrafts ? `${st.provisional} vorläufig` : "bestätigt", `<span class="my-tile-bar"><span style="width:${p}%"></span></span>`); }
+    if (key === "kalender") return tile("kalender", "Kalender", big ? "" : fmtMonth(isoMonth()).split(" ")[0], big ? "" : "Urlaub & freie Tage", big ? miniCalendarHtml() : "");
+    if (key === "aufgaben") { const open = displayedTasks().filter(t => t.status === "open" && !isInbox(t)); return tile("aufgaben", "Aufgaben", String(open.length), open.length ? (big ? open.slice(0, 2).map(t => t.title).join(" · ") : "offen") : "nichts offen"); }
+    if (key === "meintag") { const today = isoDate(), called = (state.calls || []).filter(c => (c.attempt_log || []).some(ts => isoDate(parseTimestamp(ts)) === today)).length; return tile("telefon", "Heute", String(called), "angerufen"); }
+    if (key === "woche") { const a = ownWeekAccount(); return tile("zeiten", "Wochenkonto", a.owed > 0 ? fmtMinutes(a.owed) : "✓", a.owed > 0 ? "nachzuarbeiten" : "ausgeglichen"); }
+    if (key === "filialen") return tile("termine", "Termin buchen", "", "Filiale oder Videocall");
     return "";
   }
   function myStartHtml() {
-    const rows = myPrefs.widgets.filter(k => k !== "einsatz" && k !== "merkzettel").map(myRowHtml).join("");
-    return myWeekHero() + (rows ? `<div class="my-group">${rows}</div>` : "") + (myPrefs.widgets.includes("merkzettel") ? myWidgetHtml("merkzettel") : "");
+    const tiles = myPrefs.widgets.filter(k => k !== "einsatz").map(k => k === "merkzettel" ? `<div class="my-tile-note">${myWidgetHtml(k, 0)}</div>` : myTileHtml(k)).join("");
+    return myWeekHero() + (tiles ? `<div class="my-tiles">${tiles}</div>` : "");
   }
 
   function renderMyStart() {
@@ -11999,8 +12034,11 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
 
   $("myEditBtn").addEventListener("click", () => setMyEditing(!myEditing));
 
+  $("myWidgets").addEventListener("keydown", event => {
+    if ((event.key === "Enter" || event.key === " ") && event.target.matches(".my-tile")) { event.preventDefault(); event.target.click(); }
+  });
   $("myWidgets").addEventListener("click", event => {
-    const t = event.target.closest("button");
+    const t = event.target.closest("button, .my-tile");
     if (!t) return;
     const key = t.dataset.key;
     const change = fn => { fn(); saveMyPrefs(); applyMyTheme(); renderMyStart(); };
