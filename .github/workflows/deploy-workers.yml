@@ -1,0 +1,61 @@
+# Spielt die Cloudflare-Worker automatisch ein, sobald sich ihr Code auf KimBetcher ändert.
+# Es wird NUR der Code ersetzt (Endpoint ".../content"): D1, Secrets, Variablen, Cron-Trigger bleiben unverändert.
+# Einmalig nötig: GitHub-Secret CLOUDFLARE_API_TOKEN (Workers Scripts: Bearbeiten, Account Settings: Lesen). CLOUDFLARE_ACCOUNT_ID optional.
+name: Worker einspielen
+on:
+  push:
+    branches: [KimBetcher]
+    paths: ['cloudflare/smartadm-office-api/worker.js', 'cloudflare/takt30-api/worker.js']
+  workflow_dispatch:
+    inputs:
+      worker:
+        description: 'Welcher Worker?'
+        type: choice
+        options: [beide, smartadm-office-api, takt30-api]
+        default: beide
+concurrency: { group: deploy-workers, cancel-in-progress: false }
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/setup-node@v4
+        with: { node-version: '24' }
+      - name: Welche Worker haben sich geändert?
+        id: pick
+        run: |
+          list=""
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            case "${{ inputs.worker }}" in beide) list="smartadm-office-api takt30-api";; *) list="${{ inputs.worker }}";; esac
+          else
+            for w in smartadm-office-api takt30-api; do
+              git diff --quiet HEAD~1 HEAD -- "cloudflare/$w/worker.js" || list="$list $w"
+            done
+          fi
+          echo "list=$list" >> "$GITHUB_OUTPUT"; echo "Worker: $list"
+      - name: Prüfen (Syntax + Tests)
+        run: |
+          for w in ${{ steps.pick.outputs.list }}; do node --check "cloudflare/$w/worker.js"; done
+          case "${{ steps.pick.outputs.list }}" in *smartadm-office-api*) node --test tests/office-*.test.cjs;; esac
+          case "${{ steps.pick.outputs.list }}" in *takt30-api*) node --test tests/takt30-worker.test.mjs;; esac
+      - name: Einspielen
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          [ -n "$CF_TOKEN" ] || { echo "::error::GitHub-Secret CLOUDFLARE_API_TOKEN fehlt"; exit 1; }
+          api=https://api.cloudflare.com/client/v4
+          if [ -z "${CF_ACCOUNT:-}" ]; then
+            CF_ACCOUNT=$(curl -fsS -H "Authorization: Bearer $CF_TOKEN" "$api/accounts" | jq -r '.result[0].id')
+          fi
+          for w in ${{ steps.pick.outputs.list }}; do
+            echo "→ $w"
+            out=$(curl -sS -X PUT "$api/accounts/$CF_ACCOUNT/workers/scripts/$w/content" \
+              -H "Authorization: Bearer $CF_TOKEN" \
+              -F 'metadata={"main_module":"worker.js"};type=application/json' \
+              -F "worker.js=@cloudflare/$w/worker.js;filename=worker.js;type=application/javascript+module")
+            echo "$out" | jq -e '.success' >/dev/null || { echo "$out" | jq '.errors'; echo "::error::$w konnte nicht eingespielt werden"; exit 1; }
+            echo "✓ $w eingespielt"
+          done
