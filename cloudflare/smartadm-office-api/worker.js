@@ -246,8 +246,16 @@ async function createEntry({ request, env, owner }) {
   if (closed) return closed;
   // Alte Zeile ohne Uhrzeit wird im selben Schritt durch den echten Eintrag ersetzt.
   const replaceId=Number(body?.replace_allocation)||null;
-  if(replaceId){const old=await first(env,"SELECT * FROM work_entries WHERE id=? AND clerk_user_id=? AND record_kind='weekly_allocation' AND entry_state='draft' AND submission_id IS NULL",replaceId,owner);if(!old||mondayOfWeek(old.work_date)!==mondayOfWeek(work[0]))return err('Die alte Zeile kann hier nicht ersetzt werden. Bitte neu laden.',409);}
+  if(replaceId){const old=await first(env,"SELECT * FROM work_entries WHERE id=? AND clerk_user_id=? AND record_kind='weekly_allocation' AND entry_state='draft' AND submission_id IS NULL",replaceId,owner);if(!old||mondayOfWeek(old.work_date)!==mondayOfWeek(work[0]))return err('Die alte Zeile kann hier nicht ersetzt werden. Bitte neu laden.',409);const oldClosed=await closedMonthError(env,owner,old.work_date);if(oldClosed)return oldClosed;}
 
+  if(replaceId){
+    // Erst die alte Zeile entfernen; nur wenn das geklappt hat, kommt der neue Eintrag (keine Doppelzählung).
+    const gone=await env.DB.batch([
+      stmt(env,"DELETE FROM performance_entries WHERE work_entry_id=? AND clerk_user_id=? AND EXISTS(SELECT 1 FROM work_entries WHERE id=? AND clerk_user_id=? AND record_kind='weekly_allocation' AND entry_state='draft' AND submission_id IS NULL)",[replaceId,owner,replaceId,owner]),
+      stmt(env,"DELETE FROM work_entries WHERE id=? AND clerk_user_id=? AND record_kind='weekly_allocation' AND entry_state='draft' AND submission_id IS NULL",[replaceId,owner])
+    ]);
+    if(!gone[1].meta?.changes)return err('Die alte Zeile wurde inzwischen geändert. Bitte neu laden.',409);
+  }
   const [workResult] = await env.DB.batch([
     stmt(env,
       `INSERT INTO work_entries
@@ -259,11 +267,7 @@ async function createEntry({ request, env, owner }) {
       `INSERT INTO performance_entries
          (clerk_user_id, work_date, appointments, commissionable_appointments, work_entry_id)
        VALUES (?, ?, ?, ?, (SELECT MAX(id) FROM work_entries WHERE clerk_user_id = ?))`,
-      [owner, work[0], ...perf, owner]),
-    ...(replaceId?[
-      stmt(env,"DELETE FROM performance_entries WHERE work_entry_id=? AND clerk_user_id=?",[replaceId,owner]),
-      stmt(env,"DELETE FROM work_entries WHERE id=? AND clerk_user_id=? AND record_kind='weekly_allocation' AND entry_state='draft' AND submission_id IS NULL",[replaceId,owner])
-    ]:[])
+      [owner, work[0], ...perf, owner])
   ]);
 
   return created(workResult);
@@ -5425,7 +5429,7 @@ const routes = [
   route("GET", "/admin/security-monitor", getSecurityMonitor),
   route("GET", "/admin/users", getAdminUsers),
   route("GET", "/admin/entries", listEntries, { target: true }),
-  route("PUT", "/admin/entries/:id", updateEntry, { target: true }),
+  route("PUT", "/admin/entries/:id", async ctx => { const res = await updateEntry(ctx); if (res.status === 200) await runLater(ctx.exec, notifyUser(ctx.env, ctx.owner, { title: "Kim hat einen Eintrag geändert", body: "Bitte deine Arbeitswoche kurz prüfen.", tag: "entry-edit-" + ctx.id, url: hrUrl("zeiten") })); return res; }, { target: true }),
   route("PUT", "/admin/settings", updateSettings),
   route("POST", "/admin/branches", createBranch),
   route("PUT", "/admin/branches/:id", updateBranch),

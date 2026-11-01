@@ -1944,9 +1944,9 @@ body{background:var(--ground)}
 /* Kopfzeile am Handy: großer Seitentitel statt Logo (Logo nur auf Start) */
 @media (max-width:760px){
   .topbar{height:auto;min-height:58px;padding:10px 16px;background:color-mix(in srgb,var(--ground) 82%,transparent);border-bottom:0}
-  body[data-page]:not([data-page="dashboard"]):not([data-page="boss-dashboard"]) .mobile-head{display:none}
-  body[data-page]:not([data-page="dashboard"]):not([data-page="boss-dashboard"]) .top-title{display:block!important;min-width:0}
-  body[data-page]:not([data-page="dashboard"]):not([data-page="boss-dashboard"]) .top-title strong{font-size:26px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body[data-current-page]:not([data-current-page="dashboard"]):not([data-current-page="boss-dashboard"]) .mobile-head{display:none}
+  body[data-current-page]:not([data-current-page="dashboard"]):not([data-current-page="boss-dashboard"]) .top-title{display:block!important;min-width:0}
+  body[data-current-page]:not([data-current-page="dashboard"]):not([data-current-page="boss-dashboard"]) .top-title strong{font-size:26px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .top-title span{display:none}
   #installAppBtn .label-mobile{display:none}#installAppBtn{padding:0;width:40px;height:40px;justify-content:center}
   .theme-toggle{width:40px;height:40px}
@@ -2007,6 +2007,9 @@ body{background:var(--ground)}
   body[data-office-role="employee"] #telefon > .card[data-role="employee"]{background:transparent;box-shadow:none;padding:0}
   #telefon .call-list{gap:10px}
 }
+
+html[data-theme="dark"] .btn.link{color:var(--accent);background:none;border:0}
+.regular-fix-btns{display:flex;gap:6px;flex:none}
 
 /* Kalender: Tageszahl mittig */
 .calendar-day{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;border-radius:14px}
@@ -3463,7 +3466,7 @@ html[data-theme="dark"] .btn.good{background:#123323;color:#6CCB9B}
 <script src="../date-inputs.js"></script>
 <script src="week-planner.js"></script>
 <script src="absence-calendar.js?v=2"></script>
-<script src="regular-week.js?v=7"></script>
+<script src="regular-week.js?v=8"></script>
 <script src="guided-intro.js?v=3"></script>
 <script>
 (() => {
@@ -3803,7 +3806,7 @@ html[data-theme="dark"] .btn.good{background:#123323;color:#6CCB9B}
     if (pageId !== "telefon" && document.body.classList.contains("final-modus")) pageId = "telefon";
     $$(".nav button").forEach(b => b.classList.toggle("active", b.dataset.page === pageId));
     syncTabbar(pageId);
-    document.body.dataset.page = pageId;
+    document.body.dataset.currentPage = pageId;
     if (typeof closeMoreSheet === "function" && !$("moreSheet").hidden) closeMoreSheet();
     $$("#mobileMenu [data-page]").forEach(b => (b.dataset.page === pageId ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
     closeMobileMenu();
