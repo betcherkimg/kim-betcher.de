@@ -1920,8 +1920,10 @@ async function updateSettings(env, request, who) {
       let list; try { list = JSON.parse(val); } catch { return fail("Line-up ungültig."); }
       if (!Array.isArray(list) || list.length > 20) return fail("Line-up ungültig.");
       // Bild nur aus dem eigenen Ordner /taktnr30/assets/lineup/ (kein fremder Link)
+      // Hörprobe: nur https-Links, Tracking-Parameter (?si=…) fliegen raus
+      const linkOk = v => { try { const u = new URL(String(v || "").trim()); if (u.protocol !== "https:" || u.href.length > 200) return null; u.search = ""; u.hash = ""; return u.href.replace(/\/intl-[a-z]{2}\//, "/"); } catch { return null; } };
       const imgOk = v => /^\/taktnr30\/assets\/lineup\/[a-z0-9_-]{1,40}\.(webp|png|jpg)$/.test(String(v || ""));
-      list = list.map(x => ({ name: cleanName(x?.name).slice(0, 60), time: String(x?.time || "").slice(0, 20), note: String(x?.note || "").slice(0, 80), ...(imgOk(x?.img) ? { img: x.img } : {}) })).filter(x => x.name);
+      list = list.map(x => ({ name: cleanName(x?.name).slice(0, 60), time: String(x?.time || "").slice(0, 20), note: String(x?.note || "").slice(0, 80), ...(imgOk(x?.img) ? { img: x.img } : {}), ...(linkOk(x?.link) ? { link: linkOk(x.link) } : {}) })).filter(x => x.name);
       val = JSON.stringify(list);
     }
     if (k === "helper_jobs") {

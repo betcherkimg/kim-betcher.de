@@ -1022,8 +1022,9 @@ test("Schicht-Zusage, Austragen-Sperre 7 Tage vorher, Erinnerungen, Extras (Esse
 
 test("Line-up: Künstlerfoto nur aus dem eigenen Ordner", async () => {
   const t = await setup();
-  const r = await t.admin("PUT", "/admin/settings", { lineup: JSON.stringify([{ name: "TBJ", time: "", note: "", img: "/taktnr30/assets/lineup/tbj.webp" }, { name: "X", img: "https://evil.example/x.png" }]) });
+  const r = await t.admin("PUT", "/admin/settings", { lineup: JSON.stringify([{ name: "TBJ", time: "", note: "", img: "/taktnr30/assets/lineup/tbj.webp", link: "https://open.spotify.com/intl-de/artist/5eguWaroLORXtrLz33u3f3?si=abc" }, { name: "X", img: "https://evil.example/x.png", link: "javascript:alert(1)" }]) });
   assert.equal(r.status, 200);
   const ev = (await t.call("GET", "/public/event")).data;
   assert.equal(ev.lineup[0].img, "/taktnr30/assets/lineup/tbj.webp"); assert.equal(ev.lineup[1].img, undefined);
+  assert.equal(ev.lineup[0].link, "https://open.spotify.com/artist/5eguWaroLORXtrLz33u3f3"); assert.equal(ev.lineup[1].link, undefined);
 });

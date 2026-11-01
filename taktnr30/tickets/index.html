@@ -51,6 +51,9 @@
   .lineup li.pic { grid-template-columns: 112px 1fr; align-items: center; gap: 20px; }
   .lineup .av { width: 112px; height: 112px; border-radius: 50%; object-fit: cover; border: 1px solid var(--uv); box-shadow: 0 0 0 6px rgba(157,77,255,.08); background: var(--bg-2); }
   .lineup li.pic .t { display: block; margin-top: 6px; }
+  .lineup .hp { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); text-decoration: none; border: 1px solid var(--line-2); border-radius: 99px; padding: 7px 14px; }
+  .lineup .hp:hover { border-color: #1db954; color: #1db954; }
+  .lineup .hp i { width: 8px; height: 8px; border-radius: 50%; background: #1db954; }
   .lineup-empty { font-size: clamp(22px, 6vw, 30px); color: var(--dim); }
 
   .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line-2); border-radius: var(--radius); overflow: hidden; margin: 0 0 22px; }
@@ -206,6 +209,13 @@
     $("#heroCta").innerHTML = html;
   }
 
+  // „Hörprobe“-Knopf zum Künstlerprofil (Spotify, SoundCloud …)
+  function hearLink(x) {
+    if (!x.link) return "";
+    let host = ""; try { host = new URL(x.link).hostname; } catch { return ""; }
+    const where = /spotify/.test(host) ? "Spotify" : /soundcloud/.test(host) ? "SoundCloud" : /youtu/.test(host) ? "YouTube" : /instagram/.test(host) ? "Instagram" : "";
+    return `<a class="hp" href="${esc(x.link)}" target="_blank" rel="noopener"><i aria-hidden="true"></i>Hörprobe${where ? " auf " + where : ""} ↗</a>`;
+  }
   function renderInfo() {
     $("#introTitle").textContent = ev.intro_title;
     $("#introText").textContent = ev.intro_text;
@@ -229,8 +239,8 @@
     }
     $("#lineupBox").innerHTML = ev.lineup.length
       ? `<ul class="lineup">${ev.lineup.map(x => x.img
-          ? `<li class="pic"><img class="av" src="${esc(x.img)}" alt="${esc(x.name)}" width="112" height="112" loading="lazy"><span class="n">${esc(x.name)}${x.note ? `<span class="x">${esc(x.note)}</span>` : ""}${x.time ? `<span class="t">${esc(x.time)}</span>` : ""}</span></li>`
-          : `<li><span class="t">${esc(x.time)}</span><span class="n">${esc(x.name)}${x.note ? `<span class="x">${esc(x.note)}</span>` : ""}</span></li>`).join("")}</ul>`
+          ? `<li class="pic"><img class="av" src="${esc(x.img)}" alt="${esc(x.name)}" width="112" height="112" loading="lazy"><span class="n">${esc(x.name)}${x.note ? `<span class="x">${esc(x.note)}</span>` : ""}${x.time ? `<span class="t">${esc(x.time)}</span>` : ""}${hearLink(x)}</span></li>`
+          : `<li><span class="t">${esc(x.time)}</span><span class="n">${esc(x.name)}${x.note ? `<span class="x">${esc(x.note)}</span>` : ""}${hearLink(x)}</span></li>`).join("")}</ul>`
       : `<p class="lineup-empty">${esc(ev.lineup_note || "Line-up folgt")}</p>`;
     const c = ev.contact;
     const contactLine = [c.name, c.phone && `<a href="tel:${esc(c.phone.replace(/[^+\d]/g, ""))}">${esc(c.phone)}</a>`, c.email && `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`].filter(Boolean);
