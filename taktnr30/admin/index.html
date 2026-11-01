@@ -84,6 +84,12 @@
   .slots i.a { background: var(--uv); border-color: var(--uv); } .slots i.u { background: var(--uv-deep); border-color: var(--uv); } .slots i.c { background: var(--ok); border-color: var(--ok); }
   .lineup-row { display: grid; grid-template-columns: 110px 1fr 1fr auto; gap: 8px; margin-bottom: 8px; }
   .lineup-row.lu5 { grid-template-columns: 90px 1fr 1fr 150px auto; } .lineup-row.lu5 .link-in { grid-column: 1 / -1; grid-row: 2; }
+  .dl-list { display: grid; gap: 10px; max-width: 760px; }
+  .dl { display: grid; grid-template-columns: 52px 1fr auto; gap: 14px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg-2); color: var(--ink); text-decoration: none; }
+  .dl:hover { border-color: var(--uv); }
+  .dl-ic { width: 52px; height: 52px; border-radius: 10px; display: grid; place-items: center; background: var(--uv-deep); border: 1px solid var(--uv); font-family: var(--mono); font-size: 12px; letter-spacing: .1em; color: var(--uv-soft); }
+  .dl-t b { display: block; font-weight: 400; font-size: 16px; } .dl-t small { display: block; color: var(--dim); font-size: 13px; margin-top: 3px; }
+  .dl-go { font-size: 20px; color: var(--uv-soft); }
   .tk-acts { flex-wrap: nowrap; justify-content: flex-end; }
   .tk-acts .more { background: var(--bg-3); color: var(--ink); }
   .tk-menu { position: fixed; z-index: 60; min-width: 230px; background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 10px; padding: 6px; box-shadow: 0 14px 40px rgba(0,0,0,.55); }
@@ -181,7 +187,7 @@
   // Künstlerfotos liegen im Repo unter /taktnr30/assets/lineup/ (rund zugeschnitten)
   const LINEUP_IMAGES = ["/taktnr30/assets/lineup/tbj.webp"];
   const PAGES = [
-    ["overview", "Übersicht"], ["prep", "Vorbereitung"], ["guests", "Gäste & Tickets"], ["orders", "Bestellungen"], ["helpers", "Helfer"], ["links", "Links"],
+    ["overview", "Übersicht"], ["prep", "Vorbereitung"], ["guests", "Gäste & Tickets"], ["orders", "Bestellungen"], ["helpers", "Helfer"], ["links", "Links"], ["downloads", "Downloads"],
     ["paper", "Papiertickets", "main"], ["content", "Inhalte & Line-up"], ["entry", "Einlass"], ["money", "Abrechnung", "main"], ["contracts", "Verträge & Versicherungen", "main"], ["settings", "Einstellungen", "main"]
   ];
   function renderNav() {
@@ -877,6 +883,19 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
         $("#cp").onclick = () => copy(r.url);
       };
       $$("button[data-id]", m).forEach(b => b.onclick = async () => { if (!confirm("Diesen Scanner-Zugang sperren?")) return; await act(() => call(`/admin/scanners/${b.dataset.id}`, { method: "DELETE" }), "Gesperrt"); render(); });
+    },
+
+    async downloads(m) {
+      // Dateien liegen im Repo unter /taktnr30/downloads/ – neue Version = Datei ersetzen, ?v= hochzählen
+      const files = [
+        ["Getränkekarte für die Gäste", "A4 zum Auslegen und Laminieren – alle Getränke mit Preisen, Wasser gratis, TAKT-Becher", "TAKT30-Getraenkekarte-A4.pdf"],
+        ["Bar-Rezeptkarte", "A4 für die Barkeeper – jeder Drink in Schritten, Preise und Regeln. 1× pro Bar laminieren", "TAKT30-Bar-Rezeptkarte-A4.pdf"],
+        ["Becher-Logo (PDF)", "Druckvorlage für die TAKT-Becher – Motiv schwarz, Druckfarbe Weiß, ca. 60 mm", "TAKT30-Becherlogo-schwarz.pdf"],
+        ["Becher-Logo (AI)", "Dieselbe Vorlage als Illustrator-Datei, falls der Shop kein PDF nimmt", "TAKT30-Becherlogo.ai"]
+      ];
+      m.innerHTML = `<h1>Downloads</h1><p class="note" style="margin-top:-8px">Zum Ausdrucken und Weitergeben.</p>
+        <div class="dl-list">${files.map(([t, d, f]) => `<a class="dl" href="/taktnr30/downloads/${f}?v=1" download="${f}" target="_blank" rel="noopener">
+          <span class="dl-ic" aria-hidden="true">${f.endsWith(".ai") ? "AI" : "PDF"}</span><span class="dl-t"><b>${esc(t)}</b><small>${esc(d)}</small></span><span class="dl-go" aria-hidden="true">↓</span></a>`).join("")}</div>`;
     },
 
     async orders(m) {

@@ -316,7 +316,7 @@ fs.writeFileSync('{OUT}/qr.pgm',Buffer.concat([Buffer.from('P5\\n'+W+' '+H+'\\n2
         admin.click("nav button[data-p=overview]"); admin.click("nav button[data-p=contracts]"); admin.wait_for_selector("text=unterschrieben")
         # Handy-Admin ohne Überbreite
         admin.set_viewport_size({"width": 390, "height": 844})
-        for pg in ["overview", "prep", "money", "contracts", "guests", "orders", "helpers", "links", "paper", "content", "entry", "settings"]:
+        for pg in ["overview", "prep", "money", "contracts", "guests", "orders", "helpers", "links", "downloads", "paper", "content", "entry", "settings"]:
             admin.evaluate(f"document.querySelector('nav button[data-p={pg}]').click()")
             admin.wait_for_timeout(250)
             assert not admin.is_visible("#main .err"), f"admin {pg}: " + admin.inner_text("#main")[:200]
