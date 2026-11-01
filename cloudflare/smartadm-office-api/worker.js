@@ -4574,7 +4574,7 @@ function leaveEaster(year) {
   return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
 }
 const TEST_LEAVE_USER_ID = "user_3JNA7KXodzRQQ7I2egc5wdCfLVv";
-const CALENDAR_NOTICE_VERSION = "2026-10-27-regeltage-v2";
+const CALENDAR_NOTICE_VERSION = "2026-11-01-neues-design";
 const LEAVE_REGIONS=["BW","BY","BE","BB","HB","HH","HE","MV","NI","NW","RP","SL","SN","ST","SH","TH"];
 function leaveHolidays(year,region="BW") {
   const out={};const add=(date,name)=>out[date]=name;

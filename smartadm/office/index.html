@@ -479,9 +479,9 @@ td.empty { text-align: center; color: var(--muted); padding: 26px; }
   --ink-soft: #5D6875;
   --ink-faint: #949EAA;
   --line: #E4E8EB;
-  --accent: #0D417F;
-  --accent-hi: #092F5E;
-  --accent-wash: #E6EEF8;
+  --accent: #1B4C9C;
+  --accent-hi: #133B7C;
+  --accent-wash: #E8EFFA;
   --hell: #147BF9;      --hell-wash: #E4F0FE;
   --gelb: #9A6B00;      --gelb-wash: #FAF1DC;
   --gruen: #1F7A52;     --gruen-wash: #E3F2EA;
@@ -1733,21 +1733,178 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 .calendar-event.legacy_plan{background:var(--ground);color:var(--ink-soft);border:1px dashed var(--line)}
 
 
-/* Modal guided introduction: the highlighted real control remains visible through the shade. */
-#whatsNew.guided-intro {position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;overflow:hidden;background:transparent;box-shadow:none;color:var(--ink)}
-#whatsNew.guided-intro::backdrop {background:transparent}
-.guided-intro .intro-spotlight{position:absolute;box-shadow:0 0 0 200vmax rgba(15,23,36,.74);border:3px solid #fff;pointer-events:none;z-index:0;transition:top .18s,left .18s,width .18s,height .18s}
-.guided-intro .intro-spotlight[hidden]{display:block!important;inset:0!important;width:100vw!important;height:100dvh!important;border:0!important;border-radius:0!important;background:rgba(15,23,36,.74)}
-.guided-intro .whats-new-body{position:absolute;left:50%;width:min(480px,calc(100vw - 28px));max-height:calc(100dvh - 38px);overflow:auto;border-radius:18px;background:var(--surface);padding:22px;box-shadow:0 12px 50px rgba(0,0,0,.3);z-index:1}
-#introProgress{display:block;color:var(--ink-soft);font-size:12px;margin-bottom:9px}.guided-intro #whatsNewTitle{display:block;font-size:22px;line-height:1.25}.guided-intro #whatsNewIntro{display:block;font-size:14px;line-height:1.65;margin:12px 0}.intro-example{background:var(--ground);padding:12px;border-radius:10px;font-size:13px;line-height:1.6}.intro-example p{margin:5px 0 0}.guided-intro #introBack{margin:14px 8px 0 0}.guided-intro #whatsNewOk{margin-top:14px}.guided-intro .wn-confirm{margin-top:16px}.guided-intro #whatsNewStatus{white-space:pre-wrap}
-@media(max-width:420px){.guided-intro .whats-new-body{padding:17px}.guided-intro #whatsNewTitle{font-size:20px}.guided-intro #whatsNewIntro{font-size:13px;line-height:1.5}.intro-example{font-size:12px;padding:10px}}
-@media(prefers-reduced-motion:reduce){.guided-intro .intro-spotlight{transition:none}}
+/* Geführte Einführung: echtes Element oben hervorgehoben, Erklärkarte fest unten (Handy zuerst). */
+#whatsNew.guided-intro{position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;overflow:hidden;background:transparent;box-shadow:none}
+#whatsNew.guided-intro::backdrop{background:transparent}
+.gi-spot{position:fixed;border-radius:18px;box-shadow:0 0 0 200vmax rgba(10,16,26,.62),0 0 0 3px rgba(255,255,255,.95);pointer-events:none;transition:top .25s ease,left .25s ease,width .25s ease,height .25s ease,opacity .2s ease;z-index:0}
+.gi-spot.is-off{top:50%!important;left:50%!important;width:0!important;height:0!important;box-shadow:0 0 0 200vmax rgba(10,16,26,.62)}
+.guided-intro .whats-new-body{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(520px,calc(100vw - 20px));max-height:min(58dvh,460px);overflow:auto;
+  display:grid;gap:10px;padding:18px 18px 16px;border-radius:24px;background:var(--surface);color:var(--ink);box-shadow:0 18px 50px rgba(0,0,0,.35);z-index:1;animation:gi-up .28s ease}
+@keyframes gi-up{from{transform:translate(-50%,16px);opacity:0}to{transform:translateX(-50%);opacity:1}}
+.gi-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.gi-dots{display:flex;gap:6px}.gi-dots span{width:7px;height:7px;border-radius:99px;background:var(--line);transition:width .2s ease,background .2s ease}
+.gi-dots span.done{background:color-mix(in srgb,var(--accent) 45%,transparent)}.gi-dots span.on{width:22px;background:var(--accent)}
+#introProgress{font-size:12px;color:var(--ink-faint);font-weight:600}
+.guided-intro #whatsNewTitle{display:block;font-size:20px;line-height:1.25;font-weight:700;letter-spacing:-.02em}
+.guided-intro #whatsNewIntro{margin:0;font-size:15px;line-height:1.5;color:var(--ink-soft)}
+.guided-intro #whatsNewList{display:block}
+.gi-example{margin:0;padding:10px 12px;border-radius:12px;background:var(--accent-wash);color:var(--ink);font-size:13.5px;line-height:1.45}
+.guided-intro .wn-confirm{display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:var(--ground);font-size:14.5px;font-weight:550}
+.guided-intro .wn-confirm input{width:22px;height:22px;accent-color:var(--accent);flex:none}
+.gi-nav{display:flex;gap:8px;margin-top:2px}.gi-nav .btn{flex:1;min-height:48px}.gi-nav #whatsNewOk{flex:2;width:auto}
+@media(prefers-reduced-motion:reduce){.gi-spot,.guided-intro .whats-new-body{transition:none;animation:none}}
 
 
 .regular-row{display:grid;grid-template-columns:minmax(140px,2fr) 1fr 1fr auto;gap:16px;align-items:center;padding:20px 4px;border-bottom:1px solid var(--line,#e4e8ee)}
 .regular-row>div:first-child{display:grid;gap:4px}.regular-row small,.regular-col-label{display:block;font-size:12px;color:#65758b}.regular-row input{width:100%;min-width:0;padding:12px;border:1px solid #dce2ea;border-radius:10px}.regular-row output{display:block;background:#f0f3f7;padding:12px;border-radius:10px;font-weight:700}.regular-disabled{background:#eceef0;color:#68717b;padding:20px 12px;border-radius:12px}.regular-disabled output{background:#e1e4e7}.regular-disabled strong{font-size:12px}.regular-row details{grid-column:1/-1}.regular-choice{display:flex;gap:12px;align-items:center;padding:14px;border:1px solid #dce2ea;border-radius:12px;margin:8px 0}.regular-choice input{width:22px;height:22px}#regularOverdueDialog h2{font-size:26px}#regularOverdueDialog{border:3px solid #bf165a}.regular-holiday{padding:16px 0;border-top:1px solid #dce2ea}.regular-holiday label{display:block;margin:8px 0}.regular-holiday input[type=text],.regular-holiday textarea{width:100%}
 @media(max-width:600px){.regular-row{grid-template-columns:minmax(105px,1.6fr) 1fr 1fr;gap:10px;padding:18px 8px}.regular-row-action{grid-column:1/-1}.regular-row-action button{width:100%}.regular-row output{padding:10px 6px;font-size:14px}.regular-row>div:first-child b{font-size:14px}}
 .mini-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin:12px 0}.mini-calendar>span{font-size:11px;text-align:center;color:var(--w-soft,var(--muted))}.mini-calendar button{appearance:none;border:0;min-height:30px;background:transparent;color:inherit;border-radius:8px;font:inherit;font-size:12px;position:relative;cursor:pointer}.mini-calendar button.weekend{opacity:.45}.mini-calendar button.today{background:var(--w-accent,var(--accent));color:white;font-weight:700}.mini-calendar button.marked:after{content:"";position:absolute;bottom:2px;left:calc(50% - 2px);width:4px;height:4px;background:currentColor;border-radius:50%}.mini-calendar button:hover{outline:1px solid currentColor}
+
+/* =====================================================================
+   Design 2026-11 – moderner und ruhiger
+   Mehr Luft, weichere Flächen, klare Typo-Hierarchie, schwebende Tab-Leiste.
+   Nur Optik: Logik, IDs und Abläufe bleiben unverändert.
+   ===================================================================== */
+:root{
+  --ground:#F2F4F7;--line:#E7EAEF;--ink:#18212C;--ink-soft:#5A6573;--ink-faint:#929BA7;
+  --shadow:0 1px 2px rgba(16,24,40,.04),0 6px 24px rgba(16,24,40,.06);
+  --shadow-lift:0 2px 6px rgba(16,24,40,.06),0 16px 40px rgba(16,24,40,.10);
+  --r-card:20px;--r-ctl:12px;
+}
+html,body{font-size:15px;letter-spacing:-.003em}
+.content{padding:28px 28px 80px}
+.page.active{gap:18px}
+
+/* Flächen */
+.card,.my-widget{border-radius:var(--r-card);box-shadow:var(--shadow);border:1px solid rgba(16,24,40,.045)}
+.section-card{padding:22px 22px 20px}
+.card-head{margin-bottom:14px}
+.card-head h2{font-size:18px;font-weight:650;letter-spacing:-.02em;line-height:1.3}
+.card-head p{font-size:14px;line-height:1.5;color:var(--ink-soft);max-width:62ch}
+.notice{border-radius:14px;padding:13px 15px;font-size:14px}
+.chip{border-radius:999px;font-size:12px;padding:3px 10px;font-weight:600}
+
+/* Knöpfe & Felder */
+.btn{border-radius:var(--r-ctl);min-height:44px;padding:10px 16px;font-weight:600;font-size:14.5px;letter-spacing:-.005em;transition:background .15s ease,box-shadow .15s ease,transform .08s ease,color .15s ease}
+.btn.small{min-height:34px;padding:6px 12px;border-radius:10px;font-size:13.5px}
+.btn.primary{box-shadow:0 1px 2px rgba(16,24,40,.10),inset 0 1px 0 rgba(255,255,255,.10)}
+.btn.primary:hover{box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 28%,transparent)}
+.btn.ghost,.btn.quiet{border:1px solid var(--line);background:var(--surface)}
+.btn.link{background:none;border:0;min-height:0;padding:4px 0;color:var(--accent);font-weight:600}
+.btn.link:hover{text-decoration:underline}
+.icon-btn{border-radius:10px}
+.field input,.field select,.field textarea{border-radius:var(--r-ctl);min-height:46px}
+.field textarea{min-height:0}
+.field label{font-weight:550;color:var(--ink-soft)}
+
+/* Kopfzeile */
+.topbar{background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:saturate(1.6) blur(18px);-webkit-backdrop-filter:saturate(1.6) blur(18px)}
+.top-title strong{font-size:18px;font-weight:650}
+
+/* Seitenleiste */
+.nav button{border-radius:12px}
+.nav button.active{background:var(--accent-wash);color:var(--accent)}
+
+/* Mobile: schwebende Tab-Leiste */
+@media (max-width:760px){
+  .content{padding:18px 14px calc(110px + env(safe-area-inset-bottom,0px))}
+  .section-card{padding:18px 16px 16px}
+  .card-head h2{font-size:17px}
+  body[data-office-role="employee"] .tabbar{
+    left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));
+    padding:6px;border-radius:24px;border:1px solid rgba(16,24,40,.06);
+    background:color-mix(in srgb,var(--surface) 86%,transparent);
+    backdrop-filter:saturate(1.8) blur(20px);-webkit-backdrop-filter:saturate(1.8) blur(20px);
+    box-shadow:0 10px 30px rgba(16,24,40,.14)}
+  .tab{border-radius:18px;min-height:52px;padding:6px 2px 5px;font-size:10.5px;font-weight:600}
+  .tab svg.i{width:22px;height:22px}
+  .tab[aria-current="page"],.tab.is-active{background:var(--accent-wash);color:var(--accent)}
+  .more-panel{bottom:calc(84px + env(safe-area-inset-bottom,0px));border-radius:22px}
+}
+
+/* Startseite */
+.my-head{margin-bottom:4px}
+.my-greet{font-size:28px;font-weight:700;letter-spacing:-.03em}
+.my-widget{padding:20px}
+.my-w-head h2{font-size:15px;font-weight:600;color:var(--w-soft,var(--ink-soft))}
+.my-big{font-size:30px;font-weight:700;letter-spacing:-.035em}
+.my-bar,.wk-bar{height:8px;border-radius:99px;background:color-mix(in srgb,var(--w-soft,var(--ink-soft)) 16%,transparent);overflow:hidden}
+.my-bar>span,.wk-bar>span{display:block;height:100%;border-radius:inherit;background:var(--w-accent,var(--accent));transition:width .4s ease}
+
+/* Wochen-Fortschritt in „Arbeitszeiten“ */
+.wk-progress{display:grid;gap:8px;padding:16px;border-radius:16px;background:var(--ground);margin-top:6px}
+.wk-progress .wk-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.wk-progress .wk-now{font-size:22px;font-weight:700;letter-spacing:-.03em}
+.wk-progress .wk-now small{font-size:14px;font-weight:500;color:var(--ink-soft)}
+.wk-progress .wk-meta{font-size:13px;color:var(--ink-soft)}
+.wk-progress.is-done .wk-bar>span{background:var(--gruen)}
+.wk-nav{display:flex;align-items:center;gap:6px;margin:2px 0 6px}
+.wk-nav b{flex:1;text-align:center;font-size:15px;font-weight:600}
+.wk-nav .btn{min-width:44px;padding:8px 12px}
+.wk-foot{display:flex;flex-direction:column;align-items:stretch;gap:8px;margin-top:14px}
+.wk-foot .btn.primary{width:100%}
+.wk-foot .btn.link{align-self:center}
+#regularStatus{text-align:center}
+
+/* Kurze Schrittfolge statt Fließtext */
+.steps-mini{display:flex;flex-wrap:wrap;gap:6px 18px;margin:6px 0 14px;padding:0;list-style:none;counter-reset:st;font-size:13.5px;color:var(--ink-soft)}
+.steps-mini li{counter-increment:st;display:flex;align-items:center;gap:7px}
+.steps-mini li::before{content:counter(st);display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--accent-wash);color:var(--accent);font-size:11.5px;font-weight:700}
+/* leere Untertitel nicht anzeigen */
+.card-head p:empty{display:none}
+[data-own-appointment-standing],[data-boss-appointment-standing]{padding:16px 20px}
+.standing-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.standing-row .kpi-label{font-size:14px;font-weight:600;color:var(--ink)}
+.standing-sub{font-size:13px;color:var(--ink-soft);margin-top:2px}
+.standing-val{display:flex;align-items:center;gap:10px}.standing-val b{font-size:26px;font-weight:700;letter-spacing:-.03em}
+
+/* Kalender: auf dem Handy Markierungen statt abgeschnittener Texte */
+@media(max-width:600px){
+  .calendar-grid:not(.week-mode) .calendar-event{font-size:0;line-height:0;height:5px;padding:0;margin-top:4px;border-radius:99px;overflow:hidden}
+  .calendar-grid:not(.week-mode) .calendar-day{min-height:54px}
+}
+.calendar-request-empty{color:var(--ink-soft);font-size:14px}
+
+/* Telefonliste */
+.phone-stack .phone-group{display:flex;flex:1 1 100%;gap:8px}
+.phone-stack .call-btn{flex:1 1 auto;min-height:50px;font-size:16px}
+.phone-flag{flex:none;min-height:50px;color:var(--ink-soft)}
+.cc-tools{display:flex;gap:8px;flex-basis:100%}
+.call-help.is-warn{color:var(--gelb);background:var(--gelb-wash);padding:8px 12px;border-radius:10px;font-weight:550}
+.call-card{border-radius:16px}
+.call-card.is-open{box-shadow:var(--shadow-lift)}
+.cc-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.cc-actions .btn{padding-left:8px;padding-right:8px}
+.call-toolbar{display:flex;gap:8px;flex-wrap:wrap}
+.call-toolbar .btn{flex:1 1 140px;white-space:nowrap}
+.count-chip{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:24px;padding:0 8px;margin-left:8px;border-radius:999px;background:var(--accent-wash);color:var(--accent);font-size:13px;font-weight:650;vertical-align:2px}
+
+
+/* Handy: Kennzahlen zweispaltig, Eintragstabellen als Zeilen statt Querscrollen */
+@media (max-width:760px){
+  .grid-4,.quick-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .kpi{padding:14px}.kpi-value{font-size:21px}.kpi-foot{display:none}
+  .quick{padding:12px}.quick span{font-size:12.5px}
+  :is(#bossEntryRows,#entryRows) tr{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;padding:12px 2px;border-bottom:1px solid var(--line)}
+  table:has(#bossEntryRows) thead,table:has(#entryRows) thead{display:none}
+  table:has(#bossEntryRows),table:has(#entryRows){min-width:0!important;width:100%}
+  :is(#bossEntryRows,#entryRows) td{border:0!important;padding:0!important;font-size:14px}
+  :is(#bossEntryRows,#entryRows) td:nth-child(1){flex-basis:100%;font-weight:600}
+  :is(#bossEntryRows,#entryRows) td:nth-child(2)::after{content:" –"}
+  :is(#bossEntryRows,#entryRows) td:nth-child(3)::after{content:" Uhr ·"}
+  :is(#bossEntryRows,#entryRows) td:nth-child(4)::before{content:"Pause "}
+  :is(#bossEntryRows,#entryRows) td:nth-child(4)::after{content:" ·"}
+  :is(#bossEntryRows,#entryRows) td:nth-child(6)::after{content:" Termine"}
+  :is(#bossEntryRows,#entryRows) td:nth-child(7){margin-left:auto}
+  :is(#bossEntryRows,#entryRows) td.empty{flex-basis:100%;text-align:center}
+  :is(#bossEntryRows,#entryRows) td.empty::before,:is(#bossEntryRows,#entryRows) td.empty::after{content:none}
+}
+
+/* Dunkelmodus für die neuen Bausteine */
+html[data-theme="dark"] :is(.card,.my-widget){border-color:var(--line)}
+html[data-theme="dark"] body[data-office-role="employee"] .tabbar{background:color-mix(in srgb,var(--surface) 88%,transparent);border-color:var(--line);box-shadow:0 10px 30px rgba(0,0,0,.45)}
+html[data-theme="dark"] .wk-progress{background:var(--ground)}
+html[data-theme="dark"] .btn.ghost,html[data-theme="dark"] .btn.quiet{background:transparent}
 </style>
 <link rel="stylesheet" href="../date-inputs.css">
 </head>
@@ -1844,8 +2001,6 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           </div>
           <button class="btn ghost" type="button" id="myEditBtn">Anpassen</button>
         </div>
-        <div class="card section-card" data-own-appointment-standing aria-live="polite"></div>
-        <div class="office-shortcuts" id="employeeQuickAccess"><button type="button" class="office-shortcut" data-page="zeiten"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg><span><b>Arbeitszeiten</b><small>Stunden eintragen &amp; Woche absenden</small></span><span class="shortcut-arrow" aria-hidden="true">›</span></button><button type="button" class="office-shortcut" data-page="kalender"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span><b>Kalender &amp; Urlaub</b><small>Freie Tage planen &amp; Urlaub beantragen</small></span><span class="shortcut-arrow" aria-hidden="true">›</span></button></div>
         <div class="card shortcut" id="pushCard" hidden>
           <div><strong>Benachrichtigungen</strong><span id="pushText"></span></div>
           <div class="btn-row">
@@ -1865,7 +2020,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card shortcut" id="regularSendNotice" hidden><div><strong>Heute bitte die Arbeitszeiten abschicken</strong><span id="regularSendNoticeText">Bitte deine Stunden und Termine prüfen und die Woche spätestens Sonntag absenden.</span></div><button class="btn primary" type="button" data-page="zeiten">Zur Wochenliste</button></div><div class="my-widgets" id="myWidgets"></div>
       </section>
 
-      <section class="page" id="zeiten" data-role="employee"><div class="card section-card" data-own-appointment-standing aria-live="polite"></div><div class="card section-card" id="regularWeekCard" hidden><div class="card-head"><h2>Arbeitszeiten eintragen</h2><p>Trag deine tatsächlichen Arbeitstage mit Beginn und Ende ein – egal welcher Tag. Ziel: 6 Stunden pro Woche, in einer Feiertagswoche 4 Stunden. Bis Sonntag prüfen und absenden.</p></div><div class="btn-row"><button class="btn ghost" id="regularPrev" type="button" aria-label="Vorherige Woche">‹</button><b id="regularWeekLabel"></b><button class="btn ghost" id="regularNext" type="button" aria-label="Nächste Woche">›</button><button class="btn ghost" id="regularToday" type="button">Aktuelle Woche</button></div><p id="regularPhaseNotice" class="notice" hidden></p><div id="regularRows"></div><p id="regularSummary" class="notice"></p><p id="regularStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button class="btn primary" type="button" id="regularComplete">Absenden</button><button class="btn ghost" type="button" id="regularChooseDays">Regeltage ändern</button></div></div>
+      <section class="page" id="zeiten" data-role="employee"><div class="card section-card" data-own-appointment-standing aria-live="polite"></div><div class="card section-card" id="regularWeekCard" hidden><div class="card-head"><h2>Meine Woche</h2></div><div class="wk-nav"><button class="btn ghost" id="regularPrev" type="button" aria-label="Vorherige Woche">‹</button><b id="regularWeekLabel"></b><button class="btn ghost" id="regularNext" type="button" aria-label="Nächste Woche">›</button></div><div style="text-align:center"><button class="btn link" id="regularToday" type="button">Zur aktuellen Woche</button></div><div id="regularSummary" class="wk-progress"></div><p id="regularPhaseNotice" class="notice" hidden></p><div id="regularRows"></div><div class="wk-foot"><button class="btn primary" type="button" id="regularComplete">Woche absenden</button><p id="regularStatus" class="status-text" aria-live="polite"></p><button class="btn link" type="button" id="regularChooseDays">Regeltage ändern</button></div></div>
         <div class="card section-card plan-card" id="planCard" hidden>
           <div class="card-head plan-head">
             <div>
@@ -1883,8 +2038,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card time-card" id="timeCard">
           <div class="time-head">
             <div>
-              <h2>Zeiterfassung</h2>
-              <p id="timeCardHint">Beginn und Ende werden auf volle 5 Minuten aufgerundet.</p>
+              <h2>Arbeitszeit eintragen</h2>
+              <p id="timeCardHint" hidden></p>
             </div>
             <button class="btn primary" type="button" id="openTimeFormBtn">
               <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2"/></svg>Arbeitszeit erfassen</button>
@@ -1893,11 +2048,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             <form id="entryForm"><input id="entryRegularSlot" type="hidden"><input id="entryReplace" type="hidden"><div class="field" id="entryManualHoursField" hidden><label for="entryManualHours">Geleistete Zeit (Stunden:Minuten)</label><input id="entryManualHours" type="text" inputmode="text" placeholder="z. B. 1:20"><small>Du trägst die Stunden selbst ein. Es wird nichts aus deiner Aktivität oder Planung ergänzt.</small></div><p id="entryActualHint" class="calendar-hint"></p>
               <input type="hidden" id="editId">
               <div class="form-grid">
-                <div class="field"><label for="date">Tatsächlicher Arbeitstag</label><input id="date" type="date" required><small>Heute oder maximal 7 Tage rückwirkend.</small></div>
-                <div class="field"><label for="break">Pause in Minuten</label><input id="break" type="number" min="0" step="5" value="0"></div>
+                <div class="field full"><label for="date">Tag</label><input id="date" type="date" required><small>Bis zu 7 Tage rückwirkend.</small></div>
                 <div class="field"><label for="start">Beginn</label><input id="start" type="time" step="300" required></div>
                 <div class="field"><label for="end">Ende</label><input id="end" type="time" step="300" required></div>
-                <div class="field"><label for="appointments">Gesetzte Termine</label><input id="appointments" type="number" min="0" step="1" value="0" inputmode="numeric"><small>Jeder gesetzte Termin zählt automatisch für die Vergütung.</small></div>
+                <div class="field"><label for="break">Pause (Min.)</label><input id="break" type="number" min="0" step="5" value="0"></div>
+                <div class="field"><label for="appointments">Termine</label><input id="appointments" type="number" min="0" step="1" value="0" inputmode="numeric"></div>
               </div>
               <div class="actions">
                 <button type="button" class="btn ghost" id="resetBtn">Abbrechen</button>
@@ -1958,19 +2113,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
       <!-- ===== Boss: Dashboard ===== -->
       <section class="page" id="boss-dashboard" data-role="boss">
-        <div class="hero">
-          <div>
-            <h1>Office-Dashboard</h1>
-            <p>Arbeitszeit, Leistung und Abrechnung deiner Mitarbeiter zentral im Blick.</p>
-          </div>
-          <div class="hero-badge">
-            <span>Rolle</span>
-            <b>Boss</b>
-            <small id="bossHeroMeta">Mitarbeiterverwaltung</small>
-          </div>
+        <div class="my-head">
+          <div><h1 class="my-greet">Guten Tag, Kim</h1><p class="my-date"><span id="bossHeroDate"></span> · <span id="bossHeroMeta">Mitarbeiterverwaltung</span></p></div>
         </div>
-
-        <div class="office-shortcuts" id="bossQuickAccess"><button type="button" class="office-shortcut" data-page="einsatz"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg><span><b>Arbeitszeiten</b><small>Stunden &amp; Wochen prüfen</small></span><span class="shortcut-arrow" aria-hidden="true">›</span></button><button type="button" class="office-shortcut" data-page="kalender"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span><b>Kalender &amp; Urlaub</b><small>Urlaubsanträge &amp; Feiertage prüfen</small></span><span class="shortcut-arrow" aria-hidden="true">›</span></button></div>
         <div class="card section-card chosen-workdays" data-workdays-summary aria-live="polite"></div>
         <div class="boss-look-bar">
           <button class="btn ghost" type="button" id="bossEditBtn">Anpassen</button>
@@ -2041,7 +2186,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card person-bar">
           <div class="field"><label>Mitarbeiter</label><select data-employee-select></select></div>
           <div class="field"><label for="bossMonth">Monat</label><input id="bossMonth" type="month"></div>
-          <p class="person-hint">Erfasste Stunden und Termine. Entwürfe sind bis zum Absenden noch nicht für die Abrechnung freigegeben.</p>
+          <p class="person-hint">Entwürfe zählen erst nach dem Absenden.</p>
         </div>
         <div class="card section-card chosen-workdays" data-workdays-summary aria-live="polite"></div>
         <div class="notice" data-boss-appointment-standing aria-live="polite"></div>
@@ -2054,11 +2199,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card">
           <div class="card-head">
             <h2>Erfasste Arbeitszeiten &amp; Termine</h2>
-            <p>Hier stehen die von Saskia eingetragenen Stunden und Termine. „Entwurf“ bedeutet: noch nicht verbindlich abgesendet.</p>
+            <p>„Entwurf“ = noch nicht abgesendet.</p>
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Datum</th><th>Beginn</th><th>Ende</th><th>Pause</th><th>Netto</th><th>Termine</th></tr></thead>
+              <thead><tr><th>Datum</th><th>Beginn</th><th>Ende</th><th>Pause</th><th>Netto</th><th>Termine</th><th></th></tr></thead>
               <tbody id="bossEntryRows"></tbody>
             </table>
           </div>
@@ -2066,7 +2211,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card" id="hrPlanCard">
           <div class="card-head">
             <h2>Wochen prüfen</h2>
-            <p>Prüfe die Stunden pro Woche. Bei Fehlstunden wählst du „Einordnen“. Urlaub und Feiertage findest du im Kalender.</p>
+            <p>Fehlstunden einordnen, abgesendete Wochen bei Bedarf zur Korrektur öffnen.</p>
           </div>
           <div class="quick-grid">
             <div class="quick"><span>Geplante Tage (kommend)</span><b id="hrPlannedCount">0</b></div>
@@ -2099,7 +2244,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card">
           <div class="card-head">
             <h2>Abwesenheiten &amp; Urlaub</h2>
-            <p>Urlaub nur für einen Tag erfassen, an dem ohne Urlaub tatsächlich gearbeitet worden wäre. Vertraglich gelten 6 Stunden pro Woche auf maximal 3 Arbeitstage; für den Urlaub zählt jeder tatsächlich bzw. durch Abwesenheit ersetzte Arbeitstag unabhängig von der Stundenzahl.</p>
+            <p>Nur für Tage, an denen sonst gearbeitet worden wäre.</p>
           </div>
           <div class="quick-grid">
             <div class="quick"><span>Arbeitstage im Jahr</span><b id="vacationWorkedDays">0</b></div>
@@ -2146,7 +2291,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card" id="hrIncidentCard">
           <div class="card-head">
             <h2>Vorfälle &amp; Abmahnungen</h2>
-            <p>Nur für dich sichtbar. Halte sachlich fest, was passiert ist, welche Gespräche du geführt hast und wann eine Abmahnung übergeben wurde.</p>
+            <p>Nur für dich sichtbar – sachlich festhalten.</p>
           </div>
           <form id="incidentForm">
             <input id="incidentId" type="hidden">
@@ -2180,7 +2325,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
 
       <section class="page" id="kalender" data-role="shared">
-        <div class="calendar-page-head"><div><h1>Kalender &amp; Urlaub</h1><p>Deine Arbeitstage, freie Tage und Anträge auf einen Blick.</p></div><div id="calendarEmployeeActions" class="btn-row"><button class="btn primary" type="button" id="calendarNewLeave">+ Urlaub beantragen</button><button class="btn ghost" type="button" id="calendarTransfer" hidden>Urlaub ins Folgejahr übertragen</button></div></div>
+        <div class="calendar-page-head"><div><h1>Kalender &amp; Urlaub</h1></div><div id="calendarEmployeeActions" class="btn-row"><button class="btn primary" type="button" id="calendarNewLeave">+ Urlaub beantragen</button><button class="btn ghost" type="button" id="calendarTransfer" hidden>Urlaub ins Folgejahr übertragen</button></div></div>
         <div class="field" id="calendarOwnerField" data-role="boss"><label for="calendarOwner">Mitarbeiter</label><select id="calendarOwner"></select></div>
         <div class="card section-card vacation-account-card"><div id="calendarAccount"></div></div>
         <div class="calendar-layout"><div class="calendar-main">
@@ -2188,10 +2333,10 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <div class="calendar-toolbar" id="calendarToolbar"><button class="btn ghost" id="calendarPrev" type="button" aria-label="Vorheriger Zeitraum">‹</button><label class="sr-only" for="calendarMonth">Kalendermonat</label><input id="calendarMonth" type="month"><button class="btn ghost" id="calendarNext" type="button" aria-label="Nächster Zeitraum">›</button><button class="btn ghost" id="calendarToday" type="button">Heute</button><div class="type-switch" role="group" aria-label="Kalenderansicht"><button class="btn ghost" id="calendarViewMonth" type="button" aria-pressed="true">Monat</button><button class="btn ghost" id="calendarViewWeek" type="button" aria-pressed="false">Woche</button></div></div>
           <div id="calendarStatus" class="status-text" aria-live="polite"></div>
           <div id="calendarGrid" class="calendar-grid" aria-label="Arbeitstage und Abwesenheiten"></div>
-          <div class="calendar-legend"><span class="legend-work">Erfasste Zeit / Regeltag</span><span class="legend-plan">Alter Einsatzplan</span><span class="legend-vacation">Urlaub</span><span class="legend-holiday">Feiertag</span><span class="legend-pending">Beantragt</span></div>
+          <div class="calendar-legend"><span class="legend-work">Gearbeitet / Regeltag</span><span class="legend-vacation">Urlaub</span><span class="legend-holiday">Feiertag</span><span class="legend-pending">Beantragt</span></div>
         </div>
         <div class="card section-card" id="calendarDayDetails"></div>
-        </div><div class="calendar-side"><div class="card section-card"><div class="card-head"><h2>Anträge</h2><p>Hier siehst du, was noch offen oder schon genehmigt ist.</p></div><div id="calendarRequests"></div></div>
+        </div><div class="calendar-side"><div class="card section-card"><div class="card-head"><h2>Anträge</h2></div><div id="calendarRequests"></div></div>
         <div class="card section-card"><details><summary class="calendar-details-title">Regeltage &amp; Feiertage</summary><div id="calendarPatterns"></div><div id="calendarRegularHolidays"></div></details></div></div></div>
         <div class="card section-card" id="calendarSettings" data-role="boss"><details><summary>Kalendereinstellungen und begründete Korrekturen</summary><p id="calendarSettingsNote" class="notice"></p>
           <form id="calendarRegionForm"><div class="form-grid"><div class="field"><label for="calendarRegion">Bundesland des maßgeblichen Arbeitsorts</label><select id="calendarRegion"><option value="BW">Baden-Württemberg</option><option value="BY">Bayern</option><option value="BE">Berlin</option><option value="BB">Brandenburg</option><option value="HB">Bremen</option><option value="HH">Hamburg</option><option value="HE">Hessen</option><option value="MV">Mecklenburg-Vorpommern</option><option value="NI">Niedersachsen</option><option value="NW">Nordrhein-Westfalen</option><option value="RP">Rheinland-Pfalz</option><option value="SL">Saarland</option><option value="SN">Sachsen</option><option value="ST">Sachsen-Anhalt</option><option value="SH">Schleswig-Holstein</option><option value="TH">Thüringen</option></select></div><div class="field"><label for="calendarRegionFrom">Gültig ab</label><input id="calendarRegionFrom" type="date" required></div><div class="field"><label for="calendarRegionNote">Grund / Arbeitsort</label><input id="calendarRegionNote" maxlength="500" required></div></div><button class="btn ghost" type="submit">Arbeitsort speichern</button></form>
@@ -2206,7 +2351,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card" id="addendumCard" hidden>
           <div class="card-head">
             <h2>Nachtrag zum Arbeitsvertrag</h2>
-            <p>Beide Seiten unterschreiben dasselbe Dokument mit dem Finger. Der neue Nachtrag und frühere unterschriebene Nachträge bleiben jeweils als PDF verfügbar.</p>
+
           </div>
           <div id="addendumStatus"><div class="notice">Wird geladen …</div></div>
           <div class="btn-row" id="addendumActions"></div>
@@ -2214,15 +2359,15 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card" id="payslipCard" data-role="employee">
           <div class="card-head">
             <h2>Gehaltsnachweise</h2>
-            <p>Nach jedem Monatsabschluss: ansehen, als PDF laden und mit deiner Unterschrift den Empfang und deine Arbeitszeiten bestätigen.</p>
+            <p>Nach jedem Monatsabschluss ansehen und unterschreiben.</p>
           </div>
           <div id="payslipList" class="slip-list"><div class="notice">Wird geladen …</div></div>
         </div>
         <div class="card section-card" id="docsCard">
           <div class="card-head">
             <h2>Arbeitsvertrag &amp; Dokumente</h2>
-            <p data-role="employee">Dein Arbeitsvertrag und weitere Unterlagen zum Herunterladen.</p>
-            <p data-role="boss">Nur der jeweilige Mitarbeiter und du sehen diese Dateien. PDF oder Bild, höchstens 8 MB.</p>
+
+            <p data-role="boss">Nur ihr beide seht diese Dateien. PDF oder Bild, max. 8 MB.</p>
           </div>
           <form id="docUploadForm" data-role="boss">
             <div class="form-grid">
@@ -2252,7 +2397,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <button type="button" role="tab" data-lohn-tab="abgaben">Abgaben</button>
         </div>
 
-        <div class="card section-card lohn-pane" data-lohn-pane="abrechnung"><div class="lohn-block" id="calendarPayrollCheck"><h2>Abrechnung prüfen</h2><p>1. Offene Anträge entscheiden. 2. Berechnete Beträge prüfen und übernehmen. 3. Monat abschließen und den gespeicherten Lohnzettel herunterladen.</p><div id="calendarPayrollLines"></div><p id="calendarPayrollStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button class="btn ghost" type="button" id="calendarPayrollReload">Neu berechnen</button><button class="btn ghost" type="button" data-page="kalender">Offene Punkte im Kalender</button><button class="btn primary" type="button" id="calendarPayrollConfirm">Berechnung geprüft – übernehmen</button></div></div>
+        <div class="card section-card lohn-pane" data-lohn-pane="abrechnung"><div class="lohn-block" id="calendarPayrollCheck"><h2>Abrechnung</h2><ol class="steps-mini"><li>Offene Punkte klären</li><li>Berechnung übernehmen</li><li>Monat abschließen</li></ol><div id="calendarPayrollLines"></div><p id="calendarPayrollStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button class="btn ghost" type="button" id="calendarPayrollReload">Neu berechnen</button><button class="btn ghost" type="button" data-page="kalender">Offene Punkte im Kalender</button><button class="btn primary" type="button" id="calendarPayrollConfirm">Berechnung übernehmen</button></div></div>
           <div class="lohn-block">
             <div class="notice" data-boss-appointment-standing aria-live="polite"></div>
             <div class="quick-grid">
@@ -2288,9 +2433,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           </div>
           <div class="actions">
             <span id="closeAskStatus" class="status-text close-ask-status"></span>
-            <button class="btn ghost" id="closeAskBtn" type="button">Monat abschließen</button>
-            <button class="btn ghost" id="createEmployerPayrollPdf" type="button">Arbeitgeber-Abrechnung als PDF</button>
-            <button class="btn primary" id="createPayrollPdf" type="button">Gehaltsnachweis als PDF</button>
+            <button class="btn ghost" id="createEmployerPayrollPdf" type="button">Arbeitgeber-PDF</button>
+            <button class="btn ghost" id="createPayrollPdf" type="button">Gehaltsnachweis als PDF</button>
+            <button class="btn primary" id="closeAskBtn" type="button">Monat abschließen</button>
           </div>
         </div>
 
@@ -2298,7 +2443,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <div class="lohn-block" id="contributionPanel">
             <div class="card-head" style="margin-bottom:12px">
               <h2 style="font-size:16px" id="contribHeading">Beitragsnachweis Minijob-Zentrale</h2>
-              <p>Bereitet die Monatswerte für das SV-Meldeportal vor. Unfallversicherung/BG wird hier bewusst nicht eingerechnet.</p>
+              <p>Monatswerte fürs SV-Meldeportal.</p>
             </div>
             <div class="quick-grid">
               <div class="quick"><span id="contribBasisLabel">Hochrechnung Brutto (Monatsende)</span><b id="contribProjectedGross">0,00 €</b></div>
@@ -2350,7 +2495,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <div class="lohn-block" id="dutyPanel">
             <div class="card-head" style="margin-bottom:12px">
               <h2 style="font-size:16px">Meldungen &amp; Pflichten</h2>
-              <p>Was außer dem monatlichen Beitragsnachweis an die Minijob-Zentrale und die Unfallversicherung geht. Mit Datum abhaken – dann verschwindet es aus den Fristen.</p>
+              <p>Weitere Meldungen – mit Datum abhaken.</p>
             </div>
             <div id="dutyList" class="duty-list"></div>
           </div>
@@ -2358,7 +2503,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <div class="lohn-block" id="uvPanel" style="margin-top:22px">
             <div class="card-head" style="margin-bottom:12px">
               <h2 style="font-size:16px">Lohnnachweis an die Berufsgenossenschaft</h2>
-              <p>Jahreswerte für den digitalen Lohnnachweis im SV-Meldeportal. Erst den Stammdatenabruf mit Unternehmensnummer und PIN der BG machen, dann diese Werte melden – bis 16. Februar des Folgejahres.</p>
+              <p>Jahreswerte für die BG – bis 16. Februar melden.</p>
             </div>
             <div class="form-grid narrow"><div class="field"><label for="uvYear">Beitragsjahr</label><select id="uvYear"></select></div></div>
             <div id="uvValues"></div>
@@ -2393,7 +2538,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
             <div class="panel">
               <h3>Arbeitgeber-Abgaben</h3>
-              <p>Diese Positionen erhöhen die Arbeitgeberkosten, werden aber nicht vom Brutto des Mitarbeiters abgezogen.</p>
+              <p>Nur Arbeitgeberkosten, kein Abzug vom Brutto.</p>
               <div class="check-list">
                 <label class="check-row"><input data-profile="employerKv" type="checkbox">
                   <span>Krankenversicherung 13 %<small>Pauschalbeitrag bei gesetzlich krankenversichertem Minijobber.</small></span></label>
@@ -2469,7 +2614,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card" data-role="boss">
           <div class="card-head">
             <h2>Von deinen Mitarbeitern</h2>
-            <p>Rückrufwünsche, Nachschub für die Telefonliste und andere Anliegen an dich.</p>
+            
           </div>
           <div id="taskInboxList" class="task-list"><div class="notice">Aufgaben werden geladen …</div></div>
         </div>
@@ -2478,7 +2623,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card" data-role="boss">
           <div class="card-head">
             <h2>Notizen zu Kunden</h2>
-            <p>Was deine Mitarbeiter dir über „+ Notiz“ zu einem Kunden schicken – Hinweise und neue Kontaktdaten.</p>
+            <p>Hinweise und neue Kontaktdaten zu Kunden.</p>
           </div>
           <div id="taskNoteList" class="task-list"><div class="notice">Notizen werden geladen …</div></div>
         </div>
@@ -2495,8 +2640,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <!-- Mitarbeiter: Aufgabe an den Boss -->
         <div class="card section-card" data-role="employee">
           <div class="card-head">
-            <h2>Aufgabe an den Boss</h2>
-            <p>Kunde möchte den Boss sprechen, Telefonliste geht zu Ende oder etwas anderes – direkt hier statt per WhatsApp.</p>
+            <h2>Nachricht an Kim</h2>
           </div>
           <div class="chip-row">
             <button class="chip-btn" type="button" data-task-template="callback">Rückrufwunsch Kunde</button>
@@ -2504,20 +2648,19 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           </div>
           <form id="taskRequestForm">
             <div class="form-grid">
-              <div class="field full"><label for="requestTitle">Worum geht es?</label><input id="requestTitle" type="text" maxlength="160" required placeholder="z. B. Kunde wünscht Rückruf vom Boss"></div>
-              <div class="field full"><label for="requestDescription">Details</label><textarea id="requestDescription" rows="3" maxlength="2000" placeholder="Name, Telefonnummer, Anliegen, Wunschzeit"></textarea></div>
+              <div class="field full"><label for="requestTitle">Worum geht es?</label><input id="requestTitle" type="text" maxlength="160" required placeholder="z. B. Kunde wünscht Rückruf"></div>
+              <div class="field full"><label for="requestDescription">Details (optional)</label><textarea id="requestDescription" rows="3" maxlength="2000" placeholder="Name, Telefonnummer, Anliegen, Wunschzeit"></textarea></div>
               <div class="field"><label for="requestPriority">Dringlichkeit</label>
                 <select id="requestPriority"><option value="normal">Normal</option><option value="high">Dringend</option><option value="low">Hat Zeit</option></select></div>
-              <div class="field"><label for="requestDueDate">Bis wann? (optional)</label><input id="requestDueDate" type="date"></div>
+              <div class="field"><label for="requestDueDate">Bis wann?</label><input id="requestDueDate" type="date"></div>
             </div>
-            <div class="actions"><button class="btn primary" type="submit">An den Boss senden</button></div>
+            <div class="actions"><button class="btn primary" type="submit">An Kim senden</button></div>
           </form>
         </div>
 
         <div class="card section-card" data-role="employee">
           <div class="card-head">
-            <h2>An den Boss gesendet</h2>
-            <p>Hier siehst du, ob der Boss sich schon gekümmert hat.</p>
+            <h2>Gesendet</h2>
           </div>
           <div id="taskOutList" class="task-list"></div>
         </div>
@@ -2572,7 +2715,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <div class="card-head split">
             <div>
               <h2>Pakete</h2>
-              <p>Importierte Kontakte je Filiale. Mitarbeiter ziehen sich daraus je 10 in ihre Liste – immer die mit der frühesten Rückholung zuerst. Bei jedem Ziehen bekommst du eine Nachricht; ein leeres Paket verschwindet.</p>
+              <p>Kontakte je Filiale – Mitarbeiter ziehen je 10.</p>
             </div>
             <div class="head-btns">
               <button class="btn primary" type="button" id="poolImportBtn">Excel importieren</button>
@@ -2585,7 +2728,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <div class="card-head split fold-head">
             <div>
               <h2 data-fold-title="returned" data-title="Rückläufer">Rückläufer</h2>
-              <p data-fold-text="returned">Mit Termin · ohne Termin · falsche Kontaktdaten. Wer nach 5 Versuchen nicht erreicht wurde, landet im Kundenarchiv unter „Kein Kontakt“.</p>
+              <p data-fold-text="returned">Abgeschlossene Kontakte zum Prüfen.</p>
             </div>
             <div class="fold-tools"><button class="widget-pfeil fold-btn" type="button" data-fold="returned" aria-expanded="true" aria-label="Rückläufer zuklappen" title="Zuklappen"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 15 6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           </div>
@@ -2596,7 +2739,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <div class="card-head split fold-head">
             <div>
               <h2 data-fold-title="open" data-title="In Bearbeitung">In Bearbeitung</h2>
-              <p data-fold-text="open">Offene Kontakte mit aktuellem Versuchsstand – gehaltene Kontakte mit ihrer Notiz.</p>
+              <p data-fold-text="open">Offene und gehaltene Kontakte.</p>
             </div>
             <div class="fold-tools"><button class="widget-pfeil fold-btn" type="button" data-fold="open" aria-expanded="true" aria-label="In Bearbeitung zuklappen" title="Zuklappen"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 15 6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           </div>
@@ -2607,13 +2750,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card" data-role="employee">
           <div class="card-head split">
             <div>
-              <h2>Telefonliste</h2>
-              <p>Kontakt antippen und anrufen – jeder Anruf zählt als Versuch. Wischen: nach links = Halten, nach rechts = zurückgeben oder Kontaktdaten erfassen.</p>
+              <h2>Telefonliste<span class="count-chip" id="callCountChip" hidden></span></h2>
             </div>
-            <div class="head-btns">
+            <div class="head-btns call-toolbar">
               <button class="btn primary" type="button" id="bookingPickerBtn">
                 <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>Termin buchen</button>
-              <button class="btn ghost" type="button" id="requestNumbersBtn">Neue Nummern anfordern</button>
+              <button class="btn ghost" type="button" id="requestNumbersBtn">Neue Nummern</button>
             </div>
           </div>
           <dialog id="bookingPicker" class="picker" aria-labelledby="bookingPickerTitle">
@@ -2625,7 +2767,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           </dialog>
           <dialog id="bossNoteDialog" class="picker boss-note-dialog" aria-labelledby="bossNoteTitle" closedby="none">
             <div class="picker-head">
-              <strong id="bossNoteTitle">Notiz an den Boss</strong>
+              <strong id="bossNoteTitle">Nachricht an Kim</strong>
               <button class="picker-close" type="button" id="bossNoteClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
             </div>
             <div class="boss-note-body">
@@ -2635,7 +2777,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
                 <label><input type="radio" name="bossNoteKind" value="contact"><span>Kontaktdaten</span></label>
               </div>
               <div id="bossNoteTextField">
-                <textarea id="bossNoteText" rows="5" maxlength="1500" placeholder="Was soll der Boss zu diesem Kunden wissen?"></textarea>
+                <textarea id="bossNoteText" rows="5" maxlength="1500" placeholder="Was soll Kim zu diesem Kunden wissen?"></textarea>
               </div>
               <div id="bossNoteContactField" hidden>
                 <div id="bossNoteRows" class="boss-note-rows"></div>
@@ -2644,7 +2786,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
                   <button class="add-row" type="button" data-add-contact="mail"><span class="plus">+</span><span class="add-label">E-Mail-Adresse</span></button>
                 </div>
               </div>
-              <button class="btn primary" type="button" id="bossNoteSend" disabled>An den Boss senden</button>
+              <button class="btn primary" type="button" id="bossNoteSend" disabled>An Kim senden</button>
             </div>
           </dialog>
           <dialog id="numbersDialog" class="picker numbers-dialog" aria-labelledby="numbersTitle" closedby="none">
@@ -2705,7 +2847,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <button class="picker-close" type="button" id="taskDialogClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
         </div>
         <div class="form-dialog-body">
-          <p class="form-dialog-hint">Aufgaben werden einem Mitarbeiter zugewiesen und bleiben bis zur Erledigung offen.</p>
+          
           <form id="taskForm">
             <div class="form-grid">
               <div class="field"><label>Mitarbeiter</label><select id="taskEmployeeSelect" data-employee-select data-independent required></select></div>
@@ -2785,7 +2927,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <button class="picker-close" type="button" id="callDialogClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
         </div>
         <div class="form-dialog-body">
-          <p class="form-dialog-hint">Kunde, Nummern und Terminort hinterlegen – plus ein kurzer Hinweis, worum es im Gespräch geht.</p>
+          
             <form id="callForm">
               <input type="hidden" id="callEditId">
               <div class="form-grid">
@@ -2881,11 +3023,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <div class="card-head split fold-head">
             <div>
               <h2 data-fold-title="archived" data-title="Abgeschlossene">Abgeschlossene</h2>
-              <p data-fold-text="archived">Erledigte Kontakte, neueste zuerst. „Erneut zuweisen“ gibt einen Kontakt zurück in die Telefonliste.</p>
+              <p data-fold-text="archived">Erledigte Kontakte – „Erneut zuweisen“ holt sie zurück.</p>
             </div>
             <div class="fold-tools"><button class="widget-pfeil fold-btn" type="button" data-fold="archived" aria-expanded="true" aria-label="Abgeschlossene zuklappen" title="Zuklappen"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 15 6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           </div>
-          <p class="muted">Kontakte und gespeicherte Gesprächsverläufe bleiben erhalten – auch nach erneutem Zuweisen.</p>
+          
           <div id="callArchiveList" class="employee-list archive-list" data-fold-body="archived"><div class="notice">Wird geladen …</div></div>
           <h3>Frühere Paketkontakte</h3>
           <p>Aus Paketen entfernte Kontakte bleiben hier mit ihrem bisherigen Verlauf auffindbar.</p>
@@ -2896,7 +3038,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <div class="card-head split fold-head">
             <div>
               <h2 data-fold-title="kk" data-title="Kein Kontakt">Kein Kontakt</h2>
-              <p data-fold-text="kk">Nach 5 Versuchen ohne Kontakt. Älteste zuerst – wieder freigeben startet einen neuen Durchlauf, die Historie bleibt.</p>
+              <p data-fold-text="kk">Nach 5 Versuchen nicht erreicht.</p>
             </div>
             <div class="fold-tools"><button class="fold-release" type="button" id="kkReleaseOldestBtn" title="Die 5 ältesten wieder freigeben" aria-label="Die 5 ältesten wieder freigeben">&gt;&gt;&gt;</button><button class="widget-pfeil fold-btn" type="button" data-fold="kk" aria-expanded="true" aria-label="Kein Kontakt zuklappen" title="Zuklappen"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 15 6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           </div>
@@ -2913,7 +3055,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card" data-role="boss">
           <div class="card-head">
             <h2>Deine Filialen</h2>
-            <p>Diese Filialen sehen deine Mitarbeiter unter „Terminvereinbarung“.</p>
+            
           </div>
           <div id="branchAdminList" class="employee-list"><div class="notice">Filialen werden geladen …</div></div>
         </div>
@@ -2921,7 +3063,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card" data-role="boss">
           <div class="card-head">
             <h2>Deine Videocalls</h2>
-            <p>Diese Videocalls stehen Mitarbeitern ebenfalls bei der Terminvereinbarung zur Verfügung.</p>
+            
           </div>
           <div id="videoCallAdminList" class="employee-list"><div class="notice">Videocalls werden geladen …</div></div>
         </div>
@@ -2929,7 +3071,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card" data-role="employee">
           <div class="card-head">
             <h2>Termin buchen</h2>
-            <p>Filiale oder Videocall antippen – der Buchungskalender öffnet sich direkt.</p>
+            <p>Filiale oder Videocall wählen.</p>
           </div>
           <div id="branchTiles" class="branch-grid"><div class="notice">Filialen werden geladen …</div></div>
         </div>
@@ -2938,7 +3080,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       <!-- ===== Boss: Einstellungen ===== -->
       <section class="page" id="einstellungen" data-role="boss">
         <div class="card section-card">
-          <div class="card-head"><h2>Sicherheitsmonitor</h2><p>Cloudflare prüft alle 15 Minuten die veröffentlichten Dateien, API-Erreichbarkeit und abgewiesene Zugriffe. Hinweise erscheinen als Aufgabe und Push; unveränderte Zustände bleiben still.</p></div>
+          <div class="card-head"><h2>Sicherheitsmonitor</h2><p>Prüft alle 15 Minuten Dateien, API und Zugriffe.</p></div>
           <button type="button" class="btn ghost" id="refreshSecurityMonitor">Prüfstand aktualisieren</button>
           <div id="securityMonitorStatus" class="status-text" aria-live="polite">Prüfstand noch nicht geladen.</div>
         </div>
@@ -2956,7 +3098,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card section-card">
           <div class="card-head">
             <h2>Arbeitgeber</h2>
-            <p>Erscheint im Kopf jedes Gehaltsnachweises. Betriebsnummer und Unfallversicherung brauchst du für die Meldungen.</p>
+            <p>Steht im Kopf jedes Gehaltsnachweises.</p>
           </div>
           <form id="employerForm">
             <div class="form-grid narrow">
@@ -3033,6 +3175,21 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   <div class="more-panel" role="menu" id="moreList"></div>
 </div>
 
+<dialog id="bossEntryDialog" class="form-dialog" data-role="boss" aria-labelledby="bossEntryTitle" style="width:min(460px,calc(100vw - 24px))">
+  <div class="picker-head"><strong id="bossEntryTitle">Eintrag ändern</strong><button class="picker-close" type="button" id="bossEntryClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button></div>
+  <form class="form-dialog-body" id="bossEntryForm"><input type="hidden" id="bossEntryId">
+    <p class="form-dialog-hint">Geht nur bei Entwürfen. Abgesendete Wochen vorher unter „Wochen prüfen“ zur Korrektur öffnen.</p>
+    <div class="form-grid">
+      <div class="field full"><label for="bossEntryDate">Tag</label><input id="bossEntryDate" type="date" required></div>
+      <div class="field"><label for="bossEntryStart">Beginn</label><input id="bossEntryStart" type="time" required></div>
+      <div class="field"><label for="bossEntryEnd">Ende</label><input id="bossEntryEnd" type="time" required></div>
+      <div class="field"><label for="bossEntryBreak">Pause (Min.)</label><input id="bossEntryBreak" type="number" min="0" step="5" value="0"></div>
+      <div class="field"><label for="bossEntryAppts">Termine</label><input id="bossEntryAppts" type="number" min="0" step="1" value="0"></div>
+    </div>
+    <p id="bossEntryStatus" class="status-text" aria-live="polite"></p>
+    <div class="actions"><button class="btn primary" type="submit" id="bossEntrySave">Speichern</button></div>
+  </form>
+</dialog>
 <dialog id="whatsNew" class="note-dialog whats-new" aria-labelledby="whatsNewTitle" closedby="none">
   <div class="whats-new-body">
     <strong id="whatsNewTitle">Was ist neu?</strong>
@@ -3188,9 +3345,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
 <script src="../date-inputs.js"></script>
 <script src="week-planner.js"></script>
-<script src="absence-calendar.js"></script>
-<script src="regular-week.js?v=6"></script>
-<script src="guided-intro.js"></script>
+<script src="absence-calendar.js?v=2"></script>
+<script src="regular-week.js?v=7"></script>
+<script src="guided-intro.js?v=2"></script>
 <script>
 (() => {
   "use strict";
@@ -4382,7 +4539,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const appointmentStanding = window.OfficeRegularWeek.appointmentStanding;
   function appointmentStandingHtml(entries,adjustment,month){
     const p=appointmentStanding(entries,adjustment);
-    return `<div class="kpi-label">Termine · ${esc(fmtMonth(month))}</div><div class="kpi-value">${p.total} <span class="chip ${p.hasDrafts?'warn':'good'}">${p.hasDrafts?'Vorläufig':'Bestätigt'}</span></div><p class="muted">${p.hasDrafts?`${p.official} bestätigt + ${p.provisional} vorläufig. Nach dem Absenden ist der neue Stand bestätigt.`:'Alle eingetragenen Termine sind bestätigt.'}</p>`;
+    return `<div class="standing-row"><div><div class="kpi-label">Termine im ${esc(fmtMonth(month).split(" ")[0])}</div>${p.hasDrafts?`<div class="standing-sub">${p.official} bestätigt + ${p.provisional} vorläufig</div>`:''}</div><div class="standing-val"><b>${p.total}</b><span class="chip ${p.hasDrafts?'warn':'good'}">${p.hasDrafts?'Vorläufig':'Bestätigt'}</span></div></div>`;
   }
   function renderAppointmentStandings(){
     if(state.role==='employee'){
@@ -4453,7 +4610,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (!list.length) return `<tr><td class="empty" colspan="${cols}">${esc(emptyText)}</td></tr>`;
 
     return [...list].sort(byNewest).map(e => {
-      const actions = !withActions ? "" : `<td><div class="row-actions">${
+      const actions = !withActions ? "" : withActions === "boss" ? `<td><div class="row-actions">${
+        !e.submissionId && e.recordKind !== "weekly_allocation"
+          ? `<button class="btn ghost small" type="button" data-boss-edit="${e.id}">Ändern</button>` : ""}</div></td>` : `<td><div class="row-actions">${
         isEditable(e.date)&&!e.submissionId&&e.recordKind==="weekly_allocation"
           ? `<button class="icon-btn danger" type="button" data-delete="${e.id}" title="Alte Zeile löschen" aria-label="Alte Zeile löschen">${ICONS.trash}</button>`
           : isEditable(e.date)&&!e.submissionId
@@ -4589,6 +4748,34 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const del = event.target.closest("[data-delete]");
     if (edit) editEntry(edit.dataset.edit);
     if (del) deleteEntry(del.dataset.delete);
+  });
+
+  // Kim korrigiert einen Entwurf direkt (Woche muss offen bzw. zur Korrektur freigegeben sein).
+  $("bossEntryRows").addEventListener("click", event => {
+    const btn = event.target.closest("[data-boss-edit]");
+    if (!btn) return;
+    const e = state.employeeEntries.find(x => String(x.id) === btn.dataset.bossEdit);
+    if (!e) return;
+    $("bossEntryId").value = e.id; $("bossEntryDate").value = e.date; $("bossEntryStart").value = e.start || "";
+    $("bossEntryEnd").value = e.end || ""; $("bossEntryBreak").value = e.break || 0; $("bossEntryAppts").value = e.appointments || 0;
+    setStatus("bossEntryStatus", "");
+    openDialog($("bossEntryDialog"));
+  });
+  $("bossEntryClose").addEventListener("click", () => closeDialog($("bossEntryDialog")));
+  $("bossEntryForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const uid = state.selectedUserId, id = $("bossEntryId").value;
+    const start = $("bossEntryStart").value, end = $("bossEntryEnd").value, brk = Number($("bossEntryBreak").value || 0), appts = Number($("bossEntryAppts").value || 0);
+    if (!uid || !id) return;
+    if (!start || !end || end <= start) return setStatus("bossEntryStatus", "Ende muss nach dem Beginn liegen.", true);
+    withBusy($("bossEntrySave"), async () => {
+      try {
+        await api(forUser(`/admin/entries/${id}`, uid), "PUT", { work_date: $("bossEntryDate").value, start_time: start, end_time: end, break_minutes: brk, appointments: appts, commissionable_appointments: appts });
+        closeDialog($("bossEntryDialog"));
+        await loadEmployeeData(uid);
+        toast("Eintrag geändert ✓");
+      } catch (error) { setStatus("bossEntryStatus", error.message, true); }
+    });
   });
 
   $("resetBtn").addEventListener("click", () => {
@@ -4795,7 +4982,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     $$("[data-selected-month]").forEach(el => (el.textContent = fmtMonth(month)));
 
     $("bossEntryRows").innerHTML = state.selectedUserId
-      ? entryRowsHtml(list, false, "Keine Einträge im gewählten Monat.")
+      ? entryRowsHtml(list, "boss", "Keine Einträge im gewählten Monat.")
       : '<tr><td class="empty" colspan="7">Mitarbeiter auswählen.</td></tr>';
 
     renderAbsenceData();
@@ -4846,6 +5033,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const count = state.employees.length;
     setText("bossEmployeeCount", count);
     setText("bossHeroMeta", count === 1 ? "1 Mitarbeiter" : `${count} Mitarbeiter`);
+    setText("bossHeroDate", new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "numeric", month: "long" }).format(new Date()));
 
     const keep = findEmployee(state.selectedUserId) ? state.selectedUserId : null;
     // Standard: der erste echte Mitarbeiter, nicht das Testkonto
@@ -5769,7 +5957,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     renderContributionModule();
     renderCloseAsk();
     const frozen=state.closings.some(c=>c.payroll_month===payrollMonth());
-    $("createPayrollPdf").textContent=frozen?"Lohnzettel herunterladen":isoDate()>monthEnd(payrollMonth())?"Vorschau als PDF (Monat noch nicht abgeschlossen)":"Vorschau als PDF";
+    $("createPayrollPdf").textContent=frozen?"Lohnzettel herunterladen":"Vorschau (PDF)";$("createPayrollPdf").classList.toggle("primary",frozen);$("createPayrollPdf").classList.toggle("ghost",!frozen);
   }
 
   let profileSaveTimer = null;
@@ -6224,12 +6412,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       renderTaskArchive(done);
     } else {
       setText("taskOpenTitle", "Deine Aufgaben");
-      setText("taskOpenSub", "Deine offenen Aufgaben und die nächste Wochenplanung.");
+      setText("taskOpenSub", "");
       renderTaskList("taskOpenList", ownOpen, "Keine offenen Aufgaben. ✓");
       // Gesendete: offene zuerst, erledigte nur die letzten 10
       const sent = state.tasks.filter(isInbox);
       const sentShown = [...sent.filter(t => t.status === "open"), ...sent.filter(t => t.status !== "open").slice(0, 10)];
-      renderTaskList("taskOutList", sentShown, "Noch nichts an den Boss gesendet.");
+      renderTaskList("taskOutList", sentShown, "Noch nichts gesendet.");
       renderTaskArchive(done.filter(t => !isInbox(t)));
     }
 
@@ -6275,7 +6463,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   const TASK_ACTIONS = {
     complete: { path: id => `/tasks/${id}/complete`, method: "PUT", error: "Aufgabe konnte nicht erledigt werden" },
     withdraw: { path: id => `/tasks/${id}`, method: "DELETE", error: "Aufgabe konnte nicht zurückgezogen werden",
-                confirm: "Anfrage an den Boss zurückziehen?" },
+                confirm: "Nachricht an Kim zurückziehen?" },
     adminComplete: { path: id => `/admin/tasks/${id}/complete`, method: "PUT", error: "Aufgabe konnte nicht erledigt werden" },
     reopen: { path: id => `/admin/tasks/${id}/reopen`, method: "PUT", error: "Aufgabe konnte nicht wieder geöffnet werden" },
     delete: { path: id => `/admin/tasks/${id}`, method: "DELETE", error: "Aufgabe konnte nicht gelöscht werden",
@@ -6354,7 +6542,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   const TASK_TEMPLATES = {
     callback: () => ({
-      title: "Kunde wünscht Rückruf vom Boss",
+      title: "Kunde wünscht Rückruf von Kim",
       description: "Name: \nTelefon: \nAnliegen: \nErreichbar: ",
       priority: "normal"
     }),
@@ -6396,7 +6584,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         });
         ["requestTitle", "requestDescription", "requestDueDate"].forEach(id => ($(id).value = ""));
         $("requestPriority").value = "normal";
-        toast("An den Boss gesendet ✓");
+        toast("An Kim gesendet ✓");
       } catch (error) {
         alert("Senden fehlgeschlagen: " + error.message);
       }
@@ -6419,7 +6607,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             <span><b>${esc(b.name)}</b>${b.note ? `<small>${esc(b.note)}</small>` : ""}</span>
             ${CHEVRON}
           </a>`).join("")
-      : '<div class="notice">Noch keine Filialen oder Videocalls hinterlegt – bitte beim Boss melden.</div>';
+      : '<div class="notice">Noch keine Filialen oder Videocalls hinterlegt – bitte Kim Bescheid geben.</div>';
   }
 
   function openBookingPicker() {
@@ -6451,7 +6639,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     const list = numberBranches();
     $("numbersList").innerHTML = list.length
       ? list.map(b => `<label class="numbers-row"><input type="checkbox" value="${esc(b.name)}"><span>${esc(b.name)}</span></label>`).join("")
-      : '<div class="notice">Es sind noch keine Filialen hinterlegt – die Anfrage geht ohne Filiale an den Boss.</div>';
+      : '<div class="notice">Es sind noch keine Filialen hinterlegt – die Anfrage geht ohne Filiale an Kim.</div>';
     $("numbersAll").closest("label").hidden = !list.length;
     $("numbersAll").checked = false;
     numbersSync();
@@ -6563,7 +6751,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       try {
         await sendTaskToBoss(payload);
         closeDialog($("bossNoteDialog"));
-        toast("An den Boss gesendet ✓");
+        toast("An Kim gesendet ✓");
       } catch (error) {
         alert("Senden fehlgeschlagen: " + error.message);
       }
@@ -6904,7 +7092,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       </div>
 
       ${data.briefing ? `<div class="script-block">
-        <b>Hinweis vom Boss</b>
+        <b>Hinweis von Kim</b>
         <p class="script-line">${esc(data.briefing)}</p>
       </div>` : ""}
 
@@ -6974,6 +7162,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       ? `${state.adminCalls.open.length} in Bearbeitung · ${state.adminCalls.returned.length} Rückläufer`
       : employeeCallSummary();
     $$("[data-call-summary]").forEach(el => (el.textContent = text));
+    const chip = $("callCountChip");
+    if (chip && state.role !== "boss") { const n = state.calls.filter(c => !isHeld(c)).length; chip.textContent = n; chip.hidden = !n; }
   }
 
   /* --- Mitarbeiter --- */
@@ -7098,7 +7288,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   function callSummaryHtml(c, held, open) {
     const sub = held
       ? `<span class="cc-note">${esc(c.hold_note)}</span>`
-      : `<span class="cc-sub">${esc(attemptText(c))} · ${contactRequest(c) ? `Kontaktdaten von ${esc(contactRequest(c).name)} erfragen` : esc(placeLabel(c))}${callScriptData(c).kind ? ` · <b>Kind ${esc(kindText(callScriptData(c).kind))}</b>` : ""}</span>`;
+      : `<span class="cc-sub">${esc(attemptText(c))}${contactRequest(c)||c.teams||c.branch_id?" · ":""}${contactRequest(c) ? `Kontaktdaten von ${esc(contactRequest(c).name)} erfragen` : esc(c.teams||c.branch_id?placeLabel(c):"")}${callScriptData(c).kind ? ` · <b>Kind ${esc(kindText(callScriptData(c).kind))}</b>` : ""}</span>`;
     return `<button class="cc-head" type="button" data-call-toggle aria-expanded="${open}">
       <span class="cc-main"><span class="cc-name">${esc(c.customer_name)}</span>${sub}</span>
       ${held ? "" : attemptDots(shownAttempts(c))}
@@ -7153,13 +7343,11 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
            <button class="btn ghost phone-flag" type="button" data-phone-flag="${i}" title="Nur diese Nummer als falsch markieren">Falsch</button>
          </span>`).join("");
     const scriptOpen = state.scriptExpanded.has(id);
-    const script = `<button class="btn ghost" type="button" data-script-toggle aria-expanded="${scriptOpen}">${ICONS.script}Skript</button>
-      <button class="btn ghost" type="button" data-boss-note>+ Notiz</button>`;
+    const script = `<div class="cc-tools"><button class="btn ghost small" type="button" data-script-toggle aria-expanded="${scriptOpen}">${ICONS.script}Skript</button>
+      <button class="btn ghost small" type="button" data-boss-note>An Kim</button></div>`;
     const help = running
-      ? "5. Versuch läuft. Nach dem Auflegen unten das Ergebnis wählen."
-      : isLastAttempt(c)
-        ? "Der nächste Anruf ist der letzte Versuch."
-        : "Jeder Anruf zählt automatisch als Versuch.";
+      ? "5. Versuch läuft – nach dem Auflegen unten das Ergebnis wählen."
+      : isLastAttempt(c) ? "Der nächste Anruf ist der letzte Versuch." : "";
 
     return swipeWrap(c, `<div class="call-card${open ? " is-open" : ""}${locked ? " is-locked" : ""}${isFinal ? " is-final" : ""}" data-call="${c.id}">
       ${callSummaryHtml(c, false, open)}
@@ -7167,12 +7355,12 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         ${callBriefing(c) ? `<div class="cc-text"><b>Hinweis</b>${esc(callBriefing(c))}</div>` : ""}
         <div class="phone-stack">${phones}${script}</div>
         ${scriptOpen ? scriptHtml(c) : ""}
-        <p class="call-help">${help} „Falsch“ markiert nur diese eine Nummer – der Kontakt bleibt bei dir, solange eine andere funktioniert.</p>
+        ${help ? `<p class="call-help is-warn">${help}</p>` : ""}
         ${state.callErrors[id] ? `<div class="notice warn">${esc(state.callErrors[id])}</div>` : ""}
         <div class="field">
           <label for="protocol-${c.id}">Notiz</label>
           <textarea id="protocol-${c.id}" data-protocol="${c.id}" rows="2" maxlength="2000"
-            placeholder="z. B. Mailbox, erreichbar ab 17 Uhr">${esc(noteDraft(c))}</textarea>
+            placeholder="z. B. Mailbox, ab 17 Uhr erreichbar">${esc(noteDraft(c))}</textarea>
           <small id="note-hint-${c.id}">${noteHint(c.id)}</small>
         </div>
         ${isFinal ? "" : `<div class="cc-actions">
@@ -9259,7 +9447,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
             </span>
             <span class="branch-go">Buchen →</span>
           </a>`).join("")
-      : '<div class="notice">Es sind noch keine Filialen oder Videocalls hinterlegt. Bitte beim Boss melden.</div>';
+      : '<div class="notice">Noch keine Filialen oder Videocalls hinterlegt – bitte Kim Bescheid geben.</div>';
 
     // Boss: Verwaltung
     $("branchAdminList").innerHTML = branchAdminHtml(list.filter(b => !isVideoCall(b)), "Filialen");
@@ -11179,16 +11367,14 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
    * Für das nächste Update: version ändern und die Abschnitte ersetzen.
    */
   const WHATS_NEW = {
-    version:"2026-10-27-regeltage-v2",required:true,
-    intro:"Eine geführte Einführung erklärt dir Kalender, Urlaub, Feiertage und den neuen Nachtrag.",
-    sections:[{title:"Kalender, Urlaub und Feiertage",tone:"neu",items:[
-      ["Kalender direkt in der Leiste","Deine bisherigen Wochenpläne, Urlaub und Feiertage in einer Monats- und Wochenansicht."],
-      ["Urlaub beantragen","Zeitraum und tatsächliche Solltage auswählen. Erst Kims Entscheidung genehmigt den Urlaub."],
-      ["Regeltage und Feiertage","Drei selbst gewählte Tage mit Geltungsbeginn. Ein Feiertag auf einem Regeltag gibt zwei Stunden Gutschrift."],
-      ["Entwurf und Absenden","Stunden und Termine selbst eintragen, bis zum Absenden ändern und die Woche spätestens Sonntag übermitteln."],
-      ["Erinnerungen","Freitags ein Hinweis; Samstagmittag und Sonntag um 9, 13 und 17 Uhr Push, solange noch nicht abgesendet."],
-      ["Urlaubskonto und Verlauf","Anspruch, Jahresplanung, offene Anträge und genehmigte Tage bleiben getrennt sichtbar."],
-      ["Nachtrag 2","Beide Seiten unterschreiben dasselbe Dokument. Der bisherige Nachtrag bleibt als eigenes PDF erhalten."]]}],
+    version:"2026-11-01-neues-design",required:true,
+    intro:"Office ist übersichtlicher geworden – hier siehst du, was sich geändert hat.",
+    sections:[{title:"Neu in Office",tone:"neu",items:[
+      ["Neuer Look","Ruhiger, moderner und mit deutlich weniger Text."],
+      ["Startseite","„Diese Woche“ zeigt sofort, wie viele Stunden noch fehlen."],
+      ["Arbeitszeit","Echte Tage mit Beginn und Ende – Ziel 6 Stunden pro Woche, Feiertagswoche 4 Stunden."],
+      ["Absenden","Ab Freitag „Woche absenden“. Korrekturen öffnet Kim."],
+      ["Telefonliste","Kürzere Karten, gleiche Abläufe. „An Kim“ für Hinweise zu Kunden."]]}],
     confirm:"Ich habe die Änderungen verstanden."
   };
 
@@ -11267,7 +11453,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   };
   // App-Farbe: Knöpfe, Leiste unten, Markierungen (immer mit weißer Schrift lesbar)
   const MY_ACCENTS = {
-    weiss:    { name: "Standard",   accent: "#0D417F", hi: "#092F5E", wash: "#E6EEF8" },
+    weiss:    { name: "Standard",   accent: "#1B4C9C", hi: "#133B7C", wash: "#E8EFFA" },
     himmel:   { name: "Himmelblau", accent: "#1C64B4", hi: "#154F8F", wash: "#E1EEFB" },
     mint:     { name: "Mint",       accent: "#17765A", hi: "#115C46", wash: "#DDF2EA" },
     pfirsich: { name: "Pfirsich",   accent: "#B4491F", hi: "#8F3816", wash: "#FBE6DB" },
@@ -11320,7 +11506,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   const MY_WIDGETS = {
     kalender:{title:"Kalender",icon:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h2M14 14h2M8 17h2"/>'},
-    einsatz:    { title: "Arbeitszeiten", fixed: true, icon: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M9 15l2 2 4-4"/>' },
+    einsatz:    { title: "Diese Woche", fixed: true, icon: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M9 15l2 2 4-4"/>' },
     meintag:    { title: "Mein Tag",          icon: '<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/>' },
     monat:      { title: "Monatsstand",       icon: '<path d="M4 19V5M4 19h16"/><path d="M8 15v-3M12 15V9M16 15v-6"/>' },
     telefon:    { title: "Telefonliste",      icon: '<path d="M5.5 4h3.2l1.6 4.1-2 1.3a10.5 10.5 0 0 0 5.3 5.3l1.3-2 4.1 1.6v3.2A1.5 1.5 0 0 1 17.5 19 14.5 14.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4Z"/>' },
@@ -11330,7 +11516,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     merkzettel: { title: "Merkzettel",        icon: '<path d="M6 3.8h9l3 3V20H6z"/><path d="M15 3.8V7h3M9 11h6M9 14.5h6M9 18h3.5"/>' }
   };
   const MY_DEFAULT = {
-    widgets: ["einsatz", "kalender", "meintag", "monat", "telefon", "woche", "aufgaben"],calendarWidgetIntroduced:true,
+    widgets: ["einsatz", "telefon", "monat", "kalender", "aufgaben"],calendarWidgetIntroduced:true,layout2611:true,
     colors: {}, sizes: {}, accent: "weiss", font: "klar", size: "m", note: ""
   };
   const MY_MAX = 99;                // keine Grenze – sie stellt sich die Startseite so zusammen, wie sie damit arbeitet
@@ -11344,6 +11530,9 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     out.widgets = [...new Set(asArray(out.widgets).filter(k => MY_WIDGETS[k]))];
     if(p&&!p.calendarWidgetIntroduced&&!out.widgets.includes("kalender"))out.widgets.splice(1,0,"kalender");
     out.calendarWidgetIntroduced=true;
+    // Überarbeitung 11/2026: „Wochenkonto“ steckt jetzt in „Diese Woche“, „Mein Tag“ ist optional.
+    if(p&&!p.layout2611)out.widgets=out.widgets.filter(k=>!["woche","meintag"].includes(k));
+    out.layout2611=true;
     out.widgets = ["einsatz", ...out.widgets.filter(k => k !== "einsatz")].slice(0, MY_MAX);
     if (!MY_ACCENTS[out.accent]) out.accent = "weiss";
     if (!MY_FONTS[out.font]) out.font = "klar";
@@ -11436,10 +11625,13 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
   }
 
   const MY_BODY = {
-    kalender(){return `<div class="my-big">${esc(fmtMonth(isoMonth()))}</div>${miniCalendarHtml()}<p class="my-muted">Deine Regeltage, genehmigter Urlaub und Feiertage. Urlaub beantragst du direkt hier.</p><div class="my-actions"><button class="btn primary" type="button" data-my-act="kalender">Kalender öffnen</button></div>`;},
+    kalender(){return `<div class="my-big">${esc(fmtMonth(isoMonth()))}</div>${miniCalendarHtml()}<div class="my-actions"><button class="btn ghost" type="button" data-my-act="kalender">Kalender &amp; Urlaub</button></div>`;},
     einsatz(compact) {
-      const w=regularWeek.data;
-      return `<div class="my-big">Deine Arbeitswoche</div><p class="my-muted">Trage deine geleisteten Stunden und Termine ein und sende die Woche bis Sonntag ab.</p>${w?.active?`<p>${esc(fmtMinutes(w.workMinutes))} erfasst · ${esc(fmtMinutes(w.holidayMinutes+w.absenceMinutes))} gutgeschrieben</p>`:''}<div class="my-actions"><button class="btn primary" type="button" data-my-act="zeiten">Stunden &amp; Termine eintragen</button></div>`;
+      const w=regularWeek.data,ws=mondayOfWeek(isoDate());let ist,soll;
+      if(w?.active&&w.week===ws){ist=(w.days||[]).flatMap(d=>d.entries||[]).reduce((n,e)=>n+e.work_minutes,0);soll=w.targetMinutes||0;}
+      else{const a=ownWeekAccount().weeks.find(x=>x.weekStart===ws);ist=a?a.ist:state.entries.filter(e=>e.date>=ws&&e.date<=addDaysIso(ws,6)).reduce((n,e)=>n+e.minutes,0);soll=a?a.soll:CONTRACT_WEEKLY_HOURS*60;}
+      const rest=Math.max(0,soll-ist),pct=soll?Math.min(100,Math.round(ist/soll*100)):0;
+      return `<div class="my-big">${esc(fmtMinutes(ist))} <small>von ${esc(fmtMinutes(soll))}</small></div><div class="my-bar"><span style="width:${pct}%"></span></div><p class="my-muted">${rest?`Noch ${esc(fmtMinutes(rest))} offen`:"Wochenziel erreicht ✓"}</p>${compact?"":'<div class="my-actions"><button class="btn primary" type="button" data-my-act="zeiten">Arbeitszeit eintragen</button></div>'}`;
     },
     meintag(compact) {
       const today = isoDate();
@@ -11475,7 +11667,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
       return `<div class="my-big">${open.length}</div>
         <p class="my-muted">${open.length === 1 ? "offener Kontakt" : "offene Kontakte"}${held ? ` · ${held} zu klären` : ""}</p>
         ${!compact && nextCall ? `<p class="my-line">Als Nächstes: <b>${esc(nextCall.customer_name)}</b></p>` : ""}
-        ${compact ? "" : '<div class="my-actions"><button class="btn primary" type="button" data-my-act="telefon">Telefonliste öffnen</button></div>'}`;
+        ${compact ? "" : '<div class="my-actions"><button class="btn primary" type="button" data-my-act="telefon">Weiter telefonieren</button></div>'}`;
     },
     woche(compact) {
       const account = ownWeekAccount();
@@ -11645,7 +11837,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
    */
 
   const regularWeek=window.OfficeRegularWeek.create({$,esc,api,role:()=>state.role,userId:()=>state.bootstrappedFor,today:isoDate,minutes:fmtMinutes,openDialog,closeDialog,showPage,toast,
-    changed:(pattern,data)=>{state.regularPatterns=pattern.patterns||[];state.regularGoalsByMonth??={};for(const g of data.monthGoals||[])state.regularGoalsByMonth[g.month]=g;},
+    changed:(pattern,data)=>{state.regularPatterns=pattern.patterns||[];state.regularGoalsByMonth??={};for(const g of data.monthGoals||[])state.regularGoalsByMonth[g.month]=g;queueMicrotask(renderMyStart);},
     openEntry:(slot,week,old)=>{resetForm();setTimeFormOpen(true);const date=slot>isoDate()?isoDate():slot;$("date").value=date;if(old){$("entryReplace").value=old.id;$("appointments").value=old.appointments||0;$("entryActualHint").textContent=`Bisher ohne Uhrzeit: ${fmtMinutes(old.work_minutes)} · ${old.appointments||0} Termine. Bitte Beginn und Ende eintragen – die alte Zeile wird beim Speichern ersetzt.`;}$("timeCard").scrollIntoView({block:"start",behavior:"smooth"});$("start").focus();},
     editEntry,removeEntry:id=>deleteEntry(id),onSaved:refreshOwnProgress,onSubmitted:loadOwnEntries,onOnboarded:async()=>{await afterEmployeeNotices();}
   });
@@ -11775,7 +11967,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
               <button class="btn ${done ? "ghost" : "primary"} small" type="button" data-myslip-open="${esc(sl.month)}">${done ? "Ansehen" : "Ansehen & unterschreiben"}</button>
             </div></div>`;
         }).join("")
-      : '<div class="notice">Noch kein abgeschlossener Monat. Den Gehaltsnachweis gibt es nach jedem Monatsabschluss hier.</div>';
+      : '<div class="notice">Noch kein Gehaltsnachweis.</div>';
     const open = slipOpenForMe()[0];
     $("payslipNotice").hidden = !open;
     if (open) setText("payslipNoticeTitle", `Dein Gehaltsnachweis für ${open.snapshot?.monthLabel || open.month} ist da`);
@@ -12238,7 +12430,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
           <button class="btn ghost small" type="button" data-doc-get="${d.id}">Herunterladen</button>
           ${boss ? `<button class="icon-btn danger" type="button" data-doc-del="${d.id}" title="Löschen" aria-label="Dokument löschen">${ICONS.trash}</button>` : ""}
         </div>
-      </div>`).join("") : `<p class="plan-empty">${boss ? "Noch keine Dokumente hochgeladen." : "Kim hat noch keine Dokumente hinterlegt."}</p>`;
+      </div>`).join("") : `<p class="plan-empty">${boss ? "Noch keine Dokumente hochgeladen." : "Noch keine Dokumente."}</p>`;
   }
 
   $("addendumActions").addEventListener("click", event => {

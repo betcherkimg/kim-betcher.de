@@ -74,7 +74,7 @@ with sync_playwright() as pw:
   expect(page.locator('[data-my="kalender"]')).to_be_visible();page.locator('[data-my-act="kalender"]').click();expect(page.locator('#kalender')).to_have_class('page active')
   page.clock.set_fixed_time('2026-12-22T11:00:00Z');page.evaluate('async()=>{__t.showPage("zeiten");await __t.regularWeek.selectWeek("2026-12-21")}')
   expect(page.locator('#regularWeekCard')).to_be_visible();expect(page.locator('.regular-day')).to_have_count(1);holiday=page.locator('.regular-disabled');expect(holiday).to_contain_text('Feiertag · 2 Std. gutgeschrieben');expect(page.locator('[data-regular-day]')).to_have_count(1)
-  expect(page.locator('#regularSummary')).to_contain_text('Soll diese Woche: 4:00')
+  expect(page.locator('#regularSummary')).to_contain_text('von 4:00');expect(page.locator('#regularSummary')).to_contain_text('Feiertagswoche')
   page.locator('[data-regular-day]').click();expect(page.locator('#timeCard')).to_be_visible();expect(page.locator('#date')).to_have_value('2026-12-22');expect(page.locator('#entryManualHoursField')).to_be_hidden()
   page.locator('#start').fill('09:00');page.locator('#end').fill('10:20');page.locator('#appointments').fill('3');page.locator('#saveBtn').click()
   page.wait_for_function('__t.regularWeek.data.days.some(d=>d.entries.length)')
@@ -112,15 +112,15 @@ with sync_playwright() as pw:
   page.locator('#leaveRequestClose').click();check_width(page)
   page.screenshot(path=f'/workspace/scratch/vacation-calendar-{width}.png',full_page=True)
   page.locator('#tabbar [data-page="dashboard"]').click() if width==390 else page.locator('.nav [data-page="dashboard"]').click()
-  expect(page.locator('#employeeQuickAccess [data-page="zeiten"]')).to_be_visible()
-  page.locator('#employeeQuickAccess [data-page="zeiten"]').click();expect(page.locator('#regularWeekCard')).to_be_visible()
+  expect(page.locator('[data-my-act="zeiten"]')).to_be_visible()
+  page.locator('[data-my-act="zeiten"]').click();expect(page.locator('#regularWeekCard')).to_be_visible()
   expect(page.locator('#planCard')).not_to_be_visible();expect(page.locator('#timeCard')).not_to_be_visible()
-  page.clock.set_fixed_time('2026-12-28T08:00:00Z');page.evaluate('window.dispatchEvent(new Event("focus"))');page.wait_for_function('__t.regularWeek.data.week==="2026-12-28"');expect(page.locator('#regularWeekLabel')).to_contain_text('28.12.2026')
+  page.clock.set_fixed_time('2026-12-28T08:00:00Z');page.evaluate('window.dispatchEvent(new Event("focus"))');page.wait_for_function('__t.regularWeek.data.week==="2026-12-28"');expect(page.locator('#regularWeekLabel')).to_contain_text('28.12.')
   page.screenshot(path=f'/workspace/scratch/working-hours-{width}.png',full_page=True)
 
   page.evaluate('''()=>{__t.state.role='boss';document.body.dataset.officeRole='boss';__t.state.selectedUserId='sasi';__t.state.employees=[{clerk_user_id:'sasi',display_name:'Saskia Test'}];__t.showPage('boss-dashboard');__t.renderDashboardWidgets()}''')
   page.evaluate('__t.loadLeavePayrollSummary()');expect(page.locator('#boss-dashboard [data-workdays-summary]')).to_contain_text('Montag');expect(page.locator('#boss-dashboard [data-workdays-summary]')).to_contain_text('Mittwoch');expect(page.locator('#boss-dashboard [data-workdays-summary]')).to_contain_text('Freitag');
-  expect(page.locator('[data-widget="kalender"]')).to_be_visible();expect(page.locator('#bossQuickAccess [data-page="einsatz"]')).to_be_visible();page.locator('#bossQuickAccess [data-page="einsatz"]').click();expect(page.locator('#einsatz')).to_have_class('page active');expect(page.locator('#einsatz [data-workdays-summary]')).to_contain_text('Mittwoch');assert not errors,errors
+  expect(page.locator('[data-widget="kalender"]')).to_be_visible();page.evaluate('__t.showPage("einsatz")');expect(page.locator('#einsatz')).to_have_class('page active');expect(page.locator('#einsatz [data-workdays-summary]')).to_contain_text('Mittwoch');assert not errors,errors
   print(f'PASS {width}: guided intro → real canvas signature → mandatory 3-day choice; both widgets; grey holiday; actual Tuesday with Beginn/Ende, 4h holiday target, Monday rollover; vacation off-days blocked; multi-page signed PDF; Friday submit freezes drafts')
   ctx.close()
  browser.close();server.shutdown()

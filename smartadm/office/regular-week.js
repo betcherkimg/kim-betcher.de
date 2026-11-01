@@ -28,9 +28,11 @@ function create(b){
   const active=Boolean(data?.active&&(data?.days?.length||data?.slots?.length));$('regularWeekCard').hidden=!active&&!pattern?.patterns?.length;
   $('planCard').hidden=true;$('legacyTimeOverview').hidden=active;$('timeCard').hidden=active&&$('timeFormWrap').hidden;$('openTimeFormBtn').hidden=active||!$('timeFormWrap').hidden;
   if(!data)return;
-  $('regularWeekLabel').textContent=fmt(week)+' – '+fmt(add(week,6));
+  const short=d=>fmt(d).slice(0,6);$('regularWeekLabel').textContent=short(week)+' – '+fmt(add(week,6));$('regularToday').hidden=week===mon(b.today());
   const actual=(data.days||[]).flatMap(d=>d.entries||[]),actualMin=actual.reduce((n,e)=>n+e.work_minutes,0),appts=actual.reduce((n,e)=>n+Number(e.appointments||0),0);
-  $('regularSummary').textContent=`Soll diese Woche: ${b.minutes(data.targetMinutes)}${data.holidayMinutes?' (Feiertagswoche)':''} · erfasst: ${b.minutes(actualMin)} · ${appts} Termine · noch offen: ${b.minutes(Math.max(0,data.targetMinutes-actualMin))} · ${data.confirmed?'Abgesendet':'Entwurf'}`;
+  const target=data.targetMinutes||0,rest=Math.max(0,target-actualMin),pct=target?Math.min(100,Math.round(actualMin/target*100)):0;
+  $('regularSummary').classList.toggle('is-done',target>0&&rest===0);
+  $('regularSummary').innerHTML=`<div class="wk-top"><span class="wk-now">${esc(b.minutes(actualMin))} <small>von ${esc(b.minutes(target))}${data.holidayMinutes?' · Feiertagswoche':''}</small></span><span class="wk-meta">${appts} ${appts===1?'Termin':'Termine'}</span></div><div class="wk-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><span style="width:${pct}%"></span></div><div class="wk-meta">${data.confirmed?'Abgesendet ✓':rest?`Noch ${esc(b.minutes(rest))} offen`:'Wochenziel erreicht'}</div>`;
   const now=b.today(),locked=data.confirmed||week!==mon(now)&&!data.correctionOpen,absNames={vacation:'Urlaub',sick:'Krankheit',paid_leave:'Bezahlte Freistellung'};
   const old=(data.allocations||[]).filter(e=>e.entry_state==='draft'&&!e.submission_id);
   // Nur Tage mit Einträgen, offenen Altangaben, Feiertag oder Abwesenheit – keine leeren Wochentage.
@@ -43,18 +45,20 @@ function create(b){
    return `<div class="regular-day${blocked?' regular-disabled':''}"><div><b>${esc(names[d.weekday])}</b> <small>${esc(fmt(d.date))}</small>${label?' <strong>'+esc(label)+'</strong>':''}</div><div>${list}${fix}</div></div>`;
   }).join('');
   const canAdd=!locked&&(data.days||[]).some(d=>d.date<=now&&!d.holidayName&&!d.absence);
-  $('regularRows').innerHTML=(dayRows||'<p class="muted" style="margin:12px 0">Diese Woche noch keine Arbeitszeit eingetragen.</p>')+(canAdd?`<div class="btn-row" style="margin-top:12px"><button class="btn ghost" type="button" data-regular-day="${now<add(week,4)?now:add(week,4)}">+ Arbeitszeit eintragen</button></div>`:'');
+  $('regularRows').innerHTML=(dayRows||'<p class="muted" style="margin:14px 0 4px;text-align:center">Noch nichts eingetragen.</p>')+(canAdd?`<div class="btn-row" style="margin-top:12px"><button class="btn ghost" style="width:100%" type="button" data-regular-day="${now<add(week,4)?now:add(week,4)}">+ Arbeitszeit eintragen</button></div>`:'');
   $('regularPhaseNotice').hidden=true;
-  const messages=[];
-  if(data.overtimeMinutes)messages.push(`${b.minutes(data.overtimeMinutes)} zusätzlich: Kim prüft die Mehrarbeit. Die Feiertagsgutschrift bleibt bestehen.`);
-  if(data.correctionOpen&&!data.confirmed)messages.push('Kim hat diese Woche zur Korrektur geöffnet. Bitte bei „Uhrzeit fehlt“ Beginn und Ende eintragen und die Woche erneut absenden.');else messages.push(data.confirmed?(data.confirmation?.automatic?'Automatisch nach Sonntag übernommen. Fehlende Angaben prüft Kim.':'Abgesendet. Für Korrekturen bitte Kim fragen.'):'Trag an den Tagen, an denen du wirklich gearbeitet hast, Beginn und Ende ein. Welche Tage, ist egal – Hauptsache die Wochenstunden passen. Bis Sonntag kannst du ändern. Mit „Absenden“ wird die Woche fest übermittelt; sonst übernimmt Office Sonntag zum Tagesende den gespeicherten Stand automatisch.');
-  if(data.review)messages.push('Kims Einordnung dieser Woche steht unter Arbeitszeiten.');
-  if(!data.transition&&pattern?.patterns?.length&&!pattern.current)messages.push('Die neue Regelverteilung startet nach beiden Unterschriften, frühestens am 01.11.2026. Bis dahin gilt die bisherige Regelung.');
+  const messages=[],sendFrom=add(week,4);
+  if(data.overtimeMinutes)messages.push(`${b.minutes(data.overtimeMinutes)} mehr als geplant – Kim prüft das.`);
+  if(data.correctionOpen&&!data.confirmed)messages.push('Kim hat die Woche zur Korrektur geöffnet.');
+  else if(data.confirmed)messages.push(data.confirmation?.automatic?'Automatisch übernommen.':'Für Korrekturen bitte Kim fragen.');
+  else if(sendFrom>b.today())messages.push('Absenden ab Freitag möglich.');
+  else messages.push('Bis Sonntag absenden – sonst übernimmt Office automatisch.');
+  if(data.review)messages.push('Kim hat die Woche eingeordnet.');
   $('regularStatus').textContent=messages.join(' ');
   $('regularComplete').disabled=!data.active||add(week,4)>b.today()||data.confirmed;
-  $('regularComplete').textContent=data.confirmed?'Abgesendet ✓':'Absenden';
+  $('regularComplete').textContent=data.confirmed?'Abgesendet ✓':'Woche absenden';
   const today=b.today(),wd=new Date(today+'T12:00Z').getUTCDay();$('regularSendNotice').hidden=!data.active||data.confirmed||week!==mon(today)||![5,6,0].includes(wd);
-  $('regularSendNoticeText').textContent=wd===5?'Heute bitte die Arbeitszeiten abschicken. Deine Einträge sind bis zum Absenden Entwürfe.':'Bitte die Woche bis Sonntag prüfen und absenden. Danach übernimmt Office den gespeicherten Stand automatisch.';
+  $('regularSendNoticeText').textContent=wd===5?'Bitte heute prüfen und absenden.':'Bitte bis Sonntag prüfen und absenden.';
  }
  function fillDays(days=[]){$('regularDayChoices').innerHTML=[1,2,3,4,5].map(d=>`<label class="regular-choice"><input type="checkbox" value="${d}"${days.includes(d)?' checked':''}>${names[d]}</label>`).join('');}
  async function choose(required=false){
@@ -108,10 +112,10 @@ function create(b){
  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')rollover()});root.addEventListener('focus',rollover);setInterval(rollover,30000);
  root.addEventListener('beforeunload',e=>{if(pending.size){e.preventDefault();e.returnValue='';}});
  async function complete(){
-  if(!data||!data.active||busy)return;try{await flush();await load();}catch{return;}let note='';if(data.missingMinutes>0){note=prompt(`Es fehlen ${b.minutes(data.missingMinutes)}. Bitte kurz erläutern, damit Kim die Woche einordnen kann:`)||'';if(!note.trim())return;}
-  if(!confirm('Sind alle tatsächlich geleisteten Stunden und Termine dieser Woche vollständig? Mit Absenden werden sie fest an Kim übermittelt und für die Lohnabrechnung freigegeben.'))return;
+  if(!data||!data.active||busy)return;try{await flush();await load();}catch{return;}let note='';if(data.missingMinutes>0){note=prompt(`Es fehlen ${b.minutes(data.missingMinutes)}. Kurz begründen:`)||'';if(!note.trim())return;}
+  if(!confirm('Woche jetzt absenden? Danach kann nur noch Kim etwas ändern.'))return;
   busy=true;$('regularComplete').disabled=true;
-  try{await flush();await load();await api('/regular-week/complete','POST',{week,state_hash:data.stateHash,note});await load();await b.onSubmitted?.();b.toast('Arbeitswoche abgesendet. Kim kann Abweichungen prüfen.');}catch(error){$('regularStatus').textContent=error.message;}finally{busy=false;$('regularComplete').disabled=!data?.active||add(week,4)>b.today()||!!data?.confirmed;}
+  try{await flush();await load();await api('/regular-week/complete','POST',{week,state_hash:data.stateHash,note});await load();await b.onSubmitted?.();b.toast('Woche abgesendet ✓');}catch(error){$('regularStatus').textContent=error.message;}finally{busy=false;$('regularComplete').disabled=!data?.active||add(week,4)>b.today()||!!data?.confirmed;}
  }
  $('regularRows').addEventListener('click',e=>{const slot=e.target.closest('[data-regular-slot]'),edit=e.target.closest('[data-regular-edit]');const details=e.target.closest('[data-regular-details]');if(details)document.querySelector('[data-regular-entries="'+details.dataset.regularDetails+'"]').open=true;if(slot)openEntry(slot.dataset.regularSlot);if(edit)b.editEntry(edit.dataset.regularEdit);const day=e.target.closest('[data-regular-day]'),fix=e.target.closest('[data-regular-fix]');if(day)b.openEntry(day.dataset.regularDay,week);if(fix){const a=(data.allocations||[]).find(x=>String(x.id)===fix.dataset.regularFix);if(a)b.openEntry(a.work_date,week,a);}});
  $('regularPrev').addEventListener('click',()=>{week=add(week,-7);load()});$('regularNext').addEventListener('click',()=>{week=add(week,7);load()});$('regularToday').addEventListener('click',()=>{week=mon(b.today());load()});

@@ -7,7 +7,7 @@ scope['HOOK']=scope['HOOK'].replace('window.__t={','window.__t={calculatePayroll
 expect=scope['expect']
 class ProgressAPI(scope['CalendarAPI']):
  def __init__(self):
-  super().__init__();self.signed=True;self.acks=['2026-10-27-regeltage-v2'];self.patterns=[{'id':1,'weekdays':[1,3,5],'valid_from':'2026-11-01','kind':'initial'}]
+  super().__init__();self.signed=True;self.acks=['2026-11-01-neues-design'];self.patterns=[{'id':1,'weekdays':[1,3,5],'valid_from':'2026-11-01','kind':'initial'}]
   self.entries=[{'id':1,'work_date':'2026-12-04','regular_slot':'2026-12-04','record_kind':'weekly_allocation','work_minutes':120,'appointments':10,'start_time':'','end_time':'','entry_state':'final','submission_id':1}]
  def route(self,route):
   p=scope['urlparse'](route.request.url).path
