@@ -5418,6 +5418,7 @@ const routes = [
   route("GET", "/admin/security-monitor", getSecurityMonitor),
   route("GET", "/admin/users", getAdminUsers),
   route("GET", "/admin/entries", listEntries, { target: true }),
+  route("PUT", "/admin/entries/:id", updateEntry, { target: true }),
   route("PUT", "/admin/settings", updateSettings),
   route("POST", "/admin/branches", createBranch),
   route("PUT", "/admin/branches/:id", updateBranch),
