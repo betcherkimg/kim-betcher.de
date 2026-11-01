@@ -21,7 +21,7 @@ with scope['sync_playwright']() as pw:
   page.evaluate("()=>{document.querySelectorAll('dialog[open]').forEach(d=>d.close());__t.showPage('zeiten')}")
   card=page.locator('#zeiten [data-own-appointment-standing]');expect(card).to_contain_text('10');expect(card).to_contain_text('Bestätigt')
   for day,count in [('2026-12-07',4),('2026-12-09',3),('2026-12-11',2)]:
-   page.locator(f'[data-slot-hours="{day}"]').fill('2:00');page.locator(f'[data-slot-appts="{day}"]').fill(str(count));page.locator(f'[data-slot-note="{day}"]').fill('Test')
+   page.locator(f'[data-regular-day="{day}"]').click();page.locator('#start').fill('08:00');page.locator('#end').fill('10:00');page.locator('#appointments').fill(str(count));page.locator('#saveBtn').click();expect(page.locator('#timeCard')).not_to_be_visible()
   expect(card).to_contain_text('10 bestätigt + 9 vorläufig');expect(page.locator('#regularSummary')).to_contain_text('9 Termine')
   assert sum(e['appointments'] for e in api.entries)==19
   # Employer sees the same provisional total before submission, including its start-page widget.
@@ -45,4 +45,4 @@ with scope['sync_playwright']() as pw:
   ctx.close()
  browser.close()
 scope['server'].shutdown()
-print('Appointment progress passed on mobile/desktop: autosave, employee and boss totals, submission without duplication, new drafts.')
+print('Appointment progress passed on mobile/desktop: actual times, employee and boss totals, submission without duplication, new drafts.')

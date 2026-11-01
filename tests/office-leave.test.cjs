@@ -14,7 +14,7 @@ function fixture(now='2026-10-27T10:00:00Z'){
   db.prepare('INSERT INTO office_members(clerk_user_id,display_name,email) VALUES(?,?,?)').run(id,name,email);
  }
  const env={DB,BOSS_USER_ID:'boss'},exec={waitUntil(p){p.catch(()=>{})}};
- return {db,t:context.t,context,env,exec,setTime(s){time=Date.parse(s)},request(value){return new Request('https://test.invalid',{method:'POST',body:JSON.stringify(value)})},close(){db.close()}};
+ return {db,t:context.t,context,env,exec,setTime(s){time=Date.parse(s)},request(value){return new Request('https://test.invalid',{method:'POST',headers:{'x-legacy-slot':'1'},body:JSON.stringify(value)})},close(){db.close()}};
 }
 const url=s=>new URL('https://test.invalid'+s);
 const read=async r=>{const body=await r.json();assert.equal(r.status,200,JSON.stringify(body));return body};
@@ -132,15 +132,13 @@ test('initial days require employee consent, activate after both signatures, and
  }finally{f.close()}
 });
 
-test('Christmas row is credited and blocked; early entry retains the actual Tuesday and the Wednesday reference slot',async()=>{
+test('Christmas week: 4h target, work counts on its actual day, holiday blocked',async()=>{
  const f=fixture();try{
   await signedRegular(f);f.setTime('2026-12-22T11:00:00Z');
   let w=await weekData(f,'2026-12-21');assert.equal(w.holidayMinutes,120);assert.equal(w.targetMinutes,240);assert.equal(w.slots[2].holiday.name,'1. Weihnachtstag');
   const res=await record(f,'2026-12-22','2026-12-23');assert.equal(res.status,201,JSON.stringify(await res.json()));
-  w=await weekData(f,'2026-12-21');assert.equal(w.slots[1].entries[0].work_date,'2026-12-22');assert.equal(w.slots[1].entries[0].regular_slot,'2026-12-23');assert.equal(w.workMinutes,120);assert.equal(w.missingMinutes,120);
+  w=await weekData(f,'2026-12-21');const tue=w.days.find(d=>d.date==='2026-12-22');assert.equal(tue.entries[0].work_date,'2026-12-22');assert.equal(tue.entries[0].regular_slot,null);assert.equal(w.workMinutes,120);assert.equal(w.missingMinutes,120);
   assert.equal((await record(f,'2026-12-23','2026-12-23')).status,400,'future work is not actual work');
-  assert.equal((await record(f,'2026-12-22','2026-12-25',1,'10:00','11:00')).status,400,'credited reference cannot also contain work');
-  assert.equal((await record(f,'2026-12-22','2026-12-28',1,'10:00','11:00')).status,400,'cross-week slot forbidden');
   f.setTime('2026-12-25T11:00:00Z');assert.equal((await record(f,'2026-12-25','2026-12-23')).status,400,'holiday itself cannot be worked');
   f.setTime('2026-12-26T11:00:00Z');assert.equal((await record(f,'2026-12-26','2026-12-23')).status,400,'Saturday cannot be worked');
  }finally{f.close()}
@@ -402,8 +400,22 @@ test('October transition uses old Monday Thursday Friday plans and submission co
   const save=(slot,minutes,appointments)=>f.t.saveRegularSlot({env:f.env,userId:'sasi',request:f.request({slot,minutes,appointments})});
   await read(await save('2026-10-26',80,3));await read(await save('2026-10-26',80,3));await read(await save('2026-10-29',120,4));await read(await save('2026-10-30',120,5));
   f.setTime('2026-10-30T15:00:00Z');w=await weekData(f,'2026-10-26');assert.equal(w.workMinutes,320);assert.equal(w.entries.reduce((n,e)=>n+e.appointments,0),12);
-  const submit=()=>f.t.completeRegularWeek({env:f.env,userId:'sasi',exec:f.exec,request:f.request({week:w.week,state_hash:w.stateHash,note:'Vollständige tatsächliche Angaben, Fehlzeit bitte prüfen.'})});await read(await submit());await read(await submit());
+  const submit=(automatic=false)=>f.t.completeRegularWeek({env:f.env,userId:'sasi',exec:f.exec,automatic,request:f.request({week:w.week,state_hash:w.stateHash,note:'Vollständige tatsächliche Angaben, Fehlzeit bitte prüfen.'})});
+  assert.equal((await submit()).status,409,'old rows without times must be replaced before a manual submission');
+  await read(await submit(true));await read(await submit(true));
   assert.equal(f.db.prepare('SELECT SUM(work_minutes) n FROM payroll_work_entries').get().n,320);assert.equal(f.db.prepare('SELECT SUM(appointments) n FROM payroll_performance_entries').get().n,12);
   w=await weekData(f,'2026-11-02');assert.equal(w.transition,false);assert.deepEqual(Array.from(w.slots,s=>s.weekday),[1,3,5]);assert.equal(w.workMinutes,0);
+ }finally{f.close()}
+});
+
+test('actual days with times: any weekday counts toward 6h, empty allocations disappear, old rows block manual submit',async()=>{
+ const f=fixture();try{
+  await signedRegular(f,[1,3,5]);f.setTime('2026-11-06T15:00:00Z');
+  f.db.prepare("INSERT INTO work_entries(clerk_user_id,work_date,start_time,end_time,work_minutes,regular_slot,record_kind,entry_state)VALUES('sasi','2026-11-02','','',0,'2026-11-02','weekly_allocation','draft')").run();
+  let w=await weekData(f,'2026-11-02');assert.equal(w.allocations.length,0);assert.equal(f.db.prepare("SELECT COUNT(*) n FROM work_entries WHERE record_kind='weekly_allocation'").get().n,0);
+  for(const [d,s,e] of [['2026-11-03','09:00','12:00'],['2026-11-04','14:00','15:30'],['2026-11-06','08:00','09:30']]){const r=await record(f,d,undefined,2,s,e);assert.equal(r.status,201,JSON.stringify(await r.json()));}
+  w=await weekData(f,'2026-11-02');assert.equal(w.workMinutes,360);assert.equal(w.missingMinutes,0);assert.equal(w.days.find(d=>d.date==='2026-11-03').entries.length,1);
+  await read(await f.t.completeRegularWeek({env:f.env,userId:'sasi',exec:f.exec,request:f.request({week:w.week,state_hash:w.stateHash})}));
+  assert.equal(f.db.prepare('SELECT SUM(work_minutes) n FROM payroll_work_entries').get().n,360);
  }finally{f.close()}
 });

@@ -21,9 +21,14 @@ class CalendarAPI(API):
    for i in [0,2,4]:
     d=(start+datetime.timedelta(days=i)).isoformat();hol={'date':d,'name':'1. Weihnachtstag','minutes':120} if d=='2026-12-25' else None
     slots.append({'date':d,'weekday':i+1,'holiday':hol,'absence':None,'entries':[e for e in self.entries if e.get('regular_slot')==d]})
+  days=[]
+  if active:
+   for i in range(5):
+    d=(start+datetime.timedelta(days=i)).isoformat()
+    days.append({'date':d,'weekday':i+1,'regular':i in (0,2,4),'holiday':{'date':d,'name':'1. Weihnachtstag','minutes':120} if d=='2026-12-25' else None,'holidayName':'1. Weihnachtstag' if d in ('2026-12-25',) else None,'absence':None,'entries':[e for e in self.entries if e['work_date']==d]})
   week_entries=[e for e in self.entries if week<=e['work_date']<=(start+datetime.timedelta(days=6)).isoformat()]
   mins=sum(e['work_minutes'] for e in week_entries);credit=120 if week=='2026-12-21' and active else 0
-  return {'active':active,'week':week,'slots':slots,'entries':week_entries,'unassigned':[],'workMinutes':mins,'holidayMinutes':credit,'absenceMinutes':0,'targetMinutes':360-credit,'baseMinutes':360,'fulfilledMinutes':mins+credit,'missingMinutes':max(0,360-credit-mins),'overtimeMinutes':max(0,mins-360+credit),'actualWorkdays':0,'overdue':[],'stateHash':'fixture-state','confirmed':week in self.submittedWeeks,'patterns':self.patterns}
+  return {'active':active,'week':week,'days':days,'allocations':[],'slots':slots,'entries':week_entries,'unassigned':[],'workMinutes':mins,'holidayMinutes':credit,'absenceMinutes':0,'targetMinutes':360-credit,'baseMinutes':360,'fulfilledMinutes':mins+credit,'missingMinutes':max(0,360-credit-mins),'overtimeMinutes':max(0,mins-360+credit),'actualWorkdays':0,'overdue':[],'stateHash':'fixture-state','confirmed':week in self.submittedWeeks,'patterns':self.patterns}
  def route(self,route):
   req=route.request;parsed=urlparse(req.url);p=parsed.path;m=req.method;body=req.post_data_json if req.post_data else {};out=None
   from urllib.parse import parse_qs
@@ -68,12 +73,13 @@ with sync_playwright() as pw:
   page.locator('#regularPatternCheck').check();page.locator('#regularPatternSave').click();expect(page.locator('#regularPatternDialog')).not_to_be_visible()
   expect(page.locator('[data-my="kalender"]')).to_be_visible();page.locator('[data-my-act="kalender"]').click();expect(page.locator('#kalender')).to_have_class('page active')
   page.clock.set_fixed_time('2026-12-22T11:00:00Z');page.evaluate('async()=>{__t.showPage("zeiten");await __t.regularWeek.selectWeek("2026-12-21")}')
-  expect(page.locator('#regularWeekCard')).to_be_visible();expect(page.locator('.regular-row')).to_have_count(3);holiday=page.locator('.regular-disabled');expect(holiday).to_contain_text('Feiertag · 2 Stunden gutgeschrieben');assert all(x.is_disabled() for x in holiday.locator('input').all())
-  page.locator('[data-slot-hours="2026-12-23"]').fill('1:20');page.locator('[data-slot-appts="2026-12-23"]').fill('3');page.locator('[data-slot-note="2026-12-23"]').fill('Telefoniert')
-  page.evaluate('__t.regularWeek.flush()');expect(page.locator('#regularStatus')).to_contain_text('Gespeichert')
-  assert api.saved[-1]=={'slot':'2026-12-23','minutes':80,'appointments':3,'note':'Telefoniert'}
-  expect(page.locator('#timeCard')).not_to_be_visible();page.evaluate('async()=>{await __t.regularWeek.load()}')
-  expect(page.locator('[data-slot-hours="2026-12-23"]')).to_have_value('1:20');expect(page.locator('[data-slot-note="2026-12-23"]')).to_have_value('Telefoniert')
+  expect(page.locator('#regularWeekCard')).to_be_visible();expect(page.locator('.regular-day')).to_have_count(5);holiday=page.locator('.regular-disabled');expect(holiday).to_contain_text('Feiertag · 2 Std. gutgeschrieben');expect(holiday.locator('[data-regular-day]')).to_have_count(0)
+  expect(page.locator('#regularSummary')).to_contain_text('Soll diese Woche: 4:00')
+  page.locator('[data-regular-day="2026-12-22"]').click();expect(page.locator('#timeCard')).to_be_visible();expect(page.locator('#date')).to_have_value('2026-12-22');expect(page.locator('#entryManualHoursField')).to_be_hidden()
+  page.locator('#start').fill('09:00');page.locator('#end').fill('10:20');page.locator('#appointments').fill('3');page.locator('#saveBtn').click()
+  page.wait_for_function('__t.regularWeek.data.days.some(d=>d.entries.length)')
+  assert api.saved[-1]['work_date']=='2026-12-22' and api.saved[-1]['start_time']=='09:00' and api.saved[-1]['work_minutes']==80 and 'regular_slot' not in api.saved[-1],api.saved[-1]
+  expect(page.locator('#regularRows')).to_contain_text('09:00–10:20 Uhr');expect(page.locator('#timeCard')).not_to_be_visible()
   check_width(page);page.screenshot(path=f'/workspace/scratch/calendar-week-{width}.png',full_page=True)
   with page.expect_download() as dl:
    page.evaluate('__t.downloadAddendumPdf(__t.state.addendum)')
@@ -115,6 +121,6 @@ with sync_playwright() as pw:
   page.evaluate('''()=>{__t.state.role='boss';document.body.dataset.officeRole='boss';__t.state.selectedUserId='sasi';__t.state.employees=[{clerk_user_id:'sasi',display_name:'Saskia Test'}];__t.showPage('boss-dashboard');__t.renderDashboardWidgets()}''')
   page.evaluate('__t.loadLeavePayrollSummary()');expect(page.locator('#boss-dashboard [data-workdays-summary]')).to_contain_text('Montag');expect(page.locator('#boss-dashboard [data-workdays-summary]')).to_contain_text('Mittwoch');expect(page.locator('#boss-dashboard [data-workdays-summary]')).to_contain_text('Freitag');
   expect(page.locator('[data-widget="kalender"]')).to_be_visible();expect(page.locator('#bossQuickAccess [data-page="einsatz"]')).to_be_visible();page.locator('#bossQuickAccess [data-page="einsatz"]').click();expect(page.locator('#einsatz')).to_have_class('page active');expect(page.locator('#einsatz [data-workdays-summary]')).to_contain_text('Mittwoch');assert not errors,errors
-  print(f'PASS {width}: guided intro → real canvas signature → mandatory 3-day choice; both widgets; grey holiday; direct 1:20h / 3 appointments / note autosave, no invented clocks, Monday rollover; vacation off-days blocked; multi-page signed PDF; Friday submit freezes drafts')
+  print(f'PASS {width}: guided intro → real canvas signature → mandatory 3-day choice; both widgets; grey holiday; actual Tuesday with Beginn/Ende, 4h holiday target, Monday rollover; vacation off-days blocked; multi-page signed PDF; Friday submit freezes drafts')
   ctx.close()
  browser.close();server.shutdown()

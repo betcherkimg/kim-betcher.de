@@ -220,7 +220,7 @@ const ENTRY_SELECT = `
     w.regular_slot,w.record_kind,w.entry_note,CASE WHEN w.record_kind='actual' THEN w.work_date END actual_work_date,w.entry_state,w.submission_id, w.created_at, w.updated_at
   FROM work_entries w
   LEFT JOIN performance_entries p ON p.work_entry_id = w.id
-  WHERE w.clerk_user_id = ?
+  WHERE w.clerk_user_id = ? AND NOT (w.record_kind='weekly_allocation' AND w.work_minutes=0 AND COALESCE(p.appointments,0)=0)
   ORDER BY w.work_date DESC, w.start_time DESC`;
 
 const listEntries = async ({ env, owner }) => {await ensureRegular(env);return json(await all(env, ENTRY_SELECT, owner));};
@@ -5020,6 +5020,10 @@ async function getRegularWeek({env,owner,userId,url}){
   if(!validDate(week)||mondayOfWeek(week)!==week)return err('Ungültige Kalenderwoche.');
   const patterns=await regularPatterns(env,owner),end=addDays(week,6),current=regularAt(patterns,end),context=await leaveContext(env,owner);
   await groupLegacyRegularWeek(env,owner,patterns,week);
+  await env.DB.batch([
+    stmt(env,"DELETE FROM performance_entries WHERE clerk_user_id=? AND COALESCE(appointments,0)=0 AND work_entry_id IN(SELECT id FROM work_entries WHERE clerk_user_id=? AND work_date BETWEEN ? AND ? AND record_kind='weekly_allocation' AND entry_state='draft' AND submission_id IS NULL AND work_minutes=0)",[owner,owner,week,end]),
+    stmt(env,"DELETE FROM work_entries WHERE clerk_user_id=? AND work_date BETWEEN ? AND ? AND record_kind='weekly_allocation' AND entry_state='draft' AND submission_id IS NULL AND work_minutes=0 AND NOT EXISTS(SELECT 1 FROM performance_entries p WHERE p.work_entry_id=work_entries.id)",[owner,week,end])
+  ]);
   const entries=await all(env,`SELECT w.*,COALESCE(p.appointments,0) appointments FROM work_entries w LEFT JOIN performance_entries p ON p.work_entry_id=w.id WHERE w.clerk_user_id=? AND w.work_date BETWEEN ? AND ? ORDER BY w.work_date,w.start_time`,owner,week,end);
   const holidays=await regularHolidayRows(env,owner,week,end,patterns,context);
   const monthInfos=await Promise.all([...new Set([week.slice(0,7),end.slice(0,7)])].map(m=>regularMonthInfo(env,owner,m,patterns,context)));
@@ -5058,11 +5062,14 @@ async function getRegularWeek({env,owner,userId,url}){
     const w=addDays(mondayOfWeek(berlinToday()),-7*(i+1)),ds=context.work.filter(e=>e.work_date>=w&&e.work_date<=addDays(w,6));
     if(ds.length)latestWeeks.push(ds.some(e=>e.record_kind!=='weekly_allocation'&&!regularAt(patterns,e.work_date)?.weekdays.includes(regularWeekday(e.work_date))));
   }
-  return json({transition,regularStart:declared?.valid_from||null,correctionOpen:await regularCorrectionOpen(env,owner,week),monthGoals:monthInfos.map(m=>({month:m.month,appointments:m.appointments,cutAppointments:m.cutAppointments,baseMinutes:m.baseMinutes,holidayMinutes:m.holidayMinutes})),week,end,active:activeDates.length>0||!!declared,current,patterns,slots:slots.filter(s=>s.pattern_id),unassigned,entries,holidays,absences,workMinutes:mins,holidayMinutes:credit,absenceMinutes:other,baseMinutes:baseline,targetMinutes:target,fulfilledMinutes:fulfilled,missingMinutes:Math.max(0,target-mins),overtimeMinutes:Math.max(0,mins-target),actualWorkdays:new Set(entries.filter(e=>e.record_kind!=='weekly_allocation').map(e=>e.work_date)).size,review,stateHash,confirmed:!!confirmation,confirmation,overdue:pastWeeks,patternReview:latestWeeks.filter(Boolean).length>=4,today:berlinToday()});
+  const days=leaveDays(week,addDays(week,4)).map(date=>({date,weekday:regularWeekday(date),regular:!!regularAt(patterns,date)?.weekdays.includes(regularWeekday(date)),holiday:holidays.find(h=>h.date===date)||null,holidayName:leaveHolidays(Number(date.slice(0,4)),context.regionAt(date))[date]||null,absence:absences.find(a=>a.absence_date===date)||null,entries:entries.filter(e=>e.work_date===date&&e.record_kind!=='weekly_allocation')}));
+  const allocations=entries.filter(e=>e.record_kind==='weekly_allocation'&&!(e.work_minutes===0&&!e.appointments));
+  return json({days,allocations,transition,regularStart:declared?.valid_from||null,correctionOpen:await regularCorrectionOpen(env,owner,week),monthGoals:monthInfos.map(m=>({month:m.month,appointments:m.appointments,cutAppointments:m.cutAppointments,baseMinutes:m.baseMinutes,holidayMinutes:m.holidayMinutes})),week,end,active:activeDates.length>0||!!declared,current,patterns,slots:slots.filter(s=>s.pattern_id),unassigned,entries,holidays,absences,workMinutes:mins,holidayMinutes:credit,absenceMinutes:other,baseMinutes:baseline,targetMinutes:target,fulfilledMinutes:fulfilled,missingMinutes:Math.max(0,target-mins),overtimeMinutes:Math.max(0,mins-target),actualWorkdays:new Set(entries.filter(e=>e.record_kind!=='weekly_allocation').map(e=>e.work_date)).size,review,stateHash,confirmed:!!confirmation,confirmation,overdue:pastWeeks,patternReview:latestWeeks.filter(Boolean).length>=4,today:berlinToday()});
 }
 // A weekly allocation is explicitly a reference row, never an invented actual workday or clock interval.
 async function saveRegularSlot({env,userId,request}){
   if(isBoss(env,userId))return err('Bitte im Mitarbeiterkonto eintragen.',403);
+  if(!request.headers.get('x-legacy-slot'))return err('Bitte die Arbeitszeit mit Beginn und Ende über „Zeit eintragen“ erfassen.',410);
   await ensureRegular(env);const body=await readJson(request),date=String(body?.slot||''),minutes=Number(body?.minutes),appointments=Number(body?.appointments),note=cleanText(body?.note,500)||'';
   if(!validDate(date)||!Number.isInteger(minutes)||minutes<0||minutes>1440||!Number.isInteger(appointments)||appointments<0||appointments>1000)return err('Bitte gültige Stunden und eine ganze Terminanzahl eintragen.');
   const week=mondayOfWeek(date),today=berlinToday();
@@ -5093,6 +5100,7 @@ async function completeRegularWeek(ctx){
   if(data.confirmed)return ok({already_submitted:true,week});
   if(body.state_hash!==data.stateHash)return err('Die Woche wurde inzwischen geändert. Bitte neu laden.',409);
   const note=cleanText(body?.note,500)||'';
+  if(!automatic&&data.allocations?.some(e=>e.entry_state==='draft'))return err('Bitte zuerst die alten Zeilen ohne Uhrzeit durch echte Zeiten (Beginn/Ende) ersetzen und die alten Zeilen löschen.',409);
   if(data.missingMinutes>0&&!note&&!automatic)return err('Bitte die fehlenden Stunden kurz erläutern. Kim entscheidet wie bisher über die Einordnung.');
   if(data.entries.some(e=>e.record_kind!=='weekly_allocation'&&e.work_date>berlinToday()))return err('Zukünftige Arbeit kann nicht als geleistet abgesendet werden.');
   for(const e of data.entries){const closed=await closedMonthError(env,userId,e.work_date);if(closed)return closed;}
@@ -5166,11 +5174,8 @@ async function regularEntryError(env,owner,body,ignoreId=null){
   const context=await leaveContext(env,owner);if(leaveHolidays(Number(body.work_date.slice(0,4)),context.region)[body.work_date])return err('An gesetzlichen Feiertagen wird keine Arbeitszeit gebucht. Die Gutschrift folgt den Regeltagen.');
   const sent=await first(env,"SELECT 1 FROM regular_week_confirmations WHERE clerk_user_id=? AND week_start=? AND id NOT IN(SELECT CAST(json_extract(detail_json,'$.submission_id') AS INTEGER) FROM regular_submission_events WHERE event='reopened' AND clerk_user_id=? AND week_start=?)",owner,mondayOfWeek(body.work_date),owner,mondayOfWeek(body.work_date));
   if(sent)return err('Diese Woche wurde bereits abgesendet. Kim kann sie zur Korrektur wieder öffnen.',409);
-  const slot=String(body.regular_slot||body.work_date);
-  if(!validDate(slot)||mondayOfWeek(slot)!==mondayOfWeek(body.work_date))return err('Regelplatz und tatsächlicher Arbeitstag müssen in derselben Kalenderwoche liegen.');
-  const slotPattern=await regularActive(env,owner,slot);
-  if(!slotPattern?.weekdays.includes(regularWeekday(slot)))return err('Bitte einen der gültigen Regelplätze dieser Woche auswählen.');
-  if(leaveHolidays(Number(slot.slice(0,4)),context.region)[slot]||context.absences.some(a=>a.absence_date===slot))return err('Dieser Regelplatz ist durch Feiertag oder Abwesenheit gutgeschrieben. Bitte einen anderen Regelplatz wählen.');
+  // Tatsächliche Tage zählen: verschieben ist erlaubt, entscheidend ist die Wochensumme.
+  body.regular_slot=null;
   const overlap=await first(env,'SELECT 1 FROM work_entries WHERE clerk_user_id=? AND work_date=? AND start_time<? AND end_time>? AND id<>?',owner,body.work_date,body.end_time,body.start_time,ignoreId||-1);if(overlap)return err('Diese Arbeitszeit überschneidet sich mit einem bestehenden Eintrag.');
   return null;
 }

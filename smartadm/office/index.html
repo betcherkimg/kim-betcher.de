@@ -1723,6 +1723,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 @media(max-width:600px){.calendar-toolbar input{width:145px;padding:9px}.calendar-day{min-height:65px}.calendar-date{font-size:12px}.leave-form-footer{padding:12px 16px}.calendar-event{font-size:9px}}
 
 /* Three direct weekly rows; no secondary time-entry form. */
+#regularRows .regular-day{display:grid;grid-template-columns:minmax(130px,1fr) 2fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line,#e5e5e5)}#regularRows .regular-day.regular-disabled{opacity:.7}#regularRows .regular-entry{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:3px 0}@media(max-width:600px){#regularRows .regular-day{grid-template-columns:1fr auto}#regularRows .regular-day>div:nth-child(2){grid-column:1/-1;grid-row:2}}
 #regularRows .regular-row{grid-template-columns:minmax(120px,1fr) 100px 90px minmax(130px,1fr);align-items:center;gap:14px}#regularRows .regular-row input{width:100%;min-width:0}#regularRows .regular-note{min-width:0}#regularRows .regular-row small{margin-top:5px}#regularRows .regular-disabled input{background:transparent;border-color:transparent}#regularRows .regular-row input:disabled{opacity:1;color:var(--ink-soft)}
 @media(max-width:600px){#regularRows .regular-row{grid-template-columns:minmax(74px,1fr) 50px 48px minmax(65px,1fr);gap:6px;padding:14px 0}#regularRows .regular-row .regular-note{grid-column:auto}#regularRows .regular-col-label{font-size:10px}#regularRows .regular-row input{padding:10px 6px;font-size:12px}#regularRows .regular-row b{font-size:13px}#regularRows .regular-row small{font-size:10px}}
 
@@ -1864,7 +1865,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         <div class="card shortcut" id="regularSendNotice" hidden><div><strong>Heute bitte die Arbeitszeiten abschicken</strong><span id="regularSendNoticeText">Bitte deine Stunden und Termine prüfen und die Woche spätestens Sonntag absenden.</span></div><button class="btn primary" type="button" data-page="zeiten">Zur Wochenliste</button></div><div class="my-widgets" id="myWidgets"></div>
       </section>
 
-      <section class="page" id="zeiten" data-role="employee"><div class="card section-card" data-own-appointment-standing aria-live="polite"></div><div class="card section-card" id="regularWeekCard" hidden><div class="card-head"><h2>Arbeitszeiten eintragen</h2><p>Stunden und Termine direkt neben deinen drei Tagen eintragen. Änderungen werden automatisch gespeichert. Bis Sonntag prüfen und absenden.</p></div><div class="btn-row"><button class="btn ghost" id="regularPrev" type="button" aria-label="Vorherige Woche">‹</button><b id="regularWeekLabel"></b><button class="btn ghost" id="regularNext" type="button" aria-label="Nächste Woche">›</button><button class="btn ghost" id="regularToday" type="button">Aktuelle Woche</button></div><p id="regularPhaseNotice" class="notice" hidden></p><div id="regularRows"></div><p id="regularSummary" class="notice"></p><p id="regularStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button class="btn primary" type="button" id="regularComplete">Absenden</button><button class="btn ghost" type="button" id="regularChooseDays">Regeltage ändern</button></div></div>
+      <section class="page" id="zeiten" data-role="employee"><div class="card section-card" data-own-appointment-standing aria-live="polite"></div><div class="card section-card" id="regularWeekCard" hidden><div class="card-head"><h2>Arbeitszeiten eintragen</h2><p>Trag deine tatsächlichen Arbeitstage mit Beginn und Ende ein – egal welcher Tag. Ziel: 6 Stunden pro Woche, in einer Feiertagswoche 4 Stunden. Bis Sonntag prüfen und absenden.</p></div><div class="btn-row"><button class="btn ghost" id="regularPrev" type="button" aria-label="Vorherige Woche">‹</button><b id="regularWeekLabel"></b><button class="btn ghost" id="regularNext" type="button" aria-label="Nächste Woche">›</button><button class="btn ghost" id="regularToday" type="button">Aktuelle Woche</button></div><p id="regularPhaseNotice" class="notice" hidden></p><div id="regularRows"></div><p id="regularSummary" class="notice"></p><p id="regularStatus" class="status-text" aria-live="polite"></p><div class="btn-row"><button class="btn primary" type="button" id="regularComplete">Absenden</button><button class="btn ghost" type="button" id="regularChooseDays">Regeltage ändern</button></div></div>
         <div class="card section-card plan-card" id="planCard" hidden>
           <div class="card-head plan-head">
             <div>
@@ -3188,7 +3189,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 <script src="../date-inputs.js"></script>
 <script src="week-planner.js"></script>
 <script src="absence-calendar.js"></script>
-<script src="regular-week.js"></script>
+<script src="regular-week.js?v=2"></script>
 <script src="guided-intro.js"></script>
 <script>
 (() => {
@@ -4453,13 +4454,15 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
     return [...list].sort(byNewest).map(e => {
       const actions = !withActions ? "" : `<td><div class="row-actions">${
-        isEditable(e.date)&&!e.submissionId&&e.recordKind!=="weekly_allocation"
+        isEditable(e.date)&&!e.submissionId&&e.recordKind==="weekly_allocation"
+          ? `<button class="icon-btn danger" type="button" data-delete="${e.id}" title="Alte Zeile löschen" aria-label="Alte Zeile löschen">${ICONS.trash}</button>`
+          : isEditable(e.date)&&!e.submissionId
           ? `<button class="icon-btn" type="button" data-edit="${e.id}" title="Eintrag bearbeiten" aria-label="Eintrag bearbeiten">${ICONS.edit}</button>
              <button class="icon-btn danger" type="button" data-delete="${e.id}" title="Eintrag löschen" aria-label="Eintrag löschen">${ICONS.trash}</button>`
           : ""
       }</div></td>`;
       return `<tr>
-        <td>${esc(fmtDate(e.date))}${e.recordKind==='weekly_allocation'?'<br><small>Wochenzuordnung</small>':''}${e.entryState==='draft'?'<br><span class="chip warn">Entwurf · noch nicht abgesendet</span>':e.submissionId?'<br><span class="chip good">Abgesendet</span>':''}</td>
+        <td>${esc(fmtDate(e.date))}${e.recordKind==='weekly_allocation'?'<br><small>Alte Zeile ohne Uhrzeit</small>':''}${e.entryState==='draft'?'<br><span class="chip warn">Entwurf · noch nicht abgesendet</span>':e.submissionId?'<br><span class="chip good">Abgesendet</span>':''}</td>
         <td>${esc(e.start || "–")}</td>
         <td>${esc(e.end || "–")}</td>
         <td>${e.break} min</td>
@@ -4512,7 +4515,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     delete save.dataset.label;
     save.textContent = "Eintrag speichern";
     $("editId").value = "";
-    $("entryRegularSlot").value="";$("entryActualHint").textContent="";$("entryManualHours").value="";$("entryManualHoursField").hidden=!regularWeek.data?.active;
+    $("entryRegularSlot").value="";$("entryActualHint").textContent="";$("entryManualHours").value="";$("entryManualHoursField").hidden=true;
     $("start").value = "";
     $("end").value = "";
     ["break", "appointments"].forEach(id => ($(id).value = 0));
@@ -4613,9 +4616,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     if (end <= start) return alert("Das Ende muss nach dem Beginn liegen.");
 
     const actualDuration=minutesBetween(start,end,breakMinutes);
-    const minutes=regularWeek.data?.active?window.OfficeRegularWeek.parseDuration($("entryManualHours").value):actualDuration;
-    if(regularWeek.data?.active&&(!Number.isInteger(minutes)||minutes<=0))return alert("Bitte die geleistete Zeit als Stunden:Minuten eingeben, zum Beispiel 1:20.");
-    if(regularWeek.data?.active&&Math.abs(minutes-actualDuration)>1)return alert("Die eingetragenen Stunden passen noch nicht zu Beginn, Ende und Pause im Arbeitsnachweis. Bitte deine Angaben prüfen.");
+    const minutes=actualDuration;
     if (minutes <= 0) return alert("Die Pause ist so lang wie die Arbeitszeit. Bitte Beginn, Ende und Pause prüfen.");
 
     const existing = state.entries.find(e => e.id === $("editId").value);
@@ -4628,7 +4629,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
     // Jeder gesetzte Termin wird vergütet. Der Worker speichert den Wert weiterhin in beiden Feldern.
     const payload = {
-      work_date: date, work_minutes:minutes, regular_slot:$("entryRegularSlot").value||undefined, start_time: start, end_time: end, break_minutes: breakMinutes,
+      work_date: date, work_minutes:minutes, start_time: start, end_time: end, break_minutes: breakMinutes,
       appointments, commissionable_appointments: appointments
     };
 
@@ -5767,7 +5768,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     renderContributionModule();
     renderCloseAsk();
     const frozen=state.closings.some(c=>c.payroll_month===payrollMonth());
-    $("createPayrollPdf").textContent=frozen?"Lohnzettel herunterladen":"Vorschau als PDF";
+    $("createPayrollPdf").textContent=frozen?"Lohnzettel herunterladen":isoDate()>monthEnd(payrollMonth())?"Vorschau als PDF (Monat noch nicht abgeschlossen)":"Vorschau als PDF";
   }
 
   let profileSaveTimer = null;
@@ -11643,8 +11644,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   const regularWeek=window.OfficeRegularWeek.create({$,esc,api,role:()=>state.role,userId:()=>state.bootstrappedFor,today:isoDate,minutes:fmtMinutes,openDialog,closeDialog,showPage,toast,
     changed:(pattern,data)=>{state.regularPatterns=pattern.patterns||[];state.regularGoalsByMonth??={};for(const g of data.monthGoals||[])state.regularGoalsByMonth[g.month]=g;},
-    openEntry:(slot,week)=>{resetForm();setTimeFormOpen(true);const date=slot>isoDate()?isoDate():slot;$("date").value=date;$("entryRegularSlot").value=slot;$("timeCard").scrollIntoView({block:"start",behavior:"smooth"});$("start").focus();},
-    editEntry,onSaved:refreshOwnProgress,onSubmitted:loadOwnEntries,onOnboarded:async()=>{await afterEmployeeNotices();}
+    openEntry:(slot,week)=>{resetForm();setTimeFormOpen(true);const date=slot>isoDate()?isoDate():slot;$("date").value=date;$("timeCard").scrollIntoView({block:"start",behavior:"smooth"});$("start").focus();},
+    editEntry,removeEntry:id=>deleteEntry(id),onSaved:refreshOwnProgress,onSubmitted:loadOwnEntries,onOnboarded:async()=>{await afterEmployeeNotices();}
   });
 
   const officeCalendar=window.OfficeCalendar.create({$,esc,api,state,today:isoDate,minutes:fmtMinutes,timestamp:fmtTimestamp,openDialog,closeDialog,selectEmployee,
