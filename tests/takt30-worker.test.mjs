@@ -916,3 +916,40 @@ test("Helfer-Link (Crew): Freunde melden sich nur als Helfer an, kein Ticketkauf
   await t.admin("POST", `/admin/tickets/${carsten.id}`, { action: "cancel" });
   assert.equal((await t.call("GET", `/public/invite/${code}`)).data.valid, false);
 });
+
+test("Foodtruck-Scanner: Helfer 1× Essen per QR, nur Helfer, Zugang kann nichts anderes; Einlass weist Helfer ein", async () => {
+  const t = await setup(); await openTestSale(t);
+  await t.admin("PUT", "/admin/settings", { helper_cap: "28", helper_jobs: JSON.stringify([{ name: "Bar", slots: 20 }]) });
+  const c = await invite(t, "Carsten Muster");
+  const h = (await t.call("POST", "/public/helper", { invite: c, first_name: "Carsten", last_name: "Muster", email: "c@example.org", job: "Bar", accept: true })).data;
+  const helperCode = t.db.prepare("SELECT code FROM tickets WHERE number = ?").get(h.number).code;
+  const g = await invite(t, "Gast"); const order = await buy(t, g, [guest("Lisa", "M")]);
+  await t.call("POST", "/public/test-pay", { access_key: order.data.access_key });
+  const guestCode = t.db.prepare("SELECT code FROM tickets WHERE category = 'regular' AND paper = 0 LIMIT 1").get().code;
+  const food = (await t.admin("POST", "/admin/scanners", { name: "Peerless", mode: "food" })).data.url.split("#k=")[1];
+  const door = (await t.admin("POST", "/admin/scanners", { name: "Tür" })).data.url.split("#k=")[1];
+  assert.equal((await t.admin("GET", "/admin/scanners")).data.find(s => s.name === "Peerless").mode, "food");
+  // Foodtruck darf nicht einlassen
+  assert.equal((await t.call("POST", "/scan/check", { code: helperCode }, { scanner: food })).status, 403);
+  assert.equal((await t.call("GET", "/scan/search?q=Lisa", undefined, { scanner: food })).status, 403);
+  let st = (await t.call("GET", "/scan/stats", undefined, { scanner: food })).data;
+  assert.equal(st.mode, "food"); assert.equal(st.helpers, 1); assert.equal(st.eaten, 0);
+  // Gast bekommt kein Gratis-Essen
+  const ng = (await t.call("POST", "/scan/food", { code: guestCode }, { scanner: food })).data;
+  assert.equal(ng.result, "red"); assert.match(ng.reason, /Kein Helfer/);
+  // Helfer: 1×, danach rot mit Uhrzeit
+  const ok = (await t.call("POST", "/scan/food", { code: "T30." + helperCode }, { scanner: food })).data;
+  assert.equal(ok.result, "green"); assert.equal(ok.food, true); assert.equal(ok.name, "Carsten Muster");
+  const again = (await t.call("POST", "/scan/food", { code: helperCode }, { scanner: food })).data;
+  assert.equal(again.result, "red"); assert.match(again.reason, /schon gegessen/); assert.ok(again.food_at);
+  st = (await t.call("GET", "/scan/stats", undefined, { scanner: food })).data;
+  assert.equal(st.eaten, 1); assert.equal(st.recent.length, 2);
+  // Namenssuche nur Helfer
+  const fs = (await t.call("GET", "/scan/food/search?q=Mus", undefined, { scanner: food })).data;
+  assert.ok(fs.every(x => x.category === "helper")); assert.ok(fs[0].food_at);
+  // Einlass: Einweisung für Helfer, nicht für Gäste; Admin sieht „gegessen“
+  const d = (await t.call("POST", "/scan/check", { code: helperCode }, { scanner: door })).data;
+  assert.equal(d.result, "green"); assert.equal(d.brief.length, 4); assert.match(d.brief[1], /Foodtruck/); assert.match(d.brief[2], /noch keine Schicht/);
+  assert.equal((await t.call("POST", "/scan/check", { code: guestCode }, { scanner: door })).data.brief, undefined);
+  assert.ok((await t.admin("GET", "/admin/shifts")).data.helpers[0].food_at);
+});

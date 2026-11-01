@@ -45,6 +45,12 @@
   .give .mk.zero { opacity: .55; }
   .extras { margin-top: 10px; font-size: clamp(20px, 5.6vw, 26px); font-weight: 700; background: rgba(0,0,0,.32); padding: 8px 16px; border-radius: 10px; }
   .shiftline { margin-top: 8px; font-size: 15px; opacity: .9; }
+  .brief { width: min(440px, 100%); margin-top: 14px; text-align: left; background: rgba(255,255,255,.95); color: #0b2a1b; border-radius: 14px; padding: 12px 16px; }
+  .brief b { display: block; font-family: var(--mono); font-size: 12px; letter-spacing: .16em; margin-bottom: 6px; }
+  .brief ol { margin: 0; padding-left: 20px; font-size: 16px; line-height: 1.4; } .brief li + li { margin-top: 5px; }
+  .result:has(.brief) { justify-content: flex-start; overflow-y: auto; padding-top: 24px; }
+  .result:has(.brief) .big { font-size: clamp(34px, 10vw, 56px); } .result:has(.brief) .name { margin-top: 10px; font-size: clamp(26px, 7vw, 38px); } .result:has(.brief) .btn { margin-top: 18px; }
+  .foodbig { margin-top: 18px; font-size: clamp(30px, 9vw, 44px); font-weight: 700; background: rgba(0,0,0,.3); padding: 12px 22px; border-radius: 14px; }
   .result .meta { font-family: var(--mono); font-size: 14px; margin-top: 10px; opacity: .85; }
   .result .btn { margin-top: 34px; border-color: currentColor; color: inherit; min-width: 220px; }
   .panel { padding: 18px 16px 0; }
@@ -91,6 +97,7 @@
   "use strict";
   const { esc, $, $$, timeDe, categoryLabel, guestName } = TAKT;
   let bands = {};
+  let food = false;   // Foodtruck-Zugang: scannt Helfer-QR für 1× Essen
   let scannerKey = null, mode = null, stream = null, scanning = false, busy = false, lastCode = "", lastAt = 0, wake = null;
 
   // Scanner-Link: Schlüssel aus #k=… übernehmen und aus der Adresse entfernen
@@ -114,19 +121,22 @@
       </div>
       ${extras.length ? `<div class="extras">+ ${extras.map(esc).join(" · ")}</div>` : ""}
       ${b.note ? `<div class="shiftline">${esc(b.note)}</div>` : ""}
-      ${r.hint ? `<div class="shiftline" style="font-size:17px;font-weight:600">${esc(r.hint)}</div>` : ""}
-      ${r.shifts ? `<div class="shiftline">Schicht: ${esc(r.shifts)}</div>` : ""}`;
+      ${r.hint && !r.brief ? `<div class="shiftline" style="font-size:17px;font-weight:600">${esc(r.hint)}</div>` : ""}
+      ${r.shifts && !r.brief ? `<div class="shiftline">Schicht: ${esc(r.shifts)}</div>` : ""}
+      ${r.brief ? `<div class="brief"><b>SAG DEM HELFER</b><ol>${r.brief.map(x => `<li>${esc(x)}</li>`).join("")}</ol></div>` : ""}`;
   }
   function showResult(r) {
     const box = $("#result");
     const color = r.result;
-    const title = color === "green" ? "EINLASS" : color === "red" ? "STOPP" : "PRÜFUNG NICHT MÖGLICH";
-    const sub = color === "green" ? `${r.number}` : color === "red" ? (r.number ? `${r.number}${r.checked_in_at ? ` · eingelöst ${timeDe(r.checked_in_at)}${r.checked_in_by ? " · " + r.checked_in_by : ""}` : ""}` : "") : "";
+    const title = r.food ? (color === "green" ? "ESSEN AUSGEBEN" : color === "red" ? "KEIN ESSEN" : "PRÜFUNG NICHT MÖGLICH")
+      : color === "green" ? "EINLASS" : color === "red" ? "STOPP" : "PRÜFUNG NICHT MÖGLICH";
+    const sub = r.food ? (r.number || "") : color === "green" ? `${r.number}` : color === "red" ? (r.number ? `${r.number}${r.checked_in_at ? ` · eingelöst ${timeDe(r.checked_in_at)}${r.checked_in_by ? " · " + r.checked_in_by : ""}` : ""}` : "") : "";
     box.className = `result ${color}`;
     box.innerHTML = `<div class="big">${title}</div>
       ${r.name ? `<div class="name">${esc(r.name)}</div>` : ""}
       ${color === "green" && r.kind ? `<div class="kind">${esc(r.kind)}</div>` : ""}
-      ${color === "green" ? giveHtml(r) : `<div class="reason">${esc(r.reason || "")}</div>`}
+      ${r.food ? (color === "green" ? `<div class="foodbig">1× Essen</div>` : `<div class="reason">${esc(r.reason || "")}${r.food_at ? ` um ${timeDe(r.food_at)}` : ""}</div>`)
+        : color === "green" ? giveHtml(r) : `<div class="reason">${esc(r.reason || "")}</div>`}
       ${sub ? `<div class="meta">${esc(sub)}</div>` : ""}
       ${color === "yellow" ? `<div class="reason" style="font-weight:400">NICHT einlassen – erneut scannen</div>` : ""}
       <button class="btn" id="next">Weiter</button>`;
@@ -136,7 +146,8 @@
     const close = () => { box.hidden = true; busy = false; refresh(); };
     $("#next").onclick = close; $("#next").focus();
     // Mit Marken/Extras länger stehen lassen, damit in Ruhe ausgegeben werden kann
-    if (color === "green") setTimeout(() => { if (!box.hidden) close(); }, r.drinks || (r.extras || []).length ? 5000 : 2500);
+    // Helfer-Einweisung bleibt stehen, bis „Weiter“ getippt wird
+    if (color === "green" && !r.brief) setTimeout(() => { if (!box.hidden) close(); }, r.drinks || (r.extras || []).length ? 5000 : 2500);
   }
   let audio;
   function beep(color) {
@@ -150,7 +161,7 @@
 
   async function check(code) {
     busy = true;
-    try { showResult(await call("/scan/check", { method: "POST", body: { code } })); }
+    try { showResult(await call(food ? "/scan/food" : "/scan/check", { method: "POST", body: { code } })); }
     catch (e) {
       if (e.status === 401 || e.status === 403) { showResult({ result: "yellow", reason: "Zugang ungültig oder gesperrt." }); return; }
       showResult({ result: "yellow", reason: e.status === 0 ? "Keine Verbindung zum Server." : "Serverfehler – Status unklar." });
@@ -200,6 +211,7 @@
   async function search() {
     const q = $("#q").value.trim();
     if (q.length < 2) { $("#hits").innerHTML = ""; return; }
+    if (food) return foodSearch(q);
     try {
       const list = await call(`/scan/search?q=${encodeURIComponent(q)}`);
       $("#hits").innerHTML = list.map(t => `<div class="item"><div class="who">${esc(guestName(t))}<small>${esc(t.number)} · ${esc(categoryLabel(t))}${t.is_test ? " · TEST" : ""}</small></div>
@@ -211,9 +223,35 @@
       });
     } catch (e) { $("#hits").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
   }
+  async function foodSearch(q) {
+    try {
+      const list = await call(`/scan/food/search?q=${encodeURIComponent(q)}`);
+      $("#hits").innerHTML = list.map(t => `<div class="item"><div class="who">${esc(guestName(t))}<small>${esc(t.number)} · Helfer${t.helper_job ? " · " + esc(t.helper_job) : ""}</small></div>
+        ${t.food_at ? `<span class="no">gegessen ${timeDe(t.food_at)}</span>` : t.status !== "valid" ? `<span class="no">gesperrt</span>` : `<button class="btn btn-small btn-uv" data-id="${t.id}" data-n="${esc(guestName(t))}">Essen ausgeben</button>`}</div>`).join("") || `<p class="note">Kein Helfer gefunden.</p>`;
+      $$("#hits [data-id]").forEach(b => b.onclick = async () => {
+        if (!confirm(`${b.dataset.n} ohne QR-Code Essen geben? Nur wenn der Name stimmt.`)) return;
+        try { showResult(await call(`/scan/food/${b.dataset.id}`, { method: "POST" })); search(); }
+        catch (e) { showResult({ food: true, result: "yellow", name: b.dataset.n, reason: e.message }); }
+      });
+    } catch (e) { $("#hits").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  }
+  function foodMode() {
+    food = true;
+    document.title = "Foodtruck – TAKT Nr. 30";
+    $("header .t").firstChild.textContent = "Foodtruck";
+    $("#cin").nextElementSibling.firstChild.textContent = "GEGESSEN / HELFER ";
+    $("#q").closest("label").querySelector("span").textContent = "Helfer suchen (Name oder Nummer)";
+    $("#recent").previousElementSibling.textContent = "Zuletzt ausgegeben";
+  }
   async function refresh() {
     try {
       const s = await call("/scan/stats");
+      if (s.mode === "food") {
+        if (!food) foodMode();
+        $("#cin").textContent = s.eaten; $("#cexp").textContent = s.helpers;
+        $("#recent").innerHTML = s.recent.map(r => `<div class="item"><div class="who">${esc(guestName(r))}<small>${timeDe(r.at)} · ${esc(r.number || "")}</small></div><span class="${r.result === "food" ? "ok" : "no"}">${r.result === "food" ? "Essen" : "Schon gegessen"}</span></div>`).join("") || `<p class="note">Noch nichts ausgegeben.</p>`;
+        return;
+      }
       $("#cin").textContent = s.checked_in; $("#cexp").textContent = s.expected; bands = s.bands || bands;
       const lbl = { admitted: ["Eingelassen", "ok"], already: ["Schon drin", "no"], unknown: ["Unbekannt", "no"], replaced: ["Ersetzt", "no"], blocked: ["Gesperrt", "no"], cancelled: ["Storniert", "no"], test: ["Testticket", "no"], unassigned: ["Ohne Namen", "no"], rejected: ["Abgelehnt", "no"], reset: ["Zurückgesetzt", "no"] };
       $("#recent").innerHTML = s.recent.map(r => { const [l, c] = lbl[r.result] || [r.result, ""]; return `<div class="item"><div class="who">${r.number ? esc(guestName(r)) : "–"}<small>${timeDe(r.at)} · ${esc(r.number || "")} · ${esc(r.actor)}</small></div><span class="${c}">${l}</span></div>`; }).join("") || `<p class="note">Noch keine Scans.</p>`;
