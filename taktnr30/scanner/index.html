@@ -114,6 +114,7 @@
       </div>
       ${extras.length ? `<div class="extras">+ ${extras.map(esc).join(" · ")}</div>` : ""}
       ${b.note ? `<div class="shiftline">${esc(b.note)}</div>` : ""}
+      ${r.hint ? `<div class="shiftline" style="font-size:17px;font-weight:600">${esc(r.hint)}</div>` : ""}
       ${r.shifts ? `<div class="shiftline">Schicht: ${esc(r.shifts)}</div>` : ""}`;
   }
   function showResult(r) {
