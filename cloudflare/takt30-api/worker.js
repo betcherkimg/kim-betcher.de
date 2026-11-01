@@ -1702,8 +1702,9 @@ async function updateInvitation(env, request, who, id) {
 
 async function listTickets(env, url) {
   const cat = url.searchParams.get("category");
-  const where = ["free", "regular", "helper"].includes(cat) ? `WHERE t.paper = 0 AND t.category = '${cat}'` : "WHERE t.paper = 0";
-  return json(await all(env, `SELECT t.id, t.number, t.category, t.tier, t.helper_job, hi.name AS helper_invitation, t.first_name, t.last_name, t.email, t.status, t.is_test, t.checked_in_at, t.checked_in_by, t.view_key, t.version, t.mail_status, t.note, t.created_at, t.extra_drinks, t.extra_food, t.food_used, t.food_at,
+  // Papiertickets haben dieselbe Online-Ansicht (gleicher QR-Code) – eigene Liste unter „Papiertickets“
+  const where = cat === "paper" ? "WHERE t.paper = 1" : ["free", "regular", "helper"].includes(cat) ? `WHERE t.paper = 0 AND t.category = '${cat}'` : "WHERE t.paper = 0";
+  return json(await all(env, `SELECT t.id, t.number, t.category, t.tier, t.helper_job, hi.name AS helper_invitation, t.first_name, t.last_name, t.email, t.status, t.is_test, t.checked_in_at, t.checked_in_by, t.view_key, t.version, t.mail_status, t.note, t.created_at, t.extra_drinks, t.extra_food, t.food_used, t.food_at, t.paper,
       o.order_no, o.id AS order_id, i.name AS invitation_name
     FROM tickets t LEFT JOIN orders o ON o.id = t.order_id LEFT JOIN invitations i ON i.id = o.invitation_id LEFT JOIN invitations hi ON hi.id = t.invitation_id ${where}
     ORDER BY t.category DESC, t.id`));

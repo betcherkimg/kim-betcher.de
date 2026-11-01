@@ -1032,3 +1032,20 @@ test("Line-up: Künstlerfoto nur aus dem eigenen Ordner", async () => {
   assert.equal(ev.lineup[0].img, "/taktnr30/assets/lineup/tbj.webp"); assert.equal(ev.lineup[1].img, undefined);
   assert.equal(ev.lineup[0].link, "https://open.spotify.com/artist/5eguWaroLORXtrLz33u3f3"); assert.equal(ev.lineup[1].link, undefined);
 });
+
+test("Papiertickets online: Liste, Namen zuordnen, per Mail schicken, gleicher QR", async () => {
+  const t = await setup({ RESEND_API_KEY: "k", MAIL_FROM: "TAKT Nr. 30 <tickets@kim-betcher.de>" });
+  await t.admin("GET", "/admin/paper");
+  const list = (await t.admin("GET", "/admin/tickets?category=paper")).data;
+  assert.equal(list.length, 100); assert.ok(list.every(x => x.paper === 1 && x.view_key));
+  assert.ok(!(await t.admin("GET", "/admin/tickets")).data.some(x => x.paper));
+  const fk = list.find(x => x.number === "FK-01");
+  assert.equal((await t.admin("POST", `/admin/tickets/${fk.id}`, { action: "assign", first_name: "Julian", last_name: "TBJ", email: "dj@example.org" })).status, 200);
+  t.mails.length = 0;
+  assert.equal((await t.admin("POST", `/admin/tickets/${fk.id}`, { action: "mail" })).status, 200);
+  assert.equal(t.mails.length, 1); assert.ok(t.mails[0].html.includes(fk.view_key));
+  const view = (await t.call("GET", `/public/ticket?k=${fk.view_key}`)).data;
+  assert.equal(view.first_name, "Julian"); assert.equal(view.number, "FK-01");
+  await t.admin("POST", "/admin/tickets/extras", { number: "FK-01", drinks: 0, food: 1 });
+  assert.equal((await t.admin("GET", "/admin/tickets?category=paper")).data.find(x => x.number === "FK-01").extra_food, 1);
+});

@@ -912,6 +912,9 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
           <label class="field"><span>Nachname (optional)</span><input class="input sm" name="ln" maxlength="60"></label>
           <div class="field"><button class="btn btn-uv btn-small">Als verkauft eintragen</button></div></form>
         ${(() => { const sold = [...p.vip, ...p.own].filter(t => t.sold_cents != null); return sold.length ? `<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Ticket</th><th>Name</th><th>Preis</th><th></th></tr></thead><tbody>${sold.map(t => `<tr><td class="mono">${esc(t.number)}<span class="sub">${t.category === "free" ? "VIP · 2TAKT" : "Freiticket"}</span></td><td>${esc([t.first_name, t.last_name].filter(Boolean).join(" ")) || '<span class="dim">–</span>'}<span class="sub">${fmtDT(t.sold_at)}</span></td><td class="mono">${euro(t.sold_cents)}<span class="sub">${t.sold_via === "paypal" ? "PayPal" : "bar"}</span></td><td><div class="acts"><button data-unsell="${esc(t.number)}">Rückgängig</button></div></td></tr>`).join("")}</tbody></table></div><p class="note">${sold.length} verkauft · ${euro(sold.reduce((a, t) => a + t.sold_cents, 0))}</p>` : ""; })()}
+        <h2>Papiertickets online</h2>
+        <p class="note">Jedes Papierticket hat auch eine Online-Version mit demselben QR-Code – gilt trotzdem nur einmal. Über „Aktionen“ einen Namen (mit E-Mail) zuordnen und das Ticket per Mail oder WhatsApp schicken, z. B. an deine DJs.</p>
+        <div id="ptbl"></div>
         <h2>Essen & Getränke hinzufügen</h2>
         <form class="card form" id="xForm"><label class="field"><span>Ticketnummer (z. B. 2T-07 oder FK-03)</span><input class="input sm mono" name="no" required maxlength="8"></label>
           <div class="field"><button class="btn btn-small">Öffnen …</button></div></form>
@@ -934,6 +937,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
       $("#pdfBtn").onclick = () => paperPdf(p, state).catch(e => state("Fehler: " + e.message));
       const block = async unblock => { const no = $("#blockForm").no.value.trim(); if (!no) return; await act(() => call("/admin/paper/block", { method: "POST", body: { number: no, unblock } }), unblock ? "Entsperrt" : "Gesperrt – dieses Ticket wird am Einlass abgelehnt"); VIEWS.paper(m); };
       $("#blockForm").onsubmit = e => { e.preventDefault(); block(false); };
+      await ticketTable($("#ptbl"), "paper", null);
       $("#xForm").onsubmit = e => {
         e.preventDefault();
         const no = e.target.no.value.trim().toUpperCase(), t = [...p.vip, ...p.own].find(x => x.number === no);
@@ -1187,11 +1191,11 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
         && (!f || (f === "in" ? t.checked_in_at : f === "out" ? !t.checked_in_at && t.status === "valid" : f === "blocked" ? t.status !== "valid" : f === "test" ? t.is_test : true)));
       $("#tn").textContent = `${l.length} von ${list.length}`;
       $("#trows").innerHTML = l.map(t => `<tr>
-        <td class="mono">${esc(t.number)}${t.is_test ? ' <span class="tag test">TEST</span>' : ""}<span class="sub">${esc(categoryLabel(t))}</span></td>
+        <td class="mono">${esc(t.number)}${t.is_test ? ' <span class="tag test">TEST</span>' : ""}<span class="sub">${esc(t.paper ? (t.category === "free" ? "VIP · 2TAKT · Papier" : "Freiticket · Papier") : categoryLabel(t))}</span></td>
         <td>${t.first_name ? `${esc(t.first_name)} ${esc(t.last_name)}` : '<span class="dim">ohne Namen (gültig)</span>'}<span class="sub">${esc(t.email || "")}${t.note ? " · " + esc(t.note) : ""}</span>${extrasChip(t)}</td>
         <td><span class="st-${t.status}">${{ valid: "gültig", blocked: "gesperrt", cancelled: "storniert" }[t.status]}</span>${t.checked_in_at ? `<span class="sub">drin seit ${timeDe(t.checked_in_at)}</span>` : ""}${t.version > 1 ? `<span class="sub">ersetzt (${t.version}.)</span>` : ""}</td>
         <td class="hide-sm dim">${t.order_no ? `${esc(t.order_no)}<span class="sub">Einl. ${esc(t.invitation_name || "")}</span>` : t.helper_invitation ? `Einl. ${esc(t.helper_invitation)}` : "Admin"}</td>
-        <td><div class="acts tk-acts">${t.first_name || t.category === "free" ? `<a class="lnk" href="${esc(ticketUrl(t))}&ansicht=admin" target="_blank" rel="noopener">Ansehen</a>` : ""}<button class="more" data-menu="${t.id}" aria-haspopup="menu" aria-label="Aktionen für ${esc(t.number)}">Aktionen ▾</button></div></td></tr>`).join("") || `<tr><td colspan="5" class="dim">Keine Tickets.</td></tr>`;
+        <td><div class="acts tk-acts">${t.first_name || t.category === "free" || t.paper ? `<a class="lnk" href="${esc(ticketUrl(t))}&ansicht=admin" target="_blank" rel="noopener">Ansehen</a>` : ""}<button class="more" data-menu="${t.id}" aria-haspopup="menu" aria-label="Aktionen für ${esc(t.number)}">Aktionen ▾</button></div></td></tr>`).join("") || `<tr><td colspan="5" class="dim">Keine Tickets.</td></tr>`;
       $$("#trows [data-menu]").forEach(b => b.onclick = e => { e.stopPropagation(); ticketMenu(b, list.find(t => t.id == b.dataset.menu)); });
     };
     $("#tq").oninput = rows; $("#tf").onchange = rows; rows();
@@ -1203,7 +1207,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
   // Aktionen eines Tickets als aufgeräumtes Menü statt 10 Knöpfen nebeneinander
   function ticketMenu(btn, t) {
     closeMenu();
-    const can = t.status !== "cancelled", shareable = t.first_name || t.category === "free";
+    const can = t.status !== "cancelled", shareable = t.first_name || t.category === "free" || t.paper;
     const groups = [
       ["Senden", [
         t.status === "valid" && shareable && ["wa", "Per WhatsApp schicken"],
@@ -1214,7 +1218,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
         can && !t.checked_in_at && ["assign", t.first_name ? "Name ändern" : "Namen zuordnen"],
         can && ["extras", "Essen & Getränke hinzufügen …"]]],
       ["Ticket", [
-        can && ["replace", "Neuen QR-Code erzeugen"],
+        can && ["replace", t.paper ? "Neuen QR-Code (Papier wird ungültig)" : "Neuen QR-Code erzeugen"],
         t.status === "valid" ? ["block", "Sperren"] : t.status === "blocked" && ["unblock", "Entsperren"],
         isMain() && t.checked_in_at && ["undo", "Check-in zurücksetzen"],
         isMain() && can && ["cancel", "Stornieren", "danger"]]]

@@ -96,6 +96,7 @@ try:
         admin.click("#cForm button.btn-uv"); admin.wait_for_selector("#toast:has-text('Gespeichert')")
         admin.click("#lu .lineup-row:last-child [data-del]"); admin.click("#cForm button.btn-uv"); admin.wait_for_timeout(300)
         admin.click("nav button[data-p=paper]"); admin.wait_for_selector("#blockForm")
+        admin.wait_for_selector("#ptbl #trows tr"); assert "FK-01" in admin.inner_text("#ptbl")
         admin.fill("#sellForm [name=no]", "2T-31"); admin.fill("#sellForm [name=fn]", "Max"); admin.fill("#sellForm [name=ln]", "Reserve"); admin.click("#sellForm button")
         admin.wait_for_selector("td:has-text('Max Reserve')"); assert "35 €" in admin.inner_text("#sellForm + .tablewrap")
         assert admin.inner_text(".kpis").count("50") >= 2
