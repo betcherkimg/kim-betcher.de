@@ -858,12 +858,12 @@ test("Schichtplan: Standardplan, Wahl mit Pause-Regel, Maximum, Kapazität, Admi
   t.mails.length = 0;
   const hid = t.db.prepare("SELECT id FROM tickets WHERE view_key = ?").get(carsten.view_key).id;
   assert.equal((await t.admin("POST", `/admin/tickets/${hid}`, { action: "shift_mail" })).status, 200);
-  assert.equal(t.mails.length, 1); assert.match(t.mails[0].subject, /Schicht/); assert.match(t.mails[0].html, /#schichten/); assert.match(t.mails[0].html, /ganzen Abend kostenlos versorgt/);
+  assert.equal(t.mails.length, 1); assert.match(t.mails[0].subject, /Schicht/); assert.match(t.mails[0].html, /#schichten/); assert.match(t.mails[0].html, /5 Getränkemarken und 1× Essen/);
   // Scanner zeigt die Schichten
   const key = (await t.admin("POST", "/admin/scanners", { name: "Tür" })).data.url.split("#k=")[1];
   const code = t.db.prepare("SELECT code FROM tickets WHERE id = ?").get(hid).code;
   const s = (await t.call("POST", "/scan/check", { code }, { scanner: key })).data;
-  assert.equal(s.result, "green"); assert.match(s.shifts, /19:00–22:00 Bar 1/); assert.match(s.shifts, /04:00–Ende Bar 1/); assert.equal(s.perk, "Essen & Getränke frei");
+  assert.equal(s.result, "green"); assert.match(s.shifts, /19:00–22:00 Bar 1/); assert.match(s.shifts, /04:00–Ende Bar 1/); assert.equal(s.perk, "+ 1 Essensmarke · Wasser gratis"); assert.equal(s.drinks, 5);
   // eingecheckt → keine Selbständerung mehr; storniert → Platz frei
   assert.equal((await t.call("POST", "/public/shifts", { k: carsten.view_key, shift_id: D1, take: false })).data.code, "SHIFTS_CLOSED");
   await t.admin("POST", `/admin/tickets/${ben.id}`, { action: "cancel" });

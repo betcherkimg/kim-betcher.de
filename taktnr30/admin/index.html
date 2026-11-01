@@ -819,7 +819,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
       $$("[data-cp]").forEach(b => b.onclick = () => copy(shiftUrl(H(b.dataset.cp))));
       $$("[data-crew]").forEach(b => b.onclick = () => copy(H(b.dataset.crew).crew_url, "Helfer-Link kopiert – darüber kann man sich nur als Helfer eintragen"));
       $$("[data-wa]").forEach(b => b.onclick = () => { const h = H(b.dataset.wa), max = jobOf(h.helper_job).shifts;
-        const text = `Hey ${h.first_name || ""}, danke dass du bei TAKT Nr. 30 hilfst! Such dir bitte ${max > 1 ? `deine ${max} Schichten` : "deine Schicht"} aus (${h.helper_job}, ${max > 1 ? "je " : ""}rund 3 Stunden). Dafür bist du den ganzen Abend kostenlos versorgt – Eintritt, Essen & Getränke: ${shiftUrl(h)}${h.crew_url ? `\n\nDu kennst Leute, die auch helfen würden? Dann schick ihnen diesen Link (nur für Helfer, keine Tickets): ${h.crew_url}` : ""}`;
+        const text = `Hey ${h.first_name || ""}, danke dass du bei TAKT Nr. 30 hilfst! Such dir bitte ${max > 1 ? `deine ${max} Schichten` : "deine Schicht"} aus (${h.helper_job}, ${max > 1 ? "je " : ""}rund 3 Stunden). Dafür ist dein Eintritt frei, du bekommst 5 Getränkemarken und 1× Essen, Wasser gratis: ${shiftUrl(h)}${h.crew_url ? `\n\nDu kennst Leute, die auch helfen würden? Dann schick ihnen diesen Link (nur für Helfer, keine Tickets): ${h.crew_url}` : ""}`;
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener"); });
     },
 
