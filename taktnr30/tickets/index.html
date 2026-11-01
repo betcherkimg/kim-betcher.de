@@ -138,7 +138,7 @@
 
   <section id="tickets">
     <div class="wrap">
-      <p class="kicker">Tickets</p>
+      <p class="kicker" id="ticketsKicker">Tickets</p>
       <div id="ticketBox" aria-live="polite"><p class="muted">Lädt …</p></div>
     </div>
   </section>
@@ -188,6 +188,14 @@
     if (s.sandbox) $("#testbar").textContent = "PAYPAL-TESTMODUS (SANDBOX) · nur Spielgeld · Testtickets gelten nicht am Einlass";
     const mine = myTickets().length;
     let html = "";
+    // Helfer-Link: oben „Helfer gesucht“ statt Ticketverkauf
+    if (invite && invite.kind === "crew" && !mine) {
+      const h = ev.helpers;
+      $("#count").innerHTML = h.open ? `<span class="dot pulse" aria-hidden="true"></span>HELFER GESUCHT · NOCH ${+h.available} PLÄTZE` : "ALLE HELFERPLÄTZE VERGEBEN";
+      $("#heroCta").innerHTML = h.open ? `<a class="btn btn-uv btn-block" href="#tickets">Als Helfer mitmachen</a><div class="plain mono">1 SCHICHT · EINTRITT FREI · 5 MARKEN + 1× ESSEN</div>` : `<div class="soon">Danke – wir sind komplett</div>`;
+      $("#ticketsKicker").textContent = "Helfer";
+      return;
+    }
     if (mine) html = `<a class="btn btn-uv btn-block" href="#tickets">Deine Tickets ansehen</a>`;
     else if (!s.open) html = `<div class="soon">Verkauf startet bald</div>`;
     else if (s.sold_out) html = `<div class="soon">Ausverkauft</div>`;
@@ -292,7 +300,8 @@
     const crew = invite.kind === "crew";   // Helfer-Link eines Helfers: nur Helfer-Anmeldung, kein Kauf
     const canBuy = !crew && ev.sale.open && !ev.sale.sold_out && invite.remaining > 0;
     const canHelp = ev.helpers.open && !invite.helper_job && invite.remaining > 0;
-    if (!html) html = crew ? `<h2 class="greet">${invite.from ? `${esc(invite.from)} sucht Verstärkung.` : "Wir suchen Helfer."}</h2>`
+    if (!html) html = crew ? `<h2 class="greet">${invite.from ? `${esc(invite.from)} sucht Verstärkung.` : "Wir suchen Helfer."}</h2>
+      <p class="muted">${invite.from ? `${esc(invite.from)} hilft` : "Wir suchen Leute"} bei <strong>TAKT Nr. 30</strong> – Kims privatem Techno-Geburtstagsrave am ${esc(dateDe(ev.event_date))} in ${esc(ev.place_public)}. ${esc(ev.intro_title)} Damit an der Bar, am Einlass und an der Tür alles läuft, suchen wir noch Helfer${ev.helpers.open ? ` – noch ${+ev.helpers.available} Plätze frei` : ""}.</p>`
       : `<h2 class="greet">${invite.first_name ? `Hey ${esc(invite.first_name)} – du bist eingeladen.` : "Du bist eingeladen."}</h2>`;
     else html += `<div style="height:28px"></div>`;
 

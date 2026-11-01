@@ -21,12 +21,18 @@ const HELPER_DRINKS = 5;         // Helfer: 5 Getränkemarken + 1× Essen, Wasse
 const PAPER_PRICE = { free: 3500, regular: 2500 };   // Reserve-Papiertickets verkauft: VIP 35 €, normal 25 €
 // Was der Scanner zeigt: Ticketart, Bändchen-Schlüssel, Freigetränke
 function ticketKind(t) {
-  if (t.category === "helper") return { kind: "Helfer", band: "helper", drinks: HELPER_DRINKS, perk: "+ 1 Essensmarke · Wasser gratis" };
-  if (t.category === "free") return { kind: "VIP · 2TAKT", band: "free", drinks: PAPER_VIP_DRINKS, shot: true };
-  if (t.tier === "vip") return { kind: "VIP online", band: "vip", drinks: VIP_DRINKS, shot: true };
+  if (t.category === "helper") return { kind: t.helper_job ? `Helfer · ${t.helper_job}` : "Helfer", band: "helper", drinks: HELPER_DRINKS, extras: ["1 Essensmarke"], perk: "+ 1 Essensmarke · Wasser gratis" };
+  if (t.category === "free") return { kind: "VIP · 2TAKT", band: "free", drinks: PAPER_VIP_DRINKS, shot: true, extras: ["Begrüßungsshot"] };
+  if (t.tier === "vip") return { kind: "VIP online", band: "vip", drinks: VIP_DRINKS, shot: true, extras: ["Begrüßungsshot"] };
   if (t.paper) return { kind: "Freiticket", band: "regular", drinks: 0 };
   if (!t.order_id) return { kind: "Freiticket", band: "regular", drinks: 0 };
   return { kind: "Ticket", band: "regular", drinks: 0 };
+}
+// Bändchen aus den Einstellungen – kommt direkt mit jedem Scan, damit der Einlass es sofort sieht
+function bandInfo(s, key) {
+  let b = {}; try { b = JSON.parse(s.bands || "{}"); } catch {}
+  const x = b[key] || {};
+  return { label: x.label || "–", color: /^#[0-9a-fA-F]{6}$/.test(x.color || "") ? x.color : "#ffffff", note: x.note || "" };
 }
 // Preis nach Zusammensetzung: r = Regular, v = VIP (gemischt ohne Rabatt)
 const PRICE_BY_MIX = { r: 2000, v: 3000, rr: 3500, rv: 5000, vv: 5500 };
@@ -1410,10 +1416,11 @@ async function scan(env, request, who) {
     await log(null, old ? "replaced" : "unknown", code);
     return json(old ? { result: "red", reason: "Ersetzter QR-Code – ungültig", number: old.number, name: `${old.first_name || ""} ${old.last_name || ""}`.trim() } : { result: "red", reason: "QR-Code unbekannt" });
   }
-  const base = { number: t.number, category: t.category, tier: t.tier, ...ticketKind(t), helper_job: t.helper_job, shifts: t.category === "helper" ? await shiftLine(env, t.id) : undefined, name: `${t.first_name || ""} ${t.last_name || ""}`.trim() || (t.category === "free" ? "VIP · 2TAKT" : t.paper ? "Freiticket" : "") };
+  const s = await getSettings(env);
+  const kind = ticketKind(t);
+  const base = { number: t.number, category: t.category, tier: t.tier, ...kind, band_info: bandInfo(s, kind.band), helper_job: t.helper_job, shifts: t.category === "helper" ? await shiftLine(env, t.id) : undefined, name: `${t.first_name || ""} ${t.last_name || ""}`.trim() || (t.category === "free" ? "VIP · 2TAKT" : t.paper ? "Freiticket" : "") };
   if (t.status === "blocked") { await log(t.id, "blocked"); return json({ ...base, result: "red", reason: "Ticket gesperrt" }); }
   if (t.status === "cancelled") { await log(t.id, "cancelled"); return json({ ...base, result: "red", reason: "Ticket storniert" }); }
-  const s = await getSettings(env);
   const testPhase = s.sale_mode === "test" || (s.sale_mode === "live" && env.PAYPAL_ENV !== "live");
   if (t.is_test && !testPhase) { await log(t.id, "test"); return json({ ...base, result: "red", reason: "Testticket – kein Zutritt" }); }
   // Atomar einchecken – bei gleichzeitigen Scans gewinnt genau einer.
@@ -1438,8 +1445,9 @@ async function manualCheckin(env, who, id) {
   const r = await run(env, `UPDATE tickets SET checked_in_at = ?, checked_in_by = ?, updated_at = ? WHERE id = ? AND status = 'valid' AND checked_in_at IS NULL`, at, `${who.name} (manuell)`, at, id);
   await run(env, `INSERT INTO checkins (ticket_id, action, result, actor, at) VALUES (?, 'manual', ?, ?, ?)`, id, changes(r) ? "admitted" : "rejected", who.name, at);
   if (!changes(r)) return fail("Nicht möglich – Ticket ist bereits eingecheckt, gesperrt oder storniert.", 409);
-  const t = await first(env, `SELECT category, tier, paper, order_id FROM tickets WHERE id = ?`, id);
-  return json({ result: "green", checked_in_at: at, category: t?.category, ...(t ? ticketKind(t) : {}) });
+  const t = await first(env, `SELECT id, category, tier, paper, order_id, helper_job FROM tickets WHERE id = ?`, id);
+  const kind = t ? ticketKind(t) : {};
+  return json({ result: "green", checked_in_at: at, category: t?.category, ...kind, band_info: t ? bandInfo(await getSettings(env), kind.band) : undefined, shifts: t?.category === "helper" ? await shiftLine(env, t.id) : undefined });
 }
 
 async function undoCheckin(env, request, who, id) {
