@@ -38,8 +38,8 @@ function create(b){
   const dayRows=shown.map(d=>{
    const entries=d.entries||[],blocked=Boolean(d.holidayName||d.absence);
    const label=d.holidayName?(d.holiday?'Feiertag · 2 Std. gutgeschrieben':'Feiertag'):d.absence?(absNames[d.absence.absence_type]||'Abwesenheit'):'';
-   const list=entries.map(e=>`<div class="regular-entry"><span>${esc(e.start_time)}–${esc(e.end_time)} Uhr · <b>${esc(b.minutes(e.work_minutes))}</b> · ${Number(e.appointments||0)} Termine</span>${!locked&&!e.submission_id?`<button class="btn ghost small" type="button" data-regular-edit="${e.id}">Ändern</button>`:''}</div>`).join('');
-   const fix=old.filter(e=>e.work_date===d.date).map(e=>`<div class="regular-entry regular-missing"><span>${esc(b.minutes(e.work_minutes))} · ${Number(e.appointments||0)} Termine · <b>Uhrzeit fehlt</b></span>${locked?'':`<button class="btn primary small" type="button" data-regular-fix="${e.id}">Uhrzeit eintragen</button>`}</div>`).join('');
+   const list=entries.map(e=>`<div class="regular-entry"><span>${esc(e.start_time)}–${esc(e.end_time)} Uhr · <b>${esc(b.minutes(e.work_minutes))}</b><small>${Number(e.appointments||0)} Termine</small></span>${!locked&&!e.submission_id?`<button class="btn ghost small" type="button" data-regular-edit="${e.id}">Ändern</button>`:''}</div>`).join('');
+   const fix=old.filter(e=>e.work_date===d.date).map(e=>`<div class="regular-entry regular-missing"><span><b>Uhrzeit fehlt</b> · ${esc(b.minutes(e.work_minutes))}<small>${Number(e.appointments||0)} Termine</small></span>${locked?'':`<button class="btn primary small" type="button" data-regular-fix="${e.id}">Uhrzeit eintragen</button>`}</div>`).join('');
    return `<div class="regular-day${blocked?' regular-disabled':''}"><div><b>${esc(names[d.weekday])}</b> <small>${esc(fmt(d.date))}</small>${label?' <strong>'+esc(label)+'</strong>':''}</div><div>${list}${fix}</div></div>`;
   }).join('');
   const canAdd=!locked&&(data.days||[]).some(d=>d.date<=now&&!d.holidayName&&!d.absence);
@@ -47,7 +47,7 @@ function create(b){
   $('regularPhaseNotice').hidden=true;
   const messages=[];
   if(data.overtimeMinutes)messages.push(`${b.minutes(data.overtimeMinutes)} zusätzlich: Kim prüft die Mehrarbeit. Die Feiertagsgutschrift bleibt bestehen.`);
-  if(data.correctionOpen&&!data.confirmed)messages.push('Kim hat diese Woche zur Korrektur geöffnet. Bitte fehlende Tage mit Beginn und Ende nachtragen, alte Zeilen ohne Uhrzeit löschen und erneut absenden.');else messages.push(data.confirmed?(data.confirmation?.automatic?'Automatisch nach Sonntag übernommen. Fehlende Angaben prüft Kim.':'Abgesendet. Für Korrekturen bitte Kim fragen.'):'Trag an den Tagen, an denen du wirklich gearbeitet hast, Beginn und Ende ein. Welche Tage, ist egal – Hauptsache die Wochenstunden passen. Bis Sonntag kannst du ändern. Mit „Absenden“ wird die Woche fest übermittelt; sonst übernimmt Office Sonntag zum Tagesende den gespeicherten Stand automatisch.');
+  if(data.correctionOpen&&!data.confirmed)messages.push('Kim hat diese Woche zur Korrektur geöffnet. Bitte bei „Uhrzeit fehlt“ Beginn und Ende eintragen und die Woche erneut absenden.');else messages.push(data.confirmed?(data.confirmation?.automatic?'Automatisch nach Sonntag übernommen. Fehlende Angaben prüft Kim.':'Abgesendet. Für Korrekturen bitte Kim fragen.'):'Trag an den Tagen, an denen du wirklich gearbeitet hast, Beginn und Ende ein. Welche Tage, ist egal – Hauptsache die Wochenstunden passen. Bis Sonntag kannst du ändern. Mit „Absenden“ wird die Woche fest übermittelt; sonst übernimmt Office Sonntag zum Tagesende den gespeicherten Stand automatisch.');
   if(data.review)messages.push('Kims Einordnung dieser Woche steht unter Arbeitszeiten.');
   if(!data.transition&&pattern?.patterns?.length&&!pattern.current)messages.push('Die neue Regelverteilung startet nach beiden Unterschriften, frühestens am 01.11.2026. Bis dahin gilt die bisherige Regelung.');
   $('regularStatus').textContent=messages.join(' ');
