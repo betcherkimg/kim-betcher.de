@@ -68,6 +68,14 @@
   .recruit .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .recruit .row .btn { min-height: 48px; white-space: nowrap; padding-left: 8px; padding-right: 8px; letter-spacing: .1em; }
   .recruit small { display: block; margin-top: 10px; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; color: var(--dim); }
+  .commit { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; padding: 14px; border: 1px solid var(--line-2); border-radius: 12px; margin: 0 0 14px; font-size: 15px; line-height: 1.45; cursor: pointer; }
+  .commit input { width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--ok); }
+  .commit.need { border-color: var(--warn); box-shadow: 0 0 0 3px rgba(255,194,61,.25); }
+  .commit.done { border-color: rgba(25,195,125,.45); color: var(--muted); }
+  .slot .cfm { grid-column: 1 / -1; margin-top: 8px; display: flex; gap: 10px; align-items: center; font-size: 13px; color: var(--warn); }
+  .slot .cfm button { min-height: 36px; min-width: 0; padding: 0 14px; font-size: 13px; background: var(--warn); border-color: var(--warn); color: #1a1300; grid-row: auto; grid-column: auto; }
+  .crew .contact { margin-top: 14px; font-size: 14px; color: var(--dim); }
+  .crew .contact a { color: var(--ok); }
   .crew .msg { min-height: 20px; font-size: 14px; margin: 4px 0 8px; }
   @media print { body { background: #fff; } .actions, .hint, .top, .crew { display: none; } }
 </style>
@@ -160,21 +168,24 @@
     const slot = s => {
       const swap = s.why === "max" && swapFrom && s.free > 0;
       const off = !s.mine && ((!!s.why && !swap) || !v.open);
-      const btn = s.mine ? (v.open ? `<button data-drop="${s.id}" aria-label="Aus ${esc(span(s))} austragen">Austragen</button>` : "")
+      const btn = s.mine ? (v.open && !v.drop_locked ? `<button data-drop="${s.id}" aria-label="Aus ${esc(span(s))} austragen">Austragen</button>` : "")
         : `<button class="${swap ? "" : "take"}" data-take="${s.id}" ${swap ? `data-swap="${swapFrom}"` : ""} ${off ? "disabled" : ""} aria-label="${esc(span(s))} ${swap ? "wechseln" : "nehmen"}">${s.why ? WHY[s.why] : "Nehmen"}</button>`;
       const who = s.crew.length ? `mit <span class="who">${s.crew.map(esc).join(", ")}</span>` : "noch niemand";
       return `<div class="slot ${s.mine ? "mine" : ""} ${off || swap ? "off" : ""}">
         <div class="t">${esc(span(s))}</div>${btn}
         <div class="w">${s.free ? `${s.free} von ${s.slots} frei` : "voll"} · ${who}${s.note ? " · " + esc(s.note) : ""}</div>
         <div class="bar" aria-hidden="true">${Array.from({ length: s.slots }, (_, i) => `<i class="${i < s.taken ? "on" : ""}"></i>`).join("")}</div>
+        ${s.mine && !s.committed ? `<div class="cfm"><span>Kim hat dich eingeteilt – bitte bestätigen.</span><button data-confirm="${s.id}">Zusagen</button></div>` : ""}
       </div>`;
     };
     host.innerHTML = `<h2>${v.max > 1 ? "Deine Schichten" : "Deine Schicht"}</h2>
       <p class="lead">${v.max > 1 ? `Such dir <b>${v.max} Schichten</b> aus – nie direkt hintereinander, damit du dazwischen feiern kannst.` : "Such dir <b>eine Schicht</b> aus (rund 3 Stunden). Den Rest der Nacht feierst du mit."}${v.info ? " " + esc(v.info) : ""}</p>
       <div class="perk"><span>Dafür ist dein <b>Eintritt frei</b>, du bekommst <b>5 Getränkemarken und 1× Essen</b> – Wasser gibt’s den ganzen Abend gratis.</span></div>
+      <label class="commit ${mine.length && mine.every(x => x.committed) ? "done" : ""}" id="commitBox"><input type="checkbox" id="commitChk" ${mine.length && mine.every(x => x.committed) ? "checked disabled" : ""}><span><b>Verbindliche Zusage:</b> ${esc(v.commit_text)}</span></label>
       <div class="count"><span>${esc(v.area.toUpperCase())}</span><span><b>${mine.length}</b> / ${v.max} gewählt</span></div>
       <p class="msg" id="shiftMsg">${!v.open ? '<span class="dim">Die Schichtwahl ist geschlossen. Änderungen bitte direkt mit Kim.</span>' : done ? '<span style="color:var(--ok)">Perfekt, du bist eingetragen. Danke!</span>' : ""}</p>
       ${v.shifts.length ? groups.map(g => `${groups.length > 1 ? `<div class="grp">${esc(g.toUpperCase())}</div>` : ""}${v.shifts.filter(s => (s.spot || v.area) === g).map(slot).join("")}`).join("") : '<p class="muted">Für deine Aufgabe steht noch kein Schichtplan. Kim meldet sich.</p>'}`;
+    host.insertAdjacentHTML("beforeend", `<p class="contact">${v.drop_locked ? `Austragen geht jetzt nur noch telefonisch.` : `Austragen kannst du dich selbst bis ${esc(v.drop_until.split("-").reverse().join("."))}.`} Kannst du nicht oder hast Fragen? <a href="tel:${esc(v.contact.replace(/\s/g, ""))}">${esc(v.contact)}</a></p>`);
     const rc = v.recruit;
     if (rc && rc.url && rc.open) {
       host.insertAdjacentHTML("beforeend", `<div class="recruit"><h3>Wir suchen noch Helfer</h3>
@@ -188,12 +199,21 @@
       };
       $("#rcCopy").onclick = async () => { try { await navigator.clipboard.writeText(rc.url); $("#rcCopy").textContent = "Kopiert ✓"; } catch { prompt("Zum Kopieren:", rc.url); } };
     }
-    host.querySelectorAll("[data-take],[data-drop]").forEach(b => b.onclick = () => pick(host, +(b.dataset.take || b.dataset.drop), !!b.dataset.take, b.dataset.swap ? +b.dataset.swap : undefined));
+    host.querySelectorAll("[data-take],[data-drop]").forEach(b => b.onclick = () => {
+      if (b.dataset.take && !$("#commitChk").checked) {   // erst Zusage, dann Schicht
+        const box = $("#commitBox"); box.classList.add("need"); box.scrollIntoView({ behavior: "smooth", block: "center" });
+        $("#shiftMsg").innerHTML = '<span style="color:var(--warn)">Bitte zuerst die Zusage oben ankreuzen.</span>'; return;
+      }
+      pick(host, +(b.dataset.take || b.dataset.drop), !!b.dataset.take, b.dataset.swap ? +b.dataset.swap : undefined);
+    });
+    host.querySelectorAll("[data-confirm]").forEach(b => b.onclick = () => pick(host, +b.dataset.confirm, null, undefined, true));
+    $("#commitChk").onchange = () => $("#commitBox").classList.remove("need");
   }
-  async function pick(host, id, take, replace) {
+  async function pick(host, id, take, replace, confirmOnly) {
     if (shiftBusy) return; shiftBusy = true;
     host.querySelectorAll("button").forEach(b => b.disabled = true);
-    try { renderShifts(host, await api("/public/shifts", { method: "POST", body: { k, shift_id: id, take, replace } })); }
+    const body = confirmOnly ? { k, shift_id: id, confirm: true } : { k, shift_id: id, take, replace, commit: take ? true : undefined };
+    try { renderShifts(host, await api("/public/shifts", { method: "POST", body })); }
     catch (e) { await loadShifts(); const m = $("#shiftMsg"); if (m) m.innerHTML = `<span class="err">${esc(e.message)}</span>`; }
     shiftBusy = false;
   }

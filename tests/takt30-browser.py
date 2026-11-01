@@ -62,7 +62,9 @@ try:
         admin.screenshot(path=str(OUT / "admin-uebersicht-geschlossen.png"))
         admin.click("#modeBtns button[data-m=test]")
         admin.wait_for_selector(".chip.warn:has-text('Testmodus aktiv')")
-        invite1 = invite2 = admin.inner_text(".linkbox code")     # gemeinsamer Ticket-Link
+        admin.click("nav button[data-p=links]"); admin.wait_for_selector(".linkbox code")
+        invite1 = invite2 = admin.inner_text(".linkbox code")     # gemeinsamer Ticket-Link (Reiter „Links“)
+        admin.click("nav button[data-p=overview]"); admin.wait_for_selector("text=Ticketverkauf")
         assert "?e=" in invite1
         admin.screenshot(path=str(OUT / "admin-uebersicht-test.png"))
         admin.click("nav button[data-p=prep]")
@@ -84,7 +86,7 @@ try:
         with admin.expect_download() as dl: admin.click("[data-xc=ledger]")
         p2 = OUT / "belege.csv"; dl.value.save_as(str(p2)); assert "Bier, 10 Fässer" in p2.read_text(encoding="utf-8-sig")
         admin.screenshot(path=str(OUT / "admin-abrechnung.png"), full_page=True)
-        admin.click("nav button[data-p=entry]")
+        admin.click("nav button[data-p=links]"); admin.wait_for_selector("#scForm")
         admin.fill("#scForm [name=name]", "Tür 1"); admin.click("#scForm button")
         admin.wait_for_selector("#newLink code")
         scanner_link = admin.inner_text("#newLink code")
@@ -251,6 +253,13 @@ fs.writeFileSync('{OUT}/qr.pgm',Buffer.concat([Buffer.from('P5\\n'+W+' '+H+'\\n2
         admin.screenshot(path=str(OUT / "admin-uebersicht-nach-tests.png"), full_page=True)
         admin.click("nav button[data-p=guests]"); admin.wait_for_selector("#trows tr")
         admin.screenshot(path=str(OUT / "admin-gaeste.png"))
+        # Aktionen-Menü + Essen & Getränke
+        admin.locator("#trows [data-menu]").first.click(); admin.wait_for_selector(".tk-menu")
+        admin.screenshot(path=str(OUT / "admin-ticket-menue.png"))
+        admin.click(".tk-menu [data-a=extras]"); admin.wait_for_selector("#xDlg[open]")
+        admin.click("#xDlg [data-k=drinks][data-d='1']"); admin.click("#xDlg [data-k=drinks][data-d='1']"); admin.click("#xDlg [data-k=food][data-d='1']")
+        admin.screenshot(path=str(OUT / "admin-extras.png"))
+        admin.click("#xSave"); admin.wait_for_selector("text=+2 Getränke · +1 Essen")
         # ---------- Vertrag: Kim unterschreibt im Admin, DJ per Link am Handy ----------
         def scribble(pg, sel):
             b = pg.locator(sel).bounding_box()
@@ -306,7 +315,7 @@ fs.writeFileSync('{OUT}/qr.pgm',Buffer.concat([Buffer.from('P5\\n'+W+' '+H+'\\n2
         admin.click("nav button[data-p=overview]"); admin.click("nav button[data-p=contracts]"); admin.wait_for_selector("text=unterschrieben")
         # Handy-Admin ohne Überbreite
         admin.set_viewport_size({"width": 390, "height": 844})
-        for pg in ["overview", "prep", "money", "contracts", "guests", "orders", "helpers", "paper", "content", "entry", "settings"]:
+        for pg in ["overview", "prep", "money", "contracts", "guests", "orders", "helpers", "links", "paper", "content", "entry", "settings"]:
             admin.evaluate(f"document.querySelector('nav button[data-p={pg}]').click()")
             admin.wait_for_timeout(250)
             assert not admin.is_visible("#main .err"), f"admin {pg}: " + admin.inner_text("#main")[:200]

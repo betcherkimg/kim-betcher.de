@@ -83,6 +83,18 @@
   .slots i { display: block; aspect-ratio: 1; border-radius: 4px; border: 1px solid var(--line-2); }
   .slots i.a { background: var(--uv); border-color: var(--uv); } .slots i.u { background: var(--uv-deep); border-color: var(--uv); } .slots i.c { background: var(--ok); border-color: var(--ok); }
   .lineup-row { display: grid; grid-template-columns: 110px 1fr 1fr auto; gap: 8px; margin-bottom: 8px; }
+  .tk-acts { flex-wrap: nowrap; justify-content: flex-end; }
+  .tk-acts .more { background: var(--bg-3); color: var(--ink); }
+  .tk-menu { position: fixed; z-index: 60; min-width: 230px; background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 10px; padding: 6px; box-shadow: 0 14px 40px rgba(0,0,0,.55); }
+  .tk-menu p { margin: 8px 10px 4px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; color: var(--dim); text-transform: uppercase; }
+  .tk-menu button { display: block; width: 100%; text-align: left; background: none; border: 0; border-radius: 6px; padding: 9px 10px; font-size: 14px; color: var(--ink); cursor: pointer; }
+  .tk-menu button:hover, .tk-menu button:focus { background: var(--uv-deep); outline: none; }
+  .tk-menu .danger { color: #ff8b97; }
+  .xdlg { background: var(--bg-2); color: var(--ink); border: 1px solid var(--line-2); border-radius: 14px; padding: 22px; width: min(420px, calc(100vw - 32px)); }
+  .xdlg::backdrop { background: rgba(0,0,0,.6); }
+  .xrow { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .step { display: flex; align-items: center; gap: 12px; } .step b { font-family: var(--mono); font-size: 22px; min-width: 28px; text-align: center; font-weight: 400; }
+  .step button { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line-2); background: var(--bg-3); color: var(--ink); font-size: 20px; cursor: pointer; }
   .job-row { display: grid; grid-template-columns: 80px 1fr 110px 1.2fr auto; gap: 8px; margin-bottom: 8px; align-items: center; }
   .job-head { display: grid; grid-template-columns: 80px 1fr 110px 1.2fr auto; gap: 8px; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; color: var(--dim); margin-bottom: 6px; }
   /* Schichtplan */
@@ -165,7 +177,7 @@
   const isMain = () => me.role === "main";
 
   const PAGES = [
-    ["overview", "Übersicht"], ["prep", "Vorbereitung"], ["guests", "Gäste & Tickets"], ["orders", "Bestellungen"], ["helpers", "Helfer"],
+    ["overview", "Übersicht"], ["prep", "Vorbereitung"], ["guests", "Gäste & Tickets"], ["orders", "Bestellungen"], ["helpers", "Helfer"], ["links", "Links"],
     ["paper", "Papiertickets", "main"], ["content", "Inhalte & Line-up"], ["entry", "Einlass"], ["money", "Abrechnung", "main"], ["contracts", "Verträge & Versicherungen", "main"], ["settings", "Einstellungen", "main"]
   ];
   function renderNav() {
@@ -662,11 +674,6 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
           <span class="chip ${d.turnstile_ready ? "ok" : ""}">Turnstile ${d.turnstile_ready ? "aktiv" : "aus"}</span>
           ${c.test_tickets ? `<span class="chip warn">${c.test_tickets} Testtickets</span>` : ""}
         </div>
-        <div class="card" style="margin:0 0 18px">
-          <p class="mono dim" style="font-size:11px;letter-spacing:.14em;margin:0 0 8px">DEIN TICKET-LINK ZUM TEILEN${d.group_link.status !== "active" ? " · GESPERRT" : ""}</p>
-          <div class="linkbox" style="margin:0"><code>${esc(d.group_link.url)}</code><div class="acts"><button id="glCopy">Kopieren</button><button id="glWa">WhatsApp</button>${navigator.share ? `<button id="glShare">Teilen</button>` : ""}</div></div>
-          <p class="note" style="margin:10px 0 0">Wer den Link hat, kann bis zu 2 Tickets kaufen (pro E-Mail-Adresse) oder sich als Helfer eintragen.${isMain() ? ` <button class="lnk" id="glToggle">${d.group_link.status === "active" ? "Link sperren" : "Link wieder freigeben"}</button> · <button class="lnk" id="glNew">Neuen Link erzeugen</button>` : ""}</p>
-        </div>
         <div class="kpis">
           ${kpi("Online-Tickets", `${c.regular_issued}<small> / ${c.regular_cap}</small>`, c.regular_comp ? `${c.regular_issued - c.regular_comp} verkauft · ${c.regular_comp} kostenlos` : "")}
           ${kpi("VIP online", `${c.vip_issued}<small> / ${c.vip_cap}</small>`, `${c.vip_available} noch frei · zählen in die ${c.regular_cap}`)}
@@ -681,19 +688,6 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
         ${isMain() ? `<h2>Ticketverkauf</h2><div class="acts" id="modeBtns">
           ${[["closed", "Schließen"], ["test", "Testmodus", d.test_allowed], ["live", d.paypal_env === "live" ? "Live öffnen (echtes Geld)" : "PayPal-Sandbox öffnen (Spielgeld)", d.paypal_ready]].map(([k, l, ok = true]) => `<button data-m="${k}" ${ok ? "" : "disabled"} aria-pressed="${d.sale_mode === k}" style="${d.sale_mode === k ? "border-color:var(--uv);color:var(--ink);background:var(--uv-deep)" : ""}">${l}</button>`).join("")}</div>
           <p class="note">Testmodus: Kauf ohne PayPal, nur simuliert. ${d.paypal_env === "live" ? "Live: echte Zahlungen über PayPal." : "PayPal-Sandbox: echter PayPal-Ablauf mit Spielgeld."} In beiden Testarten sind die Tickets als TEST markiert und belegen Plätze, bis du sie unter Einstellungen löschst. Abgebrochene Käufe geben ihren Platz nach spätestens 15 Minuten frei.</p>` : ""}`;
-      const glText = `TAKT Nr. 30 – Private Birthday Rave · 06.03.2027. Hier gibt's die Tickets (max. 2 pro Person, bitte nicht weiterleiten): ${d.group_link.url}`;
-      $("#glCopy").onclick = () => copy(d.group_link.url);
-      $("#glWa").onclick = () => window.open(`https://wa.me/?text=${encodeURIComponent(glText)}`, "_blank", "noopener");
-      if ($("#glShare")) $("#glShare").onclick = () => navigator.share({ title: "TAKT Nr. 30", text: glText }).catch(() => {});
-      if ($("#glToggle")) $("#glToggle").onclick = async () => {
-        const off = d.group_link.status === "active";
-        if (off && !confirm("Ticket-Link sperren? Dann kann niemand mehr darüber kaufen.")) return;
-        await act(() => call(`/admin/invitations/${d.group_link.id}`, { method: "PUT", body: { status: off ? "disabled" : "active" } }), "Gespeichert"); render();
-      };
-      if ($("#glNew")) $("#glNew").onclick = async () => {
-        if (!confirm("Neuen Ticket-Link erzeugen? Der bisherige Link funktioniert dann nicht mehr. Gekaufte Tickets bleiben gültig.")) return;
-        await act(() => call(`/admin/invitations/${d.group_link.id}`, { method: "PUT", body: { new_code: true } }), "Neuer Link erzeugt"); render();
-      };
       $$("#modeBtns button").forEach(b => b.onclick = async () => {
         if (b.dataset.m === "live" && d.paypal_env === "live" && !confirm("Verkauf jetzt live öffnen? Ab dann wird über PayPal echt bezahlt.")) return;
         await act(() => call("/admin/settings", { method: "PUT", body: { sale_mode: b.dataset.m } }), "Gespeichert"); render();
@@ -739,7 +733,8 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
         <h2>Aufgaben & Plätze</h2>
         <form id="jobForm"><div class="job-head"><span>PLÄTZE</span><span>AUFGABE</span><span>SCHICHTEN/P.</span><span>INFO</span><span></span></div><div id="jobRows"></div>
         <div class="acts" style="margin:6px 0 14px"><button type="button" id="addJob">+ Aufgabe</button></div>
-        <label class="field" style="max-width:220px"><span>Helferplätze gesamt</span><input class="input sm" type="number" name="cap" min="0" max="50" value="${cap}"></label>
+        <div class="form" style="max-width:520px"><label class="field"><span>Helferplätze gesamt</span><input class="input sm" type="number" name="cap" min="0" max="50" value="${cap}"></label>
+        <label class="field"><span>Telefon für Helfer</span><input class="input sm" name="contact" value="${esc(s.helper_contact || "")}" maxlength="40" placeholder="0151 …"></label></div>
         <label class="check" style="margin-bottom:14px"><input type="checkbox" name="open" ${s.helper_signup === "1" ? "checked" : ""}><span>Helfer-Anmeldung über Einladungslinks ist offen</span></label>
         <button class="btn btn-uv btn-small">Speichern</button></form>
         <p class="note">Plätze je Aufgabe: 0 = ohne eigene Grenze. Schichten/P. = wie viele Schichten jeder Helfer dieser Aufgabe übernimmt (Zeiten unter „Schichtplan“). Helfer-Tickets kommen zusätzlich zu den 60 Online-Tickets und 100 Papiertickets.</p>
@@ -752,7 +747,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
       $("#jobForm").onsubmit = async e => {
         e.preventDefault();
         const list = $$("#jobRows .job-row").map(r => ({ name: r.querySelector("[name=jname]").value.trim(), slots: +r.querySelector("[name=slots]").value || 0, shifts: +r.querySelector("[name=shifts]").value || 1, info: r.querySelector("[name=info]").value.trim() })).filter(j => j.name);
-        await act(() => call("/admin/settings", { method: "PUT", body: { helper_jobs: JSON.stringify(list), helper_cap: String(e.target.cap.value || 0), helper_signup: e.target.open.checked ? "1" : "0" } }), "Gespeichert"); render();
+        await act(() => call("/admin/settings", { method: "PUT", body: { helper_jobs: JSON.stringify(list), helper_cap: String(e.target.cap.value || 0), helper_signup: e.target.open.checked ? "1" : "0", helper_contact: e.target.contact.value.trim() } }), "Gespeichert"); render();
       };
       await Promise.all([VIEWS.shifts($("#spHost")), ticketTable($("#tbl"), "helper", null, list)]);
     },
@@ -768,7 +763,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
         const free = x.slots - x.crew.length, area = d.helpers.filter(h => h.helper_job === x.area && !x.crew.some(c => c.ticket_id === h.id));
         return `<div class="sp-row ${free <= 0 ? "full" : ""}">
           <div class="tm">${esc(span(x))}<small>${esc((x.spot || x.area).toUpperCase())} · ${x.crew.length}/${x.slots}</small></div>
-          <div class="sp-crew">${x.crew.map(c => `<span class="chip">${esc(c.name || c.number)}<button data-un="${x.id}" data-t="${c.ticket_id}" aria-label="${esc(c.name)} austragen">✕</button></span>`).join("")}
+          <div class="sp-crew">${x.crew.map(c => `<span class="chip" ${c.committed ? "" : 'style="border-color:#6b5413" title="Zusage fehlt"'}>${esc(c.name || c.number)}${c.committed ? "" : " ?"}<button data-un="${x.id}" data-t="${c.ticket_id}" aria-label="${esc(c.name)} austragen">✕</button></span>`).join("")}
             ${free > 0 ? `<span class="free">${free} frei</span>${area.length ? `<select class="input" data-add="${x.id}" aria-label="Helfer eintragen"><option value="">+ eintragen …</option>${area.map(h => `<option value="${h.id}">${esc(helperName(h))} (${h.shifts.length})</option>`).join("")}</select>` : ""}` : ""}
             ${x.note ? `<span class="dim" style="font-size:13px">${esc(x.note)}</span>` : ""}</div>
           <div class="acts"><button data-ed="${x.id}">Ändern</button></div>
@@ -788,7 +783,7 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
         <div class="tablewrap"><table class="sp-helpers"><thead><tr><th>Helfer</th><th>Schichten</th><th></th></tr></thead><tbody>
         ${d.helpers.map(h => { const max = jobOf(h.helper_job).shifts, mine = d.shifts.filter(x => h.shifts.includes(x.id));
           return `<tr><td><span class="sp-dot ${mine.length >= max ? "ok" : mine.length ? "" : "none"}"></span>${esc(helperName(h))}<span class="sub">${esc(h.number)} · ${esc(h.helper_job || "")}</span></td>
-          <td>${mine.length ? mine.map(x => `<span class="mono" style="font-size:13px">${esc(span(x))}${x.spot && x.spot !== x.area ? " " + esc(x.spot) : ""}</span>`).join("<br>") : '<span class="dim">noch keine</span>'}<span class="sub">${mine.length} / ${max}</span></td>
+          <td>${mine.length ? mine.map(x => { const ok = x.crew.find(c => c.ticket_id === h.id)?.committed; return `<span class="mono" style="font-size:13px">${esc(span(x))}${x.spot && x.spot !== x.area ? " " + esc(x.spot) : ""}</span>${ok ? ' <span style="color:var(--ok)" title="verbindlich zugesagt">✓</span>' : ' <span style="color:var(--warn);font-size:12px">Zusage fehlt</span>'}`; }).join("<br>") : '<span class="dim">noch keine</span>'}<span class="sub">${mine.length} / ${max}</span></td>
           <td><div class="acts">${h.email && h.first_name && h.status === "valid" ? `<button data-mail="${h.id}">Schicht anfragen</button>` : ""}<button data-wa="${h.id}">WhatsApp</button><button data-cp="${h.id}">Schicht-Link</button>${h.crew_url ? `<button data-crew="${h.id}">Helfer-Link</button>` : ""}</div>${h.brought ? `<span class="sub" style="margin-top:4px">hat ${h.brought} Helfer geworben</span>` : ""}${h.food_at ? `<span class="sub">gegessen ${timeDe(h.food_at)}</span>` : ""}</td></tr>`; }).join("") || '<tr><td colspan="3" class="dim">Noch keine Helfer.</td></tr>'}
         </tbody></table></div>`;
       const form = (x = {}) => `<form class="sp-edit" data-id="${x.id || ""}">
@@ -821,6 +816,63 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
       $$("[data-wa]").forEach(b => b.onclick = () => { const h = H(b.dataset.wa), max = jobOf(h.helper_job).shifts;
         const text = `Hey ${h.first_name || ""}, danke dass du bei TAKT Nr. 30 hilfst! Such dir bitte ${max > 1 ? `deine ${max} Schichten` : "deine Schicht"} aus (${h.helper_job}, ${max > 1 ? "je " : ""}rund 3 Stunden). Dafür ist dein Eintritt frei, du bekommst 5 Getränkemarken und 1× Essen, Wasser gratis: ${shiftUrl(h)}${h.crew_url ? `\n\nDu kennst Leute, die auch helfen würden? Dann schick ihnen diesen Link (nur für Helfer, keine Tickets): ${h.crew_url}` : ""}`;
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener"); });
+    },
+
+    async links(m) {
+      const d = await call("/admin/links");
+      const list = d.scanners;
+      const box = (title, url, note, id, extra = "") => `<div class="card" style="margin:0 0 14px">
+          <p class="mono dim" style="font-size:11px;letter-spacing:.14em;margin:0 0 8px">${title}</p>
+          <div class="linkbox" style="margin:0"><code>${esc(url)}</code><div class="acts"><button data-cp="${id}">Kopieren</button><button data-wa="${id}">WhatsApp</button>${navigator.share ? `<button data-sh="${id}">Teilen</button>` : ""}</div></div>
+          <p class="note" style="margin:10px 0 0">${note}${extra}</p></div>`;
+      const texts = {
+        tl: [d.ticket_link.url, `TAKT Nr. 30 – Private Birthday Rave · 06.03.2027. Hier gibt's die Tickets (max. 2 pro Person, bitte nicht weiterleiten): ${d.ticket_link.url}`],
+        hl: [d.helper_link.url, `TAKT Nr. 30 sucht Helfer: eine Schicht (rund 3 Stunden), dafür Eintritt frei, 5 Getränkemarken und 1× Essen. Hier eintragen (nur Helfer, keine Tickets): ${d.helper_link.url}`],
+        sc: [d.pages.scanner, `TAKT Nr. 30 Scanner: ${d.pages.scanner}`]
+      };
+      m.innerHTML = `<h1>Links</h1>
+        <h2 style="margin-top:0">Zum Teilen</h2>
+        ${box(`TICKET-LINK${d.ticket_link.status !== "active" ? " · GESPERRT" : ""}`, d.ticket_link.url, "Wer den Link hat, kann bis zu 2 Tickets kaufen (pro E-Mail-Adresse) oder sich als Helfer eintragen.", "tl",
+          isMain() ? ` <button class="lnk" id="glToggle">${d.ticket_link.status === "active" ? "Link sperren" : "Link wieder freigeben"}</button> · <button class="lnk" id="glNew">Neuen Link erzeugen</button>` : "")}
+        ${box(`HELFER-LINK${d.helper_link.status !== "active" ? " · GESPERRT" : ""}`, d.helper_link.url, `Nur Helfer-Anmeldung, kein Ticketkauf.${d.helper_link.signups ? ` Darüber angemeldet: ${d.helper_link.signups}.` : ""} Jeder Helfer hat zusätzlich seinen eigenen Link (siehe Helfer → Einteilung).`, "hl",
+          isMain() ? ` <button class="lnk" id="hlToggle">${d.helper_link.status === "active" ? "Link sperren" : "Link wieder freigeben"}</button>` : "")}
+        <h2>Scanner-Zugänge</h2>
+        <p class="muted">Die Scanner-App läuft unter <a href="${esc(d.pages.scanner)}" target="_blank">kim-betcher.de/taktnr30/scanner</a> – am Handy über „Zum Home-Bildschirm“ installieren. Jeder Zugang ist persönlich, braucht kein Konto und lässt sich jederzeit sperren. <strong>Einlass</strong> scannt Tickets, <strong>Foodtruck</strong> gibt nur Essen aus (Helfer und Tickets mit Essen).</p>
+        <form class="card form" id="scForm"><label class="field"><span>Name</span><input class="input sm" name="name" required maxlength="40" placeholder="z. B. Lena oder Peerless"></label><label class="field"><span>Art</span><select class="input sm" name="mode"><option value="entry">Einlass (Tickets scannen)</option><option value="food">Foodtruck (Essen ausgeben)</option></select></label><div class="field"><button class="btn btn-uv btn-small">Zugang erzeugen</button></div></form>
+        <div id="newLink"></div>
+        <div class="tablewrap" style="margin-top:18px"><table><thead><tr><th>Zugang</th><th>Art</th><th class="hide-sm">Erstellt</th><th>Zuletzt genutzt</th><th></th></tr></thead><tbody>
+        ${list.map(s => `<tr><td>${esc(s.name)}${s.revoked_at ? ' <span class="tag">gesperrt</span>' : ""}</td><td>${s.mode === "food" ? "Foodtruck" : "Einlass"}</td><td class="mono dim hide-sm">${fmtDT(s.created_at)}</td><td class="mono dim">${fmtDT(s.last_used_at) || "–"}</td><td>${s.revoked_at ? "" : `<div class="acts"><button class="danger" data-id="${s.id}">Sperren</button></div>`}</td></tr>`).join("") || `<tr><td colspan="5" class="dim">Noch keine Zugänge.</td></tr>`}
+        </tbody></table></div>
+        <h2>Seiten</h2>
+        <div class="acts"><a class="lnk" href="${esc(d.pages.tickets)}" target="_blank">Ticketseite</a><a class="lnk" href="${esc(d.pages.scanner)}" target="_blank">Scanner-App</a><button data-cp="sc">Scanner-App-Link kopieren</button></div>`;
+      $$("[data-cp]", m).forEach(b => b.onclick = () => copy(texts[b.dataset.cp][0]));
+      $$("[data-wa]", m).forEach(b => b.onclick = () => window.open(`https://wa.me/?text=${encodeURIComponent(texts[b.dataset.wa][1])}`, "_blank", "noopener"));
+      $$("[data-sh]", m).forEach(b => b.onclick = () => navigator.share({ title: "TAKT Nr. 30", text: texts[b.dataset.sh][1] }).catch(() => {}));
+      const toggle = async (inv, what) => {
+        const off = inv.status === "active";
+        if (off && !confirm(`${what} sperren? Dann kann sich niemand mehr darüber anmelden.`)) return;
+        await act(() => call(`/admin/invitations/${inv.id}`, { method: "PUT", body: { status: off ? "disabled" : "active" } }), "Gespeichert"); render();
+      };
+      if ($("#glToggle")) $("#glToggle").onclick = () => toggle(d.ticket_link, "Ticket-Link");
+      if ($("#hlToggle")) $("#hlToggle").onclick = () => toggle(d.helper_link, "Helfer-Link");
+      if ($("#glNew")) $("#glNew").onclick = async () => {
+        if (!confirm("Neuen Ticket-Link erzeugen? Der bisherige Link funktioniert dann nicht mehr. Gekaufte Tickets bleiben gültig.")) return;
+        await act(() => call(`/admin/invitations/${d.ticket_link.id}`, { method: "PUT", body: { new_code: true } }), "Neuer Link erzeugt"); render();
+      };
+      $("#scForm").onsubmit = async e => {
+        e.preventDefault();
+        const food = e.target.mode.value === "food";
+        const r = await act(() => call("/admin/scanners", { method: "POST", body: { name: e.target.name.value, mode: e.target.mode.value } }), food ? "Foodtruck-Link erzeugt" : "Scanner-Link erzeugt");
+        await render();
+        $("#newLink").innerHTML = `<div class="card" style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;margin-top:14px">
+          <div style="width:150px;background:#fff;padding:8px;border-radius:6px">${TAKT.qrSvg(r.url, { label: "Zugangs-QR für den Scanner" })}</div>
+          <div><p style="margin:0 0 8px">${food ? "Foodtruck-" : ""}Zugangs-QR für <strong>${esc(e.target.name.value)}</strong></p>
+          <p class="note" style="margin:0 0 10px">Am Handy: TAKT Scanner öffnen → „Zugangs-QR scannen“. Oder den Link schicken.</p>
+          <div class="linkbox" style="margin:0"><code>${esc(r.url)}</code><div class="acts"><button id="cp">Kopieren</button></div></div></div></div>
+          <p class="note">Nur jetzt sichtbar – am besten gleich abscannen oder schicken. ${food ? "Dieser Zugang gibt nur Essen aus (Helfer und Tickets mit Essen), lässt aber niemanden ein." : "Wer den Link hat, kann einlassen."} Sperren kannst du ihn jederzeit unten.</p>`;
+        $("#cp").onclick = () => copy(r.url);
+      };
+      $$("button[data-id]", m).forEach(b => b.onclick = async () => { if (!confirm("Diesen Scanner-Zugang sperren?")) return; await act(() => call(`/admin/scanners/${b.dataset.id}`, { method: "DELETE" }), "Gesperrt"); render(); });
     },
 
     async orders(m) {
@@ -856,6 +908,10 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
           <label class="field"><span>Nachname (optional)</span><input class="input sm" name="ln" maxlength="60"></label>
           <div class="field"><button class="btn btn-uv btn-small">Als verkauft eintragen</button></div></form>
         ${(() => { const sold = [...p.vip, ...p.own].filter(t => t.sold_cents != null); return sold.length ? `<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Ticket</th><th>Name</th><th>Preis</th><th></th></tr></thead><tbody>${sold.map(t => `<tr><td class="mono">${esc(t.number)}<span class="sub">${t.category === "free" ? "VIP · 2TAKT" : "Freiticket"}</span></td><td>${esc([t.first_name, t.last_name].filter(Boolean).join(" ")) || '<span class="dim">–</span>'}<span class="sub">${fmtDT(t.sold_at)}</span></td><td class="mono">${euro(t.sold_cents)}<span class="sub">${t.sold_via === "paypal" ? "PayPal" : "bar"}</span></td><td><div class="acts"><button data-unsell="${esc(t.number)}">Rückgängig</button></div></td></tr>`).join("")}</tbody></table></div><p class="note">${sold.length} verkauft · ${euro(sold.reduce((a, t) => a + t.sold_cents, 0))}</p>` : ""; })()}
+        <h2>Essen & Getränke hinzufügen</h2>
+        <form class="card form" id="xForm"><label class="field"><span>Ticketnummer (z. B. 2T-07 oder FK-03)</span><input class="input sm mono" name="no" required maxlength="8"></label>
+          <div class="field"><button class="btn btn-small">Öffnen …</button></div></form>
+        ${(() => { const x = [...p.vip, ...p.own].filter(t => t.extra_drinks || t.extra_food); return x.length ? `<p class="note">Mit Extras: ${x.map(t => `<span class="mono">${esc(t.number)}</span> (+${t.extra_drinks} Getränke, +${t.extra_food} Essen)`).join(" · ")}</p>` : ""; })()}
         <h2>Verlorenes Ticket sperren</h2>
         <form class="card form" id="blockForm"><label class="field"><span>Ticketnummer (z. B. 2T-07 oder FK-03)</span><input class="input sm mono" name="no" required maxlength="8"></label>
           <div class="field acts"><button class="btn btn-small" name="b">Sperren</button><button class="btn btn-small" name="u" type="button" id="unblockBtn">Entsperren</button></div></form>
@@ -874,6 +930,12 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
       $("#pdfBtn").onclick = () => paperPdf(p, state).catch(e => state("Fehler: " + e.message));
       const block = async unblock => { const no = $("#blockForm").no.value.trim(); if (!no) return; await act(() => call("/admin/paper/block", { method: "POST", body: { number: no, unblock } }), unblock ? "Entsperrt" : "Gesperrt – dieses Ticket wird am Einlass abgelehnt"); VIEWS.paper(m); };
       $("#blockForm").onsubmit = e => { e.preventDefault(); block(false); };
+      $("#xForm").onsubmit = e => {
+        e.preventDefault();
+        const no = e.target.no.value.trim().toUpperCase(), t = [...p.vip, ...p.own].find(x => x.number === no);
+        if (!t) return toast("Papierticket mit dieser Nummer nicht gefunden.");
+        extrasDialog(t, render);
+      };
       $("#sellForm").onsubmit = async e => {
         e.preventDefault(); const f = e.target;
         await act(() => call("/admin/paper/sell", { method: "POST", body: { number: f.no.value.trim(), via: f.via.value, price: f.price.value.trim(), first_name: f.fn.value.trim(), last_name: f.ln.value.trim() } }), "Als verkauft eingetragen"); VIEWS.paper(m);
@@ -922,40 +984,20 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
     },
 
     async entry(m) {
-      const [list, st] = await Promise.all([call("/admin/scanners"), call("/admin/settings")]);
+      const st = await call("/admin/settings");
       let bands = {}; try { bands = JSON.parse(st.bands); } catch {}
       const bandRow = (cat, label) => { const b = bands[cat] || {}; return `<div class="lineup-row" style="grid-template-columns:150px 64px 1fr 1.4fr"><span style="align-self:center">${label}</span><input class="input sm" type="color" name="c_${cat}" value="${esc(b.color || "#ffffff")}" aria-label="Farbe ${label}"><input class="input sm" name="l_${cat}" value="${esc(b.label || "")}" placeholder="Farbname" maxlength="20" aria-label="Farbname ${label}"><input class="input sm note-in" name="n_${cat}" value="${esc(b.note || "")}" placeholder="Hinweis am Einlass (optional)" maxlength="60" aria-label="Hinweis ${label}"></div>`; };
       m.innerHTML = `<h1>Einlass</h1>
         <h2 style="margin-top:0">Bändchen</h2>
         <p class="note">Der Scanner zeigt nach jedem grünen Scan Ticketart, Bändchen und Marken an. Marken: VIP · 2TAKT (Papier) 5 · VIP online 3 · Helfer 5 · alle anderen keine. Bei Helfern steht dazu, was der Einlass ihnen sagen soll. Für Peerless erzeugst du unten einen Zugang der Art „Foodtruck“.</p>
         <form id="bandForm">${bandRow("regular", "Gäste & Freitickets")}${bandRow("free", "VIP · 2TAKT (Papier)")}${bandRow("vip", "VIP online")}${bandRow("helper", "Helfer")}<button class="btn btn-uv btn-small" style="margin-top:6px">Speichern</button></form>
-        <h2>Scanner-Zugänge</h2>
-        <p class="muted">Der Scanner ist eine eigene App unter <a href="/taktnr30/scanner/" target="_blank">kim-betcher.de/taktnr30/scanner</a> – am Handy über „Zum Home-Bildschirm“ installieren. Für jeden Einlasshelfer erzeugst du hier einen persönlichen Zugang; er funktioniert ohne Konto und lässt sich jederzeit sperren. Du selbst meldest dich im Scanner mit deinem Login an.</p>
-        <div class="acts" style="margin-bottom:18px"><a class="btn btn-small" href="/taktnr30/scanner/" target="_blank">Scanner öffnen</a></div>
-        <form class="card form" id="scForm"><label class="field"><span>Name des Helfers</span><input class="input sm" name="name" required maxlength="40"></label><label class="field"><span>Art</span><select class="input sm" name="mode"><option value="entry">Einlass (Tickets scannen)</option><option value="food">Foodtruck (Helfer-Essen)</option></select></label><div class="field"><button class="btn btn-uv btn-small">Scanner-Link erzeugen</button></div></form>
-        <div id="newLink"></div>
-        <div class="tablewrap" style="margin-top:18px"><table><thead><tr><th>Helfer</th><th>Erstellt</th><th>Zuletzt genutzt</th><th></th></tr></thead><tbody>
-        ${list.map(s => `<tr><td>${esc(s.name)}${s.mode === "food" ? ' <span class="tag">Foodtruck</span>' : ""}${s.revoked_at ? ' <span class="tag">gesperrt</span>' : ""}</td><td class="mono dim">${fmtDT(s.created_at)}</td><td class="mono dim">${fmtDT(s.last_used_at) || "–"}</td><td>${s.revoked_at ? "" : `<div class="acts"><button class="danger" data-id="${s.id}">Sperren</button></div>`}</td></tr>`).join("") || `<tr><td colspan="4" class="dim">Noch keine Scanner-Links.</td></tr>`}
-        </tbody></table></div>`;
+        <p class="note" style="margin-top:18px">Scanner-Zugänge (Einlass und Foodtruck) findest du unter <button class="lnk" id="toLinks">Links</button>.</p>`;
       $("#bandForm").onsubmit = async e => {
         e.preventDefault(); const f = e.target, out = {};
         for (const cat of ["regular", "free", "vip", "helper"]) out[cat] = { color: f[`c_${cat}`].value, label: f[`l_${cat}`].value, note: f[`n_${cat}`].value };
         await act(() => call("/admin/settings", { method: "PUT", body: { bands: JSON.stringify(out) } }), "Gespeichert – der Scanner übernimmt es beim nächsten Aktualisieren");
       };
-      $("#scForm").onsubmit = async e => {
-        e.preventDefault();
-        const food = e.target.mode.value === "food";
-        const r = await act(() => call("/admin/scanners", { method: "POST", body: { name: e.target.name.value, mode: e.target.mode.value } }), food ? "Foodtruck-Link erzeugt" : "Scanner-Link erzeugt");
-        await render();
-        $("#newLink").innerHTML = `<div class="card" style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;margin-top:14px">
-          <div style="width:150px;background:#fff;padding:8px;border-radius:6px">${TAKT.qrSvg(r.url, { label: "Zugangs-QR für den Scanner" })}</div>
-          <div><p style="margin:0 0 8px">Zugangs-QR für <strong>${esc(e.target.name.value)}</strong></p>
-          <p class="note" style="margin:0 0 10px">Am Handy des Helfers: TAKT Scanner öffnen → „Zugangs-QR scannen“. Oder den Link schicken.</p>
-          <div class="linkbox" style="margin:0"><code>${esc(r.url)}</code><div class="acts"><button id="cp">Kopieren</button></div></div></div></div>
-          <p class="note">Nur jetzt sichtbar – am besten gleich abscannen oder schicken. ${food ? "Dieser Zugang kann nur Helfer-Essen ausgeben (Helfer-QR scannen, 1× pro Helfer) – kein Einlass." : "Wer den Link hat, kann einlassen"}; sperren kannst du ihn jederzeit unten.</p>`;
-        $("#cp").onclick = () => copy(r.url);
-      };
-      $$("button[data-id]", m).forEach(b => b.onclick = async () => { if (!confirm("Diesen Scanner-Zugang sperren?")) return; await act(() => call(`/admin/scanners/${b.dataset.id}`, { method: "DELETE" }), "Gesperrt"); render(); });
+      $("#toLinks").onclick = () => go("links");
     },
 
     async audit(m) {
@@ -1142,25 +1184,75 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
       $("#tn").textContent = `${l.length} von ${list.length}`;
       $("#trows").innerHTML = l.map(t => `<tr>
         <td class="mono">${esc(t.number)}${t.is_test ? ' <span class="tag test">TEST</span>' : ""}<span class="sub">${esc(categoryLabel(t))}</span></td>
-        <td>${t.first_name ? `${esc(t.first_name)} ${esc(t.last_name)}` : '<span class="dim">ohne Namen (gültig)</span>'}<span class="sub">${esc(t.email || "")}${t.note ? " · " + esc(t.note) : ""}</span></td>
+        <td>${t.first_name ? `${esc(t.first_name)} ${esc(t.last_name)}` : '<span class="dim">ohne Namen (gültig)</span>'}<span class="sub">${esc(t.email || "")}${t.note ? " · " + esc(t.note) : ""}</span>${extrasChip(t)}</td>
         <td><span class="st-${t.status}">${{ valid: "gültig", blocked: "gesperrt", cancelled: "storniert" }[t.status]}</span>${t.checked_in_at ? `<span class="sub">drin seit ${timeDe(t.checked_in_at)}</span>` : ""}${t.version > 1 ? `<span class="sub">ersetzt (${t.version}.)</span>` : ""}</td>
         <td class="hide-sm dim">${t.order_no ? `${esc(t.order_no)}<span class="sub">Einl. ${esc(t.invitation_name || "")}</span>` : t.helper_invitation ? `Einl. ${esc(t.helper_invitation)}` : "Admin"}</td>
-        <td><div class="acts">
-          ${t.status === "valid" && (t.first_name || t.category === "free") ? `<button data-a="wa" data-id="${t.id}">WhatsApp</button>` : ""}${t.first_name || t.category === "free" ? `<button data-a="link" data-id="${t.id}">Link</button><a class="lnk" href="${esc(ticketUrl(t))}" target="_blank" rel="noopener">Ansehen/PDF</a>` : ""}
-          ${t.status !== "cancelled" && !t.checked_in_at ? `<button data-a="assign" data-id="${t.id}">${t.first_name ? "Name ändern" : "Zuordnen"}</button>` : ""}
-          ${t.email && t.first_name && t.status === "valid" ? `<button data-a="mail" data-id="${t.id}">Ticket-Mail</button>` : ""}
-          ${t.category === "helper" && t.email && t.first_name && t.status === "valid" ? `<button data-a="shift_mail" data-id="${t.id}">Schicht anfragen</button>` : ""}
-          ${t.status === "valid" ? `<button data-a="block" data-id="${t.id}">Sperren</button>` : t.status === "blocked" ? `<button data-a="unblock" data-id="${t.id}">Entsperren</button>` : ""}
-          ${t.status !== "cancelled" ? `<button data-a="replace" data-id="${t.id}">Ersetzen</button>` : ""}
-          ${isMain() && t.checked_in_at ? `<button data-a="undo" data-id="${t.id}">Check-in zurück</button>` : ""}
-          ${isMain() && t.status !== "cancelled" ? `<button class="danger" data-a="cancel" data-id="${t.id}">Stornieren</button>` : ""}
-        </div></td></tr>`).join("") || `<tr><td colspan="5" class="dim">Keine Tickets.</td></tr>`;
-      $$("#trows [data-a]").forEach(b => b.onclick = () => ticketAction(list.find(t => t.id == b.dataset.id), b.dataset.a));
+        <td><div class="acts tk-acts">${t.first_name || t.category === "free" ? `<a class="lnk" href="${esc(ticketUrl(t))}" target="_blank" rel="noopener">Ansehen</a>` : ""}<button class="more" data-menu="${t.id}" aria-haspopup="menu" aria-label="Aktionen für ${esc(t.number)}">Aktionen ▾</button></div></td></tr>`).join("") || `<tr><td colspan="5" class="dim">Keine Tickets.</td></tr>`;
+      $$("#trows [data-menu]").forEach(b => b.onclick = e => { e.stopPropagation(); ticketMenu(b, list.find(t => t.id == b.dataset.menu)); });
     };
     $("#tq").oninput = rows; $("#tf").onchange = rows; rows();
   }
 
+  // Extras (Kim gibt Getränkemarken/Essen dazu) als kleiner Hinweis in der Tabelle
+  const extrasChip = t => (t.extra_drinks || t.extra_food) ? `<span class="sub" style="color:var(--ok)">+${t.extra_drinks || 0} Getränke · +${t.extra_food || 0} Essen${t.food_used ? ` (${t.food_used}× gegessen)` : ""}</span>` : (t.food_used ? `<span class="sub">${t.food_used}× gegessen</span>` : "");
+
+  // Aktionen eines Tickets als aufgeräumtes Menü statt 10 Knöpfen nebeneinander
+  function ticketMenu(btn, t) {
+    closeMenu();
+    const can = t.status !== "cancelled", shareable = t.first_name || t.category === "free";
+    const groups = [
+      ["Senden", [
+        t.status === "valid" && shareable && ["wa", "Per WhatsApp schicken"],
+        shareable && ["link", "Link kopieren"],
+        t.email && t.first_name && t.status === "valid" && ["mail", "Ticket per Mail schicken"],
+        t.category === "helper" && t.email && t.first_name && t.status === "valid" && ["shift_mail", "Schicht anfragen (Mail)"]]],
+      ["Ändern", [
+        can && !t.checked_in_at && ["assign", t.first_name ? "Name ändern" : "Namen zuordnen"],
+        can && ["extras", "Essen & Getränke hinzufügen …"]]],
+      ["Ticket", [
+        can && ["replace", "Neuen QR-Code erzeugen"],
+        t.status === "valid" ? ["block", "Sperren"] : t.status === "blocked" && ["unblock", "Entsperren"],
+        isMain() && t.checked_in_at && ["undo", "Check-in zurücksetzen"],
+        isMain() && can && ["cancel", "Stornieren", "danger"]]]
+    ].map(([g, items]) => [g, items.filter(Boolean)]).filter(([, items]) => items.length);
+    const menu = document.createElement("div");
+    menu.className = "tk-menu"; menu.setAttribute("role", "menu");
+    menu.innerHTML = groups.map(([g, items]) => `<p>${g}</p>${items.map(([a, label, cls]) => `<button role="menuitem" data-a="${a}" class="${cls || ""}">${label}</button>`).join("")}`).join("");
+    document.body.append(menu);
+    const r = btn.getBoundingClientRect(), mh = menu.offsetHeight, mw = menu.offsetWidth;
+    const top = r.bottom + 6 + mh > innerHeight ? Math.max(8, r.top - mh - 6) : r.bottom + 6;
+    Object.assign(menu.style, { top: `${top}px`, left: `${Math.max(8, Math.min(innerWidth - mw - 8, r.right - mw))}px` });
+    menu.querySelectorAll("[data-a]").forEach(b => b.onclick = () => { closeMenu(); ticketAction(t, b.dataset.a); });
+    menu.querySelector("button")?.focus();
+  }
+  function closeMenu() { $$(".tk-menu").forEach(x => x.remove()); }
+  document.addEventListener("click", e => { if (!e.target.closest(".tk-menu")) closeMenu(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeMenu(); });
+  window.addEventListener("scroll", closeMenu, true);
+
+  // Essen & Getränke für ein Ticket (auch Papier) – feste Anzahl, die der Scanner zusätzlich anzeigt
+  function extrasDialog(t, done) {
+    let d = $("#xDlg");
+    if (!d) { d = document.createElement("dialog"); d.id = "xDlg"; d.className = "xdlg"; document.body.append(d); }
+    const row = (k, label, v, max) => `<div class="xrow"><span>${label}</span><div class="step"><button type="button" data-k="${k}" data-d="-1" aria-label="${label} weniger">−</button><b id="x_${k}">${v}</b><button type="button" data-k="${k}" data-d="1" aria-label="${label} mehr">+</button></div></div>`;
+    const v = { drinks: +t.extra_drinks || 0, food: +t.extra_food || 0 };
+    const base = t.category === "helper" ? "Helfer: 5 Marken + 1× Essen sind schon dabei." : t.category === "free" ? "VIP 2TAKT: 5 Marken sind schon dabei." : t.tier === "vip" ? "VIP: 3 Marken sind schon dabei." : "";
+    d.innerHTML = `<form method="dialog"><h2 style="margin:0 0 4px">Essen & Getränke</h2><p class="note" style="margin:0 0 16px">${esc(t.number)}${t.first_name ? " · " + esc(t.first_name + " " + (t.last_name || "")) : ""}${base ? "<br>" + base : ""}</p>
+      ${row("drinks", "Zusätzliche Getränkemarken", v.drinks, 20)}${row("food", "Zusätzlich Essen (Foodtruck)", v.food, 5)}
+      <p class="note" style="margin:12px 0 0">${t.checked_in_at ? "Schon eingecheckt – die Marken bitte selbst ausgeben. Essen gilt sofort am Foodtruck." : "Der Einlass sieht die Marken beim Scannen, der Foodtruck das Essen."}</p>
+      <p class="err" id="xErr" hidden></p>
+      <div class="acts" style="margin-top:16px;justify-content:flex-end"><button value="cancel" formnovalidate>Abbrechen</button><button class="btn btn-uv btn-small" id="xSave" value="ok">Speichern</button></div></form>`;
+    d.querySelectorAll("[data-k]").forEach(b => b.onclick = () => { const k = b.dataset.k, max = k === "drinks" ? 20 : 5; v[k] = Math.max(0, Math.min(max, v[k] + +b.dataset.d)); $(`#x_${k}`).textContent = v[k]; });
+    $("#xSave").onclick = async e => {
+      e.preventDefault();
+      try { await call("/admin/tickets/extras", { method: "POST", body: { number: t.number, drinks: v.drinks, food: v.food } }); d.close(); toast("Gespeichert"); done && done(); }
+      catch (err) { $("#xErr").textContent = err.message; $("#xErr").hidden = false; }
+    };
+    d.showModal();
+  }
+
   async function ticketAction(t, a) {
+    if (a === "extras") return extrasDialog(t, render);
     if (a === "link") return copy(ticketUrl(t));
     if (a === "wa") {
       const kind = t.category === "free" ? "dein 2TAKT-Freiticket" : t.category === "helper" ? "dein Helfer-Ticket" : "dein Ticket";

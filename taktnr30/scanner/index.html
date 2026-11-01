@@ -135,7 +135,7 @@
     box.innerHTML = `<div class="big">${title}</div>
       ${r.name ? `<div class="name">${esc(r.name)}</div>` : ""}
       ${color === "green" && r.kind ? `<div class="kind">${esc(r.kind)}</div>` : ""}
-      ${r.food ? (color === "green" ? `<div class="foodbig">1× Essen</div>` : `<div class="reason">${esc(r.reason || "")}${r.food_at ? ` um ${timeDe(r.food_at)}` : ""}</div>`)
+      ${r.food ? (color === "green" ? `<div class="foodbig">1× Essen</div>${r.left > 0 ? `<div class="shiftline">danach noch ${r.left}× übrig</div>` : ""}` : `<div class="reason">${esc(r.reason || "")}${r.food_at ? ` um ${timeDe(r.food_at)}` : ""}</div>`)
         : color === "green" ? giveHtml(r) : `<div class="reason">${esc(r.reason || "")}</div>`}
       ${sub ? `<div class="meta">${esc(sub)}</div>` : ""}
       ${color === "yellow" ? `<div class="reason" style="font-weight:400">NICHT einlassen – erneut scannen</div>` : ""}
@@ -226,8 +226,8 @@
   async function foodSearch(q) {
     try {
       const list = await call(`/scan/food/search?q=${encodeURIComponent(q)}`);
-      $("#hits").innerHTML = list.map(t => `<div class="item"><div class="who">${esc(guestName(t))}<small>${esc(t.number)} · Helfer${t.helper_job ? " · " + esc(t.helper_job) : ""}</small></div>
-        ${t.food_at ? `<span class="no">gegessen ${timeDe(t.food_at)}</span>` : t.status !== "valid" ? `<span class="no">gesperrt</span>` : `<button class="btn btn-small btn-uv" data-id="${t.id}" data-n="${esc(guestName(t))}">Essen ausgeben</button>`}</div>`).join("") || `<p class="note">Kein Helfer gefunden.</p>`;
+      $("#hits").innerHTML = list.map(t => `<div class="item"><div class="who">${esc(guestName(t))}<small>${esc(t.number)} · ${t.category === "helper" ? `Helfer${t.helper_job ? " · " + esc(t.helper_job) : ""}` : "Gast"}${t.allowed > 1 ? ` · ${t.food_used}/${t.allowed}× gegessen` : ""}</small></div>
+        ${t.food_used >= t.allowed ? `<span class="no">gegessen ${t.food_at ? timeDe(t.food_at) : ""}</span>` : t.status !== "valid" ? `<span class="no">gesperrt</span>` : `<button class="btn btn-small btn-uv" data-id="${t.id}" data-n="${esc(guestName(t))}">Essen ausgeben</button>`}</div>`).join("") || `<p class="note">Niemand mit Essen gefunden.</p>`;
       $$("#hits [data-id]").forEach(b => b.onclick = async () => {
         if (!confirm(`${b.dataset.n} ohne QR-Code Essen geben? Nur wenn der Name stimmt.`)) return;
         try { showResult(await call(`/scan/food/${b.dataset.id}`, { method: "POST" })); search(); }
@@ -240,7 +240,7 @@
     document.title = "Foodtruck – TAKT Nr. 30";
     $("header .t").firstChild.textContent = "Foodtruck";
     $("#cin").nextElementSibling.firstChild.textContent = "GEGESSEN / HELFER ";
-    $("#q").closest("label").querySelector("span").textContent = "Helfer suchen (Name oder Nummer)";
+    $("#q").closest("label").querySelector("span").textContent = "Suchen (Name oder Ticketnummer)";
     $("#recent").previousElementSibling.textContent = "Zuletzt ausgegeben";
   }
   async function refresh() {

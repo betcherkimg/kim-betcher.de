@@ -19,8 +19,16 @@ const VIP_DRINKS = 3;            // Freigetränke für VIP online
 const PAPER_VIP_DRINKS = 5;      // Freigetränke für VIP-Papiertickets (2TAKT)
 const HELPER_DRINKS = 5;         // Helfer: 5 Getränkemarken + 1× Essen, Wasser gratis
 const PAPER_PRICE = { free: 3500, regular: 2500 };   // Reserve-Papiertickets verkauft: VIP 35 €, normal 25 €
-// Was der Scanner zeigt: Ticketart, Bändchen-Schlüssel, Freigetränke
+// Was der Scanner zeigt: Ticketart, Bändchen-Schlüssel, Freigetränke – plus Extras, die Kim im Admin dazugibt
 function ticketKind(t) {
+  const k = baseKind(t);
+  const xd = Math.max(0, Number(t.extra_drinks) || 0), xf = Math.max(0, Number(t.extra_food) || 0);
+  if (xd) k.drinks = (k.drinks || 0) + xd;
+  k.food = (t.category === "helper" ? 1 : 0) + xf;
+  if (xf && t.category !== "helper") k.extras = [...(k.extras || []), `${xf}× Essen am Foodtruck (QR zeigen)`];
+  return k;
+}
+function baseKind(t) {
   if (t.category === "helper") return { kind: t.helper_job ? `Helfer · ${t.helper_job}` : "Helfer", band: "helper", drinks: HELPER_DRINKS, hint: "Essen: 1× am Foodtruck – dort wird der Ticket-QR gescannt", perk: "1× Essen am Foodtruck · Wasser gratis" };
   if (t.category === "free") return { kind: "VIP · 2TAKT", band: "free", drinks: PAPER_VIP_DRINKS, shot: true, extras: ["Begrüßungsshot"] };
   if (t.tier === "vip") return { kind: "VIP online", band: "vip", drinks: VIP_DRINKS, shot: true, extras: ["Begrüßungsshot"] };
@@ -29,11 +37,11 @@ function ticketKind(t) {
   return { kind: "Ticket", band: "regular", drinks: 0 };
 }
 // Was der Einlass einem Helfer sagt (Kim kann nicht selbst einweisen)
-function helperBrief(shifts, band) {
+function helperBrief(shifts, band, kind, contact) {
   return [
-    `Hier sind deine ${HELPER_DRINKS} Getränkemarken. Wasser ist den ganzen Abend gratis.`,
-    `Essen bekommst du 1× am Foodtruck – wann du willst. Dort einfach deinen Ticket-QR zeigen.`,
-    shifts ? `Deine Schicht: ${shifts}. Sei bitte 10 Minuten vorher dort.` : `Du hast noch keine Schicht – such dir eine auf deiner Ticketseite aus oder melde dich bei Kim.`,
+    `Hier sind deine ${kind.drinks} Getränkemarken. Wasser ist den ganzen Abend gratis.`,
+    `Essen bekommst du ${kind.food || 1}× am Foodtruck – wann du willst. Dort einfach deinen Ticket-QR zeigen.`,
+    shifts ? `Deine Schicht: ${shifts}. Sei bitte 10 Minuten vorher dort.` : `Du hast noch keine Schicht – such dir eine auf deiner Ticketseite aus oder melde dich unter ${contact}.`,
     `Das Helfer-Bändchen${band.label && band.label !== "–" ? ` (${band.label})` : ""} bleibt dran – daran erkennt man dich als Crew.`
   ];
 }
@@ -74,12 +82,13 @@ const DEFAULT_SETTINGS = {
   helper_cap: "13",
   bands: JSON.stringify({ regular: { label: "Weiß", color: "#ffffff" }, free: { label: "Lila", color: "#9d4dff", note: "" }, vip: { label: "Lila", color: "#9d4dff", note: "" }, helper: { label: "Neongrün", color: "#39ff14" } }),
   helper_jobs: JSON.stringify([{ name: "Bar", slots: 8 }, { name: "Ticketscan", slots: 5 }]),
-  shifts_open: "1"                // Helfer dürfen ihre Schichten selbst wählen/ändern
+  shifts_open: "1",               // Helfer dürfen ihre Schichten selbst wählen/ändern
+  helper_contact: "0151 40411184" // Telefonnummer für Helfer (Absagen, Fragen)
 };
 const SETTING_LIMITS = {
   event_date: 10, doors_time: 5, start_time: 5, place_public: 120, venue_name: 120, venue_address: 160,
   intro_title: 120, intro_text: 600, lineup: 4000, lineup_note: 80, contact_name: 80, contact_phone: 40,
-  contact_email: 120, sale_mode: 6, show_countdown: 1, helper_signup: 1, helper_cap: 2, helper_jobs: 2000, bands: 900, shifts_open: 1
+  contact_email: 120, sale_mode: 6, show_countdown: 1, helper_signup: 1, helper_cap: 2, helper_jobs: 2000, bands: 900, shifts_open: 1, helper_contact: 40
 };
 
 /* ================= Antworten ================= */
@@ -150,6 +159,7 @@ const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS shifts (id INTEGER PRIMARY KEY AUTOINCREMENT, area TEXT NOT NULL, spot TEXT, starts TEXT NOT NULL, ends TEXT, slots INTEGER NOT NULL DEFAULT 1, note TEXT, created_at TEXT NOT NULL, updated_at TEXT)`,
   `CREATE TABLE IF NOT EXISTS shift_assignments (shift_id INTEGER NOT NULL, ticket_id INTEGER NOT NULL, assigned_at TEXT NOT NULL, assigned_by TEXT, PRIMARY KEY (shift_id, ticket_id))`,
   `CREATE INDEX IF NOT EXISTS shift_assignments_ticket ON shift_assignments(ticket_id)`,
+  `CREATE TABLE IF NOT EXISTS helper_reminders (ticket_id INTEGER NOT NULL, kind TEXT NOT NULL, sent_at TEXT NOT NULL, ok INTEGER, PRIMARY KEY (ticket_id, kind))`,
   `CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, phase TEXT NOT NULL, title TEXT NOT NULL, note TEXT, position INTEGER NOT NULL DEFAULT 0, done_at TEXT, done_by TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)`
 ];
 
@@ -482,6 +492,10 @@ async function ensureSchema(env) {
     `ALTER TABLE scanner_access ADD COLUMN mode TEXT NOT NULL DEFAULT 'entry'`,
     `ALTER TABLE tickets ADD COLUMN food_at TEXT`,
     `ALTER TABLE tickets ADD COLUMN food_by TEXT`,
+    `ALTER TABLE tickets ADD COLUMN extra_drinks INTEGER NOT NULL DEFAULT 0`,
+    `ALTER TABLE tickets ADD COLUMN extra_food INTEGER NOT NULL DEFAULT 0`,
+    `ALTER TABLE tickets ADD COLUMN food_used INTEGER NOT NULL DEFAULT 0`,
+    `ALTER TABLE shift_assignments ADD COLUMN committed_at TEXT`,
     `ALTER TABLE orders ADD COLUMN holder TEXT`,
     `ALTER TABLE reservations ADD COLUMN holder TEXT`,
     `ALTER TABLE tickets ADD COLUMN holder TEXT`,
@@ -524,6 +538,7 @@ async function ensureSchema(env) {
       await run(env, `UPDATE event_settings SET value = ?, updated_at = ?, updated_by = 'system' WHERE key = 'helper_jobs'`,
         JSON.stringify(jl.map(j => ({ ...j, shifts: j.shifts ?? 1 }))), iso());
   } catch { /* ungültig gespeichert – Admin kann neu speichern */ }
+  await run(env, `UPDATE tickets SET food_used = 1 WHERE food_at IS NOT NULL AND food_used = 0`).catch(() => {});
   await seedShifts(env);
   schemaReady = true;
 }
@@ -988,9 +1003,9 @@ async function getOrder(env, request, url) {
 async function getTicket(env, request, url) {
   if (await limited(env, `tk:${await clientKey(request, env)}`, 150, 60_000)) return fail("Zu viele Anfragen.", 429);
   const k = cleanCode(url.searchParams.get("k"), 40);
-  const t = await first(env, `SELECT number, category, tier, helper_job, first_name, last_name, code, status, checked_in_at, is_test, paper, order_id FROM tickets WHERE view_key = ?`, k);
+  const t = await first(env, `SELECT number, category, tier, helper_job, first_name, last_name, code, status, checked_in_at, is_test, paper, order_id, extra_drinks, extra_food FROM tickets WHERE view_key = ?`, k);
   if (!t) return fail("Dieses Ticket gibt es nicht (mehr). Wurde es ersetzt, nutze bitte den neuen Link.", 404);
-  const { paper, order_id, ...pub } = t;
+  const { paper, order_id, extra_drinks, extra_food, ...pub } = t;
   return json({ ...pub, drinks: ticketKind(t).drinks, perk: ticketKind(t).perk, event: eventForTicket(await getSettings(env)) });
 }
 
@@ -1016,6 +1031,14 @@ const DEFAULT_SHIFTS = [
   ["Einlass", "Einlass", "19:00", "21:30", 3], ["Einlass", "Einlass", "21:30", "00:00", 2], ["Einlass", "Einlass", "00:00", "02:00", 1],
   ["Security", "Security", "21:00", "03:00", 1], ["Security", "Security", "21:00", "", 1]
 ];
+const berlinNow = (ms = nowMs()) => {
+  const p = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Berlin", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23" }).formatToParts(new Date(ms));
+  const g = k => p.find(x => x.type === k).value;
+  return { date: `${g("year")}-${g("month")}-${g("day")}`, hour: Number(g("hour")) };
+};
+const addDays = (d, n) => new Date(Date.parse(`${d}T12:00:00Z`) + n * 86400_000).toISOString().slice(0, 10);
+const SHIFT_DROP_DAYS = 7;   // bis 7 Tage vorher selbst austragen, danach nur telefonisch
+const commitText = contact => `Ich bin 10 Minuten vor Schichtbeginn da. Wenn ich nicht kann, trage ich mich bis spätestens ${SHIFT_DROP_DAYS} Tage vorher aus oder melde mich unter ${contact}.`;
 const timeOk = v => /^([01]\d|2[0-3]):[0-5]\d$/.test(v);
 const shiftMin = v => { const [h, m] = String(v).split(":").map(Number); return (h < 12 ? h + 24 : h) * 60 + m; };
 const shiftSpan = sh => [shiftMin(sh.starts), shiftMin(sh.ends || SHIFT_OPEN_END)];
@@ -1034,7 +1057,7 @@ async function seedShifts(env) {
 
 async function shiftRows(env, area) {
   const shifts = (await all(env, `SELECT * FROM shifts ${area ? "WHERE area = ?" : ""}`, ...(area ? [area] : []))).sort(shiftSort);
-  const crew = await all(env, `SELECT a.shift_id, a.ticket_id, t.number, t.first_name, t.last_name, t.status FROM shift_assignments a JOIN tickets t ON t.id = a.ticket_id WHERE t.status != 'cancelled' ORDER BY a.assigned_at`);
+  const crew = await all(env, `SELECT a.shift_id, a.ticket_id, a.committed_at, t.number, t.first_name, t.last_name, t.status FROM shift_assignments a JOIN tickets t ON t.id = a.ticket_id WHERE t.status != 'cancelled' ORDER BY a.assigned_at`);
   return shifts.map(sh => ({ ...sh, crew: crew.filter(c => c.shift_id === sh.id) }));
 }
 
@@ -1053,6 +1076,26 @@ async function crewInvite(env, t) {
   }
   return c;
 }
+// Allgemeiner Helfer-Link von Kim (gehört keinem Helfer)
+async function generalCrewInvite(env) {
+  let c = await first(env, `SELECT id, code, status FROM invitations WHERE kind = 'crew' AND owner_ticket IS NULL ORDER BY id LIMIT 1`);
+  if (!c) {
+    await run(env, `INSERT INTO invitations (code, name, max_tickets, status, kind, created_at, created_by, updated_at) VALUES (?, 'Helfer-Link (allgemein)', 1, 'active', 'crew', ?, 'system', ?)`, randomCode(8), iso(), iso());
+    c = await first(env, `SELECT id, code, status FROM invitations WHERE kind = 'crew' AND owner_ticket IS NULL ORDER BY id LIMIT 1`);
+  }
+  return c;
+}
+async function adminLinks(env) {
+  const [g, h, scanners] = await Promise.all([ensureGroupInvite(env), generalCrewInvite(env),
+    all(env, `SELECT id, name, mode, created_at, revoked_at, last_used_at FROM scanner_access ORDER BY revoked_at IS NOT NULL, id DESC`)]);
+  const brought = await first(env, `SELECT COUNT(*) AS n FROM tickets WHERE invitation_id = ? AND status != 'cancelled'`, h.id);
+  return json({
+    ticket_link: { id: g.id, url: `${APP_URL}?e=${g.code}`, status: g.status },
+    helper_link: { id: h.id, url: crewUrl(h.code), status: h.status, signups: brought.n },
+    pages: { tickets: APP_URL, scanner: `${APP_ORIGIN}/taktnr30/scanner/`, admin: `${APP_ORIGIN}/taktnr30/admin/` },
+    scanners
+  });
+}
 const crewUrl = code => `${APP_URL}?e=${code}`;
 
 async function recruitInfo(env, t, s) {
@@ -1068,14 +1111,16 @@ async function shiftView(env, t) {
   const rows = await shiftRows(env, t.helper_job);
   const mine = rows.filter(r => r.crew.some(c => c.ticket_id === t.id));
   const open = s.shifts_open === "1" && t.status === "valid" && !t.checked_in_at;
+  const dropUntil = addDays(s.event_date, -SHIFT_DROP_DAYS);
   return {
     open, area: job.name, max: job.shifts, rest_min: SHIFT_REST_MIN, info: job.info || "",
+    contact: s.helper_contact, commit_text: commitText(s.helper_contact), drop_locked: berlinNow().date >= dropUntil, drop_until: addDays(dropUntil, -1),
     recruit: t.status === "valid" ? await recruitInfo(env, t, s) : null,
     ticket: { number: t.number, first_name: t.first_name },
     shifts: rows.map(r => {
       const taken = r.crew.length, isMine = mine.includes(r), full = taken >= r.slots;
       const why = isMine ? null : full ? "voll" : mine.length >= job.shifts ? "max" : shiftClash(r, mine) ? "pause" : null;
-      return { id: r.id, spot: r.spot, starts: r.starts, ends: r.ends || null, note: r.note || "", slots: r.slots, taken, mine: isMine, free: Math.max(0, r.slots - taken), why,
+      return { id: r.id, spot: r.spot, starts: r.starts, ends: r.ends || null, note: r.note || "", slots: r.slots, taken, mine: isMine, committed: isMine ? !!r.crew.find(c => c.ticket_id === t.id).committed_at : undefined, free: Math.max(0, r.slots - taken), why,
         crew: r.crew.filter(c => c.ticket_id !== t.id).map(c => c.first_name || "Helfer") };
     })
   };
@@ -1102,21 +1147,29 @@ async function pickShift(env, request) {
   if (!v.open) return fail(t.checked_in_at ? "Du bist schon eingecheckt – Änderungen bitte direkt mit Kim." : "Die Schichtwahl ist gerade geschlossen. Melde dich bei Kim.", 409, "SHIFTS_CLOSED");
   const sh = v.shifts.find(x => x.id === Number(b.shift_id));
   if (!sh) return fail("Diese Schicht gibt es nicht (mehr).", 404);
+  if (b.confirm === true) {
+    if (!sh.mine) return fail("Das ist nicht deine Schicht.", 409);
+    await run(env, `UPDATE shift_assignments SET committed_at = COALESCE(committed_at, ?) WHERE shift_id = ? AND ticket_id = ?`, iso(), sh.id, t.id);
+    await audit(env, { actor: `ticket:${t.number}`, name: t.first_name }, "shift.commit", t.number, { shift: sh.id });
+    return json(await shiftView(env, t));
+  }
   if (b.take === false) {
+    if (v.drop_locked) return fail(`Austragen geht jetzt nur noch telefonisch: ${v.contact}`, 409, "DROP_LOCKED");
     await run(env, `DELETE FROM shift_assignments WHERE shift_id = ? AND ticket_id = ?`, sh.id, t.id);
     await audit(env, { actor: `ticket:${t.number}`, name: t.first_name }, "shift.drop", t.number, { shift: sh.id });
     return json(await shiftView(env, t));
   }
   if (sh.mine) return json(v);
+  if (b.commit !== true) return fail("Bitte bestätige zuerst deine Zusage (Häkchen oben).", 400, "COMMIT_REQUIRED");
   // Wechseln: neue Schicht nehmen und erst danach die alte freigeben (geht die neue nicht, bleibt die alte)
   const old = b.replace != null ? v.shifts.find(x => x.id === Number(b.replace) && x.mine) : null;
   if (old) {
     const rest = v.shifts.filter(x => x.mine && x.id !== old.id);
     if (sh.free <= 0) return fail("Die Schicht ist gerade voll geworden – such dir bitte eine andere aus.", 409, "SHIFT_FULL");
     if (shiftClash(sh, rest)) return fail("Zu knapp an deiner anderen Schicht – dazwischen soll mindestens eine Stunde Pause zum Feiern sein.", 409, "SHIFT_CLASH");
-    const r = await run(env, `INSERT INTO shift_assignments (shift_id, ticket_id, assigned_at, assigned_by)
-      SELECT ?, ?, ?, 'self' WHERE (SELECT COUNT(*) FROM shift_assignments a JOIN tickets t ON t.id = a.ticket_id WHERE a.shift_id = ? AND t.status != 'cancelled') < (SELECT slots FROM shifts WHERE id = ?)
-        AND NOT EXISTS (SELECT 1 FROM shift_assignments WHERE shift_id = ? AND ticket_id = ?)`, sh.id, t.id, iso(), sh.id, sh.id, sh.id, t.id).catch(() => null);
+    const r = await run(env, `INSERT INTO shift_assignments (shift_id, ticket_id, assigned_at, assigned_by, committed_at)
+      SELECT ?, ?, ?, 'self', ? WHERE (SELECT COUNT(*) FROM shift_assignments a JOIN tickets t ON t.id = a.ticket_id WHERE a.shift_id = ? AND t.status != 'cancelled') < (SELECT slots FROM shifts WHERE id = ?)
+        AND NOT EXISTS (SELECT 1 FROM shift_assignments WHERE shift_id = ? AND ticket_id = ?)`, sh.id, t.id, iso(), iso(), sh.id, sh.id, sh.id, t.id).catch(() => null);
     if (!changes(r)) return fail("Die Schicht ist gerade voll geworden – such dir bitte eine andere aus.", 409, "SHIFT_FULL");
     await run(env, `DELETE FROM shift_assignments WHERE shift_id = ? AND ticket_id = ?`, old.id, t.id);
     await audit(env, { actor: `ticket:${t.number}`, name: t.first_name }, "shift.swap", t.number, { from: old.id, to: sh.id });
@@ -1125,11 +1178,11 @@ async function pickShift(env, request) {
   if (sh.why === "max") return fail(`Du hast schon ${v.max} ${v.max === 1 ? "Schicht" : "Schichten"}. Trag dich erst aus einer aus.`, 409, "SHIFT_MAX");
   if (sh.why === "pause") return fail("Zu knapp an deiner anderen Schicht – dazwischen soll mindestens eine Stunde Pause zum Feiern sein.", 409, "SHIFT_CLASH");
   // Atomar: nur wenn noch Platz ist und das persönliche Maximum nicht erreicht ist.
-  const r = await run(env, `INSERT INTO shift_assignments (shift_id, ticket_id, assigned_at, assigned_by)
-    SELECT ?, ?, ?, 'self' WHERE (SELECT COUNT(*) FROM shift_assignments a JOIN tickets t ON t.id = a.ticket_id WHERE a.shift_id = ? AND t.status != 'cancelled') < (SELECT slots FROM shifts WHERE id = ?)
+  const r = await run(env, `INSERT INTO shift_assignments (shift_id, ticket_id, assigned_at, assigned_by, committed_at)
+    SELECT ?, ?, ?, 'self', ? WHERE (SELECT COUNT(*) FROM shift_assignments a JOIN tickets t ON t.id = a.ticket_id WHERE a.shift_id = ? AND t.status != 'cancelled') < (SELECT slots FROM shifts WHERE id = ?)
       AND (SELECT COUNT(*) FROM shift_assignments a JOIN shifts s ON s.id = a.shift_id WHERE a.ticket_id = ? AND s.area = ?) < ?
       AND NOT EXISTS (SELECT 1 FROM shift_assignments WHERE shift_id = ? AND ticket_id = ?)`,
-    sh.id, t.id, iso(), sh.id, sh.id, t.id, v.area, v.max, sh.id, t.id).catch(() => null);
+    sh.id, t.id, iso(), iso(), sh.id, sh.id, t.id, v.area, v.max, sh.id, t.id).catch(() => null);
   if (!changes(r)) return fail("Die Schicht ist gerade voll geworden – such dir bitte eine andere aus.", 409, "SHIFT_FULL");
   await audit(env, { actor: `ticket:${t.number}`, name: t.first_name }, "shift.take", t.number, { shift: sh.id });
   return json(await shiftView(env, t));
@@ -1144,7 +1197,8 @@ async function adminShifts(env) {
   const brought = Object.fromEntries((await all(env, `SELECT i.owner_ticket AS id, COUNT(*) AS n FROM tickets tk JOIN invitations i ON i.id = tk.invitation_id WHERE i.kind = 'crew' AND tk.status != 'cancelled' GROUP BY i.owner_ticket`)).map(r => [r.id, r.n]));
   return json({
     open: s.shifts_open === "1", rest_min: SHIFT_REST_MIN, jobs: helperJobs(s),
-    shifts: rows.map(r => ({ ...r, crew: r.crew.map(c => ({ ticket_id: c.ticket_id, number: c.number, name: `${c.first_name || ""} ${c.last_name || ""}`.trim() })) })),
+    shifts: rows.map(r => ({ ...r, crew: r.crew.map(c => ({ ticket_id: c.ticket_id, number: c.number, committed: !!c.committed_at, name: `${c.first_name || ""} ${c.last_name || ""}`.trim() })) })),
+    contact: s.helper_contact,
     helpers: helpers.map(h => ({ ...h, shifts: rows.filter(r => r.crew.some(c => c.ticket_id === h.id)).map(r => r.id), crew_url: crew[h.id]?.status === "active" ? crewUrl(crew[h.id].code) : null, brought: brought[h.id] || 0 }))
   });
 }
@@ -1197,6 +1251,43 @@ async function assignShift(env, request, who, id) {
   return json({ ok: true });
 }
 
+/* ---- Erinnerungen an Helfer: 7 Tage vorher und am Partytag (je ab 10 Uhr) ---- */
+function reminderHtml(s, t, kind, mine) {
+  const url = `${APP_URL}ticket/?k=${t.view_key}#schichten`;
+  const p = txt => `<p style="font-size:15px;line-height:1.6;color:#c9c9d1;margin:0 0 16px">${txt}</p>`;
+  const list = mine.map(x => `<li style="margin:0 0 6px"><strong style="color:#f2f2f4">${esc(`${x.starts}–${x.ends || "Ende"}`)}</strong> · ${esc(x.spot || x.area)}</li>`).join("");
+  return `<!doctype html><html><body style="margin:0;background:#0a0a0c;color:#f2f2f4;font-family:Helvetica,Arial,sans-serif">
+<div style="max-width:520px;margin:0 auto;padding:32px 24px">
+<p style="letter-spacing:4px;font-size:13px;color:#b98cff;margin:0 0 6px">TAKT NR. 30 · CREW</p>
+<h1 style="font-weight:300;font-size:26px;margin:0 0 18px">${kind === "day" ? `Heute ist es so weit, ${esc(t.first_name)}!` : `In einer Woche geht's los, ${esc(t.first_name)}.`}</h1>
+${mine.length ? `${p(`Deine Schicht${mine.length > 1 ? "en" : ""}:`)}<ul style="font-size:16px;line-height:1.5;color:#c9c9d1;margin:-8px 0 16px;padding-left:20px">${list}</ul>
+${p(`Bitte sei <strong style="color:#f2f2f4">10 Minuten vor Schichtbeginn</strong> da. Einlass ab ${esc(s.doors_time)} Uhr – am Einlass bekommst du deine Marken.`)}`
+  : p(`Du hast noch <strong style="color:#f2f2f4">keine Schicht</strong> gewählt – bitte such dir jetzt eine aus.`)}
+${p(`Kannst du doch nicht? Dann melde dich bitte <strong style="color:#f2f2f4">sofort</strong> unter ${esc(s.helper_contact)}.`)}
+<a href="${esc(url)}" style="display:block;background:#39ff14;color:#0a0a0c;text-decoration:none;padding:14px 18px;border-radius:4px;margin:6px 0 10px;font-size:15px;text-align:center;font-weight:bold">${mine.length ? "Ticket & Schicht öffnen" : "Schicht auswählen"}</a>
+<p style="font-size:13px;line-height:1.6;color:#8a8a96;margin:18px 0 0">${esc(dateDe(s.event_date))} · ${esc(s.venue_name)} · ${esc(s.venue_address)}</p>
+</div></body></html>`;
+}
+async function helperReminders(env, ms = nowMs()) {
+  const s = await getSettings(env);
+  const { date, hour } = berlinNow(ms);
+  if (hour < 10 || date > s.event_date) return { sent: 0 };
+  const kind = date === s.event_date ? "day" : date >= addDays(s.event_date, -7) ? "week" : null;
+  if (!kind) return { sent: 0 };
+  const list = await all(env, `SELECT * FROM tickets t WHERE category = 'helper' AND status = 'valid' AND is_test = 0 AND email IS NOT NULL
+    AND NOT EXISTS (SELECT 1 FROM helper_reminders r WHERE r.ticket_id = t.id AND r.kind = ?) ORDER BY id LIMIT 25`, kind);
+  let sent = 0;
+  for (const t of list) {
+    const claim = await run(env, `INSERT OR IGNORE INTO helper_reminders (ticket_id, kind, sent_at) VALUES (?, ?, ?)`, t.id, kind, iso());
+    if (!changes(claim)) continue;
+    const mine = (await all(env, `SELECT s.* FROM shift_assignments a JOIN shifts s ON s.id = a.shift_id WHERE a.ticket_id = ?`, t.id)).sort(shiftSort);
+    const r = await sendMail(env, t.email, kind === "day" ? "Heute: TAKT Nr. 30 – deine Schicht" : "TAKT Nr. 30: In einer Woche – deine Schicht", reminderHtml(s, t, kind, mine)).catch(e => ({ ok: false }));
+    await run(env, `UPDATE helper_reminders SET ok = ? WHERE ticket_id = ? AND kind = ?`, r.ok ? 1 : 0, t.id, kind);
+    if (r.ok) sent++;
+  }
+  return { sent };
+}
+
 function shiftMailHtml(s, t, v) {
   const url = `${APP_URL}ticket/?k=${t.view_key}#schichten`;
   const mine = v.shifts.filter(x => x.mine);
@@ -1213,7 +1304,7 @@ ${v.recruit?.url && v.recruit.open ? `<div style="border:1px solid #33333d;borde
 <p style="letter-spacing:3px;font-size:12px;color:#39ff14;margin:0 0 8px">WIR SUCHEN NOCH HELFER</p>
 <p style="font-size:15px;line-height:1.6;color:#f2f2f4;margin:0 0 10px">Du kennst Leute, die auch helfen würden? Dann schick ihnen diesen Link. Darüber können sie sich nur als Helfer eintragen – Tickets gibt es darüber nicht.</p>
 <p style="font-size:15px;margin:0"><a href="${esc(v.recruit.url)}" style="color:#39ff14">${esc(v.recruit.url)}</a></p></div>` : ""}
-<p style="font-size:13px;line-height:1.6;color:#8a8a96;margin:18px 0 0">Wer zuerst kommt, wählt zuerst. Ändern geht über denselben Link. Fragen? ${esc(s.contact_name)} · ${esc(s.contact_phone)}</p>
+<p style="font-size:13px;line-height:1.6;color:#8a8a96;margin:18px 0 0">Wer zuerst kommt, wählt zuerst. Mit der Wahl sagst du verbindlich zu: 10 Minuten vor Schichtbeginn da sein – und wenn's nicht klappt, bis ${SHIFT_DROP_DAYS} Tage vorher austragen oder unter ${esc(s.helper_contact)} melden. Fragen? ${esc(s.helper_contact)}</p>
 </div></body></html>`;
 }
 
@@ -1423,7 +1514,7 @@ async function scan(env, request, who) {
   const at = iso();
   const log = (ticketId, result, detail) => run(env, `INSERT INTO checkins (ticket_id, action, result, actor, at, detail) VALUES (?, 'scan', ?, ?, ?, ?)`, ticketId, result, who.name, at, detail || null);
   if (code.length < 20) { await log(null, "unknown", raw.slice(0, 60)); return json({ result: "red", reason: "QR-Code unbekannt" }); }
-  const t = await first(env, `SELECT id, number, category, tier, helper_job, first_name, last_name, status, checked_in_at, checked_in_by, is_test, paper, order_id FROM tickets WHERE code = ?`, code);
+  const t = await first(env, `SELECT id, number, category, tier, helper_job, first_name, last_name, status, checked_in_at, checked_in_by, is_test, paper, order_id, extra_drinks, extra_food FROM tickets WHERE code = ?`, code);
   if (!t) {
     const old = await first(env, `SELECT t.number, t.first_name, t.last_name FROM retired_codes r JOIN tickets t ON t.id = r.ticket_id WHERE r.code = ?`, code);
     await log(null, old ? "replaced" : "unknown", code);
@@ -1432,7 +1523,7 @@ async function scan(env, request, who) {
   const s = await getSettings(env);
   const kind = ticketKind(t);
   const shifts = t.category === "helper" ? await shiftLine(env, t.id) : undefined;
-  const base = { number: t.number, category: t.category, tier: t.tier, ...kind, band_info: bandInfo(s, kind.band), helper_job: t.helper_job, shifts, brief: t.category === "helper" ? helperBrief(shifts, bandInfo(s, "helper")) : undefined, name: `${t.first_name || ""} ${t.last_name || ""}`.trim() || (t.category === "free" ? "VIP · 2TAKT" : t.paper ? "Freiticket" : "") };
+  const base = { number: t.number, category: t.category, tier: t.tier, ...kind, band_info: bandInfo(s, kind.band), helper_job: t.helper_job, shifts, brief: t.category === "helper" ? helperBrief(shifts, bandInfo(s, "helper"), kind, s.helper_contact) : undefined, name: `${t.first_name || ""} ${t.last_name || ""}`.trim() || (t.category === "free" ? "VIP · 2TAKT" : t.paper ? "Freiticket" : "") };
   if (t.status === "blocked") { await log(t.id, "blocked"); return json({ ...base, result: "red", reason: "Ticket gesperrt" }); }
   if (t.status === "cancelled") { await log(t.id, "cancelled"); return json({ ...base, result: "red", reason: "Ticket storniert" }); }
   const testPhase = s.sale_mode === "test" || (s.sale_mode === "live" && env.PAYPAL_ENV !== "live");
@@ -1449,9 +1540,9 @@ async function scanSearch(env, url) {
   const q = String(url.searchParams.get("q") || "").trim().slice(0, 40);
   if (q.length < 2) return json([]);
   const like = `%${q.replace(/[%_]/g, "")}%`;
-  const rows = await all(env, `SELECT id, number, category, tier, paper, order_id, helper_job, first_name, last_name, status, checked_in_at, checked_in_by, is_test FROM tickets
+  const rows = await all(env, `SELECT id, number, category, tier, paper, order_id, helper_job, first_name, last_name, status, checked_in_at, checked_in_by, is_test, extra_drinks, extra_food FROM tickets
      WHERE (COALESCE(first_name, '') || ' ' || COALESCE(last_name, '') LIKE ? OR number LIKE ?) ORDER BY last_name IS NULL, last_name, first_name, number LIMIT 25`, like, like);
-  return json(rows.map(({ paper, order_id, ...r }) => ({ ...r, ...ticketKind({ ...r, paper, order_id }) })));
+  return json(rows.map(({ paper, order_id, extra_drinks, extra_food, ...r }) => ({ ...r, ...ticketKind({ ...r, paper, order_id, extra_drinks, extra_food }) })));
 }
 
 async function manualCheckin(env, who, id) {
@@ -1459,11 +1550,11 @@ async function manualCheckin(env, who, id) {
   const r = await run(env, `UPDATE tickets SET checked_in_at = ?, checked_in_by = ?, updated_at = ? WHERE id = ? AND status = 'valid' AND checked_in_at IS NULL`, at, `${who.name} (manuell)`, at, id);
   await run(env, `INSERT INTO checkins (ticket_id, action, result, actor, at) VALUES (?, 'manual', ?, ?, ?)`, id, changes(r) ? "admitted" : "rejected", who.name, at);
   if (!changes(r)) return fail("Nicht möglich – Ticket ist bereits eingecheckt, gesperrt oder storniert.", 409);
-  const t = await first(env, `SELECT id, category, tier, paper, order_id, helper_job FROM tickets WHERE id = ?`, id);
+  const t = await first(env, `SELECT id, category, tier, paper, order_id, helper_job, extra_drinks, extra_food FROM tickets WHERE id = ?`, id);
   const kind = t ? ticketKind(t) : {};
   const set = await getSettings(env);
   const shifts = t?.category === "helper" ? await shiftLine(env, t.id) : undefined;
-  return json({ result: "green", checked_in_at: at, category: t?.category, ...kind, band_info: t ? bandInfo(set, kind.band) : undefined, shifts, brief: t?.category === "helper" ? helperBrief(shifts, bandInfo(set, "helper")) : undefined });
+  return json({ result: "green", checked_in_at: at, category: t?.category, ...kind, band_info: t ? bandInfo(set, kind.band) : undefined, shifts, brief: t?.category === "helper" ? helperBrief(shifts, bandInfo(set, "helper"), kind, set.helper_contact) : undefined });
 }
 
 async function undoCheckin(env, request, who, id) {
@@ -1484,19 +1575,36 @@ async function scanStats(env) {
   return json({ checked_in: c.checked_in, expected: c.expected, recent, bands });
 }
 
+// Kim gibt einem ausgegebenen Ticket (auch Papier) Getränkemarken oder Essen dazu – absolute Werte
+async function setExtras(env, request, who) {
+  const b = await readJson(request) || {};
+  const number = String(b.number || "").trim().toUpperCase();
+  const t = await first(env, `SELECT id, number, status, extra_drinks, extra_food, food_used, checked_in_at FROM tickets WHERE number = ?`, number);
+  if (!t) return fail("Ticket mit dieser Nummer nicht gefunden.", 404);
+  if (t.status === "cancelled") return fail("Stornierte Tickets lassen sich nicht ändern.", 409);
+  const d = Number(b.drinks), f = Number(b.food);
+  if (!Number.isInteger(d) || !Number.isInteger(f) || d < 0 || f < 0 || d > 20 || f > 5) return fail("Getränke 0–20, Essen 0–5.");
+  const helperBase = (await first(env, `SELECT category FROM tickets WHERE id = ?`, t.id)).category === "helper" ? 1 : 0;
+  if (f + helperBase < t.food_used) return fail(`Es wurde schon ${t.food_used}× gegessen – weniger geht nicht.`, 409);
+  await run(env, `UPDATE tickets SET extra_drinks = ?, extra_food = ?, updated_at = ? WHERE id = ?`, d, f, iso(), t.id);
+  await audit(env, who, "ticket.extras", t.number, { drinks: d, food: f });
+  return json({ ok: true, checked_in: !!t.checked_in_at });
+}
+
 /* ================= Essen am Foodtruck (Helfer: 1× gratis) ================= */
 async function foodGive(env, who, id, viaCode) {
-  const t = await first(env, `SELECT id, number, category, helper_job, first_name, last_name, status, food_at, food_by FROM tickets WHERE id = ?`, id);
+  const t = await first(env, `SELECT id, number, category, helper_job, first_name, last_name, status, food_at, food_by, food_used, extra_food FROM tickets WHERE id = ?`, id);
   if (!t) return json({ result: "red", food: true, reason: "Ticket nicht gefunden" });
-  const base = { food: true, number: t.number, name: `${t.first_name || ""} ${t.last_name || ""}`.trim(), kind: t.helper_job ? `Helfer · ${t.helper_job}` : t.category === "helper" ? "Helfer" : "" };
-  if (t.category !== "helper") return json({ ...base, result: "red", reason: "Kein Helfer – Essen nur gegen Bezahlung" });
+  const allowed = (t.category === "helper" ? 1 : 0) + (Number(t.extra_food) || 0);
+  const base = { food: true, number: t.number, name: `${t.first_name || ""} ${t.last_name || ""}`.trim(), kind: t.helper_job ? `Helfer · ${t.helper_job}` : t.category === "helper" ? "Helfer" : t.category === "free" ? "VIP · 2TAKT" : "Gast", allowed };
+  if (!allowed) return json({ ...base, result: "red", reason: "Kein Essen hinterlegt – nur gegen Bezahlung" });
   if (t.status !== "valid") return json({ ...base, result: "red", reason: t.status === "blocked" ? "Ticket gesperrt" : "Ticket storniert" });
   const at = iso();
-  const r = await run(env, `UPDATE tickets SET food_at = ?, food_by = ?, updated_at = ? WHERE id = ? AND food_at IS NULL AND status = 'valid'`, at, who.name + (viaCode ? "" : " (manuell)"), at, t.id);
+  const r = await run(env, `UPDATE tickets SET food_used = food_used + 1, food_at = ?, food_by = ?, updated_at = ? WHERE id = ? AND status = 'valid' AND food_used < ?`, at, who.name + (viaCode ? "" : " (manuell)"), at, t.id, allowed);
   await run(env, `INSERT INTO checkins (ticket_id, action, result, actor, at) VALUES (?, 'food', ?, ?, ?)`, t.id, changes(r) ? "food" : "food_again", who.name, at);
-  if (changes(r)) return json({ ...base, result: "green", food_at: at });
-  const now = await first(env, `SELECT food_at, food_by FROM tickets WHERE id = ?`, t.id);
-  return json({ ...base, result: "red", reason: "Hat schon gegessen", food_at: now.food_at, food_by: now.food_by });
+  const now = await first(env, `SELECT food_at, food_by, food_used FROM tickets WHERE id = ?`, t.id);
+  if (changes(r)) return json({ ...base, result: "green", food_at: at, used: now.food_used, left: allowed - now.food_used });
+  return json({ ...base, result: "red", reason: allowed > 1 ? `Hat schon ${allowed}× gegessen` : "Hat schon gegessen", food_at: now.food_at, food_by: now.food_by, used: now.food_used });
 }
 async function foodScan(env, request, who) {
   const body = await readJson(request);
@@ -1510,11 +1618,12 @@ async function foodSearch(env, url) {
   const q = String(url.searchParams.get("q") || "").trim().slice(0, 40);
   if (q.length < 2) return json([]);
   const like = `%${q.replace(/[%_]/g, "")}%`;
-  return json(await all(env, `SELECT id, number, category, helper_job, first_name, last_name, status, food_at FROM tickets
-    WHERE category = 'helper' AND status != 'cancelled' AND (COALESCE(first_name, '') || ' ' || COALESCE(last_name, '') LIKE ? OR number LIKE ?) ORDER BY first_name LIMIT 25`, like, like));
+  return json(await all(env, `SELECT id, number, category, helper_job, first_name, last_name, status, food_at, food_used,
+      (CASE WHEN category = 'helper' THEN 1 ELSE 0 END) + extra_food AS allowed FROM tickets
+    WHERE (category = 'helper' OR extra_food > 0) AND status != 'cancelled' AND (COALESCE(first_name, '') || ' ' || COALESCE(last_name, '') LIKE ? OR number LIKE ?) ORDER BY first_name LIMIT 25`, like, like));
 }
 async function foodStats(env) {
-  const c = await first(env, `SELECT COUNT(*) AS helpers, SUM(food_at IS NOT NULL) AS eaten FROM tickets WHERE category = 'helper' AND status = 'valid'`);
+  const c = await first(env, `SELECT SUM((CASE WHEN category = 'helper' THEN 1 ELSE 0 END) + extra_food) AS helpers, SUM(food_used) AS eaten FROM tickets WHERE status = 'valid' AND (category = 'helper' OR extra_food > 0)`);
   const recent = await all(env, `SELECT c.at, c.result, c.actor, t.number, t.first_name, t.last_name FROM checkins c LEFT JOIN tickets t ON t.id = c.ticket_id WHERE c.action = 'food' ORDER BY c.id DESC LIMIT 15`);
   return json({ mode: "food", eaten: c.eaten || 0, helpers: c.helpers || 0, recent });
 }
@@ -1595,7 +1704,7 @@ async function updateInvitation(env, request, who, id) {
 async function listTickets(env, url) {
   const cat = url.searchParams.get("category");
   const where = ["free", "regular", "helper"].includes(cat) ? `WHERE t.paper = 0 AND t.category = '${cat}'` : "WHERE t.paper = 0";
-  return json(await all(env, `SELECT t.id, t.number, t.category, t.tier, t.helper_job, hi.name AS helper_invitation, t.first_name, t.last_name, t.email, t.status, t.is_test, t.checked_in_at, t.checked_in_by, t.view_key, t.version, t.mail_status, t.note, t.created_at,
+  return json(await all(env, `SELECT t.id, t.number, t.category, t.tier, t.helper_job, hi.name AS helper_invitation, t.first_name, t.last_name, t.email, t.status, t.is_test, t.checked_in_at, t.checked_in_by, t.view_key, t.version, t.mail_status, t.note, t.created_at, t.extra_drinks, t.extra_food, t.food_used, t.food_at,
       o.order_no, o.id AS order_id, i.name AS invitation_name
     FROM tickets t LEFT JOIN orders o ON o.id = t.order_id LEFT JOIN invitations i ON i.id = o.invitation_id LEFT JOIN invitations hi ON hi.id = t.invitation_id ${where}
     ORDER BY t.category DESC, t.id`));
@@ -1657,7 +1766,7 @@ async function paperSetup(env, who) {
 }
 async function paperList(env, who) {
   const c = await paperSetup(env, who);
-  const rows = await all(env, `SELECT number, category, code, status, checked_in_at, first_name, last_name, sold_cents, sold_at, sold_via FROM tickets WHERE paper = 1 AND status != 'cancelled' ORDER BY category DESC, number`);
+  const rows = await all(env, `SELECT number, category, code, status, checked_in_at, first_name, last_name, sold_cents, sold_at, sold_via, extra_drinks, extra_food, food_used FROM tickets WHERE paper = 1 AND status != 'cancelled' ORDER BY category DESC, number`);
   return json({ vip: rows.filter(r => r.category === "free"), own: rows.filter(r => r.category === "regular"), counts: c, prices: PAPER_PRICE, event: eventForTicket(await getSettings(env)) });
 }
 
@@ -2170,7 +2279,9 @@ async function route(request, env, ctx) {
   if (m === "GET" && path === "/admin/tickets") return listTickets(env, url);
   if (m === "POST" && path === "/admin/free-tickets") return createFreeTicket(env, request, who);
   if (m === "POST" && path === "/admin/comp-tickets") return createCompTicket(env, request, who);
+  if (m === "POST" && path === "/admin/tickets/extras") return setExtras(env, request, who);
   if (m === "POST" && /^\/admin\/tickets\/\d+$/.test(path)) return updateTicket(env, request, who, id);
+  if (m === "GET" && path === "/admin/links") return adminLinks(env);
   if (m === "GET" && path === "/admin/orders") return listOrders(env);
   if (m === "POST" && /^\/admin\/orders\/\d+$/.test(path)) return orderAction(env, request, who, id);
   if (m === "GET" && path === "/admin/export") { if (url.searchParams.get("kind") === "ledger" && (denied = need("main"))) return denied; return exportCsv(env, url); }
@@ -2217,7 +2328,7 @@ async function route(request, env, ctx) {
 
 export default {
   async scheduled(event, env, ctx) {
-    ctx.waitUntil((async () => { await ensureSchema(env); await cleanupSignatures(env); })());
+    ctx.waitUntil((async () => { await ensureSchema(env); await cleanupSignatures(env); await helperReminders(env, event?.scheduledTime || nowMs()).catch(e => console.error("reminders", e)); })());
   },
   async fetch(request, env, ctx) {
     try {
