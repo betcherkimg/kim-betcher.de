@@ -1901,8 +1901,15 @@ html,body{font-size:15px;letter-spacing:-.003em}
   :is(#bossEntryRows,#entryRows) td.empty::before,:is(#bossEntryRows,#entryRows) td.empty::after{content:none}
 }
 
+/* Handy: Dashboard-Kacheln nur so hoch wie ihr Inhalt */
+@media (max-width:719px){
+  body:not(.boss-editing) .widget,body:not(.boss-editing) .widget.size-kompakt,body:not(.boss-editing) .widget.size-hoch{height:auto;min-height:0}
+  .widget{border-radius:var(--r-card);padding:18px}
+}
+.widget{border-radius:var(--r-card);box-shadow:var(--shadow);border:1px solid rgba(16,24,40,.045)}
+
 /* Dunkelmodus für die neuen Bausteine */
-html[data-theme="dark"] :is(.card,.my-widget){border-color:var(--line)}
+html[data-theme="dark"] :is(.card,.my-widget,.widget){border-color:var(--line)}
 html[data-theme="dark"] body[data-office-role="employee"] .tabbar{background:color-mix(in srgb,var(--surface) 88%,transparent);border-color:var(--line);box-shadow:0 10px 30px rgba(0,0,0,.45)}
 html[data-theme="dark"] .wk-progress{background:var(--ground)}
 html[data-theme="dark"] .btn.ghost,html[data-theme="dark"] .btn.quiet{background:transparent}
