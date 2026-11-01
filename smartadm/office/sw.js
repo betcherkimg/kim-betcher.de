@@ -1,7 +1,7 @@
 /* SmartADM 5 Office – Service Worker
  * Bei jeder Änderung an dieser Datei VERSION erhöhen.
  */
-const VERSION = "office-v10.1";
+const VERSION = "office-v10.2";
 const SCOPE = "/smartadm/office/";
 const ICON = `${SCOPE}office-icon-192-v4.png`;
 const SHELL = [SCOPE, `${SCOPE}manifest.webmanifest`, `${SCOPE}week-planner.js`,`${SCOPE}absence-calendar.js?v=3`,`${SCOPE}regular-week.js?v=10`,`${SCOPE}guided-intro.js?v=4`, ICON];

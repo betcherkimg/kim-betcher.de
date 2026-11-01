@@ -2188,6 +2188,7 @@ html[data-theme="dark"] .btn.primary{background:var(--accent-hi)}
 html[data-theme="dark"] body[data-office-role="employee"] .tabbar{background:color-mix(in srgb,var(--surface) 94%,transparent);border-top-color:var(--line)}
 html[data-theme="dark"] .my-row[data-my] .my-row-icon{background:var(--accent-wash);color:var(--accent)}
 html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav){background:var(--surface);border-color:var(--line)}
+.update-bar{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 84px);z-index:9999;border:0;border-radius:14px;padding:14px 16px;background:#1f2a44;color:#fff;font:600 15px/1.3 Onest,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.3)}
 </style>
 <link rel="stylesheet" href="../date-inputs.css">
 </head>
@@ -12137,7 +12138,36 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   /* --- Leiste unten und „Mehr“ (Handy) --- */
 
   const TAB_PAGES = ["dashboard", "telefon", "zeiten", "kalender"];
-  const OFFICE_VERSION = "2.0.0";
+  const OFFICE_VERSION = "2.0.1";   // bei jeder Veröffentlichung erhöhen – die App lädt sich dann selbst neu
+  /* Selbst-Update: Auf dem iPhone bleibt die Home-Bildschirm-App oft tagelang im Speicher und lädt nie neu.
+     Beim Zurückholen in den Vordergrund (und alle 30 Min.) prüfen, ob eine neuere Version online ist. */
+  let updatePending = false;
+  async function checkForUpdate() {
+    if (document.visibilityState !== "visible" || updatePending) return;
+    try {
+      const html = await (await fetch(`${APP_URL}?u=${Date.now()}`, { cache: "no-store" })).text();
+      const live = (html.match(/const OFFICE_VERSION = "([^"]+)"/) || [])[1];
+      if (!live || live === OFFICE_VERSION) return;
+      updatePending = true;
+      const busy = () => document.querySelector("dialog[open]") || ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName);
+      // Schutz gegen Endlosschleife (falls der Browser beim Neuladen doch noch die alte Seite bekommt)
+      let last = {}; try { last = JSON.parse(sessionStorage.getItem("officeUpdate") || "{}"); } catch {}
+      const again = last.v === live && Date.now() - (last.t || 0) < 10 * 60 * 1000;
+      if (!busy() && !again) {
+        try { sessionStorage.setItem("officeUpdate", JSON.stringify({ v: live, t: Date.now() })); } catch {}
+        location.reload(); return;
+      }
+      // Gerade wird etwas eingetragen → nicht dazwischenfunken, sondern Hinweis zum Antippen
+      const bar = document.createElement("button");
+      bar.type = "button"; bar.className = "update-bar";
+      bar.textContent = `Neue Version ${live} – zum Aktualisieren tippen`;
+      bar.onclick = () => location.reload();
+      document.body.append(bar);
+    } catch { /* offline – später erneut */ }
+  }
+  document.addEventListener("visibilitychange", checkForUpdate);
+  window.addEventListener("pageshow", checkForUpdate);
+  setInterval(checkForUpdate, 30 * 60 * 1000);
   function syncTabbar(pageId) {
     $$("#tabbar [data-page]").forEach(b => (b.dataset.page === pageId ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
     $("tabMore").classList.toggle("is-active", !TAB_PAGES.includes(pageId));
