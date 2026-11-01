@@ -29,7 +29,7 @@ function ticketKind(t) {
   return k;
 }
 function baseKind(t) {
-  if (t.category === "helper") return { kind: t.helper_job ? `Helfer · ${t.helper_job}` : "Helfer", band: "helper", drinks: HELPER_DRINKS, perk: "Wasser gratis" };
+  if (t.category === "helper") return { kind: t.helper_job ? `Helfer · ${t.helper_job}` : "Helfer", band: "helper", drinks: HELPER_DRINKS, extras: ["TAKT-Becher gratis"], perk: "Wasser gratis" };
   if (t.category === "free") return { kind: "VIP · 2TAKT", band: "free", drinks: PAPER_VIP_DRINKS, shot: true, extras: ["Begrüßungsshot"] };
   if (t.tier === "vip") return { kind: "VIP online", band: "vip", drinks: VIP_DRINKS, shot: true, extras: ["Begrüßungsshot"] };
   if (t.paper) return { kind: "Freiticket", band: "regular", drinks: 0 };
@@ -39,7 +39,7 @@ function baseKind(t) {
 // Was der Einlass einem Helfer sagt (Kim kann nicht selbst einweisen)
 function helperBrief(shifts, band, kind, contact) {
   return [
-    `Hier sind deine ${kind.drinks} Getränkemarken. Wasser ist den ganzen Abend gratis.`,
+    `Hier sind deine ${kind.drinks} Getränkemarken und dein TAKT-Becher – gratis, den behältst du. Wasser ist den ganzen Abend gratis.`,
     ...(kind.food ? [`Essen bekommst du ${kind.food}× am Foodtruck – wann du willst. Dort einfach deinen Ticket-QR zeigen.`] : []),
     shifts ? `Deine Schicht: ${shifts}. Sei bitte 10 Minuten vorher dort.` : `Du hast noch keine Schicht – such dir eine auf deiner Ticketseite aus oder melde dich unter ${contact}.`,
     `Das Helfer-Bändchen${band.label && band.label !== "–" ? ` (${band.label})` : ""} bleibt dran – daran erkennt man dich als Crew.`
@@ -1297,7 +1297,7 @@ function shiftMailHtml(s, t, v) {
 <p style="letter-spacing:4px;font-size:13px;color:#b98cff;margin:0 0 6px">TAKT NR. 30 · CREW</p>
 <h1 style="font-weight:300;font-size:26px;margin:0 0 18px">Hey ${esc(t.first_name)}, such dir deine Schicht${v.max > 1 ? "en" : ""} aus.</h1>
 ${p(`Danke, dass du am ${esc(dateDe(s.event_date))} hilfst (${esc(v.area)}). Du übernimmst <strong style="color:#f2f2f4">${v.max === 1 ? "eine Schicht (rund 3 Stunden)" : `${v.max} Schichten`}</strong>${v.max > 1 ? " – nie direkt hintereinander, damit du dazwischen feiern kannst" : ""}.`)}
-${p(`Dafür ist dein <strong style="color:#f2f2f4">Eintritt frei</strong>, du bekommst <strong style="color:#f2f2f4">${HELPER_DRINKS} Getränkemarken</strong> – Wasser gibt es den ganzen Abend gratis. Den Rest der Nacht feierst du einfach mit.`)}
+${p(`Dafür ist dein <strong style="color:#f2f2f4">Eintritt frei</strong>, du bekommst <strong style="color:#f2f2f4">${HELPER_DRINKS} Getränkemarken und deinen eigenen TAKT-Becher</strong> – Wasser gibt es den ganzen Abend gratis. Den Rest der Nacht feierst du einfach mit.`)}
 ${mine.length ? p(`Schon eingetragen: ${mine.map(x => esc(`${x.starts}–${x.ends || "Ende"}${x.spot && x.spot !== v.area ? " " + x.spot : ""}`)).join(", ")}`) : ""}
 <a href="${esc(url)}" style="display:block;background:#39ff14;color:#0a0a0c;text-decoration:none;padding:14px 18px;border-radius:4px;margin:6px 0 10px;font-size:15px;text-align:center;font-weight:bold">${mine.length ? (v.max > 1 ? "Schichten ansehen" : "Schicht ansehen") : (v.max > 1 ? "Schichten auswählen" : "Schicht auswählen")}</a>
 ${v.recruit?.url && v.recruit.open ? `<div style="border:1px solid #33333d;border-radius:6px;padding:16px 18px;margin:22px 0 0;background:#111116">
@@ -1371,7 +1371,7 @@ async function sendTicketMail(env, ticket) {
   const s = await getSettings(env);
   const r = await sendMail(env, ticket.email, ticket.helper_job ? "Dein Helfer-Ticket für TAKT Nr. 30" : "Dein Ticket für TAKT Nr. 30",
     mailHtml(s, ticket.helper_job ? `Danke fürs Helfen – ${ticket.helper_job}.` : "Du bist dabei.", [{ number: ticket.number, name: `${ticket.first_name} ${ticket.last_name}`, url: `${APP_URL}ticket/?k=${ticket.view_key}` }],
-      ticket.helper_job ? `<div style="border:1px solid #39ff14;border-radius:6px;padding:16px 18px;margin:0 0 22px;background:#0f1a0c"><p style="letter-spacing:3px;font-size:12px;color:#39ff14;margin:0 0 8px">CREW</p><p style="font-size:15px;line-height:1.6;color:#f2f2f4;margin:0">Dein Eintritt ist frei, am Einlass bekommst du <strong>${HELPER_DRINKS} Getränkemarken</strong>, Wasser ist gratis. Deine Schicht wählst du auf deiner Ticketseite unter <strong>„Deine Schicht“</strong>.</p></div>` : ""));
+      ticket.helper_job ? `<div style="border:1px solid #39ff14;border-radius:6px;padding:16px 18px;margin:0 0 22px;background:#0f1a0c"><p style="letter-spacing:3px;font-size:12px;color:#39ff14;margin:0 0 8px">CREW</p><p style="font-size:15px;line-height:1.6;color:#f2f2f4;margin:0">Dein Eintritt ist frei, am Einlass bekommst du <strong>${HELPER_DRINKS} Getränkemarken und deinen TAKT-Becher</strong> gratis, Wasser ist gratis. Deine Schicht wählst du auf deiner Ticketseite unter <strong>„Deine Schicht“</strong>.</p></div>` : ""));
   await run(env, `UPDATE tickets SET mail_status = ? WHERE id = ?`, r.ok ? "sent" : "failed", ticket.id);
   return r;
 }
