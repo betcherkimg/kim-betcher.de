@@ -795,3 +795,124 @@ test('Unterschrift: paralleler Versand ist gesperrt; alte offene Versandversuche
   const old=await signatureLink(t);t.db.prepare('UPDATE signature_requests SET png=?, signed_at=? WHERE id=?').run(signatureFixture.split(',')[1],new Date(Date.now()-24*3600000).toISOString(),old.id);
   assert.equal((await t.call('GET',old.path)).status,404);assert.equal(t.db.prepare('SELECT png FROM signature_requests WHERE id=?').get(old.id).png,null);
 });
+
+test("Schichtplan: Standardplan, Wahl mit Pause-Regel, Maximum, Kapazität, Admin, Mail, Scanner", async () => {
+  const t = await setup({ RESEND_API_KEY: "k", MAIL_FROM: "TAKT Nr. 30 <tickets@kim-betcher.de>" }); await openTestSale(t);
+  await t.admin("PUT", "/admin/settings", { helper_cap: "20", helper_jobs: JSON.stringify([{ name: "Bar", slots: 12, shifts: 2 }, { name: "Einlass", slots: 6 }]) });
+  const plan = (await t.admin("GET", "/admin/shifts")).data;
+  assert.equal(plan.shifts.filter(s => s.area === "Bar").reduce((a, s) => a + s.slots, 0), 21);
+  assert.equal(plan.jobs.find(j => j.name === "Einlass").shifts, 1);
+  const sign = async (fn, job, ip) => {
+    const c = await invite(t, `${fn} X`);
+    const r = await t.call("POST", "/public/helper", { invite: c, first_name: fn, last_name: "X", email: `${fn.toLowerCase()}@example.org`, job, accept: true }, { ip });
+    assert.equal(r.status, 201, JSON.stringify(r.data));
+    return t.db.prepare("SELECT id, view_key FROM tickets WHERE number = ?").get(r.data.number);
+  };
+  const carsten = await sign("Carsten", "Bar", "9.9.9.1");
+  let v = (await t.call("GET", `/public/shifts?k=${carsten.view_key}`)).data;
+  assert.equal(v.max, 2); assert.equal(v.shifts.length, 7); assert.ok(v.shifts.every(s => s.free > 0 && !s.why));
+  const at = (st, spot) => v.shifts.find(s => s.starts === st && s.spot === spot).id;
+  const A1 = at("19:00", "Bar 1"), B1 = at("22:00", "Bar 1"), B2 = at("22:00", "Bar 2"), C1 = at("01:00", "Bar 1"), D1 = at("04:00", "Bar 1");
+  v = (await t.call("POST", "/public/shifts", { k: carsten.view_key, shift_id: A1 })).data;
+  assert.ok(v.shifts.find(s => s.id === A1).mine);
+  assert.equal(v.shifts.find(s => s.id === B1).why, "pause");   // direkt danach → gesperrt
+  assert.equal((await t.call("POST", "/public/shifts", { k: carsten.view_key, shift_id: B2 })).data.code, "SHIFT_CLASH");
+  v = (await t.call("POST", "/public/shifts", { k: carsten.view_key, shift_id: C1 })).data;
+  assert.equal(v.shifts.filter(s => s.mine).length, 2);
+  assert.equal((await t.call("POST", "/public/shifts", { k: carsten.view_key, shift_id: D1 })).data.code, "SHIFT_MAX");
+  // austragen und neu wählen
+  v = (await t.call("POST", "/public/shifts", { k: carsten.view_key, shift_id: C1, take: false })).data;
+  assert.equal(v.shifts.filter(s => s.mine).length, 1);
+  v = (await t.call("POST", "/public/shifts", { k: carsten.view_key, shift_id: D1 })).data;
+  // Kapazität: D (2 Plätze) – zwei weitere Bar-Helfer, der zweite bekommt sie nicht mehr
+  const ben = await sign("Ben", "Bar", "9.9.9.2"), eva = await sign("Eva", "Bar", "9.9.9.3");
+  assert.equal((await t.call("POST", "/public/shifts", { k: ben.view_key, shift_id: D1 })).status, 200);
+  const ve = (await t.call("GET", `/public/shifts?k=${eva.view_key}`)).data;
+  assert.equal(ve.shifts.find(s => s.id === D1).why, "voll");
+  assert.deepEqual(ve.shifts.find(s => s.id === D1).crew.sort(), ["Ben", "Carsten"]);
+  assert.equal((await t.call("POST", "/public/shifts", { k: eva.view_key, shift_id: D1 })).data.code, "SHIFT_FULL");
+  // Wechseln bei 1 Schicht: Eva (Bar, max 2 hier) → eigener Test unten; hier: Ben wechselt nicht über volle Schichten
+  // Einlass-Helfer sieht nur Einlass, max 1
+  const ina = await sign("Ina", "Einlass", "9.9.9.4");
+  const vi = (await t.call("GET", `/public/shifts?k=${ina.view_key}`)).data;
+  assert.equal(vi.area, "Einlass"); assert.equal(vi.max, 1); assert.ok(vi.shifts.every(s => s.spot === "Einlass"));
+  assert.equal((await t.call("POST", "/public/shifts", { k: ina.view_key, shift_id: A1 })).status, 404);
+  const E1 = vi.shifts[0].id, E3 = vi.shifts[2].id;
+  assert.equal((await t.call("POST", "/public/shifts", { k: ina.view_key, shift_id: E1 })).status, 200);
+  assert.equal((await t.call("POST", "/public/shifts", { k: ina.view_key, shift_id: E3 })).data.code, "SHIFT_MAX");
+  let vs = (await t.call("POST", "/public/shifts", { k: ina.view_key, shift_id: E3, replace: E1 })).data;
+  assert.deepEqual(vs.shifts.filter(x => x.mine).map(x => x.id), [E3]);
+  const olaf = await sign("Olaf", "Einlass", "9.9.9.5");
+  vs = (await t.call("POST", "/public/shifts", { k: olaf.view_key, shift_id: E1 })).data;
+  assert.equal((await t.call("POST", "/public/shifts", { k: olaf.view_key, shift_id: E3, replace: E1 })).data.code, "SHIFT_FULL");   // 00–02 hat 1 Platz, Ina hat ihn
+  assert.ok((await t.call("GET", `/public/shifts?k=${olaf.view_key}`)).data.shifts.find(x => x.id === E1).mine);  // alte bleibt
+  // Admin: zuteilen trotz Pause-Regel, nicht über Kapazität; Plätze nicht unter Belegung
+  assert.equal((await t.admin("POST", `/admin/shifts/${B1}/assign`, { ticket_id: carsten.id })).status, 200);
+  assert.equal((await t.admin("POST", `/admin/shifts/${D1}/assign`, { ticket_id: eva.id })).data.code, "SHIFT_FULL");
+  assert.equal((await t.admin("PUT", `/admin/shifts/${D1}`, { area: "Bar", spot: "Bar 1", starts: "04:00", ends: "", slots: 1 })).status, 409);
+  assert.equal((await t.admin("PUT", `/admin/shifts/${D1}`, { area: "Bar", spot: "Bar 1", starts: "04:00", ends: "", slots: 3 })).status, 200);
+  assert.equal((await t.admin("POST", `/admin/shifts/${D1}/assign`, { ticket_id: eva.id })).status, 200);
+  assert.equal((await t.admin("POST", "/admin/shifts", { area: "Bar", spot: "Bar 2", starts: "03:00", ends: "02:00", slots: 2 })).status, 400);
+  assert.equal((await t.admin("POST", "/admin/shifts", { area: "Aufbau", spot: "Halle", starts: "14:00", ends: "18:00", slots: 4 })).status, 200);
+  // Schicht-Mail
+  t.mails.length = 0;
+  const hid = t.db.prepare("SELECT id FROM tickets WHERE view_key = ?").get(carsten.view_key).id;
+  assert.equal((await t.admin("POST", `/admin/tickets/${hid}`, { action: "shift_mail" })).status, 200);
+  assert.equal(t.mails.length, 1); assert.match(t.mails[0].subject, /Schicht/); assert.match(t.mails[0].html, /#schichten/); assert.match(t.mails[0].html, /ganzen Abend kostenlos versorgt/);
+  // Scanner zeigt die Schichten
+  const key = (await t.admin("POST", "/admin/scanners", { name: "Tür" })).data.url.split("#k=")[1];
+  const code = t.db.prepare("SELECT code FROM tickets WHERE id = ?").get(hid).code;
+  const s = (await t.call("POST", "/scan/check", { code }, { scanner: key })).data;
+  assert.equal(s.result, "green"); assert.match(s.shifts, /19:00–22:00 Bar 1/); assert.match(s.shifts, /04:00–Ende Bar 1/); assert.equal(s.perk, "Essen & Getränke frei");
+  // eingecheckt → keine Selbständerung mehr; storniert → Platz frei
+  assert.equal((await t.call("POST", "/public/shifts", { k: carsten.view_key, shift_id: D1, take: false })).data.code, "SHIFTS_CLOSED");
+  await t.admin("POST", `/admin/tickets/${ben.id}`, { action: "cancel" });
+  assert.equal(t.db.prepare("SELECT COUNT(*) AS n FROM shift_assignments WHERE ticket_id = ?").get(ben.id).n, 0);
+  // Schichtwahl schließen
+  await t.admin("PUT", "/admin/settings", { shifts_open: "0" });
+  assert.equal((await t.call("POST", "/public/shifts", { k: eva.view_key, shift_id: C1 })).data.code, "SHIFTS_CLOSED");
+});
+
+test("Schichtplan: bestehende Aufgaben bekommen 1 Schicht je Person", async () => {
+  const t = await setup();
+  t.env.DB.raw.exec(`CREATE TABLE IF NOT EXISTS event_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT, updated_by TEXT)`);
+  t.env.DB.raw.prepare(`INSERT INTO event_settings (key, value) VALUES ('helper_jobs', ?)`).run(JSON.stringify([{ name: "Bar", slots: 8 }, { name: "Einlass", slots: 6 }, { name: "Security", slots: 2 }]));
+  const jobs = (await t.admin("GET", "/admin/shifts")).data.jobs;
+  assert.deepEqual(jobs.map(j => [j.name, j.shifts]), [["Bar", 1], ["Einlass", 1], ["Security", 1]]);
+});
+
+test("Helfer-Link (Crew): Freunde melden sich nur als Helfer an, kein Ticketkauf, Werbung wird gezählt", async () => {
+  const t = await setup({ RESEND_API_KEY: "k", MAIL_FROM: "TAKT Nr. 30 <tickets@kim-betcher.de>" }); await openTestSale(t);
+  await t.admin("PUT", "/admin/settings", { helper_cap: "28", helper_jobs: JSON.stringify([{ name: "Bar", slots: 20 }, { name: "Einlass", slots: 6 }]) });
+  const c = await invite(t, "Carsten Muster");
+  const h = await t.call("POST", "/public/helper", { invite: c, first_name: "Carsten", last_name: "Muster", email: "c@example.org", job: "Bar", accept: true });
+  const v = (await t.call("GET", `/public/shifts?k=${h.data.view_key}`)).data;
+  assert.ok(v.recruit.url.includes("?e=")); assert.equal(v.recruit.open, true); assert.equal(v.recruit.brought, 0);
+  const code = v.recruit.url.split("?e=")[1];
+  // gleicher Link bei erneutem Abruf
+  assert.equal((await t.call("GET", `/public/shifts?k=${h.data.view_key}`)).data.recruit.url, v.recruit.url);
+  const inv = (await t.call("GET", `/public/invite/${code}`)).data;
+  assert.equal(inv.kind, "crew"); assert.equal(inv.from, "Carsten"); assert.equal(inv.first_name, null); assert.equal(inv.max, 1);
+  // kein Kauf
+  assert.equal((await buy(t, code, [guest("Max", "M")])).data.code, "CREW_ONLY");
+  // zwei Freunde melden sich an, jeder nur einmal
+  for (const [fn, ip] of [["Anna", "6.6.6.1"], ["Bert", "6.6.6.2"]]) {
+    const r = await t.call("POST", "/public/helper", { invite: code, first_name: fn, last_name: "F", email: `${fn}@example.org`, job: "Bar", accept: true }, { ip });
+    assert.equal(r.status, 201, JSON.stringify(r.data));
+  }
+  assert.equal((await t.call("POST", "/public/helper", { invite: code, first_name: "Anna", last_name: "F", email: "anna@example.org", job: "Einlass", accept: true }, { ip: "6.6.6.3" })).data.code, "HELPER_EXISTS");
+  assert.equal((await t.call("GET", `/public/shifts?k=${h.data.view_key}`)).data.recruit.brought, 2);
+  // taucht nicht in der Einladungsliste auf, aber im Schichtplan mit Zähler
+  assert.ok(!(await t.admin("GET", "/admin/invitations")).data.some(i => i.kind === "crew"));
+  const adm = (await t.admin("GET", "/admin/shifts")).data;
+  const carsten = adm.helpers.find(x => x.first_name === "Carsten");
+  assert.equal(carsten.brought, 2); assert.equal(carsten.crew_url, v.recruit.url);
+  assert.ok(adm.helpers.find(x => x.first_name === "Anna").crew_url);   // Geworbene können selbst weiterwerben
+  // Mail enthält den Helfer-Link
+  t.mails.length = 0;
+  await t.admin("POST", `/admin/tickets/${carsten.id}`, { action: "shift_mail" });
+  assert.ok(t.mails[0].html.includes(v.recruit.url)); assert.match(t.mails[0].html, /WIR SUCHEN NOCH HELFER/);
+  // Storniert → Link aus
+  await t.admin("POST", `/admin/tickets/${carsten.id}`, { action: "cancel" });
+  assert.equal((await t.call("GET", `/public/invite/${code}`)).data.valid, false);
+});

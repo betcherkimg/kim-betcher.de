@@ -289,14 +289,17 @@
     }
     if (!invite.valid) { box.innerHTML = html + `<h2>Diese Einladung ist nicht mehr gültig.</h2><p class="muted">Bei Fragen melde dich bei ${esc(ev.contact.name)}.</p>`; return; }
 
-    const canBuy = ev.sale.open && !ev.sale.sold_out && invite.remaining > 0;
+    const crew = invite.kind === "crew";   // Helfer-Link eines Helfers: nur Helfer-Anmeldung, kein Kauf
+    const canBuy = !crew && ev.sale.open && !ev.sale.sold_out && invite.remaining > 0;
     const canHelp = ev.helpers.open && !invite.helper_job && invite.remaining > 0;
-    if (!html) html = `<h2 class="greet">${invite.first_name ? `Hey ${esc(invite.first_name)} – du bist eingeladen.` : "Du bist eingeladen."}</h2>`;
+    if (!html) html = crew ? `<h2 class="greet">${invite.from ? `${esc(invite.from)} sucht Verstärkung.` : "Wir suchen Helfer."}</h2>`
+      : `<h2 class="greet">${invite.first_name ? `Hey ${esc(invite.first_name)} – du bist eingeladen.` : "Du bist eingeladen."}</h2>`;
     else html += `<div style="height:28px"></div>`;
 
     if (!canBuy && !canHelp) {
       let msg;
-      if (invite.remaining <= 0) msg = "Für dich sind alle Plätze vergeben.";
+      if (crew) msg = invite.helper_job ? "Du bist schon als Helfer eingetragen – danke!" : "Alle Helferplätze sind schon vergeben – danke trotzdem!";
+      else if (invite.remaining <= 0) msg = "Für dich sind alle Plätze vergeben.";
       else if (ev.sale.sold_out) msg = "Alle Tickets sind verkauft.";
       else msg = "Der Ticketverkauf startet bald. Schau einfach später wieder über deinen Link vorbei.";
       box.innerHTML = html + `<p class="muted">${esc(msg)}</p>`; return;
@@ -483,7 +486,8 @@
   function renderHelper(host) {
     const jobs = ev.helpers.jobs;
     host.innerHTML = `<form id="helpForm" novalidate>
-      <p class="muted" style="margin-top:0">Hilf mit und du bist kostenlos dabei. Such dir aus, wo du anpacken willst – du bekommst ein eigenes Helfer-Ticket mit QR-Code.</p>
+      <p class="muted" style="margin-top:0">Hilf mit: Du übernimmst <strong>eine Schicht (rund 3 Stunden)</strong> und bist dafür <strong>den ganzen Abend kostenlos versorgt</strong> – Eintritt, Essen und Getränke. Such dir aus, wo du anpacken willst – du bekommst ein eigenes Helfer-Ticket mit QR-Code.</p>
+      ${invite.kind === "crew" ? `<p class="note">Über diesen Link kannst du dich nur als Helfer eintragen, Tickets gibt es darüber nicht.</p>` : ""}
       <p class="note mono">NOCH ${ev.helpers.available} HELFERPLÄTZE</p>
       <div class="jobs" role="radiogroup" aria-label="Aufgabe">${jobs.map((j, i) => `
         <label class="${j.full ? "full" : ""}"><input type="radio" name="job" value="${esc(j.name)}" ${j.full ? "disabled" : ""}>

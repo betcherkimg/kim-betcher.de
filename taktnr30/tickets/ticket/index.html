@@ -39,7 +39,37 @@
   .void .qrwrap { opacity: .25; filter: grayscale(1); }
   .actions { max-width: 380px; margin: 18px auto 0; display: grid; gap: 10px; }
   .hint { max-width: 380px; margin: 26px auto 0; font-size: 14px; color: var(--dim); text-align: center; }
-  @media print { body { background: #fff; } .actions, .hint, .top { display: none; } }
+  /* Schichtwahl (nur Helfer) */
+  .crew { max-width: 380px; margin: 30px auto 0; scroll-margin-top: 16px; }
+  .crew h2 { font-weight: 300; font-size: 24px; margin: 0 0 6px; }
+  .crew .lead { color: var(--muted); font-size: 15px; line-height: 1.55; margin: 0 0 6px; }
+  .crew .perk { display: flex; gap: 10px; align-items: center; margin: 14px 0 18px; padding: 12px 14px; border: 1px solid rgba(25,195,125,.45); background: rgba(25,195,125,.08); border-radius: 12px; font-size: 14px; line-height: 1.45; }
+  .crew .perk b { color: var(--ok); font-weight: 600; }
+  .crew .count { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; color: var(--dim); margin: 0 0 10px; display: flex; justify-content: space-between; }
+  .crew .count b { color: var(--ok); font-weight: 500; }
+  .slot { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg-2); margin-bottom: 10px; }
+  .slot .t { font-family: var(--mono); font-size: 17px; }
+  .slot .w { font-size: 13px; color: var(--dim); grid-column: 1; }
+  .slot .w .who { color: var(--muted); }
+  .slot button { grid-row: 1 / span 2; grid-column: 2; min-width: 104px; min-height: 44px; border-radius: 99px; border: 1px solid var(--line-2); background: transparent; color: var(--ink); font: 600 14px var(--sans); letter-spacing: .04em; cursor: pointer; }
+  .slot button.take { background: var(--ok); border-color: var(--ok); color: #04210f; }
+  .slot button:disabled { opacity: .45; cursor: default; }
+  .slot.mine { border-color: var(--ok); background: rgba(25,195,125,.07); }
+  .slot.mine .t::after { content: "  ✓ deine"; font-family: var(--sans); font-size: 13px; color: var(--ok); }
+  .slot.off { opacity: .55; }
+  .slot.off button:not(:disabled) { opacity: 1; }
+  .slot .bar { grid-column: 1 / -1; display: flex; gap: 4px; margin-top: 6px; }
+  .slot .bar i { flex: 1; height: 4px; border-radius: 2px; background: var(--line-2); }
+  .slot .bar i.on { background: var(--ok); }
+  .crew .grp { font-family: var(--mono); font-size: 11px; letter-spacing: .2em; color: var(--dim); margin: 18px 0 8px; }
+  .recruit { margin-top: 26px; padding: 18px 16px; border: 1px dashed var(--line-2); border-radius: 14px; }
+  .recruit h3 { margin: 0 0 6px; font-weight: 400; font-size: 19px; }
+  .recruit p { margin: 0 0 14px; color: var(--muted); font-size: 15px; line-height: 1.5; }
+  .recruit .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .recruit .row .btn { min-height: 48px; white-space: nowrap; padding-left: 8px; padding-right: 8px; letter-spacing: .1em; }
+  .recruit small { display: block; margin-top: 10px; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; color: var(--dim); }
+  .crew .msg { min-height: 20px; font-size: 14px; margin: 4px 0 8px; }
+  @media print { body { background: #fff; } .actions, .hint, .top, .crew { display: none; } }
 </style>
 </head>
 <body>
@@ -85,6 +115,7 @@
         <div><dt>EINLASS · START</dt><dd>${esc(event.doors_time)} · ${esc(event.start_time)}</dd></div>
         <div class="addr"><dt>ORT</dt><dd>${esc(event.venue_name)}<br><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue_address)}" rel="noopener" target="_blank">${esc(event.venue_address)}</a></dd></div>
         ${t.tier === "vip" && t.drinks ? `<div class="addr"><dt>VIP</dt><dd class="uv">Lila VIP-Bändchen, Begrüßungsshot + ${+t.drinks} Getränkemarken am Einlass</dd></div>` : ""}
+        ${t.perk ? `<div class="addr"><dt>CREW</dt><dd style="color:var(--ok)">Eintritt, ${esc(t.perk)}</dd></div>` : ""}
         ${t.checked_in_at ? `<div class="addr"><dt>EINGECHECKT</dt><dd>${esc(dateDe(t.checked_in_at))} ${esc(timeDe(t.checked_in_at))}</dd></div>` : ""}
       </dl>
       <div class="stub"></div>
@@ -99,6 +130,7 @@
         ${order ? `<button class="btn btn-block" id="resend">Erneut per E-Mail senden</button><p class="note" id="mailInfo" style="text-align:center;margin:0">${order.mail_status === "sent" ? `Per E-Mail an ${esc(order.email)} geschickt.` : order.mail_status === "failed" ? "Die E-Mail konnte noch nicht verschickt werden – dein Ticket ist trotzdem gültig." : ""}</p>` : ""}
       </div>`;
     $("#hint").hidden = false;
+    if (tickets.length === 1 && tickets[0].category === "helper" && k) loadShifts();
     $("#pdf").onclick = () => pdf().catch(e => alert("PDF konnte nicht erstellt werden: " + e.message));
     if (order) $("#resend").onclick = async () => {
       const b = $("#resend"); b.disabled = true;
@@ -106,6 +138,64 @@
       catch (e) { $("#mailInfo").textContent = e.message; }
       b.disabled = false;
     };
+  }
+
+  /* ---- Schichtwahl für Helfer ---- */
+  let shiftBusy = false;
+  const span = sh => `${sh.starts} – ${sh.ends || "Ende"}`;
+  const WHY = { voll: "Voll", max: "Wechseln", pause: "Zu knapp" };
+  async function loadShifts(data) {
+    let host = $("#schichten");
+    if (!host) { $("#box").insertAdjacentHTML("beforeend", `<section class="crew" id="schichten" aria-live="polite"><p class="muted">Schichten laden …</p></section>`); host = $("#schichten"); }
+    try { data = data || await api(`/public/shifts?k=${encodeURIComponent(k)}`); }
+    catch (e) { host.innerHTML = `<p class="err">${esc(e.message)}</p>`; return; }
+    renderShifts(host, data);
+    if (location.hash === "#schichten" && !host.dataset.scrolled) { host.dataset.scrolled = "1"; setTimeout(() => host.scrollIntoView({ behavior: "smooth", block: "start" }), 150); }
+  }
+  function renderShifts(host, v) {
+    const mine = v.shifts.filter(s => s.mine), done = mine.length >= v.max;
+    const groups = [...new Set(v.shifts.map(s => s.spot || v.area))];
+    // Bei genau einer Schicht: nach der Wahl kann man direkt wechseln (statt erst austragen)
+    const swapFrom = v.max === 1 && mine.length === 1 ? mine[0].id : null;
+    const slot = s => {
+      const swap = s.why === "max" && swapFrom && s.free > 0;
+      const off = !s.mine && ((!!s.why && !swap) || !v.open);
+      const btn = s.mine ? (v.open ? `<button data-drop="${s.id}" aria-label="Aus ${esc(span(s))} austragen">Austragen</button>` : "")
+        : `<button class="${swap ? "" : "take"}" data-take="${s.id}" ${swap ? `data-swap="${swapFrom}"` : ""} ${off ? "disabled" : ""} aria-label="${esc(span(s))} ${swap ? "wechseln" : "nehmen"}">${s.why ? WHY[s.why] : "Nehmen"}</button>`;
+      const who = s.crew.length ? `mit <span class="who">${s.crew.map(esc).join(", ")}</span>` : "noch niemand";
+      return `<div class="slot ${s.mine ? "mine" : ""} ${off || swap ? "off" : ""}">
+        <div class="t">${esc(span(s))}</div>${btn}
+        <div class="w">${s.free ? `${s.free} von ${s.slots} frei` : "voll"} · ${who}${s.note ? " · " + esc(s.note) : ""}</div>
+        <div class="bar" aria-hidden="true">${Array.from({ length: s.slots }, (_, i) => `<i class="${i < s.taken ? "on" : ""}"></i>`).join("")}</div>
+      </div>`;
+    };
+    host.innerHTML = `<h2>${v.max > 1 ? "Deine Schichten" : "Deine Schicht"}</h2>
+      <p class="lead">${v.max > 1 ? `Such dir <b>${v.max} Schichten</b> aus – nie direkt hintereinander, damit du dazwischen feiern kannst.` : "Such dir <b>eine Schicht</b> aus (rund 3 Stunden). Den Rest der Nacht feierst du mit."}${v.info ? " " + esc(v.info) : ""}</p>
+      <div class="perk"><span>Dafür bist du <b>den ganzen Abend kostenlos versorgt</b>: Eintritt, Essen und Getränke.</span></div>
+      <div class="count"><span>${esc(v.area.toUpperCase())}</span><span><b>${mine.length}</b> / ${v.max} gewählt</span></div>
+      <p class="msg" id="shiftMsg">${!v.open ? '<span class="dim">Die Schichtwahl ist geschlossen. Änderungen bitte direkt mit Kim.</span>' : done ? '<span style="color:var(--ok)">Perfekt, du bist eingetragen. Danke!</span>' : ""}</p>
+      ${v.shifts.length ? groups.map(g => `${groups.length > 1 ? `<div class="grp">${esc(g.toUpperCase())}</div>` : ""}${v.shifts.filter(s => (s.spot || v.area) === g).map(slot).join("")}`).join("") : '<p class="muted">Für deine Aufgabe steht noch kein Schichtplan. Kim meldet sich.</p>'}`;
+    const rc = v.recruit;
+    if (rc && rc.url && rc.open) {
+      host.insertAdjacentHTML("beforeend", `<div class="recruit"><h3>Wir suchen noch Helfer</h3>
+        <p>Du kennst Leute, die auch helfen würden? Schick ihnen deinen Helfer-Link. Darüber können sie sich nur als Helfer eintragen – Tickets gibt es darüber nicht.</p>
+        <div class="row"><button class="btn btn-block" id="rcShare" style="background:var(--ok);border-color:var(--ok);color:#04210f">Link teilen</button><button class="btn" id="rcCopy" aria-label="Link kopieren">Kopieren</button></div>
+        <small>NOCH ${+rc.available} HELFERPLÄTZE FREI${rc.brought ? ` · ÜBER DEINEN LINK: ${+rc.brought}` : ""}</small></div>`);
+      const text = `Hey, ich helfe bei TAKT Nr. 30 mit – hast du Lust auch? Eine Schicht (rund 3 Stunden), dafür bist du den ganzen Abend kostenlos versorgt: Eintritt, Essen & Getränke. Hier eintragen:`;
+      $("#rcShare").onclick = async () => {
+        if (navigator.share) { try { await navigator.share({ title: "Helfer für TAKT Nr. 30", text, url: rc.url }); return; } catch (e) { if (e.name === "AbortError") return; } }
+        window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + rc.url)}`, "_blank", "noopener");
+      };
+      $("#rcCopy").onclick = async () => { try { await navigator.clipboard.writeText(rc.url); $("#rcCopy").textContent = "Kopiert ✓"; } catch { prompt("Zum Kopieren:", rc.url); } };
+    }
+    host.querySelectorAll("[data-take],[data-drop]").forEach(b => b.onclick = () => pick(host, +(b.dataset.take || b.dataset.drop), !!b.dataset.take, b.dataset.swap ? +b.dataset.swap : undefined));
+  }
+  async function pick(host, id, take, replace) {
+    if (shiftBusy) return; shiftBusy = true;
+    host.querySelectorAll("button").forEach(b => b.disabled = true);
+    try { renderShifts(host, await api("/public/shifts", { method: "POST", body: { k, shift_id: id, take, replace } })); }
+    catch (e) { await loadShifts(); const m = $("#shiftMsg"); if (m) m.innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+    shiftBusy = false;
   }
 
   // SVG → PNG für das PDF

@@ -83,6 +83,29 @@
   .slots i { display: block; aspect-ratio: 1; border-radius: 4px; border: 1px solid var(--line-2); }
   .slots i.a { background: var(--uv); border-color: var(--uv); } .slots i.u { background: var(--uv-deep); border-color: var(--uv); } .slots i.c { background: var(--ok); border-color: var(--ok); }
   .lineup-row { display: grid; grid-template-columns: 110px 1fr 1fr auto; gap: 8px; margin-bottom: 8px; }
+  .job-row { display: grid; grid-template-columns: 80px 1fr 110px 1.2fr auto; gap: 8px; margin-bottom: 8px; align-items: center; }
+  .job-head { display: grid; grid-template-columns: 80px 1fr 110px 1.2fr auto; gap: 8px; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; color: var(--dim); margin-bottom: 6px; }
+  /* Schichtplan */
+  .sp-area { margin-top: 26px; }
+  .sp-area > header { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .sp-area > header h2 { margin: 0; }
+  .sp-area > header span { font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: .08em; }
+  .sp-grid { display: grid; gap: 8px; }
+  .sp-row { display: grid; grid-template-columns: 128px 1fr auto; gap: 10px 14px; align-items: center; background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .sp-row.full { border-color: #1d5c3f; }
+  .sp-row .tm { font-family: var(--mono); font-size: 15px; } .sp-row .tm small { display: block; color: var(--dim); font-size: 11px; letter-spacing: .1em; margin-top: 2px; }
+  .sp-crew { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .sp-crew .chip { display: inline-flex; gap: 6px; align-items: center; color: var(--ink); border-color: #1d5c3f; background: rgba(25,195,125,.08); }
+  .sp-crew .chip button { background: none; border: 0; color: var(--dim); cursor: pointer; padding: 0; font-size: 13px; line-height: 1; }
+  .sp-crew .chip button:hover { color: #ff8b97; }
+  .sp-crew .free { font-family: var(--mono); font-size: 12px; color: var(--warn); }
+  .sp-crew select { min-height: 32px; padding: 4px 8px; font-size: 13px; max-width: 190px; }
+  .sp-row .acts { justify-content: flex-end; }
+  .sp-edit { display: grid; grid-template-columns: 1fr 1fr 100px 100px 80px 1.4fr auto; gap: 8px; align-items: end; }
+  .sp-edit .field { margin: 0; } .sp-edit .field span { font-size: 11px; }
+  .sp-helpers td { vertical-align: middle; }
+  .sp-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; background: var(--warn); } .sp-dot.ok { background: var(--ok); } .sp-dot.none { background: #ff8b97; }
+  @media (max-width: 860px) { .sp-row { grid-template-columns: 1fr auto; } .sp-row .sp-crew { grid-column: 1 / -1; grid-row: 2; } .sp-edit { grid-template-columns: 1fr 1fr; } .job-row, .job-head { grid-template-columns: 64px 1fr 84px auto; } .job-row .note-in { grid-column: 1 / -1; grid-row: 2; } .job-head span:nth-child(4) { display: none; } }
   @media (max-width: 860px) {
     .layout { grid-template-columns: 1fr; }
     aside { position: sticky; z-index: 20; height: auto; padding: 10px 10px 0; background: var(--bg); border-right: 0; border-bottom: 1px solid var(--line); }
@@ -711,26 +734,93 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
       let jobs = []; try { jobs = JSON.parse(s.helper_jobs); } catch {}
       const by = {}; list.filter(t => t.status !== "cancelled").forEach(t => (by[t.helper_job] ||= []).push(t));
       m.innerHTML = `<h1>Helfer</h1>
-        <div class="kpis">${jobs.map(j => kpi(j.name, `${(by[j.name] || []).length}<small>${j.slots ? " / " + j.slots : ""}</small>`)).join("")}${kpi("Gesamt", `${list.filter(t => t.status !== "cancelled").length}<small> / ${cap}</small>`)}</div>
-        <h2>Aufgaben</h2>
-        <form id="jobForm"><div id="jobRows"></div>
+        <div class="kpis">${jobs.map(j => kpi(j.name, `${(by[j.name] || []).length}<small>${j.slots ? " / " + j.slots : ""}</small>`, "angemeldet")).join("")}${kpi("Gesamt", `${list.filter(t => t.status !== "cancelled").length}<small> / ${cap}</small>`)}</div>
+        <div id="spHost"></div>
+        <h2>Aufgaben & Plätze</h2>
+        <form id="jobForm"><div class="job-head"><span>PLÄTZE</span><span>AUFGABE</span><span>SCHICHTEN/P.</span><span>INFO</span><span></span></div><div id="jobRows"></div>
         <div class="acts" style="margin:6px 0 14px"><button type="button" id="addJob">+ Aufgabe</button></div>
         <label class="field" style="max-width:220px"><span>Helferplätze gesamt</span><input class="input sm" type="number" name="cap" min="0" max="50" value="${cap}"></label>
         <label class="check" style="margin-bottom:14px"><input type="checkbox" name="open" ${s.helper_signup === "1" ? "checked" : ""}><span>Helfer-Anmeldung über Einladungslinks ist offen</span></label>
         <button class="btn btn-uv btn-small">Speichern</button></form>
-        <p class="note">Plätze je Aufgabe: 0 = ohne eigene Grenze. Helfer-Tickets kommen zusätzlich zu den 60 Online-Tickets und 100 Papiertickets.</p>
-        <h2>Eingetragene Helfer</h2><div id="tbl"></div>`;
-      const rowHtml = j => `<div class="lineup-row"><input class="input sm" name="slots" type="number" min="0" max="20" value="${+j.slots || 0}" aria-label="Plätze"><input class="input sm" name="jname" value="${esc(j.name)}" placeholder="Aufgabe" maxlength="40" aria-label="Aufgabe"><input class="input sm note-in" name="info" value="${esc(j.info || "")}" placeholder="Info (optional)" maxlength="120" aria-label="Info"><button type="button" class="lnk" data-del>✕</button></div>`;
+        <p class="note">Plätze je Aufgabe: 0 = ohne eigene Grenze. Schichten/P. = wie viele Schichten jeder Helfer dieser Aufgabe übernimmt (Zeiten unter „Schichtplan“). Helfer-Tickets kommen zusätzlich zu den 60 Online-Tickets und 100 Papiertickets.</p>
+        <h2>Helfer-Tickets</h2><div id="tbl"></div>`;
+      const rowHtml = j => `<div class="job-row"><input class="input sm" name="slots" type="number" min="0" max="50" value="${+j.slots || 0}" aria-label="Plätze"><input class="input sm" name="jname" value="${esc(j.name)}" placeholder="Aufgabe" maxlength="40" aria-label="Aufgabe"><input class="input sm" name="shifts" type="number" min="1" max="4" value="${+j.shifts || 1}" aria-label="Schichten je Person"><input class="input sm note-in" name="info" value="${esc(j.info || "")}" placeholder="Info (optional)" maxlength="120" aria-label="Info"><button type="button" class="lnk" data-del>✕</button></div>`;
       $("#jobRows").innerHTML = jobs.map(rowHtml).join("");
       const bindDel = () => $$("#jobRows [data-del]").forEach(b => b.onclick = () => b.parentElement.remove());
       bindDel();
       $("#addJob").onclick = () => { $("#jobRows").insertAdjacentHTML("beforeend", rowHtml({ name: "", slots: 0 })); bindDel(); };
       $("#jobForm").onsubmit = async e => {
         e.preventDefault();
-        const list = $$("#jobRows .lineup-row").map(r => ({ name: r.querySelector("[name=jname]").value.trim(), slots: +r.querySelector("[name=slots]").value || 0, info: r.querySelector("[name=info]").value.trim() })).filter(j => j.name);
+        const list = $$("#jobRows .job-row").map(r => ({ name: r.querySelector("[name=jname]").value.trim(), slots: +r.querySelector("[name=slots]").value || 0, shifts: +r.querySelector("[name=shifts]").value || 1, info: r.querySelector("[name=info]").value.trim() })).filter(j => j.name);
         await act(() => call("/admin/settings", { method: "PUT", body: { helper_jobs: JSON.stringify(list), helper_cap: String(e.target.cap.value || 0), helper_signup: e.target.open.checked ? "1" : "0" } }), "Gespeichert"); render();
       };
-      await ticketTable($("#tbl"), "helper", null, list);
+      await Promise.all([VIEWS.shifts($("#spHost")), ticketTable($("#tbl"), "helper", null, list)]);
+    },
+
+    async shifts(m) {   // Teil des Reiters „Helfer“
+      const d = await call("/admin/shifts");
+      const areas = [...new Set([...d.jobs.map(j => j.name), ...d.shifts.map(x => x.area)])].filter(a => d.shifts.some(x => x.area === a) || d.helpers.some(h => h.helper_job === a));
+      const jobOf = a => d.jobs.find(j => j.name === a) || { name: a, shifts: 1, slots: 0 };
+      const span = x => `${x.starts}–${x.ends || "Ende"}`;
+      const helperName = h => `${h.first_name || ""} ${h.last_name || ""}`.trim() || h.number;
+      const shiftUrl = h => `${ticketUrl(h)}#schichten`;
+      const row = x => {
+        const free = x.slots - x.crew.length, area = d.helpers.filter(h => h.helper_job === x.area && !x.crew.some(c => c.ticket_id === h.id));
+        return `<div class="sp-row ${free <= 0 ? "full" : ""}">
+          <div class="tm">${esc(span(x))}<small>${esc((x.spot || x.area).toUpperCase())} · ${x.crew.length}/${x.slots}</small></div>
+          <div class="sp-crew">${x.crew.map(c => `<span class="chip">${esc(c.name || c.number)}<button data-un="${x.id}" data-t="${c.ticket_id}" aria-label="${esc(c.name)} austragen">✕</button></span>`).join("")}
+            ${free > 0 ? `<span class="free">${free} frei</span>${area.length ? `<select class="input" data-add="${x.id}" aria-label="Helfer eintragen"><option value="">+ eintragen …</option>${area.map(h => `<option value="${h.id}">${esc(helperName(h))} (${h.shifts.length})</option>`).join("")}</select>` : ""}` : ""}
+            ${x.note ? `<span class="dim" style="font-size:13px">${esc(x.note)}</span>` : ""}</div>
+          <div class="acts"><button data-ed="${x.id}">Ändern</button></div>
+        </div>`;
+      };
+      const totalSlots = d.shifts.reduce((a, x) => a + x.slots, 0), totalTaken = d.shifts.reduce((a, x) => a + x.crew.length, 0);
+      const missing = d.helpers.filter(h => h.shifts.length < jobOf(h.helper_job).shifts);
+      m.innerHTML = `<h2 style="font-size:24px;font-weight:300;margin-top:30px">Schichtplan</h2>
+        <div class="kpis">${areas.map(a => { const l = d.shifts.filter(x => x.area === a); return kpi(a, `${l.reduce((s, x) => s + x.crew.length, 0)}<small> / ${l.reduce((s, x) => s + x.slots, 0)}</small>`, `${jobOf(a).shifts} Schicht${jobOf(a).shifts > 1 ? "en" : ""} je Person`); }).join("")}
+          ${kpi("Noch offen", String(missing.length), missing.length ? "Helfer ohne volle Schichtzahl" : "alle eingeteilt")}</div>
+        <label class="check" style="margin:16px 0 4px"><input type="checkbox" id="spOpen" ${d.open ? "checked" : ""}><span>Helfer wählen ihre Schichten selbst (auf ihrer Ticketseite)</span></label>
+        <p class="note">Eigene Schichten müssen mindestens ${d.rest_min} Min. auseinander liegen. Du als Admin darfst das übergehen. Ende leer = Open End.</p>
+        ${areas.map(a => `<section class="sp-area"><header><h2>${esc(a)}</h2><span>${d.shifts.filter(x => x.area === a).reduce((s, x) => s + x.crew.length, 0)} / ${d.shifts.filter(x => x.area === a).reduce((s, x) => s + x.slots, 0)} belegt</span></header>
+          <div class="sp-grid">${d.shifts.filter(x => x.area === a).map(row).join("") || '<p class="dim">Noch keine Schichten.</p>'}</div></section>`).join("")}
+        <h2>Schicht hinzufügen</h2><div id="spNew"></div>
+        <h2>Einteilung</h2>
+        <div class="tablewrap"><table class="sp-helpers"><thead><tr><th>Helfer</th><th>Schichten</th><th></th></tr></thead><tbody>
+        ${d.helpers.map(h => { const max = jobOf(h.helper_job).shifts, mine = d.shifts.filter(x => h.shifts.includes(x.id));
+          return `<tr><td><span class="sp-dot ${mine.length >= max ? "ok" : mine.length ? "" : "none"}"></span>${esc(helperName(h))}<span class="sub">${esc(h.number)} · ${esc(h.helper_job || "")}</span></td>
+          <td>${mine.length ? mine.map(x => `<span class="mono" style="font-size:13px">${esc(span(x))}${x.spot && x.spot !== x.area ? " " + esc(x.spot) : ""}</span>`).join("<br>") : '<span class="dim">noch keine</span>'}<span class="sub">${mine.length} / ${max}</span></td>
+          <td><div class="acts">${h.email && h.first_name && h.status === "valid" ? `<button data-mail="${h.id}">Schicht anfragen</button>` : ""}<button data-wa="${h.id}">WhatsApp</button><button data-cp="${h.id}">Schicht-Link</button>${h.crew_url ? `<button data-crew="${h.id}">Helfer-Link</button>` : ""}</div>${h.brought ? `<span class="sub" style="margin-top:4px">hat ${h.brought} Helfer geworben</span>` : ""}</td></tr>`; }).join("") || '<tr><td colspan="3" class="dim">Noch keine Helfer.</td></tr>'}
+        </tbody></table></div>`;
+      const form = (x = {}) => `<form class="sp-edit" data-id="${x.id || ""}">
+        <label class="field"><span>Bereich</span><select class="input sm" name="area">${[...new Set([...d.jobs.map(j => j.name), ...areas])].map(a => `<option ${a === (x.area || areas[0]) ? "selected" : ""}>${esc(a)}</option>`).join("")}</select></label>
+        <label class="field"><span>Ort</span><input class="input sm" name="spot" value="${esc(x.spot || "")}" placeholder="z. B. Bar 1" maxlength="40"></label>
+        <label class="field"><span>Beginn</span><input class="input sm" name="starts" type="time" value="${esc(x.starts || "")}" required></label>
+        <label class="field"><span>Ende</span><input class="input sm" name="ends" type="time" value="${esc(x.ends || "")}"></label>
+        <label class="field"><span>Plätze</span><input class="input sm" name="slots" type="number" min="1" max="30" value="${x.slots || 2}" required></label>
+        <label class="field"><span>Notiz</span><input class="input sm" name="note" value="${esc(x.note || "")}" maxlength="120" placeholder="optional"></label>
+        <div class="acts" style="padding-bottom:4px"><button class="btn btn-uv btn-small" style="padding:9px 14px">${x.id ? "Speichern" : "Hinzufügen"}</button>${x.id ? `<button type="button" data-cancel>Abbrechen</button><button type="button" class="danger" data-del>Löschen</button>` : ""}</div>
+      </form>`;
+      const bindForm = (host, x) => {
+        const f = host.querySelector("form");
+        f.onsubmit = async e => { e.preventDefault(); const v = Object.fromEntries(new FormData(f)); v.slots = +v.slots;
+          await act(() => call(x?.id ? `/admin/shifts/${x.id}` : "/admin/shifts", { method: x?.id ? "PUT" : "POST", body: v }), "Gespeichert"); render(); };
+        f.querySelector("[data-cancel]")?.addEventListener("click", render);
+        f.querySelector("[data-del]")?.addEventListener("click", async () => {
+          if (!confirm(`Schicht ${span(x)} (${x.spot}) löschen?${x.crew.length ? `\n${x.crew.length} Helfer werden ausgetragen.` : ""}`)) return;
+          await act(() => call(`/admin/shifts/${x.id}`, { method: "DELETE" }), "Gelöscht"); render(); });
+      };
+      $("#spNew").innerHTML = form(); bindForm($("#spNew"));
+      $("#spOpen").onchange = async e => { await act(() => call("/admin/settings", { method: "PUT", body: { shifts_open: e.target.checked ? "1" : "0" } }), e.target.checked ? "Schichtwahl offen" : "Schichtwahl geschlossen"); };
+      $$("[data-ed]").forEach(b => b.onclick = () => { const x = d.shifts.find(s => s.id == b.dataset.ed), r = b.closest(".sp-row"); r.style.display = "block"; r.innerHTML = form(x); bindForm(r, x); });
+      $$("[data-add]").forEach(sel => sel.onchange = async () => { if (!sel.value) return; await act(() => call(`/admin/shifts/${sel.dataset.add}/assign`, { method: "POST", body: { ticket_id: +sel.value } }), "Eingetragen"); render(); });
+      $$("[data-un]").forEach(b => b.onclick = async () => { await act(() => call(`/admin/shifts/${b.dataset.un}/assign`, { method: "POST", body: { ticket_id: +b.dataset.t, remove: true } }), "Ausgetragen"); render(); });
+      const H = id => d.helpers.find(h => h.id == id);
+      $$("[data-mail]").forEach(b => b.onclick = () => ticketAction(H(b.dataset.mail), "shift_mail"));
+      $$("[data-cp]").forEach(b => b.onclick = () => copy(shiftUrl(H(b.dataset.cp))));
+      $$("[data-crew]").forEach(b => b.onclick = () => copy(H(b.dataset.crew).crew_url, "Helfer-Link kopiert – darüber kann man sich nur als Helfer eintragen"));
+      $$("[data-wa]").forEach(b => b.onclick = () => { const h = H(b.dataset.wa), max = jobOf(h.helper_job).shifts;
+        const text = `Hey ${h.first_name || ""}, danke dass du bei TAKT Nr. 30 hilfst! Such dir bitte ${max > 1 ? `deine ${max} Schichten` : "deine Schicht"} aus (${h.helper_job}, ${max > 1 ? "je " : ""}rund 3 Stunden). Dafür bist du den ganzen Abend kostenlos versorgt – Eintritt, Essen & Getränke: ${shiftUrl(h)}${h.crew_url ? `\n\nDu kennst Leute, die auch helfen würden? Dann schick ihnen diesen Link (nur für Helfer, keine Tickets): ${h.crew_url}` : ""}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener"); });
     },
 
     async orders(m) {
@@ -1057,7 +1147,8 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
         <td><div class="acts">
           ${t.status === "valid" && (t.first_name || t.category === "free") ? `<button data-a="wa" data-id="${t.id}">WhatsApp</button>` : ""}${t.first_name || t.category === "free" ? `<button data-a="link" data-id="${t.id}">Link</button><a class="lnk" href="${esc(ticketUrl(t))}" target="_blank" rel="noopener">Ansehen/PDF</a>` : ""}
           ${t.status !== "cancelled" && !t.checked_in_at ? `<button data-a="assign" data-id="${t.id}">${t.first_name ? "Name ändern" : "Zuordnen"}</button>` : ""}
-          ${t.email && t.first_name && t.status === "valid" ? `<button data-a="mail" data-id="${t.id}">Mail</button>` : ""}
+          ${t.email && t.first_name && t.status === "valid" ? `<button data-a="mail" data-id="${t.id}">Ticket-Mail</button>` : ""}
+          ${t.category === "helper" && t.email && t.first_name && t.status === "valid" ? `<button data-a="shift_mail" data-id="${t.id}">Schicht anfragen</button>` : ""}
           ${t.status === "valid" ? `<button data-a="block" data-id="${t.id}">Sperren</button>` : t.status === "blocked" ? `<button data-a="unblock" data-id="${t.id}">Entsperren</button>` : ""}
           ${t.status !== "cancelled" ? `<button data-a="replace" data-id="${t.id}">Ersetzen</button>` : ""}
           ${isMain() && t.checked_in_at ? `<button data-a="undo" data-id="${t.id}">Check-in zurück</button>` : ""}
@@ -1083,13 +1174,15 @@ Der DJ trägt seine Geräte beim Unterschreiben ein:`;
       body = { action: a, first_name: fn.trim() || null, last_name: ln.trim() || null, email: em.trim() || null };
     }
     if (a === "replace") { const r = prompt(`Ticket ${t.number} ersetzen? Der alte QR-Code wird sofort ungültig. Grund:`, "verloren"); if (r === null) return; body.reason = r; }
+    if (a === "mail" && !confirm(`Ticket ${t.number} nochmal per Mail an ${t.email} schicken?`)) return;
+    if (a === "shift_mail" && !confirm(`${t.first_name} per Mail bitten, sich die Schichten auszusuchen?\n\nGeht an ${t.email} – mit Link zur Schichtwahl.`)) return;
     if (a === "block" && !confirm(`Ticket ${t.number} sperren? Es wird am Einlass abgelehnt.`)) return;
     if (a === "cancel" && !confirm(`Ticket ${t.number} stornieren? Das ist endgültig.`)) return;
     if (a === "undo") {
       const r = prompt("Check-in zurücksetzen – Grund:"); if (!r) return;
       await act(() => call(`/scan/undo/${t.id}`, { method: "POST", body: { reason: r } }), "Check-in zurückgesetzt"); return render();
     }
-    await act(() => call(`/admin/tickets/${t.id}`, { method: "POST", body }), a === "mail" ? "Mail verschickt" : a === "replace" ? "Neuer QR-Code erstellt – Link neu verschicken" : a === "assign" ? "Zugeordnet – jetzt per WhatsApp, Mail oder Link verschicken" : "Gespeichert");
+    await act(() => call(`/admin/tickets/${t.id}`, { method: "POST", body }), a === "mail" ? "Mail verschickt" : a === "shift_mail" ? "Schicht-Anfrage verschickt" : a === "replace" ? "Neuer QR-Code erstellt – Link neu verschicken" : a === "assign" ? "Zugeordnet – jetzt per WhatsApp, Mail oder Link verschicken" : "Gespeichert");
     render();
   }
 
