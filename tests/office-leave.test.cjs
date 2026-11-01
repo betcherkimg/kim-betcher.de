@@ -7,7 +7,7 @@ function fixture(now='2026-10-27T10:00:00Z'){
  const DB={prepare:statement,async batch(items){db.exec('BEGIN');try{const out=[];for(const x of items)out.push(await x.run());db.exec('COMMIT');return out}catch(e){db.exec('ROLLBACK');throw e}}};
  let time=Date.parse(now);class Clock extends Date{constructor(...a){super(...(a.length?a:[time]))}static now(){return time}}
  const context=vm.createContext({console,Request,Response,Headers,URL,TextEncoder,TextDecoder,crypto:webcrypto,atob,btoa,AbortSignal,Date:Clock,Intl});
- vm.runInContext(source.replace('export default {','const worker={')+`;globalThis.t={worker,saveRegularSlot,autoCompleteRegularWeeks,groupLegacyRegularWeek,regularMonthInfo,yearRules,calculatePayroll,calculateMinijobContributions,reopenRegularWeek,regularReminderSlot,remindRegularSubmissions,prepareCalendarPayroll,confirmPayrollPreparation,createMonthlyClosing,ensureRegular,regularAt,regularActive,regularPatterns,chooseRegularPattern,getRegularPattern,getRegularWeek,completeRegularWeek,regularHolidayRows,getRegularHolidays,decideRegularHoliday,regularClosingError,regularEntryError,createEntry,updateEntry,getLeaveSummary,ensureAdjustments,ensureLeave,leaveYearValue,leaveWaitingEnd,leaveHolidays,leaveAccount,leaveContext,getLeaveCalendar,addLeaveRequest,previewLeaveDecision,decideLeaveRequest,withdrawLeaveRequest,transferLeave,adjustLeave,setLeaveRate,getOwnAddendum,signOwnAddendum,signAdminAddendum,addendumState,renderAddendum,addendumBundle,replayCalendarIntro,seedCalendarTest,TEST_LEAVE_USER_ID,CALENDAR_ADDENDUM,ADDENDUM};notifyUser=async()=>[];pushBoss=async()=>{};notifyCalls=async()=>{};`,context);
+ vm.runInContext(source.replace('export default {','const worker={')+`;globalThis.t={worker,deleteEntry,saveRegularSlot,autoCompleteRegularWeeks,groupLegacyRegularWeek,regularMonthInfo,yearRules,calculatePayroll,calculateMinijobContributions,reopenRegularWeek,regularReminderSlot,remindRegularSubmissions,prepareCalendarPayroll,confirmPayrollPreparation,createMonthlyClosing,ensureRegular,regularAt,regularActive,regularPatterns,chooseRegularPattern,getRegularPattern,getRegularWeek,completeRegularWeek,regularHolidayRows,getRegularHolidays,decideRegularHoliday,regularClosingError,regularEntryError,createEntry,updateEntry,getLeaveSummary,ensureAdjustments,ensureLeave,leaveYearValue,leaveWaitingEnd,leaveHolidays,leaveAccount,leaveContext,getLeaveCalendar,addLeaveRequest,previewLeaveDecision,decideLeaveRequest,withdrawLeaveRequest,transferLeave,adjustLeave,setLeaveRate,getOwnAddendum,signOwnAddendum,signAdminAddendum,addendumState,renderAddendum,addendumBundle,replayCalendarIntro,seedCalendarTest,TEST_LEAVE_USER_ID,CALENDAR_ADDENDUM,ADDENDUM};notifyUser=async()=>[];pushBoss=async()=>{};notifyCalls=async()=>{};`,context);
  db.prepare("INSERT INTO office_employer(id,name,street,zip_city) VALUES(1,'Firma Test','Musterweg 1','89518 Heidenheim')").run();
  for(const [id,name,email] of [['sasi','Saskia Test','schreitersaskia@gmail.com'],[context.t.TEST_LEAVE_USER_ID,'Kim Test','betcherkimg@gmail.com'],['other','Andere Person','other@example.test']]){
   db.prepare('INSERT INTO employee_profiles(clerk_user_id,full_name,street,zip_city,birth_date,start_date)VALUES(?,?,?,?,?,?)').run(id,name,'Testweg 1','89567 Sontheim','2000-01-01','2026-10-01');
@@ -417,5 +417,21 @@ test('actual days with times: any weekday counts toward 6h, empty allocations di
   w=await weekData(f,'2026-11-02');assert.equal(w.workMinutes,360);assert.equal(w.missingMinutes,0);assert.equal(w.days.find(d=>d.date==='2026-11-03').entries.length,1);
   await read(await f.t.completeRegularWeek({env:f.env,userId:'sasi',exec:f.exec,request:f.request({week:w.week,state_hash:w.stateHash})}));
   assert.equal(f.db.prepare('SELECT SUM(work_minutes) n FROM payroll_work_entries').get().n,360);
+ }finally{f.close()}
+});
+
+test('submitted October transition week can be reopened and refilled with actual times',async()=>{
+ const f=fixture();try{
+  await signedRegular(f,[1,3,5]);f.setTime('2026-10-30T15:00:00Z');
+  await read(await f.t.saveRegularSlot({env:f.env,userId:'sasi',request:f.request({slot:'2026-10-26',minutes:120,appointments:3})}));
+  let w=await weekData(f,'2026-10-26');assert.equal(w.active,true);assert.equal(w.days.length,5);
+  await read(await f.t.completeRegularWeek({env:f.env,userId:'sasi',exec:f.exec,automatic:true,request:f.request({week:w.week,state_hash:w.stateHash})}));
+  f.setTime('2026-11-01T08:00:00Z');
+  await read(await f.t.reopenRegularWeek({env:f.env,owner:'sasi',userId:'boss',exec:f.exec,request:f.request({week:'2026-10-26',note:'Bitte echte Zeiten nachtragen.'})}));
+  w=await weekData(f,'2026-10-26');assert.equal(w.confirmed,false);assert.equal(w.correctionOpen,true);assert.equal(w.allocations.length,1);
+  const id=w.allocations[0].id;await read(await f.t.deleteEntry({env:f.env,owner:'sasi',id}));
+  for(const [d,s,e] of [['2026-10-27','09:00','12:00'],['2026-10-29','14:00','17:00']]){const r=await record(f,d,undefined,2,s,e);assert.equal(r.status,201,JSON.stringify(await r.json()));}
+  w=await weekData(f,'2026-10-26');assert.equal(w.workMinutes,360);
+  await read(await f.t.completeRegularWeek({env:f.env,userId:'sasi',exec:f.exec,request:f.request({week:w.week,state_hash:w.stateHash})}));
  }finally{f.close()}
 });

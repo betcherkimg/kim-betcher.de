@@ -25,7 +25,7 @@ function create(b){
   }catch(error){$('regularStatus').textContent='Wochenansicht konnte nicht geladen werden: '+error.message;}
  }
  function render(){
-  const active=Boolean(data?.active&&data?.slots?.length);$('regularWeekCard').hidden=!active&&!pattern?.patterns?.length;
+  const active=Boolean(data?.active&&(data?.days?.length||data?.slots?.length));$('regularWeekCard').hidden=!active&&!pattern?.patterns?.length;
   $('planCard').hidden=true;$('legacyTimeOverview').hidden=active;$('timeCard').hidden=active&&$('timeFormWrap').hidden;$('openTimeFormBtn').hidden=active||!$('timeFormWrap').hidden;
   if(!data)return;
   $('regularWeekLabel').textContent=fmt(week)+' – '+fmt(add(week,6));

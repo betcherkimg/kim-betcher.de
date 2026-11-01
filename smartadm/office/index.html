@@ -3189,7 +3189,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 <script src="../date-inputs.js"></script>
 <script src="week-planner.js"></script>
 <script src="absence-calendar.js"></script>
-<script src="regular-week.js?v=2"></script>
+<script src="regular-week.js?v=3"></script>
 <script src="guided-intro.js"></script>
 <script>
 (() => {
@@ -10949,7 +10949,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
         action = `<button class="chip-btn hr-review ${cls}" type="button" data-hr-week="${w.weekStart}" title="${esc(w.review.note || "Einordnung ändern")}">${esc(label)}</button>`;
       } else if (w.missing > 0) action = `<button class="btn ghost small" type="button" data-hr-week="${w.weekStart}">Einordnen</button>`;
       else action = '<span class="chip good">erfüllt</span>';
-      if(w.done&&state.regularPatterns?.some(p=>p.valid_from&&p.valid_from<=w.weekStart))action+=` <button class="btn ghost small" type="button" data-hr-reopen="${w.weekStart}">Korrektur öffnen</button>`;
+      const weekEnd=addDaysIso(w.weekStart,6),sent=(state.employeeEntries||[]).some(e=>e.submissionId&&e.date>=w.weekStart&&e.date<=weekEnd);
+      if(sent||w.done&&state.regularPatterns?.some(p=>p.valid_from&&p.valid_from<=weekEnd))action+=` <button class="btn ghost small" type="button" data-hr-reopen="${w.weekStart}">Korrektur öffnen</button>`;
       const detail = [w.credit ? `inkl. ${fmtMinutes(w.credit)} Abwesenheit` : "", w.released ? `${w.released} Tage Freistellung (Cut)` : ""].filter(Boolean).join(" · ");
       return `<tr>
         <td>${esc(weekRangeLabel(w.weekStart))}</td>
