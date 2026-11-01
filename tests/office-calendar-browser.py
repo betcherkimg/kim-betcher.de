@@ -73,9 +73,9 @@ with sync_playwright() as pw:
   page.locator('#regularPatternCheck').check();page.locator('#regularPatternSave').click();expect(page.locator('#regularPatternDialog')).not_to_be_visible()
   expect(page.locator('[data-my="kalender"]')).to_be_visible();page.locator('[data-my-act="kalender"]').click();expect(page.locator('#kalender')).to_have_class('page active')
   page.clock.set_fixed_time('2026-12-22T11:00:00Z');page.evaluate('async()=>{__t.showPage("zeiten");await __t.regularWeek.selectWeek("2026-12-21")}')
-  expect(page.locator('#regularWeekCard')).to_be_visible();expect(page.locator('.regular-day')).to_have_count(5);holiday=page.locator('.regular-disabled');expect(holiday).to_contain_text('Feiertag · 2 Std. gutgeschrieben');expect(holiday.locator('[data-regular-day]')).to_have_count(0)
+  expect(page.locator('#regularWeekCard')).to_be_visible();expect(page.locator('.regular-day')).to_have_count(1);holiday=page.locator('.regular-disabled');expect(holiday).to_contain_text('Feiertag · 2 Std. gutgeschrieben');expect(page.locator('[data-regular-day]')).to_have_count(1)
   expect(page.locator('#regularSummary')).to_contain_text('Soll diese Woche: 4:00')
-  page.locator('[data-regular-day="2026-12-22"]').click();expect(page.locator('#timeCard')).to_be_visible();expect(page.locator('#date')).to_have_value('2026-12-22');expect(page.locator('#entryManualHoursField')).to_be_hidden()
+  page.locator('[data-regular-day]').click();expect(page.locator('#timeCard')).to_be_visible();expect(page.locator('#date')).to_have_value('2026-12-22');expect(page.locator('#entryManualHoursField')).to_be_hidden()
   page.locator('#start').fill('09:00');page.locator('#end').fill('10:20');page.locator('#appointments').fill('3');page.locator('#saveBtn').click()
   page.wait_for_function('__t.regularWeek.data.days.some(d=>d.entries.length)')
   assert api.saved[-1]['work_date']=='2026-12-22' and api.saved[-1]['start_time']=='09:00' and api.saved[-1]['work_minutes']==80 and 'regular_slot' not in api.saved[-1],api.saved[-1]

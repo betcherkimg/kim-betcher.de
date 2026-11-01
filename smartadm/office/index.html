@@ -1890,7 +1890,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
               <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2"/></svg>Arbeitszeit erfassen</button>
           </div>
           <div id="timeFormWrap" hidden>
-            <form id="entryForm"><input id="entryRegularSlot" type="hidden"><div class="field" id="entryManualHoursField" hidden><label for="entryManualHours">Geleistete Zeit (Stunden:Minuten)</label><input id="entryManualHours" type="text" inputmode="text" placeholder="z. B. 1:20"><small>Du trägst die Stunden selbst ein. Es wird nichts aus deiner Aktivität oder Planung ergänzt.</small></div><p id="entryActualHint" class="calendar-hint"></p>
+            <form id="entryForm"><input id="entryRegularSlot" type="hidden"><input id="entryReplace" type="hidden"><div class="field" id="entryManualHoursField" hidden><label for="entryManualHours">Geleistete Zeit (Stunden:Minuten)</label><input id="entryManualHours" type="text" inputmode="text" placeholder="z. B. 1:20"><small>Du trägst die Stunden selbst ein. Es wird nichts aus deiner Aktivität oder Planung ergänzt.</small></div><p id="entryActualHint" class="calendar-hint"></p>
               <input type="hidden" id="editId">
               <div class="form-grid">
                 <div class="field"><label for="date">Tatsächlicher Arbeitstag</label><input id="date" type="date" required><small>Heute oder maximal 7 Tage rückwirkend.</small></div>
@@ -3189,7 +3189,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 <script src="../date-inputs.js"></script>
 <script src="week-planner.js"></script>
 <script src="absence-calendar.js"></script>
-<script src="regular-week.js?v=4"></script>
+<script src="regular-week.js?v=5"></script>
 <script src="guided-intro.js"></script>
 <script>
 (() => {
@@ -4515,7 +4515,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     delete save.dataset.label;
     save.textContent = "Eintrag speichern";
     $("editId").value = "";
-    $("entryRegularSlot").value="";$("entryActualHint").textContent="";$("entryManualHours").value="";$("entryManualHoursField").hidden=true;
+    $("entryRegularSlot").value="";$("entryReplace").value="";$("entryActualHint").textContent="";$("entryManualHours").value="";$("entryManualHoursField").hidden=true;
     $("start").value = "";
     $("end").value = "";
     ["break", "appointments"].forEach(id => ($(id).value = 0));
@@ -4630,7 +4630,8 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
     // Jeder gesetzte Termin wird vergütet. Der Worker speichert den Wert weiterhin in beiden Feldern.
     const payload = {
       work_date: date, work_minutes:minutes, start_time: start, end_time: end, break_minutes: breakMinutes,
-      appointments, commissionable_appointments: appointments
+      appointments, commissionable_appointments: appointments,
+      ...(!existing&&$("entryReplace").value?{replace_allocation:Number($("entryReplace").value)}:{})
     };
 
     setFormBusy(true, existing ? "Wird gespeichert …" : "Wird angelegt …");
@@ -11645,7 +11646,7 @@ body.boss-editing .widget.size-kompakt, body.boss-editing .widget.size-hoch { he
 
   const regularWeek=window.OfficeRegularWeek.create({$,esc,api,role:()=>state.role,userId:()=>state.bootstrappedFor,today:isoDate,minutes:fmtMinutes,openDialog,closeDialog,showPage,toast,
     changed:(pattern,data)=>{state.regularPatterns=pattern.patterns||[];state.regularGoalsByMonth??={};for(const g of data.monthGoals||[])state.regularGoalsByMonth[g.month]=g;},
-    openEntry:(slot,week)=>{resetForm();setTimeFormOpen(true);const date=slot>isoDate()?isoDate():slot;$("date").value=date;$("timeCard").scrollIntoView({block:"start",behavior:"smooth"});$("start").focus();},
+    openEntry:(slot,week,old)=>{resetForm();setTimeFormOpen(true);const date=slot>isoDate()?isoDate():slot;$("date").value=date;if(old){$("entryReplace").value=old.id;$("appointments").value=old.appointments||0;$("entryActualHint").textContent=`Bisher ohne Uhrzeit: ${fmtMinutes(old.work_minutes)} · ${old.appointments||0} Termine. Bitte Beginn und Ende eintragen – die alte Zeile wird beim Speichern ersetzt.`;}$("timeCard").scrollIntoView({block:"start",behavior:"smooth"});$("start").focus();},
     editEntry,removeEntry:id=>deleteEntry(id),onSaved:refreshOwnProgress,onSubmitted:loadOwnEntries,onOnboarded:async()=>{await afterEmployeeNotices();}
   });
 

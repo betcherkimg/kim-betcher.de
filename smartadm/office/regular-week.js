@@ -32,15 +32,18 @@ function create(b){
   const actual=(data.days||[]).flatMap(d=>d.entries||[]),actualMin=actual.reduce((n,e)=>n+e.work_minutes,0),appts=actual.reduce((n,e)=>n+Number(e.appointments||0),0);
   $('regularSummary').textContent=`Soll diese Woche: ${b.minutes(data.targetMinutes)}${data.holidayMinutes?' (Feiertagswoche)':''} · erfasst: ${b.minutes(actualMin)} · ${appts} Termine · noch offen: ${b.minutes(Math.max(0,data.targetMinutes-actualMin))} · ${data.confirmed?'Abgesendet':'Entwurf'}`;
   const now=b.today(),locked=data.confirmed||week!==mon(now)&&!data.correctionOpen,absNames={vacation:'Urlaub',sick:'Krankheit',paid_leave:'Bezahlte Freistellung'};
-  const dayRows=(data.days||[]).map(d=>{
-   const entries=d.entries||[],blocked=Boolean(d.holidayName||d.absence),future=d.date>now;
+  const old=(data.allocations||[]).filter(e=>e.entry_state==='draft'&&!e.submission_id);
+  // Nur Tage mit Einträgen, offenen Altangaben, Feiertag oder Abwesenheit – keine leeren Wochentage.
+  const shown=(data.days||[]).filter(d=>(d.entries||[]).length||old.some(e=>e.work_date===d.date)||d.holidayName||d.absence);
+  const dayRows=shown.map(d=>{
+   const entries=d.entries||[],blocked=Boolean(d.holidayName||d.absence);
    const label=d.holidayName?(d.holiday?'Feiertag · 2 Std. gutgeschrieben':'Feiertag'):d.absence?(absNames[d.absence.absence_type]||'Abwesenheit'):'';
    const list=entries.map(e=>`<div class="regular-entry"><span>${esc(e.start_time)}–${esc(e.end_time)} Uhr · <b>${esc(b.minutes(e.work_minutes))}</b> · ${Number(e.appointments||0)} Termine</span>${!locked&&!e.submission_id?`<button class="btn ghost small" type="button" data-regular-edit="${e.id}">Ändern</button>`:''}</div>`).join('');
-   const add=!locked&&!blocked&&!future?`<button class="btn ghost small" type="button" data-regular-day="${d.date}">+ Zeit eintragen</button>`:'';
-   return `<div class="regular-day${blocked?' regular-disabled':''}"><div><b>${esc(names[d.weekday])}</b> <small>${esc(fmt(d.date))}</small>${label?' <strong>'+esc(label)+'</strong>':''}</div><div>${list||(blocked||future?'':'<small>Kein Eintrag</small>')}</div><div>${add}</div></div>`;
+   const fix=old.filter(e=>e.work_date===d.date).map(e=>`<div class="regular-entry regular-missing"><span>${esc(b.minutes(e.work_minutes))} · ${Number(e.appointments||0)} Termine · <b>Uhrzeit fehlt</b></span>${locked?'':`<button class="btn primary small" type="button" data-regular-fix="${e.id}">Uhrzeit eintragen</button>`}</div>`).join('');
+   return `<div class="regular-day${blocked?' regular-disabled':''}"><div><b>${esc(names[d.weekday])}</b> <small>${esc(fmt(d.date))}</small>${label?' <strong>'+esc(label)+'</strong>':''}</div><div>${list}${fix}</div></div>`;
   }).join('');
-  const old=(data.allocations||[]).filter(e=>e.entry_state==='draft'&&!e.submission_id);
-  $('regularRows').innerHTML=dayRows+(old.length?`<div class="notice warn" style="margin-top:12px"><b>Alte Einträge ohne Uhrzeit – bitte mit Beginn und Ende neu eintragen und dann löschen:</b>${old.map(e=>`<div class="regular-entry"><span>${esc(fmt(e.work_date))} · ${esc(b.minutes(e.work_minutes))} · ${Number(e.appointments||0)} Termine</span>${locked?'':`<button class="btn ghost small" type="button" data-regular-remove="${e.id}">Löschen</button>`}</div>`).join('')}</div>`:'');
+  const canAdd=!locked&&(data.days||[]).some(d=>d.date<=now&&!d.holidayName&&!d.absence);
+  $('regularRows').innerHTML=(dayRows||'<p class="muted" style="margin:12px 0">Diese Woche noch keine Arbeitszeit eingetragen.</p>')+(canAdd?`<div class="btn-row" style="margin-top:12px"><button class="btn ghost" type="button" data-regular-day="${now<add(week,4)?now:add(week,4)}">+ Arbeitszeit eintragen</button></div>`:'');
   $('regularPhaseNotice').hidden=true;
   const messages=[];
   if(data.overtimeMinutes)messages.push(`${b.minutes(data.overtimeMinutes)} zusätzlich: Kim prüft die Mehrarbeit. Die Feiertagsgutschrift bleibt bestehen.`);
@@ -110,7 +113,7 @@ function create(b){
   busy=true;$('regularComplete').disabled=true;
   try{await flush();await load();await api('/regular-week/complete','POST',{week,state_hash:data.stateHash,note});await load();await b.onSubmitted?.();b.toast('Arbeitswoche abgesendet. Kim kann Abweichungen prüfen.');}catch(error){$('regularStatus').textContent=error.message;}finally{busy=false;$('regularComplete').disabled=!data?.active||add(week,4)>b.today()||!!data?.confirmed;}
  }
- $('regularRows').addEventListener('click',e=>{const slot=e.target.closest('[data-regular-slot]'),edit=e.target.closest('[data-regular-edit]');const details=e.target.closest('[data-regular-details]');if(details)document.querySelector('[data-regular-entries="'+details.dataset.regularDetails+'"]').open=true;if(slot)openEntry(slot.dataset.regularSlot);if(edit)b.editEntry(edit.dataset.regularEdit);const day=e.target.closest('[data-regular-day]'),rm=e.target.closest('[data-regular-remove]');if(day)b.openEntry(day.dataset.regularDay,week);if(rm)b.removeEntry(rm.dataset.regularRemove);});
+ $('regularRows').addEventListener('click',e=>{const slot=e.target.closest('[data-regular-slot]'),edit=e.target.closest('[data-regular-edit]');const details=e.target.closest('[data-regular-details]');if(details)document.querySelector('[data-regular-entries="'+details.dataset.regularDetails+'"]').open=true;if(slot)openEntry(slot.dataset.regularSlot);if(edit)b.editEntry(edit.dataset.regularEdit);const day=e.target.closest('[data-regular-day]'),fix=e.target.closest('[data-regular-fix]');if(day)b.openEntry(day.dataset.regularDay,week);if(fix){const a=(data.allocations||[]).find(x=>String(x.id)===fix.dataset.regularFix);if(a)b.openEntry(a.work_date,week,a);}});
  $('regularPrev').addEventListener('click',()=>{week=add(week,-7);load()});$('regularNext').addEventListener('click',()=>{week=add(week,7);load()});$('regularToday').addEventListener('click',()=>{week=mon(b.today());load()});
  $('regularChooseDays').addEventListener('click',()=>choose());$('regularComplete').addEventListener('click',complete);
  $('regularPatternClose').addEventListener('click',()=>{if(!selectionRequired)b.closeDialog($('regularPatternDialog'))});

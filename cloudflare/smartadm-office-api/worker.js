@@ -244,6 +244,9 @@ async function createEntry({ request, env, owner }) {
   if(await first(env,"SELECT 1 FROM employee_absences WHERE clerk_user_id=? AND absence_date=?",owner,work[0]))return err("Für diesen Tag ist bereits eine Abwesenheit erfasst.",409);
   const closed = await closedMonthError(env, owner, work[0]);
   if (closed) return closed;
+  // Alte Zeile ohne Uhrzeit wird im selben Schritt durch den echten Eintrag ersetzt.
+  const replaceId=Number(body?.replace_allocation)||null;
+  if(replaceId){const old=await first(env,"SELECT * FROM work_entries WHERE id=? AND clerk_user_id=? AND record_kind='weekly_allocation' AND entry_state='draft' AND submission_id IS NULL",replaceId,owner);if(!old||mondayOfWeek(old.work_date)!==mondayOfWeek(work[0]))return err('Die alte Zeile kann hier nicht ersetzt werden. Bitte neu laden.',409);}
 
   const [workResult] = await env.DB.batch([
     stmt(env,
@@ -256,7 +259,11 @@ async function createEntry({ request, env, owner }) {
       `INSERT INTO performance_entries
          (clerk_user_id, work_date, appointments, commissionable_appointments, work_entry_id)
        VALUES (?, ?, ?, ?, (SELECT MAX(id) FROM work_entries WHERE clerk_user_id = ?))`,
-      [owner, work[0], ...perf, owner])
+      [owner, work[0], ...perf, owner]),
+    ...(replaceId?[
+      stmt(env,"DELETE FROM performance_entries WHERE work_entry_id=? AND clerk_user_id=?",[replaceId,owner]),
+      stmt(env,"DELETE FROM work_entries WHERE id=? AND clerk_user_id=? AND record_kind='weekly_allocation' AND entry_state='draft' AND submission_id IS NULL",[replaceId,owner])
+    ]:[])
   ]);
 
   return created(workResult);

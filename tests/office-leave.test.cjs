@@ -429,8 +429,10 @@ test('submitted October transition week can be reopened and refilled with actual
   f.setTime('2026-11-01T08:00:00Z');
   await read(await f.t.reopenRegularWeek({env:f.env,owner:'sasi',userId:'boss',exec:f.exec,request:f.request({week:'2026-10-26',note:'Bitte echte Zeiten nachtragen.'})}));
   w=await weekData(f,'2026-10-26');assert.equal(w.confirmed,false);assert.equal(w.correctionOpen,true);assert.equal(w.allocations.length,1);
-  const id=w.allocations[0].id;await read(await f.t.deleteEntry({env:f.env,owner:'sasi',id}));
-  for(const [d,s,e] of [['2026-10-27','09:00','12:00'],['2026-10-29','14:00','17:00']]){const r=await record(f,d,undefined,2,s,e);assert.equal(r.status,201,JSON.stringify(await r.json()));}
+  const id=w.allocations[0].id;
+  let r=await f.t.createEntry({env:f.env,owner:'sasi',request:f.request({work_date:'2026-10-26',start_time:'09:00',end_time:'11:00',break_minutes:0,appointments:3,replace_allocation:id})});assert.equal(r.status,201,JSON.stringify(await r.json()));
+  w=await weekData(f,'2026-10-26');assert.equal(w.allocations.length,0,'old row replaced in the same step');assert.equal(w.workMinutes,120);
+  for(const [d,s,e] of [['2026-10-27','09:00','11:00'],['2026-10-29','14:00','16:00']]){const r=await record(f,d,undefined,2,s,e);assert.equal(r.status,201,JSON.stringify(await r.json()));}
   w=await weekData(f,'2026-10-26');assert.equal(w.workMinutes,360);
   await read(await f.t.completeRegularWeek({env:f.env,userId:'sasi',exec:f.exec,request:f.request({week:w.week,state_hash:w.stateHash})}));
  }finally{f.close()}
