@@ -21,7 +21,7 @@ const HELPER_DRINKS = 5;         // Helfer: 5 Getränkemarken + 1× Essen, Wasse
 const PAPER_PRICE = { free: 3500, regular: 2500 };   // Reserve-Papiertickets verkauft: VIP 35 €, normal 25 €
 // Was der Scanner zeigt: Ticketart, Bändchen-Schlüssel, Freigetränke
 function ticketKind(t) {
-  if (t.category === "helper") return { kind: t.helper_job ? `Helfer · ${t.helper_job}` : "Helfer", band: "helper", drinks: HELPER_DRINKS, hint: "Essen: 1× am Foodtruck – dort Strich aufs Bändchen", perk: "1× Essen mit Bändchen · Wasser gratis" };
+  if (t.category === "helper") return { kind: t.helper_job ? `Helfer · ${t.helper_job}` : "Helfer", band: "helper", drinks: HELPER_DRINKS, hint: "Essen: 1× am Foodtruck – dort wird das grüne gegen ein weißes Bändchen getauscht", perk: "1× Essen mit Bändchen · Wasser gratis" };
   if (t.category === "free") return { kind: "VIP · 2TAKT", band: "free", drinks: PAPER_VIP_DRINKS, shot: true, extras: ["Begrüßungsshot"] };
   if (t.tier === "vip") return { kind: "VIP online", band: "vip", drinks: VIP_DRINKS, shot: true, extras: ["Begrüßungsshot"] };
   if (t.paper) return { kind: "Freiticket", band: "regular", drinks: 0 };
@@ -1267,7 +1267,7 @@ async function sendTicketMail(env, ticket) {
   const s = await getSettings(env);
   const r = await sendMail(env, ticket.email, ticket.helper_job ? "Dein Helfer-Ticket für TAKT Nr. 30" : "Dein Ticket für TAKT Nr. 30",
     mailHtml(s, ticket.helper_job ? `Danke fürs Helfen – ${ticket.helper_job}.` : "Du bist dabei.", [{ number: ticket.number, name: `${ticket.first_name} ${ticket.last_name}`, url: `${APP_URL}ticket/?k=${ticket.view_key}` }],
-      ticket.helper_job ? `<div style="border:1px solid #39ff14;border-radius:6px;padding:16px 18px;margin:0 0 22px;background:#0f1a0c"><p style="letter-spacing:3px;font-size:12px;color:#39ff14;margin:0 0 8px">CREW</p><p style="font-size:15px;line-height:1.6;color:#f2f2f4;margin:0">Dein Eintritt ist frei, am Einlass bekommst du <strong>${HELPER_DRINKS} Getränkemarken</strong>, Wasser ist gratis. <strong>Einmal Essen</strong> holst du dir am Foodtruck – einfach dein grünes Helfer-Bändchen zeigen. Deine Schicht wählst du auf deiner Ticketseite unter <strong>„Deine Schicht“</strong>.</p></div>` : ""));
+      ticket.helper_job ? `<div style="border:1px solid #39ff14;border-radius:6px;padding:16px 18px;margin:0 0 22px;background:#0f1a0c"><p style="letter-spacing:3px;font-size:12px;color:#39ff14;margin:0 0 8px">CREW</p><p style="font-size:15px;line-height:1.6;color:#f2f2f4;margin:0">Dein Eintritt ist frei, am Einlass bekommst du <strong>${HELPER_DRINKS} Getränkemarken</strong>, Wasser ist gratis. <strong>Einmal Essen</strong> holst du dir am Foodtruck mit deinem grünen Helfer-Bändchen – dort bekommst du dafür ein weißes. Hol dir dein Essen also erst nach deiner Schicht. Deine Schicht wählst du auf deiner Ticketseite unter <strong>„Deine Schicht“</strong>.</p></div>` : ""));
   await run(env, `UPDATE tickets SET mail_status = ? WHERE id = ?`, r.ok ? "sent" : "failed", ticket.id);
   return r;
 }
