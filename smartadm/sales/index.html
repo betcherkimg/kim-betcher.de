@@ -2240,6 +2240,7 @@
   }
 
   .prov-archiv-monat:last-child{border-bottom:none;}
+  .prov-archiv-monat .prov-archiv-pdf{margin-left:10px;font:inherit;font-size:13px;font-weight:600;color:var(--blau,#0f4d8a);background:none;border:1px solid currentColor;border-radius:8px;padding:3px 9px;cursor:pointer}
   .prov-archiv-monat b{font-weight:600;}
 
   @media (min-width:600px){
@@ -3364,6 +3365,7 @@
       <div class="head-tools">
         <button class="prov-steuer-chip" id="prov-fix-oeffnen" type="button" title="Feste monatliche Ausgaben vor Steuer">Feste Ausgaben <strong id="prov-fix-anzeige">0,00 €</strong></button>
         <button class="prov-steuer-chip" id="prov-steuer-oeffnen" type="button" title="Persönlichen Steuersatz ändern">Steuersatz <strong id="prov-steuer-anzeige">0 %</strong></button>
+        <button class="btn btn-quiet" id="prov-pdf" type="button" title="Aufstellung des laufenden Monats als PDF">PDF</button>
         <button class="btn btn-quiet" id="prov-archiv-btn">Archiv</button>
         <button class="btn" id="prov-neu">Eintrag erfassen</button>
       </div>
@@ -6790,13 +6792,13 @@ document.getElementById("prov-archiv-btn").addEventListener("click", function(){
                 "Juli","August","September","Oktober","November","Dezember"];
   var html = "";
 
-  PROV_ARCHIV.forEach(function(a){
+  PROV_ARCHIV.forEach(function(a, i){
     var t = a.monat.split("-");
     html += '<div class="prov-archiv-monat">'
           +   '<span>' + monate[Number(t[1]) - 1] + ' ' + t[0]
           +     ' \u00b7 ' + a.eintraege.length + (a.eintraege.length === 1 ? " Eintrag" : " Eintr\u00e4ge")
           +   '</span>'
-          +   '<b>' + euro(a.netto) + '</b>'
+          +   '<span><b>' + euro(a.netto) + '</b><button class="prov-archiv-pdf" type="button" data-prov-archiv-pdf="' + i + '">PDF</button></span>'
           + '</div>';
   });
 
@@ -6804,6 +6806,145 @@ document.getElementById("prov-archiv-btn").addEventListener("click", function(){
     html || '<p class="leer-hinweis">Noch kein Monat archiviert</p>';
 
   oeffnen("veil-prov-archiv");
+});
+
+/* ---------- Provisionsaufstellung als PDF ---------- */
+
+// Rechnet einen Monat komplett durch – mit den festen Ausgaben und dem Steuersatz dieses Monats
+function provAufstellung(liste, fix, steuersatz){
+  var abschluesse = [], einnahmen = [], ausgabenVor = [], ausgabenNach = [];
+  liste.forEach(function(e){
+    var r = provRechnen(e), art = e.art || "abschluss";
+    if(art === "abschluss") abschluesse.push({e:e, r:r});
+    else if(art === "einnahme") einnahmen.push({name:e.kunde, betrag:r.brutto});
+    else if(e.nachSteuer) ausgabenNach.push({name:e.kunde, betrag:Math.abs(r.netto)});
+    else ausgabenVor.push({name:e.kunde, betrag:Math.abs(r.netto)});
+  });
+  var festListe = (fix || []).map(function(f){ return {name:f.name, betrag:Math.abs(Number(f.betrag) || 0)}; });
+  var summe = function(l, k){ return l.reduce(function(s, x){ return s + (k ? x.r[k] : x.betrag); }, 0); };
+  var g = {
+    abschluesse:abschluesse, einnahmen:einnahmen, fest:festListe, ausgabenVor:ausgabenVor, ausgabenNach:ausgabenNach,
+    sAbschluss:summe(abschluesse, "brutto"), sEinnahmen:summe(einnahmen),
+    sFest:summe(festListe), sVor:summe(ausgabenVor), sNach:summe(ausgabenNach),
+    steuersatz:Number(steuersatz) || 0
+  };
+  g.brutto = g.sAbschluss + g.sEinnahmen;
+  g.vorSteuern = g.brutto - g.sFest - g.sVor;
+  g.steuer = g.vorSteuern > 0 ? g.vorSteuern * g.steuersatz / 100 : 0;
+  g.nachSteuern = g.vorSteuern - g.steuer;
+  g.verbleibt = g.nachSteuern - g.sNach;
+  return g;
+}
+
+function provPdfDokument(monat, liste, fix, steuersatz){
+  var g = provAufstellung(liste, fix, steuersatz);
+  var monate = ["Januar","Februar","M\u00e4rz","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+  var t = monat.split("-"), monatText = monate[Number(t[1]) - 1] + " " + t[0];
+  var jetzt = new Date();
+  var erstellt = ("0" + jetzt.getDate()).slice(-2) + "." + ("0" + (jetzt.getMonth()+1)).slice(-2) + "." + jetzt.getFullYear();
+  var e2 = function(z){ return esc(euro(z)); };
+  var minus = function(z){ return z ? "\u2212 " + e2(Math.abs(z)) : e2(0); };
+  var zahl = function(z, n){ return (Number(z) || 0).toLocaleString("de-DE", {maximumFractionDigits:n == null ? 2 : n}); };
+
+  function liste2(titel, zeilen, leer){
+    var h = '<section class="bereich"><div class="bereich-kopf"><h2>' + esc(titel) + '</h2><span>' + zeilen.length + (zeilen.length === 1 ? ' Posten' : ' Posten') + '</span></div>';
+    if(!zeilen.length) return h + '<div class="leer">' + esc(leer) + '</div></section>';
+    h += '<table class="einfach"><thead><tr><th>Bezeichnung</th><th class="r">Betrag</th></tr></thead><tbody>';
+    zeilen.forEach(function(z){ h += '<tr><td>' + esc(z.name || "Ohne Bezeichnung") + '</td><td class="r">' + e2(z.betrag) + '</td></tr>'; });
+    var s = zeilen.reduce(function(a, z){ return a + z.betrag; }, 0);
+    return h + '</tbody><tfoot><tr><td>Summe</td><td class="r">' + e2(s) + '</td></tr></tfoot></table></section>';
+  }
+
+  var rechen = [
+    ["Abschl\u00fcsse (Provision brutto)", e2(g.sAbschluss), ""],
+    ["Sonstige Einnahmen", e2(g.sEinnahmen), ""],
+    ["Einnahmen gesamt", e2(g.brutto), "zwischen"],
+    ["Feste monatliche Ausgaben", minus(g.sFest), "abzug"],
+    ["Betriebsausgaben", minus(g.sVor), "abzug"],
+    ["Ergebnis vor Steuern", e2(g.vorSteuern), "zwischen"],
+    ["Steuer (" + zahl(g.steuersatz) + " %)", minus(g.steuer), "abzug"],
+    ["Ergebnis nach Steuern", e2(g.nachSteuern), "zwischen"],
+    ["Ausgaben nach Steuer", minus(g.sNach), "abzug"],
+    ["Verbleibt (frei verf\u00fcgbar)", e2(g.verbleibt), "ergebnis"]
+  ];
+
+  // Wohin das Geld geht: die vier T\u00f6pfe ergeben zusammen die Einnahmen
+  var toepfe = [
+    ["Steuerr\u00fccklage", g.steuer, "auf das Steuerkonto"],
+    ["Gesch\u00e4ftsausgaben", g.sFest + g.sVor, "feste Ausgaben + Betriebsausgaben"],
+    ["Ausgaben nach Steuer", g.sNach, "z.\u00a0B. Krankenkasse"],
+    ["Frei verf\u00fcgbar", g.verbleibt, "privat"]
+  ];
+
+  var abschlussTabelle = '<section class="bereich"><div class="bereich-kopf"><h2>Abschl\u00fcsse</h2><span>' + g.abschluesse.length + ' Posten</span></div>';
+  if(!g.abschluesse.length) abschlussTabelle += '<div class="leer">Keine Abschl\u00fcsse in diesem Monat.</div></section>';
+  else{
+    abschlussTabelle += '<table class="abschluss"><thead><tr><th>Kunde</th><th>AW</th><th class="r">BSS neu</th><th class="r">BSS alt</th><th class="r">Volumen</th><th class="r">Faktor</th><th class="r">Bewert.</th><th class="r">Auszahlung</th><th class="r">Saldo</th><th class="r">Brutto</th></tr></thead><tbody>';
+    g.abschluesse.forEach(function(x){
+      var e = x.e, r = x.r;
+      abschlussTabelle += '<tr' + (r.storno < 0 ? ' class="storno"' : '') + '><td>' + esc(e.kunde || "\u2013") + (r.storno < 0 ? ' <i>Storno</i>' : '') + '</td><td>' + esc(e.aw || "") + '</td>'
+        + '<td class="r">' + e2(e.bssNeu) + '</td><td class="r">' + e2(e.bssAlt) + '</td><td class="r">' + e2(r.volumen) + '</td>'
+        + '<td class="r">' + zahl(r.faktor) + '</td><td class="r">' + zahl(r.bewertung) + '</td>'
+        + '<td class="r">' + e2(r.auszahlung) + '</td><td class="r">' + e2(r.saldo) + '</td><td class="r"><b>' + e2(r.brutto) + '</b></td></tr>';
+    });
+    abschlussTabelle += '</tbody><tfoot><tr><td colspan="7">Summe</td><td class="r">' + e2(g.abschluesse.reduce(function(a,x){return a+x.r.auszahlung;},0)) + '</td><td class="r">' + e2(g.abschluesse.reduce(function(a,x){return a+x.r.saldo;},0)) + '</td><td class="r">' + e2(g.sAbschluss) + '</td></tr></tfoot></table></section>';
+  }
+
+  return '<!doctype html><html lang="de"><head><meta charset="utf-8"><title>Provisionsaufstellung ' + esc(monatText) + '</title>'
+    + '<style>'
+    + '@page{size:A4;margin:12mm}*{box-sizing:border-box}html{background:#eef1f4}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#152333;font-size:9.4pt;line-height:1.4;background:#eef1f4}'
+    + '.dokument{width:min(190mm,calc(100% - 32px));margin:18px auto;background:#fff;border:1px solid #cbd4dc;border-radius:4px;box-shadow:0 10px 34px rgba(27,43,58,.12);padding:11mm 11mm 9mm}'
+    + '.report-kopf{display:flex;align-items:flex-start;justify-content:space-between;gap:10mm;padding-bottom:5mm;border-bottom:2px solid #0f4d8a}.kicker{margin:0 0 1.2mm;font-size:7.5pt;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#71808e}h1{font-size:21pt;line-height:1.05;margin:0;color:#0f4d8a;letter-spacing:-.025em}.report-datum{text-align:right;color:#71808e;font-size:8.5pt}.report-datum b{display:block;color:#152333;font-size:11pt;margin-bottom:1mm}'
+    + '.oben{display:grid;grid-template-columns:1.1fr 1fr;gap:6mm;margin:5mm 0}'
+    + '.rechnung{border:1px solid #d9e0e6;border-radius:6px;overflow:hidden}.rechnung div{display:flex;justify-content:space-between;gap:4mm;padding:1.7mm 3.5mm;border-bottom:1px solid #edf1f4}.rechnung div:last-child{border-bottom:0}.rechnung b{font-variant-numeric:tabular-nums;white-space:nowrap}'
+    + '.rechnung .abzug{color:#5f6d79}.rechnung .zwischen{background:#f3f6f9;font-weight:700}.rechnung .ergebnis{background:#0f4d8a;color:#fff;font-weight:700;font-size:10.5pt}'
+    + '.toepfe h2,.bereich-kopf h2{font-size:11pt;margin:0;color:#0f4d8a}.toepfe h2{margin-bottom:2.5mm}.topf{display:flex;justify-content:space-between;align-items:center;gap:4mm;border:1px solid #d9e0e6;border-left:3px solid #0f4d8a;border-radius:5px;padding:2.1mm 3.5mm;margin-bottom:1.7mm}.topf span{display:block;font-weight:700}.topf small{display:block;color:#7b8995;font-size:7.6pt}.topf b{font-size:11pt;white-space:nowrap;font-variant-numeric:tabular-nums}.topf.summe{border-left-color:#7b8995;background:#f8fafb}'
+    + '.bereich{margin:0 0 4mm;break-inside:avoid}.bereich-kopf{display:flex;align-items:center;justify-content:space-between;gap:6mm;background:#f3f6f9;border-left:3px solid #0f4d8a;padding:2.2mm 3mm;margin-bottom:2.2mm}.bereich-kopf span{font-size:7.7pt;color:#7b8995}'
+    + 'table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #d9e0e6;border-radius:5px;overflow:hidden}th,td{padding:1.9mm 2.2mm;border-bottom:1px solid #e3e8ec;vertical-align:top}th{background:#f8fafb;text-align:left;font-size:6.9pt;text-transform:uppercase;letter-spacing:.04em;color:#71808e}td{font-size:8.6pt}.r{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}tbody tr:last-child td{border-bottom:0}tfoot td{background:#f3f6f9;font-weight:700;border-top:1.5px solid #0f4d8a;border-bottom:0}'
+    + 'table.abschluss td,table.abschluss th{font-size:7.6pt;padding:1.6mm 1.5mm}tr.storno td{color:#a33}tr.storno i{font-style:normal;font-size:7pt;border:1px solid #a33;border-radius:99px;padding:0 1.5mm}'
+    + '.zwei{display:grid;grid-template-columns:1fr 1fr;gap:5mm}.leer{border:1px dashed #ccd5dd;border-radius:5px;padding:3mm;color:#7b8995;background:#fafbfc;font-style:italic}'
+    + '.hinweis{color:#71808e;font-size:7.8pt;margin-top:2mm}.fuss{display:flex;justify-content:space-between;gap:8mm;margin-top:4mm;padding-top:2.5mm;break-inside:avoid;border-top:1px solid #d9e0e6;color:#86939e;font-size:7.5pt}'
+    + '@media print{html,body{background:#fff}.dokument{width:auto;margin:0;border:0;box-shadow:none;padding:0}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}'
+    + '@media screen and (max-width:700px){.oben,.zwei{grid-template-columns:1fr}}'
+    + '</style></head><body><main class="dokument">'
+    + '<header class="report-kopf"><div><p class="kicker">SmartADM \u00b7 Provisionen</p><h1>Provisionsaufstellung</h1></div><div class="report-datum"><b>' + esc(monatText) + '</b>Erstellt am ' + esc(erstellt) + '</div></header>'
+    + '<div class="oben"><div class="rechnung">'
+    + rechen.map(function(z){ return '<div class="' + z[2] + '"><span>' + esc(z[0]) + '</span><b>' + z[1] + '</b></div>'; }).join("")
+    + '</div><div class="toepfe"><h2>Wohin das Geld geht</h2>'
+    + toepfe.map(function(z){ return '<div class="topf"><div><span>' + esc(z[0]) + '</span><small>' + esc(z[2]) + '</small></div><b>' + e2(z[1]) + '</b></div>'; }).join("")
+    + '<div class="topf summe"><div><span>Zusammen</span><small>= Einnahmen gesamt</small></div><b>' + e2(g.steuer + g.sFest + g.sVor + g.sNach + g.verbleibt) + '</b></div>'
+    + '</div></div>'
+    + abschlussTabelle
+    + '<div class="zwei">' + liste2("Sonstige Einnahmen", g.einnahmen, "Keine sonstigen Einnahmen.")
+    + liste2("Feste monatliche Ausgaben", g.fest, "Keine festen Ausgaben hinterlegt.") + '</div>'
+    + '<div class="zwei">' + liste2("Betriebsausgaben (vor Steuer)", g.ausgabenVor, "Keine Betriebsausgaben.")
+    + liste2("Ausgaben nach Steuer", g.ausgabenNach, "Keine Ausgaben nach Steuer.") + '</div>'
+    + '<p class="hinweis">Die Steuer ist eine R\u00fccklage mit deinem pauschalen Satz von ' + esc(zahl(g.steuersatz)) + ' % auf das Ergebnis vor Steuern \u2013 keine Steuerberechnung.' + (g.vorSteuern <= 0 ? ' Das Ergebnis vor Steuern ist nicht positiv, deshalb wird keine R\u00fccklage angesetzt.' : '') + '</p>'
+    + '<footer class="fuss"><span>SmartADM \u00b7 Provisionsaufstellung</span><span>' + esc(monatText) + '</span></footer>'
+    + '</main></body></html>';
+}
+
+function provPdfOeffnen(monat, liste, fix, steuersatz){
+  var fenster = window.open("", "_blank");
+  if(!fenster){ melden("Das PDF-Fenster wurde vom Browser blockiert."); return; }
+  fenster.document.open();
+  fenster.document.write(provPdfDokument(monat, liste, fix, steuersatz));
+  fenster.document.close();
+  fenster.focus();
+  setTimeout(function(){ fenster.print(); }, 180);
+}
+
+document.getElementById("prov-pdf").addEventListener("click", function(){
+  if(!PROVISIONEN.length && !PROV_FIX.length){ melden("F\u00fcr diesen Monat ist noch nichts erfasst."); return; }
+  var d = new Date();
+  provPdfOeffnen(d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"), PROVISIONEN, PROV_FIX, PROV_STEUER);
+});
+
+document.addEventListener("click", function(ev){
+  var b = ev.target.closest("[data-prov-archiv-pdf]");
+  if(!b) return;
+  var a = PROV_ARCHIV[Number(b.getAttribute("data-prov-archiv-pdf"))];
+  if(a) provPdfOeffnen(a.monat, a.eintraege || [], a.festeAusgaben || [], a.steuersatz || 0);
 });
 
 /* ---------- Sicherung ---------- */
