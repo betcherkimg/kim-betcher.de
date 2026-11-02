@@ -2198,6 +2198,9 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
 .mf-amount b{display:block;font-size:28px;letter-spacing:-.02em;margin:2px 0 2px}
 .mf-amount small{display:block;color:var(--ink-soft,#5d6875);font-size:13px;line-height:1.35}
 .mf-steps{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.mf-limit{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:12px}
+.mf-limit>div{flex:1;min-width:0}.mf-limit b{display:block;font-size:13.5px}.mf-limit small{display:block;color:var(--ink-soft,#5d6875);font-size:12.5px;line-height:1.35}
+.mf-limit.is-warn{border-color:#d9a400;background:rgba(217,164,0,.08)}.mf-limit.is-stop{border-color:#c0392b;background:rgba(192,57,43,.07)}
 .mf-year{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:12px}
 .mf-year>b{display:block;font-size:13.5px;margin-bottom:8px}
 .mf-year-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -2714,6 +2717,10 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
             <b id="mfYearTitle">Beschäftigungsjahr</b>
             <div class="mf-year-grid"><div><span>Bisher verdient</span><strong id="mfYearEarned">0,00 €</strong></div><div><span>Jahresgrenze</span><strong id="mfYearLimit">0,00 €</strong></div><div><span>Noch möglich</span><strong id="mfYearRest">0,00 €</strong></div></div>
             <small id="mfYearHint"></small>
+          </div>
+          <div class="mf-limit" id="mfLimit" hidden>
+            <div><b id="mfLimitText">Monatsgrenze</b><small id="mfLimitHint"></small></div>
+            <button class="btn ghost small" id="mfLimitBtn" type="button">Ausnahme freigeben</button>
           </div>
           <ol class="mf-steps" id="mfSteps"></ol>
           <div class="mf-actions">
@@ -5266,7 +5273,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
       return;
     }
 
-    await Promise.all([loadEmployeeData(userId), loadClosings(userId), loadContributionReports(userId)]);
+    await Promise.all([loadEmployeeData(userId), loadClosings(userId), loadContributionReports(userId), loadLimitOverrides(userId)]);
     await loadCalendarPayroll();
     if (document.querySelector("#vertrag.active, #mitarbeiter.active")) loadContracts();
   }
@@ -6294,6 +6301,50 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   }
   function monthName(month) { const t = fmtMonth(month); return t[0].toUpperCase() + t.slice(1); }
 
+  // Freigaben für Überschreitungen der Monatsgrenze (max. 2 in 12 Monaten)
+  let limitOverrides = { userId: null, rows: [] };
+  async function loadLimitOverrides(userId) {
+    try { limitOverrides = { userId, rows: asArray(await api(forUser("/admin/limit-overrides", userId))) }; }
+    catch { limitOverrides = { userId, rows: [] }; }
+  }
+  function overridesInWindow(month) {
+    const rows = limitOverrides.userId === state.selectedUserId ? limitOverrides.rows : [];
+    const from = addMonths(month, -11), to = addMonths(month, 11);
+    return rows.filter(r => r.payroll_month >= from && r.payroll_month <= to);
+  }
+  function renderMonthLimit(month, test) {
+    const box = $("mfLimit");
+    const closed = state.closings.find(c => c.payroll_month === month);
+    if (test || !state.selectedUserId) { box.hidden = true; return; }
+    box.hidden = false;
+    const limit = minijobLimit(month);
+    const gross = closed ? Number(closed.gross || 0) : Number(currentPayroll().gross || 0);
+    const rows = limitOverrides.userId === state.selectedUserId ? limitOverrides.rows : [];
+    const own = rows.find(r => r.payroll_month === month);
+    const cap = own ? limit * 2 : limit;
+    const used = overridesInWindow(month).filter(r => r.payroll_month !== month).length;
+    box.classList.toggle("is-stop", gross >= cap - 0.005);
+    box.classList.toggle("is-warn", gross < cap && gross >= cap - 30);
+    setText("mfLimitText", `Monatsgrenze: ${euro(gross)} von ${euro(cap)}`);
+    setText("mfLimitHint", own
+      ? `Ausnahme freigegeben: ${own.reason}. Bis höchstens ${euro(cap)} (doppelte Grenze).`
+      : gross >= cap - 0.005 ? `Grenze erreicht – Sasi kann diesen Monat nichts mehr eintragen, außer du gibst frei. Freigaben: ${used} von 2 in 12 Monaten genutzt.`
+      : `Ab ${euro(limit)} stoppt das System die Einträge. Ausnahmen: ${used} von 2 in 12 Monaten genutzt.`);
+    const btn = $("mfLimitBtn");
+    btn.hidden = !!own || !!closed;
+    btn.disabled = used >= 2;
+    btn.title = used >= 2 ? "In den letzten bzw. nächsten 12 Monaten sind schon 2 Ausnahmen vergeben." : "";
+  }
+  $("mfLimitBtn").addEventListener("click", event => withBusy(event.currentTarget, async () => {
+    const month = payrollMonth(), userId = state.selectedUserId;
+    const reason = prompt(`Ausnahme für ${monthName(month)}: Warum wird die Grenze unvorhersehbar überschritten? (z. B. Krankheitsvertretung) – der Grund kommt in die Entgeltunterlagen.\n\nErlaubt sind höchstens 2 Monate in 12 Monaten, je bis ${euro(minijobLimit(month) * 2)}.`);
+    if (!reason || !reason.trim()) return;
+    try {
+      limitOverrides = { userId, rows: asArray(await api(forUser("/admin/limit-overrides", userId), "POST", { month, reason: reason.trim() })) };
+      renderMonthFlow();
+    } catch (error) { alert(`Nicht freigegeben: ${error.message}`); }
+  }));
+
   // Darf das Rendern der Lohn-Seite nie blockieren
   function renderMonthFlow() {
     try { renderMonthFlowInner(); } catch (error) { console.warn("Monatskarte:", error); }
@@ -6320,6 +6371,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     else if (d.correction) parts.push(`${monthName(month)} ${euro(d.own)} ${d.correction < 0 ? "−" : "+"} Korrektur aus ${monthName(d.prevMonth)} ${euro(Math.abs(d.correction))} (${d.correction < 0 ? "zu viel" : "zu wenig"} gezahlt)`);
     if (!test && d.preliminary) parts.push("Noch vorläufig – der Betrag wird bis zur Meldung genauer.");
     if (net) parts.push(`Lohn an ${first}: ${net}`);
+    renderMonthLimit(month, test);
     const ey = employmentYearView(month);
     const short = key => `${key.slice(5, 7)}/${key.slice(0, 4)}`;
     $("mfYear").hidden = !ey || test;
@@ -12517,16 +12569,20 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   /* --- Leiste unten und „Mehr“ (Handy) --- */
 
   const TAB_PAGES = ["dashboard", "telefon", "zeiten", "kalender"];
-  const OFFICE_VERSION = "2.2.0";   // bei jeder Veröffentlichung erhöhen – die App lädt sich dann selbst neu
+  const OFFICE_VERSION = "2.0.2";   // angezeigte Version – nur Kim entscheidet, wann sie steigt
   /* Selbst-Update: Auf dem iPhone bleibt die Home-Bildschirm-App oft tagelang im Speicher und lädt nie neu.
-     Beim Zurückholen in den Vordergrund (und alle 30 Min.) prüfen, ob eine neuere Version online ist. */
-  let updatePending = false;
+     Beim Start wird ein Fingerabdruck der veröffentlichten Seite gemerkt; ändert er sich (neue Veröffentlichung),
+     lädt die App neu – unabhängig von der Versionsnummer. */
+  let updatePending = false, pageStamp = null;
+  const stampOf = text => { let h = 2166136261; for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 16777619); } return `${text.length}:${(h >>> 0).toString(36)}`; };
+  const fetchStamp = async () => stampOf(await (await fetch(`${APP_URL}?u=${Date.now()}`, { cache: "no-store" })).text());
+  fetchStamp().then(v => { pageStamp ??= v; }).catch(() => {});
   async function checkForUpdate() {
     if (document.visibilityState !== "visible" || updatePending) return;
     try {
-      const html = await (await fetch(`${APP_URL}?u=${Date.now()}`, { cache: "no-store" })).text();
-      const live = (html.match(/const OFFICE_VERSION = "([^"]+)"/) || [])[1];
-      if (!live || live === OFFICE_VERSION) return;
+      const live = await fetchStamp();
+      if (!pageStamp) { pageStamp = live; return; }
+      if (live === pageStamp) return;
       updatePending = true;
       const busy = () => document.querySelector("dialog[open]") || ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName);
       // Schutz gegen Endlosschleife (falls der Browser beim Neuladen doch noch die alte Seite bekommt)
@@ -12539,7 +12595,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
       // Gerade wird etwas eingetragen → nicht dazwischenfunken, sondern Hinweis zum Antippen
       const bar = document.createElement("button");
       bar.type = "button"; bar.className = "update-bar";
-      bar.textContent = `Neue Version ${live} – zum Aktualisieren tippen`;
+      bar.textContent = "Neue Version verfügbar – zum Aktualisieren tippen";
       bar.onclick = () => location.reload();
       document.body.append(bar);
     } catch { /* offline – später erneut */ }

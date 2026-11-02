@@ -235,7 +235,83 @@ async function closedMonthError(env, owner, ...dates) {
   return null;
 }
 
-async function createEntry({ request, env, owner }) {
+/* ================= Monatsgrenze Minijob =================
+   Sasi kann keinen Eintrag speichern, der den Monat über die Geringfügigkeitsgrenze hebt.
+   Kim kann einen Monat freigeben (unvorhersehbare Überschreitung): höchstens 2 Monate je 12 Monate,
+   dann bis zum Doppelten der Monatsgrenze, mit Begründung. */
+async function ensureLimitOverrides(env) {
+  await run(env, `CREATE TABLE IF NOT EXISTS limit_overrides (id INTEGER PRIMARY KEY AUTOINCREMENT,
+    clerk_user_id TEXT NOT NULL, payroll_month TEXT NOT NULL, reason TEXT NOT NULL, created_by TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, UNIQUE(clerk_user_id, payroll_month))`);
+}
+const shiftMonth = (month, n) => { const [y, m] = month.split("-").map(Number); return new Date(Date.UTC(y, m - 1 + n, 1)).toISOString().slice(0, 7); };
+// Monatsbrutto aus allen erfassten Einträgen (auch Entwürfen) – vorsichtig gerechnet
+async function monthGrossCents(env, owner, month, skipWorkIds = []) {
+  const from = month + "-01", to = shiftMonth(month, 1) + "-01";
+  const skip = skipWorkIds.filter(Boolean).map(Number);
+  const marks = skip.length ? ` AND id NOT IN (${skip.map(() => "?").join(",")})` : "";
+  const pmarks = skip.length ? ` AND (work_entry_id IS NULL OR work_entry_id NOT IN (${skip.map(() => "?").join(",")}))` : "";
+  const [w, p, a, adj] = await Promise.all([
+    first(env, `SELECT COALESCE(SUM(work_minutes),0) mins FROM work_entries WHERE clerk_user_id=? AND work_date>=? AND work_date<?${marks}`, owner, from, to, ...skip),
+    first(env, `SELECT COALESCE(SUM(appointments),0) appts FROM performance_entries WHERE clerk_user_id=? AND work_date>=? AND work_date<?${pmarks}`, owner, from, to, ...skip),
+    first(env, "SELECT COALESCE(SUM(paid_amount_cents),0) paid FROM employee_absences WHERE clerk_user_id=? AND absence_date>=? AND absence_date<?", owner, from, to).catch(() => ({ paid: 0 })),
+    first(env, "SELECT COALESCE(SUM(delta),0) delta FROM appointment_adjustments WHERE clerk_user_id=? AND payroll_month=?", owner, month).catch(() => ({ delta: 0 }))
+  ]);
+  return Math.round(Number(w?.mins || 0) * hourlyRateCents(month) / 60) + (Number(p?.appts || 0) + Number(adj?.delta || 0)) * COMMISSION_RATE_CENTS + Number(a?.paid || 0);
+}
+async function monthLimitError(env, owner, userId, date, minutes, appointments, skipWorkIds = []) {
+  if (isBoss(env, userId) || !validDate(date)) return null;   // Kim darf korrigieren
+  await ensureLimitOverrides(env);
+  const month = String(date).slice(0, 7);
+  const before = await monthGrossCents(env, owner, month, skipWorkIds);
+  const after = before + Math.round(Number(minutes || 0) * hourlyRateCents(month) / 60) + Number(appointments || 0) * COMMISSION_RATE_CENTS;
+  if (after <= before) return null;                           // weniger geht immer
+  const limit = minijobLimitCents(month);
+  const override = await first(env, "SELECT 1 FROM limit_overrides WHERE clerk_user_id=? AND payroll_month=?", owner, month);
+  const cap = override ? limit * 2 : limit;
+  if (after <= cap) return null;
+  const euroText = c => (c / 100).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+  for (const boss of bossIds(env)) {
+    // Kim einmal pro Monat und Stufe Bescheid geben
+    const tag = `limit-${owner}-${month}-${override ? 2 : 1}`;
+    const seen = await first(env, "SELECT 1 FROM limit_notices WHERE tag=?", tag).catch(() => null);
+    if (!seen) {
+      await run(env, "CREATE TABLE IF NOT EXISTS limit_notices (tag TEXT PRIMARY KEY, created_at TEXT DEFAULT CURRENT_TIMESTAMP)").catch(() => {});
+      await run(env, "INSERT OR IGNORE INTO limit_notices(tag) VALUES(?)", tag).catch(() => {});
+      await notifyUser(env, boss, { title: "Minijob-Grenze erreicht", body: `${await memberName(env, owner)} kommt im ${month.slice(5)}/${month.slice(0, 4)} auf ${euroText(after)} (Grenze ${euroText(cap)}). Weiterarbeiten nur mit deiner Freigabe.`, tag, url: "/smartadm/office/#lohn" }).catch(() => {});
+    }
+  }
+  return err(override
+    ? `Stopp: Auch mit Kims Freigabe sind in diesem Monat höchstens ${euroText(cap)} möglich. Mit diesem Eintrag wären es ${euroText(after)}.`
+    : `Stopp: Die Minijob-Grenze von ${euroText(limit)} ist in diesem Monat erreicht (mit diesem Eintrag ${euroText(after)}). Kim hat eine Nachricht bekommen und kann den Monat ausnahmsweise freigeben.`, 409);
+}
+
+async function listLimitOverrides({ env, owner }) {
+  await ensureLimitOverrides(env);
+  return json(await all(env, "SELECT payroll_month, reason, created_at FROM limit_overrides WHERE clerk_user_id=? ORDER BY payroll_month DESC", owner));
+}
+async function createLimitOverride({ request, env, owner, userId }) {
+  await ensureLimitOverrides(env);
+  const body = (await readJson(request)) || {}, month = String(body.month || ""), reason = cleanText(body.reason, 300) || "";
+  if (!validMonth(month)) return err("Bitte einen gültigen Monat angeben.");
+  if (reason.length < 5) return err("Bitte den Grund für die Überschreitung angeben (z. B. Krankheitsvertretung) – er muss in den Entgeltunterlagen stehen.");
+  if (await first(env, "SELECT 1 FROM monthly_closings WHERE clerk_user_id=? AND payroll_month=?", owner, month)) return err("Der Monat ist bereits abgeschlossen.", 409);
+  const months = new Set((await all(env, "SELECT payroll_month FROM limit_overrides WHERE clerk_user_id=?", owner)).map(r => r.payroll_month));
+  if (months.has(month)) return err("Dieser Monat ist bereits freigegeben.", 409);
+  months.add(month);
+  // Jedes 12-Monats-Fenster, das diesen Monat enthält, darf höchstens 2 Freigaben haben
+  for (let i = 0; i < 12; i++) {
+    const end = shiftMonth(month, i);
+    let count = 0;
+    for (let j = 0; j < 12; j++) if (months.has(shiftMonth(end, -j))) count++;
+    if (count > 2) return err("Nicht möglich: Innerhalb von 12 Monaten sind höchstens 2 Überschreitungen erlaubt.", 409);
+  }
+  await run(env, "INSERT INTO limit_overrides (clerk_user_id, payroll_month, reason, created_by) VALUES (?,?,?,?)", owner, month, reason, userId);
+  await runLater(null, notifyUser(env, owner, { title: "Monat freigegeben", body: `Kim hat ${month.slice(5)}/${month.slice(0, 4)} ausnahmsweise freigegeben. Du kannst weiter eintragen.`, tag: "limit-ok-" + month, url: "/smartadm/office/" }).catch(() => {}));
+  return listLimitOverrides({ env, owner });
+}
+
+async function createEntry({ request, env, owner, userId }) {
   const body=await readJson(request);
   await ensureRegular(env);
   const {error,work,perf}=parseEntryBody(body,await regularCorrectionOpen(env,owner,body?.work_date));
@@ -246,6 +322,8 @@ async function createEntry({ request, env, owner }) {
   if (closed) return closed;
   // Alte Zeile ohne Uhrzeit wird im selben Schritt durch den echten Eintrag ersetzt.
   const replaceId=Number(body?.replace_allocation)||null;
+  const overLimit=await monthLimitError(env,owner,userId,work[0],work[4],perf[0],[replaceId]);
+  if(overLimit)return overLimit;
   if(replaceId){const old=await first(env,"SELECT * FROM work_entries WHERE id=? AND clerk_user_id=? AND record_kind='weekly_allocation' AND entry_state='draft' AND submission_id IS NULL",replaceId,owner);if(!old||mondayOfWeek(old.work_date)!==mondayOfWeek(work[0]))return err('Die alte Zeile kann hier nicht ersetzt werden. Bitte neu laden.',409);const oldClosed=await closedMonthError(env,owner,old.work_date);if(oldClosed)return oldClosed;}
 
   if(replaceId){
@@ -286,7 +364,7 @@ async function checkEditable(env, id, owner) {
   return null;
 }
 
-async function updateEntry({ request, env, owner, id }) {
+async function updateEntry({ request, env, owner, id, userId }) {
   const body=await readJson(request);
   await ensureRegular(env);
   if(await first(env,"SELECT 1 FROM work_entries WHERE id=? AND clerk_user_id=? AND record_kind='weekly_allocation'",id,owner))return err('Bitte diese Wochenzuordnung direkt in der Wochenliste ändern.',409);
@@ -299,6 +377,8 @@ async function updateEntry({ request, env, owner, id }) {
   const old = await first(env, "SELECT work_date FROM work_entries WHERE id = ? AND clerk_user_id = ?", id, owner);
   const closed = await closedMonthError(env, owner, work[0], old?.work_date);
   if (closed) return closed;
+  const overLimit = await monthLimitError(env, owner, userId, work[0], work[4], perf[0], [id]);
+  if (overLimit) return overLimit;
 
   await env.DB.batch([
     stmt(env,
@@ -5398,6 +5478,8 @@ const routes = [
 
   route("GET", "/entries", listEntries),
   route("POST", "/entries", createEntry),
+  route("GET", "/admin/limit-overrides", listLimitOverrides, { target: true }),
+  route("POST", "/admin/limit-overrides", createLimitOverride, { target: true }),
   route("PUT", "/entries/:id", updateEntry),
   route("DELETE", "/entries/:id", deleteEntry),
 
