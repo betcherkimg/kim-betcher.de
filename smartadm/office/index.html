@@ -6261,7 +6261,8 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     const test = isTestEmployee(userId);
     setText("mfTitle", `${monthName(month)} · ${first}`);
     setText("mfPayable", test ? "–" : euro(d.total));
-    const net = $("payrollNet")?.textContent || "";
+    const closedRow = state.closings.find(c => c.payroll_month === month);
+    const net = closedRow ? euro(closedRow.net ?? closedRow.gross) : "";
     const parts = [];
     if (test) parts.push("Testkonto – keine Meldung an die Minijob-Zentrale.");
     else if (d.correction) parts.push(`${monthName(month)} ${euro(d.own)} ${d.correction < 0 ? "−" : "+"} Korrektur aus ${monthName(d.prevMonth)} ${euro(Math.abs(d.correction))} (${d.correction < 0 ? "zu viel" : "zu wenig"} gezahlt)`);
@@ -6286,9 +6287,11 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
         act: r.status !== "paid" && r.confirmed
           ? `<input type="date" id="mfPaidDate" value="${esc(isoDate())}" max="${esc(isoDate())}" aria-label="Bezahlt am"><button class="btn primary small" type="button" data-mf="paid">Bezahlt</button>` : "" });
     }
+    const running = !closed && isoDate() <= monthEnd(month);
     steps.push({ done: closed, title: "Monat abgeschlossen",
-      sub: closed ? "Abrechnung ist eingefroren" : ($("closeAskStatus")?.textContent || ""),
-      act: closed ? "" : `<button class="btn ${btn?.disabled ? "ghost" : "primary"} small" type="button" data-mf="close"${btn?.disabled ? " disabled" : ""}>${esc(btn?.textContent || "Monat abschließen")}</button>`
+      sub: closed ? "Abrechnung ist eingefroren" : running ? `ab ${fmtDate(isoPlusDays(monthEnd(month), 1))}, wenn ${first} alle Wochen abgegeben hat`
+        : ($("closeAskStatus")?.textContent || "").replace(/\boben /g, ""),
+      act: closed || running ? "" : `<button class="btn ${btn?.disabled ? "ghost" : "primary"} small" type="button" data-mf="close"${btn?.disabled ? " disabled" : ""}>${esc(btn?.textContent || "Monat abschließen")}</button>`
         + (btn?.disabled ? '<button class="btn ghost small" type="button" data-mf="check">Prüfen</button>' : "") });
     steps.push({ done: both, title: "Gehaltsnachweis unterschrieben",
       sub: both ? `${first} hat ihn in „Meine Unterlagen“` : signMode ? `${first} hat unterschrieben – jetzt du`
@@ -12412,7 +12415,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   /* --- Leiste unten und „Mehr“ (Handy) --- */
 
   const TAB_PAGES = ["dashboard", "telefon", "zeiten", "kalender"];
-  const OFFICE_VERSION = "2.1.0";   // bei jeder Veröffentlichung erhöhen – die App lädt sich dann selbst neu
+  const OFFICE_VERSION = "2.1.1";   // bei jeder Veröffentlichung erhöhen – die App lädt sich dann selbst neu
   /* Selbst-Update: Auf dem iPhone bleibt die Home-Bildschirm-App oft tagelang im Speicher und lädt nie neu.
      Beim Zurückholen in den Vordergrund (und alle 30 Min.) prüfen, ob eine neuere Version online ist. */
   let updatePending = false;
