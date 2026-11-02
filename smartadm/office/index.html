@@ -6378,7 +6378,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     const k = pdfKit(pdf);
     const stand = r.status === "paid" ? `bezahlt ${pdfDate(r.paidDate)}` : r.confirmed ? `gemeldet ${pdfDate(r.submittedDate)}` : "Entwurf";
     let y = vDocHead(k, { preview: false }, "Beitragsnachweis", {
-      boxes: [{ label: "Monat", value: monthName(month) }, { label: "Betriebsnummer", value: orDash(e.company_number) }, { label: "Stand", value: stand, w: 1.6 }],
+      boxes: [{ label: "Monat", value: monthName(month), w: 1.4 }, { label: "Betriebsnummer", value: orDash(e.company_number), w: 1.1 }, { label: "Stand", value: stand, w: 1.6 }],
       sub: "An die Minijob-Zentrale (Betriebsnummer 98000006) · gewerblicher Minijob",
       flag: r.confirmed ? "" : "ENTWURF – NOCH NICHT GEMELDET"
     });
@@ -6387,7 +6387,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
       { label: "Beschäftigte", value: name || "–", w: 1.3 },
       { label: "Zeitraum", value: `${pdfDate(`${month}-01`)} – ${pdfDate(monthEnd(month))}`, w: 1.2 }
     ]) + 4;
-    y = vSectionTitle(k, y, "Werte im SV-Meldeportal");
+    y = vSectionTitle(k, y, r.confirmed ? `Gemeldet im SV-Meldeportal am ${pdfDate(r.submittedDate)}` : "Werte fürs SV-Meldeportal");
     const keys = Object.keys(d.fields);
     y = vTable(k, y, {
       cols: [{ w: 9 }, { w: 43 }, { w: 16, align: "right", mono: true }, { w: 16, align: "right", mono: true }, { w: 16, align: "right", mono: true }],
@@ -6401,6 +6401,42 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
       { label: "Meldung bis", value: pdfDate(d.deadline?.submit) },
       { label: "Zahlung bis", value: pdfDate(d.deadline?.payment) }
     ], { big: true }) + 5;
+
+    // Zahlung und Ausgleich: was gemeldet/bezahlt wurde, was nach Monatsabschluss wirklich fällig war
+    if (r.confirmed) {
+      const reported = r.snapshot?.portalFields || d.fields;
+      const base = r.snapshot?.baseFields || reported;
+      const closingRow = state.closings.find(c => c.payroll_month === month);
+      let due = null;
+      if (closingRow?.snapshot?.profile) {
+        const prof = closingRow.snapshot.profile;
+        const actual = contributionFieldCents(contributionBreakdownFromGross(closingRow.gross, prof, month, closingRow.snapshot.employee || selectedEmployment()), prof);
+        // Die Vormonatskorrektur bleibt Teil der Zahlung; nur der Monatsanteil wird durch den Ist-Wert ersetzt
+        due = Object.fromEntries(Object.keys(reported).map(key => [key, (actual[key] || 0) + (reported[key] || 0) - (base[key] || 0)]));
+      }
+      const sum = o => Object.values(o).reduce((a, n) => a + Number(n || 0), 0);
+      const paidTotal = sum(reported), dueTotal = due ? sum(due) : null, over = due ? paidTotal - dueTotal : null;
+      const next = monthName(isoMonth(new Date(Number(month.slice(0, 4)), Number(month.slice(5, 7)), 1)));
+      y = vSectionTitle(k, y, "Zahlung und Ausgleich");
+      y = vTable(k, y, {
+        cols: [{ w: 9 }, { w: 37 }, { w: 18, align: "right", mono: true }, { w: 18, align: "right", mono: true }, { w: 18, align: "right", mono: true }],
+        head: ["Feld", "Bezeichnung", r.status === "paid" ? "Bezahlt" : "Gemeldet", "Tatsächlich fällig", "Zu viel gezahlt"],
+        rows: Object.keys(reported).map(key => [key, labels[key] || key, num(reported[key] / 100),
+          due ? num(due[key] / 100) : "offen", due ? num((reported[key] - due[key]) / 100) : "–"]),
+        foot: ["Summe", "", num(paidTotal / 100), due ? num(dueTotal / 100) : "offen", due ? num(over / 100) : "–"],
+        zebra: true
+      }) + 4;
+      y = vStrip(k, y, [
+        { label: r.status === "paid" ? "Bezahlt am" : "Zahlung", value: r.status === "paid" ? pdfDate(r.paidDate) : "noch nicht eingetragen" },
+        { label: "Bereits bezahlt", value: r.status === "paid" ? `${num(paidTotal / 100)} EUR` : "–" },
+        { label: "Wirklich fällig", value: due ? `${num(dueTotal / 100)} EUR` : "nach Abschluss" },
+        { label: over != null && over < 0 ? "Zu wenig gezahlt" : "Zu viel gezahlt", value: over != null ? `${num(Math.abs(over) / 100)} EUR` : "–" }
+      ], { big: true }) + 4;
+      y = vNote(k, y, "Ausgleich:", due
+        ? (over ? `${num(Math.abs(over) / 100)} EUR ${over > 0 ? "zu viel" : "zu wenig"} gezahlt, weil bei der Meldung ein Brutto von ${num(Number(r.reportedGross || 0))} EUR angesetzt war und der Monat mit ${num(Number(closingRow.gross || 0))} EUR abgeschlossen wurde. Die Differenz wird je Beitragsgruppe mit dem Beitragsnachweis ${next} ${over > 0 ? "abgezogen" : "nachgezahlt"}.`
+          : "Gemeldeter und tatsächlich fälliger Betrag stimmen überein – kein Ausgleich nötig.")
+        : "Der tatsächlich fällige Betrag steht erst nach dem Monatsabschluss fest. Eine Differenz wird dann mit dem Beitragsnachweis des Folgemonats ausgeglichen.") + 3;
+    }
     if (d.correction) {
       const prevReported = Number(d.prevRecord?.reportedTotal);
       const amounts = Number.isFinite(prevReported) && prevReported
@@ -12415,7 +12451,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   /* --- Leiste unten und „Mehr“ (Handy) --- */
 
   const TAB_PAGES = ["dashboard", "telefon", "zeiten", "kalender"];
-  const OFFICE_VERSION = "2.1.1";   // bei jeder Veröffentlichung erhöhen – die App lädt sich dann selbst neu
+  const OFFICE_VERSION = "2.1.2";   // bei jeder Veröffentlichung erhöhen – die App lädt sich dann selbst neu
   /* Selbst-Update: Auf dem iPhone bleibt die Home-Bildschirm-App oft tagelang im Speicher und lädt nie neu.
      Beim Zurückholen in den Vordergrund (und alle 30 Min.) prüfen, ob eine neuere Version online ist. */
   let updatePending = false;
