@@ -4852,10 +4852,10 @@ async function leaveDateBlocked(env,owner,date) {
 
 
 async function ensurePayRates(env) {
-  await run(env,"CREATE TABLE IF NOT EXISTS office_payroll_years(pay_year INTEGER PRIMARY KEY,rules_json TEXT NOT NULL,confirmed_by TEXT NOT NULL,note TEXT NOT NULL,updated_at TEXT DEFAULT CURRENT_TIMESTAMP)");
-  for(const r of await all(env,'SELECT pay_year,rules_json FROM office_payroll_years'))officeYearRules.set(r.pay_year,{...safeParse(r.rules_json),year:r.pay_year,confirmed:true});
-  await run(env,"CREATE TABLE IF NOT EXISTS office_pay_rates(pay_year INTEGER PRIMARY KEY,rate_cents INTEGER NOT NULL,confirmed_by TEXT NOT NULL,note TEXT NOT NULL,updated_at TEXT DEFAULT CURRENT_TIMESTAMP)");
-  const rates=await all(env,"SELECT pay_year,rate_cents FROM office_pay_rates ORDER BY pay_year");
+  // Erst lesen; nur wenn die Tabelle fehlt, anlegen (spart Schreibzugriffe bei jedem Instanzstart).
+  const readOrCreate=async(sql,create)=>{try{return await all(env,sql);}catch(error){if(!/no such table/i.test(String(error?.message)))throw error;await run(env,create);return all(env,sql);}};
+  for(const r of await readOrCreate('SELECT pay_year,rules_json FROM office_payroll_years',"CREATE TABLE IF NOT EXISTS office_payroll_years(pay_year INTEGER PRIMARY KEY,rules_json TEXT NOT NULL,confirmed_by TEXT NOT NULL,note TEXT NOT NULL,updated_at TEXT DEFAULT CURRENT_TIMESTAMP)"))officeYearRules.set(r.pay_year,{...safeParse(r.rules_json),year:r.pay_year,confirmed:true});
+  const rates=await readOrCreate("SELECT pay_year,rate_cents FROM office_pay_rates ORDER BY pay_year","CREATE TABLE IF NOT EXISTS office_pay_rates(pay_year INTEGER PRIMARY KEY,rate_cents INTEGER NOT NULL,confirmed_by TEXT NOT NULL,note TEXT NOT NULL,updated_at TEXT DEFAULT CURRENT_TIMESTAMP)");
   for(const r of rates)officePayRates.set(r.pay_year,r.rate_cents);
 }
 async function setLeaveRate({request,env,owner,userId}) {
@@ -5642,6 +5642,19 @@ async function getSecurityMonitor({ env }) {
 
 /* ================= Worker ================= */
 
+/* Tabellen-Prüfung beim ersten Aufruf: Hängt sie (z. B. eine Datenbank-Anfrage kommt nie zurück),
+   darf das nicht jede weitere Anfrage dieser Instanz blockieren. Nach 4 s geht es ohne Prüfung weiter
+   (die Tabellen existieren längst), beim nächsten Aufruf wird neu geprüft. */
+async function schemaStep(env, name, ensure, cache) {
+  let timer;
+  const timeout = new Promise(resolve => { timer = setTimeout(() => resolve("timeout"), 4000); });
+  const result = await Promise.race([ensure(env).then(() => "ok"), timeout]).finally(() => clearTimeout(timer));
+  if (result === "timeout") {
+    console.error(JSON.stringify({ event: "office.schema_timeout", step: name }));
+    cache?.delete?.(env.DB);
+  }
+}
+
 export default {
   // Cron-Trigger (Cloudflare → Worker → Einstellungen → Trigger): */15 * * * *
   async scheduled(event, env, exec) {
@@ -5719,9 +5732,9 @@ export default {
       }
 
       try {
-        if (/^\/(?:admin\/)?(?:calendar|leave-|plans|absences|addendum|addenda)(?:\/|$|-)/.test(url.pathname)) await ensureLeave(env);
-        if (/^\/(?:admin\/)?(?:settings|monthly-closings|contribution-reports|uv-lohnnachweis|absences)/.test(url.pathname)) await ensureRegular(env);
-        if (/^\/(?:admin\/)?(?:calls|pool|contact-history)(?:\/|$)/.test(url.pathname)) await ensureContactHistory(env);
+        if (/^\/(?:admin\/)?(?:calendar|leave-|plans|absences|addendum|addenda)(?:\/|$|-)/.test(url.pathname)) await schemaStep(env, "leave", ensureLeave, leaveSchemaReady);
+        if (/^\/(?:admin\/)?(?:settings|monthly-closings|contribution-reports|uv-lohnnachweis|absences)/.test(url.pathname)) await schemaStep(env, "regular", ensureRegular, regularSchemaReady);
+        if (/^\/(?:admin\/)?(?:calls|pool|contact-history)(?:\/|$)/.test(url.pathname)) await schemaStep(env, "contact", ensureContactHistory, contactHistoryReady);
         return await r.handler(ctx);
       }
       catch (error) {

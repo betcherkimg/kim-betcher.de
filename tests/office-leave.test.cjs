@@ -85,7 +85,7 @@ test('new addendum freezes the reviewed text for both signatures, activates only
   const complete=await read(await f.t.signAdminAddendum({env:f.env,owner:'sasi',userId:'boss',exec:f.exec,request:f.request({version:before.version,doc_hash:frozen.hash,signature})}));assert.equal(complete.complete,true);assert.equal(complete.archive[0].hash,old.hash);
   assert.equal(f.db.prepare("SELECT COUNT(*) n FROM leave_terms WHERE clerk_user_id='sasi'").get().n,0);
   await read(await f.t.chooseRegularPattern({env:f.env,userId:'sasi',exec:f.exec,request:f.request({weekdays:[1,3,5],confirmed:true})}));
-  assert.equal(f.db.prepare("SELECT effective_from FROM leave_terms WHERE clerk_user_id='sasi'").get().effective_from,'2026-11-01');
+  assert.equal(f.db.prepare("SELECT effective_from FROM leave_terms WHERE clerk_user_id='sasi'").get().effective_from,new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Berlin'}).format(new Date()));   // gilt ab heute
   assert.equal(f.db.prepare('SELECT COUNT(*) n FROM addendum_signatures').get().n,4);
   const test=await read(await f.t.getOwnAddendum({env:f.env,userId:f.t.TEST_LEAVE_USER_ID}));assert.equal(test.testAccount,true);assert.equal(test.doc.sections[0].heading,'TESTDOKUMENT');assert.notEqual(test.hash,complete.hash);
  }finally{f.close()}
