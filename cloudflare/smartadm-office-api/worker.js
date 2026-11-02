@@ -1205,7 +1205,17 @@ async function rollingYear(env, userId, month) {
     from: from.slice(0, 7),
     to: month,
     gross: values.reduce((a, b) => a + b, 0) / 100,
-    limit: (minijobLimitCents(month) * 12) / 100,
+    // Grenze je Monat aufsummieren (2026: 603 €, ab 2027: 633 €), erst ab Beschäftigungsbeginn
+    limit: await (async () => {
+      const p = await first(env, "SELECT start_date FROM employee_profiles WHERE clerk_user_id = ?", userId).catch(() => null);
+      const start = String(p?.start_date || "").slice(0, 7);
+      let sum = 0;
+      for (let i = 11; i >= 0; i--) {
+        const key = new Date(Date.UTC(y, m - 1 - i, 1)).toISOString().slice(0, 7);
+        if (!start || key >= start) sum += minijobLimitCents(key);
+      }
+      return sum / 100;
+    })(),
     monthsOver: Object.entries(months).filter(([m, v]) => v > minijobLimitCents(m)).length
   };
 }

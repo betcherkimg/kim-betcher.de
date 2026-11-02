@@ -2198,6 +2198,12 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
 .mf-amount b{display:block;font-size:28px;letter-spacing:-.02em;margin:2px 0 2px}
 .mf-amount small{display:block;color:var(--ink-soft,#5d6875);font-size:13px;line-height:1.35}
 .mf-steps{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.mf-year{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.mf-year>b{display:block;font-size:13.5px;margin-bottom:8px}
+.mf-year-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mf-year-grid span{display:block;color:var(--ink-soft,#5d6875);font-size:12px}
+.mf-year-grid strong{font-size:16px;font-variant-numeric:tabular-nums}
+.mf-year small{display:block;color:var(--ink-soft,#5d6875);font-size:12.5px;margin-top:8px;line-height:1.35}
 .mf-step{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface,#fff)}
 .mf-check{flex:0 0 26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-weight:800;font-size:13px;color:var(--ink-soft,#5d6875)}
 .mf-step.is-done .mf-check{background:#1f7a4f;border-color:#1f7a4f;color:#fff}
@@ -2704,6 +2710,11 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
         <div class="card section-card month-flow" id="monthFlow">
           <h2 id="mfTitle">Monat</h2>
           <div class="mf-amount"><span>Zu melden und zu zahlen · Minijob-Zentrale</span><b id="mfPayable">0,00 €</b><small id="mfPayableNote"></small></div>
+          <div class="mf-year" id="mfYear" hidden>
+            <b id="mfYearTitle">Beschäftigungsjahr</b>
+            <div class="mf-year-grid"><div><span>Bisher verdient</span><strong id="mfYearEarned">0,00 €</strong></div><div><span>Jahresgrenze</span><strong id="mfYearLimit">0,00 €</strong></div><div><span>Noch möglich</span><strong id="mfYearRest">0,00 €</strong></div></div>
+            <small id="mfYearHint"></small>
+          </div>
           <ol class="mf-steps" id="mfSteps"></ol>
           <div class="mf-actions">
             <button class="btn ghost" id="mfContribPdf" type="button">Beitragsnachweis-PDF</button>
@@ -5847,6 +5858,44 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
 
   // Brutto der letzten 12 Monate inkl. Abrechnungsmonat. Abgeschlossene Monate zählen mit
   // ihrem abgerechneten Brutto, offene mit dem aktuellen Stand – wie im Worker.
+  function monthRange(from, to) {
+    const out = [];
+    if (!/^\d{4}-\d{2}$/.test(from) || !/^\d{4}-\d{2}$/.test(to)) return out;
+    for (let [y, m] = from.split("-").map(Number); `${y}-${pad(m)}` <= to && out.length < 120; m === 12 ? (y++, m = 1) : m++) out.push(`${y}-${pad(m)}`);
+    return out;
+  }
+  function addMonths(month, n) {
+    const [y, m] = month.split("-").map(Number);
+    return isoMonth(new Date(y, m - 1 + n, 1));
+  }
+
+  /* Beschäftigungsjahr (z. B. 10/2026–09/2027): Grenze = Summe der Monatsgrenzen,
+     bisher verdient = abgeschlossene bzw. vergangene Monate, Rest verteilt auf die offenen Monate. */
+  function employmentYearView(month = payrollMonth()) {
+    const start = String(selectedEmployment().start_date || "").slice(0, 7);
+    if (!/^\d{4}-\d{2}$/.test(start) || month < start) return null;
+    const [sy, sm] = start.split("-").map(Number), [y, m] = month.split("-").map(Number);
+    const index = Math.floor(((y - sy) * 12 + (m - sm)) / 12);
+    const from = addMonths(start, index * 12), to = addMonths(from, 11);
+    const months = monthRange(from, to);
+    const now = isoMonth();
+    let earned = 0, open = [];
+    months.forEach(key => {
+      const closing = state.closings.find(row => row.payroll_month === key);
+      if (closing) { earned += Number(closing.gross || 0); return; }
+      if (key < now) {
+        earned += calculatePayroll(inMonth(state.employeeEntries, key), readProfileInputs(), key, selectedEmployment(),
+          inMonthAbsences(state.employeeAbsences, key), adjustmentsFor(state.employeeAdjustments, key)).gross || 0;
+        return;
+      }
+      open.push(key);
+    });
+    const limit = months.reduce((sum, key) => sum + minijobLimit(key), 0);
+    const rest = Math.round((limit - earned) * 100) / 100;
+    return { number: index + 1, from, to, limit, earned: Math.round(earned * 100) / 100, rest, open,
+      perMonth: open.length ? Math.floor((rest / open.length) * 100) / 100 : 0 };
+  }
+
   function rollingYear(entries, absences, month) {
     const [y, m] = month.split("-").map(Number);
     const from = isoMonth(new Date(y, m - 12, 1));
@@ -5871,11 +5920,14 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
       if (key >= from && key < month) cents[key] = Math.round(Number(row.gross || 0) * 100);
     });
     const values = Object.values(cents);
+    // Grenze je Monat aufsummieren (2026: 603 €, ab 2027: 633 €), erst ab Beschäftigungsbeginn
+    const start = String(selectedEmployment().start_date || "").slice(0, 7);
+    const limitMonths = monthRange(start && start > from ? start : from, month);
     return {
       from,
       to: month,
       gross: values.reduce((a, b) => a + b, 0) / 100,
-      limit: minijobLimit(month) * 12,
+      limit: limitMonths.reduce((sum, key) => sum + minijobLimit(key), 0),
       monthsOver: Object.entries(cents).filter(([key, v]) => v > minijobLimit(key) * 100).length
     };
   }
@@ -6268,6 +6320,20 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     else if (d.correction) parts.push(`${monthName(month)} ${euro(d.own)} ${d.correction < 0 ? "−" : "+"} Korrektur aus ${monthName(d.prevMonth)} ${euro(Math.abs(d.correction))} (${d.correction < 0 ? "zu viel" : "zu wenig"} gezahlt)`);
     if (!test && d.preliminary) parts.push("Noch vorläufig – der Betrag wird bis zur Meldung genauer.");
     if (net) parts.push(`Lohn an ${first}: ${net}`);
+    const ey = employmentYearView(month);
+    const short = key => `${key.slice(5, 7)}/${key.slice(0, 4)}`;
+    $("mfYear").hidden = !ey || test;
+    if (ey && !test) {
+      setText("mfYearTitle", `${ey.number}. Beschäftigungsjahr · ${short(ey.from)}–${short(ey.to)}`);
+      setText("mfYearEarned", euro(ey.earned));
+      setText("mfYearLimit", euro(ey.limit));
+      setText("mfYearRest", euro(ey.rest));
+      setText("mfYearHint", ey.rest < 0
+        ? `Die Jahresgrenze ist um ${euro(-ey.rest)} überschritten – bitte mit der Minijob-Zentrale klären.`
+        : ey.open.length
+          ? `Noch ${ey.open.length} Monat${ey.open.length === 1 ? "" : "e"} offen: im Schnitt höchstens ${euro(ey.perMonth)} pro Monat. Grenze: ${ey.open.length && ey.from < "2027-01" && ey.to >= "2027-01" ? "603 € je Monat 2026, 633 € je Monat ab 2027" : euro(minijobLimit(ey.to)) + " je Monat"}; Stundenlohn ab 2027 ${euro(hourlyRateCents("2027-01") / 100)}.`
+          : "Jahr abgeschlossen.");
+    }
     $("mfPayableNote").innerHTML = parts.map(esc).join("<br>");
 
     const closed = state.closings.some(c => c.payroll_month === month);
@@ -12451,7 +12517,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   /* --- Leiste unten und „Mehr“ (Handy) --- */
 
   const TAB_PAGES = ["dashboard", "telefon", "zeiten", "kalender"];
-  const OFFICE_VERSION = "2.1.2";   // bei jeder Veröffentlichung erhöhen – die App lädt sich dann selbst neu
+  const OFFICE_VERSION = "2.2.0";   // bei jeder Veröffentlichung erhöhen – die App lädt sich dann selbst neu
   /* Selbst-Update: Auf dem iPhone bleibt die Home-Bildschirm-App oft tagelang im Speicher und lädt nie neu.
      Beim Zurückholen in den Vordergrund (und alle 30 Min.) prüfen, ob eine neuere Version online ist. */
   let updatePending = false;

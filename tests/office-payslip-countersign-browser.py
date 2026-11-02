@@ -34,7 +34,8 @@ class API:
    s.saved=out
   elif p=='/admin/contribution-reports':out=[s.saved] if s.saved else []
   elif p=='/notices/acks':out=[]
-  elif p in('/settings','/me/prefs','/admin/employer','/admin/employee-profile','/admin/payroll-settings'):out={}
+  elif p=='/admin/employee-profile':out={'clerk_user_id':'sasi','start_date':'2026-10-01'}
+  elif p in('/settings','/me/prefs','/admin/employer','/admin/payroll-settings'):out={}
   elif m!='GET':out={'success':True}
   route.fulfill(status=200,content_type='application/json',body=json.dumps(out))
  def attach(s,ctx):
@@ -54,6 +55,14 @@ with sync_playwright() as pw:
  card=pg.locator('#monthFlow')
  assert card.is_visible() and 'Oktober 2026 · Saskia' in pg.inner_text('#mfTitle')
  assert not pg.is_visible('.lohn-tabs'),'Details sollen standardmäßig zu sein'
+ # Beschäftigungsjahr: 3 × 603 € (2026) + 9 × 633 € (2027) = 7.506 €
+ assert pg.is_visible('#mfYear'),'Jahresbox fehlt'
+ assert '1. Beschäftigungsjahr · 10/2026–09/2027' in pg.inner_text('#mfYearTitle'),pg.inner_text('#mfYearTitle')
+ T=lambda sel:pg.inner_text(sel).replace('\xa0',' ')
+ assert T('#mfYearLimit')=='7.506,00 €',pg.inner_text('#mfYearLimit')
+ assert T('#mfYearEarned')=='519,70 €',pg.inner_text('#mfYearEarned')
+ assert T('#mfYearRest')=='6.986,30 €',pg.inner_text('#mfYearRest')
+ hint=T('#mfYearHint');assert '11 Monate offen' in hint and '635,11 €' in hint and '14,60 €' in hint,hint
  steps=pg.locator('.mf-step')
  assert steps.count()==4,steps.count()
  assert 'hat unterschrieben – jetzt du' in steps.nth(3).inner_text()
