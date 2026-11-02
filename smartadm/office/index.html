@@ -2189,7 +2189,33 @@ html[data-theme="dark"] body[data-office-role="employee"] .tabbar{background:col
 html[data-theme="dark"] .my-row[data-my] .my-row-icon{background:var(--accent-wash);color:var(--accent)}
 html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav){background:var(--surface);border-color:var(--line)}
 .update-bar{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 84px);z-index:9999;border:0;border-radius:14px;padding:14px 16px;background:#1f2a44;color:#fff;font:600 15px/1.3 Onest,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.3)}
-#closeAskBtn.sign-now{background:#1f7a4f;border-color:#1f7a4f;color:#fff}
+#closeAskBtn.sign-now,.btn.sign-now{background:#1f7a4f;border-color:#1f7a4f;color:#fff}
+/* Lohn: einfache Monatskarte, Details nur auf Wunsch */
+#lohn.lohn-simple .lohn-tabs,#lohn.lohn-simple .lohn-pane,#lohn.lohn-simple #payrollRateIntro{display:none!important}
+.month-flow h2{font-size:17px;margin:0 0 12px}
+.mf-amount{background:var(--ground,#f3f5f6);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.mf-amount span{display:block;color:var(--ink-soft,#5d6875);font-size:12.5px;font-weight:600}
+.mf-amount b{display:block;font-size:28px;letter-spacing:-.02em;margin:2px 0 2px}
+.mf-amount small{display:block;color:var(--ink-soft,#5d6875);font-size:13px;line-height:1.35}
+.mf-steps{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.mf-step{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface,#fff)}
+.mf-check{flex:0 0 26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-weight:800;font-size:13px;color:var(--ink-soft,#5d6875)}
+.mf-step.is-done .mf-check{background:#1f7a4f;border-color:#1f7a4f;color:#fff}
+.mf-text{flex:1;min-width:0}
+.mf-text b{display:block;font-size:14.5px}
+.mf-text small{display:block;color:var(--ink-soft,#5d6875);font-size:12.5px;line-height:1.35}
+.mf-step.is-done .mf-text b{color:var(--ink-soft,#5d6875)}
+.mf-act{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.mf-act input[type=date]{width:auto;min-height:36px;padding:4px 8px}
+.mf-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.mf-values{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0 12px}
+.mf-values td,.mf-values th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.mf-values td:last-child,.mf-values th:last-child{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.mf-values td:first-child{font-weight:700;white-space:nowrap}
+.mf-values small{display:block;color:var(--ink-soft,#5d6875);font-size:12px}
+.mf-values tr.sum td{font-weight:800;border-bottom:0}
+#mfReportForm{display:grid;gap:10px}
+@media (max-width:640px){.mf-step{flex-wrap:wrap}.mf-act{width:100%;justify-content:flex-start;padding-left:38px}}
 </style>
 <link rel="stylesheet" href="../date-inputs.css">
 </head>
@@ -2675,6 +2701,16 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
           <div class="field"><label for="payrollMonth">Abrechnungsmonat</label><input id="payrollMonth" type="month"></div>
           <p class="person-hint" id="payrollRateIntro">Arbeitsstunden × 13,90 € + gesetzte Termine × 5,00 €.</p>
         </div>
+        <div class="card section-card month-flow" id="monthFlow">
+          <h2 id="mfTitle">Monat</h2>
+          <div class="mf-amount"><span>Zu melden und zu zahlen · Minijob-Zentrale</span><b id="mfPayable">0,00 €</b><small id="mfPayableNote"></small></div>
+          <ol class="mf-steps" id="mfSteps"></ol>
+          <div class="mf-actions">
+            <button class="btn ghost" id="mfContribPdf" type="button">Beitragsnachweis-PDF</button>
+            <button class="btn ghost" id="mfPayslipPdf" type="button">Gehaltsnachweis-PDF</button>
+            <button class="btn ghost" id="mfDetailsBtn" type="button" aria-expanded="false">Details anzeigen</button>
+          </div>
+        </div>
         <div class="lohn-tabs" role="tablist" aria-label="Lohn">
           <button type="button" role="tab" data-lohn-tab="abrechnung">Abrechnung</button>
           <button type="button" role="tab" data-lohn-tab="beitrag">Beitragsnachweis <span class="tab-badge" id="beitragBadge"></span></button>
@@ -2762,6 +2798,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
               <button class="btn ghost" id="useCurrentGrossBtn" type="button">Automatischen Betrag verwenden</button>
               <button class="btn primary" id="saveContributionBtn" type="button">Vorbereitung speichern</button>
               <button class="btn ghost" id="showSvValuesBtn" type="button" hidden>Werte fürs SV-Meldeportal</button>
+              <button class="btn ghost" id="contribPdfBtn" type="button">Beitragsnachweis als PDF</button>
               <span id="contribSaveStatus" class="status-text" style="margin:0"></span>
             </div>
             <div class="breakdown" style="margin-top:14px">
@@ -3103,6 +3140,23 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
       </section>
 
       <!-- Boss: Widget hinzufügen -->
+      <dialog id="mfReportDialog" class="form-dialog" data-role="boss" aria-labelledby="mfReportTitle" closedby="none">
+        <div class="picker-head">
+          <strong id="mfReportTitle">Beitragsnachweis melden</strong>
+          <button class="picker-close" type="button" id="mfReportClose" aria-label="Schließen">Schließen <span aria-hidden="true">×</span></button>
+        </div>
+        <div class="form-dialog-body">
+          <p class="form-dialog-hint" id="mfReportHint"></p>
+          <div id="mfReportValues" style="overflow-x:auto"></div>
+          <div id="mfReportForm">
+            <div class="field"><label for="mfSubmittedDate">Im SV-Meldeportal übermittelt am</label><input id="mfSubmittedDate" type="date"></div>
+            <label class="check-row"><input id="mfSubmittedCheck" type="checkbox"> Ich habe genau diese Werte im SV-Meldeportal übermittelt.</label>
+            <div class="actions start"><button class="btn primary" id="mfReportSave" type="button">Als gemeldet speichern</button></div>
+            <span class="status-text" id="mfReportStatus"></span>
+          </div>
+        </div>
+      </dialog>
+
       <dialog id="widgetDialog" class="form-dialog widget-dialog" data-role="boss" aria-labelledby="widgetDialogTitle" closedby="none">
         <div class="picker-head">
           <strong id="widgetDialogTitle">Widget hinzufügen</strong>
@@ -6157,6 +6211,202 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     renderContributionValues(true);
     const soon = deadline && (record.status || "draft") === "draft" && month === isoMonth() && isoDate() >= shiftIsoDate(deadline.submit, -7);
     setText("beitragBadge", userId && soon ? "!" : "");
+    renderMonthFlow();
+  }
+
+  /* --- Monatskarte: eine Zahl, vier Haken. Alles Weitere liegt unter „Details“. --- */
+  function lohnDetailsOpen() { try { return localStorage.getItem("smartadm.office.lohnDetails") === "1"; } catch { return false; } }
+  function setLohnDetails(open) {
+    try { localStorage.setItem("smartadm.office.lohnDetails", open ? "1" : "0"); } catch {}
+    renderMonthFlow();
+  }
+  function svFieldLabels() {
+    return { "6000": "Krankenversicherung · Pauschalbeitrag", "0100": "Rentenversicherung · voller Beitrag",
+      "0500": "Rentenversicherung · Arbeitgeber-Pauschalbeitrag", U1: "Umlage U1 · Krankheit", U2: "Umlage U2 · Mutterschaft",
+      "0050": "Insolvenzgeldumlage", St: "Einheitliche Pauschsteuer" };
+  }
+  // Alles, was Karte, Dialog und PDF für den gewählten Monat brauchen
+  function monthFlowData(userId = state.selectedUserId, month = payrollMonth()) {
+    const record = readContributionRecord(userId, month);
+    const fields = currentPortalFields();
+    const prior = record.confirmed ? record.snapshot?.priorFields || {} : priorMonthFields(month);
+    const sum = o => Object.values(o || {}).reduce((a, n) => a + Number(n || 0), 0);
+    const total = sum(fields) / 100, correction = sum(prior) / 100;
+    const prevMonth = previousContributionMonth(month);
+    const prevRecord = readContributionRecord(userId, prevMonth);
+    const projection = projectedPayroll(month);
+    const gross = record.confirmed ? Number(record.reportedGross || 0) : Number($("contribReportedGross").value || projection.gross || 0);
+    return { record, fields, prior, total, correction, own: Math.round((total - correction) * 100) / 100,
+      prevMonth, prevRecord, gross, preliminary: !record.confirmed && projection.method !== "final",
+      deadline: contributionDeadline(month), month };
+  }
+  function monthName(month) { const t = fmtMonth(month); return t[0].toUpperCase() + t.slice(1); }
+
+  // Darf das Rendern der Lohn-Seite nie blockieren
+  function renderMonthFlow() {
+    try { renderMonthFlowInner(); } catch (error) { console.warn("Monatskarte:", error); }
+  }
+  function renderMonthFlowInner() {
+    const host = $("monthFlow"), page = $("lohn");
+    if (!host || !page) return;
+    const details = lohnDetailsOpen();
+    page.classList.toggle("lohn-simple", !details);
+    $("mfDetailsBtn").textContent = details ? "Details ausblenden" : "Details anzeigen";
+    $("mfDetailsBtn").setAttribute("aria-expanded", String(details));
+    const userId = state.selectedUserId, month = payrollMonth();
+    if (!userId) { host.hidden = true; return; }
+    host.hidden = false;
+    const first = employeeName(findEmployee(userId)).split(" ")[0] || "Mitarbeiterin";
+    const d = monthFlowData(userId, month);
+    const test = isTestEmployee(userId);
+    setText("mfTitle", `${monthName(month)} · ${first}`);
+    setText("mfPayable", test ? "–" : euro(d.total));
+    const net = $("payrollNet")?.textContent || "";
+    const parts = [];
+    if (test) parts.push("Testkonto – keine Meldung an die Minijob-Zentrale.");
+    else if (d.correction) parts.push(`${monthName(month)} ${euro(d.own)} ${d.correction < 0 ? "−" : "+"} Korrektur aus ${monthName(d.prevMonth)} ${euro(Math.abs(d.correction))} (${d.correction < 0 ? "zu viel" : "zu wenig"} gezahlt)`);
+    if (!test && d.preliminary) parts.push("Noch vorläufig – der Betrag wird bis zur Meldung genauer.");
+    if (net) parts.push(`Lohn an ${first}: ${net}`);
+    $("mfPayableNote").innerHTML = parts.map(esc).join("<br>");
+
+    const closed = state.closings.some(c => c.payroll_month === month);
+    const slip = closed ? slipFor(month) : null;
+    const btn = $("closeAskBtn");
+    const signMode = btn?.dataset.mode === "sign";
+    const both = !!(slip?.signatures?.employee && slip?.signatures?.employer);
+    const r = d.record, dl = d.deadline || {};
+    const steps = [];
+    if (!test) {
+      steps.push({ done: !!r.confirmed, title: "Beitragsnachweis gemeldet",
+        sub: r.confirmed ? `am ${fmtDate(r.submittedDate)}` : dl.submit ? `bis ${fmtDate(dl.submit)}` : "",
+        act: r.confirmed ? '<button class="btn ghost small" type="button" data-mf="values">Werte</button>'
+          : '<button class="btn primary small" type="button" data-mf="report">Melden</button>' });
+      steps.push({ done: r.status === "paid", title: "Beiträge bezahlt",
+        sub: r.status === "paid" ? `am ${fmtDate(r.paidDate)}` : `${euro(d.total)}${dl.payment ? ` bis ${fmtDate(dl.payment)}` : ""}`,
+        act: r.status !== "paid" && r.confirmed
+          ? `<input type="date" id="mfPaidDate" value="${esc(isoDate())}" max="${esc(isoDate())}" aria-label="Bezahlt am"><button class="btn primary small" type="button" data-mf="paid">Bezahlt</button>` : "" });
+    }
+    steps.push({ done: closed, title: "Monat abgeschlossen",
+      sub: closed ? "Abrechnung ist eingefroren" : ($("closeAskStatus")?.textContent || ""),
+      act: closed ? "" : `<button class="btn ${btn?.disabled ? "ghost" : "primary"} small" type="button" data-mf="close"${btn?.disabled ? " disabled" : ""}>${esc(btn?.textContent || "Monat abschließen")}</button>`
+        + (btn?.disabled ? '<button class="btn ghost small" type="button" data-mf="check">Prüfen</button>' : "") });
+    steps.push({ done: both, title: "Gehaltsnachweis unterschrieben",
+      sub: both ? `${first} hat ihn in „Meine Unterlagen“` : signMode ? `${first} hat unterschrieben – jetzt du`
+        : closed ? `Wartet auf ${first}s Unterschrift` : "Nach dem Abschluss",
+      act: signMode ? '<button class="btn small sign-now" type="button" data-mf="sign">Unterschreiben</button>' : "" });
+    $("mfSteps").innerHTML = steps.map((st, i) => `<li class="mf-step${st.done ? " is-done" : ""}">
+        <span class="mf-check" aria-hidden="true">${st.done ? "✓" : i + 1}</span>
+        <div class="mf-text"><b>${esc(st.title)}</b>${st.sub ? `<small>${esc(st.sub)}</small>` : ""}</div>
+        ${st.act ? `<div class="mf-act">${st.act}</div>` : ""}</li>`).join("");
+    const frozen = closed;
+    setText("mfPayslipPdf", frozen ? "Gehaltsnachweis-PDF" : "Gehaltsnachweis (Vorschau)");
+    $("mfContribPdf").hidden = test;
+  }
+
+  function mfValuesTable(d) {
+    const labels = svFieldLabels(), prevName = monthName(d.prevMonth);
+    return `<table class="mf-values"><thead><tr><th>Feld</th><th>Bezeichnung</th><th>Betrag</th></tr></thead><tbody>${
+      Object.entries(d.fields).map(([key, value]) => `<tr><td>${esc(key)}</td><td>${esc(labels[key] || key)}${d.prior[key]
+        ? `<small>enthält ${euro(d.prior[key] / 100)} Korrektur aus ${esc(prevName)}</small>` : ""}</td><td>${euro(value / 100)}</td></tr>`).join("")}
+      <tr class="sum"><td>Summe</td><td>zu melden und zu zahlen</td><td>${euro(d.total)}</td></tr></tbody></table>`;
+  }
+
+  function openMonthReport(readOnly) {
+    const month = payrollMonth(), d = monthFlowData();
+    setText("mfReportTitle", `Beitragsnachweis ${monthName(month)}`);
+    setText("mfReportHint", readOnly
+      ? `Am ${fmtDate(d.record.submittedDate)} so im SV-Meldeportal gemeldet.`
+      : `SV-Meldeportal → Beitragsnachweis → Minijob-Zentrale (98000006), Zeitraum ${fmtDate(`${month}-01`)} bis ${fmtDate(monthEnd(month))}. Werte genau so eintragen und absenden, danach hier bestätigen.`
+        + (d.preliminary ? " Tipp: kurz vor der Frist melden, dann ist die Hochrechnung am genauesten." : ""));
+    $("mfReportValues").innerHTML = mfValuesTable(d);
+    $("mfReportForm").hidden = !!readOnly;
+    $("mfSubmittedDate").value = isoDate();
+    $("mfSubmittedDate").max = isoDate();
+    $("mfSubmittedCheck").checked = false;
+    setText("mfReportStatus", "");
+    openDialog($("mfReportDialog"));
+  }
+
+  $("mfReportClose").addEventListener("click", () => closeDialog($("mfReportDialog")));
+  $("mfReportSave").addEventListener("click", event => withBusy(event.currentTarget, async () => {
+    const date = $("mfSubmittedDate").value;
+    if (!date || !$("mfSubmittedCheck").checked) return setStatus("mfReportStatus", "Bitte Datum eintragen und bestätigen, dass du genau diese Werte übermittelt hast.", true);
+    const d = monthFlowData();
+    $("contribStatus").value = "submitted";
+    $("contribSubmittedDate").value = date;
+    $("contribSubmissionConfirmed").checked = true;
+    if (d.correction && !$("contribNote").value.trim()) {
+      $("contribNote").value = `Enthält Korrektur aus ${monthName(d.prevMonth)}: ${d.correction < 0 ? "−" : "+"}${euro(Math.abs(d.correction))} (${d.correction < 0 ? "zu viel" : "zu wenig"} gezahlt)`;
+    }
+    if (await saveContributionForm()) { closeDialog($("mfReportDialog")); return; }
+    setStatus("mfReportStatus", $("contribSaveStatus").textContent || "Nicht gespeichert.", true);
+    renderContributionModule();
+  }));
+
+  $("monthFlow").addEventListener("click", event => {
+    const b = event.target.closest("[data-mf]");
+    if (!b || b.disabled) return;
+    const what = b.dataset.mf;
+    if (what === "report") openMonthReport(false);
+    else if (what === "values") openMonthReport(true);
+    else if (what === "close" || what === "sign") $("closeAskBtn").click();
+    else if (what === "check") { setLohnDetails(true); setLohnTab("abrechnung"); $("calendarPayrollCheck")?.scrollIntoView({ behavior: "smooth", block: "start" }); }
+    else if (what === "paid") withBusy(b, async () => {
+      const date = $("mfPaidDate")?.value;
+      if (!date) return alert("Bitte das Zahlungsdatum eintragen.");
+      $("contribStatus").value = "paid";
+      $("contribPaidDate").value = date;
+      if (!await saveContributionForm()) { alert($("contribSaveStatus").textContent || "Nicht gespeichert."); renderContributionModule(); }
+    });
+  });
+  $("mfDetailsBtn").addEventListener("click", () => setLohnDetails(!lohnDetailsOpen()));
+  $("mfPayslipPdf").addEventListener("click", () => $("createPayrollPdf").click());
+  $("mfContribPdf").addEventListener("click", event => withBusy(event.currentTarget, downloadContributionPdf));
+  $("contribPdfBtn").addEventListener("click", event => withBusy(event.currentTarget, downloadContributionPdf));
+
+  async function downloadContributionPdf() {
+    const userId = state.selectedUserId, month = payrollMonth();
+    if (!userId) return alert("Bitte zuerst einen Mitarbeiter auswählen.");
+    if (typeof window.html2pdf !== "function") return alert("Der PDF-Export wird noch geladen. Bitte gleich noch einmal tippen.");
+    const d = monthFlowData(userId, month), r = d.record, e = state.employer || {};
+    const name = employeeName(findEmployee(userId)), labels = svFieldLabels(), prevName = monthName(d.prevMonth);
+    const pdf = await newPdfDocument();
+    pdf.setProperties({ title: `Beitragsnachweis ${monthName(month)}`, creator: "SmartADM 5 Office" });
+    const k = pdfKit(pdf);
+    const stand = r.status === "paid" ? `bezahlt ${pdfDate(r.paidDate)}` : r.confirmed ? `gemeldet ${pdfDate(r.submittedDate)}` : "Entwurf";
+    let y = vDocHead(k, { preview: false }, "Beitragsnachweis", {
+      boxes: [{ label: "Monat", value: monthName(month) }, { label: "Betriebsnummer", value: orDash(e.company_number) }, { label: "Stand", value: stand, w: 1.6 }],
+      sub: "An die Minijob-Zentrale (Betriebsnummer 98000006) · gewerblicher Minijob",
+      flag: r.confirmed ? "" : "ENTWURF – NOCH NICHT GEMELDET"
+    });
+    y = vStrip(k, y, [
+      { label: "Arbeitgeber", value: [e.name, e.zip_city].filter(Boolean).join(", ") || "–", w: 2 },
+      { label: "Beschäftigte", value: name || "–", w: 1.3 },
+      { label: "Zeitraum", value: `${pdfDate(`${month}-01`)} – ${pdfDate(monthEnd(month))}`, w: 1.2 }
+    ]) + 4;
+    y = vSectionTitle(k, y, "Werte im SV-Meldeportal");
+    const keys = Object.keys(d.fields);
+    y = vTable(k, y, {
+      cols: [{ w: 9 }, { w: 43 }, { w: 16, align: "right", mono: true }, { w: 16, align: "right", mono: true }, { w: 16, align: "right", mono: true }],
+      head: ["Feld", "Bezeichnung", monthName(month).split(" ")[0], `Korr. ${prevName.split(" ")[0]}`, "Zu melden"],
+      rows: keys.map(key => [key, labels[key] || key, num((d.fields[key] - (d.prior[key] || 0)) / 100), d.prior[key] ? num(d.prior[key] / 100) : "–", num(d.fields[key] / 100)]),
+      foot: ["Summe", "", num(d.own), d.correction ? num(d.correction) : "–", num(d.total)],
+      zebra: true
+    }) + 5;
+    y = vStrip(k, y, [
+      { label: "Zu zahlen", value: `${num(d.total)} EUR` },
+      { label: "Meldung bis", value: pdfDate(d.deadline?.submit) },
+      { label: "Zahlung bis", value: pdfDate(d.deadline?.payment) }
+    ], { big: true }) + 5;
+    if (d.correction) {
+      const prevReported = Number(d.prevRecord?.reportedTotal);
+      const amounts = Number.isFinite(prevReported) && prevReported
+        ? ` Gemeldet und gezahlt: ${num(prevReported)} EUR, nach Monatsabschluss tatsächlich fällig: ${num(prevReported + d.correction)} EUR.` : "";
+      y = vNote(k, y, "Korrektur aus Vormonat:", `In ${prevName} wurden ${num(Math.abs(d.correction))} EUR ${d.correction < 0 ? "zu viel" : "zu wenig"} gezahlt.${amounts} Die Differenz ist je Beitragsgruppe mit diesem Beitragsnachweis verrechnet (Korrektur über den Beitragsnachweis des Folgemonats).`) + 3;
+    }
+    vNote(k, y, "Grundlage:", `Brutto ${num(d.gross)} EUR${r.confirmed ? " (bei der Meldung angesetzt)" : d.preliminary ? " (Hochrechnung bis Monatsende)" : " (endgültiger Monatsabschluss)"}. Abweichungen zum endgültigen Monatsabschluss werden im Folgemonat verrechnet.${r.note ? ` Notiz: ${r.note}` : ""}`);
+    vFooters(k, () => "Erstellt mit SmartADM 5 Office – ersetzt nicht die Meldung im SV-Meldeportal.", (pn, n) => `Beitragsnachweis ${monthName(month)} · Seite ${pn} von ${n}`);
+    pdf.save(`Beitragsnachweis_${month}.pdf`);
   }
 
   function missingMasterData(employer, employee) {
@@ -6339,15 +6589,18 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   $("contribStatus").addEventListener("change", () => {
     if ($("contribStatus").value === "draft") $("contribSubmissionConfirmed").checked = false;
   });
-  $("saveContributionBtn").addEventListener("click", event => withBusy(event.currentTarget, async () => {
-    if (!state.selectedUserId) return alert("Bitte zuerst einen Mitarbeiter auswählen.");
-    if (state.employeeDataError || state.closingsError) return setStatus("contribSaveStatus", "Abrechnungsdaten unvollständig. Bitte neu laden.", true);
-    if (!await flushProfileSave()) return setStatus("contribSaveStatus", "Abrechnungseinstellungen zuerst erfolgreich speichern.", true);
+  $("saveContributionBtn").addEventListener("click", event => withBusy(event.currentTarget, saveContributionForm));
+  // Liefert true, wenn gespeichert wurde (auch von der Monatskarte genutzt)
+  async function saveContributionForm() {
+    const fail = text => { setStatus("contribSaveStatus", text, true); return false; };
+    if (!state.selectedUserId) { alert("Bitte zuerst einen Mitarbeiter auswählen."); return false; }
+    if (state.employeeDataError || state.closingsError) return fail("Abrechnungsdaten unvollständig. Bitte neu laden.");
+    if (!await flushProfileSave()) return fail("Abrechnungseinstellungen zuerst erfolgreich speichern.");
     const gross = Number($("contribReportedGross").value);
     const status = $("contribStatus").value;
-    if (!Number.isFinite(gross) || gross < 0) return setStatus("contribSaveStatus", "Bitte ein gültiges Brutto angeben.", true);
+    if (!Number.isFinite(gross) || gross < 0) return fail("Bitte ein gültiges Brutto angeben.");
     if (status !== "draft" && (!$("contribSubmissionConfirmed").checked || !$("contribSubmittedDate").value)) {
-      return setStatus("contribSaveStatus", "Erst tatsächlich im Portal übermitteln, dann Datum und Bestätigung eintragen.", true);
+      return fail("Erst tatsächlich im Portal übermitteln, dann Datum und Bestätigung eintragen.");
     }
     const breakdown = contributionBreakdownFromGross(gross, readProfileInputs());
     try {
@@ -6360,8 +6613,9 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
       setStatus("contribSaveStatus", status === "draft" ? "Vorbereitung gespeichert · noch nicht übermittelt" : "Deine Übermittlungsbestätigung gespeichert");
       renderContributionModule();
       renderDashboardWidgets();
-    } catch (error) { setStatus("contribSaveStatus", `Nicht gespeichert: ${error.message}`, true); }
-  }));
+      return true;
+    } catch (error) { return fail(`Nicht gespeichert: ${error.message}`); }
+  }
 
   function payrollDocument() {
     const employee = findEmployee(state.selectedUserId);
@@ -6503,6 +6757,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     btn.disabled = disabled;
     btn.classList.toggle("sign-now", btn.dataset.mode === "sign");
     setText("closeAskStatus", text);
+    renderMonthFlow();
   }
 
   $("closeAskBtn").addEventListener("click", event => {
@@ -12157,7 +12412,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   /* --- Leiste unten und „Mehr“ (Handy) --- */
 
   const TAB_PAGES = ["dashboard", "telefon", "zeiten", "kalender"];
-  const OFFICE_VERSION = "2.0.3";   // bei jeder Veröffentlichung erhöhen – die App lädt sich dann selbst neu
+  const OFFICE_VERSION = "2.1.0";   // bei jeder Veröffentlichung erhöhen – die App lädt sich dann selbst neu
   /* Selbst-Update: Auf dem iPhone bleibt die Home-Bildschirm-App oft tagelang im Speicher und lädt nie neu.
      Beim Zurückholen in den Vordergrund (und alle 30 Min.) prüfen, ob eine neuere Version online ist. */
   let updatePending = false;

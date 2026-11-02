@@ -15,7 +15,7 @@ CLERK='''window.Clerk={user:{id:'kim',firstName:'Kim',lastName:'Betcher',primary
 MONTH='2026-10'
 SNAP={'month':MONTH,'monthLabel':'Oktober 2026','employeeName':'Saskia Test','employee':{'full_name':'Saskia Test','zip_city':'89518 Heidenheim'},'employer':{'name':'Kim Betcher','zip_city':'89518 Heidenheim'},'payroll':{'mins':1500,'eligible':20,'gross':519.7,'net':519.7}}
 class API:
- def __init__(s):s.slip={'month':MONTH,'snapshot':SNAP,'hash':'h','signatures':{'employee':{'name':'Saskia Test','signed_at':'2026-11-02T10:00:00Z'},'employer':None}};s.signed=[]
+ def __init__(s):s.slip={'month':MONTH,'snapshot':SNAP,'hash':'h','signatures':{'employee':{'name':'Saskia Test','signed_at':'2026-11-02T10:00:00Z'},'employer':None}};s.signed=[];s.reports=[];s.saved=None
  def route(s,route):
   req=route.request;p=urlparse(req.url).path;m=req.method;body=req.post_data_json if req.post_data else {}
   out=[]
@@ -26,6 +26,13 @@ class API:
   elif p=='/admin/payslips/sign':
    s.signed.append(body);s.slip['signatures']['employer']={'name':'Kim Betcher','signed_at':'2026-11-02T12:00:00Z'};out=s.slip
   elif p=='/admin/close-requests':out=[]
+  elif p=='/admin/contribution-reports' and m=='PUT':
+   s.reports.append(body)
+   out={'id':1,'payroll_month':body['month'],'estimated_gross':body['estimated_gross'],'reported_total':sum(body['portal_fields'].values())/100,
+        'status':body['status'],'submitted_at':body.get('submitted_date'),'paid_at':body.get('paid_date'),'note':body.get('note',''),
+        'snapshot':{'submissionConfirmation':{'confirmedBy':'kim'} if body['status']!='draft' else None,'portalFields':body['portal_fields'],'baseFields':body['portal_fields'],'priorFields':{},'profile':{}}}
+   s.saved=out
+  elif p=='/admin/contribution-reports':out=[s.saved] if s.saved else []
   elif p=='/notices/acks':out=[]
   elif p in('/settings','/me/prefs','/admin/employer','/admin/employee-profile','/admin/payroll-settings'):out={}
   elif m!='GET':out={'success':True}
@@ -44,11 +51,31 @@ with sync_playwright() as pw:
  pg.goto(BASE+'/smartadm/office/');pg.wait_for_timeout(1500)
  pg.evaluate("document.querySelector('[data-page=\"lohn\"]')?.click()");pg.wait_for_timeout(300)
  pg.evaluate(f"(()=>{{const i=document.getElementById('payrollMonth');i.value='{MONTH}';i.dispatchEvent(new Event('change',{{bubbles:true}}))}})()");pg.wait_for_timeout(1200)
- btn=pg.locator('#closeAskBtn')
- assert btn.inner_text()=='Unterschreiben',btn.inner_text()
- assert btn.is_enabled()
- assert 'hat unterschrieben' in pg.inner_text('#closeAskStatus')
- btn.click();pg.wait_for_selector('#addendumDialog[open]');assert pg.is_visible('#addendumSignBox')
+ card=pg.locator('#monthFlow')
+ assert card.is_visible() and 'Oktober 2026 · Saskia' in pg.inner_text('#mfTitle')
+ assert not pg.is_visible('.lohn-tabs'),'Details sollen standardmäßig zu sein'
+ steps=pg.locator('.mf-step')
+ assert steps.count()==4,steps.count()
+ assert 'hat unterschrieben – jetzt du' in steps.nth(3).inner_text()
+ # 1) Beitragsnachweis melden
+ pg.locator('[data-mf="report"]').click();pg.wait_for_selector('#mfReportDialog[open]')
+ assert 'Summe' in pg.inner_text('#mfReportValues') and '6000' in pg.inner_text('#mfReportValues')
+ pg.locator('#mfReportSave').click();pg.wait_for_timeout(300)
+ assert 'bestätigen' in pg.inner_text('#mfReportStatus') and not api.reports
+ pg.check('#mfSubmittedCheck');pg.locator('#mfReportSave').click();pg.wait_for_timeout(800)
+ assert len(api.reports)==1 and api.reports[0]['status']=='submitted' and api.reports[0]['submission_confirmed'] is True,api.reports
+ assert not pg.is_visible('#mfReportDialog')
+ assert 'is-done' in steps.nth(0).get_attribute('class')
+ # 2) bezahlt
+ pg.locator('[data-mf="paid"]').click();pg.wait_for_timeout(800)
+ assert api.reports[-1]['status']=='paid' and api.reports[-1]['paid_date']=='2026-11-02',api.reports[-1]
+ assert 'is-done' in steps.nth(1).get_attribute('class')
+ # 3) PDF Beitragsnachweis
+ with pg.expect_download() as dl:pg.locator('#mfContribPdf').click()
+ d=dl.value;assert d.suggested_filename=='Beitragsnachweis_2026-10.pdf',d.suggested_filename
+ data=Path(d.path()).read_bytes();assert data[:4]==b'%PDF' and len(data)>3000,len(data)
+ # 4) gegenzeichnen
+ pg.locator('[data-mf="sign"]').click();pg.wait_for_selector('#addendumDialog[open]');assert pg.is_visible('#addendumSignBox')
  note=pg.locator('#signNote').text_content();assert 'bestätige ich die Abrechnung' in note,note
  pad=pg.locator('#addendumDialog canvas').first;bb=pad.bounding_box()
  pg.mouse.move(bb['x']+30,bb['y']+40);pg.mouse.down()
@@ -57,8 +84,11 @@ with sync_playwright() as pw:
  pg.locator('#addendumDialog').get_by_role('button',name=re.compile('Unterschreiben|Unterschrift|Bestätigen',re.I)).last.click()
  pg.wait_for_timeout(800)
  assert len(api.signed)==1 and api.signed[0]['month']==MONTH and api.signed[0]['signature'],api.signed
- assert btn.inner_text()=='Unterschrieben ✓' and not btn.is_enabled(),btn.inner_text()
- assert 'Meine Unterlagen' in pg.inner_text('#closeAskStatus')
+ assert 'is-done' in steps.nth(3).get_attribute('class') and 'Meine Unterlagen' in steps.nth(3).inner_text()
+ assert pg.locator('#closeAskBtn').inner_text()=='Unterschrieben ✓'
+ # Details auf Wunsch
+ pg.locator('#mfDetailsBtn').click();assert pg.is_visible('.lohn-tabs') and pg.inner_text('#mfDetailsBtn')=='Details ausblenden'
+ pg.locator('#mfDetailsBtn').click();assert not pg.is_visible('.lohn-tabs')
  assert not errors,errors
- print('Boss-Gegenzeichnung im Lohn-Bereich: Knopf erscheint nach Saskias Unterschrift, Unterschrift wird gespeichert, danach „Unterschrieben ✓“.')
+ print('Monatskarte: melden, bezahlt, Beitragsnachweis-PDF, gegenzeichnen und Details funktionieren.')
  b.close()

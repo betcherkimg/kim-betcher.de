@@ -65,7 +65,7 @@ class API:
   context.route('https://**/*',external)
 
 def page_for(browser,api,width,date):
- context=browser.new_context(viewport={'width':width,'height':900},locale='de-DE',timezone_id='Europe/Berlin',service_workers='block');api.attach(context)
+ context=browser.new_context(viewport={'width':width,'height':900},locale='de-DE',timezone_id='Europe/Berlin',service_workers='block');api.attach(context);context.add_init_script("try{localStorage.setItem('smartadm.office.lohnDetails','1')}catch(e){}")
  page=context.new_page();page.clock.set_fixed_time(date);errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
  page.goto(BASE+'/smartadm/office/');page.wait_for_function('window.__t && window.__t.state.role==="employee"');return context,page,errors
 
