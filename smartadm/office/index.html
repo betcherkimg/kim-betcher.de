@@ -2733,7 +2733,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
             <div class="quick-grid">
               <div class="quick"><span id="contribBasisLabel">Hochrechnung Brutto (Monatsende)</span><b id="contribProjectedGross">0,00 €</b></div>
               <div class="quick"><span>Abgaben laut Nachweis</span><b id="contribEstimatedTotal">0,00 €</b></div>
-              <div class="quick"><span>Korrektur Vormonat</span><b id="contribPriorCorrection">0,00 €</b></div>
+              <div class="quick"><span>Korrektur aus Vormonat</span><b id="contribPriorCorrection">0,00 €</b></div>
               <div class="quick emphasis"><span>Beitragssoll</span><b id="contribPayableTotal">0,00 €</b></div>
             </div>
             <div id="contribNextSteps" class="notice" style="margin-bottom:12px" aria-live="polite"></div>
@@ -6023,7 +6023,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     host.innerHTML = `<b>Diese Werte gehören ins SV-Meldeportal · ${esc(fmtMonth(payrollMonth()))}</b>
       <p>„Beitragsnachweis“ → Minijob-Zentrale (Betriebsnummer 98000006). Zeitraum: ${esc(fmtDate(`${payrollMonth()}-01`))} bis ${esc(fmtDate(monthEnd(payrollMonth())))}. Beträge in Euro eingeben; das Brutto ist nur die Berechnungsgrundlage.</p>
       <table class="sv-values"><thead><tr><th>Portal-Feld</th><th>Bezeichnung</th><th>Betrag EUR</th></tr></thead><tbody>${Object.entries(fields).map(([key, value]) =>
-        `<tr><td>${esc(key)}</td><td>${esc(labels[key])}${prior[key] ? `<small> · enthält ${euro(prior[key] / 100)} Restschuld/Guthaben aus ${esc(fmtMonth(previousContributionMonth(payrollMonth())))}</small>` : ""}</td><td><b>${euro(value / 100)}</b></td></tr>`).join("")}
+        `<tr><td>${esc(key)}</td><td>${esc(labels[key])}${prior[key] ? `<small> · enthält ${euro(prior[key] / 100)} Korrektur aus ${esc(fmtMonth(previousContributionMonth(payrollMonth())))}</small>` : ""}</td><td><b>${euro(value / 100)}</b></td></tr>`).join("")}
         <tr class="sum"><td>Summe</td><td>Beitragssoll einschließlich Vormonatsausgleich</td><td>${euro(total)}</td></tr>
       </tbody></table>
       <p>${(record.confirmed ? record.snapshot.profile : state.closings.find(row => row.payroll_month === payrollMonth())?.snapshot?.profile || readProfileInputs()).employeeRv
@@ -6139,7 +6139,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     if (state.employeeDataError) messages.push("Abrechnungsdaten unvollständig geladen: Vorschau nicht zur Meldung verwenden.");
     const priorRecord = readContributionRecord(userId, previousContributionMonth(month));
     if (priorRecord.confirmed && !state.closings.some(c => c.payroll_month === previousContributionMonth(month))) messages.push("Vormonat zuerst abschließen: Der endgültige Beitragsausgleich fehlt noch.");
-    if (correction) messages.push(`Aus dem Vormonat sind ${correction > 0 ? euro(correction) + " nachzuzahlen" : euro(Math.abs(correction)) + " zu verrechnen"}.`);
+    if (correction) messages.push(`Korrektur aus Vormonat: ${correction > 0 ? euro(correction) + " zu wenig gezahlt – kommt im Nachweis dazu" : euro(Math.abs(correction)) + " zu viel gezahlt – im Nachweis schon abgezogen. Genau das Beitragssoll überweisen, dann passen Nachweis und Zahlung zusammen"}.`);
     if (Math.abs(difference) >= 0.01) messages.push(projection.method === "ist"
       ? `Die tatsächliche Beitragsschuld weicht um ${euro(Math.abs(difference))} vom Nachweis ab – wird im Folgemonat ausgeglichen.`
       : `Nach der aktuellen Hochrechnung weicht die Beitragsschuld um ${euro(Math.abs(difference))} vom angesetzten Wert ab.`);
@@ -12157,7 +12157,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   /* --- Leiste unten und „Mehr“ (Handy) --- */
 
   const TAB_PAGES = ["dashboard", "telefon", "zeiten", "kalender"];
-  const OFFICE_VERSION = "2.0.2";   // bei jeder Veröffentlichung erhöhen – die App lädt sich dann selbst neu
+  const OFFICE_VERSION = "2.0.3";   // bei jeder Veröffentlichung erhöhen – die App lädt sich dann selbst neu
   /* Selbst-Update: Auf dem iPhone bleibt die Home-Bildschirm-App oft tagelang im Speicher und lädt nie neu.
      Beim Zurückholen in den Vordergrund (und alle 30 Min.) prüfen, ob eine neuere Version online ist. */
   let updatePending = false;
