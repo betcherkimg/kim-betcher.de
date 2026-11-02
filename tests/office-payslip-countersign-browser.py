@@ -63,6 +63,8 @@ with sync_playwright() as pw:
  assert T('#mfYearEarned')=='519,70 €',pg.inner_text('#mfYearEarned')
  assert T('#mfYearRest')=='6.986,30 €',pg.inner_text('#mfYearRest')
  hint=T('#mfYearHint');assert '11 Monate offen' in hint and '635,11 €' in hint and '14,60 €' in hint,hint
+ assert 'sperrt das System weitere Einträge' in hint,hint
+ assert not pg.is_visible('#mfLimit'),'Sperr-Box nur bei erreichter Jahresgrenze'
  steps=pg.locator('.mf-step')
  assert steps.count()==4,steps.count()
  assert 'hat unterschrieben – jetzt du' in steps.nth(3).inner_text()
