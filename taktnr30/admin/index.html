@@ -1009,12 +1009,12 @@
   function drawBack(a) {
     const c = document.createElement("canvas"); c.width = PW; c.height = PH; const x = c.getContext("2d");
     x.fillStyle = "#0a0a0c"; x.fillRect(0, 0, PW, PH);
-    x.globalAlpha = 0.12; x.drawImage(a.logo, X(112), X(-8), X(120) - X(0), X(120) - X(0)); x.globalAlpha = 1;
-    x.drawImage(a.wm, X(16), X(20), X(84) - X(0), (X(84) - X(0)) * a.wm.naturalHeight / a.wm.naturalWidth);
-    txt(x, "Geschlossene Gesellschaft – Einlass nur mit diesem Ticket.", 16, 50, 3.6, 300, "Josefin Sans", "#c9c9d1");
-    txt(x, "Der QR-Code wird am Eingang geprüft und gilt genau einmal.", 16, 57, 3.6, 300, "Josefin Sans", "#c9c9d1");
-    txt(x, "Danach gibt's dein Einlassbändchen.", 16, 64, 3.6, 300, "Josefin Sans", "#c9c9d1");
-    txt(x, "KIM-BETCHER.DE/TAKTNR30/TICKETS", 16, 92, 2.6, 400, "JetBrains Mono", "#82828e", 0.45);
+    x.globalAlpha = 0.3; x.drawImage(a.logo, X(10), X(32.5), X(40) - X(0), X(40) - X(0)); x.globalAlpha = 1;   // Logo im Abriss (von hinten links, 60 mm)
+    x.drawImage(a.wm, X(72), X(20), X(84) - X(0), (X(84) - X(0)) * a.wm.naturalHeight / a.wm.naturalWidth);
+    txt(x, "Geschlossene Gesellschaft – Einlass nur mit diesem Ticket.", 72, 50, 3.6, 300, "Josefin Sans", "#c9c9d1");
+    txt(x, "Der QR-Code wird am Eingang geprüft und gilt genau einmal.", 72, 57, 3.6, 300, "Josefin Sans", "#c9c9d1");
+    txt(x, "Danach gibt's dein Einlassbändchen.", 72, 64, 3.6, 300, "Josefin Sans", "#c9c9d1");
+    txt(x, "KIM-BETCHER.DE/TAKTNR30/TICKETS", 72, 92, 2.6, 400, "JetBrains Mono", "#82828e", 0.45);
     return c;
   }
   const jpg = c => c.toDataURL("image/jpeg", 0.95);
