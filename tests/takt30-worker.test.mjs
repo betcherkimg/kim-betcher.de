@@ -1101,7 +1101,9 @@ test("DJ-Link: DJ trägt alles ein, unterschreibt zuerst, Kim zeichnet gegen →
   assert.deepEqual([tk.first_name, tk.last_name, tk.email, tk.extra_food], ["Sanna", "Sand", "dj@example.org", 1]); assert.match(tk.note, /DJ Sanna Sand/);
   assert.equal(t.db.prepare("SELECT first_name FROM tickets WHERE number = '2T-02'").get().first_name, null);   // Papiertickets bleiben frei
   const g = t.db.prepare("SELECT number, category, paper, first_name, last_name, email, note FROM tickets WHERE email = 'lea@example.org'").get();
-  assert.deepEqual([g.category, g.paper, g.first_name, g.last_name], ["regular", 0, "Lea", "Gast"]); assert.match(g.number, /^T30-/); assert.match(g.note, /Freiticket · Gast von DJ Sanna Sand/);
+  assert.deepEqual([g.number, g.category, g.paper, g.first_name, g.last_name], ["2T-50", "free", 1, "Lea", "Gast"]); assert.match(g.note, /Papierticket zerreißen/);   // letzte 20, von hinten
+  assert.equal(t.db.prepare("SELECT COUNT(*) n FROM tickets WHERE category = 'regular' AND paper = 0").get().n, 0);   // 60er-Kontingent unberührt
+  assert.deepEqual(done.data.guests, [{ name: "Lea Gast", ticket: "2T-50" }]);
   const final = (await t.call("GET", `/public/contract?k=${k}`)).data;
   assert.equal(final.status, "signed"); assert.ok(final.final_sha);
   const to = t.mails.map(m => [].concat(m.to).join(",")).join(" ");

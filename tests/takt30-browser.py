@@ -313,7 +313,7 @@ fs.writeFileSync('{OUT}/qr.pgm',Buffer.concat([Buffer.from('P5\\n'+W+' '+H+'\\n2
         assert "Festpreis 200,00 €" in admin.inner_text("#main") and "Wunsch 22:00 Uhr" in admin.inner_text("#main") and admin.is_visible("[data-cph]") and admin.is_visible("a:has-text('Hörprobe')")
         admin.click("button:has-text('Gegenzeichnen')"); admin.wait_for_selector("#oPad"); admin.wait_for_timeout(900)
         scribble(admin, "#oPad"); admin.click("#oSign"); admin.wait_for_selector("#oDone .card")
-        assert "2T-" in admin.inner_text("#oDone"), admin.inner_text("#oDone")
+        assert "2T-" in admin.inner_text("#oDone") and "zerreißen" in admin.inner_text("#oDone"), admin.inner_text("#oDone")
         admin.screenshot(path=str(OUT / "admin-gegenzeichnet.png"), full_page=True)
         d.reload(); d.wait_for_selector(".done"); assert "von beiden Seiten" in d.inner_text(".done")
         with d.expect_download() as dl: d.click("#dl")

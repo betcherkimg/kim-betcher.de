@@ -408,7 +408,7 @@
           const r = await act(() => call(`/admin/contracts/${c.id}/sign`, { method: "POST", body: { sig } }), c.party_signed_at ? "Gegengezeichnet" : "Unterschrieben – jetzt den Link schicken");
           $("#oSign").disabled = true;
           if (r.finished) {
-            $("#oDone").innerHTML = `<div class="card" style="margin-top:14px"><b>Fertig.</b> ${esc(c.party_name)} bekommt jetzt den Vertrag als PDF per Mail${r.ticket ? ` und Ticket <b>${esc(r.ticket)}</b> – das Papierticket noch per Post schicken` : " – <b>es war kein freies 2T-Ticket mehr da</b>, bitte von Hand eins zuordnen"}.</div>`;
+            $("#oDone").innerHTML = `<div class="card" style="margin-top:14px"><b>Fertig.</b> ${esc(c.party_name)} bekommt jetzt den Vertrag als PDF per Mail${r.ticket ? ` und Ticket <b>${esc(r.ticket)}</b> – das Papierticket noch per Post schicken` : " – <b>es war kein freies 2T-Ticket mehr da</b>, bitte von Hand eins zuordnen"}.${(r.guests || []).filter(g => g.ticket).map(g => ` Gast ${esc(g.name)}: <b>${esc(g.ticket)}</b> digital – <b>Papierticket ${esc(g.ticket)} zerreißen</b>.`).join("")}</div>`;
             setTimeout(() => render(), 4000);
           } else linkBox($("#oDone"), r.url, c.party_name);
         };

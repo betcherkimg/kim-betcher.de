@@ -299,7 +299,7 @@ async function signContractOwner(env, request, who, id, ctx) {
     if (!changes(r)) return fail("Dieser Vertrag ist schon unterschrieben oder zurückgezogen.", 409);
     await audit(env, who, "contract.owner_signed", before.title, { sha: finalSha });
     const done = await djFinish(env, { ...before, owner_signed_at: t, final_sha: finalSha }, ctx);
-    return json({ ok: true, finished: true, ticket: done.ticket || null, url: `${APP_ORIGIN}/taktnr30/vertrag/?k=${before.view_key}` });
+    return json({ ok: true, finished: true, ticket: done.ticket || null, guests: done.guests || [], url: `${APP_ORIGIN}/taktnr30/vertrag/?k=${before.view_key}` });
   }
   const r = await run(env, `UPDATE contracts SET owner_sig = ?, owner_signed_at = ?, updated_at = ? WHERE id = ? AND owner_signed_at IS NULL AND status = 'open'`, b.sig, t, t, id);
   if (!changes(r)) return fail("Dieser Vertrag ist schon unterschrieben oder zurückgezogen.", 409);
@@ -330,7 +330,8 @@ async function djTaken(env, s) {
   return out;
 }
 const DJ_FIRST = 480, DJ_LAST_END = 1080;   // 20:00 bis 06:00
-const DJ_MAX_GUESTS = 1;   // Gästeliste pro DJ: ein Gast mit eigenem Freiticket (nicht aus den Papiertickets)
+const DJ_MAX_GUESTS = 1;   // Gästeliste pro DJ: ein Gast
+const DJ_GUEST_FROM = 31;  // Gäste bekommen ein Freiticket aus den letzten 20 (2T-31 bis 2T-50), Kim zerreißt das Papierticket
 const moneyIn = v => { const n = Number(String(v ?? "").replace(/\s|€/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".")); return Number.isFinite(n) && n >= 0 && n <= 100000 ? Math.round(n * 100) : null; };
 const euroDe = c => (c / 100).toLocaleString("de-DE", { minimumFractionDigits: c % 100 ? 2 : 0, maximumFractionDigits: 2 }) + " €";
 const ibanOk = v => { const x = String(v || "").replace(/\s/g, "").toUpperCase(); if (!/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(x)) return false;
@@ -516,9 +517,10 @@ async function djFinish(env, c, ctx) {
   let ticket = null;
   const guestTickets = [];
   // Nächstes freies 2T-Papierticket digital zuordnen (das Papier schickt Kim per Post)
-  const take = async (fn, ln, email, food, note) => {
+  const take = async (fn, ln, email, food, note, fromEnd = false) => {
     for (let i = 0; i < 3; i++) {
-      const free = await first(env, `SELECT id, number FROM tickets WHERE category = 'free' AND paper = 1 AND status = 'valid' AND first_name IS NULL AND sold_cents IS NULL AND checked_in_at IS NULL ORDER BY CAST(substr(number, 4) AS INTEGER) LIMIT 1`);
+      const free = await first(env, `SELECT id, number FROM tickets WHERE category = 'free' AND paper = 1 AND status = 'valid' AND first_name IS NULL AND sold_cents IS NULL AND checked_in_at IS NULL
+        ${fromEnd ? `AND CAST(substr(number, 4) AS INTEGER) >= ${DJ_GUEST_FROM}` : ""} ORDER BY CAST(substr(number, 4) AS INTEGER) ${fromEnd ? "DESC" : ""} LIMIT 1`);
       if (!free) return null;
       const r = await run(env, `UPDATE tickets SET first_name = ?, last_name = ?, email = ?, extra_food = MAX(extra_food, ?), note = ?, updated_at = ? WHERE id = ? AND first_name IS NULL`, fn, ln, email, food, note, iso(), free.id);
       if (changes(r)) return free.number;
@@ -528,13 +530,10 @@ async function djFinish(env, c, ctx) {
   if (meta.kind === "dj" && !meta.ticket) {
     ticket = await take(meta.first_name, meta.last_name, c.party_email, 1, `DJ${meta.artist ? " " + meta.artist : ""} · Getränke frei`);
     for (const g of meta.guests || []) {
-      const parts = g.name.split(" "), t = nowMs();
-      const r = await run(env, `INSERT INTO tickets (number, category, code, view_key, first_name, last_name, email, status, is_test, note, created_at, updated_at)
-        SELECT printf('T30-%03d', COALESCE((SELECT MAX(CAST(substr(number, 5) AS INTEGER)) FROM tickets WHERE category = 'regular' AND number LIKE 'T30-%'), 0) + 1), 'regular', ?, ?, ?, ?, ?, 'valid', 0, ?, ?, ?
-        WHERE ${SQL_REGULAR_TAKEN()} + 1 <= ?`,
-        randomCode(26), randomCode(26), parts[0], parts.slice(1).join(" "), g.email, `Freiticket · Gast von DJ ${meta.artist || meta.first_name}`, iso(t), iso(t), t, REGULAR_CAP);
-      const n = changes(r) ? (await first(env, `SELECT number FROM tickets WHERE id = ?`, r.meta.last_row_id))?.number : null;
-      guestTickets.push({ ...g, ticket: n || null });
+      // Freiticket aus den letzten 20 (von hinten) – das 60er-Online-Kontingent bleibt unberührt
+      const parts = g.name.split(" ");
+      const n = await take(parts[0], parts.slice(1).join(" "), g.email, 0, `Freiticket · Gast von DJ ${meta.artist || meta.first_name} · Papierticket zerreißen`, true);
+      guestTickets.push({ ...g, ticket: n });
     }
     await run(env, `UPDATE contracts SET meta = ? WHERE id = ?`, JSON.stringify({ ...meta, ticket, guest_tickets: guestTickets }), c.id);
     await audit(env, { actor: `contract:${c.id}`, name: c.party_name }, "dj.ticket", ticket || "kein freies Ticket", { guests: guestTickets.map(g => g.ticket).join(", ") });
@@ -545,14 +544,14 @@ async function djFinish(env, c, ctx) {
 <a href="${esc(link)}" style="display:block;background:#9d4dff;color:#0a0a0c;text-decoration:none;padding:14px 18px;border-radius:4px;margin:18px 0;font-size:15px">Vertrag ansehen und als PDF speichern</a></div></body></html>`;
   const missing = guestTickets.filter(g => !g.ticket).map(g => g.name);
   const kimNote = [ticket ? `Ticket ${ticket} ist zugeordnet – das Papierticket noch per Post schicken.` : "Kein freies 2T-Ticket mehr – bitte von Hand ein Ticket zuordnen.",
-    guestTickets.filter(g => g.ticket).length ? `Gästeliste: ${guestTickets.filter(g => g.ticket).map(g => `${g.name} (${g.ticket})`).join(", ")}.` : "",
+    guestTickets.filter(g => g.ticket).length ? `Gästeliste: ${guestTickets.filter(g => g.ticket).map(g => `${g.name} bekommt ${g.ticket} digital – das Papierticket ${g.ticket} bitte zerreißen`).join(", ")}.` : "",
     missing.length ? `Für ${missing.join(", ")} war kein freies Ticket mehr da.` : ""].filter(Boolean).join(" ");
   const jobs = [sendMail(env, s.contact_email, `Unterschrieben: ${c.title}`, note("Vertrag unterschrieben.", kimNote))];
   if (c.party_email) jobs.push(sendMail(env, c.party_email, `Dein unterschriebener Vertrag – ${c.title}`, note("Danke – der Vertrag ist unterschrieben.", ticket ? `Dein Ticket ${ticket} kommt in einer eigenen Mail, das Papierticket per Post.` : "")));
   for (const number of [ticket, ...guestTickets.map(g => g.ticket)].filter(Boolean)) jobs.push((async () => { const t = await first(env, `SELECT * FROM tickets WHERE number = ?`, number); if (t?.email) await sendTicketMail(env, t); })());
   const job = Promise.all(jobs).catch(() => {});
   if (ctx?.waitUntil) ctx.waitUntil(job); else await job;
-  return { ticket };
+  return { ticket, guests: guestTickets.map(g => ({ name: g.name, ticket: g.ticket })) };
 }
 async function revokeContract(env, who, id) {
   const r = await run(env, `UPDATE contracts SET status = 'revoked', updated_at = ? WHERE id = ? AND status = 'open'`, iso(), id);
