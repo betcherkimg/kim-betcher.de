@@ -224,7 +224,7 @@
     window.scrollTo({ top: 0 });
     $("#box").innerHTML = `<h1 class="big">Danke, ${esc(form.first_name)}!</h1>
       <div class="done"><strong>Unterschrieben und abgeschickt.</strong> Kim unterschreibt jetzt noch. Danach bekommst du per E-Mail an ${esc(form.email)}:
-        <ul style="margin:10px 0 0;padding-left:20px"><li>den Vertrag mit beiden Unterschriften als PDF</li><li>dein Ticket (das Papierticket kommt per Post)</li>${form.guests.length ? `<li>${form.guests.length === 1 ? "deinen Gast" : "deine Gäste"} bekommen ihr Ticket direkt per E-Mail</li>` : ""}</ul></div>
+        <ul style="margin:10px 0 0;padding-left:20px"><li>den Vertrag mit beiden Unterschriften als PDF</li><li>dein Ticket</li>${form.guests.length ? `<li>${form.guests.length === 1 ? "deinen Gast" : "deine Gäste"} bekommen ihr Ticket direkt per E-Mail</li>` : ""}</ul></div>
       <p class="note" style="margin-top:16px">Deinen Vertrag kannst du jederzeit hier ansehen: <a href="${esc(url)}">Vertrag öffnen</a>. Die Uhrzeit deines Sets klärt ihr direkt miteinander.</p>`;
   }
 

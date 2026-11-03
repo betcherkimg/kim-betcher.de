@@ -100,11 +100,6 @@ try:
         admin.fill("#sellForm [name=no]", "2T-31"); admin.fill("#sellForm [name=fn]", "Max"); admin.fill("#sellForm [name=ln]", "Reserve"); admin.click("#sellForm button")
         admin.wait_for_selector("td:has-text('Max Reserve')"); assert "35 €" in admin.inner_text("#sellForm + .tablewrap")
         assert admin.inner_text(".kpis").count("50") >= 2
-        admin.click("details summary:has-text('Nachdruck')")
-        with admin.expect_download(timeout=60000) as dz: admin.click("#zipBtn")
-        dz.value.save_as(str(OUT / "TAKT30-Papiertickets-Druckdaten.zip"))
-        with admin.expect_download(timeout=120000) as dp: admin.click("#pdfBtn")
-        dp.value.save_as(str(OUT / "TAKT30-Papiertickets-A4-selbst-drucken.pdf"))
         admin.fill("#blockForm [name=no]", "fk-03"); admin.click("#blockForm button[name=b]")
         admin.wait_for_selector(".kpi:has-text('Gesperrt') b:has-text('1')")
         admin.screenshot(path=str(OUT / "admin-papiertickets.png"))

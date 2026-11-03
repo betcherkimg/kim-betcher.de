@@ -188,7 +188,7 @@
   const LINEUP_IMAGES = ["/taktnr30/assets/lineup/tbj.webp"];
   const PAGES = [
     ["overview", "Übersicht"], ["prep", "Vorbereitung"], ["guests", "Gäste & Tickets"], ["orders", "Bestellungen"], ["helpers", "Helfer"], ["links", "Links"], ["downloads", "Downloads"],
-    ["paper", "Papiertickets", "main"], ["content", "Inhalte & Line-up"], ["entry", "Einlass"], ["money", "Abrechnung", "main"], ["contracts", "Verträge & Versicherungen", "main"], ["settings", "Einstellungen", "main"]
+    ["paper", "VIP- & Freitickets", "main"], ["content", "Inhalte & Line-up"], ["entry", "Einlass"], ["money", "Abrechnung", "main"], ["contracts", "Verträge & Versicherungen", "main"], ["settings", "Einstellungen", "main"]
   ];
   function renderNav() {
     $("#nav").innerHTML = PAGES.filter(p => !p[2] || isMain()).map(([id, label]) => `<button data-p="${id}" ${id === page ? 'aria-current="page"' : ""}>${label}</button>`).join("");
@@ -275,7 +275,7 @@
     k.p("Alle Beträge wie gezahlt (brutto). Online-Tickets wurden ausschließlich über PayPal bezahlt; Testkäufe sind nicht enthalten.", 9);
     k.h("Ergebnis");
     k.row(`Ticketverkauf online (${r.tickets.orders_paid} Bestellungen, ${t.sold} Tickets)`, e2(r.money.ticket_gross_cents));
-    if (r.paper.count) k.row(`Papiertickets aus der Reserve verkauft (${r.paper.vip} VIP, ${r.paper.own} normal)`, e2(r.paper.cents));
+    if (r.paper.count) k.row(`VIP-/Freitickets aus der Reserve verkauft (${r.paper.vip} VIP, ${r.paper.own} normal)`, e2(r.paper.cents));
     S.incCats.forEach(([c, v]) => k.row(c, e2(v)));
     k.rule(); k.row("Summe Einnahmen", e2(S.incomeTotal), true); k.y += 3;
     S.expCats.forEach(([c, v]) => k.row(c, e2(v)));
@@ -285,13 +285,13 @@
     if (r.money.refunded_cents) k.p(`Hinweis: Erstattungen an Käufer über PayPal: ${e2(r.money.refunded_cents)} (nicht in den Ticketeinnahmen enthalten).`, 9);
     k.h("Tickets und Gäste");
     [["Verkaufte Online-Tickets", `${t.sold}, davon ${t.sold_vip} VIP`], ...mixRows(r),
-     ["Kostenlose Online-Tickets", String(t.comp)], ["Papiertickets VIP · 2TAKT", `${t.paper_vip}${r.paper.vip ? `, davon ${r.paper.vip} verkauft` : " (kostenlos)"}`], ["Freitickets Papier", `${t.paper_own}${r.paper.own ? `, davon ${r.paper.own} verkauft` : " (kostenlos)"}`],
+     ["Kostenlose Online-Tickets", String(t.comp)], ["VIP-Tickets · 2TAKT", `${t.paper_vip}${r.paper.vip ? `, davon ${r.paper.vip} verkauft` : " (kostenlos)"}`], ["Freitickets (Kim)", `${t.paper_own}${r.paper.own ? `, davon ${r.paper.own} verkauft` : " (kostenlos)"}`],
      ["Helfer", String(t.helpers)], ["Am Einlass eingecheckt", String(t.checked_in)]].forEach(([a, b]) => k.row(a, b));
     k.h("Belege");
     k.table([["Datum", 18], ["Art", 37, "l", 18], ["Kategorie", 56, "l", 32], ["Wofür / Firma", 90, "l", 64], ["Beleg-Nr.", 156, "l", 18], ["Betrag", 192, "r"]],
       r.ledger.map(l => [dDe(l.booked_on), l.kind === "income" ? "Einnahme" : "Ausgabe", l.category, [l.purpose, l.party].filter(Boolean).join(" – "), l.receipt_no || "", (l.kind === "income" ? "" : "– ") + e2(l.amount_cents)]));
     if (r.paper.count) {
-      k.h("Verkaufte Papiertickets (Reserve)");
+      k.h("Verkaufte VIP-/Freitickets (Reserve)");
       k.table([["Ticket", 18], ["Art", 45, "l", 40], ["Verkauft am", 90], ["Bezahlt", 125, "l", 30], ["Betrag", 192, "r"]],
         r.paper_sold.map(x => [x.number, x.category === "free" ? "VIP · 2TAKT" : "normal", dDe(x.sold_at), x.sold_via === "paypal" ? "PayPal" : "bar", e2(x.sold_cents)]));
     }
@@ -312,7 +312,7 @@
      ["Musik", "Tanzmusik, Wiedergabe von Tonträgern durch DJs"], ["Raumgröße", f.sqm ? `${f.sqm} m²` : "_____ m²"]].forEach(([a, b]) => k.row(a, b));
     k.h("Eintrittsgelder");
     [["Eintrittspreis 1 Ticket", e2(r.prices.one)], ["Eintrittspreis 2 Tickets", `${e2(r.prices.two)} (${e2(r.prices.two / 2)} je Person)`],
-     ...(r.paper.count ? [["Papierticket VIP (Reserve)", `${e2(r.paper.prices.free)} inkl. ${r.paper.vip_drinks} Getränke`], ["Papierticket normal (Reserve)", e2(r.paper.prices.regular)], ["Verkaufte Papiertickets", `${r.paper.count} (${r.paper.vip} VIP, ${r.paper.own} normal) = ${e2(r.paper.cents)}`]] : []),
+     ...(r.paper.count ? [["VIP-Ticket (Reserve)", `${e2(r.paper.prices.free)} inkl. ${r.paper.vip_drinks} Getränke`], ["Freiticket (Reserve)", e2(r.paper.prices.regular)], ["Verkaufte Papiertickets", `${r.paper.count} (${r.paper.vip} VIP, ${r.paper.own} normal) = ${e2(r.paper.cents)}`]] : []),
      ["Eintrittspreis 1 VIP-Ticket", `${e2(r.prices.vip_one)} inkl. ${r.prices.vip_drinks} Getränke`], ["Eintrittspreis 2 VIP-Tickets", `${e2(r.prices.vip_two)} inkl. je ${r.prices.vip_drinks} Getränke`], ["1 Ticket + 1 VIP-Ticket", e2(r.prices.mixed)],
      ["Verkaufte Tickets", `${t.sold}, davon ${t.sold_vip} VIP (${t.singles} Einzel-, ${t.pairs} Doppelbestellungen)`], ["Gäste ohne Eintrittsgeld", `${t.comp + t.paper_vip + t.paper_own - r.paper.count} (geladene Gäste, Freitickets) + ${t.helpers} Helfer`]].forEach(([a, b]) => k.row(a, b));
     const drinkPrice = Math.round((parseFloat(String(f.drink || "").replace(",", ".")) || 0) * 100);
@@ -327,7 +327,7 @@
     k.h("Einzelaufstellung der Eintrittsgelder");
     k.table([["Bestellung", 18], ["Bezahlt am", 60], ["Tickets", 110, "r"], ["Betrag", 192, "r"]],
       [...r.orders.filter(o => o.status === "paid").map(o => [o.order_no, dDe(o.paid_at), `${o.quantity}${o.vip_quantity ? ` (${o.vip_quantity} VIP)` : ""}`, e2(o.amount_cents)]),
-       ...r.paper_sold.map(x => [`${x.number} (Papier, ${x.sold_via === "paypal" ? "PayPal" : "bar"})`, dDe(x.sold_at), x.category === "free" ? "1 (VIP)" : "1", e2(x.sold_cents)])]);
+       ...r.paper_sold.map(x => [`${x.number} (Reserve, ${x.sold_via === "paypal" ? "PayPal" : "bar"})`, dDe(x.sold_at), x.category === "free" ? "1 (VIP)" : "1", e2(x.sold_cents)])]);
     k.y += 4; k.p("Ich bestätige die Richtigkeit und Vollständigkeit dieser Rechnungslegung. Als Nachweis liegt der PayPal-Kontoauszug für den Verkaufszeitraum bei.");
     k.sign(f.place ? `${f.place}, ${new Date().toLocaleDateString("de-DE")}` : "");
     k.finish("TAKT30-GEMA-Rechnungslegung.pdf");
@@ -436,7 +436,7 @@
       const r = await call("/admin/report"); const S = sums(r); const pf = moneyPrefs();
       const today = new Date().toISOString().slice(0, 10);
       m.innerHTML = `<h1>Abrechnung</h1>
-        <div class="kpis">${kpi("Tickets", e2(r.money.ticket_gross_cents + (r.money.paper_cents || 0)), `${r.tickets.sold} online${r.paper.count ? ` + ${r.paper.count} Papier` : ""}`)}${kpi("Einnahmen gesamt", e2(S.incomeTotal), "Tickets + Belege")}${kpi("Ausgaben gesamt", e2(S.expenseTotal), `inkl. ${e2(r.money.paypal_fee_cents)} PayPal`)}${kpi(S.result >= 0 ? "Überschuss" : "Fehlbetrag", e2(Math.abs(S.result)))}</div>
+        <div class="kpis">${kpi("Tickets", e2(r.money.ticket_gross_cents + (r.money.paper_cents || 0)), `${r.tickets.sold} online${r.paper.count ? ` + ${r.paper.count} Reserve` : ""}`)}${kpi("Einnahmen gesamt", e2(S.incomeTotal), "Tickets + Belege")}${kpi("Ausgaben gesamt", e2(S.expenseTotal), `inkl. ${e2(r.money.paypal_fee_cents)} PayPal`)}${kpi(S.result >= 0 ? "Überschuss" : "Fehlbetrag", e2(Math.abs(S.result)))}</div>
         ${r.money.fee_missing ? `<p class="note">Für ${r.money.fee_missing} frühere Zahlung(en) hat PayPal die Gebühr nicht übermittelt – die stehen in deinem PayPal-Auszug.</p>` : ""}
         <h2>Exportieren</h2>
         <div class="acts" style="flex-wrap:wrap"><button id="pdfAll">Abrechnung (PDF) – für den Steuerberater</button><button id="pdfGema">GEMA-Rechnungslegung (PDF)</button><button data-xc="orders">Bestellungen (CSV)</button><button data-xc="ledger">Belege (CSV)</button></div>
@@ -460,7 +460,7 @@
           <label class="field"><span>Notiz</span><input class="input sm" name="note" maxlength="300"></label>
           <div class="field"><input type="hidden" name="id"><button class="btn btn-uv btn-small" id="ledSave">Beleg speichern</button> <button type="button" class="lnk" id="ledCancel" hidden>Abbrechen</button></div>
         </form>
-        <p class="note">Den Getränkeverkauf an der Bar nach der Party als „Einnahme“ eintragen. Papierbelege nummerieren und die Nummer hier mit erfassen.</p>
+        <p class="note">Den Getränkeverkauf an der Bar nach der Party als „Einnahme“ eintragen. Belege nummerieren und die Nummer hier mit erfassen.</p>
         <h2>Belege</h2>
         <div class="tablewrap"><table><thead><tr><th>Datum</th><th>Wofür</th><th class="hide-sm">Kategorie</th><th>Betrag</th><th></th></tr></thead><tbody>
         ${r.ledger.map(l => `<tr><td class="mono">${dDe(l.booked_on)}</td><td>${esc(l.purpose)}<span class="sub">${esc([l.party, l.receipt_no && "Beleg " + l.receipt_no, l.note].filter(Boolean).join(" · "))}</span></td><td class="hide-sm dim">${esc(l.category)}</td><td class="mono" style="white-space:nowrap">${l.kind === "income" ? "+" : "–"} ${e2(l.amount_cents)}</td><td><div class="acts"><button data-le="${l.id}">Ändern</button><button data-ld="${l.id}">✕</button></div></td></tr>`).join("") || `<tr><td colspan="5" class="dim">Noch keine Belege.</td></tr>`}
@@ -565,7 +565,7 @@
           ${kpi("VIP online", `${c.vip_issued}<small> / ${c.vip_cap}</small>`, `${c.vip_available} noch frei · zählen in die ${c.regular_cap}`)}
           ${kpi("Verfügbar", c.available, c.reserved || c.test_tickets ? `${c.test_tickets ? c.test_tickets + " Test" : ""}${c.test_tickets && c.reserved ? " + " : ""}${c.reserved ? c.reserved + " reserviert" : ""} belegen gerade Plätze` : "")}
           ${kpi("Offene Reservierungen", c.reserved, "laufende Bezahlvorgänge")}
-          ${kpi("Papiertickets", `${c.paper_vip + c.paper_own}`, `${c.paper_vip} VIP · ${c.paper_own} Freitickets · ${c.paper_checked_in} drin`)}
+          ${kpi("VIP- & Freitickets", `${c.paper_vip + c.paper_own}`, `${c.paper_vip} VIP · ${c.paper_own} Freitickets · ${c.paper_checked_in} drin`)}
           ${kpi("Helfer", `${c.helper_issued}<small> / ${c.helper_cap}</small>`)}
           ${kpi("Eingecheckt", `${c.checked_in}<small> / ${c.expected}</small>`, "erwartete Gäste")}
           ${kpi("Umsatz", euro(c.revenue_cents), c.test_revenue_cents ? `Test: ${euro(c.test_revenue_cents)}` : "")}
@@ -801,11 +801,11 @@
 
     async paper(m) {
       const p = await call("/admin/paper"); const c = p.counts;
-      m.innerHTML = `<h1>Papiertickets</h1>
+      m.innerHTML = `<h1>VIP- & Freitickets</h1>
         <div class="kpis">${kpi("VIP · 2TAKT (Fynn)", p.vip.length, `${p.vip.filter(t => t.checked_in_at).length} eingecheckt`)}${kpi("Freitickets (Kim)", p.own.length, `${p.own.filter(t => t.checked_in_at).length} eingecheckt`)}${kpi("Gesperrt", [...p.vip, ...p.own].filter(t => t.status === "blocked").length)}</div>
-        <p class="note">Jedes Papierticket hat einen eigenen QR-Code und gilt genau einmal. Die Codes sind im Scanner hinterlegt, damit kopierte Tickets am Einlass auffallen. Sie zählen nicht zu den ${c.regular_cap} Online-Tickets.</p>
+        <p class="note">Es gibt keine Papiertickets – alle VIP- und Freitickets sind digital. Jedes hat einen eigenen QR-Code und gilt genau einmal. Sie zählen nicht zu den ${c.regular_cap} Online-Tickets.</p>
         <h2>Reserve verkauft</h2>
-        <p class="note">Wenn du ein Papierticket aus der Reserve verkaufst, hier eintragen – es zählt dann in der Abrechnung und im GEMA-PDF als Eintritt. Preise: VIP ${euro(p.prices.free)}, normal ${euro(p.prices.regular)}.</p>
+        <p class="note">Wenn du eins dieser Tickets aus der Reserve verkaufst, hier eintragen – es zählt dann in der Abrechnung und im GEMA-PDF als Eintritt. Preise: VIP ${euro(p.prices.free)}, normal ${euro(p.prices.regular)}.</p>
         <form class="card form" id="sellForm">
           <label class="field"><span>Ticketnummer</span><input class="input sm mono" name="no" required maxlength="8" placeholder="2T-31 oder FK-21"></label>
           <label class="field"><span>Bezahlt</span><select class="input sm" name="via"><option value="bar">bar</option><option value="paypal">PayPal an mich</option></select></label>
@@ -814,8 +814,8 @@
           <label class="field"><span>Nachname (optional)</span><input class="input sm" name="ln" maxlength="60"></label>
           <div class="field"><button class="btn btn-uv btn-small">Als verkauft eintragen</button></div></form>
         ${(() => { const sold = [...p.vip, ...p.own].filter(t => t.sold_cents != null); return sold.length ? `<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Ticket</th><th>Name</th><th>Preis</th><th></th></tr></thead><tbody>${sold.map(t => `<tr><td class="mono">${esc(t.number)}<span class="sub">${t.category === "free" ? "VIP · 2TAKT" : "Freiticket"}</span></td><td>${esc([t.first_name, t.last_name].filter(Boolean).join(" ")) || '<span class="dim">–</span>'}<span class="sub">${fmtDT(t.sold_at)}</span></td><td class="mono">${euro(t.sold_cents)}<span class="sub">${t.sold_via === "paypal" ? "PayPal" : "bar"}</span></td><td><div class="acts"><button data-unsell="${esc(t.number)}">Rückgängig</button></div></td></tr>`).join("")}</tbody></table></div><p class="note">${sold.length} verkauft · ${euro(sold.reduce((a, t) => a + t.sold_cents, 0))}</p>` : ""; })()}
-        <h2>Papiertickets online</h2>
-        <p class="note">Jedes Papierticket hat auch eine Online-Version mit demselben QR-Code – gilt trotzdem nur einmal. Über „Aktionen“ einen Namen (mit E-Mail) zuordnen und das Ticket per Mail oder WhatsApp schicken, z. B. an deine DJs.</p>
+        <h2>Tickets zuordnen und verschicken</h2>
+        <p class="note">Über „Aktionen“ einen Namen (mit E-Mail) zuordnen und das Ticket per Mail oder WhatsApp schicken, z. B. an deine DJs.</p>
         <div id="ptbl"></div>
         <h2>Essen & Getränke hinzufügen</h2>
         <form class="card form" id="xForm"><label class="field"><span>Ticketnummer (z. B. 2T-07 oder FK-03)</span><input class="input sm mono" name="no" required maxlength="8"></label>
@@ -824,19 +824,7 @@
         <h2>Verlorenes Ticket sperren</h2>
         <form class="card form" id="blockForm"><label class="field"><span>Ticketnummer (z. B. 2T-07 oder FK-03)</span><input class="input sm mono" name="no" required maxlength="8"></label>
           <div class="field acts"><button class="btn btn-small" name="b">Sperren</button><button class="btn btn-small" name="u" type="button" id="unblockBtn">Entsperren</button></div></form>
-        <details style="margin-top:34px"><summary class="note" style="cursor:pointer">Nachdruck – Druckdaten erneut herunterladen</summary>
-        <h2 style="margin-top:14px">Druckerei</h2>
-        <p class="note">Format 210 × 105 mm, rechts ein Abriss mit QR-Code und Nummer. Die Druckdaten enthalten beide Varianten: Vorlagen plus Code-Listen (die Druckerei setzt die QR-Codes ein) und alle Tickets fertig mit QR-Code. Die Maße für die Druckerei stehen in der LIESMICH-Datei.</p>
-        <div class="acts" style="margin-bottom:10px"><button class="btn btn-uv btn-small" id="zipBtn">Druckdaten herunterladen (ZIP)</button></div>
-        <p class="note">Bestellen bei <a href="https://www.myflyer.de/postkarten-karten/eintrittskarten.html" target="_blank" rel="noopener">myflyer.de – Eintrittskarten</a>: freies Format 210 × 105 mm, 4/4-farbig, Karton ab 300 g, 1 Perforation senkrecht bei 150 mm, QR-Code aus Excel, lose. Zwei Sorten: VIP 50 Stück, Freiticket 50 Stück (Mindestmenge 100).</p>
-        <h2>Selbst drucken</h2>
-        <p class="note">2 Tickets pro A4-Bogen mit Schnittmarken. Doppelseitig drucken („an langer Kante wenden“), möglichst auf 250–300 g Karton, dann schneiden.</p>
-        <div class="acts"><button id="pdfBtn">A4-PDF zum Selberdrucken</button></div>
-        <p class="note" id="printState" aria-live="polite"></p>
-        </details>`;
-      const state = t => $("#printState").textContent = t;
-      $("#zipBtn").onclick = () => paperZip(p, state).catch(e => state("Fehler: " + e.message));
-      $("#pdfBtn").onclick = () => paperPdf(p, state).catch(e => state("Fehler: " + e.message));
+`;
       const block = async unblock => { const no = $("#blockForm").no.value.trim(); if (!no) return; await act(() => call("/admin/paper/block", { method: "POST", body: { number: no, unblock } }), unblock ? "Entsperrt" : "Gesperrt – dieses Ticket wird am Einlass abgelehnt"); VIEWS.paper(m); };
       $("#blockForm").onsubmit = e => { e.preventDefault(); block(false); };
       await ticketTable($("#ptbl"), "paper", null);
@@ -900,8 +888,8 @@
       const bandRow = (cat, label) => { const b = bands[cat] || {}; return `<div class="lineup-row" style="grid-template-columns:150px 64px 1fr 1.4fr"><span style="align-self:center">${label}</span><input class="input sm" type="color" name="c_${cat}" value="${esc(b.color || "#ffffff")}" aria-label="Farbe ${label}"><input class="input sm" name="l_${cat}" value="${esc(b.label || "")}" placeholder="Farbname" maxlength="20" aria-label="Farbname ${label}"><input class="input sm note-in" name="n_${cat}" value="${esc(b.note || "")}" placeholder="Hinweis am Einlass (optional)" maxlength="60" aria-label="Hinweis ${label}"></div>`; };
       m.innerHTML = `<h1>Einlass</h1>
         <h2 style="margin-top:0">Bändchen</h2>
-        <p class="note">Der Scanner zeigt nach jedem grünen Scan Ticketart, Bändchen und Marken an. Marken: VIP · 2TAKT (Papier) 5 · VIP online 3 · Helfer 5 · alle anderen keine (plus Extras, die du einem Ticket gibst). Bei Helfern steht dazu, was der Einlass ihnen sagen soll.</p>
-        <form id="bandForm">${bandRow("regular", "Gäste & Freitickets")}${bandRow("free", "VIP · 2TAKT (Papier)")}${bandRow("vip", "VIP online")}${bandRow("helper", "Helfer")}<button class="btn btn-uv btn-small" style="margin-top:6px">Speichern</button></form>
+        <p class="note">Der Scanner zeigt nach jedem grünen Scan Ticketart, Bändchen und Marken an. Marken: VIP · 2TAKT 5 · VIP online 3 · Helfer 5 · alle anderen keine (plus Extras, die du einem Ticket gibst). Bei Helfern steht dazu, was der Einlass ihnen sagen soll.</p>
+        <form id="bandForm">${bandRow("regular", "Gäste & Freitickets")}${bandRow("free", "VIP · 2TAKT")}${bandRow("vip", "VIP online")}${bandRow("helper", "Helfer")}<button class="btn btn-uv btn-small" style="margin-top:6px">Speichern</button></form>
         <p class="note" style="margin-top:18px">Scanner-Zugänge (Einlass und Foodtruck) findest du unter <button class="lnk" id="toLinks">Links</button>.</p>`;
       $("#bandForm").onsubmit = async e => {
         e.preventDefault(); const f = e.target, out = {};
@@ -1094,7 +1082,7 @@
         && (!f || (f === "in" ? t.checked_in_at : f === "out" ? !t.checked_in_at && t.status === "valid" : f === "blocked" ? t.status !== "valid" : f === "test" ? t.is_test : true)));
       $("#tn").textContent = `${l.length} von ${list.length}`;
       $("#trows").innerHTML = l.map(t => `<tr>
-        <td class="mono">${esc(t.number)}${t.is_test ? ' <span class="tag test">TEST</span>' : ""}<span class="sub">${esc(t.paper ? (t.category === "free" ? "VIP · 2TAKT · Papier" : "Freiticket · Papier") : categoryLabel(t))}</span></td>
+        <td class="mono">${esc(t.number)}${t.is_test ? ' <span class="tag test">TEST</span>' : ""}<span class="sub">${esc(t.paper ? (t.category === "free" ? "VIP · 2TAKT" : "Freiticket · Papier") : categoryLabel(t))}</span></td>
         <td>${t.first_name ? `${esc(t.first_name)} ${esc(t.last_name)}` : '<span class="dim">ohne Namen (gültig)</span>'}<span class="sub">${esc(t.email || "")}${t.note ? " · " + esc(t.note) : ""}</span>${extrasChip(t)}</td>
         <td><span class="st-${t.status}">${{ valid: "gültig", blocked: "gesperrt", cancelled: "storniert" }[t.status]}</span>${t.checked_in_at ? `<span class="sub">drin seit ${timeDe(t.checked_in_at)}</span>` : ""}${t.version > 1 ? `<span class="sub">ersetzt (${t.version}.)</span>` : ""}</td>
         <td class="hide-sm dim">${t.order_no ? `${esc(t.order_no)}<span class="sub">Einl. ${esc(t.invitation_name || "")}</span>` : t.helper_invitation ? `Einl. ${esc(t.helper_invitation)}` : "Admin"}</td>
@@ -1121,7 +1109,7 @@
         can && !t.checked_in_at && ["assign", t.first_name ? "Name ändern" : "Namen zuordnen"],
         can && ["extras", "Essen & Getränke hinzufügen …"]]],
       ["Ticket", [
-        can && ["replace", t.paper ? "Neuen QR-Code (Papier wird ungültig)" : "Neuen QR-Code erzeugen"],
+        can && ["replace", t.paper ? "Neuen QR-Code (alter wird ungültig)" : "Neuen QR-Code erzeugen"],
         t.status === "valid" ? ["block", "Sperren"] : t.status === "blocked" && ["unblock", "Entsperren"],
         isMain() && t.checked_in_at && ["undo", "Check-in zurücksetzen"],
         isMain() && can && ["cancel", "Stornieren", "danger"]]]

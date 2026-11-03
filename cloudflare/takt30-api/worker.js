@@ -331,7 +331,7 @@ async function djTaken(env, s) {
 }
 const DJ_FIRST = 480, DJ_LAST_END = 1080;   // 20:00 bis 06:00
 const DJ_MAX_GUESTS = 1;   // Gästeliste pro DJ: ein Gast
-const DJ_GUEST_FROM = 31;  // Gäste bekommen ein Freiticket aus den letzten 20 (2T-31 bis 2T-50), Kim zerreißt das Papierticket
+const DJ_GUEST_FROM = 31;  // Gäste bekommen ein Freiticket aus den letzten 20 (2T-31 bis 2T-50), rein digital
 const moneyIn = v => { const n = Number(String(v ?? "").replace(/\s|€/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".")); return Number.isFinite(n) && n >= 0 && n <= 100000 ? Math.round(n * 100) : null; };
 const euroDe = c => (c / 100).toLocaleString("de-DE", { minimumFractionDigits: c % 100 ? 2 : 0, maximumFractionDigits: 2 }) + " €";
 const ibanOk = v => { const x = String(v || "").replace(/\s/g, "").toUpperCase(); if (!/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(x)) return false;
@@ -421,7 +421,7 @@ function djContractBody(v, s) {
 ${paid ? `1. Der DJ erhält einen **Festpreis von ${euroDe(v.price_cents)}**. Darin sind Anfahrt, Rückfahrt, Equipment und alle sonstigen Kosten enthalten.
 2. Der Veranstalter überweist den Festpreis bis spätestens **${dateDe(pay)}** auf folgendes Konto: ${v.holder}, IBAN ${ibanFmt(v.iban)}.
 3. Der DJ versteuert die Vergütung selbst.` : `1. Der DJ tritt **ohne Gage** auf und verlangt auch keine Fahrtkosten.`}
-${paid ? 4 : 2}. Der DJ bekommt ein **kostenloses Ticket** für die gesamte Feier (digital per E-Mail, das Papierticket kommt per Post) sowie den ganzen Abend **Getränke und Essen kostenlos**.
+${paid ? 4 : 2}. Der DJ bekommt ein **kostenloses Ticket** für die gesamte Feier (digital per E-Mail) sowie den ganzen Abend **Getränke und Essen kostenlos**.
 ${v.guests.length ? `${paid ? 5 : 3}. ${v.guests.length === 1 ? `Auf der Gästeliste des DJ steht ${v.guests[0].name}. Der Gast bekommt ein kostenloses Ticket per E-Mail.` : `Auf der Gästeliste des DJ stehen: ${v.guests.map(g => g.name).join(", ")}. Jeder Gast bekommt ein kostenloses Ticket per E-Mail.`}\n` : ""}${paid ? (v.guests.length ? 6 : 5) : (v.guests.length ? 4 : 3)}. Weitere Vergütungen oder Kostenerstattungen gibt es nicht.
 
 ## § 3 Equipment und Versicherung
@@ -516,7 +516,7 @@ async function djFinish(env, c, ctx) {
   const link = `${APP_ORIGIN}/taktnr30/vertrag/?k=${c.view_key}`;
   let ticket = null;
   const guestTickets = [];
-  // Nächstes freies 2T-Papierticket digital zuordnen (das Papier schickt Kim per Post)
+  // Nächstes freies 2T-Ticket digital zuordnen
   const take = async (fn, ln, email, food, note, fromEnd = false) => {
     for (let i = 0; i < 3; i++) {
       const free = await first(env, `SELECT id, number FROM tickets WHERE category = 'free' AND paper = 1 AND status = 'valid' AND first_name IS NULL AND sold_cents IS NULL AND checked_in_at IS NULL
@@ -532,7 +532,7 @@ async function djFinish(env, c, ctx) {
     for (const g of meta.guests || []) {
       // Freiticket aus den letzten 20 (von hinten) – das 60er-Online-Kontingent bleibt unberührt
       const parts = g.name.split(" ");
-      const n = await take(parts[0], parts.slice(1).join(" "), g.email, 0, `Freiticket · Gast von DJ ${meta.artist || meta.first_name} · Papierticket zerreißen`, true);
+      const n = await take(parts[0], parts.slice(1).join(" "), g.email, 0, `Freiticket · Gast von DJ ${meta.artist || meta.first_name}`, true);
       guestTickets.push({ ...g, ticket: n });
     }
     await run(env, `UPDATE contracts SET meta = ? WHERE id = ?`, JSON.stringify({ ...meta, ticket, guest_tickets: guestTickets }), c.id);
@@ -543,11 +543,11 @@ async function djFinish(env, c, ctx) {
 <p style="font-size:15px;line-height:1.6;color:#c9c9d1">${esc(c.title)} – unterschrieben von ${esc(s.contact_name)} und ${esc(c.party_name)}.${extra ? "<br>" + esc(extra) : ""}</p>
 <a href="${esc(link)}" style="display:block;background:#9d4dff;color:#0a0a0c;text-decoration:none;padding:14px 18px;border-radius:4px;margin:18px 0;font-size:15px">Vertrag ansehen und als PDF speichern</a></div></body></html>`;
   const missing = guestTickets.filter(g => !g.ticket).map(g => g.name);
-  const kimNote = [ticket ? `Ticket ${ticket} ist zugeordnet – das Papierticket noch per Post schicken.` : "Kein freies 2T-Ticket mehr – bitte von Hand ein Ticket zuordnen.",
-    guestTickets.filter(g => g.ticket).length ? `Gästeliste: ${guestTickets.filter(g => g.ticket).map(g => `${g.name} bekommt ${g.ticket} digital – das Papierticket ${g.ticket} bitte zerreißen`).join(", ")}.` : "",
+  const kimNote = [ticket ? `Ticket ${ticket} ist zugeordnet und per Mail an den DJ raus.` : "Kein freies 2T-Ticket mehr – bitte von Hand ein Ticket zuordnen.",
+    guestTickets.filter(g => g.ticket).length ? `Gästeliste: ${guestTickets.filter(g => g.ticket).map(g => `${g.name} bekommt ${g.ticket} digital`).join(", ")}.` : "",
     missing.length ? `Für ${missing.join(", ")} war kein freies Ticket mehr da.` : ""].filter(Boolean).join(" ");
   const jobs = [sendMail(env, s.contact_email, `Unterschrieben: ${c.title}`, note("Vertrag unterschrieben.", kimNote))];
-  if (c.party_email) jobs.push(sendMail(env, c.party_email, `Dein unterschriebener Vertrag – ${c.title}`, note("Danke – der Vertrag ist unterschrieben.", ticket ? `Dein Ticket ${ticket} kommt in einer eigenen Mail, das Papierticket per Post.` : "")));
+  if (c.party_email) jobs.push(sendMail(env, c.party_email, `Dein unterschriebener Vertrag – ${c.title}`, note("Danke – der Vertrag ist unterschrieben.", ticket ? `Dein Ticket ${ticket} kommt in einer eigenen Mail.` : "")));
   for (const number of [ticket, ...guestTickets.map(g => g.ticket)].filter(Boolean)) jobs.push((async () => { const t = await first(env, `SELECT * FROM tickets WHERE number = ?`, number); if (t?.email) await sendTicketMail(env, t); })());
   const job = Promise.all(jobs).catch(() => {});
   if (ctx?.waitUntil) ctx.waitUntil(job); else await job;
@@ -2010,7 +2010,7 @@ async function paperSetup(env, who) {
     const r = await run(env, `INSERT INTO tickets (number, category, code, view_key, status, is_test, paper, note, created_at, updated_at)
       SELECT printf('2T-%02d', COALESCE((SELECT MAX(CAST(substr(number, 4) AS INTEGER)) FROM tickets WHERE category = 'free'), 0) + 1), 'free', ?, ?,
         CASE WHEN (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND status != 'cancelled') < ? THEN 'valid' ELSE 'blocked' END, 0, 1,
-        CASE WHEN (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND status != 'cancelled') < ? THEN 'VIP (Papier)' ELSE 'VIP (Papier)' END, ?, ?
+        CASE WHEN (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND status != 'cancelled') < ? THEN 'VIP' ELSE 'VIP' END, ?, ?
       WHERE (SELECT COUNT(*) FROM tickets WHERE category = 'free' AND status != 'cancelled') < ?`, randomCode(26), randomCode(26), PAPER_VIP, PAPER_VIP, iso(t), iso(t), PAPER_VIP_TOTAL);
     if (!changes(r)) break;
   }
@@ -2018,7 +2018,7 @@ async function paperSetup(env, who) {
     const r = await run(env, `INSERT INTO tickets (number, category, code, view_key, status, is_test, paper, note, created_at, updated_at)
       SELECT printf('FK-%02d', COALESCE((SELECT MAX(CAST(substr(number, 4) AS INTEGER)) FROM tickets WHERE number LIKE 'FK-%'), 0) + 1), 'regular', ?, ?,
         CASE WHEN (SELECT COUNT(*) FROM tickets WHERE number LIKE 'FK-%' AND status != 'cancelled') < ? THEN 'valid' ELSE 'blocked' END, 0, 1,
-        CASE WHEN (SELECT COUNT(*) FROM tickets WHERE number LIKE 'FK-%' AND status != 'cancelled') < ? THEN 'Freiticket Kim (Papier)' ELSE 'Freiticket Kim (Papier)' END, ?, ?
+        CASE WHEN (SELECT COUNT(*) FROM tickets WHERE number LIKE 'FK-%' AND status != 'cancelled') < ? THEN 'Freiticket Kim' ELSE 'Freiticket Kim' END, ?, ?
       WHERE (SELECT COUNT(*) FROM tickets WHERE number LIKE 'FK-%' AND status != 'cancelled') < ?`, randomCode(26), randomCode(26), PAPER_OWN, PAPER_OWN, iso(t), iso(t), PAPER_OWN_TOTAL);
     if (!changes(r)) break;
   }
@@ -2042,7 +2042,7 @@ async function paperSell(env, request, who) {
   const b = await readJson(request) || {};
   const number = String(b.number || "").trim().toUpperCase();
   const t = await first(env, `SELECT id, category, sold_cents FROM tickets WHERE paper = 1 AND number = ? AND status != 'cancelled'`, number);
-  if (!t) return fail("Papierticket mit dieser Nummer nicht gefunden.", 404);
+  if (!t) return fail("VIP-/Freiticket mit dieser Nummer nicht gefunden.", 404);
   if (b.undo) {
     await run(env, `UPDATE tickets SET sold_cents = NULL, sold_at = NULL, sold_via = NULL, updated_at = ? WHERE id = ?`, iso(), t.id);
     await audit(env, who, "paper.sell_undo", number, {});
@@ -2063,7 +2063,7 @@ async function paperBlock(env, request, who) {
   const b = await readJson(request) || {};
   const number = String(b.number || "").trim().toUpperCase();
   const t = await first(env, `SELECT id, status FROM tickets WHERE paper = 1 AND number = ?`, number);
-  if (!t) return fail("Papierticket mit dieser Nummer nicht gefunden.", 404);
+  if (!t) return fail("VIP-/Freiticket mit dieser Nummer nicht gefunden.", 404);
   const status = b.unblock ? "valid" : "blocked";
   await run(env, `UPDATE tickets SET status = ?, updated_at = ? WHERE id = ? AND status != 'cancelled'`, status, iso(), t.id);
   await audit(env, who, b.unblock ? "paper.unblock" : "paper.block", number, {});
