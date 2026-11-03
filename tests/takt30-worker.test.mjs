@@ -109,7 +109,7 @@ test("Testkauf: 2 Tickets für 35 €, Tickets mit QR, Adresse nur nach Kauf, Ma
   assert.equal(pay.status, 200);
   const o = await t.call("GET", `/public/order?key=${co.data.access_key}`);
   assert.equal(o.data.status, "paid"); assert.equal(o.data.tickets.length, 2);
-  assert.match(o.data.event.venue_address, /Seewiesen 84/);
+  assert.match(o.data.event.venue_address, /Nähe Heidenheim/);
   assert.notEqual(o.data.tickets[0].code, o.data.tickets[1].code);
   assert.ok(o.data.tickets[0].code.length >= 26);
   assert.equal(t.mails.length, 1); assert.match(t.mails[0].subject, /TEST/);

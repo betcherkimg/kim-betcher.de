@@ -66,9 +66,9 @@ const DEFAULT_SETTINGS = {
   event_date: "2027-03-06",
   doors_time: "19:00",
   start_time: "20:00",
-  place_public: "Heidenheim · Halle Kai Betcher – Bau & Holz",
-  venue_name: "Halle Kai Betcher – Bau & Holz",
-  venue_address: "In den Seewiesen 84, 89520 Heidenheim",
+  place_public: "Nähe Heidenheim",
+  venue_name: "Location folgt",
+  venue_address: "Nähe Heidenheim",
   intro_title: "30 Jahre. 150 Gäste. 1 Halle.",
   intro_text: "Geschlossene Gesellschaft. Kein Gästelistenplatz, kein Einlass.\nEinlass ab 19:00. Der Takt beginnt um 20:00.",
   lineup: "[]",
@@ -410,7 +410,7 @@ function djContractBody(v, s) {
 
 ## § 1 Veranstaltung und Leistung
 
-1. Der DJ legt bei der privaten Geburtstagsfeier TAKT Nr. 30 am **${weekdayDeS(s.event_date)}, ${dateDe(s.event_date)}**, in der ${s.venue_name}, ${s.venue_address}, auf.
+1. Der DJ legt bei der privaten Geburtstagsfeier TAKT Nr. 30 am **${weekdayDeS(s.event_date)}, ${dateDe(s.event_date)}** auf (Ort: ${s.venue_name}, ${s.venue_address}; der genaue Ort wird dem DJ rechtzeitig mitgeteilt).
 2. Das Set dauert **${v.set_length}**.${v.wish != null ? ` Der DJ wünscht sich einen Beginn um **${fromNoon(v.wish)} Uhr**.` : ""} Die genaue Uhrzeit stimmen Veranstalter und DJ individuell ab; sie ist nicht Teil dieses Vertrags.
 3. Der DJ legt Techno nach eigener Auswahl auf, auch eigene Remixe.
 4. Der DJ bringt sein eigenes Equipment mit (Anlage 1). Lautsprecheranlage, Licht und Strom stellt der Veranstalter.
