@@ -330,7 +330,7 @@ async function djTaken(env, s) {
   return out;
 }
 const DJ_FIRST = 480, DJ_LAST_END = 1080;   // 20:00 bis 06:00
-const DJ_MAX_GUESTS = 2;   // Gästeliste pro DJ
+const DJ_MAX_GUESTS = 1;   // Gästeliste pro DJ: ein Gast mit eigenem Freiticket (nicht aus den Papiertickets)
 const moneyIn = v => { const n = Number(String(v ?? "").replace(/\s|€/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".")); return Number.isFinite(n) && n >= 0 && n <= 100000 ? Math.round(n * 100) : null; };
 const euroDe = c => (c / 100).toLocaleString("de-DE", { minimumFractionDigits: c % 100 ? 2 : 0, maximumFractionDigits: 2 }) + " €";
 const ibanOk = v => { const x = String(v || "").replace(/\s/g, "").toUpperCase(); if (!/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(x)) return false;
@@ -372,7 +372,7 @@ function djInput(b) {
     annex: annexClean(f.annex),
     guests: (Array.isArray(f.guests) ? f.guests : []).slice(0, 10).map(g => ({ name: cleanName(g?.name || "").slice(0, 80), email: String(g?.email || "").trim().toLowerCase() })).filter(g => g.name || g.email)
   };
-  if (v.guests.length > DJ_MAX_GUESTS) return { error: `Auf die Gästeliste passen höchstens ${DJ_MAX_GUESTS} Personen.` };
+  if (v.guests.length > DJ_MAX_GUESTS) return { error: DJ_MAX_GUESTS === 1 ? "Du kannst eine Person auf die Gästeliste setzen." : `Auf die Gästeliste passen höchstens ${DJ_MAX_GUESTS} Personen.` };
   for (const g of v.guests) {
     const parts = g.name.split(" ");
     if (parts.length < 2 || !nameOk(parts[0]) || !nameOk(parts.slice(1).join(" "))) return { error: "Bitte bei der Gästeliste Vor- und Nachnamen eintragen." };
@@ -421,7 +421,7 @@ ${paid ? `1. Der DJ erhält einen **Festpreis von ${euroDe(v.price_cents)}**. Da
 2. Der Veranstalter überweist den Festpreis bis spätestens **${dateDe(pay)}** auf folgendes Konto: ${v.holder}, IBAN ${ibanFmt(v.iban)}.
 3. Der DJ versteuert die Vergütung selbst.` : `1. Der DJ tritt **ohne Gage** auf und verlangt auch keine Fahrtkosten.`}
 ${paid ? 4 : 2}. Der DJ bekommt ein **kostenloses Ticket** für die gesamte Feier (digital per E-Mail, das Papierticket kommt per Post) sowie den ganzen Abend **Getränke und Essen kostenlos**.
-${v.guests.length ? `${paid ? 5 : 3}. Auf der Gästeliste des DJ stehen: ${v.guests.map(g => g.name).join(", ")}. Jeder Gast bekommt ein kostenloses Ticket per E-Mail.\n` : ""}${paid ? (v.guests.length ? 6 : 5) : (v.guests.length ? 4 : 3)}. Weitere Vergütungen oder Kostenerstattungen gibt es nicht.
+${v.guests.length ? `${paid ? 5 : 3}. ${v.guests.length === 1 ? `Auf der Gästeliste des DJ steht ${v.guests[0].name}. Der Gast bekommt ein kostenloses Ticket per E-Mail.` : `Auf der Gästeliste des DJ stehen: ${v.guests.map(g => g.name).join(", ")}. Jeder Gast bekommt ein kostenloses Ticket per E-Mail.`}\n` : ""}${paid ? (v.guests.length ? 6 : 5) : (v.guests.length ? 4 : 3)}. Weitere Vergütungen oder Kostenerstattungen gibt es nicht.
 
 ## § 3 Equipment und Versicherung
 
@@ -528,9 +528,13 @@ async function djFinish(env, c, ctx) {
   if (meta.kind === "dj" && !meta.ticket) {
     ticket = await take(meta.first_name, meta.last_name, c.party_email, 1, `DJ${meta.artist ? " " + meta.artist : ""} · Getränke frei`);
     for (const g of meta.guests || []) {
-      const parts = g.name.split(" ");
-      const n = await take(parts[0], parts.slice(1).join(" "), g.email, 0, `Gast von DJ ${meta.artist || meta.first_name}`);
-      guestTickets.push({ ...g, ticket: n });
+      const parts = g.name.split(" "), t = nowMs();
+      const r = await run(env, `INSERT INTO tickets (number, category, code, view_key, first_name, last_name, email, status, is_test, note, created_at, updated_at)
+        SELECT printf('T30-%03d', COALESCE((SELECT MAX(CAST(substr(number, 5) AS INTEGER)) FROM tickets WHERE category = 'regular' AND number LIKE 'T30-%'), 0) + 1), 'regular', ?, ?, ?, ?, ?, 'valid', 0, ?, ?, ?
+        WHERE ${SQL_REGULAR_TAKEN()} + 1 <= ?`,
+        randomCode(26), randomCode(26), parts[0], parts.slice(1).join(" "), g.email, `Freiticket · Gast von DJ ${meta.artist || meta.first_name}`, iso(t), iso(t), t, REGULAR_CAP);
+      const n = changes(r) ? (await first(env, `SELECT number FROM tickets WHERE id = ?`, r.meta.last_row_id))?.number : null;
+      guestTickets.push({ ...g, ticket: n || null });
     }
     await run(env, `UPDATE contracts SET meta = ? WHERE id = ?`, JSON.stringify({ ...meta, ticket, guest_tickets: guestTickets }), c.id);
     await audit(env, { actor: `contract:${c.id}`, name: c.party_name }, "dj.ticket", ticket || "kein freies Ticket", { guests: guestTickets.map(g => g.ticket).join(", ") });

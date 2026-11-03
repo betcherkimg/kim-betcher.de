@@ -290,8 +290,9 @@ fs.writeFileSync('{OUT}/qr.pgm',Buffer.concat([Buffer.from('P5\\n'+W+' '+H+'\\n2
         d.locator("#annex .r >> nth=0").locator("input >> nth=1").fill("SN-1")
         d.locator("#annex .r >> nth=0").locator("input >> nth=2").fill("2.400")
         d.click("#addGuest"); d.locator("#guests .r input >> nth=0").fill("Lea Gast"); d.locator("#guests .r input >> nth=1").fill("lea@example.org")
-        d.click("#addGuest"); assert d.is_hidden("#addGuest")   # höchstens 2 Gäste
-        d.locator("#guests .r >> nth=1").locator(".x").click(); assert d.is_visible("#addGuest")
+        assert d.is_hidden("#addGuest")   # nur ein Gast
+        d.locator("#guests .r .x").click(); assert d.is_visible("#addGuest")
+        d.click("#addGuest"); d.locator("#guests .r input >> nth=0").fill("Lea Gast"); d.locator("#guests .r input >> nth=1").fill("lea@example.org")
         no_overflow(d, "dj formular")
         d.click("#next"); d.wait_for_selector(".paper h2")
         txt = d.inner_text(".paper")
