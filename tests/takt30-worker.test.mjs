@@ -1049,3 +1049,64 @@ test("Papiertickets online: Liste, Namen zuordnen, per Mail schicken, gleicher Q
   await t.admin("POST", "/admin/tickets/extras", { number: "FK-01", drinks: 0, food: 1 });
   assert.equal((await t.admin("GET", "/admin/tickets?category=paper")).data.find(x => x.number === "FK-01").extra_food, 1);
 });
+
+test("DJ-Link: DJ trägt alles ein, unterschreibt zuerst, Kim zeichnet gegen → nächstes freies 2T-Ticket + Gäste", async () => {
+  const t = await setup({ RESEND_API_KEY: "k", MAIL_FROM: "TAKT Nr. 30 <tickets@kim-betcher.de>" });
+  await t.admin("GET", "/admin/paper");                                   // Papiertickets anlegen
+  await t.admin("PUT", "/admin/settings", { contact_address: "Musterweg 1, 89518 Heidenheim", lineup: JSON.stringify([{ time: "02:00 – 04:00", name: "TBJ" }]) });
+  const L = (await t.admin("GET", "/admin/links")).data;
+  assert.ok(L.dj_link.url.includes("/taktnr30/dj/?c=")); assert.ok(L.dj_link.free_tickets > 0);
+  const c = L.dj_link.url.split("?c=")[1];
+  assert.equal((await t.call("GET", "/public/dj?c=FALSCH")).status, 404);
+  const info = (await t.call("GET", `/public/dj?c=${c}`)).data;
+  assert.equal(info.pay_until, "2027-02-06"); assert.deepEqual(info.taken, [[840, 960]]);   // 02:00–04:00 als Minuten ab 12 Uhr
+  const form = { artist: "Sanna Sand", first_name: "Sanna", last_name: "Sand", street: "Hauptstr. 5", city: "70173 Stuttgart", email: "dj@example.org", phone: "0170 1234567",
+    set_length: "2 Stunden", wish_time: "22:00", price: "200", holder: "Sanna Sand", iban: "DE89 3704 0044 0532 0130 00",
+    annex: [{ item: "Pioneer CDJ-3000", serial: "X1", value: "2.400" }, { item: "Laptop", value: "1.000" }],
+    guests: [{ name: "Lea Gast", email: "lea@example.org" }] };
+  assert.equal((await t.call("POST", "/public/dj/preview", { c, form: { ...form, iban: "DE00 1234" } })).status, 400);       // IBAN falsch
+  assert.equal((await t.call("POST", "/public/dj/preview", { c, form: { ...form, guests: [{ name: "Lea", email: "lea@example.org" }] } })).status, 400); // Nachname fehlt
+  assert.equal((await t.call("POST", "/public/dj/preview", { c, form: { ...form, guests: [1, 2, 3].map(i => ({ name: `Gast Nr${i}`, email: `g${i}@example.org` })) } })).status, 400); // max. 2
+  assert.equal((await t.call("POST", "/public/dj/preview", { c, form: { ...form, wish_time: "01:00" } })).status, 409);   // überschneidet TBJ
+  assert.equal((await t.call("POST", "/public/dj/preview", { c, form: { ...form, wish_time: "13:00" } })).status, 400);   // außerhalb
+  const p = (await t.call("POST", "/public/dj/preview", { c, form })).data;
+  assert.match(p.body, /Beginn um \*\*22:00 Uhr\*\*/);
+  assert.match(p.body, /Festpreis von 200 €/); assert.match(p.body, /Anfahrt, Rückfahrt/); assert.match(p.body, /Set dauert \*\*2 Stunden\*\*/);
+  assert.match(p.body, /Uhrzeit stimmen Veranstalter und DJ individuell ab/); assert.match(p.body, /Veranstalterversicherung/);
+  assert.match(p.body, /bis spätestens \*\*06\.02\.2027\*\*/); assert.match(p.body, /IBAN DE89 3704 0044 0532 0130 00/);
+  assert.match(p.body, /ca\. 3\.400 €/); assert.match(p.body, /Gästeliste des DJ stehen: Lea Gast/); assert.match(p.body, /Musterweg 1, 89518 Heidenheim/);
+  assert.doesNotMatch(p.body, /Setbeginn voraussichtlich|02:00/);
+  const sig = "data:image/png;base64," + "A".repeat(400);
+  assert.equal((await t.call("POST", "/public/dj/sign", { c, form, sig, accept: true, body_sha: "falsch" })).status, 409);
+  t.mails.length = 0;
+  assert.equal((await t.call("POST", "/public/dj/preview", { c, form: { ...form, hear_link: "soundcloud.com/x" } })).status, 400);
+  const s = await t.call("POST", "/public/dj/sign", { c, form: { ...form, hear_link: "https://soundcloud.com/sanna" }, sig, accept: true, body_sha: p.body_sha, photo: "data:image/jpeg;base64," + "B".repeat(500) });
+  assert.equal(s.status, 201);
+  assert.equal(t.mails.length, 1); assert.match(t.mails[0].subject, /DJ hat unterschrieben/);
+  assert.equal((await t.call("POST", "/public/dj/sign", { c, form, sig, accept: true, body_sha: p.body_sha })).status, 409);   // doppelt
+  // 22:00–00:00 ist jetzt belegt
+  assert.equal((await t.call("POST", "/public/dj/preview", { c, form: { ...form, email: "b@example.org", wish_time: "23:00" } })).status, 409);
+  assert.ok((await t.call("GET", `/public/dj?c=${c}`)).data.taken.some(([a, z]) => a === 600 && z === 720));
+  const k = s.data.url.split("?k=")[1];
+  const pub = (await t.call("GET", `/public/contract?k=${k}`)).data;
+  assert.ok(pub.party_signed_at && !pub.owner_signed_at);
+  const list = (await t.admin("GET", "/admin/contracts")).data;
+  const row = list.find(x => x.view_key === k);
+  assert.equal(row.meta.hear_link, "https://soundcloud.com/sanna"); assert.equal(row.meta.wish, "22:00"); assert.equal(row.has_photo, 1);
+  assert.match((await t.admin("GET", `/admin/contracts/${row.id}/photo`)).data.data, /^data:image\/jpeg/);
+  t.mails.length = 0;
+  const done = await t.admin("POST", `/admin/contracts/${row.id}/sign`, { sig });
+  assert.equal(done.status, 200); assert.equal(done.data.finished, true); assert.equal(done.data.ticket, "2T-01");
+  const tk = t.db.prepare("SELECT first_name, last_name, email, extra_food, note FROM tickets WHERE number = '2T-01'").get();
+  assert.deepEqual([tk.first_name, tk.last_name, tk.email, tk.extra_food], ["Sanna", "Sand", "dj@example.org", 1]); assert.match(tk.note, /DJ Sanna Sand/);
+  const g = t.db.prepare("SELECT first_name, last_name, email FROM tickets WHERE number = '2T-02'").get();
+  assert.deepEqual([g.first_name, g.last_name, g.email], ["Lea", "Gast", "lea@example.org"]);
+  const final = (await t.call("GET", `/public/contract?k=${k}`)).data;
+  assert.equal(final.status, "signed"); assert.ok(final.final_sha);
+  const to = t.mails.map(m => [].concat(m.to).join(",")).join(" ");
+  assert.ok(to.includes("dj@example.org") && to.includes("lea@example.org"), to);   // Vertrag + Tickets
+  assert.equal((await t.admin("POST", `/admin/contracts/${row.id}/sign`, { sig })).status, 409);
+  // Neuer Link → alter ungültig
+  await t.admin("POST", "/admin/dj-link/renew");
+  assert.equal((await t.call("GET", `/public/dj?c=${c}`)).status, 404);
+});

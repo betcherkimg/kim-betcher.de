@@ -44,7 +44,7 @@ def wire(ctx):
 def watch(page, name):
     page.on("pageerror", lambda e: errors.append(f"{name}: {e}"))
     # ERR_FAILED ist beim Scanner der absichtlich simulierte Verbindungsabbruch
-    page.on("console", lambda m: m.type == "error" and "favicon" not in m.text and not (name == "scanner" and "ERR_FAILED" in m.text) and errors.append(f"{name} console: {m.text}"))
+    page.on("console", lambda m: m.type == "error" and "favicon" not in m.text and not (name == "scanner" and "ERR_FAILED" in m.text) and not (name == "dj" and "status of 400" in m.text) and errors.append(f"{name} console: {m.text}"))
 
 def no_overflow(page, label):
     w = page.evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth")
@@ -267,48 +267,54 @@ fs.writeFileSync('{OUT}/qr.pgm',Buffer.concat([Buffer.from('P5\\n'+W+' '+H+'\\n2
             pg.mouse.move(b["x"] + 30, b["y"] + 100); pg.mouse.down()
             for i in range(12): pg.mouse.move(b["x"] + 40 + i * 18, b["y"] + 60 + (i % 3) * 25, steps=3)
             pg.mouse.up()
-        import base64 as _b64
-        pre = _b64.urlsafe_b64encode(json.dumps({"name": "Julian Vorab", "eq": [{"item": "XDJ-AZ", "value": "2.989"}]}).encode()).decode().rstrip("=")
-        admin.goto("https://kim-betcher.de/taktnr30/admin/#contracts?d=" + pre); admin.wait_for_selector("#cForm")
-        admin.wait_for_function("document.querySelector('#cForm [name=name]').value === 'Julian Vorab'")
-        assert admin.locator("#eqRows [data-eq=item]").input_value() == "XDJ-AZ" and "?d=" not in admin.url
-        admin.wait_for_selector("#cPreview h2")   # Vertrag liegt direkt fertig zum Unterschreiben da
-        # Login dazwischen (Adresse ohne Daten): gespeicherte Daten werden trotzdem übernommen
-        admin.evaluate("localStorage.setItem('takt30.prefill', arguments[0])".replace("arguments[0]", json.dumps(pre)))
-        admin.goto("https://kim-betcher.de/taktnr30/admin/"); admin.reload()
-        admin.wait_for_selector("#cPreview h2"); assert "Julian Vorab" in admin.inner_text("#cPreview")
-        admin.fill("#cForm [name=name]", "Julian Test"); admin.fill("#cForm [name=addr]", "Teststraße 1, 89522 Heidenheim")
-        admin.fill("#cForm [name=email]", "dj@example.org")
-        admin.fill("#eqRows [data-eq=item]", "Alpha Theta XDJ-AZ"); admin.fill("#eqRows [data-eq=value]", "2.989")
-        assert admin.input_value("#cForm [name=value]") == "2.989"
-        admin.click("#cGen")
-        admin.wait_for_selector("#cPreview h2")
-        assert "kein Honorar" in admin.inner_text("#cPreview") and "Essen kostenlos" in admin.inner_text("#cPreview")
-        admin.wait_for_timeout(900)   # sanftes Scrollen abwarten
-        scribble(admin, "#cPad"); admin.click("#cSign")
-        admin.wait_for_selector("#cDone code")
-        clink = admin.inner_text("#cDone code"); assert "/taktnr30/vertrag/?k=" in clink
-        admin.screenshot(path=str(OUT / "admin-vertrag.png"), full_page=True)
+        # ---------- DJ-Link: DJ trägt alles ein und unterschreibt zuerst, Kim zeichnet gegen ----------
+        admin.evaluate("document.querySelector('nav button[data-p=paper]').click()"); admin.wait_for_timeout(600)   # Papiertickets anlegen
+        admin.evaluate("document.querySelector('nav button[data-p=links]').click()"); admin.wait_for_selector("text=DJ-LINK")
+        djlink = admin.evaluate("[...document.querySelectorAll('.linkbox code')].map(c => c.textContent).find(t => t.includes('/taktnr30/dj/'))")
+        assert djlink and "?c=" in djlink
         dctx = browser.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True, accept_downloads=True)
-        wire(dctx); d = dctx.new_page(); watch(d, "vertrag")
-        d.goto(clink); d.wait_for_selector(".paper h2")
-        d.screenshot(path=str(OUT / "dj-1-link-geoeffnet.png"))
-        d.evaluate("document.querySelector('.sigs').scrollIntoView({block:'start'})"); d.wait_for_timeout(200)
-        d.screenshot(path=str(OUT / "dj-2-nach-dem-lesen.png"))
-        assert d.locator("#annex input >> nth=0").input_value() == "Alpha Theta XDJ-AZ"
-        d.locator("#annex input >> nth=1").fill("SN-12345")
+        wire(dctx); d = dctx.new_page(); watch(d, "dj")
+        sql("UPDATE event_settings SET value = ? WHERE key = 'lineup'", json.dumps([{"time": "02:00 – 04:00", "name": "TBJ"}]))
+        d.goto(djlink); d.wait_for_selector("#first_name")
+        d.screenshot(path=str(OUT / "dj-1-formular.png"), full_page=True)
+        d.click("#next"); d.wait_for_selector("#err:not([hidden])"); assert "Vor- und Nachnamen" in d.inner_text("#err")
+        d.set_input_files("#photo", str(ROOT / "taktnr30/assets/lineup/tbj.webp")); d.wait_for_selector("#photoPrev[src^='data:image/jpeg']")
+        d.fill("#hear_link", "https://soundcloud.com/sanna"); d.fill("#arrival", "21:15")
+        for k, v in {"artist": "Sanna Sand", "first_name": "Sanna", "last_name": "Sand", "street": "Hauptstr. 5", "city": "70173 Stuttgart", "email": "dj@example.org",
+                     "phone": "0170 1234567", "price": "200", "holder": "Sanna Sand", "iban": "DE89 3704 0044 0532 0130 00"}.items():
+            d.fill(f"#{k}", v)
+        d.select_option("#set_length", "120 min")
+        assert d.evaluate("['01:00','02:00','03:30'].every(v => document.querySelector(`#wish_time option[value='${v}']`).disabled) && !document.querySelector(`#wish_time option[value='22:00']`).disabled")   # TBJ 02–04 belegt
+        d.select_option("#wish_time", "22:00")
+        d.locator("#annex .r >> nth=0").locator("input >> nth=0").fill("Pioneer CDJ-3000")
+        d.locator("#annex .r >> nth=0").locator("input >> nth=1").fill("SN-1")
+        d.locator("#annex .r >> nth=0").locator("input >> nth=2").fill("2.400")
+        d.click("#addGuest"); d.locator("#guests .r input >> nth=0").fill("Lea Gast"); d.locator("#guests .r input >> nth=1").fill("lea@example.org")
+        d.click("#addGuest"); assert d.is_hidden("#addGuest")   # höchstens 2 Gäste
+        d.locator("#guests .r >> nth=1").locator(".x").click(); assert d.is_visible("#addGuest")
+        no_overflow(d, "dj formular")
+        d.click("#next"); d.wait_for_selector(".paper h2")
+        txt = d.inner_text(".paper")
+        assert "Festpreis von 200 €" in txt and "2 Stunden" in txt and "individuell" in txt and "Veranstalterversicherung" in txt and "Lea Gast" in txt and "Pioneer CDJ-3000" in txt and "22:00 Uhr" in txt
+        d.screenshot(path=str(OUT / "dj-2-vertrag.png"), full_page=True)
+        d.click("#back"); d.wait_for_selector("#first_name"); assert d.input_value("#price") == "200"; d.click("#next"); d.wait_for_selector(".paper h2")
         d.click("#sign"); assert "gelesen" in d.inner_text("#err")
         d.check("#accept"); d.click("#sign"); assert "unterschreiben" in d.inner_text("#err")
-        d.evaluate("document.querySelector('#annex').scrollIntoView({block:'center'})"); d.wait_for_timeout(200)
-        d.screenshot(path=str(OUT / "dj-3-equipment.png"))
         d.evaluate("document.querySelector('#pad').scrollIntoView({block:'center'})"); d.wait_for_timeout(300)
-        scribble(d, "#pad"); no_overflow(d, "vertrag")
-        d.evaluate("document.querySelector('#err').hidden = true")
-        d.screenshot(path=str(OUT / "dj-4-unterschreiben.png"))
-        d.screenshot(path=str(OUT / "vertrag-vor-unterschrift.png"), full_page=True)
-        d.click("#sign"); d.wait_for_selector(".done"); d.wait_for_timeout(900)
-        d.evaluate("document.querySelector('.done').scrollIntoView({block:'start'})"); d.wait_for_timeout(200)
-        d.screenshot(path=str(OUT / "dj-5-unterschrieben-download.png"))
+        scribble(d, "#pad"); no_overflow(d, "dj vertrag")
+        d.click("#sign"); d.wait_for_selector(".done")
+        assert "Kim unterschreibt jetzt noch" in d.inner_text(".done")
+        d.screenshot(path=str(OUT / "dj-3-abgeschickt.png"))
+        clink = d.get_attribute(".done ~ p a", "href")
+        d.goto(clink); d.wait_for_selector(".done"); assert "fehlt noch die Unterschrift" in d.inner_text(".done")
+        # Kim zeichnet im Admin gegen
+        admin.evaluate("document.querySelector('nav button[data-p=contracts]').click()"); admin.wait_for_selector("text=hat unterschrieben – jetzt du")
+        assert "Festpreis 200,00 €" in admin.inner_text("#main") and "Wunsch 22:00 Uhr" in admin.inner_text("#main") and admin.is_visible("[data-cph]") and admin.is_visible("a:has-text('Hörprobe')")
+        admin.click("button:has-text('Gegenzeichnen')"); admin.wait_for_selector("#oPad"); admin.wait_for_timeout(900)
+        scribble(admin, "#oPad"); admin.click("#oSign"); admin.wait_for_selector("#oDone .card")
+        assert "2T-" in admin.inner_text("#oDone"), admin.inner_text("#oDone")
+        admin.screenshot(path=str(OUT / "admin-gegenzeichnet.png"), full_page=True)
+        d.reload(); d.wait_for_selector(".done"); assert "von beiden Seiten" in d.inner_text(".done")
         with d.expect_download() as dl: d.click("#dl")
         vp = OUT / "Vertrag.pdf"; dl.value.save_as(str(vp)); assert vp.read_bytes()[:5] == b"%PDF-"
         d.screenshot(path=str(OUT / "vertrag-unterschrieben.png"), full_page=True)

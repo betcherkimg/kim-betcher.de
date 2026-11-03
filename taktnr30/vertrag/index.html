@@ -71,10 +71,17 @@
   }
 
   function render() {
-    const signed = !!c.party_signed_at;
+    const signed = !!c.party_signed_at && !!c.owner_signed_at;
+    const waiting = !!c.party_signed_at && !c.owner_signed_at;   // DJ-Link: DJ hat zuerst unterschrieben
     const hasAnnex = /Anlage 1/.test(c.body);
-    const annexDone = signed && Array.isArray(c.annex) && c.annex.length
+    const annexDone = (signed || waiting) && Array.isArray(c.annex) && c.annex.length
       ? `<table class="eqtable"><thead><tr><th>Gerät</th><th>Seriennr.</th><th class="v">Wert €</th></tr></thead><tbody>${c.annex.map(a => `<tr><td>${esc(a.item)}</td><td>${esc(a.serial || "–")}</td><td class="v">${esc(a.value || "")}</td></tr>`).join("")}</tbody></table>` : "";
+    if (waiting) {
+      $("#box").innerHTML = `<article class="paper">${renderHtml(c.body)}${annexDone}</article>
+        <div class="done"><strong>Du hast unterschrieben.</strong> Jetzt fehlt noch die Unterschrift von ${esc(c.owner_name)}. Danach bekommst du den fertigen Vertrag als PDF per E-Mail.</div>
+        <div class="sigs">${sigCard("Veranstalter", c.owner_name, null, null)}${sigCard("Vertragspartner", c.party_name, c.party_sig, c.party_signed_at)}</div>`;
+      return;
+    }
     $("#box").innerHTML = `<article class="paper">${renderHtml(c.body)}${annexDone}</article>
       ${signed ? `
         <div class="done"><strong>Unterschrieben.</strong> Der Vertrag ist von beiden Seiten unterschrieben. Lade dir das PDF für deine Unterlagen herunter.</div>

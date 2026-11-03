@@ -83,12 +83,13 @@ const DEFAULT_SETTINGS = {
   bands: JSON.stringify({ regular: { label: "Weiß", color: "#ffffff" }, free: { label: "Lila", color: "#9d4dff", note: "" }, vip: { label: "Lila", color: "#9d4dff", note: "" }, helper: { label: "Neongrün", color: "#39ff14" } }),
   helper_jobs: JSON.stringify([{ name: "Bar", slots: 8 }, { name: "Ticketscan", slots: 5 }]),
   shifts_open: "1",               // Helfer dürfen ihre Schichten selbst wählen/ändern
-  helper_contact: "0151 40411184" // Telefonnummer für Helfer (Absagen, Fragen)
+  helper_contact: "0151 40411184", // Telefonnummer für Helfer (Absagen, Fragen)
+  contact_address: ""             // Anschrift des Veranstalters für Verträge (nur in der Datenbank)
 };
 const SETTING_LIMITS = {
   event_date: 10, doors_time: 5, start_time: 5, place_public: 120, venue_name: 120, venue_address: 160,
   intro_title: 120, intro_text: 600, lineup: 4000, lineup_note: 80, contact_name: 80, contact_phone: 40,
-  contact_email: 120, sale_mode: 6, show_countdown: 1, helper_signup: 1, helper_cap: 2, helper_jobs: 2000, bands: 900, shifts_open: 1, helper_contact: 40
+  contact_email: 120, sale_mode: 6, show_countdown: 1, helper_signup: 1, helper_cap: 2, helper_jobs: 2000, bands: 900, shifts_open: 1, helper_contact: 40, contact_address: 160
 };
 
 /* ================= Antworten ================= */
@@ -155,6 +156,8 @@ const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS rate_limits (bucket TEXT PRIMARY KEY, count INTEGER NOT NULL, reset_at INTEGER NOT NULL)`,
   `CREATE TABLE IF NOT EXISTS ledger (id INTEGER PRIMARY KEY AUTOINCREMENT, kind TEXT NOT NULL CHECK (kind IN ('expense','income')), booked_on TEXT NOT NULL, party TEXT, purpose TEXT NOT NULL, category TEXT NOT NULL, amount_cents INTEGER NOT NULL CHECK (amount_cents > 0), receipt_no TEXT, note TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, created_by TEXT)`,
   `CREATE TABLE IF NOT EXISTS contracts (id INTEGER PRIMARY KEY AUTOINCREMENT, view_key TEXT NOT NULL UNIQUE, title TEXT NOT NULL, party_name TEXT NOT NULL, party_email TEXT, body TEXT NOT NULL, body_sha TEXT NOT NULL, owner_sig TEXT, owner_signed_at TEXT, party_sig TEXT, party_signed_at TEXT, party_ua TEXT, annex TEXT, final_sha TEXT, status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open','signed','revoked')), created_at TEXT NOT NULL, created_by TEXT, updated_at TEXT NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS dj_photos (contract_id INTEGER PRIMARY KEY, data TEXT NOT NULL, created_at TEXT NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS dj_links (code TEXT PRIMARY KEY, status TEXT NOT NULL DEFAULT 'active', created_at TEXT NOT NULL, revoked_at TEXT)`,
   `CREATE TABLE IF NOT EXISTS insurances (id INTEGER PRIMARY KEY AUTOINCREMENT, kind TEXT NOT NULL, provider TEXT, policy_no TEXT, coverage TEXT, premium_cents INTEGER, note TEXT, file_name TEXT, file_data TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)`,
   `CREATE TABLE IF NOT EXISTS shifts (id INTEGER PRIMARY KEY AUTOINCREMENT, area TEXT NOT NULL, spot TEXT, starts TEXT NOT NULL, ends TEXT, slots INTEGER NOT NULL DEFAULT 1, note TEXT, created_at TEXT NOT NULL, updated_at TEXT)`,
   `CREATE TABLE IF NOT EXISTS shift_assignments (shift_id INTEGER NOT NULL, ticket_id INTEGER NOT NULL, assigned_at TEXT NOT NULL, assigned_by TEXT, PRIMARY KEY (shift_id, ticket_id))`,
@@ -258,7 +261,8 @@ function annexClean(list) {
 const contractFinalText = c => `${c.body}\n\nANLAGE:${c.annex || "[]"}\nVERANSTALTER:${c.owner_signed_at}\nPARTNER:${c.party_signed_at}`;
 
 async function listContracts(env) {
-  return json(await all(env, `SELECT id, view_key, title, party_name, party_email, body_sha, owner_signed_at, party_signed_at, status, created_at FROM contracts ORDER BY id DESC`));
+  return json((await all(env, `SELECT c.id, c.view_key, c.title, c.party_name, c.party_email, c.body_sha, c.owner_signed_at, c.party_signed_at, c.status, c.created_at, c.meta, p.contract_id IS NOT NULL AS has_photo FROM contracts c LEFT JOIN dj_photos p ON p.contract_id = c.id ORDER BY c.id DESC`))
+    .map(r => { let m = null; try { m = r.meta ? JSON.parse(r.meta) : null; } catch {} return { ...r, meta: m && { artist: m.artist, phone: m.phone, set_length: m.set_length, wish: m.wish != null ? fromNoon(m.wish) : null, arrival: m.arrival, hear_link: m.hear_link, price_cents: m.price_cents, guests: (m.guests || []).map(g => g.name), ticket: m.ticket } }; }));
 }
 async function getContractAdmin(env, id) {
   const c = await first(env, `SELECT * FROM contracts WHERE id = ?`, id);
@@ -282,14 +286,269 @@ async function createContract(env, request, who) {
   return json({ id: r.meta.last_row_id, view_key: key, url: `${APP_ORIGIN}/taktnr30/vertrag/?k=${key}` }, 201);
 }
 // Entwurf später unterschreiben (z. B. am Handy)
-async function signContractOwner(env, request, who, id) {
+async function signContractOwner(env, request, who, id, ctx) {
   const b = await readJson(request) || {};
   if (!sigOk(b.sig)) return fail("Bitte im Feld unterschreiben.");
-  const r = await run(env, `UPDATE contracts SET owner_sig = ?, owner_signed_at = ?, updated_at = ? WHERE id = ? AND owner_signed_at IS NULL AND status = 'open'`, b.sig, iso(), iso(), id);
+  const before = await first(env, `SELECT * FROM contracts WHERE id = ?`, id);
+  if (!before || before.owner_signed_at || before.status !== "open") return fail("Dieser Vertrag ist schon unterschrieben oder zurückgezogen.", 409);
+  const t = iso();
+  if (before.party_signed_at) {
+    // Der DJ hat über den DJ-Link schon unterschrieben → mit Kims Unterschrift ist der Vertrag fertig
+    const finalSha = await sha256Hex(contractFinalText({ ...before, owner_signed_at: t }));
+    const r = await run(env, `UPDATE contracts SET owner_sig = ?, owner_signed_at = ?, final_sha = ?, status = 'signed', updated_at = ? WHERE id = ? AND owner_signed_at IS NULL AND status = 'open'`, b.sig, t, finalSha, t, id);
+    if (!changes(r)) return fail("Dieser Vertrag ist schon unterschrieben oder zurückgezogen.", 409);
+    await audit(env, who, "contract.owner_signed", before.title, { sha: finalSha });
+    const done = await djFinish(env, { ...before, owner_signed_at: t, final_sha: finalSha }, ctx);
+    return json({ ok: true, finished: true, ticket: done.ticket || null, url: `${APP_ORIGIN}/taktnr30/vertrag/?k=${before.view_key}` });
+  }
+  const r = await run(env, `UPDATE contracts SET owner_sig = ?, owner_signed_at = ?, updated_at = ? WHERE id = ? AND owner_signed_at IS NULL AND status = 'open'`, b.sig, t, t, id);
   if (!changes(r)) return fail("Dieser Vertrag ist schon unterschrieben oder zurückgezogen.", 409);
-  const c = await first(env, `SELECT title, view_key FROM contracts WHERE id = ?`, id);
-  await audit(env, who, "contract.owner_signed", c.title, null);
-  return json({ ok: true, url: `${APP_ORIGIN}/taktnr30/vertrag/?k=${c.view_key}` });
+  await audit(env, who, "contract.owner_signed", before.title, null);
+  return json({ ok: true, url: `${APP_ORIGIN}/taktnr30/vertrag/?k=${before.view_key}` });
+}
+
+/* ================= DJ-Link: DJ trägt alles selbst ein, unterschreibt zuerst, Kim zeichnet gegen ================= */
+
+const DJ_MAX_EQ = 15;
+// Uhrzeiten als Minuten ab 12:00 (damit 02:00 nach 22:00 kommt)
+const noonMin = t => { const m = /^(\d{1,2}):(\d{2})$/.exec(String(t || "").trim()); if (!m) return null; const h = Number(m[1]), mm = Number(m[2]); if (h > 23 || mm > 59) return null; return (h < 12 ? h + 24 : h) * 60 + mm - 720; };
+const fromNoon = n => { const t = (n + 720) % 1440; return `${String(Math.floor(t / 60)).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}`; };
+const setMinutes = v => { const x = String(v || "").toLowerCase().replace(",", "."); const n = parseFloat(x); if (!Number.isFinite(n)) return null; const m = /min/.test(x) ? Math.round(n) : Math.round(n * 60); return m >= 30 && m <= 360 ? m : null; };
+const setLabel = m => m % 60 ? `${(m / 60).toLocaleString("de-DE")} Stunden` : m === 60 ? "1 Stunde" : `${m / 60} Stunden`;
+// Belegte Zeiten: Line-up (z. B. „02:00 – 04:00“) und DJ-Verträge mit Wunschzeit
+async function djTaken(env, s) {
+  const out = [];
+  let lineup = []; try { lineup = JSON.parse(s.lineup || "[]"); } catch {}
+  for (const x of lineup) {
+    const m = /(\d{1,2}:\d{2})\s*(?:[–-]|bis)\s*(\d{1,2}:\d{2})/.exec(String(x.time || ""));
+    if (m) { const a = noonMin(m[1]), b = noonMin(m[2]); if (a != null && b != null && b > a) out.push([a, b]); }
+    else { const a = noonMin(String(x.time || "").trim()); if (a != null) out.push([a, a + 60]); }
+  }
+  for (const r of await all(env, `SELECT meta FROM contracts WHERE status != 'revoked' AND meta LIKE '%"kind":"dj"%'`)) {
+    try { const m = JSON.parse(r.meta); if (m.wish != null && m.len_min) out.push([m.wish, m.wish + m.len_min]); } catch {}
+  }
+  return out;
+}
+const DJ_FIRST = 480, DJ_LAST_END = 1080;   // 20:00 bis 06:00
+const DJ_MAX_GUESTS = 2;   // Gästeliste pro DJ
+const moneyIn = v => { const n = Number(String(v ?? "").replace(/\s|€/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".")); return Number.isFinite(n) && n >= 0 && n <= 100000 ? Math.round(n * 100) : null; };
+const euroDe = c => (c / 100).toLocaleString("de-DE", { minimumFractionDigits: c % 100 ? 2 : 0, maximumFractionDigits: 2 }) + " €";
+const ibanOk = v => { const x = String(v || "").replace(/\s/g, "").toUpperCase(); if (!/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(x)) return false;
+  const r = (x.slice(4) + x.slice(0, 4)).replace(/[A-Z]/g, ch => String(ch.charCodeAt(0) - 55)); let m = 0; for (const d of r) m = (m * 10 + Number(d)) % 97; return m === 1; };
+const ibanFmt = v => String(v || "").replace(/\s/g, "").toUpperCase().replace(/(.{4})/g, "$1 ").trim();
+const weekdayDeS = d => new Intl.DateTimeFormat("de-DE", { weekday: "long", timeZone: "UTC" }).format(new Date(`${d}T12:00:00Z`));
+const monthBefore = d => { const [y, m, dd] = d.split("-").map(Number); const x = new Date(Date.UTC(y, m - 2, dd)); return x.toISOString().slice(0, 10); };
+
+async function djLink(env) {
+  let row = await first(env, `SELECT code, status FROM dj_links WHERE status = 'active' ORDER BY created_at DESC LIMIT 1`);
+  if (!row) {
+    const code = randomCode(16);
+    await run(env, `INSERT INTO dj_links (code, status, created_at) VALUES (?, 'active', ?)`, code, iso());
+    row = { code, status: "active" };
+  }
+  return { code: row.code, url: `${APP_ORIGIN}/taktnr30/dj/?c=${row.code}` };
+}
+async function djLinkRenew(env, who) {
+  await run(env, `UPDATE dj_links SET status = 'revoked', revoked_at = ? WHERE status = 'active'`, iso());
+  const l = await djLink(env);
+  await audit(env, who, "dj.link_renew", null, null);
+  return json(l);
+}
+async function djCodeOk(env, code) {
+  const c = cleanCode(code, 40);
+  return c && await first(env, `SELECT code FROM dj_links WHERE code = ? AND status = 'active'`, c) ? c : null;
+}
+
+// Eingaben des DJ prüfen und vereinheitlichen
+function djInput(b) {
+  const f = b?.form || {};
+  const v = {
+    first_name: cleanName(f.first_name || "").slice(0, 60), last_name: cleanName(f.last_name || "").slice(0, 60),
+    artist: cleanName(f.artist || "").slice(0, 60), street: cleanName(f.street || "").slice(0, 100), city: cleanName(f.city || "").slice(0, 80),
+    email: String(f.email || "").trim().toLowerCase(), phone: cleanName(f.phone || "").slice(0, 40),
+    len_min: setMinutes(f.set_length), wish_time: String(f.wish_time || "").trim(), price_cents: moneyIn(f.price),
+    hear_link: String(f.hear_link || "").trim().slice(0, 300), arrival: String(f.arrival || "").trim().slice(0, 5),
+    holder: cleanName(f.holder || "").slice(0, 80), iban: String(f.iban || "").replace(/\s/g, "").toUpperCase().slice(0, 34),
+    annex: annexClean(f.annex),
+    guests: (Array.isArray(f.guests) ? f.guests : []).slice(0, 10).map(g => ({ name: cleanName(g?.name || "").slice(0, 80), email: String(g?.email || "").trim().toLowerCase() })).filter(g => g.name || g.email)
+  };
+  if (v.guests.length > DJ_MAX_GUESTS) return { error: `Auf die Gästeliste passen höchstens ${DJ_MAX_GUESTS} Personen.` };
+  for (const g of v.guests) {
+    const parts = g.name.split(" ");
+    if (parts.length < 2 || !nameOk(parts[0]) || !nameOk(parts.slice(1).join(" "))) return { error: "Bitte bei der Gästeliste Vor- und Nachnamen eintragen." };
+    if (!emailOk(g.email)) return { error: `Bitte für ${g.name} eine gültige E-Mail-Adresse eintragen.` };
+    if (g.email === v.email) return { error: "Gäste brauchen eine eigene E-Mail-Adresse." };
+  }
+  if (!nameOk(v.first_name) || !nameOk(v.last_name)) return { error: "Bitte Vor- und Nachnamen eintragen." };
+  if (v.street.length < 3 || !/\d{5}/.test(v.city)) return { error: "Bitte die vollständige Adresse eintragen (Straße und PLZ Ort)." };
+  if (!emailOk(v.email)) return { error: "Bitte eine gültige E-Mail-Adresse eintragen." };
+  if (!/\d{6,}/.test(v.phone.replace(/\D/g, "") ) ) return { error: "Bitte eine Handynummer eintragen." };
+  if (!v.len_min) return { error: "Bitte die vereinbarte Set-Länge auswählen." };
+  if (v.hear_link && !/^https:\/\/[^\s<>"]+$/.test(v.hear_link)) return { error: "Bitte den Hörprobe-Link vollständig mit https:// einfügen." };
+  if (v.arrival && noonMin(v.arrival) == null) return { error: "Bitte die Ankunftszeit als Uhrzeit eintragen (z. B. 21:30)." };
+  v.set_length = setLabel(v.len_min);
+  v.wish = v.wish_time ? noonMin(v.wish_time) : null;
+  if (v.wish_time && (v.wish == null || v.wish < DJ_FIRST || v.wish + v.len_min > DJ_LAST_END)) return { error: "Bitte eine Wunsch-Uhrzeit aus der Liste wählen." };
+  if (v.price_cents == null) return { error: "Bitte den vereinbarten Festpreis eintragen (0 €, wenn du ohne Gage spielst)." };
+  if (v.price_cents > 0 && (!ibanOk(v.iban) || v.holder.length < 3)) return { error: "Bitte Kontoinhaber und eine gültige IBAN für die Überweisung eintragen." };
+  if (/[<>{}]/.test(Object.values(v).filter(x => typeof x === "string").join(""))) return { error: "Bitte keine Sonderzeichen wie < > { } verwenden." };
+  return { v };
+}
+
+function djContractBody(v, s) {
+  const owner = [`${s.contact_name}${s.contact_address ? `, ${s.contact_address}` : ""}`, `Telefon ${s.contact_phone}`, s.contact_email].join(" · ");
+  const party = [`${v.first_name} ${v.last_name}, ${v.street}, ${v.city}`, `Telefon ${v.phone}`, v.email].join(" · ");
+  const pay = monthBefore(s.event_date);
+  const value = v.annex.reduce((a, x) => a + (moneyIn(x.value) || 0), 0);
+  const paid = v.price_cents > 0;
+  return `# DJ-Vereinbarung – TAKT Nr. 30
+
+**Veranstalter:** ${owner}
+
+**DJ:** ${party}${v.artist ? `\n\nKünstlername: ${v.artist}` : ""}
+
+## § 1 Veranstaltung und Leistung
+
+1. Der DJ legt bei der privaten Geburtstagsfeier TAKT Nr. 30 am **${weekdayDeS(s.event_date)}, ${dateDe(s.event_date)}**, in der ${s.venue_name}, ${s.venue_address}, auf.
+2. Das Set dauert **${v.set_length}**.${v.wish != null ? ` Der DJ wünscht sich einen Beginn um **${fromNoon(v.wish)} Uhr**.` : ""} Die genaue Uhrzeit stimmen Veranstalter und DJ individuell ab; sie ist nicht Teil dieses Vertrags.
+3. Der DJ legt Techno nach eigener Auswahl auf, auch eigene Remixe.
+4. Der DJ bringt sein eigenes Equipment mit (Anlage 1). Lautsprecheranlage, Licht und Strom stellt der Veranstalter.
+5. Der DJ ist rechtzeitig vor Setbeginn vor Ort, damit Aufbau und Soundcheck ohne Zeitdruck möglich sind.
+
+## § 2 Vergütung
+
+${paid ? `1. Der DJ erhält einen **Festpreis von ${euroDe(v.price_cents)}**. Darin sind Anfahrt, Rückfahrt, Equipment und alle sonstigen Kosten enthalten.
+2. Der Veranstalter überweist den Festpreis bis spätestens **${dateDe(pay)}** auf folgendes Konto: ${v.holder}, IBAN ${ibanFmt(v.iban)}.
+3. Der DJ versteuert die Vergütung selbst.` : `1. Der DJ tritt **ohne Gage** auf und verlangt auch keine Fahrtkosten.`}
+${paid ? 4 : 2}. Der DJ bekommt ein **kostenloses Ticket** für die gesamte Feier (digital per E-Mail, das Papierticket kommt per Post) sowie den ganzen Abend **Getränke und Essen kostenlos**.
+${v.guests.length ? `${paid ? 5 : 3}. Auf der Gästeliste des DJ stehen: ${v.guests.map(g => g.name).join(", ")}. Jeder Gast bekommt ein kostenloses Ticket per E-Mail.\n` : ""}${paid ? (v.guests.length ? 6 : 5) : (v.guests.length ? 4 : 3)}. Weitere Vergütungen oder Kostenerstattungen gibt es nicht.
+
+## § 3 Equipment und Versicherung
+
+1. Das Equipment des DJ hat einen Gesamtwert von **ca. ${euroDe(value)}**. Die einzelnen Geräte stehen in Anlage 1.
+2. Das Equipment des DJ ist während der Veranstaltung über die **Veranstalterversicherung** des Veranstalters gegen Sachschäden versichert, und zwar am Veranstaltungsort vom Aufbau bis zum Abbau.
+3. Zahlt die Versicherung einen Schaden nicht oder nicht ganz, etwa wegen Selbstbeteiligung, ersetzt der Veranstalter den Rest selbst, höchstens bis zum Wiederbeschaffungswert und insgesamt bis ${euroDe(value)}.
+4. Nicht ersetzt werden Schäden, die der DJ selbst vorsätzlich oder grob fahrlässig verursacht, sowie normaler Verschleiß.
+5. Der Veranstalter sorgt für einen abgegrenzten DJ-Bereich ohne Getränke direkt am Pult und eine sichere Ablage für Taschen und Cases.
+6. Beide prüfen das Equipment beim Aufbau kurz gemeinsam, gern mit Fotos. Einen Schaden meldet der DJ dem Veranstalter noch am selben Abend.
+
+## § 4 Absage
+
+1. Kann der DJ nicht auflegen, etwa wegen Krankheit, sagt er so früh wie möglich Bescheid.${paid ? " Einen bereits gezahlten Festpreis zahlt er innerhalb von 14 Tagen zurück." : ""} Weitere Ansprüche entstehen daraus nicht.
+2. Fällt die Feier aus oder wird sie verschoben, ${paid ? "behält der DJ einen bereits gezahlten Festpreis. Ist noch nichts gezahlt, entstehen keine Ansprüche" : "entstehen dem DJ daraus keine Ansprüche"}.
+
+## § 5 GEMA und Nennung
+
+1. Der Veranstalter meldet die Feier bei der GEMA an und trägt die Gebühren. Für den DJ entstehen dabei keine Kosten.
+2. Der Veranstalter darf den DJ mit ${v.artist ? "seinem Künstlernamen" : "seinem Namen"} im Line-up auf der Ticketseite und in Nachrichten an die Gäste nennen.
+
+## § 6 Einlass
+
+Der Einlass ist ab 18 Jahren. Der DJ bringt seinen Ausweis mit.
+
+## § 7 Schlussbestimmungen
+
+1. Änderungen gelten nur, wenn beide sie schriftlich festhalten (E-Mail oder WhatsApp genügt).
+2. Ist eine Regelung unwirksam, bleiben die übrigen gültig.
+3. Beide unterschreiben elektronisch per Finger. Jeder bekommt das unterschriebene PDF.
+
+## Anlage 1: Equipmentliste
+
+${v.annex.length ? "Die Geräte des DJ stehen in der Tabelle unten." : "Der DJ bringt kein eigenes Equipment mit."}`;
+}
+
+async function djInfo(env, request, url) {
+  if (await limited(env, `dj:${await clientKey(request, env)}`, 60, 60_000)) return fail("Zu viele Anfragen.", 429);
+  if (!await djCodeOk(env, url.searchParams.get("c"))) return fail("Dieser DJ-Link ist nicht (mehr) gültig. Bitte bei Kim melden.", 404);
+  const s = await getSettings(env);
+  return json({ event_date: s.event_date, weekday: weekdayDeS(s.event_date), venue: s.venue_name, venue_address: s.venue_address, owner: s.contact_name, pay_until: monthBefore(s.event_date),
+    first: DJ_FIRST, last_end: DJ_LAST_END, taken: await djTaken(env, s), max_guests: DJ_MAX_GUESTS });
+}
+async function djPreview(env, request) {
+  if (await limited(env, `djp:${await clientKey(request, env)}`, 30, 10 * 60_000)) return fail("Zu viele Versuche. Bitte kurz warten.", 429);
+  const b = await readJson(request) || {};
+  if (!await djCodeOk(env, b.c)) return fail("Dieser DJ-Link ist nicht (mehr) gültig.", 404);
+  const { v, error } = djInput(b);
+  if (error) return fail(error);
+  const st = await getSettings(env);
+  if (v.wish != null && (await djTaken(env, st)).some(([a, z]) => v.wish < z && v.wish + v.len_min > a)) return fail(`${v.wish_time} Uhr ist für ${v.set_length} leider nicht mehr frei. Bitte eine andere Uhrzeit wählen.`, 409);
+  const body = djContractBody(v, st);
+  return json({ title: `DJ-Vereinbarung ${v.artist || `${v.first_name} ${v.last_name}`}`, body, body_sha: await sha256Hex(body), annex: v.annex });
+}
+async function djSign(env, request, ctx) {
+  if (await limited(env, `djs:${await clientKey(request, env)}`, 5, 60 * 60_000)) return fail("Zu viele Versuche. Bitte später erneut probieren.", 429);
+  const b = await readJson(request) || {};
+  if (!await djCodeOk(env, b.c)) return fail("Dieser DJ-Link ist nicht (mehr) gültig.", 404);
+  const { v, error } = djInput(b);
+  if (error) return fail(error);
+  if (b.accept !== true) return fail("Bitte bestätige, dass du den Vertrag gelesen hast.");
+  if (!sigOk(b.sig)) return fail("Bitte im Feld unterschreiben.");
+  const s = await getSettings(env);
+  if (v.wish != null && (await djTaken(env, s)).some(([a, z]) => v.wish < z && v.wish + v.len_min > a)) return fail(`${v.wish_time} Uhr ist inzwischen vergeben. Bitte zurückgehen und eine andere Uhrzeit wählen.`, 409);
+  const body = djContractBody(v, s), sha = await sha256Hex(body);
+  if (b.body_sha !== sha) return fail("Der Vertragstext hat sich geändert. Bitte noch einmal auf „Weiter“ tippen.", 409);
+  const dup = await first(env, `SELECT id FROM contracts WHERE party_email = ? AND status != 'revoked' AND meta LIKE '%"kind":"dj"%'`, v.email);
+  if (dup) return fail("Mit dieser E-Mail gibt es schon einen DJ-Vertrag. Bitte bei Kim melden, wenn sich etwas geändert hat.", 409);
+  const key = randomCode(26), t = iso();
+  const title = `DJ-Vereinbarung ${v.artist || `${v.first_name} ${v.last_name}`}`;
+  const meta = { kind: "dj", first_name: v.first_name, last_name: v.last_name, artist: v.artist, phone: v.phone, set_length: v.set_length, len_min: v.len_min, wish: v.wish, price_cents: v.price_cents, guests: v.guests, hear_link: v.hear_link || null, arrival: v.arrival || null };
+  const photo = typeof b.photo === "string" && /^data:image\/(jpeg|webp|png);base64,/.test(b.photo) && b.photo.length <= 600_000 ? b.photo : null;
+  if (b.photo && !photo) return fail("Das Foto ist zu groß oder kein Bild. Bitte ein anderes wählen.");
+  await run(env, `INSERT INTO contracts (view_key, title, party_name, party_email, body, body_sha, party_sig, party_signed_at, party_ua, annex, meta, created_at, created_by, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    key, title, `${v.first_name} ${v.last_name}`, v.email, body, sha, b.sig, t, String(request.headers.get("User-Agent") || "").slice(0, 200),
+    v.annex.length ? JSON.stringify(v.annex) : null, JSON.stringify(meta), t, "dj-link", t);
+  if (photo) { const row = await first(env, `SELECT id FROM contracts WHERE view_key = ?`, key); await run(env, `INSERT OR REPLACE INTO dj_photos (contract_id, data, created_at) VALUES (?, ?, ?)`, row.id, photo, t); }
+  await audit(env, { actor: "dj-link", name: `${v.first_name} ${v.last_name}` }, "dj.signed", title, { price: euroDe(v.price_cents), set: v.set_length });
+  const job = sendMail(env, s.contact_email, `DJ hat unterschrieben: ${v.artist || v.first_name + " " + v.last_name}`,
+    `<!doctype html><html><body style="margin:0;background:#0a0a0c;color:#f2f2f4;font-family:Helvetica,Arial,sans-serif"><div style="max-width:520px;margin:0 auto;padding:32px 24px">
+<p style="letter-spacing:4px;font-size:13px;color:#b98cff;margin:0 0 6px">TAKT NR. 30</p><h1 style="font-weight:300;font-size:24px;margin:0 0 18px">${esc(v.artist || v.first_name)} hat unterschrieben.</h1>
+<p style="font-size:15px;line-height:1.6;color:#c9c9d1">Festpreis ${esc(euroDe(v.price_cents))} · Set ${esc(v.set_length)}${v.wish != null ? ` · Wunsch-Beginn ${fromNoon(v.wish)} Uhr` : ""}${v.arrival ? ` · Ankunft ca. ${esc(v.arrival)} Uhr` : ""}${v.hear_link ? ` · Hörprobe: ${esc(v.hear_link)}` : ""}${photo ? " · Foto fürs Line-up liegt im Admin" : ""}${v.guests.length ? ` · Gästeliste: ${esc(v.guests.map(g => g.name).join(", "))}` : ""}<br>Bitte im Admin unter „Verträge“ gegenzeichnen. Danach bekommt ${esc(v.first_name)} automatisch den Vertrag als PDF und das nächste freie 2T-Ticket.</p>
+<a href="${APP_ORIGIN}/taktnr30/admin/#contracts" style="display:block;background:#9d4dff;color:#0a0a0c;text-decoration:none;padding:14px 18px;border-radius:4px;margin:18px 0;font-size:15px">Zum Gegenzeichnen</a></div></body></html>`).catch(() => {});
+  if (ctx?.waitUntil) ctx.waitUntil(job); else await job;
+  return json({ ok: true, url: `${APP_ORIGIN}/taktnr30/vertrag/?k=${key}` }, 201);
+}
+
+// Nach Kims Gegenzeichnung: nächstes freies 2T-Ticket digital zuordnen, Ticket- und Vertragsmail verschicken
+async function djFinish(env, c, ctx) {
+  const meta = (() => { try { return JSON.parse(c.meta || "{}"); } catch { return {}; } })();
+  const s = await getSettings(env);
+  const link = `${APP_ORIGIN}/taktnr30/vertrag/?k=${c.view_key}`;
+  let ticket = null;
+  const guestTickets = [];
+  // Nächstes freies 2T-Papierticket digital zuordnen (das Papier schickt Kim per Post)
+  const take = async (fn, ln, email, food, note) => {
+    for (let i = 0; i < 3; i++) {
+      const free = await first(env, `SELECT id, number FROM tickets WHERE category = 'free' AND paper = 1 AND status = 'valid' AND first_name IS NULL AND sold_cents IS NULL AND checked_in_at IS NULL ORDER BY CAST(substr(number, 4) AS INTEGER) LIMIT 1`);
+      if (!free) return null;
+      const r = await run(env, `UPDATE tickets SET first_name = ?, last_name = ?, email = ?, extra_food = MAX(extra_food, ?), note = ?, updated_at = ? WHERE id = ? AND first_name IS NULL`, fn, ln, email, food, note, iso(), free.id);
+      if (changes(r)) return free.number;
+    }
+    return null;
+  };
+  if (meta.kind === "dj" && !meta.ticket) {
+    ticket = await take(meta.first_name, meta.last_name, c.party_email, 1, `DJ${meta.artist ? " " + meta.artist : ""} · Getränke frei`);
+    for (const g of meta.guests || []) {
+      const parts = g.name.split(" ");
+      const n = await take(parts[0], parts.slice(1).join(" "), g.email, 0, `Gast von DJ ${meta.artist || meta.first_name}`);
+      guestTickets.push({ ...g, ticket: n });
+    }
+    await run(env, `UPDATE contracts SET meta = ? WHERE id = ?`, JSON.stringify({ ...meta, ticket, guest_tickets: guestTickets }), c.id);
+    await audit(env, { actor: `contract:${c.id}`, name: c.party_name }, "dj.ticket", ticket || "kein freies Ticket", { guests: guestTickets.map(g => g.ticket).join(", ") });
+  }
+  const note = (intro, extra) => `<!doctype html><html><body style="margin:0;background:#0a0a0c;color:#f2f2f4;font-family:Helvetica,Arial,sans-serif"><div style="max-width:520px;margin:0 auto;padding:32px 24px">
+<p style="letter-spacing:4px;font-size:13px;color:#b98cff;margin:0 0 6px">TAKT NR. 30</p><h1 style="font-weight:300;font-size:24px;margin:0 0 18px">${esc(intro)}</h1>
+<p style="font-size:15px;line-height:1.6;color:#c9c9d1">${esc(c.title)} – unterschrieben von ${esc(s.contact_name)} und ${esc(c.party_name)}.${extra ? "<br>" + esc(extra) : ""}</p>
+<a href="${esc(link)}" style="display:block;background:#9d4dff;color:#0a0a0c;text-decoration:none;padding:14px 18px;border-radius:4px;margin:18px 0;font-size:15px">Vertrag ansehen und als PDF speichern</a></div></body></html>`;
+  const missing = guestTickets.filter(g => !g.ticket).map(g => g.name);
+  const kimNote = [ticket ? `Ticket ${ticket} ist zugeordnet – das Papierticket noch per Post schicken.` : "Kein freies 2T-Ticket mehr – bitte von Hand ein Ticket zuordnen.",
+    guestTickets.filter(g => g.ticket).length ? `Gästeliste: ${guestTickets.filter(g => g.ticket).map(g => `${g.name} (${g.ticket})`).join(", ")}.` : "",
+    missing.length ? `Für ${missing.join(", ")} war kein freies Ticket mehr da.` : ""].filter(Boolean).join(" ");
+  const jobs = [sendMail(env, s.contact_email, `Unterschrieben: ${c.title}`, note("Vertrag unterschrieben.", kimNote))];
+  if (c.party_email) jobs.push(sendMail(env, c.party_email, `Dein unterschriebener Vertrag – ${c.title}`, note("Danke – der Vertrag ist unterschrieben.", ticket ? `Dein Ticket ${ticket} kommt in einer eigenen Mail, das Papierticket per Post.` : "")));
+  for (const number of [ticket, ...guestTickets.map(g => g.ticket)].filter(Boolean)) jobs.push((async () => { const t = await first(env, `SELECT * FROM tickets WHERE number = ?`, number); if (t?.email) await sendTicketMail(env, t); })());
+  const job = Promise.all(jobs).catch(() => {});
+  if (ctx?.waitUntil) ctx.waitUntil(job); else await job;
+  return { ticket };
 }
 async function revokeContract(env, who, id) {
   const r = await run(env, `UPDATE contracts SET status = 'revoked', updated_at = ? WHERE id = ? AND status = 'open'`, iso(), id);
@@ -301,7 +560,7 @@ async function getContractPublic(env, request, url) {
   if (await limited(env, `ct:${await clientKey(request, env)}`, 60, 60_000)) return fail("Zu viele Anfragen.", 429);
   const c = await first(env, `SELECT title, party_name, body, body_sha, owner_sig, owner_signed_at, party_sig, party_signed_at, annex, final_sha, status FROM contracts WHERE view_key = ?`, cleanCode(url.searchParams.get("k"), 40));
   if (!c || c.status === "revoked") return fail("Diesen Vertrag gibt es nicht (mehr). Bitte beim Veranstalter melden.", 404);
-  if (!c.owner_signed_at) return fail("Dieser Vertrag ist noch nicht freigegeben. Bitte kurz beim Veranstalter melden.", 404);
+  if (!c.owner_signed_at && !c.party_signed_at) return fail("Dieser Vertrag ist noch nicht freigegeben. Bitte kurz beim Veranstalter melden.", 404);
   const s = await getSettings(env);
   return json({ ...c, annex: c.annex ? JSON.parse(c.annex) : [], owner_name: s.contact_name });
 }
@@ -506,7 +765,8 @@ async function ensureSchema(env) {
     `ALTER TABLE reservations ADD COLUMN vip_quantity INTEGER NOT NULL DEFAULT 0`,
     `ALTER TABLE tickets ADD COLUMN sold_cents INTEGER`,
     `ALTER TABLE tickets ADD COLUMN sold_at TEXT`,
-    `ALTER TABLE tickets ADD COLUMN sold_via TEXT`
+    `ALTER TABLE tickets ADD COLUMN sold_via TEXT`,
+    `ALTER TABLE contracts ADD COLUMN meta TEXT`
   ]) await run(env, sql).catch(() => {});
   // Bändchen: VIP online ergänzen, 2TAKT-Hinweis auf 3 Getränkemarken (nur wenn noch der alte Standard drinsteht)
   const bandRow = await first(env, `SELECT value FROM event_settings WHERE key = 'bands'`);
@@ -1089,7 +1349,11 @@ async function adminLinks(env) {
   const [g, h, scanners] = await Promise.all([ensureGroupInvite(env), generalCrewInvite(env),
     all(env, `SELECT id, name, mode, created_at, revoked_at, last_used_at FROM scanner_access ORDER BY revoked_at IS NOT NULL, id DESC`)]);
   const brought = await first(env, `SELECT COUNT(*) AS n FROM tickets WHERE invitation_id = ? AND status != 'cancelled'`, h.id);
+  const dj = await djLink(env);
+  const djCount = await first(env, `SELECT COUNT(*) AS n, SUM(CASE WHEN status = 'signed' THEN 1 ELSE 0 END) AS done FROM contracts WHERE meta LIKE '%"kind":"dj"%' AND status != 'revoked'`);
+  const freePaper = await first(env, `SELECT COUNT(*) AS n FROM tickets WHERE category = 'free' AND paper = 1 AND status = 'valid' AND first_name IS NULL AND sold_cents IS NULL`);
   return json({
+    dj_link: { url: dj.url, contracts: djCount?.n || 0, signed: djCount?.done || 0, free_tickets: freePaper?.n || 0 },
     ticket_link: { id: g.id, url: `${APP_URL}?e=${g.code}`, status: g.status },
     helper_link: { id: h.id, url: crewUrl(h.code), status: h.status, signups: brought.n },
     pages: { tickets: APP_URL, scanner: `${APP_ORIGIN}/taktnr30/scanner/`, admin: `${APP_ORIGIN}/taktnr30/admin/` },
@@ -2247,6 +2511,9 @@ async function route(request, env, ctx) {
   if (m === "GET" && path === "/health") return json({ ok: true });
   if (m === "GET" && path === "/public/contract") return getContractPublic(env, request, url);
   if (m === "POST" && path === "/public/contract/sign") return signContractPublic(env, request, ctx);
+  if (m === "GET" && path === "/public/dj") return djInfo(env, request, url);
+  if (m === "POST" && path === "/public/dj/preview") return djPreview(env, request);
+  if (m === "POST" && path === "/public/dj/sign") return djSign(env, request, ctx);
 
   // Ab hier: angemeldet
   const who = await identify(request, env);
@@ -2286,6 +2553,8 @@ async function route(request, env, ctx) {
   if (m === "POST" && path === "/admin/tickets/extras") return setExtras(env, request, who);
   if (m === "POST" && /^\/admin\/tickets\/\d+$/.test(path)) return updateTicket(env, request, who, id);
   if (m === "GET" && path === "/admin/links") return adminLinks(env);
+  if (m === "GET" && /^\/admin\/contracts\/\d+\/photo$/.test(path)) { const r = await first(env, `SELECT data FROM dj_photos WHERE contract_id = ?`, Number(path.split("/")[3])); return r ? json(r) : fail("Kein Foto.", 404); }
+  if (m === "POST" && path === "/admin/dj-link/renew") { if ((denied = need("main"))) return denied; return djLinkRenew(env, who); }
   if (m === "GET" && path === "/admin/orders") return listOrders(env);
   if (m === "POST" && /^\/admin\/orders\/\d+$/.test(path)) return orderAction(env, request, who, id);
   if (m === "GET" && path === "/admin/export") { if (url.searchParams.get("kind") === "ledger" && (denied = need("main"))) return denied; return exportCsv(env, url); }
@@ -2313,7 +2582,7 @@ async function route(request, env, ctx) {
   if (m === "POST" && path === "/admin/contracts") return createContract(env, request, who);
   if (m === "GET" && /^\/admin\/contracts\/\d+$/.test(path)) return getContractAdmin(env, id);
   if (m === "DELETE" && /^\/admin\/contracts\/\d+$/.test(path)) return revokeContract(env, who, id);
-  if (m === "POST" && /^\/admin\/contracts\/\d+\/sign$/.test(path)) return signContractOwner(env, request, who, Number(path.split("/")[3]));
+  if (m === "POST" && /^\/admin\/contracts\/\d+\/sign$/.test(path)) return signContractOwner(env, request, who, Number(path.split("/")[3]), ctx);
   if (m === "GET" && path === "/admin/ledger") return listLedger(env);
   if (m === "POST" && path === "/admin/ledger") return createLedger(env, request, who);
   if (m === "PUT" && /^\/admin\/ledger\/\d+$/.test(path)) return updateLedger(env, request, who, id);
