@@ -2519,9 +2519,6 @@ async function route(request, env, ctx) {
     return fail('Nicht gefunden.', 404);
   }
 
-  // TAKT Nr. 30 ist archiviert (05.11.2026): Nur die Unterschriftslinks laufen weiter.
-  return fail("Nicht gefunden.", 404);
-
   // Komplettsicherung aller Tabellen (nur Kim) – für Archiv/Wiederherstellung
   if (m === "GET" && path === "/admin/archive-export") {
     const owner = await identify(request, env);
@@ -2529,6 +2526,9 @@ async function route(request, env, ctx) {
     if (owner.actor !== env.MAIN_ADMIN_ID) return fail("Nur Kim.", 403);
     return json(await archiveExport(env));
   }
+
+  // TAKT Nr. 30 ist archiviert (05.11.2026): Nur die Unterschriftslinks laufen weiter.
+  return fail("Nicht gefunden.", 404);
 
   // Öffentlich
   if (m === "GET" && path === "/public/event") return getEvent(env);
