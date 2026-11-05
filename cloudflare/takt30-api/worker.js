@@ -2472,6 +2472,28 @@ async function signatureAdminAction(env, request, who, id) {
   return json({ ok: true });
 }
 
+/* ================= Archiv-Export ================= */
+
+async function archiveExport(env) {
+  const tables = await all(env, `SELECT name, sql FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%' ORDER BY name`);
+  const indexes = await all(env, `SELECT name, sql FROM sqlite_master WHERE type = 'index' AND sql IS NOT NULL ORDER BY name`);
+  const enc = v => {
+    if (v instanceof ArrayBuffer || ArrayBuffer.isView(v)) {
+      const u = v instanceof ArrayBuffer ? new Uint8Array(v) : new Uint8Array(v.buffer, v.byteOffset, v.byteLength);
+      let s = ""; for (let i = 0; i < u.length; i += 32768) s += String.fromCharCode.apply(null, u.subarray(i, i + 32768));
+      return { $blob_base64: btoa(s) };
+    }
+    if (Array.isArray(v)) return enc(new Uint8Array(v));
+    return v;
+  };
+  const data = {};
+  for (const t of tables) {
+    const rows = await all(env, `SELECT * FROM "${t.name.replace(/"/g, '""')}"`);
+    data[t.name] = rows.map(r => Object.fromEntries(Object.entries(r).map(([k, v]) => [k, enc(v)])));
+  }
+  return { exported_at: iso(), database: "takt30", schema: { tables, indexes }, counts: Object.fromEntries(Object.entries(data).map(([k, v]) => [k, v.length])), data };
+}
+
 /* ================= Router ================= */
 
 async function route(request, env, ctx) {
@@ -2495,6 +2517,14 @@ async function route(request, env, ctx) {
     if (path === '/admin/signatures' && m === 'POST') return createSignatureLink(env, request, owner);
     if (/^\/admin\/signatures\/\d+$/.test(path) && ['DELETE','POST'].includes(m)) return signatureAdminAction(env, request, owner, Number(code));
     return fail('Nicht gefunden.', 404);
+  }
+
+  // Komplettsicherung aller Tabellen (nur Kim) – für Archiv/Wiederherstellung
+  if (m === "GET" && path === "/admin/archive-export") {
+    const owner = await identify(request, env);
+    if (!owner) return fail("Nicht angemeldet.", 401);
+    if (owner.actor !== env.MAIN_ADMIN_ID) return fail("Nur Kim.", 403);
+    return json(await archiveExport(env));
   }
 
   // Öffentlich
