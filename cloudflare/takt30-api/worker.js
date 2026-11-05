@@ -2519,6 +2519,9 @@ async function route(request, env, ctx) {
     return fail('Nicht gefunden.', 404);
   }
 
+  // TAKT Nr. 30 ist archiviert (05.11.2026): Nur die Unterschriftslinks laufen weiter.
+  return fail("Nicht gefunden.", 404);
+
   // Komplettsicherung aller Tabellen (nur Kim) – für Archiv/Wiederherstellung
   if (m === "GET" && path === "/admin/archive-export") {
     const owner = await identify(request, env);
@@ -2634,7 +2637,7 @@ async function route(request, env, ctx) {
 
 export default {
   async scheduled(event, env, ctx) {
-    ctx.waitUntil((async () => { await ensureSchema(env); await cleanupSignatures(env); await helperReminders(env, event?.scheduledTime || nowMs()).catch(e => console.error("reminders", e)); })());
+    ctx.waitUntil((async () => { await ensureSchema(env); await cleanupSignatures(env); })());
   },
   async fetch(request, env, ctx) {
     try {

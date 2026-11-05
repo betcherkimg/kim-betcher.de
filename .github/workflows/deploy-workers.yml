@@ -41,7 +41,7 @@ jobs:
         run: |
           for w in ${{ steps.pick.outputs.list }}; do node --check "cloudflare/$w/worker.js"; done
           case "${{ steps.pick.outputs.list }}" in *smartadm-office-api*) node --test tests/office-*.test.cjs;; esac
-          case "${{ steps.pick.outputs.list }}" in *takt30-api*) node --test tests/takt30-worker.test.mjs;; esac
+          case "${{ steps.pick.outputs.list }}" in *takt30-api*) [ ! -f tests/takt30-worker.test.mjs ] || node --test tests/takt30-worker.test.mjs;; esac
       - name: Einspielen
         env:
           CF_TOKEN: ${{ secrets.TOKEN_GITHUB || secrets.CLOUDFLARE_API_TOKEN }}
