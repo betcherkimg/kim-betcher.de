@@ -169,9 +169,10 @@ try:
             page.get_by_role("button", name="Nächstes Bild", exact=True).click()
         assert len(seen) == 6, "heimello gallery must contain six current motifs"
         page.keyboard.press("Escape")
-        page.get_by_role("button", name="E-Mail-Adresse kopieren").click()
-        expect(page.locator(".copy-status")).to_have_text("E-Mail-Adresse kopiert.")
-        assert page.evaluate("window.copiedEmail") == "kontakt@juschkinlabs.de"
+        contact = page.locator("#kontakt")
+        expect(contact.get_by_role("link", name="Maksim schreiben")).to_have_attribute("href", re.compile(r"^mailto:maksim@juschkinlabs\.de"))
+        expect(contact.get_by_role("link", name="Kim schreiben")).to_have_attribute("href", re.compile(r"^mailto:kim@juschkinlabs\.de"))
+        expect(contact.locator(".contact-mail")).to_have_attribute("href", "mailto:kontakt@juschkinlabs.de")
 
         page.goto(f"{base}/datenintegration.html", wait_until="networkidle")
         expect(page.get_by_role("heading", level=1)).to_contain_text("Daten verbinden")
