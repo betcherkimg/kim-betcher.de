@@ -15,8 +15,7 @@ Vorschauseiten enthalten `noindex, nofollow`; die Vorschau ist per Link öffentl
 - `impressum.html`, `datenschutz.html`: Rechtstexte der persönlichen Vorschau.
 - `assets/heimello/`: aktuelle Originalgrafiken und Logo; keine älteren
   App-Screenshots aus dem ersten heimello.-Paket.
-- `assets/fonts/`: Bricolage Grotesque (variabel, wie bei Juschkin Labs) und Jersey 10 für Spiel-Beschriftungen, lokal geladen, mit OFL-Lizenzen.
-- `assets/topo.svg`: Höhenlinien-Hintergrund (Weltkarten-Anmutung) für Einstieg und Kontakt.
+- `assets/fonts/`: Saira (variabel, Breite und Stärke), lokal geladen, mit OFL-Lizenz.
 - `assets/juschkinlabs-logo.png`: bereitgestelltes Original-Logo.
 - `ressources/`: unverändertes Porträt und Projektansichten aus der bestehenden Website.
 
@@ -44,3 +43,7 @@ die tatsächliche Videowiedergabe muss zusätzlich im normalen Browser geprüft 
 
 Veröffentlichung erfolgt über den bestehenden GitHub-Pages-Zweig `KimBetcher`.
 Es gibt keinen Build-Schritt und keine neuen Produktionsabhängigkeiten.
+
+## Platz für das 3D-Modell
+
+Die Charakterauswahl (`figure.stage[data-model-slot]` in `index.html`) zeigt vorerst das Porträt. Sobald Kims 3D-Modell als `.glb` vorliegt, ersetzt es dort das Bild `.stage-figure`; Bühne, Licht und Podest bleiben gleich. Haar- und Hautfarbe sollen dann auf der Seite umschaltbar sein.

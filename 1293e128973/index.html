@@ -16,20 +16,20 @@
   <meta property="og:url" content="https://kim-betcher.de/1293e128973/">
   <meta property="og:image" content="https://kim-betcher.de/1293e128973/ressources/finanzprofi.jpg">
   <meta property="og:image:alt" content="Kim Betcher">
-  <link rel="icon" type="image/svg+xml" href="/1293e128973/assets/kim-betcher-mark.svg?v=3">
-  <link rel="apple-touch-icon" href="/1293e128973/assets/kim-betcher-touch.png?v=3">
-  <link rel="preload" href="/1293e128973/assets/fonts/bricolage-grotesque-latin-standard-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/1293e128973/portfolio.css?v=20261112-r3">
-  <script src="/1293e128973/portfolio.js?v=20261112-r3" defer></script>
+  <link rel="icon" type="image/svg+xml" href="/1293e128973/assets/kim-betcher-mark.svg?v=4">
+  <link rel="apple-touch-icon" href="/1293e128973/assets/kim-betcher-touch.png?v=4">
+  <link rel="preload" href="/1293e128973/assets/fonts/saira-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/1293e128973/portfolio.css?v=20261112-r4">
+  <script src="/1293e128973/portfolio.js?v=20261112-r4" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#inhalt">Zum Inhalt</a>
   <header class="site-header">
     <div class="wrap header-inner">
-      <a class="brand" href="/1293e128973/" aria-label="Kim Betcher – Startseite"><span class="brand-mark" aria-hidden="true">KB</span>Kim Betcher</a>
+      <a class="brand" href="/1293e128973/" aria-label="Kim Betcher – Startseite"><span class="brand-mark" aria-hidden="true">KB</span><span class="brand-name">Kim Betcher</span></a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="navigation">Menü<span class="menu-icon" aria-hidden="true"></span></button>
       <nav class="site-nav" id="navigation" aria-label="Hauptnavigation">
-        <a href="/1293e128973/#projekte">Projekte</a>
+        <a href="/1293e128973/#welten">Projekte</a>
         <a href="/1293e128973/#werdegang">Werdegang</a>
         <a href="/1293e128973/#juschkin-labs">Juschkin Labs</a>
         <a class="nav-contact" href="/1293e128973/#kontakt">Kontakt</a>
@@ -39,77 +39,74 @@
 
   <main id="inhalt">
     <section class="hero" aria-labelledby="hero-title">
-      <div class="wrap hero-grid">
-        <div class="hero-text">
-          <h1 id="hero-title"><span class="h-line">Ich baue</span> <span class="h-line h-software">Software.</span> <span class="h-line h-game">Spielwelten.</span></h1>
-          <p class="hero-lead">Ich bin Kim Betcher. Ich entwickle Anwendungen, gestalte Spielerlebnisse und mache mit KI aus aufwendigen Abläufen einfache Lösungen.</p>
-          <p class="hero-actions">
-            <a class="game-button" href="#projekte">Projekte ansehen</a>
-            <a class="ghost-button" href="#kontakt">Eine Idee im Kopf?</a>
-          </p>
+      <canvas class="particles" aria-hidden="true"></canvas>
+      <div class="floor" aria-hidden="true"></div>
+      <div class="wrap hero-inner">
+        <div class="hero-head">
+          <p class="label">Charakter wählen</p>
+          <h1 id="hero-title"><span class="hero-name">Kim Betcher</span> <span class="hero-tag">Ich baue <span class="c-software">Software.</span> Und <span class="c-game">Spielwelten.</span></span></h1>
         </div>
 
-        <div class="card-stage">
-          <figure class="player-card" aria-label="Spielerkarte von Kim Betcher">
-            <div class="card-flip">
-              <div class="card-face card-front">
-                <div class="card-top"><span class="pixel">Spielerkarte</span><span class="pixel card-id">KB-01</span></div>
-                <div class="card-art">
-                  <img src="/1293e128973/ressources/finanzprofi.jpg" alt="Kim Betcher" width="1143" height="1600" fetchpriority="high">
-                </div>
-                <figcaption class="card-body">
-                  <p class="card-name">Kim Betcher</p>
-                  <dl class="card-stats">
-                    <div><dt>Herkunft</dt><dd>Zimmerhandwerk</dd></div>
-                    <div><dt>Basis</dt><dd>Heidenheim</dd></div>
-                    <div><dt>Gilde</dt><dd>Juschkin Labs ab 02/2027</dd></div>
-                  </dl>
-                  <ul class="skills" aria-label="Fähigkeiten">
-                    <li class="skill-software">Software</li>
-                    <li class="skill-game">Game-Design</li>
-                    <li class="skill-ki">KI-Automatisierung</li>
-                  </ul>
-                </figcaption>
-                <span class="card-sheen" aria-hidden="true"></span>
-              </div>
-              <div class="card-face card-back" aria-hidden="true"><span>KB</span></div>
-            </div>
+        <div class="select">
+          <aside class="panel profile" aria-labelledby="profile-title">
+            <p class="panel-title" id="profile-title">Profil</p>
+            <dl class="stats">
+              <div><dt>Klasse</dt><dd>Entwickler</dd></div>
+              <div><dt>Herkunft</dt><dd>Zimmerhandwerk</dd></div>
+              <div><dt>Basis</dt><dd>Heidenheim</dd></div>
+              <div><dt>Erfahrung</dt><dd>Handwerk, Projektleitung, Finanzberatung</dd></div>
+              <div><dt>Gilde</dt><dd>Juschkin Labs ab 01.02.2027</dd></div>
+            </dl>
+          </aside>
+
+          <figure class="stage" data-model-slot>
+            <div class="stage-glow" aria-hidden="true"></div>
+            <div class="podium" aria-hidden="true"><span class="ring ring-a"></span><span class="ring ring-b"></span><span class="ring ring-c"></span></div>
+            <img class="stage-figure" src="/1293e128973/ressources/finanzprofi.jpg" alt="Kim Betcher" width="1143" height="1600" fetchpriority="high">
           </figure>
+
+          <aside class="panel skills" aria-labelledby="skills-title">
+            <p class="panel-title" id="skills-title">Fähigkeiten</p>
+            <ul class="skill-list">
+              <li class="skill" style="--accent: var(--blue)"><span class="skill-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m8 6-6 6 6 6m8-12 6 6-6 6m-3-15-2 18"/></svg></span><span><strong>Software</strong>Web-Anwendungen und Werkzeuge für den Arbeitsalltag.</span></li>
+              <li class="skill" style="--accent: var(--green)"><span class="skill-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7h8c3 0 4 3 5 7s-1 6-4 3l-2-2H9l-2 2c-3 3-5 1-4-3s2-7 5-7Z"/><path d="M6 11h4M8 9v4m7-2h.01m3 2h.01"/></svg></span><span><strong>Game-Design</strong>Spielideen, Mechaniken und Lernspiele.</span></li>
+              <li class="skill" style="--accent: var(--coral)"><span class="skill-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="6" height="6" rx="1"/><rect x="16" y="2" width="6" height="6" rx="1"/><rect x="16" y="16" width="6" height="6" rx="1"/><path d="M8 12h4V5h4m-4 7v7h4"/></svg></span><span><strong>KI-Automatisierung</strong>Wiederkehrende Abläufe vereinfachen und verbinden.</span></li>
+            </ul>
+          </aside>
+        </div>
+
+        <div class="hero-foot">
+          <p class="hero-lead">Ich entwickle Anwendungen, gestalte Spielerlebnisse und mache mit KI aus aufwendigen Abläufen einfache Lösungen.</p>
+          <p class="hero-actions">
+            <a class="btn btn-primary" href="#welten">Welten ansehen</a>
+            <a class="btn" href="#kontakt">Eine Idee im Kopf?</a>
+          </p>
         </div>
       </div>
     </section>
 
-    <section class="projects" id="projekte" aria-labelledby="projects-title">
-      <div class="wrap">
-        <header class="section-head">
-          <h2 id="projects-title">Woran ich baue.</h2>
-          <div class="section-side">
-            <p>Eigene Werkzeuge, gemeinsame Projekte und Spielwelten. Die Farben zeigen, was in jedem Projekt steckt.</p>
-            <ul class="legend" aria-label="Farbcode">
-              <li class="tag tag-software">Software</li>
-              <li class="tag tag-game">Game-Design</li>
-              <li class="tag tag-ki">KI-Automatisierung</li>
-            </ul>
-          </div>
-        </header>
+    <section class="worlds" id="welten" aria-labelledby="worlds-title">
+      <div class="wrap section-head reveal">
+        <div>
+          <p class="label">Welten</p>
+          <h2 id="worlds-title">Woran ich baue.</h2>
+        </div>
+        <div class="carousel-controls" hidden>
+          <button class="btn btn-icon" type="button" data-world-prev aria-label="Vorherige Welt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></button>
+          <p class="world-counter" aria-live="polite"><span data-world-current>1</span> / 4</p>
+          <button class="btn btn-icon" type="button" data-world-next aria-label="Nächste Welt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
+        </div>
+      </div>
+      <nav class="wrap world-tabs reveal" aria-label="Welten auswählen">
+        <a href="#iquest" style="--accent: var(--green)">iQuest</a>
+        <a href="#smartadm" style="--accent: var(--blue)">SmartADM</a>
+        <a href="#heimello" style="--accent: var(--green)">heimello.</a>
+        <a href="#roadlands" style="--accent: var(--coral)">Roadlands</a>
+      </nav>
 
-        <article class="world world-iquest" aria-labelledby="iquest-title">
-          <div class="world-copy">
-            <ul class="tags" aria-label="Bereiche"><li class="tag tag-game">Game-Design</li><li class="tag tag-software">Software</li></ul>
-            <h3 id="iquest-title">iQuest</h3>
-            <p class="world-lead">Lernen als Abenteuer: ein Lernspiel für die IHK-Sachkundeprüfung nach § 34i GewO.</p>
-            <div class="level-track" role="img" aria-label="24 Level mit Bosskämpfen, am Ende die Prüfungssimulation">
-              <ol class="level-pips" aria-hidden="true"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ol>
-              <span class="level-goal" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-2 12H5Z"/></svg></span>
-              <p class="level-legend pixel" aria-hidden="true"><span>Level 1</span><span>Level 24</span><span>Prüfung</span></p>
-            </div>
-            <p>24 Level, Bosskämpfe und eine Prüfungssimulation. Von mir entwickelt und gemeinsam mit Maksim Juschkin weitergedacht und weiterentwickelt.</p>
-            <p class="world-links">
-              <a href="https://iquest34.de/" target="_blank" rel="noopener noreferrer">iquest34.de öffnen</a>
-              <a href="/1293e128973/ressources/coding/iquest34.jpg" data-preview data-title="iQuest" data-note="Bildschirmfoto der Lernspiel-Website. Das Projekt findest du auf iquest34.de.">Bildschirmfoto ansehen</a>
-            </p>
-          </div>
-          <div class="world-visual">
+      <div class="world-track reveal" tabindex="0" aria-label="Welten, seitlich blättern">
+        <article class="world panel world-iquest" id="iquest" aria-labelledby="iquest-title" style="--accent: var(--green)">
+          <div class="world-art">
             <div class="screen">
               <div class="trailer-player" id="iquest-player">
                 <a class="trailer-poster" href="https://www.youtube.com/watch?v=m6fthG8m1qE" target="_blank" rel="noopener noreferrer" data-load-trailer aria-label="iQuest-Trailer abspielen" aria-describedby="iquest-video-notice">
@@ -120,75 +117,78 @@
             </div>
             <p class="trailer-notice" id="iquest-video-notice">Beim Abspielen wird eine Verbindung zu YouTube hergestellt. <a href="/1293e128973/datenschutz.html#youtube">Datenschutz</a>. <a href="https://www.youtube.com/watch?v=m6fthG8m1qE" target="_blank" rel="noopener noreferrer">Auf YouTube ansehen</a></p>
           </div>
+          <div class="world-info">
+            <p class="label">Welt 1</p>
+            <h3 id="iquest-title">iQuest</h3>
+            <ul class="tags" aria-label="Bereiche"><li class="tag" style="--accent: var(--green)">Game-Design</li><li class="tag" style="--accent: var(--blue)">Software</li></ul>
+            <p class="world-lead">Lernen als Abenteuer: ein Lernspiel für die IHK-Sachkundeprüfung nach § 34i GewO.</p>
+            <div class="level-track" role="img" aria-label="24 Level mit Bosskämpfen, am Ende die Prüfungssimulation">
+              <ol class="level-pips" aria-hidden="true"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ol>
+              <span class="level-goal" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-2 12H5Z"/></svg></span>
+              <p class="level-legend" aria-hidden="true"><span>Level 1</span><span>Level 24</span><span>Prüfung</span></p>
+            </div>
+            <p>24 Level, Bosskämpfe und eine Prüfungssimulation. Von mir entwickelt und gemeinsam mit Maksim Juschkin weitergedacht und weiterentwickelt.</p>
+            <p class="world-actions">
+              <a class="btn btn-primary" href="https://iquest34.de/" target="_blank" rel="noopener noreferrer">iquest34.de öffnen</a>
+              <a class="btn" href="/1293e128973/ressources/coding/iquest34.jpg" data-preview data-title="iQuest" data-note="Bildschirmfoto der Lernspiel-Website. Das Projekt findest du auf iquest34.de.">Bildschirmfoto</a>
+            </p>
+          </div>
         </article>
 
-        <div class="world world-tools" id="smartadm">
-          <div class="tools-intro">
-            <ul class="tags" aria-label="Bereiche"><li class="tag tag-software">Software</li></ul>
-            <p class="tools-name">SmartADM</p>
-            <p>Zwei Werkzeuge, die ich für meinen eigenen Arbeitsalltag gebaut habe. Die Ansichten zeigen Beispieldaten.</p>
+        <article class="world panel world-tools" id="smartadm" aria-labelledby="smartadm-title" style="--accent: var(--blue)">
+          <div class="world-art">
+            <div class="screens">
+              <a class="project-screenshot screen-front" href="/1293e128973/ressources/coding/smartadm-sales.jpg" data-preview data-title="SmartADM Sales" data-note="Ansicht mit Beispieldaten. Die Anwendung selbst ist kein öffentlicher Demo-Zugang." aria-label="Bildschirmfoto von SmartADM Sales vergrößern"><img src="/1293e128973/ressources/coding/smartadm-sales.jpg" alt="SmartADM Sales mit Bankenübersicht, Kontakten und Wiedervorlagen; Ansicht mit Beispieldaten" width="1440" height="900" loading="lazy"></a>
+              <a class="project-screenshot screen-back" href="/1293e128973/ressources/coding/smartadm-office.jpg" data-preview data-title="SmartADM Office" data-note="Ansicht mit Beispieldaten. Die Anwendung selbst ist kein öffentlicher Demo-Zugang." aria-label="Bildschirmfoto von SmartADM Office vergrößern"><img src="/1293e128973/ressources/coding/smartadm-office.jpg" alt="SmartADM Office mit Aufgaben, Telefonliste und Zeiterfassung; Ansicht mit Beispieldaten" width="1440" height="900" loading="lazy"></a>
+            </div>
           </div>
-          <div class="sheets">
-            <article class="project-card sheet">
-              <a class="project-screenshot" href="/1293e128973/ressources/coding/smartadm-sales.jpg" data-preview data-title="SmartADM Sales" data-note="Ansicht mit Beispieldaten. Die Anwendung selbst ist kein öffentlicher Demo-Zugang." aria-label="Bildschirmfoto von SmartADM Sales vergrößern">
-                <img src="/1293e128973/ressources/coding/smartadm-sales.jpg" alt="SmartADM Sales mit Bankenübersicht, Kontakten und Wiedervorlagen; Ansicht mit Beispieldaten" width="1440" height="900" loading="lazy">
-              </a>
-              <h3>SmartADM Sales</h3>
-              <p>Banken, Ansprechpartner, Terminprotokolle und Wiedervorlagen an einem Ort. Am Rechner und auf dem Handy.</p>
-              <p class="flow" aria-label="Ablauf"><span>Kontakt</span><span>Termin</span><span>Wiedervorlage</span></p>
-              <a class="text-link" href="/1293e128973/ressources/coding/smartadm-sales.jpg" data-preview data-title="SmartADM Sales" data-note="Ansicht mit Beispieldaten.">Ansicht vergrößern</a>
-            </article>
-            <article class="project-card sheet">
-              <a class="project-screenshot" href="/1293e128973/ressources/coding/smartadm-office.jpg" data-preview data-title="SmartADM Office" data-note="Ansicht mit Beispieldaten. Die Anwendung selbst ist kein öffentlicher Demo-Zugang." aria-label="Bildschirmfoto von SmartADM Office vergrößern">
-                <img src="/1293e128973/ressources/coding/smartadm-office.jpg" alt="SmartADM Office mit Aufgaben, Telefonliste und Zeiterfassung; Ansicht mit Beispieldaten" width="1440" height="900" loading="lazy">
-              </a>
-              <h3>SmartADM Office</h3>
-              <p>Zeiterfassung, Aufgaben, Telefonliste und Terminvereinbarung für mein Team.</p>
-              <p class="flow" aria-label="Ablauf"><span>Telefonliste</span><span>Termin</span><span>Zeiterfassung</span></p>
-              <a class="text-link" href="/1293e128973/ressources/coding/smartadm-office.jpg" data-preview data-title="SmartADM Office" data-note="Ansicht mit Beispieldaten.">Ansicht vergrößern</a>
-            </article>
+          <div class="world-info">
+            <p class="label">Welt 2</p>
+            <h3 id="smartadm-title">SmartADM</h3>
+            <ul class="tags" aria-label="Bereiche"><li class="tag" style="--accent: var(--blue)">Software</li></ul>
+            <p class="world-lead">Zwei Werkzeuge, die ich für meinen eigenen Arbeitsalltag gebaut habe.</p>
+            <div class="tool-list">
+              <div class="project-card">
+                <h4>SmartADM Sales</h4>
+                <p>Banken, Ansprechpartner, Terminprotokolle und Wiedervorlagen an einem Ort. Am Rechner und auf dem Handy.</p>
+                <a class="text-link" href="/1293e128973/ressources/coding/smartadm-sales.jpg" data-preview data-title="SmartADM Sales" data-note="Ansicht mit Beispieldaten.">Ansicht vergrößern</a>
+              </div>
+              <div class="project-card">
+                <h4>SmartADM Office</h4>
+                <p>Zeiterfassung, Aufgaben, Telefonliste und Terminvereinbarung für mein Team.</p>
+                <a class="text-link" href="/1293e128973/ressources/coding/smartadm-office.jpg" data-preview data-title="SmartADM Office" data-note="Ansicht mit Beispieldaten.">Ansicht vergrößern</a>
+              </div>
+            </div>
+            <p class="world-note">Die Ansichten zeigen Beispieldaten.</p>
           </div>
-        </div>
+        </article>
 
-        <article id="heimello" class="world heimello-project" aria-labelledby="heimello-title">
-          <div class="heimello-copy">
-            <ul class="tags" aria-label="Bereiche"><li class="tag tag-game">Game-Design</li><li class="tag tag-software">Software</li></ul>
+        <article class="world panel heimello-project" id="heimello" aria-labelledby="heimello-title" style="--accent: var(--green)">
+          <div class="world-art">
+            <a class="heimello-world-board" href="/1293e128973/assets/heimello/heimello-wochen-rallye.webp" data-preview data-gallery="heimello" data-title="heimello. · Wochen-Rallye" data-note="Erledigte Aufgaben bringen Punkte und Fortschritt im gemeinsamen Spiel. Originalgrafik aus heimello.">
+              <img src="/1293e128973/assets/heimello/heimello-wochen-rallye.webp" alt="Ein Spielbrett mit Würfel und Spielfigur." width="880" height="660" loading="lazy">
+              <img class="heimello-figure" src="/1293e128973/assets/heimello/figur-jubel-3.webp" alt="" width="512" height="512" loading="lazy">
+            </a>
+          </div>
+          <div class="world-info">
+            <p class="label">Welt 3</p>
             <h3 id="heimello-title"><img src="/1293e128973/assets/heimello/heimello-logo-dunkel.svg" alt="heimello." width="2000" height="600" loading="lazy"></h3>
-            <p class="heimello-tagline">Ein Haushalt. Ein Team. Ein kleines Abenteuer.</p>
-            <p>heimello. verteilt Aufgaben nach Zeitbudget, Zuständigkeit und Rhythmus. Ihr könnt sie abhaken, verschieben oder voneinander übernehmen. Kalender, Einkauf, Vorräte, Haustiere und Urlaubsvertretung gehören dazu. Auf dem gemeinsamen Tablet hat jede Person ihr eigenes Profil.</p>
-            <p class="flow flow-toy" aria-label="So funktioniert das Spiel"><span>Erledigt</span><span>Punkte</span><span>Wochenrennen</span></p>
-            <p class="world-links"><a href="mailto:kim@juschkinlabs.de?subject=Interesse%20an%20heimello.">Über heimello. sprechen</a></p>
+            <ul class="tags" aria-label="Bereiche"><li class="tag" style="--accent: var(--green)">Game-Design</li><li class="tag" style="--accent: var(--blue)">Software</li></ul>
+            <p class="world-lead">Ein Haushalt. Ein Team. Ein kleines Abenteuer.</p>
+            <p>heimello. verteilt Aufgaben nach Zeitbudget, Zuständigkeit und Rhythmus. Ihr könnt sie abhaken, verschieben oder voneinander übernehmen. Erledigte Aufgaben bringen Punkte, bis hin zu Wochenrennen mit verbundenen Haushalten.</p>
+            <ul class="heimello-games" aria-label="Spiele in heimello.">
+              <li><a href="/1293e128973/assets/heimello/heimello-staubmonster.webp" data-preview data-gallery="heimello" data-title="heimello. · Staubmonster" data-note="Originalgrafik des Staubmonster-Spiels aus heimello."><img src="/1293e128973/assets/heimello/heimello-staubmonster.webp" alt="Das pelzige Staubmonster mit einem Besen." width="880" height="660" loading="lazy"><span>Staubmonster</span></a></li>
+              <li><a href="/1293e128973/assets/heimello/heimello-bingo.webp" data-preview data-gallery="heimello" data-title="heimello. · Bingo" data-note="Originalgrafik des Bingo-Spiels aus heimello."><img src="/1293e128973/assets/heimello/heimello-bingo.webp" alt="Ein grünes Bingo-Spielbrett mit abgehakten Feldern." width="880" height="660" loading="lazy"><span>Bingo</span></a></li>
+              <li><a href="/1293e128973/assets/heimello/heimello-tauziehen.webp" data-preview data-gallery="heimello" data-title="heimello. · Tauziehen" data-note="Originalgrafik des Tauziehen-Spiels aus heimello."><img src="/1293e128973/assets/heimello/heimello-tauziehen.webp" alt="Zwei Spielfiguren ziehen an einem gemeinsamen Seil." width="880" height="660" loading="lazy"><span>Tauziehen</span></a></li>
+              <li><a href="/1293e128973/assets/heimello/heimello-battle.webp" data-preview data-gallery="heimello" data-title="heimello. · Battle" data-note="Originalgrafik des Battle-Spiels aus heimello."><img src="/1293e128973/assets/heimello/heimello-battle.webp" alt="Zwei Spielfiguren mit einem Blitz als Wettbewerbszeichen." width="880" height="660" loading="lazy"><span>Battle</span></a></li>
+              <li><a href="/1293e128973/assets/heimello/heimello-online.webp" data-preview data-gallery="heimello" data-title="heimello. · Verbunden spielen" data-note="Verbundene Haushalte können gemeinsam spielen und sich in Rennen vergleichen. Originalgrafik aus heimello."><img src="/1293e128973/assets/heimello/heimello-online.webp" alt="Zwei Häuschen, die über einen Weg miteinander verbunden sind." width="500" height="313" loading="lazy"><span>Verbunden</span></a></li>
+            </ul>
+            <p class="world-actions"><a class="btn" href="mailto:kim@juschkinlabs.de?subject=Interesse%20an%20heimello.">Über heimello. sprechen</a></p>
           </div>
-          <a class="heimello-world-board" href="/1293e128973/assets/heimello/heimello-wochen-rallye.webp" data-preview data-gallery="heimello" data-title="heimello. · Wochen-Rallye" data-note="Erledigte Aufgaben bringen Punkte und Fortschritt im gemeinsamen Spiel. Originalgrafik aus heimello.">
-            <img src="/1293e128973/assets/heimello/heimello-wochen-rallye.webp" alt="Ein Spielbrett mit Würfel und Spielfigur." width="880" height="660" loading="lazy">
-            <img class="heimello-figure" src="/1293e128973/assets/heimello/figur-jubel-3.webp" alt="" width="512" height="512" loading="lazy">
-          </a>
-          <ul class="heimello-games" aria-label="Spiele in heimello.">
-            <li><a href="/1293e128973/assets/heimello/heimello-staubmonster.webp" data-preview data-gallery="heimello" data-title="heimello. · Staubmonster" data-note="Originalgrafik des Staubmonster-Spiels aus heimello."><img src="/1293e128973/assets/heimello/heimello-staubmonster.webp" alt="Das pelzige Staubmonster mit einem Besen." width="880" height="660" loading="lazy"><span>Staubmonster</span></a></li>
-            <li><a href="/1293e128973/assets/heimello/heimello-bingo.webp" data-preview data-gallery="heimello" data-title="heimello. · Bingo" data-note="Originalgrafik des Bingo-Spiels aus heimello."><img src="/1293e128973/assets/heimello/heimello-bingo.webp" alt="Ein grünes Bingo-Spielbrett mit abgehakten Feldern." width="880" height="660" loading="lazy"><span>Bingo</span></a></li>
-            <li><a href="/1293e128973/assets/heimello/heimello-tauziehen.webp" data-preview data-gallery="heimello" data-title="heimello. · Tauziehen" data-note="Originalgrafik des Tauziehen-Spiels aus heimello."><img src="/1293e128973/assets/heimello/heimello-tauziehen.webp" alt="Zwei Spielfiguren ziehen an einem gemeinsamen Seil." width="880" height="660" loading="lazy"><span>Tauziehen</span></a></li>
-            <li><a href="/1293e128973/assets/heimello/heimello-battle.webp" data-preview data-gallery="heimello" data-title="heimello. · Battle" data-note="Originalgrafik des Battle-Spiels aus heimello."><img src="/1293e128973/assets/heimello/heimello-battle.webp" alt="Zwei Spielfiguren mit einem Blitz als Wettbewerbszeichen." width="880" height="660" loading="lazy"><span>Battle</span></a></li>
-            <li><a href="/1293e128973/assets/heimello/heimello-online.webp" data-preview data-gallery="heimello" data-title="heimello. · Verbunden spielen" data-note="Verbundene Haushalte können gemeinsam spielen und sich in Rennen vergleichen. Originalgrafik aus heimello."><img src="/1293e128973/assets/heimello/heimello-online.webp" alt="Zwei Häuschen, die über einen Weg miteinander verbunden sind." width="500" height="313" loading="lazy"><span>Verbunden spielen</span></a></li>
-          </ul>
         </article>
 
-        <article id="roadlands" class="world roadlands-project" aria-labelledby="roadlands-title">
-          <div class="roadlands-copy">
-            <ul class="tags" aria-label="Bereiche"><li class="tag tag-game">Game-Design</li></ul>
-            <p class="locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Entwicklungsprojekt, noch nicht spielbar</p>
-            <h3 id="roadlands-title">Roadlands</h3>
-            <p class="roadlands-subtitle">The Last Exam</p>
-            <p>Eine niedergebrannte Fahrschulinsel. Ein alter Fahrlehrer, der nicht mehr neu anfangen kann. Und du, der ihr eine Zukunft geben soll.</p>
-            <ol class="quest-line" aria-label="Spielverlauf im aktuellen Konzept">
-              <li>Charakter und Klasse wählen</li>
-              <li>Die Insel übernehmen</li>
-              <li>Fahr- und Klassenlehrer gewinnen</li>
-              <li>Wiederaufbauen, Quests, Kämpfe und Bosse</li>
-              <li>Bis Level 85</li>
-            </ol>
-            <p class="release-note">Ein 3D-MMORPG. „The Last Exam“ ist die geplante erste Version. Einen festen Veröffentlichungstermin gibt es noch nicht.</p>
-          </div>
-          <figure class="roadlands-map">
+        <article class="world panel roadlands-project" id="roadlands" aria-labelledby="roadlands-title" style="--accent: var(--coral)">
+          <figure class="world-art roadlands-map">
             <svg viewBox="0 0 600 430" role="img" aria-labelledby="island-title island-description">
               <title id="island-title">Konzeptkarte für die Fahrschulinsel von Roadlands</title>
               <desc id="island-description">Eine stilisierte Insel mit Straßen, einer beschädigten Fahrschule, Bergen und zwei Wegpunkten. Eine Illustration, kein Bild aus dem Spiel.</desc>
@@ -216,78 +216,79 @@
               <g><path d="m356 263 30-17 29 17-30 17Z" fill="#b2a67c"/><path d="m356 263v-27l29 17v27Z" fill="#bfb28b"/><path d="m385 253 30-17v27l-30 17Z" fill="#7f8760"/><path d="m351 236 34-24 35 24-35 21Z" fill="#3d5d51"/><path d="m372 271v-15l8 5v14" fill="#3c5142"/></g>
               <g fill="#274b39"><path d="m175 168-15 31h30Z"/><path d="m161 179-11 25h23Z"/><path d="m410 221-14 31h28Z"/><path d="m433 241-13 28h26Z"/><path d="m297 285-12 28h24Z"/></g>
               <g stroke="#d6ff70" stroke-width="1.5"><path d="m242 226 0-37m0 0 24 13-24 13Z" fill="#d6ff70"/><circle cx="242" cy="229" r="5" fill="#1d382e"/><path d="m384 199 0-34m0 0 20 11-20 11Z" fill="#ffa17d" stroke="#ffa17d"/><circle cx="384" cy="201" r="5" fill="#1d382e"/></g>
-              <g font-family="Jersey 10, sans-serif" font-size="16"><rect x="125" y="263" width="104" height="24" rx="3" fill="#141b1e" stroke="#d6ff70"/><text x="135" y="280" fill="#f5f3e9">Neuanfang</text><rect x="359" y="290" width="78" height="24" rx="3" fill="#141b1e" stroke="#ffa17d"/><text x="369" y="307" fill="#f5f3e9">Aufbau</text></g>
+              <g font-family="Saira, sans-serif" font-size="13" font-weight="600"><rect x="125" y="263" width="104" height="24" rx="3" fill="#141b1e" stroke="#d6ff70"/><text x="135" y="280" fill="#f5f3e9">Neuanfang</text><rect x="359" y="290" width="78" height="24" rx="3" fill="#141b1e" stroke="#ffa17d"/><text x="369" y="307" fill="#f5f3e9">Aufbau</text></g>
             </svg>
             <figcaption>Konzeptskizze der Insel, kein Bild aus dem Spiel.</figcaption>
           </figure>
+          <div class="world-info roadlands-copy">
+            <p class="label">Welt 4</p>
+            <h3 id="roadlands-title">Roadlands</h3>
+            <p class="roadlands-subtitle">The Last Exam</p>
+            <ul class="tags" aria-label="Bereiche"><li class="tag" style="--accent: var(--green)">Game-Design</li><li class="tag locked" style="--accent: var(--coral)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>noch nicht spielbar</li></ul>
+            <p class="world-lead">Eine niedergebrannte Fahrschulinsel. Ein alter Fahrlehrer, der nicht mehr neu anfangen kann. Und du, der ihr eine Zukunft geben soll.</p>
+            <ol class="quest-line" aria-label="Spielverlauf im aktuellen Konzept">
+              <li>Charakter und Klasse wählen</li>
+              <li>Die Insel übernehmen</li>
+              <li>Fahr- und Klassenlehrer gewinnen</li>
+              <li>Wiederaufbauen, Quests, Kämpfe und Bosse</li>
+              <li>Bis Level 85</li>
+            </ol>
+            <p class="world-note">Ein 3D-MMORPG und Entwicklungsprojekt. „The Last Exam“ ist die geplante erste Version. Einen festen Veröffentlichungstermin gibt es noch nicht.</p>
+          </div>
         </article>
       </div>
     </section>
 
-    <section class="career" id="werdegang" aria-labelledby="career-title">
+    <section class="progress" id="werdegang" aria-labelledby="career-title">
       <div class="wrap">
-        <header class="section-head">
-          <h2 id="career-title">Kein gerader Weg. Aber meiner.</h2>
-          <div class="section-side"><p>Vom Dachstuhl zur eigenen Software. Jedes Feld hat etwas mitgegeben, das ich heute brauche.</p></div>
-        </header>
-
-        <div class="board">
-          <svg class="board-path" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M10 30 C20 30 20 52 30 52 S40 30 50 30 S60 52 70 52 S80 30 90 30"/></svg>
-          <ol class="fields">
-            <li class="field" data-field="1">
-              <span class="spot"><span class="pixel">Start</span></span>
-              <span class="field-text"><strong>Zimmerer</strong>Gelernt, wie aus einem Plan etwas wird, das hält.</span>
-            </li>
-            <li class="field" data-field="2">
-              <span class="spot"><span class="pixel">2</span></span>
-              <span class="field-text"><strong>Projektleiter</strong>Projekte, Abläufe und Menschen zusammengebracht.</span>
-            </li>
-            <li class="field" data-field="3">
-              <span class="spot"><span class="pixel">3</span></span>
-              <span class="field-text"><strong>Finanzberatung</strong>Menschen beraten und ein eigenes Büro organisiert.</span>
-            </li>
-            <li class="field is-current" data-field="4">
-              <span class="spot"><span class="pixel">4</span>
-                <span class="token" aria-hidden="true"><svg viewBox="0 0 40 56"><ellipse cx="20" cy="52" rx="14" ry="3.5" fill="#000" opacity=".35"/><path d="M8 50c0-9 5-14 7-20a9 9 0 1 1 10 0c2 6 7 11 7 20Z" fill="#d6ff70" stroke="#141b1e" stroke-width="2.5" stroke-linejoin="round"/><circle cx="17" cy="20" r="1.8" fill="#141b1e"/><circle cx="23" cy="20" r="1.8" fill="#141b1e"/></svg></span>
-              </span>
-              <span class="field-text"><strong>Eigene Software</strong>Fehlende Werkzeuge selbst gebaut. <em class="here">Hier stehe ich gerade.</em></span>
-            </li>
-            <li class="field is-goal" data-field="5">
-              <span class="spot"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 2.9 6.6 7.1.7-5.4 4.8 1.6 7L12 17.4 5.8 21l1.6-7L2 9.3l7.1-.7Z"/></svg></span>
-              <span class="field-text"><strong>Juschkin Labs</strong>Ab 1. Februar 2027 Partner mit Maksim Juschkin.</span>
-            </li>
-          </ol>
+        <div class="section-head reveal">
+          <div>
+            <p class="label">Fortschritt</p>
+            <h2 id="career-title">Kein gerader Weg. Aber meiner.</h2>
+          </div>
+          <p class="section-intro">Vom Dachstuhl zur eigenen Software. Jede Station hat etwas mitgegeben, das ich heute brauche.</p>
         </div>
 
-        <div class="story">
+        <ol class="track reveal">
+          <li class="node is-done"><span class="node-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 5 5 9-10"/></svg></span><div class="node-card"><strong>Zimmerer</strong><span>Gelernt, wie aus einem Plan etwas wird, das hält.</span></div></li>
+          <li class="node is-done"><span class="node-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 5 5 9-10"/></svg></span><div class="node-card"><strong>Projektleiter</strong><span>Projekte, Abläufe und Menschen zusammengebracht.</span></div></li>
+          <li class="node is-done"><span class="node-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 5 5 9-10"/></svg></span><div class="node-card"><strong>Finanzberatung</strong><span>Menschen beraten und ein eigenes Büro organisiert.</span></div></li>
+          <li class="node is-current"><span class="node-mark" aria-hidden="true">KB</span><div class="node-card"><strong>Eigene Software</strong><span>Fehlende Werkzeuge selbst gebaut.</span><em class="here">Hier stehe ich gerade</em></div></li>
+          <li class="node is-goal"><span class="node-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.6 7.1.7-5.4 4.8 1.6 7L12 17.4 5.8 21l1.6-7L2 9.3l7.1-.7Z"/></svg></span><div class="node-card"><strong>Juschkin Labs</strong><span>Partner mit Maksim Juschkin.</span><em class="unlock">Ab 01.02.2027</em></div></li>
+        </ol>
+
+        <div class="story reveal">
           <p>Mein Weg hat im Handwerk begonnen. Als gelernter Zimmerer und Projektleiter habe ich gelernt, wie aus einer Idee etwas entsteht, das im Alltag bestehen muss. In der Finanzberatung kamen Menschen, Organisation und neue Perspektiven dazu.</p>
           <p>Was mir an Werkzeugen fehlte, habe ich irgendwann selbst gebaut. So ist aus dem eigenen Bedarf die Arbeit an Software geworden. SmartADM organisiert meinen Arbeitsalltag. iQuest verbindet Lernen mit Spielen. Mit heimello. und Roadlands denke ich diese Verbindung weiter.</p>
         </div>
       </div>
     </section>
 
-    <section class="labs" id="juschkin-labs" aria-labelledby="labs-title">
-      <div class="wrap labs-inner">
-        <div class="labs-brand">
-          <p class="pixel labs-kicker">Nächstes Kapitel</p>
-          <img class="labs-logo" src="/1293e128973/assets/juschkinlabs-logo.png" alt="Juschkin Labs" width="1750" height="229">
-        </div>
-        <div class="labs-sheet">
-          <h2 id="labs-title">Ab 1. Februar 2027 gehen wir es gemeinsam an.</h2>
-          <p>Maksim Juschkin und ich starten als selbstständige Partner unter dem Namen Juschkin Labs. Uns verbindet bereits die Arbeit an iQuest. Künftig bündeln wir unsere Erfahrung in Software, digitalen Anwendungen und dem Einsatz von KI.</p>
-          <p><a href="https://juschkinlabs.de/" target="_blank" rel="noopener noreferrer">juschkinlabs.de besuchen</a></p>
+    <section class="guild" id="juschkin-labs" aria-labelledby="labs-title">
+      <div class="wrap">
+        <div class="panel guild-panel reveal" style="--accent: var(--gold)">
+          <div class="guild-brand">
+            <p class="label">Neue Gilde</p>
+            <img class="labs-logo" src="/1293e128973/assets/juschkinlabs-logo.png" alt="Juschkin Labs" width="1750" height="229" loading="lazy">
+          </div>
+          <div class="guild-copy">
+            <h2 id="labs-title">Ab 1. Februar 2027 gehen wir es gemeinsam an.</h2>
+            <p>Maksim Juschkin und ich starten als selbstständige Partner unter dem Namen Juschkin Labs. Uns verbindet bereits die Arbeit an iQuest. Künftig bündeln wir unsere Erfahrung in Software, digitalen Anwendungen und dem Einsatz von KI.</p>
+            <p class="world-actions"><a class="btn btn-gold" href="https://juschkinlabs.de/" target="_blank" rel="noopener noreferrer">juschkinlabs.de besuchen</a></p>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="contact" id="kontakt" aria-labelledby="contact-title">
-      <div class="wrap contact-inner">
+      <div class="wrap contact-inner reveal">
+        <p class="label">Koop-Modus</p>
         <h2 id="contact-title">Was hast du im Kopf?</h2>
         <p class="contact-lead">Du möchtest einen Ablauf vereinfachen, eine Anwendung entwickeln oder gemeinsam an einer Spielidee arbeiten? Erzähl mir davon.</p>
-        <a class="contact-mail game-button" href="mailto:kim@juschkinlabs.de">kim@juschkinlabs.de</a>
+        <a class="btn btn-primary contact-mail" href="mailto:kim@juschkinlabs.de">kim@juschkinlabs.de</a>
         <p class="contact-secondary">
-          <button class="copy-email ghost-button" type="button" data-copy-email hidden>E-Mail-Adresse kopieren</button>
-          <a href="https://www.linkedin.com/in/kim-betcher-5a764b397/" target="_blank" rel="noopener noreferrer">Auf LinkedIn verbinden</a>
+          <button class="btn copy-email" type="button" data-copy-email hidden>E-Mail-Adresse kopieren</button>
+          <a class="btn" href="https://www.linkedin.com/in/kim-betcher-5a764b397/" target="_blank" rel="noopener noreferrer">Auf LinkedIn verbinden</a>
         </p>
         <p class="copy-status" role="status" aria-live="polite"></p>
       </div>
@@ -295,9 +296,9 @@
   </main>
 
   <dialog class="project-dialog" aria-labelledby="preview-title" aria-describedby="preview-note">
-    <div class="dialog-heading"><h2 id="preview-title">Projekteinblick</h2><button class="dialog-close" type="button" aria-label="Projekteinblick schließen">Schließen</button></div>
+    <div class="dialog-heading"><h2 id="preview-title">Projekteinblick</h2><button class="btn dialog-close" type="button" aria-label="Projekteinblick schließen">Schließen</button></div>
     <div class="preview-stage"><img id="preview-image" alt=""></div>
-    <div class="preview-footer"><p class="dialog-note" id="preview-note"></p><div class="preview-navigation" hidden><button type="button" data-preview-previous aria-label="Vorheriges Bild">←</button><span class="preview-counter pixel" role="status" aria-live="polite"></span><button type="button" data-preview-next aria-label="Nächstes Bild">→</button></div></div>
+    <div class="preview-footer"><p class="dialog-note" id="preview-note"></p><div class="preview-navigation" hidden><button class="btn btn-icon" type="button" data-preview-previous aria-label="Vorheriges Bild">←</button><span class="preview-counter" role="status" aria-live="polite"></span><button class="btn btn-icon" type="button" data-preview-next aria-label="Nächstes Bild">→</button></div></div>
   </dialog>
 
   <footer class="site-footer">
