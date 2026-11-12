@@ -35,7 +35,8 @@ Besucher werden geduzt. Preise stehen nicht auf der Seite („auf Anfrage“).
 - `assets/leistungen/`, `assets/webapps/`, `assets/editor/`: Bilder, Icons und
   Texturen für Leistungen, Web-Apps und den Charakter-Editor.
 - `assets/stimmen/`: Sprachaufnahmen, `kim_<zeile>.mp3` und `maksim_<zeile>.mp3`.
-- `assets/fonts/`: Saira (variabel, Breite und Stärke), lokal geladen, mit OFL-Lizenz.
+- `assets/fonts/`: Saira (Überschriften, Bedienelemente, Lab) und Source Sans 3
+  (Fließtext), beide variabel, lokal geladen, mit OFL-Lizenz.
 - `assets/juschkinlabs-logo.png`: Original-Logo (Open Graph); `assets/jl-logo.png`
   ist die verkleinerte Fassung für die Kopfzeile. `assets/jl-mark.svg` und
   `assets/jl-touch.png` sind die Seitensymbole.
@@ -44,6 +45,15 @@ Besucher werden geduzt. Preise stehen nicht auf der Seite („auf Anfrage“).
 
 Alle Pfade sind relativ. Der Ordner funktioniert deshalb unter
 `kim-betcher.de/1293e128973/` genauso wie später direkt unter `juschkinlabs.de`.
+
+## Gestaltung
+
+Das Lab im Kopfbereich ist die Bühne und sieht aus wie ein Spielmenü: abgeschrägte Panels,
+Saira, farbige Akzente. Alles darunter ist bewusst ruhig, damit auch Leser ohne Spielbezug
+schnell finden, was sie suchen: flache Karten mit feiner Linie, Gold als einzige
+Akzentfarbe, Fließtext in Source Sans 3 (18 px), Überschriften in Saira. Blau, Koralle und
+Pflaume gehören nur zu den eigenen Projekten. Abläufe sind nummerierte Schritte.
+Spielbegriffe (Level, Bosse) stehen nur bei iQuest und Roadlands.
 
 ## Lab
 

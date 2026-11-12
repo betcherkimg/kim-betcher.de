@@ -434,7 +434,7 @@ async function start() {
     raus: { k: 0.36, a: 0, ay: 0.78 }
   };
   const FOCUS_NARROW = {
-    ganz: { k: 0.5, a: 0, ay: 0.9 },
+    ganz: { k: 0.46, a: 0, ay: 0.9 },
     kopf: { k: 1.3, a: 0.86, ay: 0.5 },
     oberkoerper: { k: 0.85, a: 0.6, ay: 0.52 },
     beine: { k: 0.75, a: 0.26, ay: 0.6 },
@@ -586,7 +586,7 @@ async function start() {
         view.a = damp(view.a, focus.a, 1.6, dt);
         view.ay = damp(view.ay, focus.ay, 1.6, dt);
         const feetX = toImage(labPos).x;
-        view.x = damp(view.x ?? feetX, feetX, 2.2, dt);
+        view.x = damp(view.x ?? feetX, feetX, 3.4, dt);
         if (u >= 1) finishLeave();
       } else {
         const focus = table[editing ? focusName : "ganz"];
@@ -909,7 +909,7 @@ async function start() {
       setFocus(CATEGORIES.find((category) => category.key === key).focus);
       renderOptions();
       refreshTabs();
-      if (key === "haarfarbe" && hairLocked()) sound.say("gesperrt", { force: true });
+      if (key === "haarfarbe" && hairLocked()) sound.say(styleOf().locked ? "gesperrt" : "glatze_gesperrt", { force: true });
     }
 
     function refreshTabs() {
