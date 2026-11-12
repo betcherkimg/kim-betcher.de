@@ -85,13 +85,45 @@ Fahrgefühl, Flug, Reiten, Kamera mit gefangener Maus, alle Töne und das Radio.
 
 ## Neu am 12.11. um 17:49: Kämpfen
 
-- [ ] Kleine Gegner (Mobs) aus verschiedenen Roadlands-Leveln (KlasseB-3d, `02_Exporte/Characters/Gegner`, `Gegner_L4`, `Tiere`), unterschiedlich stark, keine Level
-- [ ] Lebensanzeige über den Köpfen der Gegner
-- [ ] Gegner lassen sich im Baumodus aufstellen und tauchen zwischendurch von selbst an manchen Stellen auf
-- [ ] Schwert für Kim in der Hand (ein vorhandenes Schwert aus dem Ordner), Schwert ziehen und wegstecken mit den vorhandenen Bewegungen (`Animationen_Neu`: Draw Sword, Sheath Sword, Great Sword Slash ...), auf Kim übertragen
-- [ ] Mausklick = Schlag
-- [ ] Kim hat Leben; Gegner können ihn verletzen und besiegen
-- [ ] Polizei nimmt nicht mehr fest: sie schießt, bis Kim umfällt (kein Blut). Gegen Polizei kann man nicht kämpfen, nur wegrennen.
-- [ ] Umgefallen: Bildschirm wird kurz dunkel, Kim steht wieder am Startpunkt. Man verliert nichts.
-- [ ] HUD unten: schlicht, passend zur Website, mit Anklängen an Roadlands; wenig Information (Leben, Schwert, im Fahrzeug Zustand)
-- [ ] Die vielen Tastenhinweise oben raus; stattdessen eine Taste, die die Steuerung einblendet
+- [x] Kleine Gegner (Mobs) aus verschiedenen Roadlands-Leveln (KlasseB-3d, `02_Exporte/Characters/Gegner`, `Gegner_L4`, `Tiere`), unterschiedlich stark, keine Level
+- [x] Lebensanzeige über den Köpfen der Gegner
+- [x] Gegner lassen sich im Baumodus aufstellen und tauchen zwischendurch von selbst an manchen Stellen auf
+- [x] Schwert für Kim in der Hand (ein vorhandenes Schwert aus dem Ordner), Schwert ziehen und wegstecken mit den vorhandenen Bewegungen (`Animationen_Neu`: Draw Sword, Sheath Sword, Great Sword Slash ...), auf Kim übertragen
+- [x] Mausklick = Schlag
+- [x] Kim hat Leben; Gegner können ihn verletzen und besiegen
+- [x] Polizei nimmt nicht mehr fest: sie schießt, bis Kim umfällt (kein Blut). (18:45 geändert: Polizisten kann man bekämpfen und besiegen.)
+- [x] Umgefallen: Bildschirm wird kurz dunkel, Kim steht wieder am Startpunkt. Man verliert nichts.
+- [x] HUD unten: schlicht, passend zur Website, mit Anklängen an Roadlands; wenig Information (Leben, Schwert, im Fahrzeug Zustand)
+- [x] Die vielen Tastenhinweise oben raus; stattdessen eine Taste, die die Steuerung einblendet
+
+## Neu am 12.11. um 18:23: Handysteuerung
+
+- [x] Die Spielwiese darf nicht von der Fensterbreite abhängen (schmales Fenster am PC = weiterhin Tastatur und Maus; Finger werden am Zeiger erkannt, nicht an der Breite)
+- [x] Finger auf die Wiese legen und ziehen: Kim läuft in diese Richtung; je weiter der Finger von Kim weg ist, desto schneller (gehen, rennen)
+- [x] Beim Ziehen dreht die Kamera von selbst mit
+- [x] Tippen auf ein Fahrzeug oder das Pferd: hinlaufen und einsteigen
+- [x] Tippen auf einen Gegner: zuschlagen (mehrfach tippen = mehrfach schlagen)
+- [x] Im Fahrzeug mit dem Finger lenken und Gas geben, aussteigen über den Knopf; abheben und Klaps über einen Knopf
+- [ ] Am echten Handy prüfen (bei mir nur nachgestellt: Hochformat 390 px, Finger-Ereignisse über den Testbrowser)
+
+## Neu am 12.11. zwischen 18:34 und 19:13
+
+- [x] Fehler: Füße fliegen im Gokart (Beinhaltung drehte mit der Fahrtrichtung und addierte sich auf)
+- [x] Fehler: beim Aussteigen im Boden stecken (Höhe hängt jetzt an der Aufsteh-Bewegung)
+- [x] Fehler: nach dem Umfallen schräg in der Luft liegen (legt sich flach hin)
+- [x] Bäume hingen an der Randwand: Bäume am Rand weg, Rand ist jetzt ein Bergrand (Fels, Grate). Karte bleibt klein.
+- [x] Jeder hat Leben und eine Lebensanzeige und lässt sich angreifen: Polizist (150, wehrt sich), Mann mit Fernsteuerung (rennt weg), Fuchs, Reh, Pferd (rennen weg)
+- [x] Erwachsener statt Junge an der Drohne ("Mann mit Fernsteuerung")
+- [x] Überfahren: Ziel nimmt viel Schaden, Fahrzeug keinen
+- [x] Polizei ist friedlich, bis Kim etwas anstellt (Leute, Tiere, Polizisten angreifen oder anfahren, harter Aufprall). Gegner bekämpfen stört nicht. Dann Sirene, Polizisten, Streife und Hubschrauber greifen an.
+- [x] Hubschrauber schießt und ist übermächtig
+- [x] Licht: leichte Abenddämmerung, einen Hauch rötlicher und gedämpfter; Spiegelungen aus dem Himmel
+- [x] Wind: Gras, Blumen, Büsche und Bäume wiegen sich
+- [x] Maus fangen klappt schon beim Drücken (vorher erst beim Loslassen, ein leicht verrutschter Klick zählte als Ziehen)
+
+Werte zum Nachstellen (alles in `spielwiese.js`): Kim 100 Leben, Schwert 25, schwerer Hieb 34, Überfahren Tempo x 7.
+Gegner: Pilzling 30/6, Parkuhr-Wicht 45/8, Kreiselwicht 55/10, Lolli 70/12, Mülltonnen-Mimik 85/15 (Leben/Schaden).
+Polizist 150 Leben, Schuss 14; Hubschrauber Schuss 10 alle 0,2 s. Mann 60, Fuchs 30, Reh 45, Pferd 110.
+
+Nur am Standbild und in Zeitlupe geprüft (Software-Grafik mit etwa 2 Bildern je Sekunde), nicht in echtem Tempo und nicht gehört:
+Kampfgefühl, Tempo der Schläge, Schüsse, Wind, alle neuen Töne, Fingersteuerung am echten Gerät, Maus fangen im echten Browser.

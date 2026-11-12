@@ -24,4 +24,9 @@ info={'size':[round(mx[i]-mn[i],2) for i in range(3)],'min':[round(v,2) for v in
  'actions':[(a.name, round(a.frame_range[1]-a.frame_range[0])) for a in bpy.data.actions],'mats':[(m.name, bool(m.node_tree and [n for n in m.node_tree.nodes if n.type=='TEX_IMAGE'])) for m in bpy.data.materials],
  'arm':[o.name for o in bpy.data.objects if o.type=='ARMATURE']}
 print('INFO', os.path.basename(src), json.dumps(info))
+if os.environ.get('JOIN') and len(meshes)>1:
+    bpy.ops.object.select_all(action='DESELECT')
+    for o in meshes: o.select_set(True)
+    bpy.context.view_layer.objects.active=meshes[0]
+    bpy.ops.object.join()
 bpy.ops.export_scene.gltf(filepath=out, export_format='GLB', export_animations=True, export_animation_mode='ACTIONS', export_yup=True, export_apply=False, export_skins=True, export_force_sampling=True, export_optimize_animation_size=True, use_visible=False, export_cameras=False, export_lights=False)

@@ -17,10 +17,10 @@
   <link rel="apple-touch-icon" href="assets/kb-icon-180.png?v=1">
   <link rel="preload" href="assets/fonts/saira-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/source-sans-3-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="start.css?v=20261112-k18">
-  <script src="start.js?v=20261112-k18" defer></script>
+  <link rel="stylesheet" href="start.css?v=20261112-k20">
+  <script src="start.js?v=20261112-k20" defer></script>
   <script type="importmap">{"imports": {"three": "./vendor/three/three.module.min.js"}}</script>
-  <script type="module" src="spielwiese.js?v=20261112-k18"></script>
+  <script type="module" src="spielwiese.js?v=20261112-k20"></script>
 </head>
 <body>
   <a class="skip-link" href="#inhalt">Zum Inhalt</a>
@@ -58,8 +58,6 @@
         <button type="button" data-mode="build" aria-pressed="false">Bauen</button>
         <kbd>B</kbd>
       </div>
-      <p class="play-hint hint-play" data-play-hint><span><kbd>Klick</kbd>Maus fangen</span><span><kbd>Esc</kbd>Maus frei</span><span><kbd>Maus</kbd>umsehen</span><span><kbd>W A S D</kbd>laufen</span><span><kbd>Shift</kbd>rennen</span><span><kbd>Leertaste</kbd>springen, abheben, Klaps</span><span><kbd>E</kbd>ein- und aussteigen</span><span><kbd>R</kbd>Radio</span><span><kbd>H</kbd>Hupe</span></p>
-      <p class="play-hint hint-build"><span><kbd>Leiste</kbd>Dinge auf die Wiese ziehen</span><span><kbd>Ziehen</kbd>Karte verschieben</span><span><kbd>Rechte Maustaste</kbd>drehen</span><span><kbd>Mausrad</kbd>Zoom</span><span><kbd>Q</kbd><kbd>E</kbd>Ding drehen</span><span><kbd>Entf</kbd>löschen</span></p>
       <p class="play-status" data-play-status role="status" aria-live="polite"></p>
       <div class="play-tools" data-play-tools hidden>
         <strong data-tool-name></strong>
@@ -70,7 +68,85 @@
         <button class="btn" type="button" data-tool="close" aria-label="Auswahl aufheben">✕</button>
       </div>
       <button class="btn btn-primary play-exit" type="button" data-play-exit hidden>Aussteigen</button>
-      <p class="play-hp" data-play-hp hidden><span>Zustand</span><i></i></p>
+      <button class="btn play-act" type="button" data-play-act>Springen</button>
+      <div class="hud" data-hud>
+        <span class="hud-face"><canvas width="128" height="128" data-hud-face aria-hidden="true"></canvas></span>
+        <p class="hud-life" data-hud-life><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.7s-7.6-4.7-9.4-9.4C1.2 7.7 3.3 4.3 6.8 4.3c2 0 3.6 1 5.2 3 1.6-2 3.2-3 5.2-3 3.5 0 5.6 3.4 4.2 7-1.8 4.7-9.4 9.4-9.4 9.4z"/></svg><span class="sr-only">Leben</span><b>100</b><i></i></p>
+        <button class="hud-slot" type="button" data-hud-sword aria-pressed="false" aria-label="Schwert" title="Schwert"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5 9.5 14.5M20.5 3.5h-3.2L8 12.8l1.5 1.7 1.7 1.5 9.3-9.3zM6 12l6 6M7.8 16.2 4 20"/></svg></button>
+        <p class="hud-car" data-hud-car hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17v-4.2l1.8-4.3A2.4 2.4 0 0 1 7 7h10a2.4 2.4 0 0 1 2.2 1.5L21 12.8V17h-2.2a2 2 0 0 1-4 0H9.2a2 2 0 0 1-4 0zM6.2 12h11.6l-1-2.6a.6.6 0 0 0-.6-.4H7.8a.6.6 0 0 0-.6.4z"/></svg><span class="sr-only">Zustand des Fahrzeugs</span><i></i></p>
+      </div>
+      <button class="help-open" type="button" data-help-open aria-expanded="false" aria-controls="steuerung"><kbd>H</kbd>Steuerung</button>
+      <div class="play-hurt" data-play-hurt aria-hidden="true"></div>
+      <div class="play-fade" data-play-fade aria-hidden="true"></div>
+      <div class="help" id="steuerung" data-help hidden>
+        <div class="help-card" role="dialog" aria-modal="true" aria-labelledby="steuerung-titel">
+          <h2 id="steuerung-titel">Steuerung</h2>
+          <div class="help-grid">
+            <section>
+              <h3>Zu Fuß</h3>
+              <ul>
+                <li><kbd>Klick</kbd><span>Maus fangen, <kbd>Esc</kbd> gibt sie frei</span></li>
+                <li><kbd>Maus</kbd><span>umsehen</span></li>
+                <li><kbd>W A S D</kbd><span>laufen</span></li>
+                <li><kbd>Shift</kbd><span>rennen</span></li>
+                <li><kbd>Leertaste</kbd><span>springen</span></li>
+                <li><kbd>E</kbd><span>einsteigen, aufsteigen</span></li>
+              </ul>
+            </section>
+            <section>
+              <h3>Kämpfen</h3>
+              <ul>
+                <li><kbd>Klick</kbd><span>zuschlagen</span></li>
+                <li><kbd>Q</kbd><span>Schwert ziehen, wegstecken</span></li>
+              </ul>
+              <p>Jeder hat Leben und lässt sich angreifen. Die Polizei ist friedlich, bis du Leute, Tiere oder Polizisten angreifst oder anfährst.</p>
+            </section>
+            <section>
+              <h3>Fahren und Fliegen</h3>
+              <ul>
+                <li><kbd>W S</kbd><span>Gas, Bremse</span></li>
+                <li><kbd>A D</kbd><span>lenken</span></li>
+                <li><kbd>Shift</kbd><span>schneller</span></li>
+                <li><kbd>Leertaste</kbd><span>abheben, landen</span></li>
+                <li><kbd>X</kbd><span>Hupe</span></li>
+                <li><kbd>R</kbd><span>Radio</span></li>
+                <li><kbd>E</kbd><span>aussteigen</span></li>
+              </ul>
+            </section>
+            <section>
+              <h3>Reiten</h3>
+              <ul>
+                <li><kbd>W</kbd><span>reiten</span></li>
+                <li><kbd>Leertaste</kbd><span>Klaps: Trab, dann Galopp</span></li>
+                <li><kbd>S</kbd><span>langsamer</span></li>
+                <li><kbd>A D</kbd><span>lenken</span></li>
+                <li><kbd>E</kbd><span>absteigen</span></li>
+              </ul>
+            </section>
+            <section>
+              <h3>Bauen</h3>
+              <ul>
+                <li><kbd>B</kbd><span>zwischen Spielen und Bauen wechseln</span></li>
+                <li><kbd>Ziehen</kbd><span>Karte verschieben</span></li>
+                <li><kbd>Rechte Maustaste</kbd><span>Blick drehen</span></li>
+                <li><kbd>Mausrad</kbd><span>Zoom</span></li>
+                <li><kbd>Q E</kbd><span>Ding drehen</span></li>
+                <li><kbd>Entf</kbd><span>Ding löschen</span></li>
+              </ul>
+            </section>
+          <section>
+              <h3>Mit dem Finger</h3>
+              <ul>
+                <li><kbd>Ziehen</kbd><span>laufen; weiter weg von Kim: rennen. Die Kamera dreht mit</span></li>
+                <li><kbd>Tippen</kbd><span>auf die Wiese: hinlaufen. Auf ein Fahrzeug: einsteigen. Auf einen Gegner: zuschlagen</span></li>
+                <li><kbd>Zwei Finger</kbd><span>Zoom</span></li>
+                <li><kbd>Im Fahrzeug</kbd><span>Finger davor: Gas. Dahinter: Bremse. Seitlich: lenken</span></li>
+              </ul>
+            </section>
+          </div>
+          <p class="help-foot"><span>H oder Esc schließt die Steuerung. <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span><button class="btn btn-primary" type="button" data-help-close>Weiter spielen</button></p>
+        </div>
+      </div>
     </section>
   </main>
 </body>
