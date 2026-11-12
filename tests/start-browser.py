@@ -83,6 +83,20 @@ try:
         expect(page.locator("#preview-title")).to_have_text("Meine Familie")
         expect(page.locator(".preview-counter")).to_have_text("1 / 8")
         page.keyboard.press("Escape")
+        # Musik-Kachel startet den Song, der Player steuert ihn
+        player = page.locator("[data-music-player]")
+        expect(player).to_be_hidden()
+        page.locator(".tile[data-music]").click()
+        page.keyboard.press("Escape")
+        expect(player).to_be_visible()
+        expect(player).to_have_class(re.compile("is-playing"))
+        assert page.evaluate("() => { const a = document.querySelector('[data-music-player] audio'); return !a.paused && a.src.endsWith('assets/musik/odk-wie-wir.mp3') && window.kbMusicPlaying === true; }")
+        page.wait_for_function("document.querySelector('[data-music-player] audio').currentTime > 0.3")
+        player.locator(".music-toggle").click()
+        expect(player).not_to_have_class(re.compile("is-playing"))
+        assert page.evaluate("window.kbMusicPlaying === false")
+        player.locator(".music-close").click()
+        expect(player).to_be_hidden()
         for width in (320, 390, 820, 1440):
             page.set_viewport_size({"width": width, "height": 1000})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), f"Overflow on private page at {width}px"

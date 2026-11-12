@@ -266,3 +266,38 @@ rosterSlots.forEach((slot) => slot.addEventListener("click", () => {
   document.dispatchEvent(new CustomEvent("figur:wahl", { detail: slot.dataset.character }));
 }));
 document.addEventListener("figur:bereit", (event) => showCharacter(event.detail));
+
+// Musik: Beim Antippen der Musik-Kachel läuft der Song; ein kleiner Player unten rechts steuert ihn
+const musicPlayer = document.querySelector("[data-music-player]");
+if (musicPlayer) {
+  const song = musicPlayer.querySelector("audio");
+  const toggle = musicPlayer.querySelector(".music-toggle");
+  const status = musicPlayer.querySelector("[data-music-status]");
+  const sync = () => {
+    const playing = !song.paused && !song.ended;
+    musicPlayer.classList.toggle("is-playing", playing);
+    toggle.setAttribute("aria-label", playing ? "Song anhalten" : "Song abspielen");
+    if (status) status.textContent = playing ? "Läuft" : "Pausiert";
+    // Solange Musik läuft, spricht die Figur nicht dazwischen
+    window.kbMusicPlaying = playing;
+    if (playing) document.dispatchEvent(new Event("musik:an"));
+  };
+  const startSong = () => {
+    musicPlayer.hidden = false;
+    song.play().catch(() => {}).finally(sync);
+  };
+  for (const type of ["play", "pause", "ended"]) song.addEventListener(type, sync);
+  document.querySelectorAll("[data-music]").forEach((element) => element.addEventListener("click", startSong));
+  toggle.addEventListener("click", () => { if (song.paused) startSong(); else song.pause(); });
+  musicPlayer.querySelector(".music-close").addEventListener("click", () => {
+    song.pause();
+    song.currentTime = 0;
+    musicPlayer.hidden = true;
+  });
+  // Von der Startseite aus: direkt zum Song. Lässt der Browser das Abspielen ohne Klick nicht zu, wartet der Player.
+  if (window.location.hash === "#musik") {
+    startSong();
+    // Bilder laden nach und verschieben die Seite: nach dem Laden noch einmal zur Kachel
+    window.addEventListener("load", () => document.getElementById("musik")?.scrollIntoView({ block: "center" }));
+  }
+}

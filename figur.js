@@ -348,7 +348,7 @@ async function start() {
       get on() { return on; },
       get busy() { return speaking; },
       say(line, { force = false, once = false } = {}) {
-        if (!on || !line) return false;
+        if (!on || !line || window.kbMusicPlaying) return false;
         const file = fileFor(line);
         if (once && said.has(file)) return false;
         if (speaking && !force) return false;
@@ -380,6 +380,7 @@ async function start() {
       }).catch(() => { if (token === playToken) audio.muted = false; });
     };
     for (const type of ["pointerdown", "pointerup", "keydown", "touchend"]) window.addEventListener(type, unlock, { capture: true, passive: true });
+    document.addEventListener("musik:an", () => api.stop());
     if (toggle) {
       toggle.hidden = false;
       label();
