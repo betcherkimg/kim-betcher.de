@@ -993,9 +993,12 @@ async function start() {
   }
 
   // Abgang nach „Fertig“
-  function startLeave() {
+  // goto: Adresse, die nach dem Lauf durchs Tor geöffnet wird (Spielplatz); ohne goto geht es zum ersten Abschnitt
+  let leaveGoto = "";
+  function startLeave(goto = "") {
+    leaveGoto = goto;
     const target = document.querySelector("main > section[id]");
-    const goOn = () => target?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+    const goOn = () => { if (goto) window.location.href = goto; else target?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" }); };
     if (reduceMotion || !lab) { goOn(); return; }
     heroSection?.classList.add("is-leaving");
     gesture = null;
@@ -1009,6 +1012,7 @@ async function start() {
     leave = null;
     leaveHidden = true;
     pivot.visible = false;
+    if (leaveGoto) { window.location.href = leaveGoto; return; }
     const target = document.querySelector("main > section[id]");
     target?.scrollIntoView({ behavior: "smooth" });
     setTimeout(() => {
@@ -1128,8 +1132,10 @@ async function start() {
     worldsButton?.addEventListener("click", (event) => {
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || leave) return;
       event.preventDefault();
-      startLeave();
+      startLeave(worldsButton.dataset.goto !== undefined ? worldsButton.href : "");
     });
+    // Zurück aus dem Spielplatz (Verlauf): Figur steht wieder auf dem Podest
+    window.addEventListener("pageshow", (event) => { if (event.persisted) window.location.reload(); });
 
     // Icons aus der Asset-Lieferung (32 × 32, currentColor)
     const ICONS = {

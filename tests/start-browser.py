@@ -13,7 +13,7 @@ from threading import Thread
 from playwright.sync_api import expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parent.parent
-NEW_PAGES = ["index.html", "private-einblicke.html", "impressum.html", "datenschutz.html"]
+NEW_PAGES = ["index.html", "private-einblicke.html", "spielplatz.html", "impressum.html", "datenschutz.html"]
 
 for name in ("index.html", "private-einblicke.html"):
     source = (ROOT / name).read_text()
@@ -138,6 +138,28 @@ try:
             page.set_viewport_size({"width": width, "height": 1000})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), f"Overflow on private page at {width}px"
 
+        # Spielplatz: Wiese läuft, Leiste ist gefüllt, Antippen stellt etwas auf und merkt es
+        page.goto(origin + "/", wait_until="networkidle")
+        assert page.locator("[data-worlds]").get_attribute("href") == "spielplatz.html"
+        expect(page.locator(".hero-actions a")).to_have_count(1)
+        page.goto(origin + "/spielplatz.html", wait_until="networkidle")
+        expect(page.locator(".palette-item")).to_have_count(16)
+        if page.evaluate("Boolean(document.createElement('canvas').getContext('webgl2'))"):
+            expect(page.locator("[data-play]")).to_have_class(re.compile("is-live"))
+            page.wait_for_function("window.kbSpielplatz && kbSpielplatz.kim.ready && kbSpielplatz.things.length === 7", timeout=60000)
+            page.locator('.palette-item[data-item="gokart"]').click()
+            page.wait_for_function("kbSpielplatz.things.length === 8", timeout=30000)
+            assert any(row[0] == "gokart" for row in page.evaluate("JSON.parse(localStorage.getItem('kb-spielplatz-v1'))"))
+            expect(page.locator("[data-play-tools]")).to_be_visible()
+            page.locator('[data-tool="drive"]').click()
+            expect(page.locator("[data-play-exit]")).to_be_visible()
+            page.keyboard.press("e")
+            expect(page.locator("[data-play-exit]")).to_be_hidden()
+        assert not errors, errors
+        for width in (390, 1440):
+            page.set_viewport_size({"width": width, "height": 800})
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), f"Overflow on playground at {width}px"
+        page.set_viewport_size({"width": 1440, "height": 1000})
         page.goto(origin + "/impressum.html", wait_until="networkidle")
         expect(page.get_by_role("heading", name="Angaben gemäß § 5 DDG")).to_be_visible()
         expect(page.get_by_role("heading", name="Angaben zur Beratung")).to_be_visible()
