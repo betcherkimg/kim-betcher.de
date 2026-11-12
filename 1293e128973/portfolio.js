@@ -109,19 +109,39 @@ if (copyButton && copyStatus && emailLink && navigator.clipboard?.writeText) {
   });
 }
 
+// YouTube erst nach Klick laden; das Vorschaubild bleibt gemerkt, falls die Version gewechselt wird
+const trailerPosters = new WeakMap();
 document.querySelectorAll("[data-load-trailer]").forEach((link) => {
   link.addEventListener("click", (event) => {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
+    const box = link.closest(".trailer-player");
     const player = document.createElement("iframe");
-    player.src = "https://www.youtube-nocookie.com/embed/m6fthG8m1qE?autoplay=1&playsinline=1&rel=0";
-    player.title = "iQuest-Trailer – YouTube-Video";
+    player.src = `https://www.youtube-nocookie.com/embed/${link.dataset.video}?autoplay=1&playsinline=1&rel=0`;
+    player.title = `${link.dataset.videoTitle || "Trailer"} – YouTube-Video`;
     player.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
     player.allowFullscreen = true;
     player.referrerPolicy = "strict-origin-when-cross-origin";
-    link.closest(".trailer-player").replaceChildren(player);
+    trailerPosters.set(box, link);
+    box.replaceChildren(player);
     player.focus();
   });
+});
+
+// Versionen umschalten (iQuest und iQuest Classic): Bild, Logo, Trailer und Text
+document.querySelectorAll("[data-variants]").forEach((root) => {
+  const buttons = root.querySelectorAll("[data-variant-switch]");
+  const parts = root.querySelectorAll("[data-variant]");
+  buttons.forEach((button) => button.addEventListener("click", () => {
+    const name = button.dataset.variantSwitch;
+    buttons.forEach((other) => other.setAttribute("aria-pressed", String(other === button)));
+    parts.forEach((part) => { part.hidden = part.dataset.variant !== name; });
+    // Ein laufender Trailer der anderen Version wird gestoppt
+    root.querySelectorAll(".trailer-player").forEach((box) => {
+      if (box.closest("[hidden]") && trailerPosters.has(box)) box.replaceChildren(trailerPosters.get(box));
+    });
+    root.classList.toggle("is-classic", name === "classic");
+  }));
 });
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -156,56 +176,6 @@ if (hero && finePointer && !reduceMotion) {
   });
 }
 
-// Schwebende Lichtpunkte in der Charakterauswahl.
-const canvas = document.querySelector(".particles");
-if (canvas && hero && !reduceMotion && canvas.getContext) {
-  const context = canvas.getContext("2d");
-  const colors = ["215, 199, 145", "236, 220, 170", "142, 189, 255", "241, 238, 228"];
-  let points = [];
-  let running = false;
-  let frame = 0;
-  const resize = () => {
-    const ratio = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = canvas.clientWidth * ratio;
-    canvas.height = canvas.clientHeight * ratio;
-    context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    const count = Math.round(Math.min(70, canvas.clientWidth / 18));
-    points = Array.from({ length: count }, () => ({
-      x: Math.random() * canvas.clientWidth,
-      y: Math.random() * canvas.clientHeight,
-      r: 0.6 + Math.random() * 1.8,
-      speed: 0.12 + Math.random() * 0.35,
-      sway: Math.random() * Math.PI * 2,
-      alpha: 0.15 + Math.random() * 0.5,
-      color: colors[Math.floor(Math.random() * colors.length)]
-    }));
-  };
-  const draw = () => {
-    if (!running) return;
-    frame += 1;
-    context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
-    for (const point of points) {
-      point.y -= point.speed;
-      point.x += Math.sin(frame / 90 + point.sway) * 0.18;
-      if (point.y < -10) { point.y = canvas.clientHeight + 10; point.x = Math.random() * canvas.clientWidth; }
-      context.beginPath();
-      context.fillStyle = `rgba(${point.color}, ${point.alpha})`;
-      context.shadowColor = `rgba(${point.color}, ${point.alpha})`;
-      context.shadowBlur = 8;
-      context.arc(point.x, point.y, point.r, 0, Math.PI * 2);
-      context.fill();
-    }
-    requestAnimationFrame(draw);
-  };
-  resize();
-  window.addEventListener("resize", resize);
-  new IntersectionObserver(([entry]) => {
-    const wasRunning = running;
-    running = entry.isIntersecting && !document.hidden;
-    if (running && !wasRunning) requestAnimationFrame(draw);
-  }).observe(hero);
-}
-
 // Erscheinen beim Scrollen.
 const reveals = document.querySelectorAll(".reveal");
 document.querySelectorAll(".track .node").forEach((node, index) => node.style.setProperty("--i", index));
@@ -236,6 +206,7 @@ if (track) {
     worlds.forEach((world, i) => world.classList.toggle("is-active", i === index));
     tabs.forEach((tab, i) => tab.classList.toggle("is-active", i === index));
     if (current) current.textContent = String(index + 1);
+    document.dispatchEvent(new CustomEvent("welt:aktiv", { detail: worlds[index]?.id }));
   };
   const goTo = (index) => {
     const target = worlds[Math.max(0, Math.min(worlds.length - 1, index))];

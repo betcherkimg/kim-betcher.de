@@ -1,13 +1,15 @@
-// Juschkin Labs: Kim und Maksim als 3D-Spielfiguren.
-// Charakterauswahl und Editor auf dem Podest, danach begleitet die gewählte Figur beim Scrollen.
-// Eine einzige Zeichenfläche liegt fest über der Seite und zeichnet nur im Podest oder im Begleiter-Rahmen.
-// Alle Dateien liegen lokal; es gibt keine Verbindung zu Dritten.
+// Juschkin Labs: Kim und Maksim als 3D-Spielfiguren im Lab.
+// Das Lab ist ein gerendertes Bild; die Figur steht mit derselben Kamera wie im Blender-Projekt
+// auf dem Podest. Darüber liegt die Vordergrundmaske der vorderen Torsäule.
+// Nach „Fertig“ läuft die Figur durchs Tor hinaus und begleitet danach beim Scrollen.
+// Alle Dateien liegen auf dem eigenen Server; es gibt keine Verbindung zu Dritten.
 import * as THREE from "three";
 import { GLTFLoader } from "./vendor/three/GLTFLoader.js";
 import { MeshoptDecoder } from "./vendor/three/meshopt_decoder.module.js";
 
-const ROOT = "/1293e128973/";
+const ROOT = new URL("./", import.meta.url).href;
 const STORE_KEY = "jl-figuren-v1";
+const SOUND_KEY = "jl-ton";
 const FIGURE_VERSION = "20261112-3";
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -38,6 +40,29 @@ const CLOTH_COLORS = [
 const PARTS = ["Oberteil", "Hose", "Schuhe"];
 const LOOK_DEFAULTS = { frisur: "Original", haarfarbe: "Original", haut: "Original", Oberteil: "Original", Hose: "Original", Schuhe: "Original" };
 
+// Lab: Kamera und Wege aus dem Blender-Projekt (umgerechnet auf Y nach oben)
+const LAB = {
+  width: 3840,
+  height: 1600,
+  aspect: 2.4,
+  vfov: THREE.MathUtils.radToDeg(2 * Math.atan(18 / 29 / 2.4)),
+  camera: [0.7, 7.4, 16.5],
+  pitch: -(90 - 73.465),
+  feet: [-2.05, 0.195, 0.48],
+  // Vom Podest herunter, in die Gasse zwischen den Lichtleisten, mittig durchs Tor hinaus
+  exit: [[-2.05, 0.195, 0.48], [-0.6, 0.195, 0.48], [0.05, 0.03, 0.44], [1.4, 0.03, 0.15], [2.8, 0.03, -0.24], [4.6, 0.03, -0.3], [8.3, 0.03, -0.3], [12.5, 0.03, -0.3], [16.5, 0.03, -0.3]],
+  // Vordergrundmaske (Torbogen und vordere Säule) als Ausschnitt des 3840er-Bilds
+  front: [2976, 300, 3624, 1316],
+  // Figuren sind im Lab größer als im Begleiter: rund 3,2 m, der goldene Rahmen im Tor liegt bei 4,0 bis 4,7 m
+  scale: 1.75
+};
+
+// Stimmen: Dateinamen in assets/stimmen
+const LINES = {
+  kim: { leistungen: "leistungen", "web-apps": "webapps", agenturen: "agenturen", welten: "projekte", roadlands: "roadlands", team: "team", kontakt: "kontakt" },
+  maksim: { leistungen: "vision", "web-apps": "anwendungen", einblick: "workshops", ablauf: "ablauf", team: "arbeitsprobe", kontakt: "kontakt", aufgaben: "daten", zusammenarbeit: "ablauf", arbeitsprobe: "arbeitsprobe" }
+};
+
 const hairColors = (id) => [["Original", CHARACTERS[id].hair], ...HAIR_COLORS];
 const skinColors = (id) => [["Original", CHARACTERS[id].skin], ...SKIN_COLORS];
 const clothColors = (id, part) => [["Original", CHARACTERS[id].parts[part]], ...CLOTH_COLORS];
@@ -66,6 +91,8 @@ function webglAvailable() {
 
 const stage = document.querySelector("[data-model-slot]");
 const heroSection = document.querySelector(".hero");
+const lab = document.querySelector(".lab");
+const labImage = lab?.querySelector(".lab-bg");
 let state = readState();
 if (!CHARACTERS[state.aktiv]) state.aktiv = "kim";
 
@@ -76,6 +103,7 @@ if (webglAvailable() && (stage || (state.fertig && state.begleiter))) {
   start().catch((error) => {
     console.warn("3D-Figur konnte nicht geladen werden:", error);
     stage?.classList.remove("is-loading", "is-loading-figure", "is-3d");
+    lab?.classList.remove("is-live");
     const status = stage?.querySelector(".stage-status");
     if (status) status.textContent = "";
   });
@@ -96,23 +124,65 @@ async function start() {
   renderer.setClearColor(0x000000, 0);
   renderer.autoClear = false;
   renderer.toneMapping = THREE.NeutralToneMapping;
-  renderer.toneMappingExposure = 1.08;
+  renderer.toneMappingExposure = 1.05;
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(22, 1, 0.05, 60);
-  scene.add(new THREE.HemisphereLight(0xf1eee4, 0x1d1c16, 1.5));
-  const keyLight = new THREE.DirectionalLight(0xffffff, 2.3);
-  keyLight.position.set(-1.6, 2.6, 3.2);
-  const fillLight = new THREE.DirectionalLight(0xffffff, 0.7);
-  fillLight.position.set(2.2, 1.2, 2.4);
-  const rimGold = new THREE.DirectionalLight(0xe6d39a, 2.6);
+  scene.add(new THREE.HemisphereLight(0xe8eef5, 0x1c1f24, 1.45));
+  const keyLight = new THREE.DirectionalLight(0xffe7cc, 2.2);
+  keyLight.position.set(-1.8, 3.2, 3.4);
+  const fillLight = new THREE.DirectionalLight(0xbfd6ff, 0.85);
+  fillLight.position.set(2.6, 1.6, 2.4);
+  const rimGold = new THREE.DirectionalLight(0xe6d39a, 2.2);
   rimGold.position.set(-2.6, 1.8, -2.2);
-  const rimBlue = new THREE.DirectionalLight(0x8ebdff, 2.2);
+  const rimBlue = new THREE.DirectionalLight(0x8ebdff, 1.9);
   rimBlue.position.set(2.6, 2, -2.2);
   scene.add(keyLight, fillLight, rimGold, rimBlue);
 
   const pivot = new THREE.Group();
   scene.add(pivot);
+
+  // Weicher Schatten unter den Füßen (nur im Lab)
+  const shadowCanvas = document.createElement("canvas");
+  shadowCanvas.width = shadowCanvas.height = 128;
+  const shadowContext = shadowCanvas.getContext("2d");
+  const gradient = shadowContext.createRadialGradient(64, 64, 4, 64, 64, 62);
+  gradient.addColorStop(0, "rgba(0,0,0,0.55)");
+  gradient.addColorStop(1, "rgba(0,0,0,0)");
+  shadowContext.fillStyle = gradient;
+  shadowContext.fillRect(0, 0, 128, 128);
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.8), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(shadowCanvas), transparent: true, depthWrite: false, toneMapped: false }));
+  shadow.rotation.x = -Math.PI / 2;
+  shadow.position.y = 0.006;
+  shadow.renderOrder = -1;
+  pivot.add(shadow);
+
+  // Lab-Kamera wie in Blender, und eine Referenzkamera für Bildkoordinaten
+  const labCamera = new THREE.PerspectiveCamera(LAB.vfov, LAB.aspect, 0.1, 200);
+  labCamera.position.fromArray(LAB.camera);
+  labCamera.rotation.set(THREE.MathUtils.degToRad(LAB.pitch), 0, 0);
+  const labReference = labCamera.clone();
+  labReference.updateMatrixWorld(true);
+  labReference.updateProjectionMatrix();
+  const feetHome = new THREE.Vector3().fromArray(LAB.feet);
+  const faceCamera = Math.atan2(LAB.camera[0] - LAB.feet[0], LAB.camera[2] - LAB.feet[2]);
+  const exitCurve = new THREE.CatmullRomCurve3(LAB.exit.map((point) => new THREE.Vector3().fromArray(point)), false, "centripetal");
+  const exitLength = exitCurve.getLength();
+  const labPos = feetHome.clone();
+  let labYaw = faceCamera;
+  const projected = new THREE.Vector3();
+  const toImage = (point) => {
+    projected.copy(point).project(labReference);
+    return { x: (projected.x + 1) / 2, y: (1 - projected.y) / 2 };
+  };
+
+  // Vordergrund: vordere Torsäule, deckungsgleich mit dem Lab-Bild
+  const frontScene = new THREE.Scene();
+  const frontCamera = new THREE.OrthographicCamera(0, 1, 0, -1, -1, 1);
+  const frontTexture = new THREE.TextureLoader().load(`${ROOT}assets/lab/labor-vorne.webp?v=2`);
+  frontTexture.colorSpace = THREE.SRGBColorSpace;
+  const front = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: frontTexture, transparent: true, depthTest: false, depthWrite: false, toneMapped: false }));
+  frontScene.add(front);
 
   // Figuren werden erst geladen, wenn sie gebraucht werden
   const loader = new GLTFLoader();
@@ -176,7 +246,7 @@ async function start() {
     figure.currentName = name;
   }
   function doGesture(name) {
-    if (!active?.actions[name]) return;
+    if (!active?.actions[name] || leave) return;
     gesture = name;
     play(name, { once: true, fade: 0.25 });
     wake();
@@ -213,14 +283,69 @@ async function start() {
       gesture = null;
       play("Idle", { fade: 0 });
     }
-    pivot.visible = true;
+    pivot.visible = !leaveHidden;
     stage?.classList.remove("is-loading", "is-loading-figure");
+    if (lab && !lab.classList.contains("is-live")) {
+      initView(lab.getBoundingClientRect());
+      lab.classList.add("is-live");
+    }
     if (active === figure) editor?.rebuild();
     stage?.classList.add("is-3d");
     if (status) status.textContent = "";
-    if (greet && !reduceMotion) doGesture("Wave");
+    if (greet) {
+      if (sound.on) sound.say("hallo", { force: true });
+      else if (!reduceMotion) doGesture("Wave");
+    }
     wake();
   }
+
+  // Stimmen (standardmäßig aus, Schalter in der Kopfzeile)
+  const sound = (() => {
+    const toggle = document.querySelector(".sound-toggle");
+    let on = false;
+    try { on = window.localStorage.getItem(SOUND_KEY) === "an"; } catch { /* Standard: aus */ }
+    let audio = null;
+    let speaking = false;
+    const said = new Set();
+    const label = () => {
+      if (!toggle) return;
+      toggle.setAttribute("aria-pressed", String(on));
+      toggle.setAttribute("aria-label", "Stimmen der Figuren");
+      toggle.querySelector("span").textContent = on ? "Ton aus" : "Ton an";
+      toggle.classList.toggle("is-on", on);
+    };
+    const api = {
+      get on() { return on; },
+      say(line, { force = false, once = false } = {}) {
+        if (!on || !line) return false;
+        const who = active?.id || state.aktiv;
+        const file = line.startsWith("kim_") || line.startsWith("maksim_") ? line : `${who}_${line}`;
+        if (once && said.has(file)) return false;
+        if (speaking && !force) return false;
+        audio?.pause();
+        audio = new Audio(`${ROOT}assets/stimmen/${file}.mp3`);
+        speaking = true;
+        said.add(file);
+        audio.addEventListener("ended", () => { speaking = false; });
+        audio.addEventListener("error", () => { speaking = false; });
+        audio.play().then(() => { if (!gesture && active?.actions.Talk && !leave) doGesture("Talk"); }).catch(() => { speaking = false; });
+        return true;
+      },
+      stop() { audio?.pause(); speaking = false; }
+    };
+    if (toggle) {
+      toggle.hidden = false;
+      label();
+      toggle.addEventListener("click", () => {
+        on = !on;
+        try { window.localStorage.setItem(SOUND_KEY, on ? "an" : "aus"); } catch { /* nur Bequemlichkeit */ }
+        label();
+        if (on) api.say("hallo", { force: true });
+        else api.stop();
+      });
+    }
+    return api;
+  })();
 
   // Begleiter-Rahmen unten links
   const companion = document.createElement("div");
@@ -231,6 +356,7 @@ async function start() {
   const gestures = ["Wave", "Talk", "Jump"];
   let gestureIndex = 0;
   companion.querySelector(".companion-figure").addEventListener("click", () => {
+    if (sound.on && sound.say(`klick_${(gestureIndex % 3) + 1}`, { force: true })) { gestureIndex += 1; return; }
     doGesture(gestures[gestureIndex % gestures.length]);
     gestureIndex += 1;
   });
@@ -240,29 +366,42 @@ async function start() {
     updateMode();
   });
 
-  // Ansichten: Podest oder Begleiter
+  // Ansichten: Lab (Startseite) oder Begleiter
   let heroVisible = false;
   let mode = null;
   let editing = false;
   let heroYaw = 0;
-  let walk = null;
+  let walkIn = null;
+  let leave = null;
+  let leaveHidden = false;
   const clock = new THREE.Clock();
   let frameRequest = 0;
-  const frames = { hero: { feet: -0.84, head: 0.86 }, companion: { feet: -0.9, head: 0.84 } };
-  // Kamera-Ausschnitte im Editor: Anteil der Figur, der im Bild liegt
-  const FOCUS = {
-    ganz: { feet: -0.84, head: 0.86 },
-    kopf: { feet: -3.7, head: 0.76 },
-    oberkoerper: { feet: -2.0, head: 0.86 },
-    beine: { feet: -0.91, head: 2.17 },
-    schuhe: { feet: -0.8, head: 4.3 }
+  const companionFrame = { feet: -0.9, head: 0.84 };
+
+  // Ausschnitte im Lab: k = Figurhöhe im Verhältnis zur Bühnenhöhe, a = Ankerpunkt an der Figur (0 Füße, 1 Kopf), ay = Höhe des Ankers auf der Bühne
+  const FOCUS_WIDE = {
+    ganz: { k: 0.44, a: 0, ay: 0.76 },
+    kopf: { k: 1.2, a: 0.86, ay: 0.44 },
+    oberkoerper: { k: 0.72, a: 0.6, ay: 0.48 },
+    beine: { k: 0.64, a: 0.26, ay: 0.56 },
+    schuhe: { k: 0.98, a: 0.03, ay: 0.66 },
+    raus: { k: 0.36, a: 0, ay: 0.78 }
+  };
+  const FOCUS_NARROW = {
+    ganz: { k: 0.5, a: 0, ay: 0.9 },
+    kopf: { k: 1.3, a: 0.86, ay: 0.5 },
+    oberkoerper: { k: 0.85, a: 0.6, ay: 0.52 },
+    beine: { k: 0.75, a: 0.26, ay: 0.6 },
+    schuhe: { k: 1.1, a: 0.03, ay: 0.7 },
+    raus: { k: 0.34, a: 0, ay: 0.88 }
   };
   let focusName = "ganz";
-  const heroFrame = { ...FOCUS.ganz };
+  const view = { k: FOCUS_WIDE.ganz.k, a: 0, ay: FOCUS_WIDE.ganz.ay, x: null };
+  const focusTable = (rect) => rect.width / rect.height < 1.1 ? FOCUS_NARROW : FOCUS_WIDE;
   function setFocus(name) {
-    focusName = FOCUS[name] ? name : "ganz";
+    focusName = FOCUS_WIDE[name] ? name : "ganz";
     stage?.classList.toggle("is-zoomed", focusName !== "ganz");
-    if (reduceMotion) Object.assign(heroFrame, FOCUS[focusName]);
+    if (reduceMotion && lab) Object.assign(view, focusTable(lab.getBoundingClientRect())[focusName]);
     wake();
   }
   const thumbCamera = new THREE.PerspectiveCamera(22, 1, 0.01, 50);
@@ -271,30 +410,100 @@ async function start() {
     const rect = element.getBoundingClientRect();
     return { left: rect.left, top: rect.top, width: rect.width, height: rect.height, bottom: rect.bottom, right: rect.right };
   };
-  function draw(frameRect, renderRect, framing) {
-    if (!active || !pivot.visible || frameRect.width < 2 || frameRect.height < 2) return;
-    if (renderRect.bottom < 0 || renderRect.top > window.innerHeight || renderRect.right < 0 || renderRect.left > window.innerWidth) return;
-    const scale = active.height / (framing.head - framing.feet);
-    const target = -framing.feet * scale;
+  const visibleRect = (rect) => !(rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth || rect.width < 2 || rect.height < 2);
+  function setViewport(rect) {
+    const y = window.innerHeight - rect.bottom;
+    renderer.setViewport(rect.left, y, rect.width, rect.height);
+    renderer.setScissor(rect.left, y, rect.width, rect.height);
+    renderer.setScissorTest(true);
+  }
+
+  // Begleiter: Kamera auf die Figur gerichtet
+  function drawCompanion(rect) {
+    if (!active || !pivot.visible || !visibleRect(rect)) return;
+    const scale = active.height / (companionFrame.head - companionFrame.feet);
+    const target = -companionFrame.feet * scale;
     const distance = scale / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-    camera.aspect = frameRect.width / frameRect.height;
+    camera.aspect = rect.width / rect.height;
     camera.position.set(0, target, distance);
     camera.lookAt(0, target, 0);
-    camera.setViewOffset(frameRect.width, frameRect.height, renderRect.left - frameRect.left, renderRect.top - frameRect.top, renderRect.width, renderRect.height);
+    camera.clearViewOffset();
     camera.updateProjectionMatrix();
-    const y = window.innerHeight - renderRect.bottom;
-    renderer.setViewport(renderRect.left, y, renderRect.width, renderRect.height);
-    renderer.setScissor(renderRect.left, y, renderRect.width, renderRect.height);
-    renderer.setScissorTest(true);
+    setViewport(rect);
     renderer.render(scene, camera);
+  }
+
+  // Lab: Bildausschnitt berechnen, Hintergrund verschieben, Figur und Torsäule zeichnen
+  let lastTransform = "";
+  let lastBlur = -1;
+  function labLayout(rect) {
+    const feet = toImage(labPos);
+    const head = toImage(projected.set(labPos.x, labPos.y + (active?.height || 1.8) * LAB.scale, labPos.z));
+    const charHeight = Math.max(0.02, feet.y - head.y);
+    // Nie kleiner als bildschirmfüllend, damit auch sehr breite Fenster keinen Rand zeigen
+    const dispH = Math.max((view.k * rect.height) / charHeight, rect.height, rect.width / LAB.aspect);
+    const dispW = dispH * LAB.aspect;
+    const anchorX = view.x ?? feet.x;
+    const anchorY = feet.y - view.a * charHeight;
+    let left = rect.width / 2 - anchorX * dispW;
+    let top = view.ay * rect.height - anchorY * dispH;
+    left = Math.min(0, Math.max(rect.width - dispW, left));
+    top = Math.min(0, Math.max(rect.height - dispH, top));
+    return { left, top, dispW, dispH, feet };
+  }
+  // Start genau dort, wo das Bild ohne 3D steht (object-fit: cover, 37 % 76 %), dann sanft heranfahren
+  function initView(rect) {
+    const feet = toImage(feetHome);
+    const head = toImage(projected.set(feetHome.x, feetHome.y + (active?.height || 1.8) * LAB.scale, feetHome.z));
+    const charHeight = feet.y - head.y;
+    const scale = Math.max(rect.width / LAB.width, rect.height / LAB.height);
+    const dispW = LAB.width * scale;
+    const dispH = LAB.height * scale;
+    const left = (rect.width - dispW) * 0.37;
+    const top = (rect.height - dispH) * 0.76;
+    view.k = (charHeight * dispH) / rect.height;
+    view.a = 0;
+    view.ay = (top + feet.y * dispH) / rect.height;
+    view.x = reduceMotion ? null : (rect.width / 2 - left) / dispW;
+    if (reduceMotion) Object.assign(view, focusTable(rect).ganz, { x: null });
+  }
+  function drawLab(rect) {
+    const layout = labLayout(rect);
+    if (labImage) {
+      const transform = `translate3d(${layout.left.toFixed(1)}px, ${layout.top.toFixed(1)}px, 0) scale(${(layout.dispW / LAB.width).toFixed(5)})`;
+      if (transform !== lastTransform) { labImage.style.transform = transform; lastTransform = transform; }
+      const base = focusTable(rect).ganz.k;
+      const blur = Math.round(Math.max(0, Math.min(3, (view.k / base - 1.8) * 1.6)) * 4) / 4;
+      if (blur !== lastBlur) { labImage.style.filter = blur ? `blur(${blur}px)` : ""; lastBlur = blur; }
+    }
+    if (!visibleRect(rect)) return;
+    setViewport(rect);
+    if (active && pivot.visible) {
+      labCamera.aspect = LAB.aspect;
+      labCamera.setViewOffset(layout.dispW, layout.dispH, -layout.left, -layout.top, rect.width, rect.height);
+      labCamera.updateProjectionMatrix();
+      renderer.render(scene, labCamera);
+    }
+    const s = layout.dispW / LAB.width;
+    const [x0, y0, x1, y1] = LAB.front;
+    front.scale.set((x1 - x0) * s, (y1 - y0) * s, 1);
+    front.position.set(layout.left + ((x0 + x1) / 2) * s, -(layout.top + ((y0 + y1) / 2) * s), 0);
+    frontCamera.left = 0;
+    frontCamera.right = rect.width;
+    frontCamera.top = 0;
+    frontCamera.bottom = -rect.height;
+    frontCamera.updateProjectionMatrix();
+    renderer.render(frontScene, frontCamera);
   }
 
   let lastScroll = window.scrollY;
   let scrollSpeed = 0;
   let scrollDir = 1;
   let calmFor = 0;
+  let idleFor = 0;
   const greetQueue = [];
   const damp = (value, targetValue, lambda, dt) => THREE.MathUtils.lerp(value, targetValue, 1 - Math.exp(-lambda * dt));
+  const tangent = new THREE.Vector3();
 
   function tick() {
     frameRequest = 0;
@@ -304,67 +513,81 @@ async function start() {
     scrollSpeed = damp(scrollSpeed, dt > 0 ? Math.abs(dy) / dt : 0, 10, dt);
     if (dy !== 0) scrollDir = Math.sign(dy);
 
-    if (walk) {
-      walk.elapsed += dt;
-      const progress = Math.min(1, walk.elapsed / walk.duration);
-      pivot.position.x = THREE.MathUtils.lerp(walk.from, walk.to, progress);
-      pivot.rotation.y = damp(pivot.rotation.y, walk.yaw, 10, dt);
+    if (mode === "hero") {
+      const rect = lab ? lab.getBoundingClientRect() : null;
+      const table = rect ? focusTable(rect) : FOCUS_WIDE;
+      if (leave) {
+        // Abgang: vom Podest, durch die Gasse, mittig durchs Tor
+        // Tempo mit der Figurgröße skaliert, damit die Schritte nicht rutschen
+        const walking = leave.s < 2.2 * LAB.scale;
+        const target = (walking ? 1.4 : 4.2) * LAB.scale;
+        leave.speed = damp(leave.speed, target, 2.6, dt);
+        leave.s += leave.speed * dt;
+        if (!walking && active?.currentName !== "Run") play("Run", { fade: 0.35, timeScale: 1.05 });
+        const u = Math.min(1, leave.s / exitLength);
+        labPos.copy(exitCurve.getPointAt(u));
+        exitCurve.getTangentAt(u, tangent);
+        labYaw = damp(labYaw, Math.atan2(tangent.x, tangent.z), 8, dt);
+        const focus = table.raus;
+        view.k = damp(view.k, focus.k, 1.6, dt);
+        view.a = damp(view.a, focus.a, 1.6, dt);
+        view.ay = damp(view.ay, focus.ay, 1.6, dt);
+        const feetX = toImage(labPos).x;
+        view.x = damp(view.x ?? feetX, feetX, 2.2, dt);
+        if (u >= 1) finishLeave();
+      } else {
+        const focus = table[editing ? focusName : "ganz"];
+        view.k = damp(view.k, focus.k, 5, dt);
+        view.a = damp(view.a, focus.a, 5, dt);
+        view.ay = damp(view.ay, focus.ay, 5, dt);
+        if (view.x !== null) { view.x = damp(view.x, toImage(labPos).x, 4, dt); if (Math.abs(view.x - toImage(labPos).x) < 0.0005) view.x = null; }
+        labYaw = damp(labYaw, faceCamera + heroYaw, 9, dt);
+      }
+      pivot.position.copy(labPos);
+      pivot.rotation.y = labYaw;
+    } else if (walkIn) {
+      walkIn.elapsed += dt;
+      const progress = Math.min(1, walkIn.elapsed / walkIn.duration);
+      pivot.position.set(THREE.MathUtils.lerp(walkIn.from, walkIn.to, progress), 0, 0);
+      pivot.rotation.y = damp(pivot.rotation.y, walkIn.yaw, 10, dt);
       if (progress >= 1) {
-        const done = walk.done;
-        walk = null;
+        const done = walkIn.done;
+        walkIn = null;
         done?.();
       }
     } else if (mode === "companion") {
       if (scrollSpeed > 60 && !reduceMotion) {
         calmFor = 0;
+        idleFor = 0;
         if (gesture) gesture = null;
         play(scrollSpeed > 1900 ? "Run" : "Walk", { timeScale: THREE.MathUtils.clamp(scrollSpeed / 750, 0.75, 1.5), fade: 0.25 });
         pivot.rotation.y = damp(pivot.rotation.y, scrollDir > 0 ? 1.15 : -1.15, 8, dt);
       } else {
         calmFor += dt;
+        idleFor += dt;
         if (!gesture && active?.currentName !== "Idle") play("Idle", { fade: 0.45 });
         pivot.rotation.y = damp(pivot.rotation.y, 0.38, 5, dt);
         if (calmFor > 0.45 && greetQueue.length && !gesture) {
+          const section = greetQueue.pop();
           greetQueue.length = 0;
-          doGesture("Wave");
+          const line = LINES[active?.id]?.[section];
+          if (!(line && sound.say(line, { once: true }))) doGesture("Wave");
         }
+        if (idleFor > 40) { idleFor = -1e9; sound.say("warten", { once: true }); }
       }
-    } else if (mode === "hero") {
-      pivot.rotation.y = damp(pivot.rotation.y, heroYaw, 9, dt);
     }
-    const focus = FOCUS[editing ? focusName : "ganz"];
-    heroFrame.feet = damp(heroFrame.feet, focus.feet, 5, dt);
-    heroFrame.head = damp(heroFrame.head, focus.head, 5, dt);
 
+    shadow.visible = mode === "hero";
     active?.mixer.update(dt);
     renderView();
     if (mode) frameRequest = requestAnimationFrame(tick);
   }
-  // Beim Heranzoomen läuft die Figur am Bühnenrand weich aus statt hart abgeschnitten zu werden
-  let maskValue = "";
-  function setMask(value) {
-    if (value === maskValue) return;
-    maskValue = value;
-    canvas.style.maskImage = value;
-    canvas.style.webkitMaskImage = value;
-  }
   function renderView() {
+    pivot.scale.setScalar(mode === "hero" ? LAB.scale : 1);
     renderer.setScissorTest(false);
     renderer.clear();
-    const zoom = mode === "hero" && stage && !walk?.wide ? Math.min(1, Math.max(0, (heroFrame.head - heroFrame.feet) / (FOCUS.ganz.head - FOCUS.ganz.feet) - 1)) : 0;
-    if (zoom > 0.02) {
-      const rect = stage.getBoundingClientRect();
-      const fade = Math.round(70 * Math.min(1, zoom * 2));
-      const top = Math.round(rect.top), bottom = Math.round(rect.bottom);
-      setMask(`linear-gradient(to bottom, transparent ${top}px, #000 ${top + fade}px, #000 ${bottom - fade}px, transparent ${bottom}px)`);
-    } else setMask("");
-    if (mode === "hero" && stage) {
-      const frameRect = rectOf(stage);
-      draw(frameRect, walk?.wide && heroSection ? rectOf(heroSection) : frameRect, walk?.wide ? frames.hero : heroFrame);
-    } else if (mode === "companion") {
-      const box = rectOf(companion);
-      draw(box, box, frames.companion);
-    }
+    if (mode === "hero" && lab) drawLab(rectOf(lab));
+    else if (mode === "companion") drawCompanion(rectOf(companion));
   }
   function wake() {
     if (!frameRequest && mode && !document.hidden) {
@@ -374,8 +597,8 @@ async function start() {
   }
 
   function updateMode() {
-    const wantCompanion = !editing && state.fertig && state.begleiter && !heroVisible;
-    const next = (stage && (heroVisible || editing)) || walk?.wide ? "hero" : wantCompanion ? "companion" : null;
+    const wantCompanion = !editing && !leave && state.fertig && state.begleiter && !heroVisible;
+    const next = lab && (heroVisible || editing || leave) ? "hero" : wantCompanion ? "companion" : null;
     if (next === mode) { wake(); return; }
     const previous = mode;
     mode = next;
@@ -383,19 +606,23 @@ async function start() {
     if (mode === "companion") {
       if (active?.id !== state.aktiv) show(state.aktiv);
       gesture = null;
+      pivot.visible = true;
+      idleFor = 0;
       if (!reduceMotion && previous !== "companion") {
-        pivot.position.x = -1.4;
+        pivot.position.set(-1.4, 0, 0);
         pivot.rotation.y = 1.3;
         play("Walk", { fade: 0.2 });
-        walk = { from: -1.4, to: 0, elapsed: 0, duration: 1.5, yaw: 1.3, done: () => play("Idle", { fade: 0.5 }) };
+        walkIn = { from: -1.4, to: 0, elapsed: 0, duration: 1.5, yaw: 1.3, done: () => play("Idle", { fade: 0.5 }) };
       } else {
-        pivot.position.x = 0;
+        pivot.position.set(0, 0, 0);
         pivot.rotation.y = 0.38;
         play("Idle", { fade: 0.2 });
       }
-    } else if (mode === "hero" && !walk) {
-      pivot.position.x = 0;
-      pivot.rotation.y = heroYaw;
+    } else if (mode === "hero" && !leave) {
+      walkIn = null;
+      labPos.copy(feetHome);
+      pivot.position.copy(labPos);
+      pivot.visible = !leaveHidden && Boolean(active);
       play("Idle", { fade: 0.2 });
     }
     if (!mode) {
@@ -405,22 +632,56 @@ async function start() {
     wake();
   }
 
+  // Abgang nach „Fertig“
+  function startLeave() {
+    const target = document.querySelector("#leistungen");
+    const goOn = () => target?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+    if (reduceMotion || !lab) { goOn(); return; }
+    heroSection?.classList.add("is-leaving");
+    gesture = null;
+    heroYaw = 0;
+    play("Walk", { fade: 0.3 });
+    leave = { s: 0, speed: 0.6 };
+    view.x = toImage(labPos).x;
+    updateMode();
+  }
+  function finishLeave() {
+    leave = null;
+    leaveHidden = true;
+    pivot.visible = false;
+    const target = document.querySelector("#leistungen");
+    target?.scrollIntoView({ behavior: "smooth" });
+    setTimeout(() => {
+      // Zurück auf das Podest, für den Fall, dass man wieder nach oben scrollt
+      leaveHidden = false;
+      labPos.copy(feetHome);
+      labYaw = faceCamera;
+      view.x = null;
+      heroSection?.classList.remove("is-leaving");
+      if (mode === "hero") { pivot.visible = true; play("Idle", { fade: 0 }); }
+      updateMode();
+    }, 1400);
+    updateMode();
+  }
+
   window.addEventListener("resize", () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
     renderer.setSize(window.innerWidth, window.innerHeight, false);
     wake();
   });
   window.addEventListener("scroll", wake, { passive: true });
+  for (const type of ["pointerdown", "keydown"]) window.addEventListener(type, () => { idleFor = 0; }, { passive: true });
   document.addEventListener("visibilitychange", () => { if (!document.hidden) wake(); });
 
-  if (stage) {
+  const watch = lab || stage;
+  if (watch) {
     new IntersectionObserver(([entry]) => {
       heroVisible = entry.isIntersecting;
       updateMode();
-    }, { threshold: 0.12 }).observe(stage);
+    }, { threshold: 0.12 }).observe(watch);
   }
   const greetSeen = new Set();
-  const sections = document.querySelectorAll("main > section[id], main.legal");
+  const sections = document.querySelectorAll("main > section[id], #agenturen, main.legal");
   if (sections.length) {
     const greeter = new IntersectionObserver((entries) => {
       for (const entry of entries) {
@@ -433,8 +694,11 @@ async function start() {
     }, { threshold: 0.35 });
     sections.forEach((section) => greeter.observe(section));
   }
+  document.addEventListener("welt:aktiv", (event) => {
+    if (event.detail === "roadlands" && mode === "companion" && active?.id === "kim") sound.say("roadlands", { once: true });
+  });
 
-  // Podest: Figur statt Foto, drehen mit Ziehen oder Pfeiltasten
+  // Bühne: drehen mit Ziehen oder Pfeiltasten
   let editor = null;
   if (stage) {
     stage.tabIndex = 0;
@@ -497,25 +761,27 @@ async function start() {
     const optionsBox = optionsPanel.querySelector(".ed-options");
     const optionsTitle = optionsPanel.querySelector("#options-title");
     const optionsValue = optionsPanel.querySelector(".ed-options-value");
+    const defaultLabel = modeLabel?.textContent || "";
     createButton.hidden = false;
     if (state.fertig) createButton.textContent = "Charakter anpassen";
     worldsButton?.classList.remove("btn-primary");
 
+    // Icons aus der Asset-Lieferung (32 × 32, currentColor)
     const ICONS = {
-      frisur: '<path d="M6 15c0-6 3-10 9-10 4 0 6 2 7 4-3-1-5 0-6 2 3-1 5 0 6 2-4-1-8 0-10 3"/><path d="M8 26c-2-3-2-7-2-11"/><path d="M18 22l6 6m-3-9 6 6"/>',
-      haarfarbe: '<path d="M9 5c-2 6 2 9 0 15"/><path d="M14 5c-2 6 2 9 0 15"/><path d="M23 14s-4 4.5-4 7.5a4 4 0 0 0 8 0c0-3-4-7.5-4-7.5Z"/>',
-      haut: '<path d="M10 28v-9l-3-4c-1-1 0-3 2-2l3 3V6a1.5 1.5 0 0 1 3 0v8-10a1.5 1.5 0 0 1 3 0v10-8a1.5 1.5 0 0 1 3 0v9-6a1.5 1.5 0 0 1 3 0v9c0 6-3 10-7 10h-6"/>',
-      Oberteil: '<path d="M11 4c1 2 3 3 5 3s4-1 5-3l7 4-3 6-3-2v16H10V12l-3 2-3-6Z"/>',
-      Hose: '<path d="M9 4h14l2 24h-6l-3-15-3 15H7Z"/><path d="M9 8h14"/>',
-      Schuhe: '<path d="M3 21v-9h6l3 3h4l3-1 9 5v4H3Z"/><path d="M3 25h25"/><path d="M13 15l2 3m1-4 2 3"/>'
+      frisur: '<path d="M7 28v-7a9.5 9.5 0 0 1-3-7c0-5.5 4.7-9 9.5-9 2.2 0 4.8-.8 6.5-2 .7 4.6-.8 7.8-3.7 9.7l2.2 4.3-3 1v4.5H12V28"/><path d="M4.5 12c3.8 1.2 7.2-.6 9.1-3.6"/><rect x="24" y="16" width="4" height="13" rx="1.4"/><path d="M21 18h3m-3 3h3m-3 3h3m-3 3h3"/>',
+      haarfarbe: '<path d="M11 4C4 10 4 13.5 9 18c3.8 3.5 3.5 6.7-.5 10M17 4c-5.3 5.3-5.4 8.1-2.5 11.5"/><path d="M23 13c-1.8 3.2-5.5 6.6-5.5 10a5.5 5.5 0 0 0 11 0c0-3.4-3.7-6.8-5.5-10Z"/><path d="M21 22c-.7 1.5-.2 2.4.8 2.8"/>',
+      haut: '<path d="M9 19V10a2 2 0 0 1 4 0V6a2 2 0 0 1 4 0v2a2 2 0 0 1 4 0v3a2 2 0 0 1 4 0v10a7 7 0 0 1-7 7h-3.3a7 7 0 0 1-5.5-2.7l-5-6.4a2.1 2.1 0 0 1 3.1-2.8Z"/><path d="M13 11v5m4-7v7m4-4v5"/><circle cx="27" cy="5" r="1.5"/>',
+      Oberteil: '<path d="m12 5-5 3-4 10 5 2 2-5v13h12V15l2 5 5-2-4-10-5-3"/><path d="M12 5a4 4 0 0 0 8 0M10 24.5h12M4 15.5l5 2m14 0 5-2"/>',
+      Hose: '<path d="M9 4h14l1.5 24h-7L16 14l-1.5 14h-7Z"/><path d="M9 8h14M16 8v6m-4-5-1.5 5m9-5 1 5M8 24h6.5m3 0H24"/>',
+      Schuhe: '<path d="M5 12c2 2 3.5 3 7 3l4-5 5 7 5.6 2.8A4.3 4.3 0 0 1 29 24v2H4v-8.6c0-2.5.2-3.9 1-5.4Z"/><path d="M4 23h25M4 18h4l2 3m4-6 3 1m-.5-2.5 3 1M23 19l-1 3"/>'
     };
     const CATEGORIES = [
       { key: "frisur", label: "Frisur", focus: "kopf" },
-      { key: "haarfarbe", label: "Haare", title: "Haarfarbe", focus: "kopf" },
-      { key: "haut", label: "Haut", focus: "oberkoerper" },
-      { key: "Oberteil", label: "Oberteil", focus: "oberkoerper" },
-      { key: "Hose", label: "Hose", focus: "beine" },
-      { key: "Schuhe", label: "Schuhe", focus: "schuhe" }
+      { key: "haarfarbe", label: "Haare", title: "Haarfarbe", focus: "kopf", texture: "haar" },
+      { key: "haut", label: "Haut", title: "Hautfarbe", focus: "oberkoerper" },
+      { key: "Oberteil", label: "Oberteil", focus: "oberkoerper", texture: "strick" },
+      { key: "Hose", label: "Hose", focus: "beine", texture: "jeans" },
+      { key: "Schuhe", label: "Schuhe", focus: "schuhe", texture: "leder" }
     ];
     let current = "frisur";
     const look = () => state.figuren[state.aktiv];
@@ -552,6 +818,7 @@ async function start() {
       setFocus(CATEGORIES.find((category) => category.key === key).focus);
       renderOptions();
       refreshTabs();
+      if (key === "haarfarbe" && hairLocked() && state.aktiv === "kim") sound.say("gesperrt", { force: true });
     }
 
     function refreshTabs() {
@@ -603,7 +870,7 @@ async function start() {
         orb.type = "button";
         orb.className = "orb";
         orb.dataset.value = name;
-        orb.dataset.texture = current === "Oberteil" ? "strick" : current === "Hose" ? "jeans" : current === "Schuhe" ? "leder" : current === "haarfarbe" ? "haar" : "haut";
+        if (category.texture) orb.dataset.texture = category.texture;
         orb.style.setProperty("--swatch", hex);
         orb.title = name;
         orb.setAttribute("aria-label", `${category.title || category.label}: ${name}`);
@@ -679,14 +946,19 @@ async function start() {
       editorActions.hidden = !on;
       createButton.closest(".hero-actions").hidden = on;
       document.querySelector(".roster")?.toggleAttribute("inert", on);
-      if (modeLabel) modeLabel.textContent = on ? `${CHARACTERS[state.aktiv].name} gestalten` : "Charakter wählen";
-      if (on) { heroYaw = 0; state.begleiter = true; select("frisur"); scheduleThumbs(250); }
-      else setFocus("ganz");
+      if (modeLabel) modeLabel.textContent = on ? `${CHARACTERS[state.aktiv].name} gestalten` : defaultLabel;
+      if (on) {
+        heroYaw = 0;
+        state.begleiter = true;
+        select("frisur");
+        scheduleThumbs(250);
+        if (state.aktiv === "kim") sound.say("editor", { force: true });
+      } else setFocus("ganz");
       updateMode();
     };
     createButton.addEventListener("click", () => {
       setEditing(true);
-      stage.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+      heroSection?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
     });
     editorActions.querySelector("[data-random]")?.addEventListener("click", () => {
       const pick = (list) => list[Math.floor(Math.random() * list.length)];
@@ -710,24 +982,7 @@ async function start() {
       writeState();
       createButton.textContent = "Charakter anpassen";
       setEditing(false);
-      const target = document.querySelector("#leistungen");
-      const goOn = () => target?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
-      if (reduceMotion) { goOn(); return; }
-      // Die Figur dreht sich zur Seite und läuft vom Podest; danach geht es weiter.
-      gesture = null;
-      play("Walk", { fade: 0.25 });
-      heroYaw = 0;
-      walk = {
-        from: 0, to: 2.6, elapsed: 0, duration: 2.1, yaw: Math.PI / 2, wide: true,
-        done: () => {
-          pivot.position.x = 0;
-          pivot.rotation.y = 0;
-          play("Idle", { fade: 0 });
-          updateMode();
-        }
-      };
-      updateMode();
-      setTimeout(goOn, 1100);
+      startLeave();
     });
     renderOptions();
     refreshTabs();
@@ -742,10 +997,10 @@ async function start() {
     out.width = px;
     out.height = px;
     const context = out.getContext("2d");
-    const saved = { yaw: pivot.rotation.y, x: pivot.position.x, visible: pivot.visible };
+    const saved = { yaw: pivot.rotation.y, visible: pivot.visible, shadow: shadow.visible };
     pivot.rotation.y = 0.5;
-    pivot.position.x = 0;
     pivot.visible = true;
+    shadow.visible = false;
     scene.updateMatrixWorld(true);
     const head = figure.model.getObjectByName("Head");
     const top = figure.model.getObjectByName("head_end");
@@ -775,8 +1030,8 @@ async function start() {
     renderer.setScissorTest(false);
     renderer.clear();
     pivot.rotation.y = saved.yaw;
-    pivot.position.x = saved.x;
     pivot.visible = saved.visible;
+    shadow.visible = saved.shadow;
     applyLook(figure);
     renderView();
     return urls;

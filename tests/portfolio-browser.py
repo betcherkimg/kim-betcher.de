@@ -20,7 +20,7 @@ from playwright.sync_api import expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else None
-PAGES = [f"1293e128973/{name}" for name in ("index.html", "datenintegration.html", "impressum.html", "datenschutz.html")]
+PAGES = [f"1293e128973/{name}" for name in ("index.html", "datenintegration-automatisierung.html", "impressum.html", "datenschutz.html")]
 
 
 class PageLinks(HTMLParser):
@@ -45,6 +45,8 @@ for name in PAGES:
     # Only the business addresses belong on these pages.
     assert "gmail" not in source.lower(), f"Private address in {name}"
     assert "finanzprofi" not in source, f"Old portrait still linked in {name}"
+    # Relative paths only, so the folder can move to juschkinlabs.de unchanged.
+    assert '="/1293e128973/' not in source, f"Absolute preview path in {name}"
 
 
 class QuietHandler(SimpleHTTPRequestHandler):
@@ -73,8 +75,8 @@ try:
         page.goto(base + "/", wait_until="networkidle")
         expect(page.get_by_role("heading", level=1)).to_contain_text("Arbeitsabläufe")
         expect(page.locator(".site-header .brand-logo")).to_have_attribute("alt", "Juschkin Labs")
-        for project in ["iQuest", "SmartADM", "heimello", "Roadlands"]:
-            expect(page.get_by_role("heading", name=project, exact=project != "heimello")).to_be_attached()
+        for project in ["iQuest", "SmartADM 5", "heimello.", "Roadlands – The Last Exam"]:
+            expect(page.get_by_role("heading", name=project, exact=True)).to_be_attached()
         for heading in ("Was wir für dich bauen.", "Deine Ansprechpartner."):
             expect(page.get_by_role("heading", name=heading)).to_be_visible()
         assert "Preise nennen wir dir im Gespräch" in page.locator("#web-apps").inner_text()
@@ -93,6 +95,7 @@ try:
         # 3D editor (only where the browser offers WebGL).
         if page.evaluate("Boolean(document.createElement('canvas').getContext('webgl2') || document.createElement('canvas').getContext('webgl'))"):
             expect(page.locator(".stage")).to_have_class(re.compile(r"\bis-3d\b"), timeout=60000)
+            expect(page.locator(".lab")).to_have_class(re.compile(r"\bis-live\b"))
             page.get_by_role("button", name="Charakter erstellen").click()
             expect(page.locator('[data-editor="tabs"]')).to_be_visible()
             expect(page.locator(".hair-card")).to_have_count(12)
@@ -115,7 +118,7 @@ try:
             page.evaluate("localStorage.clear()")
             page.reload(wait_until="networkidle")
         assert page.locator('a[href*="beratung"], a[href*="private-einblicke"], a[href*="/smartadm/"]').count() == 0
-        expect(page.locator(".roadlands-copy")).to_contain_text("noch nicht spielbar")
+        expect(page.locator(".roadlands-copy")).to_contain_text("Noch nicht spielbar")
         assert not any(name in page.locator(".roadlands-project").inner_text() for name in ("WoW", "Metin2", "GTA", "Steam"))
 
         for width in (320, 390, 760, 768, 1024, 1440):
@@ -148,7 +151,8 @@ try:
 
         expect(page.locator(".trailer-player iframe")).to_have_count(0)
         assert not video_requests, "YouTube contacted before a click"
-        page.locator("[data-load-trailer]").click()
+        iquest = page.locator("#iquest")
+        iquest.locator("[data-load-trailer]:visible").click()
         player = page.locator(".trailer-player iframe")
         expect(player).to_have_count(1)
         assert player.get_attribute("src").startswith("https://www.youtube-nocookie.com/embed/m6fthG8m1qE?")
@@ -156,25 +160,48 @@ try:
         assert player.get_attribute("allowfullscreen") is not None
         expect(page.frame_locator(".trailer-player iframe").locator("body")).to_contain_text("Video player")
         assert len(video_requests) == 1
+
+        # iQuest Classic: own logo, text and trailer; the running game trailer stops.
+        iquest.get_by_role("button", name="iQuest Classic", exact=True).click()
+        expect(iquest.get_by_role("button", name="iQuest Classic", exact=True)).to_have_attribute("aria-pressed", "true")
+        expect(page.locator(".trailer-player iframe")).to_have_count(0)
+        expect(iquest.get_by_role("img", name="iQuest Classic")).to_be_visible()
+        expect(iquest.get_by_role("img", name="iQuest", exact=True)).to_be_hidden()
+        expect(iquest.locator(".classic-facts")).to_contain_text("1.700 Fragen")
+        expect(iquest.locator(".level-track")).to_be_hidden()
+        iquest.locator("[data-load-trailer]:visible").click()
+        expect(player).to_have_count(1)
+        assert player.get_attribute("src").startswith("https://www.youtube-nocookie.com/embed/J9GCI-y0vVs?")
+        expect(player).to_have_attribute("title", "Trailer von iQuest Classic – YouTube-Video")
+        assert len(video_requests) == 2
+        iquest.get_by_role("button", name="iQuest", exact=True).click()
+        expect(page.locator(".trailer-player iframe")).to_have_count(0)
+        expect(iquest.locator(".level-track")).to_be_visible()
         page.reload(wait_until="networkidle")
         expect(page.locator(".trailer-player iframe")).to_have_count(0)
-        assert len(video_requests) == 1, "Reload unexpectedly contacted YouTube"
-        page.locator(".heimello-world-board").click()
-        expect(page.locator("#preview-title")).to_have_text("heimello. · Wochen-Rallye")
-        seen = set()
-        for _ in range(6):
-            src = page.locator("#preview-image").get_attribute("src")
-            assert "/assets/heimello/" in src
-            seen.add(src)
-            page.get_by_role("button", name="Nächstes Bild", exact=True).click()
-        assert len(seen) == 6, "heimello gallery must contain six current motifs"
-        page.keyboard.press("Escape")
+        assert len(video_requests) == 2, "Reload unexpectedly contacted YouTube"
+
+        # Real screenshots: heimello app and Roadlands.
+        for opener, title, folder, count in (
+            (".heimello-project .device-tablet", "heimello. auf dem Tablet", "/assets/heimello/app/", 4),
+            (".roadlands-key", "Roadlands · Titelmotiv", "/assets/roadlands/", 6),
+        ):
+            page.locator(opener).click()
+            expect(page.locator("#preview-title")).to_have_text(title)
+            seen = set()
+            for _ in range(count):
+                src = page.locator("#preview-image").get_attribute("src")
+                assert folder in src, src
+                seen.add(src)
+                page.get_by_role("button", name="Nächstes Bild", exact=True).click()
+            assert len(seen) == count, f"{title}: expected {count} images, saw {len(seen)}"
+            page.keyboard.press("Escape")
         contact = page.locator("#kontakt")
         expect(contact.get_by_role("link", name="Maksim schreiben")).to_have_attribute("href", re.compile(r"^mailto:maksim@juschkinlabs\.de"))
         expect(contact.get_by_role("link", name="Kim schreiben")).to_have_attribute("href", re.compile(r"^mailto:kim@juschkinlabs\.de"))
         expect(contact.locator(".contact-mail")).to_have_attribute("href", "mailto:kontakt@juschkinlabs.de")
 
-        page.goto(f"{base}/datenintegration.html", wait_until="networkidle")
+        page.goto(f"{base}/datenintegration-automatisierung.html", wait_until="networkidle")
         expect(page.get_by_role("heading", level=1)).to_contain_text("Daten verbinden")
         questions = page.locator(".faq summary")
         expect(questions).to_have_count(5)
@@ -212,7 +239,8 @@ try:
         no_js.goto(base + "/")
         expect(no_js.locator("#navigation")).to_be_visible()
         expect(no_js.locator(".hero-lead")).to_be_visible()
-        expect(no_js.locator(".trailer-poster")).to_have_attribute("href", "https://www.youtube.com/watch?v=m6fthG8m1qE")
+        expect(no_js.locator(".trailer-poster").first).to_have_attribute("href", "https://www.youtube.com/watch?v=m6fthG8m1qE")
+        expect(no_js.locator(".variant-switch")).to_be_hidden()
         expect(no_js.locator(".trailer-player iframe")).to_have_count(0)
         plain.close()
         page.emulate_media(reduced_motion="reduce")
@@ -230,7 +258,7 @@ try:
             page.screenshot(path=str(OUTPUT / "portfolio-mobile.png"), full_page=True)
         browser.close()
     assert not errors, errors
-    print("PASS: local links, no private addresses, responsive layouts, navigation, character select, 3D editor, project gallery, current heimello gallery, click-to-load trailer, contact, detail page with FAQ, legal pages, unchanged public homepage and booking flow, no-JS and reduced-motion support.")
+    print("PASS: local links, relative paths, no private addresses, responsive layouts, navigation, character select, lab and 3D editor, project gallery, heimello and Roadlands galleries, click-to-load trailers incl. iQuest Classic, contact, detail page with FAQ, legal pages, unchanged public homepage and booking flow, no-JS and reduced-motion support.")
 finally:
     server.shutdown()
     server.server_close()
