@@ -59,7 +59,7 @@ const LAB = {
 // Stimmen: Dateinamen in assets/stimmen
 // Zeilen je Abschnitt (Dateien assets/stimmen/kim_<zeile>.mp3). Fehlt eine Aufnahme noch, winkt die Figur.
 const LINES = {
-  kim: { "ueber-mich": "ueber_mich", weg: "weg", werte: "werte", kontakt: "start_kontakt", einblicke: "einblicke", zuhause: "zuhause", ausgleich: "ausgleich", coding: "coding", ehrlich: "ehrlich" }
+  kim: { "ueber-mich": "ueber_mich", weg: "weg", werte: "werte", kontakt: "start_kontakt", privat: "einblicke", einblicke: "einblicke", zuhause: "zuhause", ausgleich: "ausgleich", coding: "coding", ehrlich: "ehrlich" }
 };
 
 const hairColors = (id) => [["Original", CHARACTERS[id].hair], ...HAIR_COLORS];

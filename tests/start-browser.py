@@ -46,7 +46,7 @@ try:
         page.route(re.compile(r"^https?://(?!127\.0\.0\.1)"), lambda route: (external.append(route.request.url), route.abort()))
         page.goto(origin + "/", wait_until="networkidle")
         expect(page.get_by_role("heading", level=1)).to_have_text("Hi, ich bin Kim.")
-        for heading in ("Kurz zu mir.", "Mein Weg.", "Auf diese Steine kannst du bauen.", "Meld dich einfach."):
+        for heading in ("Kurz zu mir.", "Mein Weg.", "Was ich baue.", "Wofür ich stehe.", "Was mich erdet.", "Meld dich einfach."):
             expect(page.get_by_role("heading", name=heading)).to_be_attached()
         assert not external, f"Start page loads external content: {external}"
         expect(page.locator(".roster")).to_have_count(0)
@@ -60,7 +60,12 @@ try:
             saved = page.evaluate("JSON.parse(localStorage.getItem('kb-figur-v1'))")
             assert saved["fertig"] and saved["figuren"]["kim"]["frisur"] == "Kurz" and "maksim" not in saved["figuren"], saved
             page.evaluate("localStorage.clear()")
-        for width in (320, 390, 768, 1024, 1440):
+        assert "Steine" not in page.locator("main").inner_text(), "Advisory slogan on the personal page"
+        page.locator(".build-shot[data-preview]").click()
+        expect(page.locator("#preview-title")).to_have_text("SmartADM 5")
+        expect(page.locator(".preview-counter")).to_have_text("1 / 2")
+        page.keyboard.press("Escape")
+        for width in (320, 390, 768, 820, 1024, 1440):
             page.set_viewport_size({"width": width, "height": 1000})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), f"Overflow at {width}px"
         page.set_viewport_size({"width": 1440, "height": 1000})
@@ -70,9 +75,6 @@ try:
         page.locator('.tile[data-gallery="familie"]').click()
         expect(page.locator("#preview-title")).to_have_text("Meine Familie")
         expect(page.locator(".preview-counter")).to_have_text("1 / 8")
-        page.keyboard.press("Escape")
-        page.locator('.work-shot').first.click()
-        expect(page.locator("#preview-title")).to_have_text("SmartADM 5 Sales")
         page.keyboard.press("Escape")
         for width in (320, 390, 820, 1440):
             page.set_viewport_size({"width": width, "height": 1000})

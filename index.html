@@ -17,10 +17,10 @@
   <link rel="preload" href="assets/fonts/saira-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/source-sans-3-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/lab/labor-3840.webp" as="image" type="image/webp">
-  <link rel="stylesheet" href="start.css?v=20261112-k1">
-  <script src="start.js?v=20261112-k1" defer></script>
+  <link rel="stylesheet" href="start.css?v=20261112-k2">
+  <script src="start.js?v=20261112-k2" defer></script>
   <script type="importmap">{"imports": {"three": "./vendor/three/three.module.min.js"}}</script>
-  <script type="module" src="figur.js?v=20261112-k1"></script>
+  <script type="module" src="figur.js?v=20261112-k2"></script>
 </head>
 <body>
   <a class="skip-link" href="#inhalt">Zum Inhalt</a>
@@ -33,6 +33,7 @@
       <nav class="site-nav" id="navigation" aria-label="Hauptnavigation">
         <a href="./#ueber-mich">Über mich</a>
         <a href="./#weg">Mein Weg</a>
+        <a href="./#coding">Projekte</a>
         <a href="./#werte">Meine Werte</a>
         <a href="private-einblicke.html">Private Einblicke</a>
         <a class="nav-contact" href="./#kontakt">Kontakt</a>
@@ -110,14 +111,16 @@
       <div class="wrap about-grid">
         <div class="about-copy reveal">
           <h2 id="about-title">Kurz zu mir.</h2>
-          <p>Ich bin Kim, komme aus Heidenheim und bin glücklich verheiratet. Gelernt habe ich Zimmerer, im väterlichen Betrieb und von der Pike auf. Später habe ich als Vorarbeiter und Projektleiter Verantwortung übernommen.</p>
-          <p>Heute arbeite ich im Finanzvertrieb. Meine große Leidenschaft ist das Machen: Was mir im Arbeitsalltag fehlt, baue ich selbst, mit KI als Werkzeug.</p>
+          <p class="about-lead">Ich bin Kim aus Heidenheim: gelernter Zimmerer, glücklich verheiratet, ein Mensch mit Ecken, Kanten und einer großen Leidenschaft für das Machen.</p>
+          <p>Aufgewachsen bin ich im väterlichen Betrieb. Dort habe ich das Handwerk von der Pike auf gelernt und später als Vorarbeiter und Projektleiter Verantwortung übernommen. Heute arbeite ich im Finanzvertrieb.</p>
+          <p>Und was mir im Arbeitsalltag fehlt, baue ich selbst, mit KI als Werkzeug.</p>
           <p class="world-actions"><a class="btn" href="private-einblicke.html">Private Einblicke ansehen</a></p>
         </div>
-        <figure class="about-photo reveal">
-          <img src="ressources/zimmerer-projektleiter.jpg" alt="Blick von oben auf eine Baustelle mit neuem Dachstuhl" width="1600" height="1205" loading="lazy">
-          <figcaption>Da komme ich her: vom Dach.</figcaption>
-        </figure>
+        <div class="collage reveal">
+          <figure class="photo collage-a"><img src="ressources/zimmerer-projektleiter.jpg" alt="Blick von oben auf eine Baustelle mit neuem Dachstuhl" width="1600" height="1205" loading="lazy"><figcaption>Vom Dach</figcaption></figure>
+          <figure class="photo collage-b"><img src="ressources/klein/musik.jpg" alt="Kim singt auf einer Bühne" width="1100" height="825" loading="lazy"><figcaption>Auf der Bühne</figcaption></figure>
+          <figure class="photo collage-c"><img src="ressources/klein/familie.jpg" alt="Kim und Franziska" width="900" height="1200" loading="lazy"><figcaption>Mit Franziska</figcaption></figure>
+        </div>
       </div>
     </section>
 
@@ -127,25 +130,68 @@
           <h2 id="path-title">Mein Weg.</h2>
           <p class="section-intro">Vom Geruch frischen Holzes über die Finanzberatung zur eigenen Software.</p>
         </div>
-        <ol class="track reveal">
-          <li class="node"><span class="node-mark" aria-hidden="true">1</span><div class="node-card"><strong>Die Wurzeln</strong><span>Aufgewachsen im väterlichen Betrieb. Zimmerer von der Pike auf gelernt, dann als Vorarbeiter und Projektleiter Verantwortung übernommen.</span></div></li>
-          <li class="node"><span class="node-mark" aria-hidden="true">2</span><div class="node-card"><strong>Der Wendepunkt</strong><span>Ich wollte nicht mehr nur ausführen, sondern gestalten. Seit 2026 bin ich Bezirksleiter der Bausparkasse Schwäbisch Hall.</span></div></li>
-          <li class="node is-goal"><span class="node-mark" aria-hidden="true">3</span><div class="node-card"><strong>Das Machen</strong><span>Was mir im Arbeitsalltag fehlt, baue ich selbst. So sind SmartADM, BlankofleX und iQuest entstanden, und die Zusammenarbeit mit Juschkin Labs.</span></div></li>
+        <ol class="track track-4 reveal">
+          <li class="node"><span class="node-mark" aria-hidden="true">1</span><div class="node-card"><span class="node-when">Der Anfang</span><strong>Die Wurzeln</strong><span>Aufgewachsen im väterlichen Betrieb. Zimmerer von der Pike auf gelernt, dann als Vorarbeiter und Projektleiter Verantwortung übernommen.</span></div></li>
+          <li class="node"><span class="node-mark" aria-hidden="true">2</span><div class="node-card"><span class="node-when">2024</span><strong>Das eigene Haus</strong><span>Gekauft und kernsaniert. Mein ganzer Stolz.</span></div></li>
+          <li class="node"><span class="node-mark" aria-hidden="true">3</span><div class="node-card"><span class="node-when">2026</span><strong>Der Wendepunkt</strong><span>Ich wollte nicht mehr nur ausführen, sondern gestalten. Seitdem bin ich Bezirksleiter der Bausparkasse Schwäbisch Hall.</span></div></li>
+          <li class="node is-goal"><span class="node-mark" aria-hidden="true">4</span><div class="node-card"><span class="node-when">Heute</span><strong>Das Machen</strong><span>Was mir im Arbeitsalltag fehlt, baue ich selbst. Daraus sind eigene Anwendungen, ein Lernspiel und die Zusammenarbeit mit Juschkin Labs entstanden.</span></div></li>
         </ol>
       </div>
     </section>
 
-    <section class="services values" id="werte" aria-labelledby="values-title">
+    <section class="services builds" id="coding" aria-labelledby="builds-title">
       <div class="wrap">
         <div class="section-head reveal">
-          <h2 id="values-title">Auf diese Steine kannst du bauen.</h2>
-          <blockquote class="quote"><p>„Ich bin nicht hier für das schnelle Geschäft. Ich baue ein Unternehmen auf, das Bestand hat.“</p></blockquote>
+          <h2 id="builds-title">Was ich baue.</h2>
+          <p class="section-intro">Coding und AI-Automatisierung: Anwendungen und Websites, die mir Routinearbeit abnehmen, dazu eigene Spiele.</p>
         </div>
-        <div class="service-grid reveal">
-          <article class="panel service"><h3>Langfristige Partnerschaft</h3><p>In der Region verwurzelt.</p></article>
-          <article class="panel service"><h3>Familiäre Werte</h3><p>Gemeinsam mit meiner Frau.</p></article>
-          <article class="panel service"><h3>Finanzielle Freiheit</h3><p>Durch ehrliche Arbeit.</p></article>
+        <ul class="build-grid reveal">
+          <li class="build"><a class="photo build-shot" href="ressources/coding/smartadm-sales.jpg" data-preview data-gallery="smartadm" data-title="SmartADM 5" data-note="Ansicht mit Beispieldaten." aria-label="Bildschirmfoto vergrößern: SmartADM 5"><img src="ressources/coding/smartadm-sales.jpg" alt="" loading="lazy"></a><a href="ressources/coding/smartadm-office.jpg" data-preview data-gallery="smartadm" data-title="SmartADM 5 Office" data-note="Ansicht mit Beispieldaten." hidden></a><h3>SmartADM 5</h3><p>Meine Werkzeuge für Vertrieb und Büro: Ansprechpartner, Terminprotokolle und Wiedervorlagen, dazu Zeiterfassung, Aufgaben und Terminvereinbarung für mein Team.</p></li>
+          <li class="build"><span class="photo build-shot"><img src="ressources/coding/blankoflex.jpg" alt="" loading="lazy"></span><h3>BlankofleX</h3><p>Website mit 3-Fragen-Check und Online-Anfrage für ein eigenes Finanzierungsangebot.</p><a class="text-link" href="https://blankoflex.de/p/34YY2" target="_blank" rel="noopener noreferrer">blankoflex.de</a></li>
+          <li class="build"><span class="photo build-shot"><img src="ressources/coding/iquest34.jpg" alt="" loading="lazy"></span><h3>iQuest</h3><p>Lernspiel für die IHK-Sachkundeprüfung nach §&nbsp;34i GewO: 24 Level, Bosskämpfe und eine Prüfungssimulation.</p><a class="text-link" href="https://iquest34.de/" target="_blank" rel="noopener noreferrer">iquest34.de</a></li>
+          <li class="build"><span class="photo build-shot"><img src="assets/projekte/heimello.webp" alt="" loading="lazy"></span><h3>heimello.</h3><p>Eine App, die Aufgaben im Haushalt nach Zeitbudget, Zuständigkeit und Rhythmus verteilt. Erledigte Aufgaben bringen Punkte.</p></li>
+          <li class="build"><span class="photo build-shot"><img src="assets/projekte/roadlands.webp" alt="" loading="lazy"></span><h3>Roadlands</h3><p>Ein 3D-MMORPG rund um eine Fahrschulinsel. Mein Entwicklungsprojekt, noch nicht spielbar.</p></li>
+        </ul>
+        <article class="panel partner reveal">
+          <a class="photo partner-shot" href="https://juschkinlabs.de/" target="_blank" rel="noopener noreferrer" aria-label="juschkinlabs.de öffnen"><img src="assets/projekte/juschkinlabs.jpg" alt="Startseite von Juschkin Labs mit 3D-Lab" width="1440" height="900" loading="lazy"></a>
+          <div>
+            <p class="service-kind">Gemeinsam mit meinem Geschäftspartner</p>
+            <h3>Juschkin Labs</h3>
+            <p>Maksim Juschkin ist mein langjähriger Freund und Geschäftspartner. iQuest ist unser gemeinsames Projekt: Ich habe es entwickelt, er hostet es, kümmert sich um den Datenschutz und entwickelt es mit mir weiter. Mit seiner Firma Juschkin Labs baut er Software, verbindet Daten und gibt KI-Workshops für Unternehmen.</p>
+            <p class="world-actions"><a class="btn" href="https://juschkinlabs.de/" target="_blank" rel="noopener noreferrer">juschkinlabs.de</a></p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="progress values" id="werte" aria-labelledby="values-title">
+      <div class="wrap values-grid">
+        <div class="reveal">
+          <h2 id="values-title">Wofür ich stehe.</h2>
+          <blockquote class="pull-quote"><p>„Ich bin nicht hier für das schnelle Geschäft. Ich baue ein Unternehmen auf, das Bestand hat.“</p></blockquote>
         </div>
+        <dl class="value-list reveal">
+          <div><dt>Ehrlichkeit</dt><dd>Sie ist meine Basis. Niemand ist perfekt, ich auch nicht.</dd></div>
+          <div><dt>Familie</dt><dd>Gemeinsam mit meiner Frau. Sie ist das, was mich erdet.</dd></div>
+          <div><dt>Heimat</dt><dd>In der Region verwurzelt, in Heidenheim zu Hause.</dd></div>
+          <div><dt>Machen</dt><dd>Nicht nur ausführen, sondern gestalten. Was fehlt, baue ich selbst.</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="services private-teaser" id="privat" aria-labelledby="private-title">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2 id="private-title">Was mich erdet.</h2>
+          <p class="section-intro">Wenn ich nicht gerade arbeite, brauche ich einen Ausgleich: meine Familie, die Berge, das Angeln und die Musik.</p>
+        </div>
+        <ul class="tiles reveal">
+          <li><a class="tile" href="private-einblicke.html#ausgleich"><span class="photo"><img src="ressources/klein/familie.jpg" alt="Kim und Franziska" loading="lazy"></span><span class="tile-text"><strong>Meine Familie</strong><span>Meine Frau Franziska, zwei Katzen und ein Hund.</span></span></a></li>
+          <li><a class="tile" href="private-einblicke.html#ausgleich"><span class="photo"><img src="ressources/klein/berge.jpg" alt="Wanderweg vor einem Berggipfel" loading="lazy"></span><span class="tile-text"><strong>Bergwandern</strong><span>Ruhe finden und Weitblick genießen.</span></span></a></li>
+          <li><a class="tile" href="private-einblicke.html#ausgleich"><span class="photo"><img src="ressources/klein/angeln.jpg" alt="Kim mit einem gefangenen Fisch" loading="lazy"></span><span class="tile-text"><strong>Angeln</strong><span>Geduld üben und abschalten.</span></span></a></li>
+          <li><a class="tile" href="private-einblicke.html#ausgleich"><span class="photo"><img src="ressources/klein/musik.jpg" alt="Kim singt auf einer Bühne" loading="lazy"></span><span class="tile-text"><strong>Musik</strong><span>Mein kreativer Ausgleich.</span></span></a></li>
+        </ul>
+        <p class="teaser-more reveal"><a class="btn" href="private-einblicke.html">Private Einblicke ansehen</a></p>
       </div>
     </section>
 
