@@ -96,6 +96,8 @@ try:
         if page.evaluate("Boolean(document.createElement('canvas').getContext('webgl2') || document.createElement('canvas').getContext('webgl'))"):
             expect(page.locator(".stage")).to_have_class(re.compile(r"\bis-3d\b"), timeout=60000)
             expect(page.locator(".lab")).to_have_class(re.compile(r"\bis-live\b"))
+            # Voices are on by default; the header switch turns them off.
+            expect(page.locator(".sound-toggle")).to_have_attribute("aria-pressed", "true")
             page.get_by_role("button", name="Charakter erstellen").click()
             expect(page.locator('[data-editor="tabs"]')).to_be_visible()
             expect(page.locator(".hair-card")).to_have_count(12)

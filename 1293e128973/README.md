@@ -84,18 +84,23 @@ Alle Pfade sind relativ. Der Ordner funktioniert deshalb unter
   Haarfarbe gesperrt.
 - Editor: Reiter für Frisur, Haare, Haut, Oberteil, Hose und Schuhe; die Kamera
   zoomt im Lab auf den Körperteil. Die Frisur-Karten werden im Browser live aus
-  der Figur gerendert (mit aktueller Haar- und Hautfarbe). „Zufall“ würfelt ein
+  der Figur gerendert (mit aktueller Haar- und Hautfarbe). Im Lab liegt die Figur
+  unter Text und Knöpfen, als Begleiter unten links darüber. „Zufall“ würfelt ein
   Aussehen. Die Auswahl liegt nur im Browser (`localStorage`, Schlüssel
   `jl-figuren-v1`).
 
 ## Stimmen
 
-Aufnahmen aus ElevenLabs in `assets/stimmen/`. Der Ton ist standardmäßig aus; der
-Schalter „Ton an“ in der Kopfzeile merkt sich die Wahl (`localStorage`, Schlüssel
-`jl-ton`). Beim Wechsel der Figur grüßt sie (`hallo`), im Editor sagt Kim `editor`
-bzw. `gesperrt`, als Begleiter spricht die Figur je Abschnitt einmal ihre Zeile
-(Zuordnung in `LINES` in `character.js`) und nach 40 Sekunden Ruhe `warten`. Ohne
-Aufnahme winkt sie stattdessen.
+Aufnahmen aus ElevenLabs in `assets/stimmen/`. Der Ton ist standardmäßig an; der
+Schalter in der Kopfzeile merkt sich „aus“ (`localStorage`, Schlüssel `jl-ton`).
+Browser spielen Ton erst nach der ersten Berührung oder Taste. Die Begrüßung
+(`hallo`) wartet deshalb und kommt mit dem ersten Klick irgendwo auf der Seite.
+Beim Wechsel der Figur grüßt die neue Figur, Antippen der Figur spielt `klick_1`
+bis `klick_3`, im Editor sagt Kim `editor` bzw. `gesperrt`. Als Begleiter spricht die
+Figur je Abschnitt einmal ihre Zeile (Zuordnung in `LINES` in `character.js`), nach
+30 bzw. 40 Sekunden Ruhe `warten`. Ohne Aufnahme winkt sie stattdessen. Es wird
+immer nur ein Audio-Element genutzt, damit Safari nach der ersten Berührung alle
+weiteren Zeilen abspielt.
 
 ## Livegang auf juschkinlabs.de
 

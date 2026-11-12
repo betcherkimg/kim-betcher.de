@@ -299,13 +299,18 @@ async function start() {
     wake();
   }
 
-  // Stimmen (standardmäßig aus, Schalter in der Kopfzeile)
+  // Stimmen: standardmäßig an, Schalter in der Kopfzeile. Browser spielen Ton erst nach der
+  // ersten Berührung oder Taste; bis dahin wartet die Zeile und kommt dann sofort.
   const sound = (() => {
     const toggle = document.querySelector(".sound-toggle");
-    let on = false;
-    try { on = window.localStorage.getItem(SOUND_KEY) === "an"; } catch { /* Standard: aus */ }
-    let audio = null;
+    let on = true;
+    try { on = window.localStorage.getItem(SOUND_KEY) !== "aus"; } catch { /* Standard: an */ }
+    const audio = new Audio();
+    audio.preload = "auto";
     let speaking = false;
+    let pending = null;
+    let unlocked = false;
+    let playToken = 0;
     const said = new Set();
     const label = () => {
       if (!toggle) return;
@@ -314,25 +319,63 @@ async function start() {
       toggle.querySelector("span").textContent = on ? "Ton aus" : "Ton an";
       toggle.classList.toggle("is-on", on);
     };
+    const fileFor = (line) => line.startsWith("kim_") || line.startsWith("maksim_") ? line : `${active?.id || state.aktiv}_${line}`;
+    const start = (file) => {
+      const token = ++playToken;
+      audio.pause();
+      audio.muted = false;
+      audio.src = `${ROOT}assets/stimmen/${file}.mp3`;
+      speaking = true;
+      said.add(file);
+      audio.play().then(() => {
+        unlocked = true;
+        if (token !== playToken) return;
+        pending = null;
+        if (!gesture && active?.actions.Talk && !leave) doGesture("Talk");
+      }).catch((error) => {
+        if (token !== playToken) return;
+        speaking = false;
+        // Noch keine Berührung: Zeile merken und beim ersten Klick abspielen
+        if (error?.name === "NotAllowedError") { pending = file; said.delete(file); }
+      });
+    };
+    audio.addEventListener("ended", () => { speaking = false; });
+    audio.addEventListener("error", () => { speaking = false; });
     const api = {
       get on() { return on; },
       say(line, { force = false, once = false } = {}) {
         if (!on || !line) return false;
-        const who = active?.id || state.aktiv;
-        const file = line.startsWith("kim_") || line.startsWith("maksim_") ? line : `${who}_${line}`;
+        const file = fileFor(line);
         if (once && said.has(file)) return false;
         if (speaking && !force) return false;
-        audio?.pause();
-        audio = new Audio(`${ROOT}assets/stimmen/${file}.mp3`);
-        speaking = true;
-        said.add(file);
-        audio.addEventListener("ended", () => { speaking = false; });
-        audio.addEventListener("error", () => { speaking = false; });
-        audio.play().then(() => { if (!gesture && active?.actions.Talk && !leave) doGesture("Talk"); }).catch(() => { speaking = false; });
+        start(file);
         return true;
       },
-      stop() { audio?.pause(); speaking = false; }
+      // Noch nicht gehörte Begrüßung nachholen
+      flush() {
+        if (!on || !pending) return false;
+        start(pending);
+        return true;
+      },
+      stop() { audio.pause(); speaking = false; pending = null; }
     };
+    // Erste Berührung oder Taste: wartende Zeile abspielen. Startet der Klick selbst eine Zeile
+    // (Figurenwahl, Ton-Schalter, Editor bei Kim), wird nur das Abspielen freigeschaltet.
+    const unlock = (event) => {
+      if (unlocked || speaking) return;
+      const target = event.target instanceof Element ? event.target : null;
+      const speaksItself = target?.closest(".roster button, .sound-toggle, .stage, .companion") || (target?.closest("[data-create]") && (active?.id || state.aktiv) === "kim");
+      if (on && pending && !speaksItself) { start(pending); return; }
+      // Nur freischalten (stumm anspielen), damit die Zeile des Klicks gleich danach klappt
+      const token = ++playToken;
+      audio.muted = true;
+      audio.src = `${ROOT}assets/stimmen/${fileFor("hallo")}.mp3`;
+      audio.play().then(() => {
+        unlocked = true;
+        if (token === playToken) { audio.pause(); audio.muted = false; }
+      }).catch(() => { if (token === playToken) audio.muted = false; });
+    };
+    for (const type of ["pointerdown", "pointerup", "keydown", "touchend"]) window.addEventListener(type, unlock, { capture: true, passive: true });
     if (toggle) {
       toggle.hidden = false;
       label();
@@ -347,19 +390,23 @@ async function start() {
     return api;
   })();
 
+  // Antippen der Figur: sie spricht eine ihrer Zeilen oder macht eine Geste
+  const gestures = ["Wave", "Talk", "Jump"];
+  let gestureIndex = 0;
+  function poke() {
+    if (sound.flush()) return;
+    if (sound.on && sound.say(`klick_${(gestureIndex % 3) + 1}`, { force: true })) { gestureIndex += 1; return; }
+    doGesture(gestures[gestureIndex % gestures.length]);
+    gestureIndex += 1;
+  }
+
   // Begleiter-Rahmen unten links
   const companion = document.createElement("div");
   companion.className = "companion";
   companion.hidden = true;
   companion.innerHTML = '<button class="companion-figure" type="button" aria-label="Die Figur winkt dir zu"></button><button class="companion-close" type="button" aria-label="Begleiter ausblenden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>';
   document.body.append(companion);
-  const gestures = ["Wave", "Talk", "Jump"];
-  let gestureIndex = 0;
-  companion.querySelector(".companion-figure").addEventListener("click", () => {
-    if (sound.on && sound.say(`klick_${(gestureIndex % 3) + 1}`, { force: true })) { gestureIndex += 1; return; }
-    doGesture(gestures[gestureIndex % gestures.length]);
-    gestureIndex += 1;
-  });
+  companion.querySelector(".companion-figure").addEventListener("click", poke);
   companion.querySelector(".companion-close").addEventListener("click", () => {
     state.begleiter = false;
     writeState();
@@ -542,6 +589,8 @@ async function start() {
         view.ay = damp(view.ay, focus.ay, 5, dt);
         if (view.x !== null) { view.x = damp(view.x, toImage(labPos).x, 4, dt); if (Math.abs(view.x - toImage(labPos).x) < 0.0005) view.x = null; }
         labYaw = damp(labYaw, faceCamera + heroYaw, 9, dt);
+        idleFor += dt;
+        if (idleFor > 30 && !editing) { idleFor = -1e9; sound.say("warten", { once: true }); }
       }
       pivot.position.copy(labPos);
       pivot.rotation.y = labYaw;
@@ -603,6 +652,8 @@ async function start() {
     const previous = mode;
     mode = next;
     companion.hidden = mode !== "companion";
+    // Im Lab liegt die Figur unter Text und Knöpfen, als Begleiter darüber
+    canvas.dataset.layer = mode === "hero" ? "lab" : "";
     if (mode === "companion") {
       if (active?.id !== state.aktiv) show(state.aktiv);
       gesture = null;
@@ -703,23 +754,32 @@ async function start() {
   if (stage) {
     stage.tabIndex = 0;
     stage.setAttribute("role", "img");
-    stage.setAttribute("aria-label", "3D-Spielfigur. Zum Drehen ziehen oder Pfeiltasten nutzen.");
+    stage.setAttribute("aria-label", "3D-Spielfigur. Antippen zum Sprechen, ziehen oder Pfeiltasten zum Drehen.");
     let dragX = null;
+    let dragged = 0;
+    let pressedAt = 0;
     stage.addEventListener("dragstart", (event) => event.preventDefault());
     stage.addEventListener("pointerdown", (event) => {
       event.preventDefault();
       dragX = event.clientX;
+      dragged = 0;
+      pressedAt = performance.now();
       stage.setPointerCapture(event.pointerId);
       stage.classList.add("is-dragging");
     });
     stage.addEventListener("pointermove", (event) => {
       if (dragX === null) return;
       heroYaw += (event.clientX - dragX) * 0.012;
+      dragged += Math.abs(event.clientX - dragX);
       dragX = event.clientX;
       wake();
     });
     const stopDrag = () => { dragX = null; stage.classList.remove("is-dragging"); };
-    stage.addEventListener("pointerup", stopDrag);
+    stage.addEventListener("pointerup", () => {
+      // Kurz angetippt statt gedreht: die Figur antwortet
+      if (dragX !== null && dragged < 6 && performance.now() - pressedAt < 450 && active && !leave) poke();
+      stopDrag();
+    });
     stage.addEventListener("pointercancel", stopDrag);
     stage.addEventListener("keydown", (event) => {
       if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
@@ -728,7 +788,6 @@ async function start() {
         wake();
       }
     });
-    stage.addEventListener("dblclick", () => doGesture("Wave"));
     editor = setupEditor();
     // Auswahl in der Charakterleiste (gesteuert von portfolio.js)
     document.addEventListener("figur:wahl", (event) => {
@@ -742,6 +801,8 @@ async function start() {
   }
   await show(state.aktiv);
   updateMode();
+  // Erster Eindruck: die Figur im Lab begrüßt dich (spätestens mit deiner ersten Berührung)
+  if (stage && mode === "hero") sound.say("hallo", { force: true });
   // Die andere Figur schon im Hintergrund holen, damit der Wechsel sofort klappt.
   if (stage) {
     const other = state.aktiv === "kim" ? "maksim" : "kim";
