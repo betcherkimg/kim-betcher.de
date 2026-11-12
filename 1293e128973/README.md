@@ -15,7 +15,7 @@ Vorschauseiten enthalten `noindex, nofollow`; die Vorschau ist per Link öffentl
 - `impressum.html`, `datenschutz.html`: Rechtstexte der persönlichen Vorschau.
 - `assets/heimello/`: aktuelle Originalgrafiken und Logo; keine älteren
   App-Screenshots aus dem ersten heimello.-Paket.
-- `assets/fonts/`: lokal geladene Schriften mit OFL-Lizenzen.
+- `assets/fonts/`: Archivo (variabel, Breite und Stärke), lokal geladen, mit OFL-Lizenz.
 - `assets/juschkinlabs-logo.png`: bereitgestelltes Original-Logo.
 - `ressources/`: unverändertes Porträt und Projektansichten aus der bestehenden Website.
 

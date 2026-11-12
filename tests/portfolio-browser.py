@@ -150,7 +150,7 @@ try:
         no_js = plain.new_page()
         no_js.goto(base + "/")
         expect(no_js.locator("#navigation")).to_be_visible()
-        expect(no_js.locator(".hero-description")).to_be_visible()
+        expect(no_js.locator(".hero-lead")).to_be_visible()
         expect(no_js.locator(".trailer-poster")).to_have_attribute("href", "https://www.youtube.com/watch?v=m6fthG8m1qE")
         expect(no_js.locator(".trailer-player iframe")).to_have_count(0)
         plain.close()

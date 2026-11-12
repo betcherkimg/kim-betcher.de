@@ -123,3 +123,15 @@ document.querySelectorAll("[data-load-trailer]").forEach((link) => {
     player.focus();
   });
 });
+
+// Zollstock im Hero: startet zusammengeklappt und klappt einmal beim Laden auf.
+const ruler = document.querySelector(".ruler.is-folded");
+if (ruler) {
+  const unfold = () => ruler.classList.remove("is-folded");
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    unfold();
+  } else {
+    window.addEventListener("load", () => setTimeout(unfold, 250), { once: true });
+    setTimeout(unfold, 2500);
+  }
+}
