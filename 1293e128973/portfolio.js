@@ -124,14 +124,54 @@ document.querySelectorAll("[data-load-trailer]").forEach((link) => {
   });
 });
 
-// Zollstock im Hero: startet zusammengeklappt und klappt einmal beim Laden auf.
-const ruler = document.querySelector(".ruler.is-folded");
-if (ruler) {
-  const unfold = () => ruler.classList.remove("is-folded");
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    unfold();
-  } else {
-    window.addEventListener("load", () => setTimeout(unfold, 250), { once: true });
-    setTimeout(unfold, 2500);
-  }
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Spielerkarte: neigt sich mit dem Zeiger, mit Lichtreflex.
+const playerCard = document.querySelector(".player-card");
+if (playerCard && !reduceMotion && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+  playerCard.addEventListener("pointermove", (event) => {
+    const box = playerCard.getBoundingClientRect();
+    const x = (event.clientX - box.left) / box.width;
+    const y = (event.clientY - box.top) / box.height;
+    playerCard.classList.add("is-tilting");
+    playerCard.style.setProperty("--ry", `${(x - 0.5) * 14}deg`);
+    playerCard.style.setProperty("--rx", `${(0.5 - y) * 12}deg`);
+    playerCard.style.setProperty("--mx", `${x * 100}%`);
+    playerCard.style.setProperty("--my", `${y * 100}%`);
+  });
+  playerCard.addEventListener("pointerleave", () => {
+    playerCard.classList.remove("is-tilting");
+    playerCard.style.setProperty("--rx", "0deg");
+    playerCard.style.setProperty("--ry", "0deg");
+  });
+}
+
+// Spielbrett: Die Figur startet auf dem ersten Feld und zieht bis zum aktuellen Feld,
+// sobald das Brett sichtbar wird. Ohne JavaScript steht sie direkt auf dem aktuellen Feld.
+const token = document.querySelector(".board .token");
+const spots = Array.from(document.querySelectorAll(".board .field .spot"));
+const currentSpot = token?.closest(".spot");
+const target = spots.indexOf(currentSpot);
+if (token && target > 0 && !reduceMotion && "IntersectionObserver" in window && token.animate) {
+  spots[0].append(token);
+  const hop = (index) => {
+    if (index > target) return;
+    const before = token.getBoundingClientRect();
+    spots[index].append(token);
+    const after = token.getBoundingClientRect();
+    const dx = before.left - after.left;
+    const dy = before.top - after.top;
+    token.animate([
+      { transform: `translate(${dx}px, ${dy}px)` },
+      { transform: `translate(${dx / 2}px, ${dy / 2 - 46}px)`, offset: 0.5 },
+      { transform: "translate(0, 0)" }
+    ], { duration: 460, easing: "cubic-bezier(.3, .7, .4, 1)" }).finished.then(() => setTimeout(() => hop(index + 1), 140));
+  };
+  const watcher = new IntersectionObserver((entries) => {
+    if (entries.some((entry) => entry.isIntersecting)) {
+      watcher.disconnect();
+      setTimeout(() => hop(1), 350);
+    }
+  }, { threshold: 0.55 });
+  watcher.observe(document.querySelector(".board"));
 }
