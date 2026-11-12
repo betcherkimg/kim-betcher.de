@@ -609,24 +609,28 @@ async function start() {
     idleFor = 0;
     anticIn = Math.max(anticIn, 8);
     play("Idle", { fade: 0.3 });
-    // In der Luft abgesetzt: Die Hälfte der Male hält der Platz, sonst stürzt die Figur an den unteren Rand
-    const floor = window.innerHeight - rect.height;
-    if (!reduceMotion && floor - rect.top > 60 && active?.actions.FallBackward && Math.random() < 0.5) drop = { left: rect.left, top: rect.top, speed: 0, wait: 0.45 };
+    // Losgelassen fällt die Figur sofort an den unteren Rand: Dort gehört sie hin
+    const floor = Math.max(0, window.innerHeight - rect.height);
+    if (floor - rect.top > 4) {
+      if (reduceMotion) placeCompanion(rect.left, floor, true);
+      else {
+        drop = { left: rect.left, top: rect.top, speed: 0, crash: floor - rect.top > 60 && Boolean(active?.actions.FallBackward) };
+        gesture = "Hang";
+        play(active?.actions.Hang ? "Hang" : "Idle", { fade: 0.1, timeScale: 1.5 });
+      }
+    }
     wake();
   };
-  // Sturz: kurzes Zögern, dann freier Fall; unten landet die Figur in der Hocke und kippt um
+  // Sturz: freier Fall; aus der Höhe landet die Figur in der Hocke und kippt um
   function runDrop(dt) {
-    if (drop.wait > 0) {
-      drop.wait -= dt;
-      if (drop.wait <= 0) { gesture = "Hang"; play(active?.actions.Hang ? "Hang" : "Idle", { fade: 0.12, timeScale: 1.5 }); }
-      return;
-    }
     const floor = Math.max(0, window.innerHeight - companion.offsetHeight);
     drop.speed += 3200 * dt;
     drop.top += drop.speed * dt;
     if (drop.top < floor) { placeCompanion(drop.left, drop.top); return; }
     placeCompanion(drop.left, floor, true);
+    const crash = drop.crash;
     drop = null;
+    if (!crash) { gesture = null; play("Idle", { fade: 0.25 }); return; }
     fallOver({ from: 1.45, landed: () => {
       if (!DROP_LINES.length) return;
       sound.say(DROP_LINES[dropLine % DROP_LINES.length], { force: true });

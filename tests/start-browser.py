@@ -83,8 +83,14 @@ try:
             expect(page.locator(".companion")).not_to_have_class(re.compile("is-carried"))
             after = page.locator(".companion").bounding_box()
             assert abs(after["x"] - before["x"] - 300) < 12, (before, after)
+            # Losgelassen fällt die Figur immer an den unteren Rand
+            page.mouse.move(after["x"] + after["width"] / 2, after["y"] + after["height"] / 2)
+            page.mouse.down()
+            page.mouse.move(after["x"] + after["width"] / 2, after["y"] + after["height"] / 2 - 400, steps=8)
+            page.mouse.up()
+            page.wait_for_function("Math.abs(document.querySelector('.companion').getBoundingClientRect().bottom - innerHeight) < 2", timeout=20000)
             spot = page.evaluate("JSON.parse(localStorage.getItem('kb-figur-v1')).platz")
-            assert 0 < spot["x"] < 1 and 0 <= spot["y"] <= 1, spot
+            assert 0 < spot["x"] < 1 and spot["y"] == 1, spot
             assert not errors, errors
             page.evaluate("window.scrollTo(0, 0)")
         for key, count in (("blankoflex", 3), ("iquest", 3), ("heimello", 4), ("roadlands", 6)):
