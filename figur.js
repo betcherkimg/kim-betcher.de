@@ -10,6 +10,8 @@ import { MeshoptDecoder } from "./vendor/three/meshopt_decoder.module.js";
 const ROOT = new URL("./", import.meta.url).href;
 const STORE_KEY = "kb-figur-v1";
 const SOUND_KEY = "kb-ton";
+// Nach neuen Aufnahmen hochzählen, damit Browser die alten nicht aus dem Zwischenspeicher nehmen
+const VOICE_VERSION = "2";
 const FIGURE_VERSION = "20261112-3";
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -323,7 +325,7 @@ async function start() {
       const token = ++playToken;
       audio.pause();
       audio.muted = false;
-      audio.src = `${ROOT}assets/stimmen/${file}.mp3`;
+      audio.src = `${ROOT}assets/stimmen/${file}.mp3?v=${VOICE_VERSION}`;
       speaking = true;
       said.add(file);
       audio.play().then(() => {
@@ -371,7 +373,7 @@ async function start() {
       // Nur freischalten (stumm anspielen), damit die Zeile des Klicks gleich danach klappt
       const token = ++playToken;
       audio.muted = true;
-      audio.src = `${ROOT}assets/stimmen/${fileFor("hallo")}.mp3`;
+      audio.src = `${ROOT}assets/stimmen/${fileFor("hallo")}.mp3?v=${VOICE_VERSION}`;
       audio.play().then(() => {
         unlocked = true;
         if (token === playToken) { audio.pause(); audio.muted = false; }
