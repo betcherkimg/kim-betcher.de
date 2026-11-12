@@ -635,6 +635,15 @@ a.build-shot:hover img, a.partner-shot:hover img { filter: none; scale: 1.04; }
 .tile .photo::after { background: linear-gradient(180deg, rgba(11, 13, 14, 0) 30%, rgba(11, 13, 14, .9)); }
 .tile-links { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; font-size: 16px; }
 .tile-links a { color: var(--gold); }
+.tile-menu { margin-top: 12px; font-family: var(--font); }
+.tile-menu summary { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 1px solid rgba(215, 199, 145, .5); border-radius: 8px; color: var(--gold); font-size: 16px; font-weight: 600; cursor: pointer; list-style: none; }
+.tile-menu summary::-webkit-details-marker { display: none; }
+.tile-menu summary:hover { background: rgba(215, 199, 145, .1); }
+.tile-menu summary svg { width: 16px; height: 16px; transition: rotate .2s; }
+.tile-menu[open] summary svg { rotate: 180deg; }
+.tile-menu ul { display: grid; margin: 8px 0 0; padding: 6px; border: 1px solid rgba(241, 238, 228, .14); border-radius: 8px; background: var(--surface); list-style: none; }
+.tile-menu a { display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 6px; color: var(--text); font-size: 17px; font-weight: 600; text-decoration: none; }
+.tile-menu a:hover { background: rgba(215, 199, 145, .12); color: var(--gold); }
 .teaser-more { margin-top: 32px; }
 
 .private-hero { position: relative; overflow: hidden; background: var(--bg-deep); }

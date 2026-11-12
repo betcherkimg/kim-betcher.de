@@ -86,6 +86,14 @@ try:
         expect(page.locator("#preview-title")).to_have_text("Meine Familie")
         expect(page.locator(".preview-counter")).to_have_text("1 / 8")
         page.keyboard.press("Escape")
+        # YouTube öffnet eine Liste mit KIM und ODYN, TikTok ist raus
+        menu = page.locator("#musik .tile-menu")
+        expect(menu.locator("ul")).to_be_hidden()
+        menu.locator("summary").click()
+        assert menu.locator("a").all_inner_texts() == ["KIM", "ODYN"]
+        assert all("youtu" in (a.get_attribute("href") or "") for a in menu.locator("a").all())
+        assert "tiktok" not in page.content().lower()
+        menu.locator("summary").click()
         # Musik-Kachel startet den Song, der Player steuert ihn
         player = page.locator("[data-music-player]")
         expect(player).to_be_hidden()
