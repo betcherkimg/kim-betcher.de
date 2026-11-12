@@ -17,10 +17,10 @@
   <link rel="apple-touch-icon" href="assets/kb-icon-180.png?v=1">
   <link rel="preload" href="assets/fonts/saira-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/source-sans-3-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="start.css?v=20261112-k14">
-  <script src="start.js?v=20261112-k14" defer></script>
+  <link rel="stylesheet" href="start.css?v=20261112-k15">
+  <script src="start.js?v=20261112-k15" defer></script>
   <script type="importmap">{"imports": {"three": "./vendor/three/three.module.min.js"}}</script>
-  <script type="module" src="spielplatz.js?v=20261112-k14"></script>
+  <script type="module" src="spielplatz.js?v=20261112-k15"></script>
 </head>
 <body>
   <a class="skip-link" href="#inhalt">Zum Inhalt</a>
@@ -28,6 +28,7 @@
   <header class="site-header">
     <div class="wrap header-inner">
       <a class="brand" href="./" aria-label="Kim Betcher, Startseite"><span class="brand-name">Kim Betcher</span></a>
+      <p class="header-legal"><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></p>
       <button class="sound-toggle" type="button" aria-pressed="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9Z"/><path class="sound-wave" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="sound-off" d="m16 9 6 6m0-6-6 6"/></svg><span>Ton an</span></button>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="navigation">Menü<span class="menu-icon" aria-hidden="true"></span></button>
       <nav class="site-nav" id="navigation" aria-label="Hauptnavigation">
@@ -35,6 +36,8 @@
         <a href="private-einblicke.html">Private Einblicke</a>
         <a href="spielplatz.html">Spielplatz</a>
         <a class="nav-contact" href="./#kontakt">Kontakt</a>
+        <a class="nav-legal" href="impressum.html">Impressum</a>
+        <a class="nav-legal" href="datenschutz.html">Datenschutz</a>
       </nav>
     </div>
   </header>
@@ -44,12 +47,13 @@
     <section class="play" data-play aria-label="Spielplatz: 3D-Wiese">
       <canvas aria-hidden="true"></canvas>
       <p class="play-fallback">Der Spielplatz braucht 3D-Grafik (WebGL). Dein Browser stellt sie gerade nicht bereit.</p>
-      <aside class="palette" aria-label="Dinge zum Aufstellen">
+      <aside class="palette" id="leiste" aria-label="Dinge zum Aufstellen">
+        <button class="palette-toggle" type="button" aria-expanded="true" aria-controls="leiste" data-palette-toggle><span>Dinge</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
         <p class="palette-title">Zieh etwas auf die Wiese</p>
         <div class="palette-list" data-palette></div>
         <button class="btn palette-clear" type="button" data-play-clear>Wiese leeren</button>
       </aside>
-      <p class="play-hint" data-play-hint><span class="hint-keys">WASD oder Klick: laufen · Shift: rennen · Leertaste: springen · E: einsteigen · Ziehen: Kamera · Mausrad: Zoom</span><span class="hint-touch">Tippen: hinlaufen · Ziehen: Kamera · Knöpfe unten: steuern</span></p>
+      <p class="play-hint" data-play-hint><span class="hint-keys">WASD oder Klick: laufen · Shift: rennen · Leertaste: springen, im Schweber und Hubschrauber steigen · E: ein- und aussteigen · Ziehen: Kamera · Mausrad: Zoom</span></p>
       <p class="play-status" data-play-status role="status" aria-live="polite"></p>
       <div class="play-tools" data-play-tools hidden>
         <strong data-tool-name></strong>
@@ -60,15 +64,6 @@
         <button class="btn" type="button" data-tool="close" aria-label="Auswahl aufheben">✕</button>
       </div>
       <button class="btn btn-primary play-exit" type="button" data-play-exit hidden>Aussteigen</button>
-      <p class="play-legal"><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></p>
-      <div class="play-pad" data-play-pad aria-label="Steuerung">
-        <button type="button" data-key="w" aria-label="Vor">▲</button>
-        <button type="button" data-key="a" aria-label="Links">◀</button>
-        <button type="button" data-key="s" aria-label="Zurück">▼</button>
-        <button type="button" data-key="d" aria-label="Rechts">▶</button>
-        <button type="button" data-key=" " class="pad-wide">Springen</button>
-        <button type="button" data-key="e" class="pad-wide">Ein-/Aussteigen</button>
-      </div>
     </section>
   </main>
 </body>

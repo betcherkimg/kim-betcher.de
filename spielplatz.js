@@ -4,22 +4,24 @@ import * as THREE from "three";
 import { GLTFLoader } from "./vendor/three/GLTFLoader.js";
 import { MeshoptDecoder } from "./vendor/three/meshopt_decoder.module.js";
 
-const ASSET_VERSION = "1";
+const ASSET_VERSION = "2";
 const MAP_KEY = "kb-spielplatz-v1";
 const LOOK_KEY = "kb-figur-v1";
 const SIZE = 110; // Kantenlänge der Wiese in Metern
 const EDGE = SIZE / 2 - 4;
+const KIM_SCALE = 1.22;
 
 // Dinge für die Leiste. h: Zielhöhe in Metern, yaw: Drehung, damit "vorn" nach +Z zeigt,
-// drive: fahrbar, hover: schwebt so hoch, wander: läuft von selbst herum
+// drive: fahrbar, fly: kann steigen (Leertaste), hover: schwebt so hoch, wander: läuft von selbst herum,
+// follow: fliegt Kim von selbst hinterher, npc: Mensch mit Bewegungen (chase: verfolgt Kim)
 const CATALOG = [
   { id: "polizeiauto", name: "Polizeiauto", group: "Fahrzeuge", h: 1.2, drive: { speed: 15, turn: 2.2 } },
-  { id: "schweber", name: "E-Quester Flight", group: "Fahrzeuge", h: 0.85, hover: 0.45, drive: { speed: 19, turn: 2.4 } },
+  { id: "schweber", name: "E-Quester Flight", group: "Fahrzeuge", h: 0.85, hover: 0.45, drive: { speed: 19, turn: 2.4 }, fly: { max: 16 } },
   { id: "monstertruck", name: "Monstertruck", group: "Fahrzeuge", h: 1.8, drive: { speed: 13, turn: 1.8 } },
   { id: "gokart", name: "Gokart", group: "Fahrzeuge", h: 0.68, drive: { speed: 17, turn: 2.8 } },
-  { id: "hubschrauber", name: "Polizei-Hubschrauber", group: "Fahrzeuge", h: 2.9 },
-  { id: "polizist", name: "Polizist", group: "Leute", h: 1.7, armsDown: 72 },
-  { id: "kind", name: "Kind mit Fernsteuerung", group: "Leute", h: 1.3, armsDown: 62 },
+  { id: "hubschrauber", name: "Polizei-Hubschrauber", group: "Fahrzeuge", h: 2.9, drive: { speed: 17, turn: 1.7 }, fly: { max: 26 }, follow: true },
+  { id: "polizist", name: "Polizist", group: "Leute", h: 2.08, armsDown: 72, npc: { chase: true } },
+  { id: "kind", name: "Kind mit Fernsteuerung", group: "Leute", h: 1.5, armsDown: 58, npc: { keepArms: true } },
   { id: "drohne", name: "Drohne", group: "Leute", h: 0.22, hover: 2.3, orbit: true, hull: true },
   { id: "pferd", name: "Pferd", group: "Tiere", h: 1.6, wander: { walk: "Schritt", speed: 1.3 } },
   { id: "fuchs", name: "Fuchs", group: "Tiere", h: 0.62, wander: { walk: "Walk", idle: "Idle", speed: 1.1 } },
@@ -106,7 +108,7 @@ function start() {
   const say = (text) => { if (statusEl) statusEl.textContent = text; };
 
   // Kim: dieselbe Figur wie auf der Startseite, mit dem Aussehen aus dem Charakter-Editor
-  const kim = { group: new THREE.Group(), mixer: null, actions: {}, current: "", yaw: 0, speed: 0, jump: 0, target: null, ready: false, height: 1.75 };
+  const kim = { group: new THREE.Group(), mixer: null, actions: {}, clips: {}, rest: {}, current: "", yaw: 0, speed: 0, jump: 0, target: null, ready: false, height: 1.75, hip: 0.95, busy: null };
   scene.add(kim.group);
   const HAIR = { Original: "Original", Kurz: "Kurz", Dutt: "Dutt", Irokese: "Irokese", Kraus: "Kraus", Lang: "Lang", "Lange Locken": "LangeLocken", Locken: "Locken", Locs: "Locs", "Zöpfe": "Zoepfe", Zopf: "Zopf", Glatze: null };
   const COLORS = {
@@ -149,12 +151,25 @@ function start() {
     }
     tintable(materials.Haut)?.set(COLORS.haut[look.haut] || ORIGINAL.haut);
     for (const part of ["Oberteil", "Hose", "Schuhe"]) tintable(materials[part])?.set(COLORS.stoff[look[part]] || ORIGINAL[part]);
+    // Kim ist hier etwas größer als im Lab, damit die Fahrzeuge für ihn eher zu klein wirken
+    gltf.scene.scale.setScalar(KIM_SCALE);
+    gltf.scene.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(gltf.scene);
     gltf.scene.position.y = -box.min.y;
     kim.height = box.max.y - box.min.y;
     kim.group.add(gltf.scene);
+    // Ruhepose der Knochen: Grundlage, um Kims Bewegungen auf andere Figuren zu übertragen
+    gltf.scene.traverse((bone) => { if (bone.isBone) kim.rest[bone.name] = bone.quaternion.clone(); });
+    gltf.scene.updateMatrixWorld(true);
+    kim.hip = (gltf.scene.getObjectByName("Hips")?.getWorldPosition(new THREE.Vector3()).y ?? kim.height * 0.55);
     kim.mixer = new THREE.AnimationMixer(gltf.scene);
-    for (const clip of gltf.animations) kim.actions[clip.name.replace(/^[A-Za-z]+_/, "")] = kim.mixer.clipAction(clip);
+    for (const clip of gltf.animations) { kim.clips[clip.name.replace(/^[A-Za-z]+_/, "")] = clip; kim.actions[clip.name.replace(/^[A-Za-z]+_/, "")] = kim.mixer.clipAction(clip); }
+    // Umfallen (kim-moves) sowie Ein-/Aussteigen und Sitzen (kim-fahren)
+    for (const file of ["kim-moves.glb?v=1", "kim-fahren.glb?v=1"]) {
+      loader.loadAsync(`assets/figuren/${file}`).then((extra) => {
+        for (const clip of extra.animations) kim.actions[clip.name.replace(/^[A-Za-z]+_/, "")] = kim.mixer.clipAction(clip);
+      }).catch(() => { /* ohne Zusatzbewegungen: Kim steht im Auto und fällt nicht um */ });
+    }
     kim.ready = true;
     kimPlay("Idle", 0);
     // Ankunft: Kim kommt angerannt
@@ -169,9 +184,71 @@ function start() {
     next.timeScale = timeScale;
     if (kim.current === name) return;
     const previous = kim.actions[kim.current];
-    next.reset().setEffectiveWeight(1).play();
+    next.reset().setEffectiveWeight(1).setLoop(THREE.LoopRepeat, Infinity).play();
     if (previous && fade > 0) next.crossFadeFrom(previous, fade, false); else previous?.stop();
     kim.current = name;
+  }
+  // Einmal abspielen und am Ende stehen bleiben; speed < 0 spielt rückwärts. Liefert die Dauer in Sekunden.
+  function kimOnce(name, speed = 1, fade = 0.2) {
+    const next = kim.actions[name];
+    if (!next) return 0;
+    const previous = kim.actions[kim.current];
+    const length = next.getClip().duration;
+    next.reset().setEffectiveWeight(1).setLoop(THREE.LoopOnce, 1);
+    next.clampWhenFinished = true;
+    next.timeScale = speed;
+    if (speed < 0) next.time = length;
+    next.play();
+    if (previous && previous !== next) { if (fade > 0) next.crossFadeFrom(previous, fade, false); else previous.stop(); }
+    kim.current = name;
+    return length / Math.abs(speed);
+  }
+
+  // Bewegungen für Polizist und Kind: gleiche Knochen wie Kim, deshalb lassen sich Clips übertragen
+  let people = null;
+  loader.loadAsync(`assets/spielplatz/leute-anim.glb?v=${ASSET_VERSION}`).then((gltf) => {
+    const rest = {};
+    gltf.scene.traverse((node) => { rest[node.name] = node.quaternion.clone(); });
+    people = { rest, clips: Object.fromEntries(gltf.animations.map((clip) => [clip.name, clip])) };
+  }).catch(() => { people = null; });
+  const fix = new THREE.Quaternion();
+  const turned = new THREE.Quaternion();
+  function retarget(clip, sourceRest, targetRest, skip) {
+    const tracks = [];
+    for (const track of clip.tracks) {
+      const [bone, property] = track.name.split(".");
+      if (property !== "quaternion" || !sourceRest[bone] || !targetRest[bone] || (skip && skip.test(bone))) continue;
+      fix.copy(targetRest[bone]).multiply(turned.copy(sourceRest[bone]).invert());
+      const values = new Float32Array(track.values.length);
+      for (let i = 0; i < values.length; i += 4) {
+        turned.fromArray(track.values, i).premultiply(fix);
+        turned.toArray(values, i);
+      }
+      tracks.push(new THREE.QuaternionKeyframeTrack(track.name, track.times, values));
+    }
+    return new THREE.AnimationClip(clip.name, clip.duration, tracks);
+  }
+  function setupNpc(thing) {
+    if (thing.mixer || !people || !kim.ready) return;
+    const skip = thing.item.npc.keepArms ? /Arm|Hand|Shoulder/ : null;
+    thing.mixer = new THREE.AnimationMixer(thing.inner);
+    const add = (name, clip, rest) => { if (clip) thing.actions[name] = thing.mixer.clipAction(retarget(clip, rest, thing.rest, skip)); };
+    add("Idle", people.clips.Idle, people.rest);
+    add("Look", people.clips.Activity_Umsehen, people.rest);
+    add("Walk", people.clips.Walk_InPlace, people.rest);
+    add("Run", kim.clips.Run, kim.rest);
+    thing.pose = "";
+    npcPlay(thing, "Idle");
+  }
+  function npcPlay(thing, name, timeScale = 1) {
+    const next = thing.actions[name];
+    if (!next) return;
+    next.timeScale = timeScale;
+    if (thing.pose === name) return;
+    const previous = thing.actions[thing.pose];
+    next.reset().setEffectiveWeight(1).play();
+    if (previous) next.crossFadeFrom(previous, 0.25, false);
+    thing.pose = name;
   }
 
   // Modelle: einmal laden, für jedes platzierte Ding klonen
@@ -181,6 +258,10 @@ function start() {
       models[id] = loader.loadAsync(`assets/spielplatz/${id}.glb?v=${ASSET_VERSION}`).then((gltf) => {
         const item = byId[id];
         gltf.scene.updateMatrixWorld(true);
+        const rest = {};
+        gltf.scene.traverse((bone) => { if (bone.isBone) rest[bone.name] = bone.quaternion.clone(); });
+        const seatNode = gltf.scene.getObjectByName("DriverSeat") || gltf.scene.getObjectByName("PilotSeat");
+        const seatAt = seatNode ? seatNode.getWorldPosition(new THREE.Vector3()) : null;
         // Manche Modelle kommen mit Deckkraft 0 aus der Quelle
         gltf.scene.traverse((object) => { if (object.isMesh && object.material.opacity === 0) { object.material.opacity = 1; object.material.transparent = false; } });
         // Umrisshülle (nach innen gedrehte Flächen): einseitig zeichnen, sonst verdeckt sie das Modell
@@ -204,7 +285,8 @@ function start() {
         const size = box.getSize(new THREE.Vector3());
         const scale = item.h / Math.max(0.001, size.y);
         const center = box.getCenter(new THREE.Vector3());
-        return { gltf, scale, offset: new THREE.Vector3(-center.x, -box.min.y, -center.z), radius: Math.max(size.x, size.z) * scale / 2 };
+        const offset = new THREE.Vector3(-center.x, -box.min.y, -center.z);
+        return { gltf, scale, offset, rest, seat: seatAt ? seatAt.add(offset).multiplyScalar(scale) : null, radius: Math.max(size.x, size.z) * scale / 2 };
       });
       models[id].catch(() => { delete models[id]; });
     }
@@ -242,7 +324,12 @@ function start() {
     tilt.add(inner);
     const group = new THREE.Group();
     group.add(tilt);
-    const thing = { key: nextKey, id, item, group, tilt, x, z, yaw, radius: model.radius, speed: 0, home: new THREE.Vector2(x, z), phase: Math.random() * 6.28, mixer: null, actions: {}, wait: 1 + Math.random() * 3, goal: null };
+    const rotors = [];
+    inner.traverse((node) => {
+      if (node.name === "Rotor_Haupt" || /^Rotor_[LR]_(Front|Rear)$/.test(node.name)) rotors.push([node, "y"]);
+      else if (node.name === "Rotor_Heck") rotors.push([node, "x"]);
+    });
+    const thing = { key: nextKey, id, item, group, tilt, inner, rest: model.rest, seat: model.seat, rotors, alt: 0, float: 1, down: 0, cool: 0, x, z, yaw, radius: model.radius, speed: 0, home: new THREE.Vector2(x, z), phase: Math.random() * 6.28, mixer: null, actions: {}, wait: 1 + Math.random() * 3, goal: null };
     nextKey += 1;
     group.userData.thing = thing;
     if (model.gltf.animations.length && item.wander) {
@@ -258,7 +345,7 @@ function start() {
     return thing;
   }
   function removeThing(thing) {
-    if (driving === thing) leaveVehicle();
+    if (driving === thing) { thing.alt = 0; kim.busy = null; if (kim.group.parent !== scene) { scene.add(kim.group); kim.group.position.set(thing.x, 0, thing.z); kim.group.rotation.set(0, thing.yaw, 0); } kim.group.visible = true; kim.current = ""; driving = null; if (driveButton) driveButton.hidden = true; say(""); }
     scene.remove(thing.group);
     things.splice(things.indexOf(thing), 1);
     if (selected === thing) select(null);
@@ -269,10 +356,12 @@ function start() {
   const tiltTarget = new THREE.Quaternion();
   // Auf den Boden setzen: Höhe der Wiese, Fahrzeuge neigen sich mit dem Hang
   function settle(thing, blend) {
-    const lift = thing.item.hover ? thing.item.hover + Math.sin(clock.elapsedTime * 2 + thing.phase) * 0.06 : 0;
+    const lift = (thing.item.hover ? (thing.item.hover + Math.sin(clock.elapsedTime * 2 + thing.phase) * 0.06) * thing.float : 0) + thing.alt;
+    thing.lift = lift;
     thing.group.position.set(thing.x, height(thing.x, thing.z) + lift, thing.z);
     thing.group.rotation.y = thing.yaw;
-    if (thing.item.drive || thing.item.wander) {
+    if (lift > 1) thing.tilt.quaternion.slerp(tiltTarget.identity(), blend);
+    else if (thing.item.drive || thing.item.wander) {
       normalAt(thing.x, thing.z, normal).applyAxisAngle(up, -thing.yaw);
       tiltTarget.setFromUnitVectors(up, normal);
       thing.tilt.quaternion.slerp(tiltTarget, blend);
@@ -402,9 +491,7 @@ function start() {
     else if (tool === "close") select(null);
   });
   document.querySelector("[data-play-clear]")?.addEventListener("click", () => {
-    if (driving) leaveVehicle();
-    for (const thing of [...things]) scene.remove(thing.group);
-    things.length = 0;
+    for (const thing of [...things]) removeThing(thing);
     select(null);
     saveMap();
   });
@@ -423,27 +510,50 @@ function start() {
     return best;
   }
   function enterVehicle(thing) {
-    if (!thing?.item.drive || !kim.ready) return;
+    if (!thing?.item.drive || !kim.ready || driving || kim.busy) return;
     driving = thing;
     thing.speed = 0;
-    kim.group.visible = false;
     kim.target = null;
+    kim.jump = 0;
     select(null);
     if (driveButton) driveButton.hidden = false;
-    say(`${thing.item.name}: W/S Gas und Bremse, A/D lenken, E aussteigen`);
+    const flies = thing.item.fly ? ", Leertaste steigen (loslassen: sinken)" : "";
+    say(`${thing.item.name}: W/S Gas und Bremse, A/D lenken${flies}, E aussteigen`);
+    if (!thing.seat || !kim.actions.SitInCar) { kim.group.visible = false; return; }
+    // Kim sitzt auf dem Sitzanker des Fahrzeugs: Aussteigen rückwärts abgespielt ist das Einsteigen
+    thing.tilt.add(kim.group);
+    kim.group.position.set(thing.seat.x, thing.seat.y - (kim.hip - 0.21 * KIM_SCALE), thing.seat.z);
+    kim.group.rotation.set(0, 0, 0);
+    const wait = kimOnce("ExitCar", -2.6, 0.15);
+    kim.busy = { left: wait || 0.01, then: () => kimPlay("SitInCar", 0.2) };
   }
+  const stand = new THREE.Vector3();
   function leaveVehicle() {
-    if (!driving) return;
+    if (!driving || kim.busy) return;
     const thing = driving;
-    driving = null;
+    if (thing.alt > 0.6) { say("Erst landen: Leertaste loslassen und sinken, dann aussteigen."); return; }
     thing.speed = 0;
-    const side = thing.radius + 0.9;
-    kim.group.position.set(thing.x + Math.cos(thing.yaw) * side, 0, thing.z - Math.sin(thing.yaw) * side);
-    kim.yaw = thing.yaw;
-    kim.group.visible = true;
-    if (driveButton) driveButton.hidden = true;
-    say("");
-    saveMap();
+    const finish = () => {
+      // Dort absetzen, wo die Bewegung endet, sonst neben dem Fahrzeug
+      const hips = kim.group.getObjectByName("Hips");
+      if (kim.group.parent !== scene && hips) hips.getWorldPosition(stand);
+      else stand.set(thing.x + Math.cos(thing.yaw) * (thing.radius + 0.9), 0, thing.z - Math.sin(thing.yaw) * (thing.radius + 0.9));
+      scene.add(kim.group);
+      kim.group.position.set(THREE.MathUtils.clamp(stand.x, -EDGE, EDGE), 0, THREE.MathUtils.clamp(stand.z, -EDGE, EDGE));
+      kim.group.rotation.set(0, thing.yaw, 0);
+      kim.yaw = thing.yaw;
+      kim.group.visible = true;
+      kim.speed = 0;
+      kim.actions[kim.current]?.stop();
+      kim.current = "";
+      kimPlay("Idle", 0);
+      driving = null;
+      if (driveButton) driveButton.hidden = true;
+      say("");
+      saveMap();
+    };
+    if (kim.group.parent === scene || !kim.actions.ExitCar) { finish(); return; }
+    kim.busy = { left: kimOnce("ExitCar", 2.6, 0.15), then: finish };
   }
   driveButton?.addEventListener("click", leaveVehicle);
 
@@ -459,7 +569,7 @@ function start() {
         if (key === "e") { if (driving) leaveVehicle(); else enterVehicle(selected?.item.drive ? selected : nearestVehicle()); }
         if ((key === "delete" || key === "backspace") && selected) removeThing(selected);
         if ((key === "q" || key === "r") && selected) { selected.yaw += key === "q" ? Math.PI / 8 : -Math.PI / 8; settle(selected, 1); saveMap(); }
-        if (key === " " && !driving && kim.ready && kim.jump <= 0) { kim.jump = 0.0001; kim.vy = 6.2; }
+        if (key === " " && !driving && kim.ready && !kim.busy && kim.jump <= 0) { kim.jump = 0.0001; kim.vy = 6.2; }
       }
       keys.add(key);
       hint?.classList.add("is-used");
@@ -512,16 +622,12 @@ function start() {
     orbit.distance = THREE.MathUtils.clamp(orbit.distance * (event.deltaY > 0 ? 1.1 : 0.9), 4, 30);
   }, { passive: false });
   canvas.addEventListener("contextmenu", (event) => event.preventDefault());
-  // Steuerkreuz für Finger
-  const pad = document.querySelector("[data-play-pad]");
-  pad?.querySelectorAll("[data-key]").forEach((button) => {
-    const key = button.dataset.key;
-    const press = (event) => { event.preventDefault(); if (key === "e") { if (driving) leaveVehicle(); else enterVehicle(nearestVehicle()); } else if (key === " ") { if (!driving && kim.ready && kim.jump <= 0) { kim.jump = 0.0001; kim.vy = 6.2; } } else keys.add(key); };
-    const lift = () => keys.delete(key);
-    button.addEventListener("pointerdown", press);
-    for (const type of ["pointerup", "pointercancel", "pointerleave"]) button.addEventListener(type, lift);
+  // Leiste auf- und zuklappen
+  const paletteToggle = document.querySelector("[data-palette-toggle]");
+  paletteToggle?.addEventListener("click", () => {
+    const closed = paletteToggle.closest(".palette").classList.toggle("is-closed");
+    paletteToggle.setAttribute("aria-expanded", String(!closed));
   });
-
   function resize() {
     const rect = stageEl.getBoundingClientRect();
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
@@ -537,6 +643,7 @@ function start() {
   const cameraGoal = new THREE.Vector3();
   function moveKim(dt) {
     const position = kim.group.position;
+    if (kim.busy) { position.y = height(position.x, position.z); return; }
     let moveX = 0;
     let moveZ = 0;
     const ahead = (keys.has("w") || keys.has("arrowup") ? 1 : 0) - (keys.has("s") || keys.has("arrowdown") ? 1 : 0);
@@ -566,7 +673,7 @@ function start() {
     }
     // Um Bäume, Autos und Leute herum statt hindurch
     for (const thing of things) {
-      if (thing.held || thing.item.hover > 1) continue;
+      if (thing.held || thing.lift > 1.2) continue;
       const reach = Math.min(thing.radius, thing.item.group === "Grün" && thing.item.h > 3 ? 0.45 : thing.radius) * 0.8 + 0.3;
       const dx = position.x - thing.x;
       const dz = position.z - thing.z;
@@ -582,13 +689,30 @@ function start() {
     position.y = floor + Math.max(0, kim.jump);
     kim.group.rotation.y = kim.yaw;
     if (kim.jump > 0) kimPlay("Jump", 0.15, 1.6);
-    else if (kim.speed > 4) kimPlay("Run", 0.2, kim.speed / 5.2);
-    else if (kim.speed > 0.4) kimPlay("Walk", 0.2, kim.speed / 1.9);
+    else if (kim.speed > 4) kimPlay("Run", 0.2, kim.speed / 5.2 / KIM_SCALE);
+    else if (kim.speed > 0.4) kimPlay("Walk", 0.2, kim.speed / 1.9 / KIM_SCALE);
     else kimPlay("Idle", 0.3);
   }
   function drive(thing, dt) {
-    const gas = (keys.has("w") || keys.has("arrowup") ? 1 : 0) - (keys.has("s") || keys.has("arrowdown") ? 1 : 0);
-    const steer = (keys.has("a") || keys.has("arrowleft") ? 1 : 0) - (keys.has("d") || keys.has("arrowright") ? 1 : 0);
+    const locked = Boolean(kim.busy);
+    const gas = locked ? 0 : (keys.has("w") || keys.has("arrowup") ? 1 : 0) - (keys.has("s") || keys.has("arrowdown") ? 1 : 0);
+    const steer = locked ? 0 : (keys.has("a") || keys.has("arrowleft") ? 1 : 0) - (keys.has("d") || keys.has("arrowright") ? 1 : 0);
+    if (thing.item.fly) {
+      // Leertaste: steigen, loslassen: sinken
+      const rise = !locked && keys.has(" ");
+      thing.alt = THREE.MathUtils.clamp(thing.alt + (rise ? 5.5 : -3.2) * dt, 0, thing.item.fly.max);
+      // In der Luft: Drohnen rammen
+      if (thing.alt > 0.8) {
+        for (const other of things) {
+          if (other.id !== "drohne" || other.down > 0) continue;
+          if (Math.hypot(other.group.position.x - thing.group.position.x, other.group.position.y - (thing.group.position.y + 0.5), other.group.position.z - thing.group.position.z) < thing.radius * 0.8 + 0.5) {
+            other.down = 6;
+            thing.speed *= 0.5;
+            say("Drohne erwischt!");
+          }
+        }
+      }
+    }
     const top = thing.item.drive.speed * (keys.has("shift") ? 1.35 : 1);
     thing.speed = damp(thing.speed, gas > 0 ? top : gas < 0 ? -top * 0.45 : 0, gas ? 1.6 : 1.1, dt);
     const grip = THREE.MathUtils.clamp(Math.abs(thing.speed) / 4, 0, 1) * Math.sign(thing.speed || 1);
@@ -600,7 +724,8 @@ function start() {
     thing.z = THREE.MathUtils.clamp(nz, -EDGE, EDGE);
     // Anstoßen: andere Dinge bremsen, kleine Pflanzen werden überfahren
     for (const other of things) {
-      if (other === thing || other.held || other.item.hover > 1 || (other.item.group === "Grün" && other.item.h < 2)) continue;
+      if (thing.alt > 2.5) break;
+      if (other === thing || other.held || other.lift > 1.2 || (other.item.group === "Grün" && other.item.h < 2)) continue;
       const reach = (other.item.group === "Grün" ? 0.5 : other.radius * 0.8) + thing.radius * 0.7;
       const dx = thing.x - other.x;
       const dz = thing.z - other.z;
@@ -613,8 +738,57 @@ function start() {
       }
     }
     settle(thing, 1 - Math.exp(-8 * dt));
-    kim.group.position.set(thing.x, height(thing.x, thing.z), thing.z);
     kim.yaw = thing.yaw;
+  }
+  // Polizist: läuft Kim hinterher und wirft ihn um, wenn er ihn erwischt
+  function chase(thing, dt) {
+    thing.cool = Math.max(0, thing.cool - dt);
+    const lead = driving ? driving.group.position : kim.group.position;
+    const dx = lead.x - thing.x;
+    const dz = lead.z - thing.z;
+    const distance = Math.hypot(dx, dz);
+    const hunting = thing.cool <= 0 && !kim.busy && distance < 45 && distance > 0.9 && !(driving && driving.alt > 3);
+    if (hunting) {
+      const speed = distance > 5 ? 5.3 : 3.6;
+      thing.yaw = dampAngle(thing.yaw, Math.atan2(dx, dz), 7, dt);
+      thing.x = THREE.MathUtils.clamp(thing.x + Math.sin(thing.yaw) * speed * dt, -EDGE, EDGE);
+      thing.z = THREE.MathUtils.clamp(thing.z + Math.cos(thing.yaw) * speed * dt, -EDGE, EDGE);
+      thing.home.set(thing.x, thing.z);
+      npcPlay(thing, thing.actions.Run ? "Run" : "Walk", speed / 5.2);
+    } else {
+      npcPlay(thing, thing.cool > 0 && thing.cool < 5 ? "Look" : "Idle");
+      if (thing.cool <= 0 && !kim.busy && !driving && distance <= 0.9 && kim.jump <= 0) {
+        // Erwischt: Kim fällt um, bleibt kurz liegen und steht wieder auf
+        thing.cool = 10;
+        kim.target = null;
+        kim.speed = 0;
+        say("Erwischt! Der Polizist hat dich.");
+        const fall = kimOnce("FallBackward", 1.7);
+        if (fall) kim.busy = { left: fall + 0.8, then: () => { kim.busy = { left: kimOnce("FallBackward", -2), then: () => { kim.current = ""; kimPlay("Idle", 0.3); say(""); } }; } };
+      }
+    }
+    settle(thing, 1);
+  }
+  // Hubschrauber ohne Pilot: hebt ab und kreist über Kim
+  function follow(thing, dt) {
+    thing.wait -= dt;
+    if (thing.wait > 0) return;
+    thing.alt = damp(thing.alt, 9, 0.8, dt);
+    if (thing.alt < 3) { settle(thing, 1); return; }
+    const lead = driving ? driving.group.position : kim.group.position;
+    thing.phase += dt * 0.35;
+    const gx = lead.x + Math.cos(thing.phase) * 9;
+    const gz = lead.z + Math.sin(thing.phase) * 9;
+    const dx = gx - thing.x;
+    const dz = gz - thing.z;
+    const distance = Math.hypot(dx, dz);
+    const speed = Math.min(11, distance * 1.2);
+    if (distance > 0.05) {
+      thing.yaw = dampAngle(thing.yaw, Math.atan2(dx, dz), 2.5, dt);
+      thing.x = THREE.MathUtils.clamp(thing.x + (dx / distance) * speed * dt, -EDGE, EDGE);
+      thing.z = THREE.MathUtils.clamp(thing.z + (dz / distance) * speed * dt, -EDGE, EDGE);
+    }
+    settle(thing, 1);
   }
   function wander(thing, dt) {
     const rule = thing.item.wander;
@@ -657,14 +831,38 @@ function start() {
   function tick() {
     const dt = Math.min(clock.getDelta(), 0.05);
     if (kim.ready) {
+      if (kim.busy) {
+        kim.busy.left -= dt;
+        if (kim.busy.left <= 0) { const then = kim.busy.then; kim.busy = null; then(); }
+      }
       if (driving) drive(driving, dt); else moveKim(dt);
       kim.mixer.update(dt);
     }
     for (const thing of things) {
+      // Rotoren drehen, sobald etwas fliegt oder der Motor läuft
+      if (thing.rotors.length && (thing.lift > 0.3 || thing === driving || thing.item.orbit) && thing.down <= 0) {
+        for (const [node, axis] of thing.rotors) node.rotation[axis] += dt * 28;
+      }
       if (thing.held || thing === driving) continue;
-      if (thing.item.wander && !reduceMotion) wander(thing, dt);
+      if (thing.item.npc) {
+        setupNpc(thing);
+        if (thing.mixer) {
+          if (thing.item.npc.chase && !reduceMotion) chase(thing, dt);
+          else { thing.wait -= dt; if (thing.wait <= 0) { thing.wait = 6 + Math.random() * 6; npcPlay(thing, thing.pose === "Idle" ? "Look" : "Idle"); } }
+        }
+      } else if (thing.item.follow && !reduceMotion) follow(thing, dt);
+      else if (thing.item.fly && thing.alt > 0) { thing.alt = Math.max(0, thing.alt - 3.2 * dt); settle(thing, 1); }
+      else if (thing.item.orbit && thing.down > 0) {
+        // Getroffene Drohne: trudelt zu Boden und startet nach ein paar Sekunden neu
+        thing.down -= dt;
+        thing.float = damp(thing.float, 0.03, 3, dt);
+        thing.yaw += dt * 9 * thing.float;
+        settle(thing, 1);
+      }
+      else if (thing.item.wander && !reduceMotion) wander(thing, dt);
       else if (thing.item.orbit && !reduceMotion) {
         // Drohne kreist langsam um ihren Platz
+        thing.float = damp(thing.float, 1, 1.5, dt);
         thing.phase += dt * 0.5;
         thing.x = thing.home.x + Math.cos(thing.phase) * 2.2;
         thing.z = thing.home.y + Math.sin(thing.phase) * 2.2;
@@ -696,6 +894,6 @@ function start() {
   }
   stageEl.classList.add("is-live");
   // Für die Browser-Tests
-  window.kbSpielplatz = { kim, things, orbit, addThing };
+  window.kbSpielplatz = { kim, things, orbit, addThing, enter: enterVehicle };
   requestAnimationFrame(tick);
 }

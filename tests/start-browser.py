@@ -153,8 +153,13 @@ try:
             expect(page.locator("[data-play-tools]")).to_be_visible()
             page.locator('[data-tool="drive"]').click()
             expect(page.locator("[data-play-exit]")).to_be_visible()
+            page.wait_for_function("!kbSpielplatz.kim.busy", timeout=90000)
+            assert page.evaluate("kbSpielplatz.kim.current") == "SitInCar"
             page.keyboard.press("e")
-            expect(page.locator("[data-play-exit]")).to_be_hidden()
+            expect(page.locator("[data-play-exit]")).to_be_hidden(timeout=90000)
+            page.locator("[data-palette-toggle]").click()
+            expect(page.locator(".palette-item").first).to_be_hidden()
+            page.locator("[data-palette-toggle]").click()
         assert not errors, errors
         for width in (390, 1440):
             page.set_viewport_size({"width": width, "height": 800})
