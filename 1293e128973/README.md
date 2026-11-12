@@ -34,8 +34,9 @@ Besucher werden geduzt. Preise stehen nicht auf der Seite („auf Anfrage“).
 
 - Quelle sind die Blender-Dateien `Kim_Kleidung_v1.blend` und
   `Maksim_Kleidung_v1.blend` (Desktop, Ordner Fahrlehrer). Beide nutzen dasselbe
-  24-Knochen-Rig; die Animationen Idle, Walk, Run, Wave, Talk und Jump wurden pro
-  Bild im Weltraum auf die Ruhepose der jeweiligen Figur übertragen.
+  24-Knochen-Rig. Walk, Run, Wave, Talk und Jump wurden pro Bild im Weltraum
+  übertragen, hängende Arme dabei näher an den Körper geholt. Die Ruhepose (Idle)
+  ist selbst gebaut: aufrecht, Arme locker, Füße hüftbreit, 5 Sekunden Atmen.
 - Export als glTF, danach mit gltf-transform: dedup, Texturen auf 2048 px,
   WebP (Qualität 86), meshopt. Clipnamen beginnen mit `Kim_` bzw. `Maksim_`,
   Frisuren heißen `Frisur_<Name>_<Frisur>`.
@@ -43,6 +44,11 @@ Besucher werden geduzt. Preise stehen nicht auf der Seite („auf Anfrage“).
   Alphakanal der Textur eine Maske; die Seite multipliziert dort die gewählte
   Farbe. Das Haar nutzt die Vertex-Farbe `Grau`. Bei der Originalfrisur ist die
   Haarfarbe gesperrt.
+- Editor: Reiter für Frisur, Haare, Haut, Oberteil, Hose und Schuhe; die Kamera
+  zoomt jeweils auf den Körperteil. Die Frisur-Karten werden im Browser live aus
+  der Figur gerendert (mit aktueller Haar- und Hautfarbe). „Zufall“ würfelt ein
+  Aussehen. Die Codex-Icons und -Texturen aus der Asset-Liste ersetzen später
+  die gezeichneten Icons und flachen Farbkugeln.
 - Nach „Charakter erstellen“ → „Fertig“ läuft die Figur vom Podest und begleitet
   unten links beim Scrollen (Gehen oder Laufen je nach Tempo, Winken pro
   Abschnitt, Klick für Gesten). Die Auswahl liegt nur im Browser

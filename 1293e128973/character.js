@@ -214,6 +214,7 @@ async function start() {
     }
     pivot.visible = true;
     stage?.classList.remove("is-loading", "is-loading-figure");
+    if (active === figure) editor?.rebuild();
     stage?.classList.add("is-3d");
     if (status) status.textContent = "";
     if (greet && !reduceMotion) doGesture("Wave");
@@ -247,6 +248,23 @@ async function start() {
   const clock = new THREE.Clock();
   let frameRequest = 0;
   const frames = { hero: { feet: -0.84, head: 0.86 }, companion: { feet: -0.9, head: 0.84 } };
+  // Kamera-Ausschnitte im Editor: Anteil der Figur, der im Bild liegt
+  const FOCUS = {
+    ganz: { feet: -0.84, head: 0.86 },
+    kopf: { feet: -3.7, head: 0.76 },
+    oberkoerper: { feet: -2.0, head: 0.86 },
+    beine: { feet: -0.91, head: 2.17 },
+    schuhe: { feet: -0.8, head: 4.3 }
+  };
+  let focusName = "ganz";
+  const heroFrame = { ...FOCUS.ganz };
+  function setFocus(name) {
+    focusName = FOCUS[name] ? name : "ganz";
+    stage?.classList.toggle("is-zoomed", focusName !== "ganz");
+    if (reduceMotion) Object.assign(heroFrame, FOCUS[focusName]);
+    wake();
+  }
+  const thumbCamera = new THREE.PerspectiveCamera(22, 1, 0.01, 50);
 
   const rectOf = (element) => {
     const rect = element.getBoundingClientRect();
@@ -313,18 +331,39 @@ async function start() {
     } else if (mode === "hero") {
       pivot.rotation.y = damp(pivot.rotation.y, heroYaw, 9, dt);
     }
+    const focus = FOCUS[editing ? focusName : "ganz"];
+    heroFrame.feet = damp(heroFrame.feet, focus.feet, 5, dt);
+    heroFrame.head = damp(heroFrame.head, focus.head, 5, dt);
 
     active?.mixer.update(dt);
+    renderView();
+    if (mode) frameRequest = requestAnimationFrame(tick);
+  }
+  // Beim Heranzoomen läuft die Figur am Bühnenrand weich aus statt hart abgeschnitten zu werden
+  let maskValue = "";
+  function setMask(value) {
+    if (value === maskValue) return;
+    maskValue = value;
+    canvas.style.maskImage = value;
+    canvas.style.webkitMaskImage = value;
+  }
+  function renderView() {
     renderer.setScissorTest(false);
     renderer.clear();
+    const zoom = mode === "hero" && stage && !walk?.wide ? Math.min(1, Math.max(0, (heroFrame.head - heroFrame.feet) / (FOCUS.ganz.head - FOCUS.ganz.feet) - 1)) : 0;
+    if (zoom > 0.02) {
+      const rect = stage.getBoundingClientRect();
+      const fade = Math.round(70 * Math.min(1, zoom * 2));
+      const top = Math.round(rect.top), bottom = Math.round(rect.bottom);
+      setMask(`linear-gradient(to bottom, transparent ${top}px, #000 ${top + fade}px, #000 ${bottom - fade}px, transparent ${bottom}px)`);
+    } else setMask("");
     if (mode === "hero" && stage) {
       const frameRect = rectOf(stage);
-      draw(frameRect, walk?.wide && heroSection ? rectOf(heroSection) : frameRect, frames.hero);
+      draw(frameRect, walk?.wide && heroSection ? rectOf(heroSection) : frameRect, walk?.wide ? frames.hero : heroFrame);
     } else if (mode === "companion") {
       const box = rectOf(companion);
       draw(box, box, frames.companion);
     }
-    if (mode) frameRequest = requestAnimationFrame(tick);
   }
   function wake() {
     if (!frameRequest && mode && !document.hidden) {
@@ -444,117 +483,225 @@ async function start() {
     (window.requestIdleCallback || ((fn) => setTimeout(fn, 1500)))(() => loadFigure(other).catch(() => {}));
   }
 
-  // Charakter-Editor
+  // Charakter-Editor: Reiter links, Auswahl rechts, Kamera zoomt auf den passenden Körperteil
   function setupEditor() {
     const createButton = document.querySelector("[data-create]");
     const worldsButton = document.querySelector("[data-worlds]");
     const editorActions = document.querySelector(".editor-actions");
-    const lookPanel = document.querySelector('[data-editor="look"]');
-    const outfitPanel = document.querySelector('[data-editor="outfit"]');
+    const tabsPanel = document.querySelector('[data-editor="tabs"]');
+    const optionsPanel = document.querySelector('[data-editor="options"]');
     const modeLabel = document.querySelector("[data-mode-label]");
-    if (!createButton || !lookPanel || !outfitPanel || !editorActions) return null;
+    if (!createButton || !tabsPanel || !optionsPanel || !editorActions) return null;
+    const tabList = tabsPanel.querySelector(".ed-tabs");
+    const optionsBox = optionsPanel.querySelector(".ed-options");
+    const optionsTitle = optionsPanel.querySelector("#options-title");
+    const optionsValue = optionsPanel.querySelector(".ed-options-value");
     createButton.hidden = false;
     if (state.fertig) createButton.textContent = "Charakter anpassen";
     worldsButton?.classList.remove("btn-primary");
 
+    const ICONS = {
+      frisur: '<path d="M6 15c0-6 3-10 9-10 4 0 6 2 7 4-3-1-5 0-6 2 3-1 5 0 6 2-4-1-8 0-10 3"/><path d="M8 26c-2-3-2-7-2-11"/><path d="M18 22l6 6m-3-9 6 6"/>',
+      haarfarbe: '<path d="M9 5c-2 6 2 9 0 15"/><path d="M14 5c-2 6 2 9 0 15"/><path d="M23 14s-4 4.5-4 7.5a4 4 0 0 0 8 0c0-3-4-7.5-4-7.5Z"/>',
+      haut: '<path d="M10 28v-9l-3-4c-1-1 0-3 2-2l3 3V6a1.5 1.5 0 0 1 3 0v8-10a1.5 1.5 0 0 1 3 0v10-8a1.5 1.5 0 0 1 3 0v9-6a1.5 1.5 0 0 1 3 0v9c0 6-3 10-7 10h-6"/>',
+      Oberteil: '<path d="M11 4c1 2 3 3 5 3s4-1 5-3l7 4-3 6-3-2v16H10V12l-3 2-3-6Z"/>',
+      Hose: '<path d="M9 4h14l2 24h-6l-3-15-3 15H7Z"/><path d="M9 8h14"/>',
+      Schuhe: '<path d="M3 21v-9h6l3 3h4l3-1 9 5v4H3Z"/><path d="M3 25h25"/><path d="M13 15l2 3m1-4 2 3"/>'
+    };
+    const CATEGORIES = [
+      { key: "frisur", label: "Frisur", focus: "kopf" },
+      { key: "haarfarbe", label: "Haare", title: "Haarfarbe", focus: "kopf" },
+      { key: "haut", label: "Haut", focus: "oberkoerper" },
+      { key: "Oberteil", label: "Oberteil", focus: "oberkoerper" },
+      { key: "Hose", label: "Hose", focus: "beine" },
+      { key: "Schuhe", label: "Schuhe", focus: "schuhe" }
+    ];
+    let current = "frisur";
     const look = () => state.figuren[state.aktiv];
-    const changed = () => { if (active?.id === state.aktiv) applyLook(active); refresh(); wake(); };
+    const styleOf = () => HAIRSTYLES.find((item) => item.name === look().frisur) || HAIRSTYLES[0];
+    const hairLocked = () => { const style = styleOf(); return Boolean(style.locked || !style.key); };
+    const listFor = (key) => key === "haarfarbe" ? hairColors(state.aktiv) : key === "haut" ? skinColors(state.aktiv) : clothColors(state.aktiv, key);
+    const valueOf = (key) => key === "frisur" ? look().frisur : key === "haarfarbe" && hairLocked() ? (styleOf().locked ? "Original" : "–") : look()[key];
 
-    function swatchRow(label, key, list, { lockable = false } = {}) {
-      const row = document.createElement("div");
-      row.className = "ed-row";
-      row.dataset.key = key;
-      row.innerHTML = `<p class="ed-label"><span>${label}</span><span class="ed-current"></span></p>`;
-      const group = document.createElement("div");
-      group.className = "swatches";
-      group.setAttribute("role", "group");
-      group.setAttribute("aria-label", label);
-      for (const [name, hex] of list) {
-        const swatch = document.createElement("button");
-        swatch.type = "button";
-        swatch.className = "swatch";
-        swatch.style.setProperty("--swatch", hex);
-        swatch.dataset.value = name;
-        swatch.title = name;
-        swatch.setAttribute("aria-label", `${label}: ${name}`);
-        swatch.addEventListener("click", () => { look()[key] = name; changed(); });
-        group.append(swatch);
-      }
-      row.append(group);
-      if (lockable) {
-        const lock = document.createElement("p");
-        lock.className = "ed-lock";
-        lock.hidden = true;
-        lock.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span></span>';
-        row.append(lock);
-      }
-      return row;
+    // Reiter
+    const tabButtons = {};
+    for (const category of CATEGORIES) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "ed-tab";
+      button.setAttribute("role", "tab");
+      button.dataset.tab = category.key;
+      button.innerHTML = `<span class="ed-tab-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[category.key]}</svg></span><span class="ed-tab-text"><strong>${category.label}</strong><span class="ed-tab-value"></span></span><span class="ed-tab-dot" aria-hidden="true"></span>`;
+      button.addEventListener("click", () => select(category.key));
+      tabList.append(button);
+      tabButtons[category.key] = button;
+    }
+    tabList.addEventListener("keydown", (event) => {
+      if (!["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)) return;
+      event.preventDefault();
+      const index = CATEGORIES.findIndex((category) => category.key === current);
+      const step = event.key === "ArrowDown" || event.key === "ArrowRight" ? 1 : -1;
+      const next = CATEGORIES[(index + step + CATEGORIES.length) % CATEGORIES.length].key;
+      select(next);
+      tabButtons[next].focus();
+    });
+
+    function select(key) {
+      current = key;
+      setFocus(CATEGORIES.find((category) => category.key === key).focus);
+      renderOptions();
+      refreshTabs();
     }
 
-    let builtFor = null;
-    function rebuild() {
-      const id = state.aktiv;
-      if (builtFor === id) { refresh(); return; }
-      builtFor = id;
-      lookPanel.querySelectorAll(".ed-row").forEach((row) => row.remove());
-      outfitPanel.querySelectorAll(".ed-row").forEach((row) => row.remove());
-      const hairRow = document.createElement("div");
-      hairRow.className = "ed-row";
-      hairRow.innerHTML = '<p class="ed-label"><span>Frisur</span><span class="ed-current" data-hair-count></span></p><div class="ed-select"><button class="btn btn-icon" type="button" data-hair-step="-1" aria-label="Vorherige Frisur"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></button><output class="ed-value" aria-live="polite" data-hair-name></output><button class="btn btn-icon" type="button" data-hair-step="1" aria-label="Nächste Frisur"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>';
-      hairRow.querySelectorAll("[data-hair-step]").forEach((button) => button.addEventListener("click", () => {
-        const index = Math.max(0, HAIRSTYLES.findIndex((item) => item.name === look().frisur));
-        look().frisur = HAIRSTYLES[(index + Number(button.dataset.hairStep) + HAIRSTYLES.length) % HAIRSTYLES.length].name;
-        changed();
-      }));
-      lookPanel.append(hairRow, swatchRow("Haarfarbe", "haarfarbe", hairColors(id), { lockable: true }), swatchRow("Hautfarbe", "haut", skinColors(id)));
-      for (const part of PARTS) outfitPanel.append(swatchRow(part, part, clothColors(id, part)));
-      refresh();
+    function refreshTabs() {
+      for (const category of CATEGORIES) {
+        const button = tabButtons[category.key];
+        const on = category.key === current;
+        button.setAttribute("aria-selected", String(on));
+        button.tabIndex = on ? 0 : -1;
+        button.classList.toggle("is-active", on);
+        button.querySelector(".ed-tab-value").textContent = valueOf(category.key);
+        const dot = button.querySelector(".ed-tab-dot");
+        if (category.key === "frisur") dot.style.removeProperty("--swatch");
+        else dot.style.setProperty("--swatch", category.key === "haarfarbe" && hairLocked() ? CHARACTERS[state.aktiv].hair : findColor(listFor(category.key), look()[category.key]));
+        button.classList.toggle("is-locked", category.key === "haarfarbe" && hairLocked());
+      }
+    }
+
+    function renderOptions() {
+      const category = CATEGORIES.find((item) => item.key === current);
+      optionsTitle.textContent = category.title || category.label;
+      optionsValue.textContent = valueOf(current);
+      optionsBox.replaceChildren();
+      optionsBox.dataset.kind = current === "frisur" ? "frisur" : "farbe";
+      if (current === "frisur") {
+        const grid = document.createElement("div");
+        grid.className = "hair-grid";
+        HAIRSTYLES.forEach((style, index) => {
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = "hair-card";
+          card.dataset.value = style.name;
+          card.setAttribute("aria-pressed", String(style.name === look().frisur));
+          card.setAttribute("aria-label", `Frisur: ${style.name}`);
+          const thumb = thumbs[`${state.aktiv}:${index}`];
+          card.innerHTML = `<span class="hair-thumb">${thumb ? `<img src="${thumb}" alt="" width="160" height="160">` : ""}</span><span class="hair-name">${style.name}</span>`;
+          card.addEventListener("click", () => { look().frisur = style.name; changed(); });
+          grid.append(card);
+        });
+        optionsBox.append(grid);
+        return;
+      }
+      const grid = document.createElement("div");
+      grid.className = "orb-grid";
+      grid.setAttribute("role", "group");
+      grid.setAttribute("aria-label", category.title || category.label);
+      const locked = current === "haarfarbe" && hairLocked();
+      for (const [name, hex] of listFor(current)) {
+        const orb = document.createElement("button");
+        orb.type = "button";
+        orb.className = "orb";
+        orb.dataset.value = name;
+        orb.dataset.texture = current === "Oberteil" ? "strick" : current === "Hose" ? "jeans" : current === "Schuhe" ? "leder" : current === "haarfarbe" ? "haar" : "haut";
+        orb.style.setProperty("--swatch", hex);
+        orb.title = name;
+        orb.setAttribute("aria-label", `${category.title || category.label}: ${name}`);
+        orb.setAttribute("aria-pressed", String(!locked && name === look()[current]));
+        orb.disabled = locked;
+        orb.innerHTML = `<span class="orb-name">${name}</span>`;
+        orb.addEventListener("click", () => { look()[current] = name; changed(); });
+        grid.append(orb);
+      }
+      optionsBox.append(grid);
+      if (locked) {
+        const note = document.createElement("div");
+        note.className = "ed-lock";
+        note.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>${styleOf().locked ? "Bei der Originalfrisur ist die Haarfarbe gesperrt." : "Ohne Haare gibt es keine Haarfarbe."}</span>`;
+        const pick = document.createElement("button");
+        pick.type = "button";
+        pick.className = "btn btn-small";
+        pick.textContent = "Andere Frisur wählen";
+        pick.addEventListener("click", () => select("frisur"));
+        note.append(pick);
+        optionsBox.append(note);
+      }
     }
 
     function refresh() {
-      const current = look();
-      const index = Math.max(0, HAIRSTYLES.findIndex((item) => item.name === current.frisur));
-      const style = HAIRSTYLES[index];
-      const name = lookPanel.querySelector("[data-hair-name]");
-      if (!name) return;
-      name.textContent = style.name;
-      lookPanel.querySelector("[data-hair-count]").textContent = `${index + 1} / ${HAIRSTYLES.length}`;
-      document.querySelectorAll(".ed-row[data-key]").forEach((row) => {
-        const key = row.dataset.key;
-        row.querySelector(".ed-current").textContent = current[key];
-        row.querySelectorAll(".swatch").forEach((swatch) => swatch.setAttribute("aria-pressed", String(swatch.dataset.value === current[key])));
-        if (key === "haarfarbe") {
-          const locked = style.locked || !style.key;
-          row.classList.toggle("is-locked", locked);
-          row.querySelectorAll(".swatch").forEach((swatch) => { swatch.disabled = locked; });
-          const lock = row.querySelector(".ed-lock");
-          lock.hidden = !locked;
-          lock.querySelector("span").textContent = style.locked ? "Bei der Originalfrisur gesperrt" : "Ohne Haare keine Haarfarbe";
-          if (locked) row.querySelector(".ed-current").textContent = style.locked ? "Original" : "–";
+      optionsValue.textContent = valueOf(current);
+      optionsBox.querySelectorAll(".hair-card").forEach((card) => card.setAttribute("aria-pressed", String(card.dataset.value === look().frisur)));
+      const locked = current === "haarfarbe" && hairLocked();
+      optionsBox.querySelectorAll(".orb").forEach((orb) => orb.setAttribute("aria-pressed", String(!locked && orb.dataset.value === look()[current])));
+      refreshTabs();
+    }
+
+    // Frisur-Vorschauen werden live aus der Figur gerendert, mit Haar- und Hautfarbe
+    const thumbs = {};
+    let thumbTimer = 0;
+    function scheduleThumbs(delay = 120) {
+      clearTimeout(thumbTimer);
+      thumbTimer = setTimeout(() => {
+        if (!editing || !active || active.id !== state.aktiv) return;
+        const urls = renderHairThumbs(active);
+        urls.forEach((url, index) => { thumbs[`${active.id}:${index}`] = url; });
+        if (current === "frisur") {
+          optionsBox.querySelectorAll(".hair-card").forEach((card, index) => {
+            const box = card.querySelector(".hair-thumb");
+            let img = box.querySelector("img");
+            if (!img) { img = document.createElement("img"); img.alt = ""; img.width = 160; img.height = 160; box.append(img); }
+            img.src = urls[index];
+          });
         }
-      });
+      }, delay);
+    }
+
+    const changed = () => {
+      if (active?.id === state.aktiv) applyLook(active);
+      refresh();
+      if (current !== "frisur") scheduleThumbs(400);
+      wake();
+    };
+
+    function rebuild() {
+      for (const key of Object.keys(thumbs)) if (!key.startsWith(`${state.aktiv}:`)) delete thumbs[key];
+      if (modeLabel && editing) modeLabel.textContent = `${CHARACTERS[state.aktiv].name} gestalten`;
+      renderOptions();
+      refreshTabs();
+      if (editing) scheduleThumbs(200);
     }
 
     const setEditing = (on) => {
       editing = on;
       heroSection?.classList.toggle("is-editing", on);
-      lookPanel.hidden = !on;
-      outfitPanel.hidden = !on;
+      tabsPanel.hidden = !on;
+      optionsPanel.hidden = !on;
       editorActions.hidden = !on;
       createButton.closest(".hero-actions").hidden = on;
       document.querySelector(".roster")?.toggleAttribute("inert", on);
       if (modeLabel) modeLabel.textContent = on ? `${CHARACTERS[state.aktiv].name} gestalten` : "Charakter wählen";
-      if (on) { heroYaw = 0; state.begleiter = true; }
+      if (on) { heroYaw = 0; state.begleiter = true; select("frisur"); scheduleThumbs(250); }
+      else setFocus("ganz");
       updateMode();
     };
     createButton.addEventListener("click", () => {
-      rebuild();
       setEditing(true);
       stage.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+    });
+    editorActions.querySelector("[data-random]")?.addEventListener("click", () => {
+      const pick = (list) => list[Math.floor(Math.random() * list.length)];
+      const target = look();
+      target.frisur = pick(HAIRSTYLES.slice(1)).name;
+      target.haarfarbe = pick(HAIR_COLORS)[0];
+      target.haut = Math.random() < 0.85 ? pick(SKIN_COLORS.filter(([name]) => name !== "Blau"))[0] : "Blau";
+      for (const part of PARTS) target[part] = pick(CLOTH_COLORS)[0];
+      if (!reduceMotion) heroYaw += Math.PI * 2;
+      changed();
+      scheduleThumbs(300);
     });
     editorActions.querySelector("[data-reset]").addEventListener("click", () => {
       state.figuren[state.aktiv] = { ...LOOK_DEFAULTS };
       changed();
+      scheduleThumbs(300);
     });
     editorActions.querySelector("[data-done]").addEventListener("click", () => {
       state.fertig = true;
@@ -581,7 +728,57 @@ async function start() {
       updateMode();
       setTimeout(goOn, 1100);
     });
+    renderOptions();
+    refreshTabs();
     return { rebuild };
+  }
+
+  function renderHairThumbs(figure) {
+    const size = 160;
+    const ratio = renderer.getPixelRatio();
+    const px = Math.round(size * ratio);
+    const out = document.createElement("canvas");
+    out.width = px;
+    out.height = px;
+    const context = out.getContext("2d");
+    const saved = { yaw: pivot.rotation.y, x: pivot.position.x, visible: pivot.visible };
+    pivot.rotation.y = 0.5;
+    pivot.position.x = 0;
+    pivot.visible = true;
+    scene.updateMatrixWorld(true);
+    const head = figure.model.getObjectByName("Head");
+    const top = figure.model.getObjectByName("head_end");
+    const a = head.getWorldPosition(new THREE.Vector3());
+    const b = top ? top.getWorldPosition(new THREE.Vector3()) : a.clone().add(new THREE.Vector3(0, figure.height * 0.2, 0));
+    const center = a.clone().lerp(b, 0.42);
+    const radius = a.distanceTo(b) * 0.98;
+    thumbCamera.position.set(center.x, center.y + radius * 0.12, center.z + radius / Math.tan(THREE.MathUtils.degToRad(thumbCamera.fov / 2)));
+    thumbCamera.lookAt(center);
+    thumbCamera.updateProjectionMatrix();
+    const id = figure.id;
+    const chosen = state.figuren[id].haarfarbe;
+    const urls = [];
+    renderer.setScissorTest(true);
+    HAIRSTYLES.forEach((style) => {
+      const meshName = style.key ? `Frisur_${CHARACTERS[id].prefix}_${style.key}` : null;
+      for (const [name, mesh] of Object.entries(figure.hairMeshes)) mesh.visible = name === meshName;
+      figure.materials.Haar?.color.set(style.locked ? CHARACTERS[id].hair : findColor(hairColors(id), chosen));
+      renderer.setViewport(0, 0, size, size);
+      renderer.setScissor(0, 0, size, size);
+      renderer.clear();
+      renderer.render(scene, thumbCamera);
+      context.clearRect(0, 0, px, px);
+      context.drawImage(renderer.domElement, 0, renderer.domElement.height - px, px, px, 0, 0, px, px);
+      urls.push(out.toDataURL("image/png"));
+    });
+    renderer.setScissorTest(false);
+    renderer.clear();
+    pivot.rotation.y = saved.yaw;
+    pivot.position.x = saved.x;
+    pivot.visible = saved.visible;
+    applyLook(figure);
+    renderView();
+    return urls;
   }
 
   function makeTintable(material) {
@@ -594,11 +791,11 @@ async function start() {
         "#include <map_fragment>",
         `#ifdef USE_MAP
           vec4 sampledDiffuseColor = texture2D( map, vMapUv );
-          diffuseColor.rgb *= sampledDiffuseColor.rgb * mix( vec3( 1.0 ), uTint, sampledDiffuseColor.a );
+          diffuseColor.rgb *= sampledDiffuseColor.rgb * mix( vec3( 1.0 ), uTint, smoothstep( 0.04, 0.32, sampledDiffuseColor.a ) );
         #endif`
       )}`;
     };
-    material.customProgramCacheKey = () => "jl-tint";
+    material.customProgramCacheKey = () => "jl-tint-2";
     material.needsUpdate = true;
   }
 }
