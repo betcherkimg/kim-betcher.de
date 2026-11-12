@@ -20,7 +20,7 @@ for name in ("index.html", "private-einblicke.html"):
     # The personal pages may mention the employer but never show its material or link the advisory page.
     for banned in ("SH_", "fuchs", "qr-visitenkarte", "finanzprofi", "beratung.html", "volksbank", "gmail"):
         assert banned not in source.lower() if banned.islower() else banned not in source, f"{banned} in {name}"
-    for path in re.findall(r'(?:src|href)="((?:ressources|assets)/[^"]+)"', source):
+    for path in re.findall(r'(?:src|href)="((?:ressources|assets)/[^"?]+)', source):
         target = ROOT / path.replace("%20", " ").replace("%26", "&").replace("%28", "(").replace("%29", ")").replace("&amp;", "&")
         assert target.exists(), f"Missing {path} in {name}"
 advisory = (ROOT / "beratung.html").read_text()
@@ -61,10 +61,17 @@ try:
             assert saved["fertig"] and saved["figuren"]["kim"]["frisur"] == "Kurz" and "maksim" not in saved["figuren"], saved
             page.evaluate("localStorage.clear()")
         assert "Steine" not in page.locator("main").inner_text(), "Advisory slogan on the personal page"
-        page.locator(".build-shot[data-preview]").click()
+        page.locator('.build-shot[data-gallery="smartadm"]').click()
         expect(page.locator("#preview-title")).to_have_text("SmartADM 5")
         expect(page.locator(".preview-counter")).to_have_text("1 / 2")
         page.keyboard.press("Escape")
+        # Every project opens a gallery; BlankofleX is linked in its card only, not in the footer.
+        expect(page.locator(".build-shot[data-preview]")).to_have_count(5)
+        for key, count in (("blankoflex", 3), ("iquest", 3), ("heimello", 4), ("roadlands", 6)):
+            page.locator(f'.build-shot[data-gallery="{key}"]').click()
+            expect(page.locator(".preview-counter")).to_have_text(f"1 / {count}")
+            page.keyboard.press("Escape")
+        assert "BlankofleX" not in page.locator(".site-footer").inner_text()
         for width in (320, 390, 768, 820, 1024, 1440):
             page.set_viewport_size({"width": width, "height": 1000})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), f"Overflow at {width}px"
