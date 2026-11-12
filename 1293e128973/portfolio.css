@@ -400,11 +400,6 @@ html:not(.js) .track { --fill: 1; }
 .companion { position: fixed; left: 0; bottom: 0; z-index: 21; width: clamp(140px, 16vw, 250px); height: clamp(200px, 23vw, 350px); }
 .companion::before { content: ""; position: absolute; left: 50%; bottom: 4px; width: 70%; height: 16px; translate: -50% 0; border-radius: 50%; background: radial-gradient(closest-side, rgba(215, 199, 145, .45), transparent); pointer-events: none; }
 .companion-figure { position: absolute; inset: 12% 22% 2%; border: 0; background: none; cursor: pointer; }
-.companion-close { position: absolute; top: 4px; right: 8px; display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; background: rgba(12, 17, 19, .8); color: var(--soft); cursor: pointer; opacity: 0; transition: opacity .2s; }
-.companion-close svg { width: 14px; height: 14px; }
-.companion:hover .companion-close, .companion:focus-within .companion-close { opacity: 1; }
-.companion-close:hover { color: var(--text); }
-@media (hover: none) { .companion-close { opacity: .85; } }
 
 /* Juschkin Labs: Marke, Charakterauswahl mit zwei Figuren */
 .brand-logo { width: auto; height: 26px; }

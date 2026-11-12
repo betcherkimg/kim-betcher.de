@@ -58,9 +58,10 @@ const LAB = {
 };
 
 // Stimmen: Dateinamen in assets/stimmen
+// Jede Figur hat für jeden Abschnitt eine Zeile. Fehlt eine Aufnahme noch, winkt die Figur.
 const LINES = {
-  kim: { leistungen: "leistungen", "web-apps": "webapps", agenturen: "agenturen", welten: "projekte", roadlands: "roadlands", team: "team", kontakt: "kontakt" },
-  maksim: { leistungen: "vision", "web-apps": "anwendungen", einblick: "workshops", ablauf: "ablauf", team: "arbeitsprobe", kontakt: "kontakt", aufgaben: "daten", zusammenarbeit: "ablauf", arbeitsprobe: "arbeitsprobe" }
+  kim: { leistungen: "leistungen", "web-apps": "webapps", agenturen: "agenturen", welten: "projekte", einblick: "einblick", ablauf: "ablauf", team: "team", kontakt: "kontakt", aufgaben: "aufgaben", zusammenarbeit: "ablauf", arbeitsprobe: "arbeitsprobe", fragen: "fragen" },
+  maksim: { leistungen: "vision", "web-apps": "anwendungen", agenturen: "agenturen", welten: "projekte", einblick: "workshops", ablauf: "ablauf", team: "team", kontakt: "kontakt", aufgaben: "daten", zusammenarbeit: "ablauf", arbeitsprobe: "arbeitsprobe", fragen: "fragen" }
 };
 
 const hairColors = (id) => [["Original", CHARACTERS[id].hair], ...HAIR_COLORS];
@@ -72,7 +73,7 @@ function readState() {
   const base = { aktiv: "kim", fertig: false, begleiter: true, figuren: { kim: { ...LOOK_DEFAULTS }, maksim: { ...LOOK_DEFAULTS } } };
   try {
     const saved = JSON.parse(window.localStorage.getItem(STORE_KEY) || "{}");
-    return { ...base, ...saved, figuren: { kim: { ...LOOK_DEFAULTS, ...saved.figuren?.kim }, maksim: { ...LOOK_DEFAULTS, ...saved.figuren?.maksim } } };
+    return { ...base, ...saved, begleiter: true, figuren: { kim: { ...LOOK_DEFAULTS, ...saved.figuren?.kim }, maksim: { ...LOOK_DEFAULTS, ...saved.figuren?.maksim } } };
   } catch {
     return base;
   }
@@ -337,6 +338,8 @@ async function start() {
         speaking = false;
         // Noch keine Berührung: Zeile merken und beim ersten Klick abspielen
         if (error?.name === "NotAllowedError") { pending = file; said.delete(file); }
+        // Aufnahme fehlt (noch): stattdessen winken
+        else if (error?.name === "NotSupportedError" && !gesture && !reduceMotion && !leave) doGesture("Wave");
       });
     };
     audio.addEventListener("ended", () => { speaking = false; });
@@ -364,7 +367,7 @@ async function start() {
     const unlock = (event) => {
       if (unlocked || speaking) return;
       const target = event.target instanceof Element ? event.target : null;
-      const speaksItself = target?.closest(".roster button, .sound-toggle, .stage, .companion") || (target?.closest("[data-create]") && (active?.id || state.aktiv) === "kim");
+      const speaksItself = target?.closest(".roster button, .sound-toggle, .stage, .companion, [data-create]");
       if (on && pending && !speaksItself) { start(pending); return; }
       // Nur freischalten (stumm anspielen), damit die Zeile des Klicks gleich danach klappt
       const token = ++playToken;
@@ -404,14 +407,9 @@ async function start() {
   const companion = document.createElement("div");
   companion.className = "companion";
   companion.hidden = true;
-  companion.innerHTML = '<button class="companion-figure" type="button" aria-label="Die Figur winkt dir zu"></button><button class="companion-close" type="button" aria-label="Begleiter ausblenden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>';
+  companion.innerHTML = '<button class="companion-figure" type="button" aria-label="Figur antippen: sie spricht mit dir"></button>';
   document.body.append(companion);
   companion.querySelector(".companion-figure").addEventListener("click", poke);
-  companion.querySelector(".companion-close").addEventListener("click", () => {
-    state.begleiter = false;
-    writeState();
-    updateMode();
-  });
 
   // Ansichten: Lab (Startseite) oder Begleiter
   let heroVisible = false;
@@ -746,7 +744,7 @@ async function start() {
     sections.forEach((section) => greeter.observe(section));
   }
   document.addEventListener("welt:aktiv", (event) => {
-    if (event.detail === "roadlands" && mode === "companion" && active?.id === "kim") sound.say("roadlands", { once: true });
+    if (event.detail === "roadlands" && mode === "companion") sound.say("roadlands", { once: true });
   });
 
   // Bühne: drehen mit Ziehen oder Pfeiltasten
@@ -879,7 +877,7 @@ async function start() {
       setFocus(CATEGORIES.find((category) => category.key === key).focus);
       renderOptions();
       refreshTabs();
-      if (key === "haarfarbe" && hairLocked() && state.aktiv === "kim") sound.say("gesperrt", { force: true });
+      if (key === "haarfarbe" && hairLocked()) sound.say("gesperrt", { force: true });
     }
 
     function refreshTabs() {
@@ -1013,7 +1011,7 @@ async function start() {
         state.begleiter = true;
         select("frisur");
         scheduleThumbs(250);
-        if (state.aktiv === "kim") sound.say("editor", { force: true });
+        sound.say("editor", { force: true });
       } else setFocus("ganz");
       updateMode();
     };
