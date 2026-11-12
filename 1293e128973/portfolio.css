@@ -355,7 +355,8 @@ html:not(.js) .track { --fill: 1; }
 /* 3D-Figur: eine feste Zeichenfläche über der Seite, gezeichnet wird nur im Podest oder im Begleiter */
 .figure-layer { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 20; pointer-events: none; }
 .stage-figure { transition: opacity .6s var(--ease); }
-.stage.is-3d .stage-figure { opacity: 0; }
+.stage.is-3d .stage-figure { opacity: 0; visibility: hidden; pointer-events: none; }
+.stage.is-3d { -webkit-user-select: none; user-select: none; }
 .stage.is-3d { cursor: grab; touch-action: pan-y; }
 .stage.is-3d.is-dragging { cursor: grabbing; }
 .stage:focus-visible { outline-offset: -2px; }

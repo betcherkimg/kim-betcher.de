@@ -401,7 +401,9 @@ async function start() {
     stage.setAttribute("role", "img");
     stage.setAttribute("aria-label", "3D-Spielfigur. Zum Drehen ziehen oder Pfeiltasten nutzen.");
     let dragX = null;
+    stage.addEventListener("dragstart", (event) => event.preventDefault());
     stage.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
       dragX = event.clientX;
       stage.setPointerCapture(event.pointerId);
       stage.classList.add("is-dragging");
