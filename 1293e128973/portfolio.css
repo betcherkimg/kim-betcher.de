@@ -558,9 +558,7 @@ html:not(.js) .variant-switch { display: none; }
 .classic-facts { display: grid; max-width: 30em; margin: 22px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
 .classic-facts li { padding: 11px 0; border-bottom: 1px solid var(--line); color: var(--soft); }
 .classic-facts strong { color: var(--text); }
-.smartadm-logo { display: inline-flex; align-items: center; gap: 14px; }
-.smartadm-logo img:first-child { height: 48px; }
-.smartadm-logo img:last-child { height: 36px; }
+.smartadm-logo img { height: 80px; }
 .heimello-logo img { height: 54px; margin-left: -6px; }
 .roadlands-logo img { height: 128px; margin-left: -8px; filter: drop-shadow(0 10px 20px rgba(0, 0, 0, .5)); }
 .world-info .tags { margin-top: 18px; }
@@ -683,6 +681,7 @@ html:not(.js) .variant-switch { display: none; }
   .trailer-poster-classic img { top: 30%; width: 36%; }
   .trailer-poster-classic .trailer-play { top: 76%; min-height: 46px; }
   .heimello-logo img { height: 44px; }
+  .smartadm-logo img { height: 60px; }
   .roadlands-logo img { height: 92px; }
   .editor-actions .btn { flex: 1 1 40%; }
   .hero-actions .btn { flex: 1 1 100%; }

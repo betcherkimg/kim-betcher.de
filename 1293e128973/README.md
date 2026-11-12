@@ -28,7 +28,7 @@ Besucher werden geduzt. Preise stehen nicht auf der Seite („auf Anfrage“).
   Gesamtbild (`labor-vorne.json`).
 - `assets/figuren/`: `kim.glb` und `maksim.glb`.
 - `assets/logos/`: Logos von iQuest, iQuest Classic, SmartADM und Roadlands. Auf der
-  dunklen Seite stehen helle Fassungen ohne Hintergrundfläche (`…-hell.webp`,
+  dunklen Seite stehen helle Fassungen ohne Hintergrundfläche (`smartadm-logo-hell.webp`,
   `iquest-classic-…webp`).
 - `assets/heimello/`: Logo (dunkel und hell) und `app/` mit Bildschirmfotos der App.
 - `assets/roadlands/`: Titelmotiv und Bilder aus dem Entwicklungsstand.
