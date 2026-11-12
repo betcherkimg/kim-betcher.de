@@ -101,7 +101,7 @@ if (copyButton && copyStatus && emailLink && navigator.clipboard?.writeText) {
   copyButton.hidden = false;
   copyButton.addEventListener("click", async () => {
     try {
-      await navigator.clipboard.writeText(emailLink.href.slice("mailto:".length));
+      await navigator.clipboard.writeText(emailLink.href.slice("mailto:".length).split("?")[0]);
       copyStatus.textContent = "E-Mail-Adresse kopiert.";
     } catch {
       copyStatus.textContent = "Bitte die E-Mail-Adresse markieren und kopieren.";
@@ -160,7 +160,7 @@ if (hero && finePointer && !reduceMotion) {
 const canvas = document.querySelector(".particles");
 if (canvas && hero && !reduceMotion && canvas.getContext) {
   const context = canvas.getContext("2d");
-  const colors = ["214, 255, 112", "142, 189, 255", "245, 243, 233"];
+  const colors = ["215, 199, 145", "236, 220, 170", "142, 189, 255", "241, 238, 228"];
   let points = [];
   let running = false;
   let frame = 0;
@@ -274,3 +274,25 @@ if (track) {
   // Links mit Vorschau in einer nicht aktiven Welt holen diese zuerst nach vorn.
   worlds.forEach((world, index) => world.addEventListener("focusin", () => { if (index !== active) setActive(index); }));
 }
+
+// Charakterleiste: Kim oder Maksim wählen (die 3D-Figur hört auf "figur:wahl")
+const heroSelect = document.querySelector(".hero[data-character]");
+const rosterSlots = document.querySelectorAll(".roster .slot[data-character]");
+function showCharacter(id) {
+  if (!heroSelect || !id) return;
+  heroSelect.dataset.character = id;
+  heroSelect.querySelectorAll("[data-for]").forEach((element) => { element.hidden = element.dataset.for !== id; });
+  rosterSlots.forEach((slot) => {
+    const active = slot.dataset.character === id;
+    slot.classList.toggle("is-active", active);
+    slot.setAttribute("aria-pressed", String(active));
+  });
+  const fallback = heroSelect.querySelector(".stage-figure");
+  if (fallback) fallback.alt = id === "maksim" ? "" : "Kim Betcher";
+}
+rosterSlots.forEach((slot) => slot.addEventListener("click", () => {
+  if (slot.dataset.character === heroSelect?.dataset.character) return;
+  showCharacter(slot.dataset.character);
+  document.dispatchEvent(new CustomEvent("figur:wahl", { detail: slot.dataset.character }));
+}));
+document.addEventListener("figur:bereit", (event) => showCharacter(event.detail));

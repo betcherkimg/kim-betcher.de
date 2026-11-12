@@ -1,4 +1,4 @@
-"""Check the portfolio and the relocated advisory pages.
+"""Check the Juschkin Labs preview (one-pager, detail page, legal pages) and the relocated advisory pages.
 
 Run: python tests/portfolio-browser.py [screenshot-directory]
 Requires Playwright and Chromium. The advisory booking test loads its existing CDNs.
@@ -9,6 +9,7 @@ from functools import partial
 from html.parser import HTMLParser
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+import re
 import shutil
 import sys
 from threading import Thread
@@ -19,7 +20,7 @@ from playwright.sync_api import expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else None
-PAGES = [f"1293e128973/{name}" for name in ("index.html", "impressum.html", "datenschutz.html")]
+PAGES = [f"1293e128973/{name}" for name in ("index.html", "datenintegration.html", "impressum.html", "datenschutz.html")]
 
 
 class PageLinks(HTMLParser):
@@ -39,7 +40,10 @@ class PageLinks(HTMLParser):
 
 
 for name in PAGES:
-    PageLinks(ROOT / name).feed((ROOT / name).read_text())
+    source = (ROOT / name).read_text()
+    PageLinks(ROOT / name).feed(source)
+    # Only the business addresses belong on these pages.
+    assert "gmail" not in source.lower(), f"Private address in {name}"
 
 
 class QuietHandler(SimpleHTTPRequestHandler):
@@ -66,9 +70,41 @@ try:
         page.on("request", lambda request: video_requests.append(request.url) if "youtube" in request.url else None)
         page.on("pageerror", lambda error: errors.append(str(error)))
         page.goto(base + "/", wait_until="networkidle")
-        expect(page.get_by_role("heading", level=1)).to_contain_text("Spielwelten")
-        for project in ["iQuest", "SmartADM Sales", "SmartADM Office", "heimello", "Roadlands"]:
-            expect(page.get_by_role("heading", name=project, exact=project != "heimello")).to_be_visible()
+        expect(page.get_by_role("heading", level=1)).to_contain_text("Arbeitsabläufe")
+        expect(page.locator(".site-header .brand-logo")).to_have_attribute("alt", "Juschkin Labs")
+        for project in ["iQuest", "SmartADM", "heimello", "Roadlands"]:
+            expect(page.get_by_role("heading", name=project, exact=project != "heimello")).to_be_attached()
+        for heading in ("Was wir für dich bauen.", "Deine Ansprechpartner."):
+            expect(page.get_by_role("heading", name=heading)).to_be_visible()
+        assert "Preise nennen wir dir im Gespräch" in page.locator("#web-apps").inner_text()
+
+        # Character select: both partners are playable and switch the side panels.
+        hero = page.locator(".hero")
+        page.get_by_role("button", name="Maksim Juschkin").click()
+        expect(hero).to_have_attribute("data-character", "maksim")
+        expect(page.locator('.roster [data-character="maksim"]')).to_have_attribute("aria-pressed", "true")
+        expect(page.locator('dl.stats[data-for="maksim"]')).to_be_visible()
+        expect(page.locator('dl.stats[data-for="kim"]')).to_be_hidden()
+        page.get_by_role("button", name="Kim Betcher").click()
+        expect(hero).to_have_attribute("data-character", "kim")
+        expect(page.locator('ul.skill-list[data-for="kim"]')).to_be_visible()
+
+        # 3D editor (only where the browser offers WebGL).
+        if page.evaluate("Boolean(document.createElement('canvas').getContext('webgl2') || document.createElement('canvas').getContext('webgl'))"):
+            expect(page.locator(".stage")).to_have_class(re.compile(r"\bis-3d\b"), timeout=60000)
+            page.get_by_role("button", name="Charakter erstellen").click()
+            expect(page.locator('[data-editor="look"]')).to_be_visible()
+            expect(page.locator('.ed-row[data-key="haarfarbe"]')).to_have_class(re.compile(r"\bis-locked\b"))
+            page.get_by_role("button", name="Nächste Frisur").click()
+            expect(page.locator("[data-hair-name]")).to_have_text("Kurz")
+            expect(page.locator('.ed-row[data-key="haarfarbe"]')).not_to_have_class(re.compile(r"\bis-locked\b"))
+            page.locator('.ed-row[data-key="Oberteil"] .swatch[data-value="Gold"]').click()
+            page.get_by_role("button", name="Fertig").click()
+            expect(page.locator('[data-editor="look"]')).to_be_hidden()
+            saved = page.evaluate("JSON.parse(localStorage.getItem('jl-figuren-v1'))")
+            assert saved["fertig"] and saved["figuren"]["kim"]["frisur"] == "Kurz" and saved["figuren"]["kim"]["Oberteil"] == "Gold", saved
+            page.evaluate("localStorage.clear()")
+            page.reload(wait_until="networkidle")
         assert page.locator('a[href*="beratung"], a[href*="private-einblicke"], a[href*="/smartadm/"]').count() == 0
         expect(page.locator(".roadlands-copy")).to_contain_text("noch nicht spielbar")
         assert not any(name in page.locator(".roadlands-project").inner_text() for name in ("WoW", "Metin2", "GTA", "Steam"))
@@ -126,7 +162,22 @@ try:
         page.keyboard.press("Escape")
         page.get_by_role("button", name="E-Mail-Adresse kopieren").click()
         expect(page.locator(".copy-status")).to_have_text("E-Mail-Adresse kopiert.")
-        assert page.evaluate("window.copiedEmail") == "kim@juschkinlabs.de"
+        assert page.evaluate("window.copiedEmail") == "kontakt@juschkinlabs.de"
+
+        page.goto(f"{base}/datenintegration.html", wait_until="networkidle")
+        expect(page.get_by_role("heading", level=1)).to_contain_text("Daten verbinden")
+        questions = page.locator(".faq summary")
+        expect(questions).to_have_count(5)
+        questions.first.click()
+        expect(page.locator(".faq details").first).to_have_attribute("open", "")
+        mail = page.locator(".contact-mail")
+        assert mail.get_attribute("href").startswith("mailto:kontakt@juschkinlabs.de?subject=Datenintegration%20und%20Automatisierung")
+        page.get_by_role("button", name="E-Mail-Adresse kopieren").click()
+        assert page.evaluate("window.copiedEmail") == "kontakt@juschkinlabs.de"
+        for width in (320, 390, 820, 1440):
+            page.set_viewport_size({"width": width, "height": 1000})
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), f"Overflow on detail page at {width}px"
+        page.set_viewport_size({"width": 1440, "height": 1000})
 
         for name in ("impressum.html", "datenschutz.html"):
             page.goto(f"{base}/{name}", wait_until="networkidle")
@@ -169,7 +220,7 @@ try:
             page.screenshot(path=str(OUTPUT / "portfolio-mobile.png"), full_page=True)
         browser.close()
     assert not errors, errors
-    print("PASS: local links, responsive layouts, navigation, project gallery, current heimello gallery, click-to-load trailer, contact, legal pages, unchanged public homepage and booking flow, no-JS and reduced-motion support.")
+    print("PASS: local links, no private addresses, responsive layouts, navigation, character select, 3D editor, project gallery, current heimello gallery, click-to-load trailer, contact, detail page with FAQ, legal pages, unchanged public homepage and booking flow, no-JS and reduced-motion support.")
 finally:
     server.shutdown()
     server.server_close()
