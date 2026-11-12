@@ -387,7 +387,10 @@ h2 { font-size: clamp(32px, 3.5vw, 52px); }
 /* Begleiter unten links */
 .companion { position: fixed; left: 0; bottom: 0; z-index: 21; width: clamp(140px, 16vw, 250px); height: clamp(200px, 23vw, 350px); }
 .companion::before { content: ""; position: absolute; left: 50%; bottom: 4px; width: 70%; height: 16px; translate: -50% 0; border-radius: 50%; background: radial-gradient(closest-side, rgba(215, 199, 145, .45), transparent); pointer-events: none; }
-.companion-figure { position: absolute; inset: 12% 22% 2%; border: 0; background: none; cursor: pointer; }
+.companion-figure { position: absolute; inset: 12% 22% 2%; border: 0; background: none; cursor: grab; touch-action: none; }
+.companion.is-carried .companion-figure { cursor: grabbing; }
+.companion::before { transition: opacity .2s; }
+.companion.is-carried::before { opacity: 0; }
 
 /* Juschkin Labs: Marke, Charakterauswahl mit zwei Figuren */
 .brand-logo { width: auto; height: 26px; }
@@ -737,7 +740,7 @@ a.build-shot:hover img, a.partner-shot:hover img { filter: none; scale: 1.04; }
 }
 
 /* Menü als Schaltfläche, sobald die Navigation nicht mehr in eine Zeile passt */
-@media (max-width: 940px) {
+@media (max-width: 760px) {
   .menu-toggle { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 4px; border: 0; background: none; font-size: 15px; font-weight: 600; cursor: pointer; }
   .menu-icon { position: relative; width: 20px; height: 2px; background: currentColor; transition: background .2s; }
   .menu-icon::before, .menu-icon::after { content: ""; position: absolute; left: 0; width: 20px; height: 2px; background: currentColor; transition: transform .2s; }

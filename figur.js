@@ -13,10 +13,11 @@ const SOUND_KEY = "kb-ton";
 // Nach neuen Aufnahmen hochzählen, damit Browser die alten nicht aus dem Zwischenspeicher nehmen
 const VOICE_VERSION = "2";
 const FIGURE_VERSION = "20261112-3";
+const MOVES_VERSION = "1";
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const CHARACTERS = {
-  kim: { name: "Kim", file: "kim.glb", prefix: "Kim", hair: "#6C4B35", skin: "#FFB490", parts: { Oberteil: "#E0D5D3", Hose: "#262528", Schuhe: "#262526" } }
+  kim: { name: "Kim", file: "kim.glb", moves: "kim-moves.glb", prefix: "Kim", hair: "#6C4B35", skin: "#FFB490", parts: { Oberteil: "#E0D5D3", Hose: "#262528", Schuhe: "#262526" } }
 };
 const HAIRSTYLES = [
   { name: "Original", key: "Original", locked: true },
@@ -217,19 +218,28 @@ async function start() {
       for (const clip of gltf.animations) actions[clip.name.replace(/^[A-Za-z]+_/, "")] = mixer.clipAction(clip);
       const figure = { id, model, materials, hairMeshes, mixer, actions, height: box.max.y - box.min.y, current: null, currentName: "" };
       mixer.addEventListener("finished", (event) => {
-        if (figure === active && event.action === figure.current && gesture) {
+        if (figure !== active || event.action !== figure.current) return;
+        if (stunt?.finished) { stunt.finished(); return; }
+        if (gesture) {
           gesture = null;
           play("Idle", { fade: 0.4 });
         }
       });
       applyLook(figure);
+      // Weitere Bewegungen (Tanz, Schreck, Umfallen, Baumeln) kommen nach, die Figur wartet nicht darauf
+      if (CHARACTERS[id].moves) {
+        loader.loadAsync(`${ROOT}assets/figuren/${CHARACTERS[id].moves}?v=${MOVES_VERSION}`).then((extra) => {
+          for (const clip of extra.animations) actions[clip.name.replace(/^[A-Za-z]+_/, "")] = mixer.clipAction(clip);
+        }).catch(() => { /* ohne Zusatzbewegungen bleibt es bei Winken und Hüpfen */ });
+      }
       return figure;
     });
     loading[id].catch(() => { delete loading[id]; });
     return loading[id];
   }
 
-  function play(name, { once = false, fade = 0.35, timeScale = 1 } = {}) {
+  // once: einmal abspielen und stehen bleiben; loops: so oft wiederholen; timeScale < 0: rückwärts
+  function play(name, { once = false, loops = 1, fade = 0.35, timeScale = 1 } = {}) {
     const figure = active;
     const next = figure?.actions[name];
     if (!next) return;
@@ -238,9 +248,11 @@ async function start() {
     next.enabled = true;
     next.setEffectiveWeight(1);
     next.timeScale = timeScale;
-    next.setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat, Infinity);
+    next.setLoop(once && loops <= 1 ? THREE.LoopOnce : THREE.LoopRepeat, once ? loops : Infinity);
     next.clampWhenFinished = once;
-    if (figure.current && fade > 0) next.crossFadeFrom(figure.current, fade, false);
+    if (timeScale < 0) next.time = next.getClip().duration;
+    if (figure.current === next) { /* dieselbe Bewegung noch einmal: nichts zu überblenden */ }
+    else if (figure.current && fade > 0) next.crossFadeFrom(figure.current, fade, false);
     else if (figure.current) figure.current.stop();
     next.play();
     figure.current = next;
@@ -248,9 +260,108 @@ async function start() {
   }
   function doGesture(name) {
     if (!active?.actions[name] || leave) return;
+    stunt = null;
+    spin = 0;
     gesture = name;
     play(name, { once: true, fade: 0.25 });
     wake();
+  }
+
+  // Kunststücke: beim Antippen der Reihe nach, als Begleiter ab und zu auch von selbst
+  const MOVES = ["Wave", "Dance", "Jump", "Spin", "Flinch", "Sprint", "Fall"];
+  const ANTICS = ["Dance", "Wave", "Spin", "Jump", "Sprint"];
+  let stunt = null;
+  let spin = 0;
+  let moveIndex = 0;
+  let lastAntic = "";
+  function canMove(name) {
+    const has = (clip) => Boolean(active?.actions[clip]);
+    if (reduceMotion) return (name === "Wave" || name === "Jump") && has(name);
+    if (name === "Dance") return has("Dance");
+    if (name === "Spin") return has("Jump");
+    if (name === "Flinch") return has("HitReaction");
+    if (name === "Sprint") return has("Run");
+    if (name === "Fall") return mode === "companion" && has("FallBackward");
+    return has(name);
+  }
+  function doMove(name) {
+    if (!canMove(name) || leave) return false;
+    if (name === "Wave" || name === "Jump") { doGesture(name); return true; }
+    spin = 0;
+    if (name === "Dance") {
+      stunt = null;
+      gesture = name;
+      play("Dance", { once: true, loops: 2, fade: 0.3 });
+    } else if (name === "Spin") {
+      // Sprung mit ganzer Drehung, solange die Figur in der Luft ist
+      doGesture("Jump");
+      stunt = { name, t: 0 };
+    } else if (name === "Flinch") {
+      stunt = null;
+      gesture = name;
+      play("HitReaction", { once: true, fade: 0.12 });
+    } else if (name === "Sprint") {
+      gesture = name;
+      play("Run", { fade: 0.2, timeScale: 1.25 });
+      stunt = { name, t: 0, yaw: 1.15 };
+    } else if (name === "Fall") {
+      fallOver();
+    }
+    wake();
+    return true;
+  }
+  // Umfallen, kurz liegen bleiben, dann dieselbe Bewegung rückwärts: aufstehen.
+  // from: mitten in der Bewegung einsteigen (nach einem Sturz landet die Figur schon in der Hocke).
+  function fallOver({ from = 0, landed = null } = {}) {
+    const box = rectOf(companion);
+    const side = box.left + box.width / 2 < window.innerWidth / 2 ? -1 : 1;
+    spin = 0;
+    gesture = "Fall";
+    play("FallBackward", { once: true, fade: 0.15, timeScale: 1.5 });
+    if (from) active.actions.FallBackward.time = from;
+    stunt = { name: "Fall", t: 0, yaw: side * 1.25, hold: -1, landed };
+    stunt.finished = () => {
+      if (stunt.hold < 0) { stunt.hold = 0.5; return; }
+      stunt = null;
+      gesture = null;
+      play("Idle", { fade: 0.4 });
+    };
+    wake();
+  }
+  function nextMove() {
+    for (let tries = 0; tries < MOVES.length; tries += 1) {
+      const name = MOVES[moveIndex % MOVES.length];
+      moveIndex += 1;
+      if (doMove(name)) return true;
+    }
+    return false;
+  }
+  function antic() {
+    const pool = ANTICS.filter((name) => name !== lastAntic && canMove(name));
+    if (!pool.length) return;
+    lastAntic = pool[Math.floor(Math.random() * pool.length)];
+    doMove(lastAntic);
+  }
+  // Läuft jedes Bild: Drehung im Sprung, Sprint auf der Stelle, Liegen und Aufstehen
+  function runStunt(dt) {
+    if (!stunt) { spin = 0; return; }
+    stunt.t += dt;
+    if (stunt.name === "Spin") {
+      const k = THREE.MathUtils.smootherstep(stunt.t, 0.8, 1.7);
+      spin = k * Math.PI * 2;
+      if (stunt.t > 1.9) { stunt = null; spin = 0; }
+    } else if (stunt.name === "Sprint" && stunt.t > 1.7) {
+      stunt = null;
+      gesture = null;
+      play("Idle", { fade: 0.35 });
+    } else if (stunt.name === "Fall") {
+      // Sobald die Figur liegt (ab etwa 3,3 s der Bewegung), darf sie sich beschweren
+      if (stunt.landed && stunt.hold < 0 && active?.actions.FallBackward.time > 3.3) { stunt.landed(); stunt.landed = null; }
+      if (stunt.hold > 0) {
+        stunt.hold -= dt;
+        if (stunt.hold <= 0) { stunt.hold = 0; play("FallBackward", { once: true, fade: 0, timeScale: -1.9 }); }
+      }
+    }
   }
 
   function applyLook(figure) {
@@ -396,22 +507,138 @@ async function start() {
   })();
 
   // Antippen der Figur: sie spricht eine ihrer Zeilen oder macht eine Geste
-  const gestures = ["Wave", "Talk", "Jump"];
+  // Ton an: abwechselnd eine Zeile und ein Kunststück (eine laufende Zeile wird nicht abgeschnitten).
+  // Ton aus: jedes Mal ein Kunststück.
   let gestureIndex = 0;
+  let spokeLast = false;
   function poke() {
     if (sound.flush()) return;
-    if (sound.on && sound.say(`klick_${(gestureIndex % 3) + 1}`, { force: true })) { gestureIndex += 1; return; }
-    doGesture(gestures[gestureIndex % gestures.length]);
-    gestureIndex += 1;
+    idleFor = 0;
+    anticIn = Math.max(anticIn, 10);
+    if (sound.on && !sound.busy && !spokeLast && sound.say(`klick_${(gestureIndex % 3) + 1}`, { force: true })) {
+      gestureIndex += 1;
+      spokeLast = true;
+      return;
+    }
+    spokeLast = false;
+    if (!nextMove()) doGesture("Wave");
   }
 
   // Begleiter-Rahmen unten links
   const companion = document.createElement("div");
   companion.className = "companion";
   companion.hidden = true;
-  companion.innerHTML = '<button class="companion-figure" type="button" aria-label="Figur antippen: sie spricht mit dir"></button>';
+  companion.innerHTML = '<button class="companion-figure" type="button" aria-label="Figur antippen oder mit der Maus an einen anderen Platz ziehen"></button>';
   document.body.append(companion);
-  companion.querySelector(".companion-figure").addEventListener("click", poke);
+  const figureButton = companion.querySelector(".companion-figure");
+  let press = null;
+  let carry = null;
+  let skipClick = false;
+  let drop = null;
+  let dropLine = 0;
+  // Zeilen beim Packen und nach einem Sturz: Aufnahmen folgen, bis dahin bleibt die Figur dabei stumm
+  const GRAB_LINES = [];
+  const DROP_LINES = [];
+  let grabLine = 0;
+  const hang = { angle: 0, omega: 0, lift: 0 };
+  // Platz des Begleiters: Anteile der freien Fläche, damit er nach dem Drehen oder Verkleinern sichtbar bleibt
+  function placeCompanion(left, top, save = false) {
+    const width = companion.offsetWidth;
+    const height = companion.offsetHeight;
+    if (!width || !height) return;
+    const maxLeft = Math.max(0, window.innerWidth - width);
+    const maxTop = Math.max(0, window.innerHeight - height);
+    const x = Math.min(maxLeft, Math.max(0, left));
+    const y = Math.min(maxTop, Math.max(0, top));
+    companion.style.left = `${x}px`;
+    companion.style.top = `${y}px`;
+    companion.style.bottom = "auto";
+    if (save) {
+      state.platz = { x: maxLeft ? x / maxLeft : 0, y: maxTop ? y / maxTop : 1 };
+      writeState();
+    }
+  }
+  function restoreCompanion() {
+    const spot = state.platz;
+    if (!spot || typeof spot.x !== "number" || typeof spot.y !== "number") return;
+    placeCompanion(spot.x * (window.innerWidth - companion.offsetWidth), spot.y * (window.innerHeight - companion.offsetHeight));
+  }
+  figureButton.addEventListener("pointerdown", (event) => {
+    if (event.button) return;
+    const rect = companion.getBoundingClientRect();
+    drop = null;
+    press = { id: event.pointerId, x: event.clientX, y: event.clientY, left: rect.left, top: rect.top, lastX: event.clientX, lastT: performance.now() };
+    figureButton.setPointerCapture(event.pointerId);
+  });
+  figureButton.addEventListener("pointermove", (event) => {
+    if (!press || event.pointerId !== press.id) return;
+    const dx = event.clientX - press.x;
+    const dy = event.clientY - press.y;
+    if (!carry && Math.hypot(dx, dy) > 8) {
+      // Gepackt: die Figur baumelt am Griff
+      carry = { vx: 0 };
+      stunt = null;
+      spin = 0;
+      walkIn = null;
+      pivot.position.set(0, 0, 0);
+      gesture = "Hang";
+      play(active?.actions.Hang ? "Hang" : "Idle", { fade: 0.15 });
+      companion.classList.add("is-carried");
+      if (GRAB_LINES.length && !sound.busy) { sound.say(GRAB_LINES[grabLine % GRAB_LINES.length], { force: true }); grabLine += 1; }
+    }
+    if (!carry) return;
+    const now = performance.now();
+    const speed = (event.clientX - press.lastX) / Math.max(1, now - press.lastT) * 1000;
+    carry.vx = THREE.MathUtils.lerp(carry.vx, speed, 0.5);
+    press.lastX = event.clientX;
+    press.lastT = now;
+    placeCompanion(press.left + dx, press.top + dy);
+    wake();
+  });
+  const release = (event) => {
+    if (!press || event.pointerId !== press.id) return;
+    press = null;
+    if (!carry) return;
+    carry = null;
+    skipClick = true;
+    setTimeout(() => { skipClick = false; }, 300);
+    companion.classList.remove("is-carried");
+    const rect = companion.getBoundingClientRect();
+    placeCompanion(rect.left, rect.top, true);
+    gesture = null;
+    idleFor = 0;
+    anticIn = Math.max(anticIn, 8);
+    play("Idle", { fade: 0.3 });
+    // In der Luft abgesetzt: Die Hälfte der Male hält der Platz, sonst stürzt die Figur an den unteren Rand
+    const floor = window.innerHeight - rect.height;
+    if (!reduceMotion && floor - rect.top > 60 && active?.actions.FallBackward && Math.random() < 0.5) drop = { left: rect.left, top: rect.top, speed: 0, wait: 0.45 };
+    wake();
+  };
+  // Sturz: kurzes Zögern, dann freier Fall; unten landet die Figur in der Hocke und kippt um
+  function runDrop(dt) {
+    if (drop.wait > 0) {
+      drop.wait -= dt;
+      if (drop.wait <= 0) { gesture = "Hang"; play(active?.actions.Hang ? "Hang" : "Idle", { fade: 0.12, timeScale: 1.5 }); }
+      return;
+    }
+    const floor = Math.max(0, window.innerHeight - companion.offsetHeight);
+    drop.speed += 3200 * dt;
+    drop.top += drop.speed * dt;
+    if (drop.top < floor) { placeCompanion(drop.left, drop.top); return; }
+    placeCompanion(drop.left, floor, true);
+    drop = null;
+    fallOver({ from: 1.45, landed: () => {
+      if (!DROP_LINES.length) return;
+      sound.say(DROP_LINES[dropLine % DROP_LINES.length], { force: true });
+      dropLine += 1;
+    } });
+  }
+  figureButton.addEventListener("pointerup", release);
+  figureButton.addEventListener("pointercancel", release);
+  figureButton.addEventListener("click", () => {
+    if (skipClick) { skipClick = false; return; }
+    poke();
+  });
 
   // Ansichten: Lab (Startseite) oder Begleiter
   let heroVisible = false;
@@ -466,18 +693,44 @@ async function start() {
   }
 
   // Begleiter: Kamera auf die Figur gerichtet
+  const COMPANION_FOV = camera.fov;
   function drawCompanion(rect) {
     if (!active || !pivot.visible || !visibleRect(rect)) return;
     const scale = active.height / (companionFrame.head - companionFrame.feet);
     const target = -companionFrame.feet * scale;
-    const distance = scale / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-    camera.aspect = rect.width / rect.height;
+    const half = Math.tan(THREE.MathUtils.degToRad(COMPANION_FOV / 2));
+    const distance = scale / half;
+    // Gedachter großer Ausschnitt um den Rahmen; gezeichnet wird, was davon im Fenster liegt
+    const padX = rect.height * 1.25;
+    const padY = rect.height * 0.3;
+    const fullW = rect.width + 2 * padX;
+    const fullH = rect.height + 2 * padY;
+    const left = Math.max(0, rect.left - padX);
+    const top = Math.max(0, rect.top - padY);
+    const right = Math.min(window.innerWidth, rect.right + padX);
+    const bottom = Math.min(window.innerHeight, rect.bottom + padY);
+    if (right - left < 2 || bottom - top < 2) return;
+    camera.fov = THREE.MathUtils.radToDeg(2 * Math.atan(half * fullH / rect.height));
+    camera.aspect = fullW / fullH;
     camera.position.set(0, target, distance);
     camera.lookAt(0, target, 0);
-    camera.clearViewOffset();
+    camera.setViewOffset(fullW, fullH, left - (rect.left - padX), top - (rect.top - padY), right - left, bottom - top);
     camera.updateProjectionMatrix();
-    setViewport(rect);
+    setViewport({ left, bottom, width: right - left, height: bottom - top });
+    // Kunststücke und Tragen wirken nur auf das Bild, nicht auf den Stand der Figur
+    const lean = hang.angle;
+    const grip = active.height * 0.93;
+    pivot.rotation.y += spin;
+    pivot.rotation.z = lean;
+    pivot.position.x += Math.sin(lean) * grip;
+    pivot.position.y += hang.lift + grip - Math.cos(lean) * grip;
     renderer.render(scene, camera);
+    pivot.position.x -= Math.sin(lean) * grip;
+    pivot.position.y -= hang.lift + grip - Math.cos(lean) * grip;
+    pivot.rotation.z = 0;
+    pivot.rotation.y -= spin;
+    camera.clearViewOffset();
+    camera.fov = COMPANION_FOV;
   }
 
   // Lab: Bildausschnitt berechnen, Hintergrund verschieben, Figur und Torsäule zeichnen
@@ -548,6 +801,7 @@ async function start() {
   let scrollDir = 1;
   let calmFor = 0;
   let idleFor = 0;
+  let anticIn = 9;
   const greetSeen = new Set();
   const inView = new Set();
   // Der innerste noch nicht begrüßte Abschnitt in der Bildschirmmitte
@@ -598,9 +852,10 @@ async function start() {
         labYaw = damp(labYaw, faceCamera + heroYaw, 9, dt);
         idleFor += dt;
         if (idleFor > 30 && !editing) { idleFor = -1e9; sound.say("warten", { once: true }); }
+        runStunt(dt);
       }
       pivot.position.copy(labPos);
-      pivot.rotation.y = labYaw;
+      pivot.rotation.y = labYaw + (leave ? 0 : spin);
     } else if (walkIn) {
       walkIn.elapsed += dt;
       const progress = Math.min(1, walkIn.elapsed / walkIn.duration);
@@ -612,17 +867,35 @@ async function start() {
         done?.();
       }
     } else if (mode === "companion") {
-      if (scrollSpeed > 60 && !reduceMotion) {
+      // Am Griff: die Figur pendelt der Bewegung nach; losgelassen schwingt sie aus und setzt auf
+      const leanTo = carry ? THREE.MathUtils.clamp(-carry.vx * 0.0011, -0.75, 0.75) : 0;
+      hang.omega += ((leanTo - hang.angle) * (carry ? 55 : 120) - hang.omega * (carry ? 6 : 14)) * dt;
+      hang.angle += hang.omega * dt;
+      hang.lift = damp(hang.lift, carry ? active?.height * 0.07 || 0 : 0, carry ? 12 : 9, dt);
+      if (carry) {
+        carry.vx = damp(carry.vx, 0, 6, dt);
         calmFor = 0;
         idleFor = 0;
+        pivot.rotation.y = damp(pivot.rotation.y, 0.2, 8, dt);
+      } else if (drop) {
+        calmFor = 0;
+        idleFor = 0;
+        runDrop(dt);
+      } else if (scrollSpeed > 60 && !reduceMotion) {
+        calmFor = 0;
+        idleFor = 0;
+        anticIn = Math.max(anticIn, 5);
+        stunt = null;
+        spin = 0;
         if (gesture) gesture = null;
         play(scrollSpeed > 1900 ? "Run" : "Walk", { timeScale: THREE.MathUtils.clamp(scrollSpeed / 750, 0.75, 1.5), fade: 0.25 });
         pivot.rotation.y = damp(pivot.rotation.y, scrollDir > 0 ? 1.15 : -1.15, 8, dt);
       } else {
         calmFor += dt;
         idleFor += dt;
+        runStunt(dt);
         if (!gesture && active?.currentName !== "Idle") play("Idle", { fade: 0.45 });
-        pivot.rotation.y = damp(pivot.rotation.y, 0.38, 5, dt);
+        pivot.rotation.y = damp(pivot.rotation.y, stunt?.yaw ?? 0.38, stunt?.yaw ? 7 : 5, dt);
         if (calmFor > 0.45 && !gesture && !sound.busy) {
           const section = nextSection();
           if (section) {
@@ -632,6 +905,14 @@ async function start() {
           }
         }
         if (idleFor > 40) { idleFor = -1e9; sound.say("warten", { once: true }); }
+        // Ab und zu ein Kunststück von selbst, ohne Ton häufiger
+        if (!gesture && !stunt && !sound.busy && !reduceMotion && calmFor > 2) {
+          anticIn -= dt;
+          if (anticIn <= 0) {
+            anticIn = (sound.on ? 26 : 12) + Math.random() * (sound.on ? 14 : 9);
+            antic();
+          }
+        }
       }
     }
 
@@ -662,6 +943,8 @@ async function start() {
     const previous = mode;
     mode = next;
     companion.hidden = mode !== "companion";
+    if (mode === "companion") restoreCompanion();
+    else if (carry || drop) { carry = null; press = null; drop = null; companion.classList.remove("is-carried"); }
     // Im Lab liegt die Figur unter Text und Knöpfen, als Begleiter darüber
     canvas.dataset.layer = mode === "hero" ? "lab" : "";
     if (mode === "companion") {
@@ -728,6 +1011,7 @@ async function start() {
   window.addEventListener("resize", () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
     renderer.setSize(window.innerWidth, window.innerHeight, false);
+    if (mode === "companion") restoreCompanion();
     wake();
   });
   window.addEventListener("scroll", wake, { passive: true });

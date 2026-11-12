@@ -67,6 +67,26 @@ try:
         page.keyboard.press("Escape")
         # Every project opens a gallery; BlankofleX is linked in its card only, not in the footer.
         expect(page.locator(".build-shot[data-preview]")).to_have_count(5)
+        # Begleiter: lässt sich antippen, packen und versetzen; der Platz wird gemerkt
+        if page.locator(".stage.is-3d").count():
+            page.evaluate("document.querySelector('#weg').scrollIntoView({behavior: 'instant'})")
+            figure = page.locator(".companion-figure")
+            expect(figure).to_be_visible()
+            page.wait_for_function("performance.getEntriesByType('resource').some((entry) => entry.name.includes('kim-moves.glb') && entry.responseEnd > 0)")
+            figure.click()
+            before = page.locator(".companion").bounding_box()
+            page.mouse.move(before["x"] + before["width"] / 2, before["y"] + before["height"] / 2)
+            page.mouse.down()
+            page.mouse.move(before["x"] + before["width"] / 2 + 300, before["y"] + before["height"] / 2 - 4, steps=8)
+            expect(page.locator(".companion")).to_have_class(re.compile("is-carried"))
+            page.mouse.up()
+            expect(page.locator(".companion")).not_to_have_class(re.compile("is-carried"))
+            after = page.locator(".companion").bounding_box()
+            assert abs(after["x"] - before["x"] - 300) < 12, (before, after)
+            spot = page.evaluate("JSON.parse(localStorage.getItem('kb-figur-v1')).platz")
+            assert 0 < spot["x"] < 1 and 0 <= spot["y"] <= 1, spot
+            assert not errors, errors
+            page.evaluate("window.scrollTo(0, 0)")
         for key, count in (("blankoflex", 3), ("iquest", 3), ("heimello", 4), ("roadlands", 6)):
             page.locator(f'.build-shot[data-gallery="{key}"]').click()
             expect(page.locator(".preview-counter")).to_have_text(f"1 / {count}")
