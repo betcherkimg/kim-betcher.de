@@ -389,6 +389,8 @@ h2 { font-size: clamp(32px, 3.5vw, 52px); }
 .companion::before { content: ""; position: absolute; left: 50%; bottom: 4px; width: 70%; height: 16px; translate: -50% 0; border-radius: 50%; background: radial-gradient(closest-side, rgba(215, 199, 145, .45), transparent); pointer-events: none; }
 .companion-figure { position: absolute; inset: 12% 22% 2%; border: 0; background: none; cursor: grab; touch-action: none; }
 .companion.is-carried .companion-figure { cursor: grabbing; }
+.companion.is-down-right .companion-figure { inset: 50% -115% 0 10%; }
+.companion.is-down-left .companion-figure { inset: 50% 10% 0 -115%; }
 .companion::before { transition: opacity .2s; }
 .companion.is-carried::before { opacity: 0; }
 

@@ -536,6 +536,7 @@ async function start() {
   let skipClick = false;
   let drop = null;
   let dropLine = 0;
+  let downClass = "";
   // Zeilen beim Packen und nach einem Sturz: Aufnahmen folgen, bis dahin bleibt die Figur dabei stumm
   const GRAB_LINES = [];
   const DROP_LINES = [];
@@ -575,7 +576,11 @@ async function start() {
     const dx = event.clientX - press.x;
     const dy = event.clientY - press.y;
     if (!carry && Math.hypot(dx, dy) > 8) {
-      // Gepackt: die Figur baumelt am Griff
+      // Gepackt: die Figur baumelt am Griff. Lag sie gerade, hängt sie jetzt unter dem Zeiger.
+      if (stunt?.name === "Fall") {
+        press.left = event.clientX - dx - companion.offsetWidth / 2;
+        press.top = event.clientY - dy - companion.offsetHeight * 0.3;
+      }
       carry = { vx: 0 };
       stunt = null;
       spin = 0;
@@ -871,6 +876,13 @@ async function start() {
         done?.();
       }
     } else if (mode === "companion") {
+      // Liegt die Figur, reicht ihre Greiffläche bis dorthin, wo sie liegt
+      const down = stunt?.name === "Fall" && !carry ? (stunt.yaw < 0 ? "is-down-right" : "is-down-left") : "";
+      if (down !== downClass) {
+        if (downClass) companion.classList.remove(downClass);
+        if (down) companion.classList.add(down);
+        downClass = down;
+      }
       // Am Griff: die Figur pendelt der Bewegung nach; losgelassen schwingt sie aus und setzt auf
       const leanTo = carry ? THREE.MathUtils.clamp(-carry.vx * 0.0011, -0.75, 0.75) : 0;
       hang.omega += ((leanTo - hang.angle) * (carry ? 55 : 120) - hang.omega * (carry ? 6 : 14)) * dt;
