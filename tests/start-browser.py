@@ -72,6 +72,9 @@ try:
             expect(page.locator(".preview-counter")).to_have_text(f"1 / {count}")
             page.keyboard.press("Escape")
         assert "BlankofleX" not in page.locator(".site-footer").inner_text()
+        # Alle Verweise auf Juschkin Labs führen auf Kims Seite dort
+        links = page.eval_on_selector_all('a[href*="juschkinlabs.de"]', "els => els.map(a => a.getAttribute('href'))")
+        assert len(links) == 3 and set(links) == {"https://juschkinlabs.de/kim"}, links
         for width in (320, 390, 768, 820, 1024, 1440):
             page.set_viewport_size({"width": width, "height": 1000})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), f"Overflow at {width}px"
