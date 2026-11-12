@@ -1,367 +1,143 @@
-<!DOCTYPE html>
-<html lang="de" class="scroll-smooth">
+<!doctype html>
+<html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Private Einblicke | Kim Betcher</title>
-    <meta name="description" content="Kim Betcher privat: 29, aus Heidenheim, verheiratet. Haus selbst kernsaniert, dazu Familie, Bergwandern, Angeln, Musik sowie Coding und AI-Automatisierung.">
-
-    <link rel="icon" type="image/png" sizes="512x512" href="ressources/Logo.png">
-    <link rel="apple-touch-icon" href="ressources/Logo.png">
-
-    <!-- Gleiches Stylesheet wie die Startseite. Schrift liegt lokal, die Seite lädt nichts von fremden Servern. -->
-    <link rel="preload" href="ressources/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="kb.css?v=20261010a">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#131618">
+  <title>Private Einblicke | Kim Betcher</title>
+  <meta name="description" content="Kim Betcher privat: Familie, Hauskauf und Kernsanierung, Berge, Angeln, Musik und selbst gebaute Software.">
+  <link rel="canonical" href="https://kim-betcher.de/private-einblicke.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:title" content="Private Einblicke | Kim Betcher">
+  <meta property="og:description" content="Kim Betcher privat: Familie, Hauskauf und Kernsanierung, Berge, Angeln, Musik und selbst gebaute Software.">
+  <meta property="og:url" content="https://kim-betcher.de/private-einblicke.html">
+  <link rel="icon" type="image/png" sizes="512x512" href="ressources/Logo.png">
+  <link rel="apple-touch-icon" href="ressources/Logo.png">
+  <link rel="preload" href="assets/fonts/saira-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/source-sans-3-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="start.css?v=20261112-k1">
+  <script src="start.js?v=20261112-k1" defer></script>
+  <script type="importmap">{"imports": {"three": "./vendor/three/three.module.min.js"}}</script>
+  <script type="module" src="figur.js?v=20261112-k1"></script>
 </head>
 <body>
-  <div class="kb kb-seite">
-        <header class="kb-nav">
-            <a class="kb-brand" href="index.html">
-                <svg class="kb-brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 212 112" role="img" aria-label="Schwäbisch Hall"><polygon points="0 0 0 112 212 112 212 0 0 0" fill="#fff02d"/><polygon points="66 12 106 12 146 12 146 36 66 36 66 12" fill="#e6002d"/><polygon points="66 76 106 76 146 76 146 100 66 100 66 76" fill="#e6002d"/><polygon points="110 44 148 44 186 44 186 68 110 68 110 44" fill="#e6002d"/><polygon points="26 44 64 44 102 44 102 68 26 68 26 44" fill="#e6002d"/></svg>
-                <span>Kim Betcher</span>
-            </a>
-            <nav class="kb-links" aria-label="Hauptnavigation">
-                <a href="index.html#usp">Mein Mehrwert</a>
-                <a href="index.html#story">Mein Weg</a>
-                <a href="index.html#ziele">Meine Werte</a>
-                <a href="index.html#kontakt">Kontakt</a>
-                <span class="kb-links-trenner" aria-hidden="true"></span>
-                <a href="private-einblicke.html" aria-current="page">Private Einblicke</a>
-            </nav>
-            <button class="kb-menu-btn" type="button" aria-label="Menü öffnen" aria-controls="mobile-menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded', !document.getElementById('mobile-menu').classList.toggle('hidden'))"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
-            <div id="mobile-menu" class="kb-mobile hidden">
-                <a href="index.html#usp">Mein Mehrwert</a>
-                <a href="index.html#story">Mein Weg</a>
-                <a href="index.html#ziele">Meine Werte</a>
-                <a href="index.html#kontakt" class="kb-mobile-kontakt">Kontakt</a>
-                <a href="private-einblicke.html" class="kb-mobile-privat" aria-current="page">Private Einblicke</a>
-            </div>
-        </header>
+  <a class="skip-link" href="#inhalt">Zum Inhalt</a>
 
-        <section class="kb-auftakt">
-            <div class="kb-auftakt-text">
-                <h1 class="kb-titel">Mehr als nur ein Anzugträger.</h1>
-                <p class="kb-lead">Hinter dem Bezirksleiter steckt ein Mensch mit Ecken, Kanten und einer großen Leidenschaft für das „Machen“.</p>
-            </div>
-            <div class="kb-first" aria-hidden="true"></div>
-            <div class="kb-half">
-                <img src="ressources/klein/berge-kopf.jpg" alt="Bergsee, in dem sich Wolken und Gipfel spiegeln">
-            </div>
-        </section>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="./" aria-label="Kim Betcher, Startseite"><span class="brand-name">Kim Betcher</span></a>
+      <button class="sound-toggle" type="button" aria-pressed="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9Z"/><path class="sound-wave" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="sound-off" d="m16 9 6 6m0-6-6 6"/></svg><span>Ton an</span></button>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="navigation">Menü<span class="menu-icon" aria-hidden="true"></span></button>
+      <nav class="site-nav" id="navigation" aria-label="Hauptnavigation">
+        <a href="./#ueber-mich">Über mich</a>
+        <a href="./#weg">Mein Weg</a>
+        <a href="./#werte">Meine Werte</a>
+        <a href="private-einblicke.html">Private Einblicke</a>
+        <a class="nav-contact" href="./#kontakt">Kontakt</a>
+      </nav>
+    </div>
+  </header>
 
-        <main>
-        <!-- Wer ich bin -->
-        <section class="kb-sec">
-            <div class="kb-wrap kb-ich">
-                <div>
-                    <h2 class="kb-h2">Wer ich bin</h2>
-                    <p class="kb-lead">Ich bin 29 Jahre alt, komme aus Heidenheim und bin glücklich verheiratet.</p>
-                    <ul class="kb-punkte">
-                        <li>
-                            <h3 class="kb-h3">Mein ganzer Stolz</h3>
-                            <p>Hauskauf &amp; Kernsanierung 2024.</p>
-                        </li>
-                    </ul>
-                </div>
-                <button type="button" class="kb-bildknopf" data-galerie="haus" aria-label="Galerie öffnen: Hauskauf und Kernsanierung 2024">
-                    <img src="ressources/klein/haus.jpg" alt="Mein Haus von außen">
-                    <span class="kb-bildzahl" hidden><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 22H4a2 2 0 0 1-2-2V6"/><path d="m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18"/><circle cx="12" cy="8" r="2"/><rect width="16" height="16" x="6" y="2" rx="2"/></svg><span></span></span>
-                </button>
-            </div>
-        </section>
-
-        <!-- Hobbys -->
-        <section class="kb-sec kb-weg-sec">
-            <div class="kb-wrap">
-                <h2 class="kb-h2">Was mich erdet</h2>
-                <p class="kb-lead">Wenn ich nicht gerade arbeite, brauche ich einen Ausgleich, der mich erdet.</p>
-                <ul class="kb-hobbys">
-                    <li>
-                        <button type="button" class="kb-hobby" data-galerie="familie">
-                            <img src="ressources/klein/familie.jpg" alt="Kim Betcher mit seiner Frau Franziska" loading="lazy">
-                            <span class="kb-bildzahl" hidden><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 22H4a2 2 0 0 1-2-2V6"/><path d="m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18"/><circle cx="12" cy="8" r="2"/><rect width="16" height="16" x="6" y="2" rx="2"/></svg><span></span></span>
-                            <span class="kb-hobby-text"><span class="kb-hobby-name">Meine Familie</span><span class="kb-hobby-satz">Meine Frau Franziska, zwei Katzen und ein Hund.</span></span>
-                        </button>
-                    </li>
-                    <li>
-                        <button type="button" class="kb-hobby" data-galerie="berge">
-                            <img src="ressources/klein/berge.jpg" alt="Wanderweg über eine Wiese, dahinter ein Berggipfel" loading="lazy">
-                            <span class="kb-bildzahl" hidden><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 22H4a2 2 0 0 1-2-2V6"/><path d="m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18"/><circle cx="12" cy="8" r="2"/><rect width="16" height="16" x="6" y="2" rx="2"/></svg><span></span></span>
-                            <span class="kb-hobby-text"><span class="kb-hobby-name">Bergwandern</span><span class="kb-hobby-satz">Ruhe finden und Weitblick genießen.</span></span>
-                        </button>
-                    </li>
-                    <li>
-                        <button type="button" class="kb-hobby" data-galerie="angeln">
-                            <img src="ressources/klein/angeln.jpg" alt="Kim Betcher mit einem gefangenen Hecht" loading="lazy">
-                            <span class="kb-bildzahl" hidden><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 22H4a2 2 0 0 1-2-2V6"/><path d="m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18"/><circle cx="12" cy="8" r="2"/><rect width="16" height="16" x="6" y="2" rx="2"/></svg><span></span></span>
-                            <span class="kb-hobby-text"><span class="kb-hobby-name">Angeln</span><span class="kb-hobby-satz">Geduld üben und abschalten.</span></span>
-                        </button>
-                    </li>
-                    <li>
-                        <button type="button" class="kb-hobby" data-galerie="musik">
-                            <img src="ressources/klein/musik.jpg" alt="Kim Betcher singt auf einer Bühne" loading="lazy">
-                            <span class="kb-bildzahl" hidden><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 22H4a2 2 0 0 1-2-2V6"/><path d="m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18"/><circle cx="12" cy="8" r="2"/><rect width="16" height="16" x="6" y="2" rx="2"/></svg><span></span></span>
-                            <span class="kb-hobby-text"><span class="kb-hobby-name">Musik</span><span class="kb-hobby-satz">Mein kreativer Ausgleich.</span></span>
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        </section>
-
-        <!-- Coding & AI-Automatisierung -->
-        <section id="coding" class="kb-sec kb-code-sec">
-            <div class="kb-wrap">
-                <h2 class="kb-h2">Coding &amp; AI-Automatisierung</h2>
-                <p class="kb-lead">Was mir im Arbeitsalltag fehlt, baue ich selbst, mit KI als Werkzeug. So entstehen Anwendungen und Websites, die mir Routinearbeit abnehmen.</p>
-                <ul class="kb-projekte">
-                    <li>
-                        <button type="button" class="kb-schirm" data-galerie="coding" data-nr="0" aria-label="Bildschirmfoto vergrößern: SmartADM 5 Sales">
-                            <img src="ressources/coding/smartadm-sales.jpg" alt="Bildschirmfoto von SmartADM 5 Sales" width="1440" height="900" loading="lazy">
-                        </button>
-                        <h3 class="kb-h3">SmartADM 5 Sales</h3>
-                        <p>Mein Werkzeug für den Vertrieb: Banken, Ansprechpartner, Terminprotokolle und Wiedervorlagen an einem Ort, am PC und auf dem Handy.</p>
-                        <p class="kb-hinweis">Ansicht mit Beispieldaten.</p>
-                    </li>
-                    <li>
-                        <button type="button" class="kb-schirm" data-galerie="coding" data-nr="1" aria-label="Bildschirmfoto vergrößern: SmartADM 5 Office">
-                            <img src="ressources/coding/smartadm-office.jpg" alt="Bildschirmfoto von SmartADM 5 Office" width="1440" height="900" loading="lazy">
-                        </button>
-                        <h3 class="kb-h3">SmartADM 5 Office</h3>
-                        <p>Für mein Büro: Zeiterfassung, Aufgaben, Telefonliste und Terminvereinbarung für mein Team.</p>
-                        <p class="kb-hinweis">Ansicht mit Beispieldaten.</p>
-                    </li>
-                    <li>
-                        <button type="button" class="kb-schirm" data-galerie="coding" data-nr="2" aria-label="Bildschirmfoto vergrößern: kim-betcher.de">
-                            <img src="ressources/coding/kim-betcher.jpg" alt="Bildschirmfoto von kim-betcher.de" width="1440" height="900" loading="lazy">
-                        </button>
-                        <h3 class="kb-h3">kim-betcher.de</h3>
-                        <p>Diese Website: eigenes Design, eigener Code, kein Baukasten.</p>
-                    </li>
-                    <li>
-                        <button type="button" class="kb-schirm" data-galerie="coding" data-nr="3" aria-label="Bildschirmfoto vergrößern: BlankofleX">
-                            <img src="ressources/coding/blankoflex.jpg" alt="Bildschirmfoto von BlankofleX" width="1440" height="900" loading="lazy">
-                        </button>
-                        <h3 class="kb-h3">BlankofleX</h3>
-                        <p>Website mit 3-Fragen-Check und Online-Anfrage für ein eigenes Finanzierungsangebot.</p>
-                        <a class="kb-projekt-link" href="https://blankoflex.de/p/34YY2" target="_blank" rel="noopener">blankoflex.de</a>
-                    </li>
-                    <li>
-                        <button type="button" class="kb-schirm" data-galerie="coding" data-nr="4" aria-label="Bildschirmfoto vergrößern: iQuest">
-                            <img src="ressources/coding/iquest34.jpg" alt="Bildschirmfoto von iQuest" width="1440" height="900" loading="lazy">
-                        </button>
-                        <h3 class="kb-h3">iQuest</h3>
-                        <p>Lernspiel für die IHK-Sachkundeprüfung nach §&nbsp;34i GewO: 24 Level, Bosskämpfe und eine Prüfungssimulation. Ein gemeinsames Projekt mit Maksim Juschkin.</p>
-                        <a class="kb-projekt-link" href="https://iquest34.de/" target="_blank" rel="noopener">iquest34.de</a>
-                    </li>
-                </ul>
-                <div class="kb-partner">
-                    <button type="button" class="kb-schirm" data-galerie="coding" data-nr="5" aria-label="Bildschirmfoto vergrößern: Juschkin Labs">
-                        <img src="ressources/coding/juschkinlabs.jpg" alt="Bildschirmfoto der Website von Juschkin Labs" width="1440" height="900" loading="lazy">
-                    </button>
-                    <div>
-                        <h3 class="kb-h3">Gemeinsam mit meinem Geschäftspartner</h3>
-                        <p>Maksim Juschkin ist mein langjähriger Freund und Geschäftspartner. iQuest ist unser gemeinsames Projekt: Ich habe es entwickelt, er hostet es, kümmert sich um den Datenschutz und entwickelt es mit mir weiter. Mit seiner Firma Juschkin Labs baut er Software, verbindet Daten und gibt KI-Workshops für Unternehmen.</p>
-                        <a class="kb-projekt-link" href="https://juschkinlabs.de/" target="_blank" rel="noopener">juschkinlabs.de</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Eigenschaften -->
-        <section class="kb-sec">
-            <div class="kb-wrap kb-usp">
-                <div>
-                    <h2 class="kb-h2">Ehrlichkeit ist meine Basis.</h2>
-                    <p class="kb-lead">Niemand ist perfekt. Aber ich weiß, wie ich meine Eigenschaften für Sie nutze.</p>
-                </div>
-                <table class="kb-vergleich">
-                    <thead>
-                        <tr><th scope="col">Eigenschaft</th><th scope="col">Ihr Vorteil</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><strong>Ungeduld</strong>Wenn Dinge langsam laufen, werde ich nervös.</td><td>Ich nutze das Momentum. Bei mir bleibt kein Antrag liegen.</td></tr>
-                        <tr><td><strong>Ablenkbarkeit</strong>Mein „Radar“ ist immer an, ich nehme alles wahr.</td><td>Im Gespräch ist das Gold wert. Ich erkenne unausgesprochene Bedürfnisse.</td></tr>
-                        <tr><td><strong>Vergesslichkeit</strong>Ich verlasse mich nie nur auf mein Gedächtnis.</td><td>Deshalb nutze ich wasserdichte Systeme. Was aufgeschrieben ist, wird erledigt.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Kontakt -->
-        <section id="kontakt" class="kb-sec kb-kontakt">
-            <div class="kb-wrap kb-kontakt-raster">
-                <div>
-                    <h2 class="kb-h2">Lassen Sie uns Ihre Zukunft bauen.</h2>
-                    <p class="kb-lead">Ihr Ansprechpartner für Aalen, Ebnat, Hüttlingen und Oberkochen. Vereinbaren Sie jetzt einen Termin.</p>
-                    <p class="kb-buero">Termine vereinbart meine Assistentin: <a href="tel:+4915511553697">+49 155 11553697</a></p>
-                    <div class="kb-wege">
-                        <a href="index.html#kontakt" class="kb-btn kb-btn-rot"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>Termin buchen</a>
-                        <a href="tel:+4915222686361" class="kb-btn kb-btn-hell"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>+49 152 22686361</a>
-                        <a href="#" onclick="window.location.href='mailto:'+'kim.betcher'+'@'+'schwaebisch-hall.de';return false;" class="kb-btn kb-btn-hell"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>E-Mail schreiben</a>
-                    </div>
-                </div>
-                <div class="kb-karte">
-                    <a href="https://bausparkasse.wazzl.me/tag/1bf01cc9e71b465a9cb2298bd0a80d27" target="_blank" rel="noopener" aria-label="Digitale Visitenkarte öffnen"><img src="ressources/qr-visitenkarte.svg" width="410" height="410" alt="QR-Code zur digitalen Visitenkarte"></a>
-                    <p>Digitale Visitenkarte<span>Scannen und Kontakt speichern</span></p>
-                </div>
-            </div>
-        </section>
-        </main>
-
-        <footer class="kb-fuss">
-            <div class="kb-wrap kb-fuss-raster">
-                <div>
-                    <span class="kb-sh"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1096 112" role="img" aria-label="Schwäbisch Hall"><polygon points="0 0 0 112 212 112 212 0 0 0" fill="#fff02d"/><polygon points="66 12 106 12 146 12 146 36 66 36 66 12" fill="#e6002d"/><polygon points="66 76 106 76 146 76 146 100 66 100 66 76" fill="#e6002d"/><polygon points="110 44 148 44 186 44 186 68 110 68 110 44" fill="#e6002d"/><polygon points="26 44 64 44 102 44 102 68 26 68 26 44" fill="#e6002d"/><path d="M247.555,94.2965Q239.3886,87.56,239,74.7265l15.164-2.0725q.2582,7.5166,4.6651,11.015,4.4051,3.5,12.5714,3.5,6.74,0,10.4337-2.6578a8.1721,8.1721,0,0,0,3.6941-6.9334,6.8819,6.8819,0,0,0-2.2683-5.3137,16.0047,16.0047,0,0,0-5.638-3.2393q-3.3728-1.1686-9.3322-2.5926a97.578,97.578,0,0,1-14.191-4.3427,23.8973,23.8973,0,0,1-9.4607-7.0619q-3.9541-4.7937-3.9532-13.09A21.6874,21.6874,0,0,1,244.51,29.3669a25.47,25.47,0,0,1,10.8865-8.7488,39.9894,39.9894,0,0,1,16.5227-3.176q13.3485,0,21.32,6.5458t8.49,18.5971L286.5646,44.66q-.3886-6.8672-4.3408-10.1094-3.9572-3.2393-10.5642-3.2393-6.22,0-9.785,2.7212a8.4241,8.4241,0,0,0-3.5636,6.9986,6.8751,6.8751,0,0,0,2.2683,5.3137,15.9389,15.9389,0,0,0,5.638,3.2393q3.37,1.1658,9.4607,2.5926a109.2618,109.2618,0,0,1,14.1258,4.2775,23.3284,23.3284,0,0,1,9.526,6.9986q3.9542,4.7937,3.9531,13.09a21.5936,21.5936,0,0,1-4.0164,12.959,25.3807,25.3807,0,0,1-11.2761,8.555,44.1441,44.1441,0,0,1-16.8489,2.98Q255.7164,101.0361,247.555,94.2965Z"/><path d="M317.0509,93.5193q-7.4516-7.9023-7.4515-23.0684V65.9144a35.8167,35.8167,0,0,1,3.5636-16.4593,25.78,25.78,0,0,1,10.1093-10.8233,29.6532,29.6532,0,0,1,15.2293-3.8226q11.4027,0,18.4033,6.2214,6.9977,6.22,8.0348,16.8489l-13.9972,2.203a13.5632,13.5632,0,0,0-3.4351-8.7487,11.0411,11.0411,0,0,0-8.3591-3.176,11.19,11.19,0,0,0-9.33,4.5365q-3.5,4.5386-3.5,13.6077v3.7594q0,9.0741,3.5655,13.5424a11.4223,11.4223,0,0,0,9.3955,4.4713q11.0141,0,11.7942-13.4772l14.2563,2.203q-1.0412,11.5362-8.2306,18.079-7.1934,6.5467-19.2458,6.5458Q324.5044,101.4257,317.0509,93.5193Z"/><path d="M423.3413,41.1593q5.5709,6.354,5.5728,17.8852V100H412.4548V61.7676q0-6.351-3.0455-9.85t-8.6182-3.5a11.0551,11.0551,0,0,0-8.6183,3.5q-3.177,3.5-3.176,9.72V100H372.5375V12h16.4593V32.4758q0,4.2774-.259,12.8325a20.6949,20.6949,0,0,1,7.9063-7.7778,22.9257,22.9257,0,0,1,11.2741-2.7212Q417.7666,34.8093,423.3413,41.1593Z"/><path d="M522.1766,36.234a197.9142,197.9142,0,0,1-4.73,24.1719q-3.3045,12.8947-11.8575,39.5929H488.0912L477.7228,55.545,466.3182,99.9988H448.9511q-8.0358-26.178-11.2089-39.2706A219.29,219.29,0,0,1,433.14,36.234h16.7184q1.1658,9.5932,3.3045,20.282,2.1388,10.6936,6.4153,27.8007L471.1138,36.234h14.7744l11.0171,47.9522q4.5355-17.3651,6.7395-27.9293,2.2011-10.56,3.37-20.0229Z"/><path d="M568.7673,36.235h16.2V100H569.4159l-.13-10.24a20.07,20.07,0,0,1-7.7758,8.7487,23.9058,23.9058,0,0,1-24.1066-.7119,23.7486,23.7486,0,0,1-8.4878-10.5642A40.862,40.862,0,0,1,525.87,70.71V65.9144a40.2356,40.2356,0,0,1,3.1107-16.4593,24.73,24.73,0,0,1,8.8121-10.8233,23.4115,23.4115,0,0,1,13.3486-3.8226q12.18,0,17.6261,9.9788ZM534.4228,12h16.8489V26.7743H534.4228Zm34.3445,54.1735q0-9.0713-3.5-13.5444a11.5135,11.5135,0,0,0-9.5893-4.4713,11.3359,11.3359,0,0,0-9.5259,4.4713q-3.4351,4.4731-3.4351,13.5444v3.8879q0,9.2046,3.4351,13.6076a11.5329,11.5329,0,0,0,9.6564,4.4061,11.3358,11.3358,0,0,0,9.526-4.4713q3.4292-4.47,3.4331-13.5424ZM561.381,12h16.847V26.7743H561.381Z"/><path d="M641.1476,38.5033a24.209,24.209,0,0,1,8.49,10.6274,40.9175,40.9175,0,0,1,3.0454,16.5246V70.32q0,14.3868-6.8681,22.7461-6.873,8.3592-18.4032,8.3592-11.6667,0-17.108-9.0731V100H594.2317V12H610.691V44.0108q5.7013-9.1986,17.8851-9.2016A21.8555,21.8555,0,0,1,641.1476,38.5033Zm-5.3138,27.67q0-9.0713-3.433-13.5444a11.4769,11.4769,0,0,0-9.6565-4.4713,11.3388,11.3388,0,0,0-9.526,4.4713q-3.435,4.4731-3.433,13.5444v3.8879q0,9.0741,3.433,13.5424a11.4717,11.4717,0,0,0,9.6565,4.4713,11.3359,11.3359,0,0,0,9.526-4.4713q3.432-4.47,3.433-13.5424Z"/><path d="M677.9541,26.7743H660.1975V12h17.7566ZM677.3055,100h-16.59V36.235h16.59Z"/><path d="M692.5837,96.1119q-6.7425-5.3127-7.2577-15.2945l14.1258-1.944q.2582,5.1852,3.2413,7.8411,2.9781,2.6579,9.4607,2.6579,11.014,0,11.015-6.87a5.4309,5.4309,0,0,0-3.3045-5.3138,48.9412,48.9412,0,0,0-10.4337-2.98,81.6373,81.6373,0,0,1-11.5984-3.1107,17.98,17.98,0,0,1-7.8411-5.638q-3.2422-3.9513-3.2392-10.8213a17.4008,17.4008,0,0,1,6.8681-14.45q6.867-5.3781,18.7928-5.379,11.2752,0,17.8852,5.3137,6.609,5.3157,6.9986,14.7744l-13.9972,2.0745q-.65-10.1093-11.2762-10.1093-4.7965,0-7.3862,1.8787a5.9875,5.9875,0,0,0-2.5926,5.12,5.3288,5.3288,0,0,0,3.3045,5.1832,48.7436,48.7436,0,0,0,10.3032,2.9822,78.8517,78.8517,0,0,1,11.6637,3.1107,18.537,18.537,0,0,1,7.8411,5.6361q3.3045,3.9571,3.3045,10.8232a17.2856,17.2856,0,0,1-6.9967,14.45q-7.0005,5.378-19.4415,5.379Q699.3213,101.4257,692.5837,96.1119Z"/><path d="M751.6142,93.5193q-7.4544-7.9023-7.4515-23.0684V65.9144a35.818,35.818,0,0,1,3.5636-16.4593,25.7686,25.7686,0,0,1,10.1094-10.8233,29.6506,29.6506,0,0,1,15.2273-3.8226q11.4056,0,18.4052,6.2214,6.9976,6.22,8.0349,16.8489l-13.9972,2.203a13.5632,13.5632,0,0,0-3.4351-8.7487,11.0414,11.0414,0,0,0-8.3592-3.176,11.19,11.19,0,0,0-9.33,4.5365q-3.5,4.5386-3.5,13.6077v3.7594q0,9.0741,3.5636,13.5424a11.4258,11.4258,0,0,0,9.3974,4.4713q11.0142,0,11.7923-13.4772l14.2563,2.203q-1.0381,11.5362-8.2287,18.079-7.1934,6.5467-19.2457,6.5458Q759.0648,101.4257,751.6142,93.5193Z"/><path d="M859.3761,41.1593q5.5737,6.354,5.5747,17.8852V100H848.49V61.7676q0-6.351-3.0454-9.85t-8.6183-3.5a11.055,11.055,0,0,0-8.6182,3.5q-3.177,3.5-3.176,9.72V100H808.5722V12h16.4594V32.4758q0,4.2774-.2591,12.8324a20.696,20.696,0,0,1,7.9063-7.7777,22.9336,22.9336,0,0,1,11.2762-2.7212Q853.8033,34.8093,859.3761,41.1593Z"/><path d="M974.4985,100H957.0009V65.7839H922.4466V100H904.951V18.35h17.4956V51.5276h34.5543V18.35h17.4976Z"/><path d="M1024.9456,36.235h16.2V100h-15.5516l-.13-10.24a20.0711,20.0711,0,0,1-7.7758,8.7487,23.9058,23.9058,0,0,1-24.1066-.7119,23.7486,23.7486,0,0,1-8.4878-10.5642A40.8272,40.8272,0,0,1,982.0461,70.71V65.9144a40.2686,40.2686,0,0,1,3.1107-16.4593,24.7471,24.7471,0,0,1,8.8141-10.8233,23.4115,23.4115,0,0,1,13.3486-3.8226q12.18,0,17.6261,9.9788Zm0,29.9385q0-9.0713-3.5-13.5444a11.5135,11.5135,0,0,0-9.5893-4.4713,11.3359,11.3359,0,0,0-9.5259,4.4713q-3.4352,4.4731-3.4351,13.5444v3.8879q0,9.2046,3.4351,13.6076a11.5317,11.5317,0,0,0,9.6545,4.4061,11.3358,11.3358,0,0,0,9.5259-4.4713q3.4321-4.47,3.4351-13.5424Z"/><path d="M1068.5766,100h-16.4593V12h16.4593Z"/><path d="M1096,100h-16.4593V12H1096Z"/></svg></span>
-                    <strong>Kim Betcher</strong>
-                    <p>Selbstständiger Handelsvertreter der Bausparkasse Schwäbisch Hall AG</p>
-                    <div class="kb-sozial">
-                        <a href="https://www.linkedin.com/in/kim-betcher-5a764b397/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect width="4" height="12" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-                        </a>
-                        <a href="https://www.instagram.com/kimbetcher/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
-                        </a>
-                    </div>
-                </div>
-                <div class="kb-fuss-links">
-                    <a href="impressum.html">Impressum</a>
-                    <a href="datenschutz.html">Datenschutz</a>
-                    <a href="private-einblicke.html" aria-current="page">Private Einblicke</a>
-                    <a href="https://blankoflex.de/p/34YY2" target="_blank" rel="noopener">BlankofleX</a>
-                    <a href="https://juschkinlabs.de/" target="_blank" rel="noopener">Juschkin Labs</a>
-                </div>
-            </div>
-        </footer>
-
-        <!-- Galerie -->
-        <div id="galerie" class="kb-licht" role="dialog" aria-modal="true" aria-labelledby="galerie-titel" hidden>
-            <div class="kb-licht-kopf">
-                <p class="kb-licht-titel"><span id="galerie-titel"></span><span id="galerie-zahl" class="kb-licht-zahl"></span></p>
-                <button type="button" class="kb-licht-knopf" id="galerie-zu" aria-label="Galerie schließen"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-            </div>
-            <div class="kb-licht-buehne">
-                <img id="galerie-bild" src="" alt="">
-                <button type="button" class="kb-licht-knopf kb-licht-zurueck" id="galerie-zurueck" aria-label="Vorheriges Bild"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
-                <button type="button" class="kb-licht-knopf kb-licht-weiter" id="galerie-weiter" aria-label="Nächstes Bild"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
-            </div>
-            <div class="kb-licht-fuss" id="galerie-links"></div>
+  <main id="inhalt">
+    <section class="detail-hero" id="einblicke" aria-labelledby="insights-title">
+      <div class="wrap detail-hero-inner">
+        <div class="detail-copy">
+          <p class="breadcrumb"><a href="./">Startseite</a> / Private Einblicke</p>
+          <h1 id="insights-title">Mehr als nur Arbeit.</h1>
+          <p class="hero-lead">Ein Mensch mit Ecken, Kanten und einer großen Leidenschaft für das „Machen“.</p>
         </div>
+        <figure class="about-photo"><img src="ressources/klein/berge-kopf.jpg" alt="Bergsee mit Spiegelung der Wolken" width="1600" height="1200"></figure>
+      </div>
+    </section>
 
-        <script>
-            // Bilder je Galerie. Neue Bilder: Datei nach ressources/ legen und hier eintragen.
-            // „namen“ (optional) beschriftet einzelne Bilder, z. B. die Projekte unter Coding.
-            const galerien = {
-                haus: { titel: 'Hauskauf & Kernsanierung 2024', bilder: ["ressources/Haus Bilder & Videos (22).jpeg", "ressources/Haus 1.jpg", "ressources/Haus 2.jpg", "ressources/Haus 3.jpg", "ressources/Haus 4.jpg", "ressources/Haus 5.jpg", "ressources/Haus 6.jpg", "ressources/Haus 7.jpg", "ressources/Haus Bilder & Videos (35).JPEG", "ressources/Haus Bilder & Videos (39).JPEG", "ressources/2025-09-04 (6).jpg", "ressources/haus-wohnzimmer-tv.jpg", "ressources/haus-wohnzimmer-sofa.jpg", "ressources/haus-esszimmer.jpg"] },
-                familie: { titel: 'Meine Familie', bilder: ["ressources/familie-franziska-und-kim.jpg", "ressources/familie-blacky.jpg", "ressources/familie-blacky-2.jpg", "ressources/familie-mondpfote.jpg", "ressources/familie-mondpfote-2.jpg", "ressources/familie-flitzy.jpg", "ressources/familie-flitzy-2.jpg", "ressources/familie-sakura.jpg"], namen: ["Franziska und ich", "Blacky", "Blacky", "Mondpfote", "Mondpfote", "Flitzy", "Flitzy", "In Erinnerung an Sakura"] },
-                berge: { titel: 'Bergwandern', bilder: ["ressources/berge-weg-gipfel.jpg", "ressources/IMG_1506.JPG", "ressources/IMG_1497.JPG", "ressources/20171230_125417.jpg", "ressources/20171230_130453.jpg", "ressources/20171230_152835.jpg", "ressources/IMG_0229.jpg", "ressources/IMG_0268.jpg", "ressources/IMG_0276.jpg", "ressources/berge-bach.jpg", "ressources/berge-winter-aussicht.jpg", "ressources/berge-felsen.jpg"] },
-                angeln: { titel: 'Angeln', bilder: ["ressources/IMG_7186.jpg", "ressources/89076192-402C-43F2-85B6-F1D7372917DE.JPG"] },
-                musik: { titel: 'Musik', bilder: ["ressources/e48c1d0f-2676-481b-9c84-dae14748b061.jpg"], links: [
-                    { text: 'ODYN: Wald', url: 'https://www.youtube.com/watch?v=AKPXDcRlC18' },
-                    { text: 'KIM: An meiner Seite', url: 'https://youtu.be/9UcvOI7RD38?si=neqAJ6y12Lbpktqv' },
-                    { text: 'TikTok', url: 'https://vm.tiktok.com/ZGdCrCujQ/' }
-                ] },
-                coding: { titel: 'Coding & AI-Automatisierung', bilder: ["ressources/coding/smartadm-sales.jpg", "ressources/coding/smartadm-office.jpg", "ressources/coding/kim-betcher.jpg", "ressources/coding/blankoflex.jpg", "ressources/coding/iquest34.jpg", "ressources/coding/juschkinlabs.jpg"], namen: ["SmartADM 5 Sales", "SmartADM 5 Office", "kim-betcher.de", "BlankofleX", "iQuest", "Juschkin Labs"] }
-            };
+    <section class="detail-section" id="zuhause" aria-labelledby="home-title">
+      <div class="wrap about-grid">
+        <div class="about-copy reveal">
+          <h2 id="home-title">Wer ich bin.</h2>
+          <p>Ich bin 29 Jahre alt, komme aus Heidenheim und bin glücklich verheiratet.</p>
+          <h3>Mein ganzer Stolz</h3>
+          <p>Hauskauf und Kernsanierung 2024.</p>
+        </div>
+        <ul class="tiles tiles-one reveal"><li><a class="tile" href="ressources/Haus%20Bilder%20%26%20Videos%20%2822%29.jpeg" data-preview data-gallery="haus" data-title="Hauskauf &amp; Kernsanierung 2024" data-note="" aria-label="Bilder ansehen: Hauskauf &amp; Kernsanierung 2024"><img src="ressources/klein/haus.jpg" alt="Mein Haus von außen" loading="lazy"><span class="tile-text"><strong>Unser Haus</strong><span>Gekauft und kernsaniert, 2024.</span><span class="tile-count">14 Bilder</span></span></a><a href="ressources/Haus%201.jpg" data-preview data-gallery="haus" data-title="Hauskauf &amp; Kernsanierung 2024" data-note="" hidden></a><a href="ressources/Haus%202.jpg" data-preview data-gallery="haus" data-title="Hauskauf &amp; Kernsanierung 2024" data-note="" hidden></a><a href="ressources/Haus%203.jpg" data-preview data-gallery="haus" data-title="Hauskauf &amp; Kernsanierung 2024" data-note="" hidden></a><a href="ressources/Haus%204.jpg" data-preview data-gallery="haus" data-title="Hauskauf &amp; Kernsanierung 2024" data-note="" hidden></a><a href="ressources/Haus%205.jpg" data-preview data-gallery="haus" data-title="Hauskauf &amp; Kernsanierung 2024" data-note="" hidden></a><a href="ressources/Haus%206.jpg" data-preview data-gallery="haus" data-title="Hauskauf &amp; Kernsanierung 2024" data-note="" hidden></a><a href="ressources/Haus%207.jpg" data-preview data-gallery="haus" data-title="Hauskauf &amp; Kernsanierung 2024" data-note="" hidden></a><a href="ressources/Haus%20Bilder%20%26%20Videos%20%2835%29.JPEG" data-preview data-gallery="haus" data-title="Hauskauf &amp; Kernsanierung 2024" data-note="" hidden></a><a href="ressources/Haus%20Bilder%20%26%20Videos%20%2839%29.JPEG" data-preview data-gallery="haus" data-title="Hauskauf &amp; Kernsanierung 2024" data-note="" hidden></a><a href="ressources/2025-09-04%20%286%29.jpg" data-preview data-gallery="haus" data-title="Hauskauf &amp; Kernsanierung 2024" data-note="" hidden></a><a href="ressources/haus-wohnzimmer-tv.jpg" data-preview data-gallery="haus" data-title="Hauskauf &amp; Kernsanierung 2024" data-note="" hidden></a><a href="ressources/haus-wohnzimmer-sofa.jpg" data-preview data-gallery="haus" data-title="Hauskauf &amp; Kernsanierung 2024" data-note="" hidden></a><a href="ressources/haus-esszimmer.jpg" data-preview data-gallery="haus" data-title="Hauskauf &amp; Kernsanierung 2024" data-note="" hidden></a></li></ul>
+      </div>
+    </section>
 
-            (function () {
-                const el = id => document.getElementById(id);
-                const licht = el('galerie'), bild = el('galerie-bild'), zahl = el('galerie-zahl');
-                let aktuell = null, nr = 0, ausloeser = null;
+    <section class="detail-section" id="ausgleich" aria-labelledby="balance-title">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2 id="balance-title">Was mich erdet.</h2>
+          <p class="section-intro">Wenn ich nicht gerade arbeite, brauche ich einen Ausgleich, der mich erdet.</p>
+        </div>
+        <ul class="tiles reveal">
+          <li><a class="tile" href="ressources/familie-franziska-und-kim.jpg" data-preview data-gallery="familie" data-title="Meine Familie" data-note="" aria-label="Bilder ansehen: Meine Familie"><img src="ressources/klein/familie.jpg" alt="Kim und Franziska" loading="lazy"><span class="tile-text"><strong>Meine Familie</strong><span>Meine Frau Franziska, zwei Katzen und ein Hund.</span><span class="tile-count">8 Bilder</span></span></a><a href="ressources/familie-blacky.jpg" data-preview data-gallery="familie" data-title="Meine Familie" data-note="" hidden></a><a href="ressources/familie-blacky-2.jpg" data-preview data-gallery="familie" data-title="Meine Familie" data-note="" hidden></a><a href="ressources/familie-mondpfote.jpg" data-preview data-gallery="familie" data-title="Meine Familie" data-note="" hidden></a><a href="ressources/familie-mondpfote-2.jpg" data-preview data-gallery="familie" data-title="Meine Familie" data-note="" hidden></a><a href="ressources/familie-flitzy.jpg" data-preview data-gallery="familie" data-title="Meine Familie" data-note="" hidden></a><a href="ressources/familie-flitzy-2.jpg" data-preview data-gallery="familie" data-title="Meine Familie" data-note="" hidden></a><a href="ressources/familie-sakura.jpg" data-preview data-gallery="familie" data-title="Meine Familie" data-note="" hidden></a></li>
+          <li><a class="tile" href="ressources/berge-weg-gipfel.jpg" data-preview data-gallery="berge" data-title="Bergwandern" data-note="" aria-label="Bilder ansehen: Bergwandern"><img src="ressources/klein/berge.jpg" alt="Wanderweg vor einem Berggipfel" loading="lazy"><span class="tile-text"><strong>Bergwandern</strong><span>Ruhe finden und Weitblick genießen.</span><span class="tile-count">12 Bilder</span></span></a><a href="ressources/IMG_1506.JPG" data-preview data-gallery="berge" data-title="Bergwandern" data-note="" hidden></a><a href="ressources/IMG_1497.JPG" data-preview data-gallery="berge" data-title="Bergwandern" data-note="" hidden></a><a href="ressources/20171230_125417.jpg" data-preview data-gallery="berge" data-title="Bergwandern" data-note="" hidden></a><a href="ressources/20171230_130453.jpg" data-preview data-gallery="berge" data-title="Bergwandern" data-note="" hidden></a><a href="ressources/20171230_152835.jpg" data-preview data-gallery="berge" data-title="Bergwandern" data-note="" hidden></a><a href="ressources/IMG_0229.jpg" data-preview data-gallery="berge" data-title="Bergwandern" data-note="" hidden></a><a href="ressources/IMG_0268.jpg" data-preview data-gallery="berge" data-title="Bergwandern" data-note="" hidden></a><a href="ressources/IMG_0276.jpg" data-preview data-gallery="berge" data-title="Bergwandern" data-note="" hidden></a><a href="ressources/berge-bach.jpg" data-preview data-gallery="berge" data-title="Bergwandern" data-note="" hidden></a><a href="ressources/berge-winter-aussicht.jpg" data-preview data-gallery="berge" data-title="Bergwandern" data-note="" hidden></a><a href="ressources/berge-felsen.jpg" data-preview data-gallery="berge" data-title="Bergwandern" data-note="" hidden></a></li>
+          <li><a class="tile" href="ressources/IMG_7186.jpg" data-preview data-gallery="angeln" data-title="Angeln" data-note="" aria-label="Bilder ansehen: Angeln"><img src="ressources/klein/angeln.jpg" alt="Kim mit einem gefangenen Fisch" loading="lazy"><span class="tile-text"><strong>Angeln</strong><span>Geduld üben und abschalten.</span><span class="tile-count">2 Bilder</span></span></a><a href="ressources/89076192-402C-43F2-85B6-F1D7372917DE.JPG" data-preview data-gallery="angeln" data-title="Angeln" data-note="" hidden></a></li>
+          <li><a class="tile" href="ressources/e48c1d0f-2676-481b-9c84-dae14748b061.jpg" data-preview data-gallery="musik" data-title="Musik" data-note="" aria-label="Bilder ansehen: Musik"><img src="ressources/klein/musik.jpg" alt="Kim singt auf einer Bühne" loading="lazy"><span class="tile-text"><strong>Musik</strong><span>Mein kreativer Ausgleich.</span><span class="tile-count">1 Bild</span></span></a><p class="tile-links"><a href="https://www.youtube.com/watch?v=AKPXDcRlC18" target="_blank" rel="noopener noreferrer">ODYN: Wald</a><a href="https://youtu.be/9UcvOI7RD38?si=neqAJ6y12Lbpktqv" target="_blank" rel="noopener noreferrer">KIM: An meiner Seite</a><a href="https://vm.tiktok.com/ZGdCrCujQ/" target="_blank" rel="noopener noreferrer">TikTok</a></p></li>
+        </ul>
+      </div>
+    </section>
 
-                // Kacheln beschriften
-                document.querySelectorAll('[data-galerie]').forEach(knopf => {
-                    const g = galerien[knopf.dataset.galerie];
-                    const n = g ? g.bilder.length : 0;
-                    if (!n) { knopf.disabled = true; return; }
-                    const marke = knopf.querySelector('.kb-bildzahl');
-                    if (marke) {
-                        marke.lastElementChild.textContent = g.links ? 'Bild & Videos' : n + ' Bilder';
-                        marke.hidden = false;
-                    }
-                    knopf.addEventListener('click', () => oeffnen(knopf.dataset.galerie, knopf, Number(knopf.dataset.nr) || 0));
-                });
+    <section class="detail-section" id="coding" aria-labelledby="coding-title">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2 id="coding-title">Coding &amp; AI-Automatisierung.</h2>
+          <p class="section-intro">Was mir im Arbeitsalltag fehlt, baue ich selbst, mit KI als Werkzeug. So entstehen Anwendungen und Websites, die mir Routinearbeit abnehmen.</p>
+        </div>
+        <ul class="works reveal">
+          <li class="work"><a class="work-shot" href="ressources/coding/smartadm-sales.jpg" data-preview data-gallery="coding" data-title="SmartADM 5 Sales" data-note="" aria-label="Bildschirmfoto vergrößern: SmartADM 5 Sales"><img src="ressources/coding/smartadm-sales.jpg" alt="" width="1440" height="900" loading="lazy"></a><div><h3>SmartADM 5 Sales</h3><p>Mein Werkzeug für den Vertrieb: Ansprechpartner, Terminprotokolle und Wiedervorlagen an einem Ort, am PC und auf dem Handy. Ansicht mit Beispieldaten.</p></div></li>
+          <li class="work"><a class="work-shot" href="ressources/coding/smartadm-office.jpg" data-preview data-gallery="coding" data-title="SmartADM 5 Office" data-note="" aria-label="Bildschirmfoto vergrößern: SmartADM 5 Office"><img src="ressources/coding/smartadm-office.jpg" alt="" width="1440" height="900" loading="lazy"></a><div><h3>SmartADM 5 Office</h3><p>Für mein Büro: Zeiterfassung, Aufgaben, Telefonliste und Terminvereinbarung für mein Team. Ansicht mit Beispieldaten.</p></div></li>
+          <li class="work"><a class="work-shot" href="ressources/coding/blankoflex.jpg" data-preview data-gallery="coding" data-title="BlankofleX" data-note="" aria-label="Bildschirmfoto vergrößern: BlankofleX"><img src="ressources/coding/blankoflex.jpg" alt="" width="1440" height="900" loading="lazy"></a><div><h3>BlankofleX</h3><p>Website mit 3-Fragen-Check und Online-Anfrage für ein eigenes Finanzierungsangebot.</p><a class="text-link" href="https://blankoflex.de/p/34YY2" target="_blank" rel="noopener noreferrer">blankoflex.de</a></div></li>
+          <li class="work"><a class="work-shot" href="ressources/coding/iquest34.jpg" data-preview data-gallery="coding" data-title="iQuest" data-note="" aria-label="Bildschirmfoto vergrößern: iQuest"><img src="ressources/coding/iquest34.jpg" alt="" width="1440" height="900" loading="lazy"></a><div><h3>iQuest</h3><p>Lernspiel für die IHK-Sachkundeprüfung nach §&nbsp;34i GewO: 24 Level, Bosskämpfe und eine Prüfungssimulation. Ein gemeinsames Projekt mit Maksim Juschkin.</p><a class="text-link" href="https://iquest34.de/" target="_blank" rel="noopener noreferrer">iquest34.de</a></div></li>
+          <li class="work"><a class="work-shot" href="ressources/coding/juschkinlabs.jpg" data-preview data-gallery="coding" data-title="Gemeinsam mit meinem Geschäftspartner" data-note="" aria-label="Bildschirmfoto vergrößern: Gemeinsam mit meinem Geschäftspartner"><img src="ressources/coding/juschkinlabs.jpg" alt="" width="1440" height="900" loading="lazy"></a><div><h3>Gemeinsam mit meinem Geschäftspartner</h3><p>Maksim Juschkin ist mein langjähriger Freund und Geschäftspartner. iQuest ist unser gemeinsames Projekt: Ich habe es entwickelt, er hostet es, kümmert sich um den Datenschutz und entwickelt es mit mir weiter. Mit seiner Firma Juschkin Labs baut er Software, verbindet Daten und gibt KI-Workshops für Unternehmen.</p><a class="text-link" href="https://juschkinlabs.de/" target="_blank" rel="noopener noreferrer">juschkinlabs.de</a></div></li>
+        </ul>
+      </div>
+    </section>
 
-                // Kachel-Überschriften stehen je Reihe auf einer Höhe, auch wenn die Texte darunter
-                // unterschiedlich viele Zeilen haben: die Textblöcke einer Reihe werden gleich hoch.
-                function ueberschriftenAngleichen() {
-                    const texte = [...document.querySelectorAll('.kb-hobby-text')];
-                    texte.forEach(t => { t.style.minHeight = ''; });
-                    const reihen = new Map();
-                    texte.forEach(t => {
-                        const oben = Math.round(t.closest('.kb-hobby').getBoundingClientRect().top + scrollY);
-                        if (!reihen.has(oben)) reihen.set(oben, []);
-                        reihen.get(oben).push(t);
-                    });
-                    reihen.forEach(liste => {
-                        const hoehe = Math.max(...liste.map(t => t.offsetHeight));
-                        liste.forEach(t => { t.style.minHeight = hoehe + 'px'; });
-                    });
-                }
-                ueberschriftenAngleichen();
-                addEventListener('resize', ueberschriftenAngleichen);
-                addEventListener('load', ueberschriftenAngleichen);
-                if (document.fonts && document.fonts.ready) document.fonts.ready.then(ueberschriftenAngleichen);
+    <section class="detail-section" id="ehrlich" aria-labelledby="honest-title">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2 id="honest-title">Ehrlichkeit ist meine Basis.</h2>
+          <p class="section-intro">Niemand ist perfekt. Aber ich weiß, wie ich meine Eigenschaften für dich nutze.</p>
+        </div>
+        <div class="service-grid reveal">
+          <article class="panel service"><p class="service-kind">Eigenschaft</p><h3>Ungeduld</h3><p>Wenn Dinge langsam laufen, werde ich nervös.</p><p class="trait-gain"><strong>Dein Vorteil:</strong> Ich nutze das Momentum. Bei mir bleibt nichts liegen.</p></article>
+          <article class="panel service"><p class="service-kind">Eigenschaft</p><h3>Ablenkbarkeit</h3><p>Mein „Radar“ ist immer an, ich nehme alles wahr.</p><p class="trait-gain"><strong>Dein Vorteil:</strong> Im Gespräch ist das Gold wert. Ich erkenne unausgesprochene Bedürfnisse.</p></article>
+          <article class="panel service"><p class="service-kind">Eigenschaft</p><h3>Vergesslichkeit</h3><p>Ich verlasse mich nie nur auf mein Gedächtnis.</p><p class="trait-gain"><strong>Dein Vorteil:</strong> Deshalb nutze ich wasserdichte Systeme. Was aufgeschrieben ist, wird erledigt.</p></article>
+        </div>
+      </div>
+    </section>
 
-                function zeigen() {
-                    const n = aktuell.bilder.length;
-                    bild.src = aktuell.bilder[nr];
-                    const name = aktuell.namen && aktuell.namen[nr];
-                    el('galerie-titel').textContent = name || aktuell.titel;
-                    bild.alt = (name || aktuell.titel) + (n > 1 ? ', Bild ' + (nr + 1) + ' von ' + n : '');
-                    zahl.textContent = n > 1 ? (nr + 1) + ' / ' + n : '';
-                    if (n > 1) [nr + 1, nr - 1].forEach(i => { new Image().src = aktuell.bilder[(i + n) % n]; });   // Nachbarn vorladen
-                }
-                function oeffnen(key, von, start) {
-                    aktuell = galerien[key]; nr = start || 0; ausloeser = von;
-                    const mehrere = aktuell.bilder.length > 1;
-                    el('galerie-zurueck').hidden = el('galerie-weiter').hidden = !mehrere;
-                    el('galerie-links').innerHTML = (aktuell.links || []).map(l =>
-                        `<a class="kb-btn kb-btn-hell" href="${l.url}" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"/></svg>${l.text}</a>`).join('');
-                    zeigen();
-                    licht.hidden = false;
-                    document.body.style.overflow = 'hidden';
-                    el('galerie-zu').focus();
-                }
-                function schliessen() {
-                    licht.hidden = true;
-                    document.body.style.overflow = '';
-                    bild.removeAttribute('src');
-                    if (ausloeser) ausloeser.focus();
-                }
-                function blaettern(schritt) {
-                    const n = aktuell.bilder.length;
-                    if (n < 2) return;
-                    nr = (nr + schritt + n) % n;
-                    zeigen();
-                }
+    <section class="contact" id="kontakt" aria-labelledby="contact-title">
+      <div class="wrap contact-inner reveal">
+        <h2 id="contact-title">Meld dich einfach.</h2>
+        <p class="contact-lead">Am schnellsten erreichst du mich am Telefon. Oder du schreibst mir über LinkedIn oder Instagram.</p>
+        <a class="btn btn-primary contact-mail" href="tel:+4915222686361">+49 152 22686361</a>
+        <p class="contact-secondary">
+          <a class="btn" href="https://www.linkedin.com/in/kim-betcher-5a764b397/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a class="btn" href="https://www.instagram.com/kimbetcher/" target="_blank" rel="noopener noreferrer">Instagram</a>
+        </p>
+      </div>
+    </section>
+  </main>
 
-                el('galerie-zu').addEventListener('click', schliessen);
-                el('galerie-zurueck').addEventListener('click', () => blaettern(-1));
-                el('galerie-weiter').addEventListener('click', () => blaettern(1));
-                licht.addEventListener('click', e => { if (e.target === licht || e.target.classList.contains('kb-licht-buehne')) schliessen(); });
-                document.addEventListener('keydown', e => {
-                    if (licht.hidden) return;
-                    if (e.key === 'Escape') schliessen();
-                    else if (e.key === 'ArrowLeft') blaettern(-1);
-                    else if (e.key === 'ArrowRight') blaettern(1);
-                    else if (e.key === 'Tab') {   // Fokus bleibt in der Galerie
-                        const f = [...licht.querySelectorAll('button:not([hidden]), a[href]')];
-                        const erster = f[0], letzter = f[f.length - 1];
-                        if (e.shiftKey && document.activeElement === erster) { e.preventDefault(); letzter.focus(); }
-                        else if (!e.shiftKey && document.activeElement === letzter) { e.preventDefault(); erster.focus(); }
-                    }
-                });
-                // Wischen auf dem Handy
-                let startX = null;
-                licht.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
-                licht.addEventListener('touchend', e => {
-                    if (startX === null) return;
-                    const dx = e.changedTouches[0].clientX - startX; startX = null;
-                    if (Math.abs(dx) > 48) blaettern(dx < 0 ? 1 : -1);
-                });
-            })();
-        </script>
+  <dialog class="project-dialog" aria-labelledby="preview-title" aria-describedby="preview-note">
+    <div class="dialog-heading"><h2 id="preview-title">Bild</h2><button class="btn dialog-close" type="button" aria-label="Bildansicht schließen">Schließen</button></div>
+    <div class="preview-stage"><img id="preview-image" alt=""></div>
+    <div class="preview-footer"><p class="dialog-note" id="preview-note"></p><div class="preview-navigation" hidden><button class="btn btn-icon" type="button" data-preview-previous aria-label="Vorheriges Bild">←</button><span class="preview-counter" role="status" aria-live="polite"></span><button class="btn btn-icon" type="button" data-preview-next aria-label="Nächstes Bild">→</button></div></div>
+  </dialog>
 
-  </div>
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>Kim Betcher, Heidenheim</p>
+      <nav aria-label="Weitere Links">
+        <a href="private-einblicke.html">Private Einblicke</a>
+        <a href="https://blankoflex.de/p/34YY2" target="_blank" rel="noopener noreferrer">BlankofleX</a>
+        <a href="https://juschkinlabs.de/" target="_blank" rel="noopener noreferrer">Juschkin Labs</a>
+        <a href="impressum.html">Impressum</a>
+        <a href="datenschutz.html">Datenschutz</a>
+      </nav>
+    </div>
+  </footer>
 </body>
 </html>
