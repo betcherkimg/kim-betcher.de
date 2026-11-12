@@ -645,13 +645,13 @@ a.build-shot:hover img, a.partner-shot:hover img { filter: none; scale: 1.04; }
 .private-hero .hero-lead { margin: 18px 0 0; max-width: 30em; font-size: clamp(19px, 1.6vw, 23px); }
 .project-dialog .preview-stage img { filter: none; }
 
-.music-player { position: fixed; right: 16px; bottom: 16px; z-index: 25; display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 10px; border: 1px solid rgba(215, 199, 145, .45); border-radius: 12px; background: rgba(19, 22, 24, .96); box-shadow: 0 16px 40px rgba(0, 0, 0, .55); }
+.music-player { position: fixed; right: 16px; bottom: 16px; z-index: 25; max-width: calc(100vw - 32px); display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 10px; border: 1px solid rgba(215, 199, 145, .45); border-radius: 12px; background: rgba(19, 22, 24, .96); box-shadow: 0 16px 40px rgba(0, 0, 0, .55); }
 .music-toggle { display: grid; place-items: center; width: 46px; height: 46px; flex-shrink: 0; border: 0; border-radius: 50%; background: var(--gold); color: var(--ink); cursor: pointer; }
 .music-toggle svg { width: 22px; height: 22px; }
 .music-toggle .icon-pause, .music-player.is-playing .icon-play { display: none; }
 .music-player.is-playing .icon-pause { display: block; }
 .music-player p { min-width: 0; padding-right: 4px; font-family: var(--font); line-height: 1.25; }
-.music-player strong { display: block; font-size: 16px; font-weight: 700; white-space: nowrap; }
+.music-player strong { display: block; overflow: hidden; font-size: 16px; font-weight: 700; white-space: nowrap; text-overflow: ellipsis; }
 .music-player span { font-size: 14px; color: var(--dim); }
 .music-player.is-playing span { color: var(--gold); }
 .music-close { display: grid; place-items: center; width: 36px; height: 36px; flex-shrink: 0; border: 0; border-radius: 50%; background: transparent; color: var(--soft); cursor: pointer; }

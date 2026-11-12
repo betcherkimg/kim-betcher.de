@@ -93,7 +93,7 @@ try:
         page.keyboard.press("Escape")
         expect(player).to_be_visible()
         expect(player).to_have_class(re.compile("is-playing"))
-        assert page.evaluate("() => { const a = document.querySelector('[data-music-player] audio'); return !a.paused && a.src.endsWith('assets/musik/odk-wie-wir.mp3') && window.kbMusicPlaying === true; }")
+        assert page.evaluate("() => { const a = document.querySelector('[data-music-player] audio'); return !a.paused && a.src.endsWith('assets/musik/odyn-wald-2026-remake.mp3') && window.kbMusicPlaying === true; }")
         page.wait_for_function("document.querySelector('[data-music-player] audio').currentTime > 0.3")
         player.locator(".music-toggle").click()
         expect(player).not_to_have_class(re.compile("is-playing"))
