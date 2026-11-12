@@ -76,6 +76,7 @@ Alle Pfade sind relativ. Der Ordner funktioniert deshalb unter
   WebP (Qualität 86), meshopt. Vor dem Export wird die Hauttextur gesäubert:
   Bartkanten laufen weich aus, und Alpha ist nie ganz 0, weil WebP sonst die
   Farben unter transparenten Pixeln verwirft (das machte den Bart fleckig).
+  Die Skripte dafür liegen in `tools/figuren/` (`build.sh Kim` bzw. `build.sh Maksim`).
   Nach einem neuen Export `FIGURE_VERSION` in `character.js` hochzählen. Clipnamen beginnen mit `Kim_` bzw. `Maksim_`,
   Frisuren heißen `Frisur_<Name>_<Frisur>`.
 - Färbbare Materialien (`Haut`, `Oberteil`, `Hose`, `Schuhe`) tragen im
