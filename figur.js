@@ -993,7 +993,7 @@ async function start() {
   }
 
   // Abgang nach „Fertig“
-  // goto: Adresse, die nach dem Lauf durchs Tor geöffnet wird (Spielplatz); ohne goto geht es zum ersten Abschnitt
+  // goto: Adresse, die nach dem Lauf durchs Tor geöffnet wird (Spielwiese); ohne goto geht es zum ersten Abschnitt
   let leaveGoto = "";
   function startLeave(goto = "") {
     leaveGoto = goto;
@@ -1134,7 +1134,7 @@ async function start() {
       event.preventDefault();
       startLeave(worldsButton.dataset.goto !== undefined ? worldsButton.href : "");
     });
-    // Zurück aus dem Spielplatz (Verlauf): Figur steht wieder auf dem Podest
+    // Zurück von der Spielwiese (Verlauf): Figur steht wieder auf dem Podest
     window.addEventListener("pageshow", (event) => { if (event.persisted) window.location.reload(); });
 
     // Icons aus der Asset-Lieferung (32 × 32, currentColor)

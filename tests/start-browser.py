@@ -13,7 +13,7 @@ from threading import Thread
 from playwright.sync_api import expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parent.parent
-NEW_PAGES = ["index.html", "private-einblicke.html", "spielplatz.html", "impressum.html", "datenschutz.html"]
+NEW_PAGES = ["index.html", "private-einblicke.html", "spielwiese.html", "impressum.html", "datenschutz.html"]
 
 for name in ("index.html", "private-einblicke.html"):
     source = (ROOT / name).read_text()
@@ -138,28 +138,39 @@ try:
             page.set_viewport_size({"width": width, "height": 1000})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), f"Overflow on private page at {width}px"
 
-        # Spielplatz: Wiese läuft, Leiste ist gefüllt, Antippen stellt etwas auf und merkt es
+        # Spielwiese: Wiese läuft, Leiste ist gefüllt, Antippen stellt etwas auf und merkt es
         page.goto(origin + "/", wait_until="networkidle")
-        assert page.locator("[data-worlds]").get_attribute("href") == "spielplatz.html"
+        assert page.locator("[data-worlds]").get_attribute("href") == "spielwiese.html"
         expect(page.locator(".hero-actions a")).to_have_count(1)
-        page.goto(origin + "/spielplatz.html", wait_until="networkidle")
-        expect(page.locator(".palette-item")).to_have_count(16)
+        page.goto(origin + "/spielwiese.html", wait_until="networkidle")
+        expect(page.locator(".palette-item")).to_have_count(17)
+        expect(page.locator(".header-legal a")).to_have_count(2)
         if page.evaluate("Boolean(document.createElement('canvas').getContext('webgl2'))"):
             expect(page.locator("[data-play]")).to_have_class(re.compile("is-live"))
-            page.wait_for_function("window.kbSpielplatz && kbSpielplatz.kim.ready && kbSpielplatz.things.length === 7", timeout=60000)
-            page.locator('.palette-item[data-item="gokart"]').click()
-            page.wait_for_function("kbSpielplatz.things.length === 8", timeout=30000)
-            assert any(row[0] == "gokart" for row in page.evaluate("JSON.parse(localStorage.getItem('kb-spielplatz-v1'))"))
-            expect(page.locator("[data-play-tools]")).to_be_visible()
-            page.locator('[data-tool="drive"]').click()
-            expect(page.locator("[data-play-exit]")).to_be_visible()
-            page.wait_for_function("!kbSpielplatz.kim.busy", timeout=90000)
-            assert page.evaluate("kbSpielplatz.kim.current") == "SitInCar"
-            page.keyboard.press("e")
-            expect(page.locator("[data-play-exit]")).to_be_hidden(timeout=90000)
+            page.wait_for_function("window.kbSpielwiese && kbSpielwiese.kim.ready && kbSpielwiese.things.length === 7", timeout=60000)
+            # Spielen: keine Leiste. Bauen (B): Leiste sichtbar, auf- und zuklappbar.
+            expect(page.locator(".palette")).to_be_hidden()
+            page.keyboard.press("b")
+            expect(page.locator("[data-play]")).to_have_class(re.compile("is-build"))
+            expect(page.locator(".palette-item").first).to_be_visible()
             page.locator("[data-palette-toggle]").click()
             expect(page.locator(".palette-item").first).to_be_hidden()
             page.locator("[data-palette-toggle]").click()
+            expect(page.locator(".palette-item").first).to_be_visible()
+            page.locator('.palette-item[data-item="arian"]').click()
+            page.wait_for_function("kbSpielwiese.things.length === 8", timeout=30000)
+            assert any(row[0] == "arian" for row in page.evaluate("JSON.parse(localStorage.getItem('kb-spielwiese-v1'))"))
+            expect(page.locator("[data-play-tools]")).to_be_visible()
+            # Einsteigen wechselt ins Spiel; Kim sitzt, steigt mit E wieder aus
+            page.locator('[data-tool="drive"]').click()
+            assert page.evaluate("kbSpielwiese.mode") == "play"
+            expect(page.locator("[data-play-exit]")).to_be_visible()
+            page.wait_for_function("!kbSpielwiese.kim.busy", timeout=90000)
+            assert page.evaluate("kbSpielwiese.kim.current") == "SitInCar"
+            page.keyboard.press(" ")
+            page.keyboard.press("e")
+            expect(page.locator("[data-play-exit]")).to_be_hidden(timeout=90000)
+            assert page.evaluate("kbSpielwiese.kim.group.parent.type") == "Scene"
         assert not errors, errors
         for width in (390, 1440):
             page.set_viewport_size({"width": width, "height": 800})
