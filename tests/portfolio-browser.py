@@ -44,6 +44,7 @@ for name in PAGES:
     PageLinks(ROOT / name).feed(source)
     # Only the business addresses belong on these pages.
     assert "gmail" not in source.lower(), f"Private address in {name}"
+    assert "finanzprofi" not in source, f"Old portrait still linked in {name}"
 
 
 class QuietHandler(SimpleHTTPRequestHandler):

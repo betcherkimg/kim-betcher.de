@@ -145,9 +145,6 @@ h2 { font-size: clamp(40px, 5.4vw, 80px); }
 .stage-glow { position: absolute; left: 50%; top: 46%; width: 70%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%;
   background: radial-gradient(circle, rgba(215, 199, 145, .22), rgba(142, 189, 255, .12) 45%, transparent 70%); filter: blur(10px);
   transform: translate3d(calc(var(--mx) * 22px), calc(var(--my) * 14px), 0); }
-.stage-figure { position: absolute; left: 50%; bottom: 4%; z-index: 2; height: 96%; width: auto; max-width: none; translate: -50% 0;
-  -webkit-mask-image: radial-gradient(ellipse 44% 58% at 50% 42%, #000 58%, transparent 100%); mask-image: radial-gradient(ellipse 44% 58% at 50% 42%, #000 58%, transparent 100%);
-  filter: contrast(1.05) saturate(.95); transform: translate3d(calc(var(--mx) * 8px), calc(var(--my) * 4px), 0); }
 .podium { position: absolute; left: 50%; bottom: -4%; width: min(440px, 120%); aspect-ratio: 1; translate: -50% 0; transform: perspective(700px) rotateX(74deg); transform-origin: 50% 100%; z-index: 1; pointer-events: none; }
 .ring { position: absolute; inset: 0; border-radius: 50%; }
 .ring-a { border: 2px solid rgba(215, 199, 145, .65); box-shadow: 0 0 40px rgba(215, 199, 145, .45), inset 0 0 50px rgba(215, 199, 145, .25); background: radial-gradient(circle, rgba(215, 199, 145, .18), transparent 70%); }
@@ -164,7 +161,6 @@ h2 { font-size: clamp(40px, 5.4vw, 80px); }
 .js .hero h1 { animation-delay: .08s; }
 .js .profile { animation: from-left 1s var(--ease) .35s both; }
 .js .skills { animation: from-right 1s var(--ease) .35s both; }
-.js .stage-figure { animation: materialize 1.3s var(--ease) .15s both; }
 .js .podium { animation: podium 1.1s var(--ease) both; }
 .js .hero-foot { animation: rise .9s var(--ease) .55s both; }
 @keyframes rise { from { opacity: 0; translate: 0 18px; } }
@@ -354,8 +350,6 @@ html:not(.js) .track { --fill: 1; }
 
 /* 3D-Figur: eine feste Zeichenfläche über der Seite, gezeichnet wird nur im Podest oder im Begleiter */
 .figure-layer { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 20; pointer-events: none; }
-.stage-figure { transition: opacity .6s var(--ease); }
-.stage.is-3d .stage-figure { opacity: 0; visibility: hidden; pointer-events: none; }
 .stage.is-3d { -webkit-user-select: none; user-select: none; }
 .stage.is-3d { cursor: grab; touch-action: pan-y; }
 .stage.is-3d.is-dragging { cursor: grabbing; }
@@ -442,9 +436,7 @@ html:not(.js) .track { --fill: 1; }
 .slot-text strong { display: block; font-size: 16px; font-weight: 800; font-stretch: 116%; color: inherit; }
 .slot-text span { font-size: 12px; font-weight: 600; font-stretch: 116%; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
 .stage-monogram { position: absolute; left: 50%; top: 42%; z-index: 2; display: none; place-items: center; width: 150px; height: 150px; translate: -50% -50%; clip-path: polygon(24px 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%, 0 24px); background: rgba(241, 238, 228, .06); color: var(--gold); font-size: 54px; font-weight: 900; font-stretch: 125%; }
-.hero[data-character="maksim"] .stage:not(.is-3d) .stage-figure { opacity: 0; }
-.hero[data-character="maksim"] .stage:not(.is-3d) .stage-monogram { display: grid; }
-.hero[data-character="maksim"] .stage.is-3d.is-loading-figure .stage-monogram { display: grid; }
+.stage:not(.is-3d) .stage-monogram, .stage.is-loading-figure .stage-monogram { display: grid; }
 
 /* Leistungen */
 .services, .webapps, .insight, .team { position: relative; padding-block: clamp(88px, 10vw, 150px); border-top: 1px solid var(--line); }

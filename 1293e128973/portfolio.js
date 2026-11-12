@@ -287,8 +287,6 @@ function showCharacter(id) {
     slot.classList.toggle("is-active", active);
     slot.setAttribute("aria-pressed", String(active));
   });
-  const fallback = heroSelect.querySelector(".stage-figure");
-  if (fallback) fallback.alt = id === "maksim" ? "" : "Kim Betcher";
 }
 rosterSlots.forEach((slot) => slot.addEventListener("click", () => {
   if (slot.dataset.character === heroSelect?.dataset.character) return;

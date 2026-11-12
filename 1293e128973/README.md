@@ -28,7 +28,7 @@ Besucher werden geduzt. Preise stehen nicht auf der Seite („auf Anfrage“).
   `assets/jl-logo.png` ist die verkleinerte Fassung für die Kopfzeile.
   `assets/jl-mark.svg` und `assets/jl-touch.png` sind die Seitensymbole.
 - `vendor/three/`: three.js r169 (MIT-Lizenz), lokal ausgeliefert.
-- `ressources/`: Porträt und Projektansichten aus der bestehenden Website.
+- `ressources/coding/`: Projektansichten (iQuest, SmartADM). Kein Porträtfoto auf dieser Seite.
 
 ## 3D-Spielfiguren
 
@@ -53,7 +53,7 @@ Besucher werden geduzt. Preise stehen nicht auf der Seite („auf Anfrage“).
   unten links beim Scrollen (Gehen oder Laufen je nach Tempo, Winken pro
   Abschnitt, Klick für Gesten). Die Auswahl liegt nur im Browser
   (`localStorage`, Schlüssel `jl-figuren-v1`).
-- Ohne WebGL bleibt das Porträt bzw. das Monogramm sichtbar.
+- Ohne WebGL oder während des Ladens zeigt die Bühne das Monogramm (KB bzw. MJ), kein Foto.
 
 ## Sprachausgabe (geplant)
 
