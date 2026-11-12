@@ -92,16 +92,19 @@ Alle Pfade sind relativ. Der Ordner funktioniert deshalb unter
 
 ## Stimmen
 
-Aufnahmen aus ElevenLabs in `assets/stimmen/`. Der Ton ist standardmäßig an; der
-Schalter in der Kopfzeile merkt sich „aus“ (`localStorage`, Schlüssel `jl-ton`).
-Browser spielen Ton erst nach der ersten Berührung oder Taste. Die Begrüßung
-(`hallo`) wartet deshalb und kommt mit dem ersten Klick irgendwo auf der Seite.
-Beim Wechsel der Figur grüßt die neue Figur, Antippen der Figur spielt `klick_1`
-bis `klick_3`, im Editor sagt Kim `editor` bzw. `gesperrt`. Als Begleiter spricht die
-Figur je Abschnitt einmal ihre Zeile (Zuordnung in `LINES` in `character.js`), nach
-30 bzw. 40 Sekunden Ruhe `warten`. Ohne Aufnahme winkt sie stattdessen. Es wird
-immer nur ein Audio-Element genutzt, damit Safari nach der ersten Berührung alle
-weiteren Zeilen abspielt.
+Aufnahmen aus ElevenLabs in `assets/stimmen/`, `kim_<zeile>.mp3` und `maksim_<zeile>.mp3`.
+Der Ton ist standardmäßig an; der Schalter in der Kopfzeile merkt sich „aus“
+(`localStorage`, Schlüssel `jl-ton`). Browser spielen Ton erst nach der ersten Berührung
+oder Taste. Die Begrüßung (`hallo`) wartet deshalb und kommt mit dem ersten Klick.
+
+- Lab: Beim Wechsel der Figur grüßt die neue Figur, Antippen spielt `klick_1` bis
+  `klick_3`, im Editor `editor` bzw. `gesperrt`, nach 30 Sekunden Ruhe `warten`.
+- Begleiter: Er kommt bei allen Besuchern mit, auch ohne Editor. Der Abschnitt in der
+  Bildschirmmitte bekommt einmal seine Zeile (Zuordnung in `LINES` in `character.js`).
+- Projekte: Beim Ankommen kommt nur `projekte`. Ein Projekt wird erst beim Umschalten
+  erklärt: `smartadm`, `heimello`, `roadlands`, `classic` und beim Zurückschalten `iquest`.
+- Fehlt eine Aufnahme, winkt die Figur. Es gibt nur ein Audio-Element, damit Safari
+  nach der ersten Berührung alle weiteren Zeilen abspielt.
 
 ## Livegang auf juschkinlabs.de
 

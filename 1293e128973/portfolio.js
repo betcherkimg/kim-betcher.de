@@ -141,6 +141,7 @@ document.querySelectorAll("[data-variants]").forEach((root) => {
       if (box.closest("[hidden]") && trailerPosters.has(box)) box.replaceChildren(trailerPosters.get(box));
     });
     root.classList.toggle("is-classic", name === "classic");
+    document.dispatchEvent(new CustomEvent("welt:variante", { detail: name }));
   }));
 });
 

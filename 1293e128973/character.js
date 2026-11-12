@@ -100,7 +100,7 @@ if (!CHARACTERS[state.aktiv]) state.aktiv = "kim";
 // Die Charakterleiste (portfolio.js) soll die zuletzt gewählte Figur zeigen, auch ohne WebGL.
 document.dispatchEvent(new CustomEvent("figur:bereit", { detail: state.aktiv }));
 
-if (webglAvailable() && (stage || (state.fertig && state.begleiter))) {
+if (webglAvailable()) {
   start().catch((error) => {
     console.warn("3D-Figur konnte nicht geladen werden:", error);
     stage?.classList.remove("is-loading", "is-loading-figure", "is-3d");
@@ -346,6 +346,7 @@ async function start() {
     audio.addEventListener("error", () => { speaking = false; });
     const api = {
       get on() { return on; },
+      get busy() { return speaking; },
       say(line, { force = false, once = false } = {}) {
         if (!on || !line) return false;
         const file = fileFor(line);
@@ -546,7 +547,14 @@ async function start() {
   let scrollDir = 1;
   let calmFor = 0;
   let idleFor = 0;
-  const greetQueue = [];
+  const greetSeen = new Set();
+  const inView = new Set();
+  // Der innerste noch nicht begrüßte Abschnitt in der Bildschirmmitte
+  const nextSection = () => {
+    let pick = null;
+    for (const section of inView) if (!greetSeen.has(section) && (!pick || pick.contains(section))) pick = section;
+    return pick;
+  };
   const damp = (value, targetValue, lambda, dt) => THREE.MathUtils.lerp(value, targetValue, 1 - Math.exp(-lambda * dt));
   const tangent = new THREE.Vector3();
 
@@ -614,11 +622,13 @@ async function start() {
         idleFor += dt;
         if (!gesture && active?.currentName !== "Idle") play("Idle", { fade: 0.45 });
         pivot.rotation.y = damp(pivot.rotation.y, 0.38, 5, dt);
-        if (calmFor > 0.45 && greetQueue.length && !gesture) {
-          const section = greetQueue.pop();
-          greetQueue.length = 0;
-          const line = LINES[active?.id]?.[section];
-          if (!(line && sound.say(line, { once: true }))) doGesture("Wave");
+        if (calmFor > 0.45 && !gesture && !sound.busy) {
+          const section = nextSection();
+          if (section) {
+            greetSeen.add(section);
+            const line = LINES[active?.id]?.[section.id];
+            if (!(line && sound.say(line, { once: true }))) doGesture("Wave");
+          }
         }
         if (idleFor > 40) { idleFor = -1e9; sound.say("warten", { once: true }); }
       }
@@ -644,7 +654,8 @@ async function start() {
   }
 
   function updateMode() {
-    const wantCompanion = !editing && !leave && state.fertig && state.begleiter && !heroVisible;
+    // Der Begleiter kommt bei allen mit, auch ohne Charakter-Editor
+    const wantCompanion = !editing && !leave && !heroVisible;
     const next = lab && (heroVisible || editing || leave) ? "hero" : wantCompanion ? "companion" : null;
     if (next === mode) { wake(); return; }
     const previous = mode;
@@ -729,22 +740,37 @@ async function start() {
       updateMode();
     }, { threshold: 0.12 }).observe(watch);
   }
-  const greetSeen = new Set();
+  // Abschnitte: Was gerade in der Bildschirmmitte liegt, bekommt einmal seine Zeile
   const sections = document.querySelectorAll("main > section[id], #agenturen, main.legal");
   if (sections.length) {
     const greeter = new IntersectionObserver((entries) => {
       for (const entry of entries) {
-        if (entry.isIntersecting && !greetSeen.has(entry.target) && mode === "companion") {
-          greetSeen.add(entry.target);
-          greetQueue.push(entry.target.id);
-          wake();
-        }
+        if (entry.isIntersecting) inView.add(entry.target);
+        else inView.delete(entry.target);
       }
-    }, { threshold: 0.35 });
+      wake();
+    }, { rootMargin: "-42% 0px -42% 0px", threshold: 0 });
     sections.forEach((section) => greeter.observe(section));
   }
-  document.addEventListener("welt:aktiv", (event) => {
-    if (event.detail === "roadlands" && mode === "companion") sound.say("roadlands", { once: true });
+  // Projekte: Beim Ankommen kommt nur die allgemeine Zeile. Ein Projekt wird erst erklärt,
+  // wenn man umschaltet (anderes Projekt, iQuest Classic oder zurück auf iQuest).
+  let projectKey = "iquest";
+  let iquestVariant = "spiel";
+  const projectLine = (id) => id === "iquest" && iquestVariant === "classic" ? "classic" : id;
+  let projectTimer = 0;
+  const explainProject = (key) => {
+    // Erst sprechen, wenn die Auswahl steht (beim Blättern laufen Zwischenstände durch)
+    clearTimeout(projectTimer);
+    projectTimer = setTimeout(() => {
+      if (!key || key === projectKey) return;
+      projectKey = key;
+      if (mode === "companion") sound.say(key, { force: true });
+    }, 450);
+  };
+  document.addEventListener("welt:aktiv", (event) => explainProject(projectLine(event.detail)));
+  document.addEventListener("welt:variante", (event) => {
+    iquestVariant = event.detail;
+    explainProject(projectLine("iquest"));
   });
 
   // Bühne: drehen mit Ziehen oder Pfeiltasten
@@ -824,6 +850,12 @@ async function start() {
     createButton.hidden = false;
     if (state.fertig) createButton.textContent = "Charakter anpassen";
     worldsButton?.classList.remove("btn-primary");
+    // „Leistungen ansehen“: die Figur geht durchs Tor voraus
+    worldsButton?.addEventListener("click", (event) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || leave) return;
+      event.preventDefault();
+      startLeave();
+    });
 
     // Icons aus der Asset-Lieferung (32 × 32, currentColor)
     const ICONS = {
