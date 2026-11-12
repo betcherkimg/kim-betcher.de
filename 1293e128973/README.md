@@ -38,7 +38,10 @@ Besucher werden geduzt. Preise stehen nicht auf der Seite („auf Anfrage“).
   übertragen, hängende Arme dabei näher an den Körper geholt. Die Ruhepose (Idle)
   ist selbst gebaut: aufrecht, Arme locker, Füße hüftbreit, 5 Sekunden Atmen.
 - Export als glTF, danach mit gltf-transform: dedup, Texturen auf 2048 px,
-  WebP (Qualität 86), meshopt. Clipnamen beginnen mit `Kim_` bzw. `Maksim_`,
+  WebP (Qualität 86), meshopt. Vor dem Export wird die Hauttextur gesäubert:
+  Bartkanten laufen weich aus, und Alpha ist nie ganz 0, weil WebP sonst die
+  Farben unter transparenten Pixeln verwirft (das machte den Bart fleckig).
+  Nach einem neuen Export `FIGURE_VERSION` in `character.js` hochzählen. Clipnamen beginnen mit `Kim_` bzw. `Maksim_`,
   Frisuren heißen `Frisur_<Name>_<Frisur>`.
 - Färbbare Materialien (`Haut`, `Oberteil`, `Hose`, `Schuhe`) tragen im
   Alphakanal der Textur eine Maske; die Seite multipliziert dort die gewählte

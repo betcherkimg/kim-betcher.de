@@ -8,6 +8,7 @@ import { MeshoptDecoder } from "./vendor/three/meshopt_decoder.module.js";
 
 const ROOT = "/1293e128973/";
 const STORE_KEY = "jl-figuren-v1";
+const FIGURE_VERSION = "20261112-3";
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const CHARACTERS = {
@@ -123,7 +124,7 @@ async function start() {
 
   function loadFigure(id) {
     if (loading[id]) return loading[id];
-    loading[id] = loader.loadAsync(`${ROOT}assets/figuren/${CHARACTERS[id].file}`, (event) => {
+    loading[id] = loader.loadAsync(`${ROOT}assets/figuren/${CHARACTERS[id].file}?v=${FIGURE_VERSION}`, (event) => {
       if (status && event.total && id === wanted) status.textContent = `${CHARACTERS[id].name} wird geladen: ${Math.round((event.loaded / event.total) * 100)} %`;
     }).then((gltf) => {
       const model = gltf.scene;
@@ -791,11 +792,11 @@ async function start() {
         "#include <map_fragment>",
         `#ifdef USE_MAP
           vec4 sampledDiffuseColor = texture2D( map, vMapUv );
-          diffuseColor.rgb *= sampledDiffuseColor.rgb * mix( vec3( 1.0 ), uTint, smoothstep( 0.04, 0.32, sampledDiffuseColor.a ) );
+          diffuseColor.rgb *= sampledDiffuseColor.rgb * mix( vec3( 1.0 ), uTint, sampledDiffuseColor.a );
         #endif`
       )}`;
     };
-    material.customProgramCacheKey = () => "jl-tint-2";
+    material.customProgramCacheKey = () => "jl-tint-3";
     material.needsUpdate = true;
   }
 }
