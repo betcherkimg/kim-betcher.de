@@ -1052,9 +1052,9 @@ h3 { letter-spacing: -.005em; }
 /* Kims Wut: Anzeige unten rechts, kaputte Stellen (ein Klick heilt sie), Stift, Beute, Knopf zum Zurücksetzen */
 .wut-ebene { position: absolute; top: 0; left: 0; width: 100%; height: 0; z-index: 15; }
 .wut-stelle { position: absolute; padding: 0; border: 0; border-radius: 4px; background: none; cursor: pointer; }
-.wut-stelle:hover, .wut-stelle:focus-visible { outline: 2px dashed var(--wood-deep); outline-offset: 4px; }
+/* Keine Rahmen um kaputte Stellen; nur wer mit der Tastatur hinspringt, sieht, wo er ist */
+.wut-stelle:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 .wut-stelle svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.wut-stelle.wut-klauen { outline: 2px dashed rgba(138, 91, 46, .55); outline-offset: 2px; }
 .wut-stelle.wut-linie { background: var(--wut-papier, #fff); border-radius: 0; }
 .wut-stelle.wut-neu { animation: wut-schlag .45s var(--ease); }
 @keyframes wut-schlag { 0% { transform: scale(1.12) rotate(-3deg); } 35% { transform: scale(.94) rotate(3deg); } 100% { transform: none; } }
@@ -1073,7 +1073,7 @@ h3 { letter-spacing: -.005em; }
 .wut-beute-bild img { display: block; width: 92px; height: 70px; object-fit: cover; border-radius: 2px; }
 .wut-beute.wut-am-boden { rotate: var(--wut-dreh, 6deg); transition: left .3s var(--ease), rotate .3s; }
 .wut-beute.wut-heim { transition: left .4s var(--ease), top .4s var(--ease), opacity .4s; opacity: .25; rotate: 0deg; }
-.wut-beute:hover, .wut-beute:focus-visible { outline: 2px dashed var(--wood-deep); outline-offset: 3px; }
+.wut-beute:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 .wut-anzeige { position: fixed; right: 84px; bottom: 28px; z-index: 24; display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px 0 8px; border: 1px solid rgba(31, 45, 58, .12); border-radius: 999px; background: var(--surface); box-shadow: 0 6px 16px rgba(31, 45, 58, .16); color: #b5713a; }
 .wut-anzeige svg { width: 16px; height: 16px; }
 .wut-balken { display: block; width: 84px; height: 8px; border-radius: 4px; background: rgba(31, 45, 58, .14); overflow: hidden; }
