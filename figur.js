@@ -13,7 +13,7 @@ const SOUND_KEY = "kb-ton";
 // Nach neuen Aufnahmen hochzählen, damit Browser die alten nicht aus dem Zwischenspeicher nehmen
 const VOICE_VERSION = "3";
 const FIGURE_VERSION = "20261112-3";
-const MOVES_VERSION = "1";
+const MOVES_VERSION = "2";
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const CHARACTERS = {
@@ -45,9 +45,10 @@ const PARTS = ["Oberteil", "Hose", "Schuhe"];
 const SKINS = [
   { name: "Ohne", key: null },
   { name: "Zimmerer", key: "Zimmerer", colors: { Oberteil: "#F4F4F0", Hose: "#1C1C1D", Schuhe: "#161616" }, hat: true },
-  { name: "Anzug", key: "Anzug", colors: { Oberteil: "#F4F4F0", Hose: "#1A1A1C", Schuhe: "#141414" } }
+  { name: "Anzug", key: "Anzug", colors: { Oberteil: "#F4F4F0", Hose: "#1A1A1C", Schuhe: "#141414" } },
+  { name: "Nerd", key: "Nerd", colors: { Oberteil: "#F4F4F0", Hose: "#1C1C1D", Schuhe: "#161616" } }
 ];
-const SKIN_VERSION = "1";
+const SKIN_VERSION = "2";
 // Krempen-Ebene des Huts in Kims Ruhepose (aus der Blender-Datei, umgerechnet auf Y nach oben)
 const HAT_BRIM = { point: [0, 0.732, 0], normal: [0.0004, 1, -0.0366] };
 const LOOK_DEFAULTS = { skin: "Ohne", frisur: "Original", haarfarbe: "Original", haut: "Original", Oberteil: "Original", Hose: "Original", Schuhe: "Original" };
@@ -338,10 +339,11 @@ async function start() {
     if (from) active.actions.FallBackward.time = from;
     stunt = { name: "Fall", t: 0, yaw: side * 1.25, hold: -1, landed };
     stunt.finished = () => {
-      if (stunt.hold < 0) { stunt.hold = 0.5; return; }
+      // Erst liegen bleiben, dann aufstehen (runStunt), danach wieder Ruhe
+      if (stunt.hold < 0) { stunt.hold = 0.35; return; }
       stunt = null;
       gesture = null;
-      play("Idle", { fade: 0.4 });
+      play("Idle", { fade: 0.35 });
     };
     wake();
   }
@@ -376,7 +378,13 @@ async function start() {
       if (stunt.landed && stunt.hold < 0 && active?.actions.FallBackward.time > 3.3) { stunt.landed(); stunt.landed = null; }
       if (stunt.hold > 0) {
         stunt.hold -= dt;
-        if (stunt.hold <= 0) { stunt.hold = 0; play("FallBackward", { once: true, fade: 0, timeScale: -1.9 }); }
+        if (stunt.hold <= 0) {
+          stunt.hold = 0;
+          // Aufstehen: Er wälzt sich vom Rücken auf den Bauch (Überblendung) und stemmt sich hoch.
+          // Fehlt die Bewegung, läuft wie früher der Sturz rückwärts.
+          if (active?.actions.GetUp) play("GetUp", { once: true, fade: 0.45 });
+          else play("FallBackward", { once: true, fade: 0, timeScale: -1.9 });
+        }
       }
     }
   }
@@ -393,7 +401,7 @@ async function start() {
       gltf.scene.traverse((object) => { if (object.isSkinnedMesh) meshes.push(object); });
       for (const mesh of meshes) {
         // Name des Teils: "Zimmerer_Hut" oder bei mehreren Materialien die Gruppe darüber
-        const label = /^(Zimmerer|Anzug)_/.test(mesh.name) ? mesh.name : mesh.parent?.name || "";
+        const label = /^(Zimmerer|Anzug|Nerd)_/.test(mesh.name) ? mesh.name : mesh.parent?.name || "";
         const key = label.split("_")[0];
         const joined = mesh.skeleton.bones.map((bone) => bones[bone.name]);
         if (!SKINS.some((skin) => skin.key === key) || joined.some((bone) => !bone)) continue;
@@ -666,7 +674,8 @@ async function start() {
         press.top = event.clientY - dy - companion.offsetHeight * 0.3;
       }
       const lying = stunt?.name === "Fall";
-      carry = { vx: 0, since: performance.now(), step: 0, mark: 0, freeAt: 0 };
+      // u, v: wo der Zeiger im Rahmen der Figur sitzt (bleibt beim Tragen gleich)
+      carry = { vx: 0, since: performance.now(), step: 0, mark: 0, freeAt: 0, u: (press.x - press.left) / Math.max(1, companion.offsetWidth), v: (press.y - press.top) / Math.max(1, companion.offsetHeight) };
       stunt = null;
       spin = 0;
       walkIn = null;
@@ -695,6 +704,7 @@ async function start() {
     if (!press || event.pointerId !== press.id) return;
     press = null;
     if (!carry) return;
+    endTug();
     carry = null;
     skipClick = true;
     setTimeout(() => { skipClick = false; }, 300);
@@ -727,18 +737,145 @@ async function start() {
       if (now - carry.mark > 6000 && !sound.busy) { sound.say(HANG_LINES[1], { force: true }); carry.step = 2; carry.mark = now; }
     } else if (carry.step === 2) {
       if (now - carry.mark > 1600 && !sound.busy) {
-        // Er zappelt kurz und kommt dann frei
+        // Er greift mit beiden Händen nach dem Zeiger und reißt sich los (applyTug)
         sound.say(FREE_LINE, { force: true });
         carry.step = 3;
-        carry.freeAt = now + 520;
-        hang.omega += hang.angle > 0 ? -11 : 11;
+        carry.mark = now;
+        carry.freeAt = now + TUG_TIME;
       }
     } else if (now >= carry.freeAt) breakFree();
+  }
+  // Losreißen: Die Hände gehen an den Zeiger, der Körper zerrt zweimal nach unten, das Oberteil spannt sich dabei
+  // ein Stück zum Zeiger hin. Am Ende des zweiten Rucks ist er frei.
+  const TUG_TIME = 900;
+  const TUG_DROP = 0.085;
+  const tug = { pull: 0, tip: new THREE.Vector3(), cloth: null, on: false };
+  const tugMemo = new Map();
+  const tugA = new THREE.Vector3();
+  const tugB = new THREE.Vector3();
+  const tugC = new THREE.Vector3();
+  const tugD = new THREE.Vector3();
+  const tugE = new THREE.Vector3();
+  const tugT = new THREE.Vector3();
+  const tugQ = new THREE.Quaternion();
+  const tugW = new THREE.Quaternion();
+  const tugP = new THREE.Quaternion();
+  const tugNone = new THREE.Quaternion();
+  const UP = new THREE.Vector3(0, 1, 0);
+  // Knochen kurz überschreiben: Die Bewegung schreibt nur geänderte Werte neu, deshalb erst ihren Wert zurückholen
+  function tugBase(bone) {
+    let memo = tugMemo.get(bone);
+    if (!memo) { memo = { base: new THREE.Quaternion(), applied: new THREE.Quaternion(2, 2, 2, 2) }; tugMemo.set(bone, memo); }
+    if (bone.quaternion.equals(memo.applied)) bone.quaternion.copy(memo.base);
+    else memo.base.copy(bone.quaternion);
+    return memo;
+  }
+  function endTug() {
+    for (const [bone, memo] of tugMemo) if (bone.quaternion.equals(memo.applied)) bone.quaternion.copy(memo.base);
+    tugMemo.clear();
+    tug.on = false;
+    tug.pull = 0;
+    if (tug.cloth) tug.cloth.visible = false;
+  }
+  function clothColor() {
+    const look = state.figuren[active.id] || {};
+    const skin = skinOf(look);
+    if (skin.key === "Zimmerer" || skin.key === "Anzug") return "#1b1b1d";
+    if (skin.colors) return skin.colors.Oberteil;
+    return findColor(clothColors(active.id, "Oberteil"), look.Oberteil);
+  }
+  function applyTug() {
+    const figure = active;
+    const height = figure.height;
+    const t = THREE.MathUtils.clamp((performance.now() - carry.mark) / TUG_TIME, 0, 1);
+    const reach = THREE.MathUtils.smoothstep(t, 0, 0.3);
+    tug.pull = t < 0.3 ? 0 : Math.sin(((t - 0.3) / 0.7) * Math.PI * 1.5) ** 2;
+    tug.on = true;
+    // Zeiger im Raum: Der Rahmen des Begleiters zeigt genau die Höhe von den Füßen bis über den Kopf
+    const size = height / (companionFrame.head - companionFrame.feet);
+    const box = companion.getBoundingClientRect();
+    pivot.updateMatrixWorld(true);
+    tug.tip.set(size * (2 * carry.u - 1) * box.width / Math.max(1, box.height), -companionFrame.feet * size + size * (1 - 2 * carry.v) + tug.pull * TUG_DROP * height, 0.15 * height);
+    for (const side of ["Left", "Right"]) {
+      const arm = figure.model.getObjectByName(`${side}Arm`);
+      const fore = figure.model.getObjectByName(`${side}ForeArm`);
+      const hand = figure.model.getObjectByName(`${side}Hand`);
+      if (!arm || !fore || !hand) continue;
+      const armMemo = tugBase(arm);
+      const foreMemo = tugBase(fore);
+      // Ziel fürs Handgelenk: knapp neben und unter dem Zeiger, damit die Finger ihn umschließen
+      tugT.copy(tug.tip);
+      tugT.x += (side === "Left" ? 1 : -1) * 0.045 * height;
+      tugT.y -= 0.03 * height;
+      // 1. Ellbogen so weit beugen, dass die Hand genau bis zum Ziel reicht
+      arm.updateWorldMatrix(true, true);
+      arm.getWorldPosition(tugA);
+      fore.getWorldPosition(tugB);
+      hand.getWorldPosition(tugC);
+      const upper = tugA.distanceTo(tugB);
+      const lower = tugB.distanceTo(tugC);
+      const span = THREE.MathUtils.clamp(tugA.distanceTo(tugT), Math.abs(upper - lower) + 0.01, upper + lower - 0.005);
+      tugD.copy(tugA).sub(tugB).normalize();
+      tugE.copy(tugC).sub(tugB).normalize();
+      const bendNow = Math.acos(THREE.MathUtils.clamp(tugD.dot(tugE), -1, 1));
+      const bendWant = Math.acos(THREE.MathUtils.clamp((upper * upper + lower * lower - span * span) / (2 * upper * lower), -1, 1));
+      tugD.cross(tugE);
+      if (tugD.lengthSq() < 1e-6) tugD.set(side === "Left" ? 0.3 : -0.3, -1, 0);
+      tugD.normalize();
+      tugQ.setFromAxisAngle(tugD, bendWant - bendNow);
+      fore.getWorldQuaternion(tugW);
+      fore.parent.getWorldQuaternion(tugP);
+      tugNone.copy(tugP).invert().multiply(tugQ.multiply(tugW));
+      fore.quaternion.copy(foreMemo.base).slerp(tugNone, reach);
+      foreMemo.applied.copy(fore.quaternion);
+      // 2. Oberarm so drehen, dass die Hand auf das Ziel zeigt
+      arm.updateWorldMatrix(true, true);
+      hand.getWorldPosition(tugC);
+      tugD.copy(tugC).sub(tugA).normalize();
+      tugE.copy(tugT).sub(tugA).normalize();
+      tugQ.setFromUnitVectors(tugD, tugE);
+      arm.getWorldQuaternion(tugW);
+      arm.parent.getWorldQuaternion(tugP);
+      tugW.premultiply(tugQ);
+      // 3. Um die Linie Schulter–Ziel schwenken, bis der Ellbogen nach unten und etwas nach außen zeigt:
+      //    So kommen die Unterarme von unten an den Zeiger und verdecken die Stofffalte nicht
+      tugD.copy(tugB).sub(tugA).applyQuaternion(tugQ);
+      tugD.addScaledVector(tugE, -tugD.dot(tugE));
+      tugC.set(side === "Left" ? 0.45 : -0.45, -1, 0.1);
+      tugC.addScaledVector(tugE, -tugC.dot(tugE));
+      if (tugD.lengthSq() > 1e-6 && tugC.lengthSq() > 1e-6) {
+        tugQ.setFromUnitVectors(tugD.normalize(), tugC.normalize());
+        tugW.premultiply(tugQ);
+      }
+      tugNone.copy(tugP).invert().multiply(tugW);
+      arm.quaternion.copy(armMemo.base).slerp(tugNone, reach);
+      armMemo.applied.copy(arm.quaternion);
+    }
+    // Stofffalte: ein spitzer Kegel von der Brust zum Zeiger, in der Farbe des Oberteils
+    if (!tug.cloth) {
+      tug.cloth = new THREE.Mesh(new THREE.ConeGeometry(1, 1, 14, 1, true), new THREE.MeshStandardMaterial({ roughness: 0.92, metalness: 0, side: THREE.DoubleSide }));
+      tug.cloth.frustumCulled = false;
+      pivot.add(tug.cloth);
+    }
+    // Die Falte hängt an der Figur und läuft auf ihrer Brust nach oben zum Zeiger: Der Körper ist nach unten gezerrt,
+    // der Stoff bleibt am Zeiger hängen. Nur wenn der Zeiger auf dem Oberteil sitzt.
+    pivot.worldToLocal(tugC.copy(tug.tip));
+    const onShirt = Math.abs(tugC.x) < 0.13 * height && tugC.y > 0.47 * height && tugC.y < 0.76 * height;
+    const length = tug.pull * (TUG_DROP + 0.03) * height;
+    tug.cloth.visible = onShirt && length > 0.012 * height;
+    if (tug.cloth.visible) {
+      tugB.set(0, 1, 0.22).normalize();
+      tug.cloth.material.color.set(clothColor()).multiplyScalar(0.6);
+      tug.cloth.scale.set(0.07 * height, length, 0.045 * height);
+      tug.cloth.quaternion.setFromUnitVectors(UP, tugB);
+      tug.cloth.position.set(tugC.x, tugC.y - length / 2, 0.055 * height);
+    }
   }
   // Losgerissen: Er springt in einem Bogen dorthin, wo mehr Platz ist, und bleibt am unteren Rand stehen
   function breakFree() {
     const rect = companion.getBoundingClientRect();
     if (press) { try { figureButton.releasePointerCapture(press.id); } catch { /* schon frei */ } }
+    endTug();
     press = null;
     carry = null;
     skipClick = true;
@@ -872,10 +1009,11 @@ async function start() {
     pivot.rotation.y += spin;
     pivot.rotation.z = lean;
     pivot.position.x += Math.sin(lean) * grip;
-    pivot.position.y += hang.lift + grip - Math.cos(lean) * grip;
+    const tugDown = tug.on ? tug.pull * TUG_DROP * active.height : 0;
+    pivot.position.y += hang.lift + grip - Math.cos(lean) * grip - tugDown;
     renderer.render(scene, camera);
     pivot.position.x -= Math.sin(lean) * grip;
-    pivot.position.y -= hang.lift + grip - Math.cos(lean) * grip;
+    pivot.position.y -= hang.lift + grip - Math.cos(lean) * grip - tugDown;
     pivot.rotation.z = 0;
     pivot.rotation.y -= spin;
     camera.clearViewOffset();
@@ -1030,7 +1168,7 @@ async function start() {
         downClass = down;
       }
       // Am Griff: die Figur pendelt der Bewegung nach; losgelassen schwingt sie aus und setzt auf
-      const leanTo = carry ? THREE.MathUtils.clamp(-carry.vx * 0.0011, -0.75, 0.75) : 0;
+      const leanTo = carry && carry.step < 3 ? THREE.MathUtils.clamp(-carry.vx * 0.0011, -0.75, 0.75) : 0;
       hang.omega += ((leanTo - hang.angle) * (carry ? 55 : 120) - hang.omega * (carry ? 6 : 14)) * dt;
       hang.angle += hang.omega * dt;
       hang.lift = damp(hang.lift, carry ? active?.height * 0.07 || 0 : 0, carry ? 12 : 9, dt);
@@ -1082,6 +1220,8 @@ async function start() {
 
     shadow.visible = mode === "hero" && !(flee?.lean > 0.02);
     active?.mixer.update(dt);
+    if (mode === "companion" && carry?.step === 3 && active && !reduceMotion) applyTug();
+    else if (tug.on) endTug();
     renderView();
     if (mode) frameRequest = requestAnimationFrame(tick);
   }

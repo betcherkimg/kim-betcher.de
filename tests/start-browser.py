@@ -80,7 +80,7 @@ try:
             page.get_by_role("button", name="Frisur: Kurz").click()
             # Skins: mit Skin bleiben nur Frisur, Haarfarbe und Hautfarbe anpassbar
             page.locator('.ed-tab[data-tab="skin"]').click()
-            expect(page.locator(".skin-card")).to_have_count(3)
+            expect(page.locator(".skin-card")).to_have_count(4)
             page.get_by_role("button", name="Skin: Zimmerer").click()
             for tab in ("Oberteil", "Hose", "Schuhe"):
                 expect(page.locator(f'.ed-tab[data-tab="{tab}"]')).to_be_hidden()

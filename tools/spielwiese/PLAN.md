@@ -169,6 +169,23 @@ Entscheidungen von Kim: alle Seiten außer /beratung; vorhandene Texte, neu geor
 - [x] Sturz: Der Spruch kommt im Moment des Aufpralls, nicht erst im Liegen
 - [ ] Von Kim prüfen lassen: Schwelle fürs schnelle Drehen an Maus und Handy, Tempo des Weglaufens, Zeitpunkt der Sprüche (bei mir nur an Standbildern und Abspielzeiten geprüft, nicht gehört)
 
+## Neu am 13.11. zwischen 07:06 und 07:13: Nerd-Skin, Aufstehen, Losreißen mit den Händen
+
+- [x] Nerd-Skin (Brille, rote Fliege, Hosenträger, Gürtel) aus `Kim_Skins_v1.blend`, vierter Eintrag im Reiter „Skin"; gilt auch für Begleiter und Spielwiese
+- [x] Aufstehen als echte Bewegung statt rückwärts abgespieltem Sturz: Mixamo „Getting Up" auf Kim übertragen (`Kim_GetUp` in `kim-moves.glb`, Bau: `tools/figuren/aufstehen.py`). Die Quelle beginnt in Bauchlage; Kim wälzt sich deshalb erst vom Rücken auf den Bauch (Überblendung) und stemmt sich dann hoch. Liegen 0,35 s, Aufstehen gut 2 s.
+- [x] Losreißen: Beide Hände greifen an den Zeiger, der Körper zerrt zweimal nach unten, das Oberteil spannt sich dabei ein Stück zum Zeiger (kleiner Kegel in der Farbe des Oberteils, nur wenn der Zeiger auf dem Oberteil sitzt), dann springt er weg
+- [ ] Von Kim prüfen lassen: Aufstehen und Losreißen in Bewegung (bei mir nur an Standbildern geprüft). Die Stofffalte ist klein; wenn sie zu unauffällig ist, größer machen.
+
+## Als Nächstes (Kims Auftrag von 07:13 bis 07:23, erst nach dem Veröffentlichen des Obigen)
+
+- [ ] Wut-Anzeige: Kim ist ruhig, solange man ihn in Ruhe lässt. Hochheben, schnelles Drehen, Fallenlassen und Antippen machen ihn wütender.
+- [ ] Ist die Wut voll, muss er sie loswerden: Texte oder Bilder klauen und damit wegrennen, Buchstaben verschieben, Text kaputtschlagen, Bilder verunstalten und bemalen. Dazu `kim_wut_1` bis `kim_wut_3` im Wechsel. Die Anzeige leert sich dabei teilweise.
+- [ ] Aufhalten durch Hochheben: Er lässt Geklautes fallen (es liegt am unteren Rand), reißt sich in voller Wut aber wieder los.
+- [ ] Ein Klick auf die betroffene Stelle oder das liegende Stück stellt sie wieder her.
+- [ ] Schäden bleiben bis zum nächsten Besuch erhalten; ein Knopf setzt die ganze Seite zurück.
+- [ ] Überall außer im Charakter-Fenster, im Impressum und im Datenschutz.
+- [ ] »-Knopf: springt zum jeweils nächsten Abschnitt.
+
 ## LETZTER SCHRITT – IMMER, NIE ENTFERNEN
 
 Vor jedem Veröffentlichen, Pushen oder Abgeben: alle neuen oder geänderten Texte nach AI-SMELL.md (Teil A, B, C) prüfen und den Bericht ausgeben. Wortlaut der Regel: siehe `CLAUDE.md` im Hauptordner.

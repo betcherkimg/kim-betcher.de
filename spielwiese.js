@@ -576,7 +576,8 @@ function start() {
   // Skins aus dem Charakter-Editor (assets/figuren/kim-skins.glb): Kluft mit Hut oder Anzug. Die Kleidung darunter ist dann festgelegt.
   const SKINS = {
     Zimmerer: { colors: { Oberteil: "#F4F4F0", Hose: "#1C1C1D", Schuhe: "#161616" }, hat: true },
-    Anzug: { colors: { Oberteil: "#F4F4F0", Hose: "#1A1A1C", Schuhe: "#141414" } }
+    Anzug: { colors: { Oberteil: "#F4F4F0", Hose: "#1A1A1C", Schuhe: "#141414" } },
+    Nerd: { colors: { Oberteil: "#F4F4F0", Hose: "#1C1C1D", Schuhe: "#161616" } }
   };
   // Krempen-Ebene des Huts in Kims Ruhepose: was von den Haaren darüber liegt, wird nicht gezeichnet
   const HAT_BRIM = { point: [0, 0.732, 0], normal: [0.0004, 1, -0.0366] };
@@ -613,7 +614,7 @@ function start() {
     }
     if (skin) {
       // Teile des gewählten Skins an Kims Knochen hängen (gleiche Knochennamen, eigene Bindematrizen)
-      loader.loadAsync("assets/figuren/kim-skins.glb?v=1").then((extra) => {
+      loader.loadAsync("assets/figuren/kim-skins.glb?v=2").then((extra) => {
         const bones = {};
         gltf.scene.traverse((object) => { if (object.isBone) bones[object.name] = object; });
         let host = gltf.scene;
@@ -621,7 +622,7 @@ function start() {
         const meshes = [];
         extra.scene.traverse((object) => { if (object.isSkinnedMesh) meshes.push(object); });
         for (const mesh of meshes) {
-          const label = /^(Zimmerer|Anzug)_/.test(mesh.name) ? mesh.name : mesh.parent?.name || "";
+          const label = /^(Zimmerer|Anzug|Nerd)_/.test(mesh.name) ? mesh.name : mesh.parent?.name || "";
           const joined = mesh.skeleton.bones.map((bone) => bones[bone.name]);
           if (label.split("_")[0] !== look.skin || joined.some((bone) => !bone)) continue;
           host.add(mesh);
