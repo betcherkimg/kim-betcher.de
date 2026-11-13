@@ -127,3 +127,15 @@ Polizist 150 Leben, Schuss 14; Hubschrauber Schuss 10 alle 0,2 s. Mann 60, Fuchs
 
 Nur am Standbild und in Zeitlupe geprüft (Software-Grafik mit etwa 2 Bildern je Sekunde), nicht in echtem Tempo und nicht gehört:
 Kampfgefühl, Tempo der Schläge, Schüsse, Wind, alle neuen Töne, Fingersteuerung am echten Gerät, Maus fangen im echten Browser.
+
+## Neu am 13.11. um 03:59
+
+- [x] Steuerungsfenster aufgeräumt: drei gleich breite Spalten, einzelne Tasten, Maus und Finger umrandet; es steht nur, was gerade gilt (Spielen, Finger oder Bauen)
+- [x] Beine werden beim Aussteigen sofort wieder ganz gezeigt (Schnittebene sinkt, sobald Kim aus dem Fahrzeug kommt)
+- [x] Fuchs und Reh bleiben drin; Leben und Schaden bleiben so; Wind ist selbst gebaut
+- [x] Sprechzeilen: 38 Aufnahmen von Kim eingebaut (assets/stimmen). Begleiter: Packen, Hängen (nach knapp 4 s), Sturz, im Liegen gepackt, beim dritten Packen in Folge sauer. Spielwiese: Treffer (nicht jeder), wenig Leben, Schwert, Sieg, Polizei, Umfallen, Start, Fahren, Fliegen, Pferd, Crash, Wrack. Sieben leise Aufnahmen im Pegel angehoben.
+
+## LETZTER SCHRITT – IMMER, NIE ENTFERNEN
+
+Vor jedem Veröffentlichen, Pushen oder Abgeben: alle neuen oder geänderten Texte nach AI-SMELL.md (Teil A, B, C) prüfen und den Bericht ausgeben. Wortlaut der Regel: siehe `CLAUDE.md` im Hauptordner.
+Dieser Punkt bleibt immer der letzte auf der Liste. Er wird nie gelöscht, abgehakt oder übersprungen.
