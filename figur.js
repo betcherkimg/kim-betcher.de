@@ -11,7 +11,7 @@ const ROOT = new URL("./", import.meta.url).href;
 const STORE_KEY = "kb-figur-v1";
 const SOUND_KEY = "kb-ton";
 // Nach neuen Aufnahmen hochzählen, damit Browser die alten nicht aus dem Zwischenspeicher nehmen
-const VOICE_VERSION = "2";
+const VOICE_VERSION = "3";
 const FIGURE_VERSION = "20261112-3";
 const MOVES_VERSION = "1";
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -537,10 +537,25 @@ async function start() {
   let drop = null;
   let dropLine = 0;
   let downClass = "";
-  // Zeilen beim Packen und nach einem Sturz: Aufnahmen folgen, bis dahin bleibt die Figur dabei stumm
-  const GRAB_LINES = [];
-  const DROP_LINES = [];
-  let grabLine = 0;
+  // Zeilen beim Packen, Hängen und nach einem Sturz. Wer ihn dreimal hintereinander packt, macht ihn richtig sauer;
+  // wer ihn im Liegen packt, bekommt die ungläubigen Zeilen.
+  const GRAB_LINES = ["kim_packen_1", "kim_packen_2", "kim_packen_3", "kim_packen_4"];
+  const HANG_LINES = ["kim_haengen_1", "kim_haengen_2"];
+  const DROP_LINES = ["kim_sturz_1", "kim_sturz_2", "kim_sturz_3", "kim_sturz_4"];
+  const AGAIN_LINES = ["kim_nochmal_1", "kim_nochmal_2"];
+  const MAD_LINES = ["kim_sauer_1", "kim_sauer_2"];
+  const turns = { grab: 0, hang: 0, again: 0, mad: 0 };
+  const tease = { count: 0, last: 0 };
+  let reactUntil = 0;
+  // Eine Reaktion unterbricht alles andere, aber nicht die vorige Reaktion
+  function react(lines, turn) {
+    const now = performance.now();
+    if (sound.busy && now < reactUntil) return false;
+    if (!sound.say(lines[turns[turn] % lines.length], { force: true })) return false;
+    turns[turn] += 1;
+    reactUntil = now + 2600;
+    return true;
+  }
   const hang = { angle: 0, omega: 0, lift: 0 };
   // Platz des Begleiters: Anteile der freien Fläche, damit er nach dem Drehen oder Verkleinern sichtbar bleibt
   function placeCompanion(left, top, save = false) {
@@ -581,7 +596,8 @@ async function start() {
         press.left = event.clientX - dx - companion.offsetWidth / 2;
         press.top = event.clientY - dy - companion.offsetHeight * 0.3;
       }
-      carry = { vx: 0 };
+      const lying = stunt?.name === "Fall";
+      carry = { vx: 0, since: performance.now(), moaned: false };
       stunt = null;
       spin = 0;
       walkIn = null;
@@ -589,7 +605,13 @@ async function start() {
       gesture = "Hang";
       play(active?.actions.Hang ? "Hang" : "Idle", { fade: 0.15 });
       companion.classList.add("is-carried");
-      if (GRAB_LINES.length && !sound.busy) { sound.say(GRAB_LINES[grabLine % GRAB_LINES.length], { force: true }); grabLine += 1; }
+      // Gezählt wird, wie oft hintereinander (innerhalb von 25 Sekunden) er gepackt wird
+      const now = performance.now();
+      tease.count = now - tease.last < 25000 ? tease.count + 1 : 1;
+      tease.last = now;
+      if (tease.count >= 3 && tease.count % 3 === 0) react(MAD_LINES, "mad");
+      else if (lying) react(AGAIN_LINES, "again");
+      else react(GRAB_LINES, "grab");
     }
     if (!carry) return;
     const now = performance.now();
@@ -889,6 +911,8 @@ async function start() {
       hang.angle += hang.omega * dt;
       hang.lift = damp(hang.lift, carry ? active?.height * 0.07 || 0 : 0, carry ? 12 : 9, dt);
       if (carry) {
+        // Hängt er eine Weile in der Luft, meldet er sich noch einmal
+        if (!carry.moaned && performance.now() - carry.since > 3800 && !sound.busy) carry.moaned = react(HANG_LINES, "hang");
         carry.vx = damp(carry.vx, 0, 6, dt);
         calmFor = 0;
         idleFor = 0;

@@ -172,6 +172,31 @@ function start() {
     material.customProgramCacheKey = () => `wind${strength}`;
     return material;
   }
+  // Kims Stimme: kurze Zeilen zu dem, was gerade passiert (assets/stimmen/kim_<gruppe>_<nr>.mp3).
+  // Nie zwei zugleich und nicht bei jeder Kleinigkeit: "chance" würfelt, "gap" ist die Ruhe danach in Sekunden,
+  // "must" kommt immer und unterbricht.
+  const voice = (() => {
+    const audio = new Audio();
+    audio.preload = "auto";
+    audio.volume = 0.95;
+    const turn = {};
+    let busyUntil = 0;
+    let quietUntil = 0;
+    return {
+      say(group, count, { chance = 1, must = false, gap = 6 } = {}) {
+        const now = performance.now();
+        if (!sound.on || mode !== "play") return false;
+        if (!must && (now < busyUntil || now < quietUntil || Math.random() > chance)) return false;
+        turn[group] = ((turn[group] ?? Math.floor(Math.random() * count)) + 1) % count;
+        audio.src = `assets/stimmen/kim_${group}_${turn[group] + 1}.mp3?v=3`;
+        audio.play().catch(() => { /* ohne Aufnahme oder ohne Freigabe: stumm */ });
+        busyUntil = now + 2400;
+        quietUntil = now + gap * 1000;
+        return true;
+      },
+      stop() { audio.pause(); },
+    };
+  })();
   // Wiese: leicht wellig, an den Rändern etwas höher
   function height(x, z) {
     const waves = Math.sin(x * 0.085) * Math.cos(z * 0.07) * 1.1 + Math.sin(x * 0.19 + 1.7) * Math.sin(z * 0.16 + 0.6) * 0.5 + Math.sin((x + z) * 0.045 + 2.1) * 0.8;
@@ -1107,6 +1132,7 @@ function start() {
     if (thing.item.ride) {
       // Pferd geht zum Aufsteigen herunter; Kim sitzt auf, sobald es unten ist
       thing.riding = { gait: 0, held: 0, clip: "" };
+      voice.say("pferd", 1, { chance: 0.7, gap: 8 });
       horsePlay(thing, "Aufsteigen", 1, true);
       kimOnce("Jump", 1.5);
       kim.busy = { left: 1.5, then: () => {
@@ -1123,6 +1149,7 @@ function start() {
       sound.play("tuer", 0.8);
       if (thing.item.engine === "v8" || thing.item.engine === "boxer") sound.play("start", 0.7);
       if (thing.item.radio) radio.start();
+      voice.say("fahren", 2, { chance: 0.6, gap: 8 });
     };
     if (!thing.seat || !kim.actions.SitInCar) { kim.group.visible = false; begin(); return; }
     if (sword.mesh) sword.mesh.visible = false;
@@ -1257,6 +1284,7 @@ function start() {
       // Einmal drücken: auf Reiseflughöhe steigen. Noch einmal: wieder hinuntergleiten.
       driving.airborne = !driving.airborne;
       say(driving.airborne ? "Abheben" : "Landen", 2);
+      if (driving.airborne) voice.say("fliegen", 2, { chance: 0.6, gap: 8 });
     } else if (driving.riding) {
       // Klaps: nächste Gangart
       driving.riding.gait = Math.min(3, Math.max(1, driving.riding.gait) + 1);
@@ -1770,7 +1798,9 @@ function start() {
     // Ein harter Aufprall mit dem eigenen Fahrzeug ruft die Polizei auf den Plan
     if (thing === driving && amount >= 12) alarm();
     sound.play("knall", Math.min(0.6, amount / 40) * Math.max(0.3, loudness(thing.group.position, 5, 60)), 1.5);
+    if (thing === driving && thing.hp > 0 && amount >= 12) voice.say("crash", 2, { chance: 0.6, gap: 7 });
     if (thing.hp > 0) return;
+    if (thing === driving) voice.say("wrack", 1, { must: true });
     thing.wreck = true;
     thing.motor = false;
     thing.speed = 0;
@@ -1860,6 +1890,8 @@ function start() {
     sound.play("treffer", 0.6, 0.8);
     if (hurtEl) { hurtEl.classList.remove("is-on"); void hurtEl.offsetWidth; hurtEl.classList.add("is-on"); }
     if (kim.hp <= 0) { killKim(); return; }
+    if (kim.hp <= 25 && !kim.warned) { kim.warned = true; voice.say("knapp", 2, { must: true }); }
+    else voice.say("au", 3, { chance: 0.45, gap: 5 });
     // Kleiner Stoß weg vom Treffer
     const dx = kim.group.position.x - fromX;
     const dz = kim.group.position.z - fromZ;
@@ -1874,6 +1906,7 @@ function start() {
     kim.jump = 0;
     stowSword();
     say("Umgefallen. Gleich stehst du wieder am Start.", 5);
+    voice.say("umfallen", 1, { must: true });
     const fall = kimOnce("FallBackward", 1.5) || 0.5;
     // Die Bewegung endet schräg in der Luft: danach legt sich Kim ganz auf den Rücken
     kim.busy = { left: fall * 0.8, then: () => {
@@ -1915,6 +1948,8 @@ function start() {
       if (thing.item.mob) { thing.calm = 8; thing.angry = false; thing.swing = null; }
     }
     snapCamera = true;
+    kim.warned = false;
+    voice.say("start", 2, { must: true });
     fadeEl?.classList.remove("is-on");
     say("");
   }
@@ -1932,6 +1967,7 @@ function start() {
     const length = kimOnce(drawn ? "Draw" : "Sheath", drawn ? 0.75 : 0.85, 0.12) || 0.3;
     sword.moving = { t: 0, length, at: length * (drawn ? 0.45 : 0.6), drawn, switched: false };
     sound.play("schwung", 0.25, drawn ? 1.5 : 1.1);
+    if (drawn) voice.say("schwert", 2, { chance: 0.5, gap: 8 });
     return true;
   }
   // Ein Klick ist ein Schlag. Steckt das Schwert noch, zieht Kim es erst. Wer weiterklickt, lässt einen schweren Hieb folgen.
@@ -2068,6 +2104,7 @@ function start() {
     thing.bar.visible = false;
     thing.gone = (mobPlay(thing, "Death", { once: true }) || 0.8) + 1;
     sound.play("plopp", 0.6 * near);
+    if (!driving) voice.say("sieg", 3, { chance: 0.55, gap: 6 });
   }
   // Fahndung: Die Polizei ist friedlich. Erst wenn Kim etwas anstellt (Leute, Tiere oder Polizisten angreifen oder anfahren,
   // mit dem Auto irgendwo voll dagegen brettern), geht die Sirene los und Polizisten, Streife und Hubschrauber greifen an.
@@ -2075,7 +2112,7 @@ function start() {
   let wanted = 0;
   function alarm() {
     if (!things.some((thing) => !thing.dead && (thing.item.npc?.chase || thing.item.patrol || thing.item.follow))) return;
-    if (wanted <= 0) say("Das hat die Polizei gesehen. Jetzt ist sie hinter dir her.", 5);
+    if (wanted <= 0) { say("Das hat die Polizei gesehen. Jetzt ist sie hinter dir her.", 5); voice.say("polizei", 3, { must: true }); }
     wanted = 30;
   }
   // Leute und Tiere: der Polizist wehrt sich sofort, alle anderen rennen weg. Bei 0 fallen sie um.
@@ -2599,6 +2636,7 @@ function start() {
       // Erholen: nach ein paar ruhigen Sekunden kommt das Leben zurück
       kim.safe = Math.max(0, kim.safe - dt);
       if (!kim.dead && kim.hp < 100 && now - kim.hurtAt > 5) kim.hp = Math.min(100, kim.hp + 7 * dt);
+      if (kim.hp > 60) kim.warned = false;
       kim.mixer.update(dt);
       if (kim.lie) {
         kim.lie.t = Math.min(kim.lie.time, kim.lie.t + dt);
@@ -2770,6 +2808,6 @@ function start() {
   }
   stageEl.classList.add("is-live");
   // Für die Browser-Tests
-  window.kbSpielwiese = { kim, things, orbit, stick, camera, scene, tune,  build, look, radio, sound, sword, hud, alarm, get wanted() { return wanted; }, get now() { return now; }, addThing, enter: enterVehicle, leave: leaveVehicle, setMode, setHelp, setSword, strike, hurtKim, hurtMob, spawnMob, get help() { return helpOpen; }, get mode() { return mode; }, get driving() { return driving; } };
+  window.kbSpielwiese = { kim, things, orbit, stick, camera, scene, tune,  build, look, radio, sound, sword, hud, voice, alarm, get wanted() { return wanted; }, get now() { return now; }, addThing, enter: enterVehicle, leave: leaveVehicle, setMode, setHelp, setSword, strike, hurtKim, hurtMob, spawnMob, get help() { return helpOpen; }, get mode() { return mode; }, get driving() { return driving; } };
   requestAnimationFrame(tick);
 }
