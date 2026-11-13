@@ -195,6 +195,7 @@ function start() {
         return true;
       },
       stop() { audio.pause(); },
+      hush(seconds) { quietUntil = Math.max(quietUntil, performance.now() + seconds * 1000); },
     };
   })();
   // Wiese: leicht wellig, an den Rändern etwas höher
@@ -470,12 +471,20 @@ function start() {
     return k * k;
   };
 
-  // Autoradio: "ODYN - Wald (2026 Remake)". Erst Rauschen, dann der Song mit dem Klang eines alten Radios. R schaltet es ein und aus.
+  // Autoradio: "ODYN - Wald (2026 Remake)". Erst Rauschen, beim ersten Mal Kims Ansage, dann der Song mit dem Klang eines alten Radios.
+  // Danach läuft nur noch der Song weiter, auch nach dem Aus- und Einsteigen. R schaltet das Radio ein und aus.
   const radio = (() => {
     const element = new Audio();
     element.preload = "none";
     element.loop = true;
     element.src = "assets/musik/odyn-wald-2026-remake.mp3?v=1";
+    const intro = new Audio();
+    intro.preload = "none";
+    intro.src = "assets/stimmen/kim_radio_1.mp3?v=1";
+    let greeted = false;
+    const afterIntro = () => { greeted = true; if (active) element.play().catch(() => { /* ohne Radio */ }); };
+    intro.addEventListener("ended", afterIntro);
+    intro.addEventListener("error", afterIntro);
     let wanted = true;
     let active = false;
     let gain = null;
@@ -503,6 +512,7 @@ function start() {
       gain = context.createGain();
       gain.gain.value = 0;
       source.connect(high).connect(lowpass).connect(nose).connect(drive).connect(gain).connect(sound.master);
+      context.createMediaElementSource(intro).connect(high);
       return true;
     }
     function start() {
@@ -512,7 +522,8 @@ function start() {
       window.clearTimeout(timer);
       timer = window.setTimeout(() => {
         if (!active) return;
-        element.play().catch(() => { /* ohne Radio */ });
+        if (greeted) element.play().catch(() => { /* ohne Radio */ });
+        else intro.play().catch(afterIntro);
         gain.gain.setTargetAtTime(0.75, sound.context.currentTime, 0.25);
       }, 780);
     }
@@ -521,12 +532,15 @@ function start() {
       active = false;
       window.clearTimeout(timer);
       if (gain) gain.gain.setTargetAtTime(0, sound.context.currentTime, 0.04);
-      window.setTimeout(() => { if (!active) element.pause(); }, 220);
+      window.setTimeout(() => { if (!active) { element.pause(); intro.pause(); } }, 220);
       if (click) sound.play("rauschen", 0.22, 2.4);
     }
     return {
       get active() { return active; },
       get wanted() { return wanted; },
+      get greeted() { return greeted; },
+      // Kommt gleich Kims Ansage? Dann schweigen die anderen Sprüche so lange.
+      get opening() { return wanted && sound.on && !greeted; },
       start,
       stop,
       toggle() { wanted = !wanted; return wanted; }
@@ -1203,6 +1217,7 @@ function start() {
       thing.motor = true;
       sound.play("tuer", 0.8);
       if (thing.item.engine === "v8" || thing.item.engine === "boxer") sound.play("start", 0.7);
+      if (thing.item.radio && radio.opening) voice.hush(7.5);
       if (thing.item.radio) radio.start();
       voice.say("fahren", 2, { chance: 0.6, gap: 8 });
     };

@@ -146,6 +146,13 @@ Entscheidungen von Kim: alle Seiten außer /beratung; vorhandene Texte, neu geor
 - [x] Skins (nur kim-betcher.de): Zimmerer-Kluft mit Hut und Anzug aus `Kim_Skins_v1.blend` (`assets/figuren/kim-skins.glb`, Bau: `tools/figuren/export_skins.py`). Mit Skin sind nur Hautfarbe, Haarfarbe und Frisur anpassbar; unter dem Hut enden die Haare an der Krempe. Gilt auch für Begleiter und Spielwiese.
 - [ ] Von Kim ansehen lassen: Farben, Schrift, Reihenfolge der Abschnitte, Skins in Bewegung (bei mir nur an Standbildern geprüft)
 
+## Neu am 13.11. um 06:00: Radio-Ansage
+
+- [x] Beim ersten Einsteigen in ein Fahrzeug mit Radio: Rauschen, dann Kims Ansage („Hier ist Radio Kim …", `assets/stimmen/kim_radio_1.mp3`) durch den Radioklang, danach der Song
+- [x] Die Ansage kommt nur einmal je Seitenaufruf. Danach läuft der Song weiter wie bisher, auch nach dem Aus- und Einsteigen. Wer während der Ansage aussteigt, hört sie beim nächsten Einsteigen zu Ende.
+- [x] Während der Ansage schweigt der Einsteige-Spruch, damit Kim nicht doppelt spricht
+- [ ] Von Kim anhören lassen: Lautstärke der Ansage gegen den Song (bei mir nur gemessen, nicht gehört)
+
 ## LETZTER SCHRITT – IMMER, NIE ENTFERNEN
 
 Vor jedem Veröffentlichen, Pushen oder Abgeben: alle neuen oder geänderten Texte nach AI-SMELL.md (Teil A, B, C) prüfen und den Bericht ausgeben. Wortlaut der Regel: siehe `CLAUDE.md` im Hauptordner.
