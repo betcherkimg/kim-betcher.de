@@ -49,6 +49,11 @@ try:
         for heading in ("Kurz zu mir.", "Mein Weg.", "Was ich baue.", "Wofür ich stehe.", "Was mich erdet.", "Meld dich einfach."):
             expect(page.get_by_role("heading", name=heading)).to_be_attached()
         expect(page.locator(".story .chapter")).to_have_count(4)
+        # Die Stationen liegen in .story: Der Begleiter muss ihre Abschnitte trotzdem finden, sonst spricht er dort nicht
+        assert 'querySelectorAll("main section[id]")' in (ROOT / "figur.js").read_text(encoding="utf-8")
+        assert page.evaluate('[...document.querySelectorAll("main section[id]")].map(s => s.id).join()') == "ueber-mich,weg,privat,werte,coding,kontakt"
+        # Die Stationsnummer liegt über dem Zollstock
+        assert page.evaluate("getComputedStyle(document.querySelector('.story .chapter')).zIndex") == "2"
         assert not external, f"Start page loads external content: {external}"
         expect(page.locator(".roster")).to_have_count(0)
         if page.evaluate("Boolean(document.createElement('canvas').getContext('webgl2') || document.createElement('canvas').getContext('webgl'))"):

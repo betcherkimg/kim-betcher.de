@@ -153,6 +153,14 @@ Entscheidungen von Kim: alle Seiten außer /beratung; vorhandene Texte, neu geor
 - [x] Während der Ansage schweigt der Einsteige-Spruch, damit Kim nicht doppelt spricht
 - [ ] Von Kim anhören lassen: Lautstärke der Ansage gegen den Song (bei mir nur gemessen, nicht gehört)
 
+## Neu am 13.11. zwischen 06:28 und 06:35: Nachbesserungen am hellen Design
+
+- [x] Stationsnummern liegen über dem Zollstock (`.chapter { z-index: 2 }`)
+- [x] Einleitungssatz von „Mein Weg." steht unter der Überschrift statt allein rechts
+- [x] Begleiter spricht wieder bei den vier Stationen (Abschnitte liegen in `.story`, Suche in `figur.js` angepasst) und bei jedem Ankommen neu, auch beim Hochscrollen
+- [x] Bildansicht hell: weißes Fenster, so breit wie das Bild, Seite dahinter abgedunkelt
+- [ ] Von Kim prüfen lassen: Ist das wiederholte Sprechen beim Hin- und Herscrollen so gewollt oder zu viel?
+
 ## LETZTER SCHRITT – IMMER, NIE ENTFERNEN
 
 Vor jedem Veröffentlichen, Pushen oder Abgeben: alle neuen oder geänderten Texte nach AI-SMELL.md (Teil A, B, C) prüfen und den Bericht ausgeben. Wortlaut der Regel: siehe `CLAUDE.md` im Hauptordner.

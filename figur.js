@@ -902,7 +902,8 @@ async function start() {
   let anticIn = 9;
   const greetSeen = new Set();
   const inView = new Set();
-  // Der innerste noch nicht begrüßte Abschnitt in der Bildschirmmitte
+  // Der innerste Abschnitt in der Bildschirmmitte, der bei diesem Besuch noch nicht dran war.
+  // Verlässt ein Abschnitt die Mitte, ist er beim nächsten Mal wieder dran, auch beim Hochscrollen.
   const nextSection = () => {
     let pick = null;
     for (const section of inView) if (!greetSeen.has(section) && (!pick || pick.contains(section))) pick = section;
@@ -1008,7 +1009,7 @@ async function start() {
           if (section) {
             greetSeen.add(section);
             const line = LINES[active?.id]?.[section.id];
-            if (!(line && sound.say(line, { once: true }))) doGesture("Wave");
+            if (!(line && sound.say(line))) doGesture("Wave");
           }
         }
         if (idleFor > 40) { idleFor = -1e9; sound.say("warten", { once: true }); }
@@ -1136,13 +1137,14 @@ async function start() {
       updateMode();
     }, { threshold: 0.12 }).observe(watch);
   }
-  // Abschnitte: Was gerade in der Bildschirmmitte liegt, bekommt einmal seine Zeile
-  const sections = document.querySelectorAll("main > section[id]");
+  // Abschnitte: Was gerade in der Bildschirmmitte liegt, bekommt seine Zeile, bei jedem Ankommen neu
+  // (die vier Stationen von „Mein Weg" liegen eine Ebene tiefer in .story)
+  const sections = document.querySelectorAll("main section[id]");
   if (sections.length) {
     const greeter = new IntersectionObserver((entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting) inView.add(entry.target);
-        else inView.delete(entry.target);
+        else { inView.delete(entry.target); greetSeen.delete(entry.target); }
       }
       wake();
     }, { rootMargin: "-42% 0px -42% 0px", threshold: 0 });
