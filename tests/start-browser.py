@@ -18,7 +18,7 @@ NEW_PAGES = ["index.html", "private-einblicke.html", "spielwiese.html", "impress
 for name in ("index.html", "private-einblicke.html"):
     source = (ROOT / name).read_text()
     # The personal pages may mention the employer but never show its material or link the advisory page.
-    for banned in ("SH_", "fuchs", "qr-visitenkarte", "finanzprofi", "beratung.html", "volksbank", "gmail"):
+    for banned in ("SH_", "fuchs", "qr-visitenkarte", "finanzprofi", "beratung.html", "volksbank", "gmail", "schwäbisch", "schwaebisch", "bausparkasse"):
         assert banned not in source.lower() if banned.islower() else banned not in source, f"{banned} in {name}"
     for path in re.findall(r'(?:src|href)="((?:ressources|assets)/[^"?]+)', source):
         target = ROOT / path.replace("%20", " ").replace("%26", "&").replace("%28", "(").replace("%29", ")").replace("&amp;", "&")
