@@ -186,6 +186,7 @@ Entscheidungen von Kim: alle Seiten außer /beratung; vorhandene Texte, neu geor
 - [x] Gilt auf der Startseite (unterhalb der Bühne) und auf „Private Einblicke"; nicht im Charakter-Fenster, nicht im Impressum, nicht im Datenschutz
 - [x] »-Knopf unten rechts springt zum nächsten Abschnitt und verschwindet am Seitenende
 - [x] Startseite: Abschnitt 2 („Das eigene Haus" und „Was mich erdet.") entfernt, er steht auf „Private Einblicke". Es bleiben drei Stationen.
+- [x] Der Stift ist ein 3D-Modell aus Blender (`tools/figuren/stift.py` → `assets/figuren/stift.glb`): Er liegt in Kims rechter Faust, die Spitze sitzt genau auf dem Strich, Kappe und Spitze tragen die Strichfarbe. Lädt das Modell nicht, erscheint ersatzweise der gezeichnete Stift.
 - [ ] Von Kim prüfen lassen: Wie schnell er wütend wird, ob die Schäden klein genug sind, Stift und Kritzeln in Bewegung, Lautstärke der Wut-Sprüche (bei mir an Standbildern und Abspielfolgen geprüft)
 
 ## LETZTER SCHRITT – IMMER, NIE ENTFERNEN

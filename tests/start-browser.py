@@ -51,6 +51,7 @@ try:
         expect(page.locator(".story .chapter")).to_have_count(3)
         # „Was mich erdet." steht nur noch auf der Seite „Private Einblicke"
         assert "Was mich erdet" not in page.content()
+        assert (ROOT / "assets" / "figuren" / "stift.glb").is_file(), "3D-Stift fehlt"
         for voice in ("drehen_1", "drehen_2", "drehen_3", "zurueck_1", "loesen_1", "radio_1", "wut_1", "wut_2", "wut_3"):
             assert (ROOT / "assets" / "stimmen" / f"kim_{voice}.mp3").is_file(), voice
         # Die Stationen liegen in .story: Der Begleiter muss ihre Abschnitte trotzdem finden, sonst spricht er dort nicht

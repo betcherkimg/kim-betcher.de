@@ -791,6 +791,7 @@ async function start() {
     tug.on = false;
     tug.pull = 0;
     if (tug.cloth) tug.cloth.visible = false;
+    if (pen3d) pen3d.visible = false;
   }
   function clothColor() {
     const look = state.figuren[active.id] || {};
@@ -1011,18 +1012,58 @@ async function start() {
   function penBox(tip, width, height, floor) {
     return { left: tip.x + PEN_GRIP.x - PEN_HAND.u * width, top: Math.min(floor, tip.y + PEN_GRIP.y - PEN_HAND.v * height) };
   }
+  // Der Stift ist ein kleines 3D-Modell (tools/figuren/stift.py): Spitze im Ursprung, Länge 1 entlang +Y.
+  // Solange es nicht geladen ist, zeigt wut.js ersatzweise einen gezeichneten Stift.
+  let pen3d = null;
+  let penInk = null;
+  const penTip = new THREE.Vector3();
+  const penTurn = new THREE.Quaternion();
+  if (wut.enabled) {
+    loader.loadAsync(`${ROOT}assets/figuren/stift.glb?v=1`).then((gltf) => {
+      pen3d = gltf.scene;
+      pen3d.traverse((node) => { if (node.isMesh && node.material.name === "Farbe") penInk = node.material; if (node.isMesh) node.frustumCulled = false; });
+      pen3d.visible = false;
+      pivot.add(pen3d);
+    }).catch(() => { /* dann bleibt es beim gezeichneten Stift */ });
+  }
+  // Bildschirmpunkt -> Punkt im Raum der Begleiter-Ansicht, depth vor der Figur (mit Perspektive)
+  function companionPoint(x, y, depth, out) {
+    const size = active.height / (companionFrame.head - companionFrame.feet);
+    const middle = -companionFrame.feet * size;
+    const distance = size / Math.tan(THREE.MathUtils.degToRad(COMPANION_FOV / 2));
+    const box = companion.getBoundingClientRect();
+    const near = (distance - depth) / distance;
+    return out.set(
+      size * (2 * ((x - box.left) / box.width) - 1) * (box.width / Math.max(1, box.height)) * near,
+      middle + size * (1 - 2 * ((y - box.top) / Math.max(1, box.height))) * near,
+      depth
+    );
+  }
   function applyPenArm() {
     if (!rage?.tip || !active) return;
-    const size = active.height / (companionFrame.head - companionFrame.feet);
-    const box = companion.getBoundingClientRect();
+    const height = active.height;
     tug.on = true;
     pivot.updateMatrixWorld(true);
-    tugT.set(
-      size * (2 * ((rage.tip.x + PEN_GRIP.x - box.left) / box.width) - 1) * box.width / Math.max(1, box.height),
-      -companionFrame.feet * size + size * (1 - 2 * ((rage.tip.y + PEN_GRIP.y - box.top) / Math.max(1, box.height))),
-      0.2 * active.height
-    );
+    // Das Handgelenk sitzt ein Stück über der Spitze, die Spitze selbst genau auf dem Strich
+    companionPoint(rage.tip.x + PEN_GRIP.x, rage.tip.y + PEN_GRIP.y, 0.2 * height, tugT);
     reachArm(active, "Right", rage.phase === "hoch" ? THREE.MathUtils.smoothstep(rage.t, 0, 0.3) : 1);
+    if (!pen3d) return;
+    const hand = active.model.getObjectByName("RightHand");
+    const fore = active.model.getObjectByName("RightForeArm");
+    if (!hand || !fore) return;
+    // Der Stift läuft von der Spitze durch die Faust (ein Stück hinter dem Handgelenk in Armrichtung)
+    hand.updateWorldMatrix(true, false);
+    hand.getWorldPosition(tugA);
+    fore.getWorldPosition(tugB);
+    tugA.addScaledVector(tugC.copy(tugA).sub(tugB).normalize(), 0.055 * height);
+    companionPoint(rage.tip.x, rage.tip.y, 0.13 * height, penTip);
+    tugC.copy(tugA).sub(penTip).normalize();
+    pivot.getWorldQuaternion(tugP);
+    pen3d.quaternion.copy(tugP.invert()).multiply(penTurn.setFromUnitVectors(UP, tugC));
+    pivot.worldToLocal(pen3d.position.copy(penTip));
+    pen3d.scale.setScalar(0.26 * height);
+    if (penInk && rage.tip.color) penInk.color.set(rage.tip.color);
+    pen3d.visible = true;
   }
   function runRage(dt) {
     calmFor = 0;
@@ -1068,7 +1109,8 @@ async function start() {
         if (!rage.draw) { calmDown(); return; }
         rage.draw.set(0);
         rage.done = true;
-        rage.tip = rage.draw.at(0);
+        rage.start = rage.draw.at(0);
+        rage.tip = { x: goalLeft + PEN_HAND.u * width - PEN_GRIP.x, y: floor + PEN_HAND.v * height - PEN_GRIP.y, color: rage.start.color };
         rage.pos = { left: goalLeft, top: floor };
         rage.from = { left: goalLeft, top: floor };
         rage.phase = "hoch";
@@ -1089,12 +1131,14 @@ async function start() {
     } else if (rage.phase === "hoch") {
       const k = Math.min(1, rage.t / 0.32);
       const eased = 1 - (1 - k) * (1 - k);
-      const goal = penBox(rage.tip, width, height, floor);
+      const goal = penBox(rage.start, width, height, floor);
       rage.pos.left = rage.from.left + (goal.left - rage.from.left) * eased;
       rage.pos.top = rage.from.top + (goal.top - rage.from.top) * eased;
       moveCompanion(rage.pos.left, rage.pos.top);
       pivot.rotation.y = damp(pivot.rotation.y, 0.2, 8, dt);
-      wut.pen(rage.pos.left + PEN_HAND.u * width - PEN_GRIP.x, rage.pos.top + PEN_HAND.v * height - PEN_GRIP.y, rage.tip.color);
+      // Der Stift ist schon in der Hand: Seine Spitze wandert mit ihm nach oben
+      rage.tip = { x: rage.pos.left + PEN_HAND.u * width - PEN_GRIP.x, y: rage.pos.top + PEN_HAND.v * height - PEN_GRIP.y, color: rage.tip.color };
+      if (!pen3d) wut.pen(rage.tip.x, rage.tip.y, rage.tip.color);
       if (k >= 1) { rage.phase = "kritzeln"; rage.t = 0; }
     } else if (rage.phase === "kritzeln") {
       const length = rage.target.kind === "streichen" ? 0.9 : rage.target.kind === "malen" ? 1.7 : 1.4;
@@ -1106,7 +1150,7 @@ async function start() {
       rage.pos.top = damp(rage.pos.top, goal.top, 18, dt);
       moveCompanion(rage.pos.left, rage.pos.top);
       pivot.rotation.y = damp(pivot.rotation.y, 0.2, 8, dt);
-      wut.pen(rage.tip.x, rage.tip.y, rage.tip.color);
+      if (!pen3d) wut.pen(rage.tip.x, rage.tip.y, rage.tip.color);
       if (progress >= 1) {
         // Fertig: Stift weg, er fällt zurück auf den Boden
         rage.draw.done();
