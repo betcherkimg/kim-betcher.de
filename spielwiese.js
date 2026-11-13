@@ -1134,7 +1134,7 @@ function start() {
     swingDoor(thing, true);
     const wait = kimOnce("ExitCar", -2.2, 0.15);
     // Beim Einsteigen steht Kim zuerst auf dem Boden und steigt in Stufen auf Sitzhöhe (Monstertruck) bzw. hinunter (flache Autos)
-    kim.climb = { seat: kim.group.position.y, ground: -(thing.lift || 0), t: 0, time: (wait || 0.01) * 0.62, up: true };
+    kim.climb = { seat: kim.group.position.y, ground: -(thing.lift || 0), t: 0, time: (wait || 0.01) * 0.62, up: true, out: 1 };
     kim.group.position.y = kim.climb.ground;
     kim.busy = { left: wait || 0.01, then: () => { kim.climb = null; kim.group.position.y = thing.seat.y - (kim.hip - 0.21 * KIM_SCALE); kim.pose = pose; kimPlay("SitInCar", 0.2); swingDoor(thing, false); begin(); } };
   }
@@ -1176,7 +1176,7 @@ function start() {
     kim.pose = null;
     swingDoor(thing, true);
     const wait = kimOnce("ExitCar", 2.2, 0.15);
-    kim.climb = { seat: kim.group.position.y, ground: -(thing.lift || 0), t: 0, time: wait * 0.62, delay: wait * 0.38, up: false };
+    kim.climb = { seat: kim.group.position.y, ground: -(thing.lift || 0), t: 0, time: wait * 0.62, delay: wait * 0.38, up: false, out: 0 };
     kim.busy = { left: wait, then: () => { kim.climb = null; finish(); swingDoor(thing, false); } };
   }
   // Tür auf der Fahrerseite öffnen oder schließen (bewegt sich dann von selbst dorthin)
@@ -2614,11 +2614,13 @@ function start() {
           // Steht er aufrecht, steht er auf dem Boden und steckt nicht darin.
           const up = THREE.MathUtils.clamp((rise.bone.position.y - rise.sit) / (rise.stand - rise.sit), 0, 1);
           kim.group.position.y = THREE.MathUtils.lerp(climb.seat, climb.ground, up);
+          climb.out = THREE.MathUtils.smoothstep(up, 0.04, 0.4);
         } else {
           // Hohes Fahrzeug: drei Tritte zwischen Boden und Sitzhöhe
           const stepped = (Math.floor(k * 3) + THREE.MathUtils.smoothstep((k * 3) % 1, 0.15, 0.7)) / 3;
           const done = k >= 1 ? 1 : stepped;
           kim.group.position.y = climb.up ? THREE.MathUtils.lerp(climb.ground, climb.seat, done) : THREE.MathUtils.lerp(climb.seat, climb.ground, done);
+          climb.out = climb.up ? 1 - THREE.MathUtils.smoothstep(done, 0.7, 1) : THREE.MathUtils.smoothstep(done, 0, 0.3);
         }
       }
       // Sitz- und Reithaltung der Beine
@@ -2627,7 +2629,9 @@ function start() {
       if (driving && !driving.item.ride && kim.group.parent !== scene) {
         driving.tilt.updateWorldMatrix(true, false);
         seatUp.set(0, 1, 0).transformDirection(driving.tilt.matrixWorld);
-        seatFloor.set(0, driving.item.hover ? 0.1 : 0.03, 0).applyMatrix4(driving.tilt.matrixWorld);
+        // Solange Kim ein- oder aussteigt, sinkt die Ebene bis unter den Boden: neben dem Fahrzeug sind die Beine sofort ganz da
+        const base = driving.item.hover ? 0.1 : 0.03;
+        seatFloor.set(0, kim.climb ? THREE.MathUtils.lerp(base, kim.climb.ground - 0.05, kim.climb.out || 0) : base, 0).applyMatrix4(driving.tilt.matrixWorld);
         floorClip.setFromNormalAndCoplanarPoint(seatUp, seatFloor);
       }
     }

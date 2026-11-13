@@ -17,10 +17,10 @@
   <link rel="apple-touch-icon" href="assets/kb-icon-180.png?v=1">
   <link rel="preload" href="assets/fonts/saira-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/source-sans-3-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="start.css?v=20261112-k20">
-  <script src="start.js?v=20261112-k20" defer></script>
+  <link rel="stylesheet" href="start.css?v=20261113-k21">
+  <script src="start.js?v=20261113-k21" defer></script>
   <script type="importmap">{"imports": {"three": "./vendor/three/three.module.min.js"}}</script>
-  <script type="module" src="spielwiese.js?v=20261112-k20"></script>
+  <script type="module" src="spielwiese.js?v=20261113-k21"></script>
 </head>
 <body>
   <a class="skip-link" href="#inhalt">Zum Inhalt</a>
@@ -81,70 +81,128 @@
       <div class="help" id="steuerung" data-help hidden>
         <div class="help-card" role="dialog" aria-modal="true" aria-labelledby="steuerung-titel">
           <h2 id="steuerung-titel">Steuerung</h2>
-          <div class="help-grid">
-            <section>
-              <h3>Zu Fuß</h3>
-              <ul>
-                <li><kbd>Klick</kbd><span>Maus fangen, <kbd>Esc</kbd> gibt sie frei</span></li>
-                <li><kbd>Maus</kbd><span>umsehen</span></li>
-                <li><kbd>W A S D</kbd><span>laufen</span></li>
-                <li><kbd>Shift</kbd><span>rennen</span></li>
-                <li><kbd>Leertaste</kbd><span>springen</span></li>
-                <li><kbd>E</kbd><span>einsteigen, aufsteigen</span></li>
-              </ul>
-            </section>
-            <section>
-              <h3>Kämpfen</h3>
-              <ul>
-                <li><kbd>Klick</kbd><span>zuschlagen</span></li>
-                <li><kbd>Q</kbd><span>Schwert ziehen, wegstecken</span></li>
-              </ul>
-              <p>Jeder hat Leben und lässt sich angreifen. Die Polizei ist friedlich, bis du Leute, Tiere oder Polizisten angreifst oder anfährst.</p>
-            </section>
-            <section>
-              <h3>Fahren und Fliegen</h3>
-              <ul>
-                <li><kbd>W S</kbd><span>Gas, Bremse</span></li>
-                <li><kbd>A D</kbd><span>lenken</span></li>
-                <li><kbd>Shift</kbd><span>schneller</span></li>
-                <li><kbd>Leertaste</kbd><span>abheben, landen</span></li>
-                <li><kbd>X</kbd><span>Hupe</span></li>
-                <li><kbd>R</kbd><span>Radio</span></li>
-                <li><kbd>E</kbd><span>aussteigen</span></li>
-              </ul>
-            </section>
-            <section>
-              <h3>Reiten</h3>
-              <ul>
-                <li><kbd>W</kbd><span>reiten</span></li>
-                <li><kbd>Leertaste</kbd><span>Klaps: Trab, dann Galopp</span></li>
-                <li><kbd>S</kbd><span>langsamer</span></li>
-                <li><kbd>A D</kbd><span>lenken</span></li>
-                <li><kbd>E</kbd><span>absteigen</span></li>
-              </ul>
-            </section>
-            <section>
-              <h3>Bauen</h3>
-              <ul>
-                <li><kbd>B</kbd><span>zwischen Spielen und Bauen wechseln</span></li>
-                <li><kbd>Ziehen</kbd><span>Karte verschieben</span></li>
-                <li><kbd>Rechte Maustaste</kbd><span>Blick drehen</span></li>
-                <li><kbd>Mausrad</kbd><span>Zoom</span></li>
-                <li><kbd>Q E</kbd><span>Ding drehen</span></li>
-                <li><kbd>Entf</kbd><span>Ding löschen</span></li>
-              </ul>
-            </section>
-          <section>
-              <h3>Mit dem Finger</h3>
-              <ul>
-                <li><kbd>Ziehen</kbd><span>laufen; weiter weg von Kim: rennen. Die Kamera dreht mit</span></li>
-                <li><kbd>Tippen</kbd><span>auf die Wiese: hinlaufen. Auf ein Fahrzeug: einsteigen. Auf einen Gegner: zuschlagen</span></li>
-                <li><kbd>Zwei Finger</kbd><span>Zoom</span></li>
-                <li><kbd>Im Fahrzeug</kbd><span>Finger davor: Gas. Dahinter: Bremse. Seitlich: lenken</span></li>
-              </ul>
-            </section>
+          <div class="help-grid help-play">
+            <div>
+              <section>
+                <h3>Zu Fuß</h3>
+                <ul>
+                <li><span class="help-keys"><kbd class="is-move">Klick</kbd></span><span>Maus fangen</span></li>
+                <li><span class="help-keys"><kbd>Esc</kbd></span><span>Maus freigeben</span></li>
+                <li><span class="help-keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>laufen</span></li>
+                <li><span class="help-keys"><kbd>Shift</kbd></span><span>rennen</span></li>
+                <li><span class="help-keys"><kbd>Leertaste</kbd></span><span>springen</span></li>
+                <li><span class="help-keys"><kbd>E</kbd></span><span>einsteigen</span></li>
+                </ul>
+              </section>
+              <section>
+                <h3>Kämpfen</h3>
+                <ul>
+                <li><span class="help-keys"><kbd class="is-move">Klick</kbd></span><span>zuschlagen</span></li>
+                <li><span class="help-keys"><kbd>Q</kbd></span><span>Schwert ziehen</span></li>
+                </ul>
+              </section>
+            </div>
+            <div>
+              <section>
+                <h3>Fahren und Fliegen</h3>
+                <ul>
+                <li><span class="help-keys"><kbd>W</kbd><kbd>S</kbd></span><span>Gas, Bremse</span></li>
+                <li><span class="help-keys"><kbd>A</kbd><kbd>D</kbd></span><span>lenken</span></li>
+                <li><span class="help-keys"><kbd>Shift</kbd></span><span>schneller</span></li>
+                <li><span class="help-keys"><kbd>Leertaste</kbd></span><span>abheben, landen</span></li>
+                <li><span class="help-keys"><kbd>X</kbd></span><span>Hupe</span></li>
+                <li><span class="help-keys"><kbd>R</kbd></span><span>Radio</span></li>
+                <li><span class="help-keys"><kbd>E</kbd></span><span>aussteigen</span></li>
+                </ul>
+              </section>
+            </div>
+            <div>
+              <section>
+                <h3>Reiten</h3>
+                <ul>
+                <li><span class="help-keys"><kbd>W</kbd></span><span>losreiten</span></li>
+                <li><span class="help-keys"><kbd>Leertaste</kbd></span><span>Klaps: schneller</span></li>
+                <li><span class="help-keys"><kbd>S</kbd></span><span>langsamer</span></li>
+                <li><span class="help-keys"><kbd>A</kbd><kbd>D</kbd></span><span>lenken</span></li>
+                <li><span class="help-keys"><kbd>E</kbd></span><span>absteigen</span></li>
+                </ul>
+              </section>
+              <section>
+                <h3>Wiese</h3>
+                <ul>
+                <li><span class="help-keys"><kbd>B</kbd></span><span>Bauen</span></li>
+                <li><span class="help-keys"><kbd>H</kbd></span><span>Steuerung</span></li>
+                </ul>
+              </section>
+            </div>
           </div>
-          <p class="help-foot"><span>H oder Esc schließt die Steuerung. <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span><button class="btn btn-primary" type="button" data-help-close>Weiter spielen</button></p>
+          <div class="help-grid help-touch">
+            <div>
+              <section>
+                <h3>Mit dem Finger</h3>
+                <ul>
+                <li><span class="help-keys"><kbd class="is-move">Ziehen</kbd></span><span>laufen</span></li>
+                <li><span class="help-keys"><kbd class="is-move">Weit ziehen</kbd></span><span>rennen</span></li>
+                <li><span class="help-keys"><kbd class="is-move">Zwei Finger</kbd></span><span>Zoom</span></li>
+                </ul>
+              </section>
+            </div>
+            <div>
+              <section>
+                <h3>Tippen</h3>
+                <ul>
+                <li><span class="help-keys"><kbd class="is-move">Wiese</kbd></span><span>hinlaufen</span></li>
+                <li><span class="help-keys"><kbd class="is-move">Fahrzeug</kbd></span><span>einsteigen</span></li>
+                <li><span class="help-keys"><kbd class="is-move">Gegner</kbd></span><span>zuschlagen</span></li>
+                </ul>
+              </section>
+            </div>
+            <div>
+              <section>
+                <h3>Im Fahrzeug</h3>
+                <ul>
+                <li><span class="help-keys"><kbd class="is-move">Finger davor</kbd></span><span>Gas</span></li>
+                <li><span class="help-keys"><kbd class="is-move">Finger dahinter</kbd></span><span>Bremse</span></li>
+                <li><span class="help-keys"><kbd class="is-move">Finger seitlich</kbd></span><span>lenken</span></li>
+                </ul>
+              </section>
+            </div>
+          </div>
+          <div class="help-grid help-build">
+            <div>
+              <section>
+                <h3>Aufstellen</h3>
+                <ul>
+                <li><span class="help-keys"><kbd class="is-move">Leiste</kbd></span><span>Ding antippen oder ziehen</span></li>
+                <li><span class="help-keys"><kbd class="is-move">Ziehen</kbd></span><span>Ding verschieben</span></li>
+                <li><span class="help-keys"><kbd>Q</kbd><kbd>E</kbd></span><span>Ding drehen</span></li>
+                <li><span class="help-keys"><kbd>Entf</kbd></span><span>Ding löschen</span></li>
+                </ul>
+              </section>
+            </div>
+            <div>
+              <section>
+                <h3>Ansicht</h3>
+                <ul>
+                <li><span class="help-keys"><kbd class="is-move">Ziehen</kbd></span><span>Karte verschieben</span></li>
+                <li><span class="help-keys"><kbd class="is-move">Rechtsklick</kbd></span><span>Blick drehen</span></li>
+                <li><span class="help-keys"><kbd class="is-move">Mausrad</kbd></span><span>Zoom</span></li>
+                <li><span class="help-keys"><kbd class="is-move">Zwei Finger</kbd></span><span>Zoom</span></li>
+                </ul>
+              </section>
+            </div>
+            <div>
+              <section>
+                <h3>Wiese</h3>
+                <ul>
+                <li><span class="help-keys"><kbd>B</kbd></span><span>Spielen</span></li>
+                <li><span class="help-keys"><kbd>H</kbd></span><span>Steuerung</span></li>
+                </ul>
+              </section>
+            </div>
+          </div>
+          <p class="help-note help-play help-touch">Die Polizei bleibt friedlich, solange du niemanden angreifst oder anfährst.</p>
+          <p class="help-foot"><span><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></span><button class="btn btn-primary" type="button" data-help-close>Weiter spielen</button></p>
         </div>
       </div>
     </section>

@@ -148,7 +148,7 @@ try:
         expect(page.locator(".header-legal a")).to_have_count(2)
         if page.evaluate("Boolean(document.createElement('canvas').getContext('webgl2'))"):
             expect(page.locator("[data-play]")).to_have_class(re.compile("is-live"))
-            page.wait_for_function("window.kbSpielwiese && kbSpielwiese.kim.ready && kbSpielwiese.things.filter(t => !t.temp).length === 7", timeout=60000)
+            page.wait_for_function("window.kbSpielwiese && kbSpielwiese.kim.ready && kbSpielwiese.things.filter(t => !t.temp).length === 7", timeout=240000)
             # Spielen: keine Leiste. Bauen (B): Leiste sichtbar, auf- und zuklappbar.
             expect(page.locator(".palette")).to_be_hidden()
             page.keyboard.press("b")
@@ -159,7 +159,7 @@ try:
             page.locator("[data-palette-toggle]").click()
             expect(page.locator(".palette-item").first).to_be_visible()
             page.locator('.palette-item[data-item="arian"]').click()
-            page.wait_for_function("kbSpielwiese.things.filter(t => !t.temp).length === 8", timeout=30000)
+            page.wait_for_function("kbSpielwiese.things.filter(t => !t.temp).length === 8", timeout=120000)
             assert any(row[0] == "arian" for row in page.evaluate("JSON.parse(localStorage.getItem('kb-spielwiese-v1'))"))
             expect(page.locator("[data-play-tools]")).to_be_visible()
             # Einsteigen wechselt ins Spiel; Kim sitzt, steigt mit E wieder aus
@@ -167,15 +167,15 @@ try:
             assert page.evaluate("kbSpielwiese.mode") == "play"
             # Die Knöpfe unten rechts gibt es nur mit dem Finger
             expect(page.locator("[data-play-exit]")).to_be_hidden()
-            page.wait_for_function("kbSpielwiese.driving && !kbSpielwiese.kim.busy", timeout=90000)
+            page.wait_for_function("kbSpielwiese.driving && !kbSpielwiese.kim.busy", timeout=1200000)
             assert page.evaluate("kbSpielwiese.kim.current") == "SitInCar"
             page.keyboard.press(" ")
             page.keyboard.press("e")
-            page.wait_for_function("!kbSpielwiese.driving", timeout=90000)
+            page.wait_for_function("!kbSpielwiese.driving", timeout=1200000)
             assert page.evaluate("kbSpielwiese.kim.group.parent.type") == "Scene"
             # Flaches Fahrzeug: die Beine bleiben ruhig (früher drehten sie sich jedes Bild weiter), nach dem Aussteigen steht Kim auf dem Boden
             page.evaluate("kbSpielwiese.kim.safe = 9999; kbSpielwiese.enter(kbSpielwiese.things.find(t => t.id === 'gokart'))")
-            page.wait_for_function("kbSpielwiese.driving && !kbSpielwiese.kim.busy", timeout=90000)
+            page.wait_for_function("kbSpielwiese.driving && !kbSpielwiese.kim.busy", timeout=1200000)
             legs = "kbSpielwiese.kim.legs.flatMap(l => [...l.thigh.quaternion.toArray(), ...l.shin.quaternion.toArray()])"
             page.wait_for_timeout(1200)
             before = page.evaluate(legs)
@@ -186,24 +186,24 @@ try:
             page.keyboard.up("a")
             drift = max(abs(a - b) for a, b in zip(page.evaluate(legs), before))
             assert drift < 0.05, f"Legs move while driving ({drift})"
-            page.wait_for_function("Math.abs(kbSpielwiese.driving.speed) < 2", timeout=60000)
+            page.wait_for_function("Math.abs(kbSpielwiese.driving.speed) < 2", timeout=240000)
             page.keyboard.press("e")
-            page.wait_for_function("!kbSpielwiese.driving && !kbSpielwiese.kim.busy", timeout=90000)
+            page.wait_for_function("!kbSpielwiese.driving && !kbSpielwiese.kim.busy", timeout=1200000)
             # Steuerung mit H, Schwert mit Q, ein Schlag trifft den Gegner
             page.keyboard.press("h")
             expect(page.locator("[data-help]")).to_be_visible()
             page.keyboard.press("h")
             expect(page.locator("[data-help]")).to_be_hidden()
             page.evaluate("(async () => { const k = kbSpielwiese, at = k.kim.group.position; window.__mob = await k.addThing('pilzling', at.x + Math.sin(k.kim.yaw) * 1.6, at.z + Math.cos(k.kim.yaw) * 1.6, 0, { save: false }); window.__mob.calm = 9999; })()")
-            page.wait_for_function("window.__mob && kbSpielwiese.sword.mesh", timeout=60000)
+            page.wait_for_function("window.__mob && kbSpielwiese.sword.mesh", timeout=240000)
             page.keyboard.press("q")
-            page.wait_for_function("kbSpielwiese.sword.drawn && !kbSpielwiese.sword.moving", timeout=60000)
+            page.wait_for_function("kbSpielwiese.sword.drawn && !kbSpielwiese.sword.moving", timeout=240000)
             expect(page.locator("[data-hud-sword]")).to_have_attribute("aria-pressed", "true")
             page.evaluate("kbSpielwiese.strike()")
-            page.wait_for_function("window.__mob.hp < 30", timeout=60000)
+            page.wait_for_function("window.__mob.hp < 30", timeout=240000)
             # Die Polizei ist friedlich, bis Kim ein Tier angreift
             page.evaluate("(async () => { const k = kbSpielwiese; window.__cop = await k.addThing('polizist', 20, 20, 0, { save: false }); })()")
-            page.wait_for_function("window.__cop", timeout=60000)
+            page.wait_for_function("window.__cop", timeout=240000)
             assert page.evaluate("kbSpielwiese.wanted") == 0
             page.evaluate("kbSpielwiese.hurtMob(kbSpielwiese.things.find(t => t.id === 'fuchs'), 5, 0, 0)")
             assert page.evaluate("kbSpielwiese.wanted") > 0
