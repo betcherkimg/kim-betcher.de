@@ -135,6 +135,17 @@ Kampfgefühl, Tempo der Schläge, Schüsse, Wind, alle neuen Töne, Fingersteuer
 - [x] Fuchs und Reh bleiben drin; Leben und Schaden bleiben so; Wind ist selbst gebaut
 - [x] Sprechzeilen: 38 Aufnahmen von Kim eingebaut (assets/stimmen). Begleiter: Packen, Hängen (nach knapp 4 s), Sturz, im Liegen gepackt, beim dritten Packen in Folge sauer. Spielwiese: Treffer (nicht jeder), wenig Leben, Schwert, Sieg, Polizei, Umfallen, Start, Fahren, Fliegen, Pferd, Crash, Wrack. Sieben leise Aufnahmen im Pegel angehoben.
 
+## Neu am 13.11. um 05:20: helles Design und Skins
+
+Entscheidungen von Kim: alle Seiten außer /beratung; vorhandene Texte, neu geordnet entlang seines Wegs; helles Holz und Schieferblau.
+
+- [x] Werkstatt-Szene (Zimmerer_Charakterauswahl) statt des dunklen Labs: Hintergrund, Vordergrund mit Pergola, Podest und Laufweg
+- [x] Farben und Schrift: warmes Weiß, Holz, Schieferblau; Überschriften in Bitter, Text in Source Sans 3 (`start.css`, Variablen oben; die dunkle Fassung liegt in der Git-Geschichte)
+- [x] Startseite als Geschichte: „Mein Weg" ist der rote Faden (Zollstock links), vier Stationen führen in ihre Abschnitte: Die Wurzeln, Das eigene Haus → Was mich erdet, Der Wendepunkt → Wofür ich stehe, Das Machen → Was ich baue. Texte unverändert.
+- [x] Private Einblicke, Impressum, Datenschutz und der Rahmen der Spielwiese im hellen Design; /beratung unverändert
+- [x] Skins (nur kim-betcher.de): Zimmerer-Kluft mit Hut und Anzug aus `Kim_Skins_v1.blend` (`assets/figuren/kim-skins.glb`, Bau: `tools/figuren/export_skins.py`). Mit Skin sind nur Hautfarbe, Haarfarbe und Frisur anpassbar; unter dem Hut enden die Haare an der Krempe. Gilt auch für Begleiter und Spielwiese.
+- [ ] Von Kim ansehen lassen: Farben, Schrift, Reihenfolge der Abschnitte, Skins in Bewegung (bei mir nur an Standbildern geprüft)
+
 ## LETZTER SCHRITT – IMMER, NIE ENTFERNEN
 
 Vor jedem Veröffentlichen, Pushen oder Abgeben: alle neuen oder geänderten Texte nach AI-SMELL.md (Teil A, B, C) prüfen und den Bericht ausgeben. Wortlaut der Regel: siehe `CLAUDE.md` im Hauptordner.

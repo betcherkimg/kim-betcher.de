@@ -559,6 +559,16 @@ function start() {
     material.needsUpdate = true;
     return tint;
   }
+  // Skins aus dem Charakter-Editor (assets/figuren/kim-skins.glb): Kluft mit Hut oder Anzug. Die Kleidung darunter ist dann festgelegt.
+  const SKINS = {
+    Zimmerer: { colors: { Oberteil: "#F4F4F0", Hose: "#1C1C1D", Schuhe: "#161616" }, hat: true },
+    Anzug: { colors: { Oberteil: "#F4F4F0", Hose: "#1A1A1C", Schuhe: "#141414" } }
+  };
+  // Krempen-Ebene des Huts in Kims Ruhepose: was von den Haaren darüber liegt, wird nicht gezeichnet
+  const HAT_BRIM = { point: [0, 0.732, 0], normal: [0.0004, 1, -0.0366] };
+  const hatClip = new THREE.Plane();
+  const hatPoint = new THREE.Vector3();
+  const hatNormal = new THREE.Vector3();
   function readLook() {
     try { return JSON.parse(window.localStorage.getItem(LOOK_KEY) || "{}").figuren?.kim || {}; } catch { return {}; }
   }
@@ -578,7 +588,39 @@ function start() {
       materials.Haar.color.set(hairKey === "Original" ? ORIGINAL.haar : COLORS.haar[look.haarfarbe] || ORIGINAL.haar);
     }
     tintable(materials.Haut)?.set(COLORS.haut[look.haut] || ORIGINAL.haut);
-    for (const part of ["Oberteil", "Hose", "Schuhe"]) tintable(materials[part])?.set(COLORS.stoff[look[part]] || ORIGINAL[part]);
+    const skin = SKINS[look.skin] || null;
+    for (const part of ["Oberteil", "Hose", "Schuhe"]) tintable(materials[part])?.set(skin ? skin.colors[part] : COLORS.stoff[look[part]] || ORIGINAL[part]);
+    // Krempen-Ebene im Raum des Kopfknochens merken, solange Kim in der Ruhepose am Ursprung steht
+    gltf.scene.updateMatrixWorld(true);
+    const headBone = gltf.scene.getObjectByName("Head");
+    if (skin?.hat && headBone) {
+      const inverse = headBone.matrixWorld.clone().invert();
+      kim.hat = { bone: headBone, point: new THREE.Vector3().fromArray(HAT_BRIM.point).applyMatrix4(inverse), normal: new THREE.Vector3().fromArray(HAT_BRIM.normal).normalize().transformDirection(inverse) };
+    }
+    if (skin) {
+      // Teile des gewählten Skins an Kims Knochen hängen (gleiche Knochennamen, eigene Bindematrizen)
+      loader.loadAsync("assets/figuren/kim-skins.glb?v=1").then((extra) => {
+        const bones = {};
+        gltf.scene.traverse((object) => { if (object.isBone) bones[object.name] = object; });
+        let host = gltf.scene;
+        gltf.scene.traverse((object) => { if (object.isSkinnedMesh && host === gltf.scene) host = object.parent; });
+        const meshes = [];
+        extra.scene.traverse((object) => { if (object.isSkinnedMesh) meshes.push(object); });
+        for (const mesh of meshes) {
+          const label = /^(Zimmerer|Anzug)_/.test(mesh.name) ? mesh.name : mesh.parent?.name || "";
+          const joined = mesh.skeleton.bones.map((bone) => bones[bone.name]);
+          if (label.split("_")[0] !== look.skin || joined.some((bone) => !bone)) continue;
+          host.add(mesh);
+          mesh.bind(new THREE.Skeleton(joined, mesh.skeleton.boneInverses), mesh.bindMatrix);
+          mesh.frustumCulled = false;
+          mesh.castShadow = true;
+          if (!kim.materials.includes(mesh.material)) kim.materials.push(mesh.material);
+        }
+        kim.hatOn = Boolean(kim.hat);
+        clipKim(Boolean(driving && kim.group.parent !== scene && !driving.item.ride));
+        hud.portrait = false;
+      }).catch(() => { /* ohne Skin: Kim trägt die Grundkleidung in den Farben des Skins */ });
+    }
     // Kim ist hier etwas größer als im Lab, damit die Fahrzeuge für ihn eher zu klein wirken
     gltf.scene.scale.setScalar(KIM_SCALE);
     gltf.scene.updateMatrixWorld(true);
@@ -735,9 +777,22 @@ function start() {
   const floorClip = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   const CLIP_ON = [floorClip];
   const CLIP_OFF = [];
+  const CLIP_HAT = [hatClip];
+  const CLIP_BOTH = [floorClip, hatClip];
   function clipKim(on) {
-    for (const material of kim.materials) { material.clippingPlanes = on ? CLIP_ON : CLIP_OFF; material.needsUpdate = true; }
+    for (const material of kim.materials) {
+      // Unter dem Hut enden die Haare an der Krempe
+      const hat = kim.hatOn && (material.name === "Haar" || material.name === "Original");
+      material.clippingPlanes = on ? (hat ? CLIP_BOTH : CLIP_ON) : (hat ? CLIP_HAT : CLIP_OFF);
+      material.needsUpdate = true;
+    }
   }
+  scene.onBeforeRender = () => {
+    if (!kim.hatOn) return;
+    hatPoint.copy(kim.hat.point).applyMatrix4(kim.hat.bone.matrixWorld);
+    hatNormal.copy(kim.hat.normal).transformDirection(kim.hat.bone.matrixWorld).negate();
+    hatClip.setFromNormalAndCoplanarPoint(hatNormal, hatPoint);
+  };
 
   // Bewegungen für Polizist und Kind: gleiche Knochen wie Kim, deshalb lassen sich Clips übertragen
   let people = null;

@@ -40,7 +40,17 @@ const CLOTH_COLORS = [
   ["Braun", "#6B4A32"], ["Rosa", "#E79AB0"], ["Lila", "#7A4FA3"]
 ];
 const PARTS = ["Oberteil", "Hose", "Schuhe"];
-const LOOK_DEFAULTS = { frisur: "Original", haarfarbe: "Original", haut: "Original", Oberteil: "Original", Hose: "Original", Schuhe: "Original" };
+// Skins: fertige Outfits (assets/figuren/kim-skins.glb, dieselben Knochen wie Kim). Mit Skin sind Oberteil, Hose und Schuhe
+// festgelegt; anpassbar bleiben Hautfarbe, Haarfarbe und Frisur. Unter dem Hut der Kluft enden die Haare an der Krempe.
+const SKINS = [
+  { name: "Ohne", key: null },
+  { name: "Zimmerer", key: "Zimmerer", colors: { Oberteil: "#F4F4F0", Hose: "#1C1C1D", Schuhe: "#161616" }, hat: true },
+  { name: "Anzug", key: "Anzug", colors: { Oberteil: "#F4F4F0", Hose: "#1A1A1C", Schuhe: "#141414" } }
+];
+const SKIN_VERSION = "1";
+// Krempen-Ebene des Huts in Kims Ruhepose (aus der Blender-Datei, umgerechnet auf Y nach oben)
+const HAT_BRIM = { point: [0, 0.732, 0], normal: [0.0004, 1, -0.0366] };
+const LOOK_DEFAULTS = { skin: "Ohne", frisur: "Original", haarfarbe: "Original", haut: "Original", Oberteil: "Original", Hose: "Original", Schuhe: "Original" };
 
 // Lab: Kamera und Wege aus dem Blender-Projekt (umgerechnet auf Y nach oben)
 const LAB = {
@@ -52,9 +62,9 @@ const LAB = {
   pitch: -(90 - 73.465),
   feet: [-2.05, 0.195, 0.48],
   // Vom Podest herunter, in die Gasse zwischen den Lichtleisten, mittig durchs Tor hinaus
-  exit: [[-2.05, 0.195, 0.48], [-0.6, 0.195, 0.48], [0.05, 0.03, 0.44], [1.4, 0.03, 0.15], [2.8, 0.03, -0.24], [4.6, 0.03, -0.3], [8.3, 0.03, -0.3], [12.5, 0.03, -0.3], [16.5, 0.03, -0.3]],
+  exit: [[-2.05, 0.195, 0.48], [-0.45, 0.195, 0.48], [0, 0.03, 0.48], [2.15, 0.03, 0.48], [5.2, 0.03, 0.48], [8.2, 0.03, -0.42], [11.8, 0.03, -0.42], [16, 0.03, -0.42]],
   // Vordergrundmaske (Torbogen und vordere Säule) als Ausschnitt des 3840er-Bilds
-  front: [2976, 300, 3624, 1316],
+  front: [2915, 363, 3690, 1341],
   // Figuren sind im Lab größer als im Begleiter: rund 3,2 m, der goldene Rahmen im Tor liegt bei 4,0 bis 4,7 m
   scale: 1.75
 };
@@ -121,6 +131,7 @@ async function start() {
   canvas.setAttribute("aria-hidden", "true");
   document.body.append(canvas);
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
+  renderer.localClippingEnabled = true;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
   renderer.setSize(window.innerWidth, window.innerHeight, false);
   renderer.setClearColor(0x000000, 0);
@@ -181,7 +192,7 @@ async function start() {
   // Vordergrund: vordere Torsäule, deckungsgleich mit dem Lab-Bild
   const frontScene = new THREE.Scene();
   const frontCamera = new THREE.OrthographicCamera(0, 1, 0, -1, -1, 1);
-  const frontTexture = new THREE.TextureLoader().load(`${ROOT}assets/lab/labor-vorne.webp?v=2`);
+  const frontTexture = new THREE.TextureLoader().load(`${ROOT}assets/lab/werkstatt-vorne.webp?v=1`);
   frontTexture.colorSpace = THREE.SRGBColorSpace;
   const front = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: frontTexture, transparent: true, depthTest: false, depthWrite: false, toneMapped: false }));
   frontScene.add(front);
@@ -211,12 +222,18 @@ async function start() {
       for (const name of ["Haut", ...PARTS]) makeTintable(materials[name]);
       if (materials.Haar) materials.Haar.vertexColors = true;
       model.updateMatrixWorld(true);
+      // Krempen-Ebene im Raum des Kopfknochens merken, solange die Figur in der Ruhepose am Ursprung steht
+      const headBone = model.getObjectByName("Head");
+      const hat = headBone ? (() => {
+        const inverse = headBone.matrixWorld.clone().invert();
+        return { bone: headBone, point: new THREE.Vector3().fromArray(HAT_BRIM.point).applyMatrix4(inverse), normal: new THREE.Vector3().fromArray(HAT_BRIM.normal).normalize().transformDirection(inverse) };
+      })() : null;
       const box = new THREE.Box3().setFromObject(model);
       model.position.set(-(box.min.x + box.max.x) / 2, -box.min.y, -(box.min.z + box.max.z) / 2);
       const mixer = new THREE.AnimationMixer(model);
       const actions = {};
       for (const clip of gltf.animations) actions[clip.name.replace(/^[A-Za-z]+_/, "")] = mixer.clipAction(clip);
-      const figure = { id, model, materials, hairMeshes, mixer, actions, height: box.max.y - box.min.y, current: null, currentName: "" };
+      const figure = { id, model, materials, hairMeshes, mixer, actions, height: box.max.y - box.min.y, current: null, currentName: "", hat, hatOn: false, skinParts: {}, skinsLoading: null };
       mixer.addEventListener("finished", (event) => {
         if (figure !== active || event.action !== figure.current) return;
         if (stunt?.finished) { stunt.finished(); return; }
@@ -364,15 +381,65 @@ async function start() {
     }
   }
 
+  // Skin-Teile nachladen und an Kims Knochen hängen (gleiche Knochennamen, eigene Bindematrizen)
+  function loadSkins(figure) {
+    if (figure.skinsLoading) return figure.skinsLoading;
+    figure.skinsLoading = loader.loadAsync(`${ROOT}assets/figuren/kim-skins.glb?v=${SKIN_VERSION}`).then((gltf) => {
+      const bones = {};
+      figure.model.traverse((object) => { if (object.isBone) bones[object.name] = object; });
+      let host = figure.model;
+      figure.model.traverse((object) => { if (object.isSkinnedMesh && host === figure.model) host = object.parent; });
+      const meshes = [];
+      gltf.scene.traverse((object) => { if (object.isSkinnedMesh) meshes.push(object); });
+      for (const mesh of meshes) {
+        // Name des Teils: "Zimmerer_Hut" oder bei mehreren Materialien die Gruppe darüber
+        const label = /^(Zimmerer|Anzug)_/.test(mesh.name) ? mesh.name : mesh.parent?.name || "";
+        const key = label.split("_")[0];
+        const joined = mesh.skeleton.bones.map((bone) => bones[bone.name]);
+        if (!SKINS.some((skin) => skin.key === key) || joined.some((bone) => !bone)) continue;
+        host.add(mesh);
+        mesh.bind(new THREE.Skeleton(joined, mesh.skeleton.boneInverses), mesh.bindMatrix);
+        mesh.frustumCulled = false;
+        mesh.visible = false;
+        (figure.skinParts[key] ||= []).push(mesh);
+      }
+      applyLook(figure);
+      wake();
+    }).catch(() => { figure.skinsLoading = null; });
+    return figure.skinsLoading;
+  }
+  const skinOf = (look) => SKINS.find((item) => item.name === look.skin) || SKINS[0];
+  const HAT_CLIP = [new THREE.Plane()];
+  const hatPoint = new THREE.Vector3();
+  const hatNormal = new THREE.Vector3();
+  // Vor jedem Bild: die Krempen-Ebene folgt dem Kopf; was von den Haaren darüber liegt, wird nicht gezeichnet
+  scene.onBeforeRender = () => {
+    const hat = active?.hatOn ? active.hat : null;
+    if (!hat) return;
+    hatPoint.copy(hat.point).applyMatrix4(hat.bone.matrixWorld);
+    hatNormal.copy(hat.normal).transformDirection(hat.bone.matrixWorld).negate();
+    HAT_CLIP[0].setFromNormalAndCoplanarPoint(hatNormal, hatPoint);
+  };
+
   function applyLook(figure) {
     const id = figure.id;
     const look = state.figuren[id];
+    const skin = skinOf(look);
+    if (skin.key && !figure.skinsLoading) loadSkins(figure);
+    for (const [key, meshes] of Object.entries(figure.skinParts)) for (const mesh of meshes) mesh.visible = key === skin.key;
+    figure.hatOn = Boolean(skin.hat && figure.hat && figure.skinParts[skin.key]);
+    for (const name of ["Haar", "Original"]) {
+      const material = figure.materials[name];
+      if (!material || Boolean(material.clippingPlanes?.length) === figure.hatOn) continue;
+      material.clippingPlanes = figure.hatOn ? HAT_CLIP : null;
+      material.needsUpdate = true;
+    }
     const style = HAIRSTYLES.find((item) => item.name === look.frisur) || HAIRSTYLES[0];
     const meshName = style.key ? `Frisur_${CHARACTERS[id].prefix}_${style.key}` : null;
     for (const [name, mesh] of Object.entries(figure.hairMeshes)) mesh.visible = name === meshName;
     figure.materials.Haar?.color.set(style.locked ? CHARACTERS[id].hair : findColor(hairColors(id), look.haarfarbe));
     figure.materials.Haut?.userData.tint.set(findColor(skinColors(id), look.haut));
-    for (const part of PARTS) figure.materials[part]?.userData.tint.set(findColor(clothColors(id, part), look[part]));
+    for (const part of PARTS) figure.materials[part]?.userData.tint.set(skin.key ? skin.colors[part] : findColor(clothColors(id, part), look[part]));
   }
 
   async function show(id, { greet = false } = {}) {
@@ -1163,6 +1230,7 @@ async function start() {
 
     // Icons aus der Asset-Lieferung (32 × 32, currentColor)
     const ICONS = {
+      skin: '<path d="M16 10.5a3 3 0 1 1 3-3M16 10.5V14L4.6 22.4A1.7 1.7 0 0 0 5.6 25.5h20.8a1.7 1.7 0 0 0 1-3.1L16 14"/>',
       frisur: '<path d="M7 28v-7a9.5 9.5 0 0 1-3-7c0-5.5 4.7-9 9.5-9 2.2 0 4.8-.8 6.5-2 .7 4.6-.8 7.8-3.7 9.7l2.2 4.3-3 1v4.5H12V28"/><path d="M4.5 12c3.8 1.2 7.2-.6 9.1-3.6"/><rect x="24" y="16" width="4" height="13" rx="1.4"/><path d="M21 18h3m-3 3h3m-3 3h3m-3 3h3"/>',
       haarfarbe: '<path d="M11 4C4 10 4 13.5 9 18c3.8 3.5 3.5 6.7-.5 10M17 4c-5.3 5.3-5.4 8.1-2.5 11.5"/><path d="M23 13c-1.8 3.2-5.5 6.6-5.5 10a5.5 5.5 0 0 0 11 0c0-3.4-3.7-6.8-5.5-10Z"/><path d="M21 22c-.7 1.5-.2 2.4.8 2.8"/>',
       haut: '<path d="M9 19V10a2 2 0 0 1 4 0V6a2 2 0 0 1 4 0v2a2 2 0 0 1 4 0v3a2 2 0 0 1 4 0v10a7 7 0 0 1-7 7h-3.3a7 7 0 0 1-5.5-2.7l-5-6.4a2.1 2.1 0 0 1 3.1-2.8Z"/><path d="M13 11v5m4-7v7m4-4v5"/><circle cx="27" cy="5" r="1.5"/>',
@@ -1171,6 +1239,7 @@ async function start() {
       Schuhe: '<path d="M5 12c2 2 3.5 3 7 3l4-5 5 7 5.6 2.8A4.3 4.3 0 0 1 29 24v2H4v-8.6c0-2.5.2-3.9 1-5.4Z"/><path d="M4 23h25M4 18h4l2 3m4-6 3 1m-.5-2.5 3 1M23 19l-1 3"/>'
     };
     const CATEGORIES = [
+      { key: "skin", label: "Skin", focus: "oberkoerper" },
       { key: "frisur", label: "Frisur", focus: "kopf" },
       { key: "haarfarbe", label: "Haare", title: "Haarfarbe", focus: "kopf", texture: "haar" },
       { key: "haut", label: "Haut", title: "Hautfarbe", focus: "oberkoerper" },
@@ -1183,7 +1252,10 @@ async function start() {
     const styleOf = () => HAIRSTYLES.find((item) => item.name === look().frisur) || HAIRSTYLES[0];
     const hairLocked = () => { const style = styleOf(); return Boolean(style.locked || !style.key); };
     const listFor = (key) => key === "haarfarbe" ? hairColors(state.aktiv) : key === "haut" ? skinColors(state.aktiv) : clothColors(state.aktiv, key);
-    const valueOf = (key) => key === "frisur" ? look().frisur : key === "haarfarbe" && hairLocked() ? (styleOf().locked ? "Original" : "–") : look()[key];
+    const skinOn = () => Boolean(skinOf(look()).key);
+    // Mit Skin sind Oberteil, Hose und Schuhe festgelegt: ihre Reiter verschwinden
+    const shown = (key) => !(skinOn() && PARTS.includes(key));
+    const valueOf = (key) => key === "skin" ? look().skin : key === "frisur" ? look().frisur : key === "haarfarbe" && hairLocked() ? (styleOf().locked ? "Original" : "–") : look()[key];
 
     // Reiter
     const tabButtons = {};
@@ -1201,9 +1273,10 @@ async function start() {
     tabList.addEventListener("keydown", (event) => {
       if (!["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)) return;
       event.preventDefault();
-      const index = CATEGORIES.findIndex((category) => category.key === current);
+      const open = CATEGORIES.filter((category) => shown(category.key));
+      const index = open.findIndex((category) => category.key === current);
       const step = event.key === "ArrowDown" || event.key === "ArrowRight" ? 1 : -1;
-      const next = CATEGORIES[(index + step + CATEGORIES.length) % CATEGORIES.length].key;
+      const next = open[(index + step + open.length) % open.length].key;
       select(next);
       tabButtons[next].focus();
     });
@@ -1219,13 +1292,14 @@ async function start() {
     function refreshTabs() {
       for (const category of CATEGORIES) {
         const button = tabButtons[category.key];
+        button.hidden = !shown(category.key);
         const on = category.key === current;
         button.setAttribute("aria-selected", String(on));
         button.tabIndex = on ? 0 : -1;
         button.classList.toggle("is-active", on);
         button.querySelector(".ed-tab-value").textContent = valueOf(category.key);
         const dot = button.querySelector(".ed-tab-dot");
-        if (category.key === "frisur") dot.style.removeProperty("--swatch");
+        if (category.key === "frisur" || category.key === "skin") dot.style.removeProperty("--swatch");
         else dot.style.setProperty("--swatch", category.key === "haarfarbe" && hairLocked() ? CHARACTERS[state.aktiv].hair : findColor(listFor(category.key), look()[category.key]));
         button.classList.toggle("is-locked", category.key === "haarfarbe" && hairLocked());
       }
@@ -1236,7 +1310,24 @@ async function start() {
       optionsTitle.textContent = category.title || category.label;
       optionsValue.textContent = valueOf(current);
       optionsBox.replaceChildren();
-      optionsBox.dataset.kind = current === "frisur" ? "frisur" : "farbe";
+      optionsBox.dataset.kind = current === "frisur" || current === "skin" ? "frisur" : "farbe";
+      if (current === "skin") {
+        const grid = document.createElement("div");
+        grid.className = "hair-grid skin-grid";
+        for (const skin of SKINS) {
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = "hair-card skin-card";
+          card.dataset.value = skin.name;
+          card.setAttribute("aria-pressed", String(skin.name === look().skin));
+          card.setAttribute("aria-label", `Skin: ${skin.name}`);
+          card.innerHTML = `<span class="hair-thumb"><img src="${ROOT}assets/figuren/skins/${skin.key ? skin.key.toLowerCase() : "ohne"}.webp?v=${SKIN_VERSION}" alt="" width="240" height="320" loading="lazy"></span><span class="hair-name">${skin.name}</span>`;
+          card.addEventListener("click", () => { look().skin = skin.name; changed(); });
+          grid.append(card);
+        }
+        optionsBox.append(grid);
+        return;
+      }
       if (current === "frisur") {
         const grid = document.createElement("div");
         grid.className = "hair-grid";
@@ -1292,7 +1383,7 @@ async function start() {
 
     function refresh() {
       optionsValue.textContent = valueOf(current);
-      optionsBox.querySelectorAll(".hair-card").forEach((card) => card.setAttribute("aria-pressed", String(card.dataset.value === look().frisur)));
+      optionsBox.querySelectorAll(".hair-card").forEach((card) => card.setAttribute("aria-pressed", String(card.dataset.value === (current === "skin" ? look().skin : look().frisur))));
       const locked = current === "haarfarbe" && hairLocked();
       optionsBox.querySelectorAll(".orb").forEach((orb) => orb.setAttribute("aria-pressed", String(!locked && orb.dataset.value === look()[current])));
       refreshTabs();
@@ -1320,6 +1411,7 @@ async function start() {
 
     const changed = () => {
       if (active?.id === state.aktiv) applyLook(active);
+      if (!shown(current)) { select("skin"); wake(); return; }
       refresh();
       if (current !== "frisur") scheduleThumbs(400);
       wake();

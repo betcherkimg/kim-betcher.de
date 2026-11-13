@@ -48,6 +48,7 @@ try:
         expect(page.get_by_role("heading", level=1)).to_have_text("Hi, ich bin Kim.")
         for heading in ("Kurz zu mir.", "Mein Weg.", "Was ich baue.", "Wofür ich stehe.", "Was mich erdet.", "Meld dich einfach."):
             expect(page.get_by_role("heading", name=heading)).to_be_attached()
+        expect(page.locator(".story .chapter")).to_have_count(4)
         assert not external, f"Start page loads external content: {external}"
         expect(page.locator(".roster")).to_have_count(0)
         if page.evaluate("Boolean(document.createElement('canvas').getContext('webgl2') || document.createElement('canvas').getContext('webgl'))"):
@@ -56,9 +57,20 @@ try:
             page.get_by_role("button", name="Charakter erstellen").click()
             expect(page.locator(".hair-card")).to_have_count(12)
             page.get_by_role("button", name="Frisur: Kurz").click()
+            # Skins: mit Skin bleiben nur Frisur, Haarfarbe und Hautfarbe anpassbar
+            page.locator('.ed-tab[data-tab="skin"]').click()
+            expect(page.locator(".skin-card")).to_have_count(3)
+            page.get_by_role("button", name="Skin: Zimmerer").click()
+            for tab in ("Oberteil", "Hose", "Schuhe"):
+                expect(page.locator(f'.ed-tab[data-tab="{tab}"]')).to_be_hidden()
+            for tab in ("frisur", "haarfarbe", "haut"):
+                expect(page.locator(f'.ed-tab[data-tab="{tab}"]')).to_be_visible()
+            page.get_by_role("button", name="Skin: Ohne").click()
+            expect(page.locator('.ed-tab[data-tab="Hose"]')).to_be_visible()
+            page.get_by_role("button", name="Skin: Anzug").click()
             page.get_by_role("button", name="Fertig").click()
             saved = page.evaluate("JSON.parse(localStorage.getItem('kb-figur-v1'))")
-            assert saved["fertig"] and saved["figuren"]["kim"]["frisur"] == "Kurz" and "maksim" not in saved["figuren"], saved
+            assert saved["fertig"] and saved["figuren"]["kim"]["frisur"] == "Kurz" and saved["figuren"]["kim"]["skin"] == "Anzug" and "maksim" not in saved["figuren"], saved
             page.evaluate("localStorage.clear()")
         assert "Steine" not in page.locator("main").inner_text(), "Advisory slogan on the personal page"
         page.locator('.build-shot[data-gallery="smartadm"]').click()

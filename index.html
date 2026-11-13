@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#131618">
+  <meta name="theme-color" content="#faf7f1">
   <title>Kim Betcher | Zimmerer, Finanzvertrieb, Software</title>
   <meta name="description" content="Kim Betcher aus Heidenheim: gelernter Zimmerer, heute im Finanzvertrieb, und einer, der sich seine Werkzeuge selbst baut.">
   <link rel="canonical" href="https://kim-betcher.de/">
@@ -15,13 +15,13 @@
   <link rel="icon" type="image/png" sizes="64x64" href="assets/kb-icon-64.png?v=1">
   <link rel="icon" type="image/png" sizes="512x512" href="assets/kb-icon-512.png?v=1">
   <link rel="apple-touch-icon" href="assets/kb-icon-180.png?v=1">
-  <link rel="preload" href="assets/fonts/saira-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/bitter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/source-sans-3-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/lab/labor-3840.webp" as="image" type="image/webp">
-  <link rel="stylesheet" href="start.css?v=20261113-k23">
-  <script src="start.js?v=20261113-k23" defer></script>
+  <link rel="preload" href="assets/lab/werkstatt-3840.webp" as="image" type="image/webp">
+  <link rel="stylesheet" href="start.css?v=20261113-h1">
+  <script src="start.js?v=20261113-h1" defer></script>
   <script type="importmap">{"imports": {"three": "./vendor/three/three.module.min.js"}}</script>
-  <script type="module" src="figur.js?v=20261113-k23"></script>
+  <script type="module" src="figur.js?v=20261113-h1"></script>
 </head>
 <body>
   <a class="skip-link" href="#inhalt">Zum Inhalt</a>
@@ -43,7 +43,7 @@
   <main id="inhalt">
     <section class="hero" aria-labelledby="hero-title" data-character="kim">
       <div class="lab" aria-hidden="true">
-        <img class="lab-bg" src="assets/lab/labor-3840.webp" alt="" width="3840" height="1600" fetchpriority="high" decoding="async" draggable="false">
+        <img class="lab-bg" src="assets/lab/werkstatt-3840.webp" alt="" width="3840" height="1600" fetchpriority="high" decoding="async" draggable="false">
         <span class="lab-shade"></span>
       </div>
       <div class="wrap hero-inner">
@@ -122,22 +122,88 @@
       </div>
     </section>
 
+    <!-- Mein Weg als roter Faden: vier Stationen, jede führt in den Abschnitt, der zu ihr gehört -->
+    <div class="story">
     <section class="progress" id="weg" aria-labelledby="path-title">
       <div class="wrap">
         <div class="section-head reveal">
           <h2 id="path-title">Mein Weg.</h2>
           <p class="section-intro">Vom Geruch frischen Holzes über die Finanzberatung zur eigenen Software.</p>
         </div>
-        <ol class="track track-4 reveal">
-          <li class="node"><span class="node-mark" aria-hidden="true">1</span><div class="node-card"><span class="node-when">Der Anfang</span><strong>Die Wurzeln</strong><span>Aufgewachsen im väterlichen Betrieb. Zimmerer von der Pike auf gelernt, dann als Vorarbeiter und Projektleiter Verantwortung übernommen.</span></div></li>
-          <li class="node"><span class="node-mark" aria-hidden="true">2</span><div class="node-card"><span class="node-when">2024</span><strong>Das eigene Haus</strong><span>Gekauft und kernsaniert. Mein ganzer Stolz.</span></div></li>
-          <li class="node"><span class="node-mark" aria-hidden="true">3</span><div class="node-card"><span class="node-when">2026</span><strong>Der Wendepunkt</strong><span>Ich wollte nicht mehr nur ausführen, sondern gestalten. Seitdem arbeite ich im Finanzvertrieb.</span></div></li>
-          <li class="node is-goal"><span class="node-mark" aria-hidden="true">4</span><div class="node-card"><span class="node-when">Heute</span><strong>Das Machen</strong><span>Was mir im Arbeitsalltag fehlt, baue ich selbst. Daraus sind eigene Anwendungen, ein Lernspiel und die Zusammenarbeit mit Juschkin Labs entstanden.</span></div></li>
-        </ol>
+        <div class="chapter reveal">
+          <span class="chapter-mark" aria-hidden="true">1</span>
+          <div class="chapter-card">
+            <p class="chapter-when">Der Anfang</p>
+            <p class="chapter-title">Die Wurzeln</p>
+            <p class="chapter-text">Aufgewachsen im väterlichen Betrieb. Zimmerer von der Pike auf gelernt, dann als Vorarbeiter und Projektleiter Verantwortung übernommen.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="services private-teaser" id="privat" aria-labelledby="private-title">
+      <div class="wrap chapter-wrap">
+        <div class="chapter reveal has-photo">
+          <span class="chapter-mark" aria-hidden="true">2</span>
+          <div class="chapter-card">
+            <p class="chapter-when">2024</p>
+            <p class="chapter-title">Das eigene Haus</p>
+            <p class="chapter-text">Gekauft und kernsaniert. Mein ganzer Stolz.</p>
+          </div>
+          <figure class="photo chapter-photo"><img src="ressources/klein/haus.jpg" alt="Mein Haus von außen" width="1100" height="1467" loading="lazy" decoding="async"></figure>
+        </div>
+      </div>
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2 id="private-title">Was mich erdet.</h2>
+          <p class="section-intro">Wenn ich nicht gerade arbeite, brauche ich einen Ausgleich: meine Familie, die Berge, das Angeln und die Musik.</p>
+        </div>
+        <ul class="tiles reveal">
+          <li><a class="tile" href="private-einblicke.html#ausgleich"><span class="photo"><img src="ressources/klein/familie.jpg" alt="Kim und Franziska" loading="lazy"></span><span class="tile-text"><strong>Meine Familie</strong><span>Meine Frau Franziska, zwei Katzen und ein Hund.</span></span></a></li>
+          <li><a class="tile" href="private-einblicke.html#ausgleich"><span class="photo"><img src="ressources/klein/berge.jpg" alt="Wanderweg vor einem Berggipfel" loading="lazy"></span><span class="tile-text"><strong>Bergwandern</strong><span>Ruhe finden und Weitblick genießen.</span></span></a></li>
+          <li><a class="tile" href="private-einblicke.html#ausgleich"><span class="photo"><img src="ressources/klein/angeln.jpg" alt="Kim mit einem gefangenen Fisch" loading="lazy"></span><span class="tile-text"><strong>Angeln</strong><span>Geduld üben und abschalten.</span></span></a></li>
+          <li><a class="tile" href="private-einblicke.html#musik"><span class="photo"><img src="ressources/klein/musik.jpg" alt="Kim singt auf einer Bühne" loading="lazy"></span><span class="tile-text"><strong>Musik</strong><span>Mein kreativer Ausgleich.</span></span></a></li>
+        </ul>
+        <p class="teaser-more reveal"><a class="btn" href="private-einblicke.html">Private Einblicke ansehen</a></p>
+      </div>
+    </section>
+
+    <section class="progress values" id="werte" aria-labelledby="values-title">
+      <div class="wrap chapter-wrap">
+        <div class="chapter reveal">
+          <span class="chapter-mark" aria-hidden="true">3</span>
+          <div class="chapter-card">
+            <p class="chapter-when">2026</p>
+            <p class="chapter-title">Der Wendepunkt</p>
+            <p class="chapter-text">Ich wollte nicht mehr nur ausführen, sondern gestalten. Seitdem arbeite ich im Finanzvertrieb.</p>
+          </div>
+        </div>
+      </div>
+      <div class="wrap values-grid">
+        <div class="reveal">
+          <h2 id="values-title">Wofür ich stehe.</h2>
+          <blockquote class="pull-quote"><p>„Ich bin nicht hier für das schnelle Geschäft. Ich baue ein Unternehmen auf, das Bestand hat.“</p></blockquote>
+        </div>
+        <dl class="value-list reveal">
+          <div><dt>Ehrlichkeit</dt><dd>Sie ist meine Basis. Niemand ist perfekt, ich auch nicht.</dd></div>
+          <div><dt>Familie</dt><dd>Gemeinsam mit meiner Frau. Sie ist das, was mich erdet.</dd></div>
+          <div><dt>Heimat</dt><dd>In der Region verwurzelt, in Heidenheim zu Hause.</dd></div>
+          <div><dt>Machen</dt><dd>Nicht nur ausführen, sondern gestalten. Was fehlt, baue ich selbst.</dd></div>
+        </dl>
       </div>
     </section>
 
     <section class="services builds" id="coding" aria-labelledby="builds-title">
+      <div class="wrap chapter-wrap">
+        <div class="chapter reveal">
+          <span class="chapter-mark" aria-hidden="true">4</span>
+          <div class="chapter-card">
+            <p class="chapter-when">Heute</p>
+            <p class="chapter-title">Das Machen</p>
+            <p class="chapter-text">Was mir im Arbeitsalltag fehlt, baue ich selbst. Daraus sind eigene Anwendungen, ein Lernspiel und die Zusammenarbeit mit Juschkin Labs entstanden.</p>
+          </div>
+        </div>
+      </div>
       <div class="wrap">
         <div class="section-head reveal">
           <h2 id="builds-title">Was ich baue.</h2>
@@ -161,37 +227,7 @@
         </article>
       </div>
     </section>
-
-    <section class="progress values" id="werte" aria-labelledby="values-title">
-      <div class="wrap values-grid">
-        <div class="reveal">
-          <h2 id="values-title">Wofür ich stehe.</h2>
-          <blockquote class="pull-quote"><p>„Ich bin nicht hier für das schnelle Geschäft. Ich baue ein Unternehmen auf, das Bestand hat.“</p></blockquote>
-        </div>
-        <dl class="value-list reveal">
-          <div><dt>Ehrlichkeit</dt><dd>Sie ist meine Basis. Niemand ist perfekt, ich auch nicht.</dd></div>
-          <div><dt>Familie</dt><dd>Gemeinsam mit meiner Frau. Sie ist das, was mich erdet.</dd></div>
-          <div><dt>Heimat</dt><dd>In der Region verwurzelt, in Heidenheim zu Hause.</dd></div>
-          <div><dt>Machen</dt><dd>Nicht nur ausführen, sondern gestalten. Was fehlt, baue ich selbst.</dd></div>
-        </dl>
-      </div>
-    </section>
-
-    <section class="services private-teaser" id="privat" aria-labelledby="private-title">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <h2 id="private-title">Was mich erdet.</h2>
-          <p class="section-intro">Wenn ich nicht gerade arbeite, brauche ich einen Ausgleich: meine Familie, die Berge, das Angeln und die Musik.</p>
-        </div>
-        <ul class="tiles reveal">
-          <li><a class="tile" href="private-einblicke.html#ausgleich"><span class="photo"><img src="ressources/klein/familie.jpg" alt="Kim und Franziska" loading="lazy"></span><span class="tile-text"><strong>Meine Familie</strong><span>Meine Frau Franziska, zwei Katzen und ein Hund.</span></span></a></li>
-          <li><a class="tile" href="private-einblicke.html#ausgleich"><span class="photo"><img src="ressources/klein/berge.jpg" alt="Wanderweg vor einem Berggipfel" loading="lazy"></span><span class="tile-text"><strong>Bergwandern</strong><span>Ruhe finden und Weitblick genießen.</span></span></a></li>
-          <li><a class="tile" href="private-einblicke.html#ausgleich"><span class="photo"><img src="ressources/klein/angeln.jpg" alt="Kim mit einem gefangenen Fisch" loading="lazy"></span><span class="tile-text"><strong>Angeln</strong><span>Geduld üben und abschalten.</span></span></a></li>
-          <li><a class="tile" href="private-einblicke.html#musik"><span class="photo"><img src="ressources/klein/musik.jpg" alt="Kim singt auf einer Bühne" loading="lazy"></span><span class="tile-text"><strong>Musik</strong><span>Mein kreativer Ausgleich.</span></span></a></li>
-        </ul>
-        <p class="teaser-more reveal"><a class="btn" href="private-einblicke.html">Private Einblicke ansehen</a></p>
-      </div>
-    </section>
+    </div>
 
     <section class="contact" id="kontakt" aria-labelledby="contact-title">
       <div class="wrap contact-inner reveal">
