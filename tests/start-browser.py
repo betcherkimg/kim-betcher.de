@@ -49,6 +49,8 @@ try:
         for heading in ("Kurz zu mir.", "Mein Weg.", "Was ich baue.", "Wofür ich stehe.", "Was mich erdet.", "Meld dich einfach."):
             expect(page.get_by_role("heading", name=heading)).to_be_attached()
         expect(page.locator(".story .chapter")).to_have_count(4)
+        for voice in ("drehen_1", "drehen_2", "drehen_3", "zurueck_1", "loesen_1", "radio_1"):
+            assert (ROOT / "assets" / "stimmen" / f"kim_{voice}.mp3").is_file(), voice
         # Die Stationen liegen in .story: Der Begleiter muss ihre Abschnitte trotzdem finden, sonst spricht er dort nicht
         assert 'querySelectorAll("main section[id]")' in (ROOT / "figur.js").read_text(encoding="utf-8")
         assert page.evaluate('[...document.querySelectorAll("main section[id]")].map(s => s.id).join()') == "ueber-mich,weg,privat,werte,coding,kontakt"
@@ -58,6 +60,20 @@ try:
         expect(page.locator(".roster")).to_have_count(0)
         if page.evaluate("Boolean(document.createElement('canvas').getContext('webgl2') || document.createElement('canvas').getContext('webgl'))"):
             expect(page.locator(".stage")).to_have_class(re.compile(r"\bis-3d\b"), timeout=60000)
+            # Schwindel: dreimal schnell gedreht, dann rennt Kim aus dem Bild und kommt von selbst zurück
+            stage_box = page.locator("[data-model-slot]").bounding_box()
+            mid_x, mid_y = stage_box["x"] + stage_box["width"] / 2, stage_box["y"] + stage_box["height"] * 0.55
+            for turn in range(3):
+                page.mouse.move(mid_x - 170, mid_y)
+                page.mouse.down()
+                for step in range(4):
+                    page.mouse.move(mid_x + (170 if step % 2 == 0 else -170), mid_y)
+                page.mouse.up()
+                if turn < 2:
+                    expect(page.locator(".hero")).not_to_have_class(re.compile("is-fleeing"))
+                    page.wait_for_timeout(4600)
+            expect(page.locator(".hero")).to_have_class(re.compile("is-fleeing"), timeout=20000)
+            expect(page.locator(".hero")).not_to_have_class(re.compile("is-fleeing"), timeout=120000)
             expect(page.locator(".lab")).to_have_class(re.compile(r"\bis-live\b"))
             page.get_by_role("button", name="Charakter erstellen").click()
             expect(page.locator(".hair-card")).to_have_count(12)

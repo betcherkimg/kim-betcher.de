@@ -161,6 +161,14 @@ Entscheidungen von Kim: alle Seiten außer /beratung; vorhandene Texte, neu geor
 - [x] Bildansicht hell: weißes Fenster, so breit wie das Bild, Seite dahinter abgedunkelt
 - [ ] Von Kim prüfen lassen: Ist das wiederholte Sprechen beim Hin- und Herscrollen so gewollt oder zu viel?
 
+## Neu am 13.11. zwischen 06:46 und 07:00: Schwindel, Losreißen, Aufprall
+
+- [x] Schwindel auf der Bühne (auch im Editor): schnelles Drehen löst beim ersten Mal `kim_drehen_1` aus, beim zweiten `kim_drehen_2`. Beim dritten Mal (`kim_drehen_3`) lässt Kim sich nicht mehr drehen, rennt wütend rechts aus dem Bild, bleibt eine Sekunde weg, lugt um die Ecke, rennt zurück aufs Podest und sagt `kim_zurueck_1`. Danach beginnt die Zählung neu.
+- [x] „Schnell" heißt: rund eine Vierteldrehung pro Zehntelsekunde über einen Moment; gemächliches Drehen zum Anschauen löst nichts aus (Schwelle in `feelSpin`)
+- [x] Hängen: nach knapp 4 s `kim_haengen_1` (Höhenangst), 6 s später `kim_haengen_2`, danach reißt er sich mit `kim_loesen_1` los, springt in einem Bogen weg und bleibt am unteren Rand stehen
+- [x] Sturz: Der Spruch kommt im Moment des Aufpralls, nicht erst im Liegen
+- [ ] Von Kim prüfen lassen: Schwelle fürs schnelle Drehen an Maus und Handy, Tempo des Weglaufens, Zeitpunkt der Sprüche (bei mir nur an Standbildern und Abspielzeiten geprüft, nicht gehört)
+
 ## LETZTER SCHRITT – IMMER, NIE ENTFERNEN
 
 Vor jedem Veröffentlichen, Pushen oder Abgeben: alle neuen oder geänderten Texte nach AI-SMELL.md (Teil A, B, C) prüfen und den Bericht ausgeben. Wortlaut der Regel: siehe `CLAUDE.md` im Hauptordner.

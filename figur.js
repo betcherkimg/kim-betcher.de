@@ -276,7 +276,7 @@ async function start() {
     figure.currentName = name;
   }
   function doGesture(name) {
-    if (!active?.actions[name] || leave) return;
+    if (!active?.actions[name] || leave || flee) return;
     stunt = null;
     spin = 0;
     gesture = name;
@@ -510,7 +510,7 @@ async function start() {
         unlocked = true;
         if (token !== playToken) return;
         pending = null;
-        if (!gesture && active?.actions.Talk && !leave) doGesture("Talk");
+        if (!gesture && active?.actions.Talk && !leave && !flee) doGesture("Talk");
       }).catch((error) => {
         if (token !== playToken) return;
         speaking = false;
@@ -607,11 +607,13 @@ async function start() {
   // Zeilen beim Packen, Hängen und nach einem Sturz. Wer ihn dreimal hintereinander packt, macht ihn richtig sauer;
   // wer ihn im Liegen packt, bekommt die ungläubigen Zeilen.
   const GRAB_LINES = ["kim_packen_1", "kim_packen_2", "kim_packen_3", "kim_packen_4"];
+  // Hängen: erst die Höhenangst (haengen_1), ein paar Sekunden später haengen_2, dann reißt er sich los (loesen_1)
   const HANG_LINES = ["kim_haengen_1", "kim_haengen_2"];
+  const FREE_LINE = "kim_loesen_1";
   const DROP_LINES = ["kim_sturz_1", "kim_sturz_2", "kim_sturz_3", "kim_sturz_4"];
   const AGAIN_LINES = ["kim_nochmal_1", "kim_nochmal_2"];
   const MAD_LINES = ["kim_sauer_1", "kim_sauer_2"];
-  const turns = { grab: 0, hang: 0, again: 0, mad: 0 };
+  const turns = { grab: 0, again: 0, mad: 0 };
   const tease = { count: 0, last: 0 };
   let reactUntil = 0;
   // Eine Reaktion unterbricht alles andere, aber nicht die vorige Reaktion
@@ -664,7 +666,7 @@ async function start() {
         press.top = event.clientY - dy - companion.offsetHeight * 0.3;
       }
       const lying = stunt?.name === "Fall";
-      carry = { vx: 0, since: performance.now(), moaned: false };
+      carry = { vx: 0, since: performance.now(), step: 0, mark: 0, freeAt: 0 };
       stunt = null;
       spin = 0;
       walkIn = null;
@@ -715,21 +717,65 @@ async function start() {
     }
     wake();
   };
+  // Am Griff: Nach knapp vier Sekunden meldet er seine Höhenangst, sechs Sekunden später noch einmal,
+  // und wenn das nichts hilft, reißt er sich los. Ohne Ton läuft dieselbe Folge stumm ab.
+  function runHang() {
+    const now = performance.now();
+    if (carry.step === 0) {
+      if (now - carry.since > 3800 && !sound.busy) { sound.say(HANG_LINES[0], { force: true }); carry.step = 1; carry.mark = now; }
+    } else if (carry.step === 1) {
+      if (now - carry.mark > 6000 && !sound.busy) { sound.say(HANG_LINES[1], { force: true }); carry.step = 2; carry.mark = now; }
+    } else if (carry.step === 2) {
+      if (now - carry.mark > 1600 && !sound.busy) {
+        // Er zappelt kurz und kommt dann frei
+        sound.say(FREE_LINE, { force: true });
+        carry.step = 3;
+        carry.freeAt = now + 520;
+        hang.omega += hang.angle > 0 ? -11 : 11;
+      }
+    } else if (now >= carry.freeAt) breakFree();
+  }
+  // Losgerissen: Er springt in einem Bogen dorthin, wo mehr Platz ist, und bleibt am unteren Rand stehen
+  function breakFree() {
+    const rect = companion.getBoundingClientRect();
+    if (press) { try { figureButton.releasePointerCapture(press.id); } catch { /* schon frei */ } }
+    press = null;
+    carry = null;
+    skipClick = true;
+    setTimeout(() => { skipClick = false; }, 2200);
+    companion.classList.remove("is-carried");
+    idleFor = 0;
+    anticIn = Math.max(anticIn, 10);
+    tease.count = 0;
+    const floor = Math.max(0, window.innerHeight - rect.height);
+    const maxLeft = Math.max(0, window.innerWidth - rect.width);
+    const side = rect.left > maxLeft / 2 ? -1 : 1;
+    const reach = Math.min(maxLeft * 0.42, 200 + Math.random() * 180);
+    const target = THREE.MathUtils.clamp(rect.left + side * reach, 0, maxLeft);
+    if (reduceMotion) { gesture = null; placeCompanion(target, floor, true); play("Idle", { fade: 0.3 }); wake(); return; }
+    // Absprung nach oben, dann freier Fall: Flugzeit aus Höhe und Schwerkraft
+    const up = -760;
+    const fall = Math.max(0, floor - rect.top);
+    const time = (-up + Math.sqrt(up * up + 2 * 3200 * fall)) / 3200;
+    drop = { left: rect.left, top: rect.top, speed: up, vx: (target - rect.left) / Math.max(0.2, time), crash: false, side };
+    gesture = "Jump";
+    play(active?.actions.Jump ? "Jump" : "Idle", { once: true, fade: 0.12, timeScale: 1.3 });
+    wake();
+  }
   // Sturz: freier Fall; aus der Höhe landet die Figur in der Hocke und kippt um
   function runDrop(dt) {
     const floor = Math.max(0, window.innerHeight - companion.offsetHeight);
     drop.speed += 3200 * dt;
     drop.top += drop.speed * dt;
+    if (drop.vx) drop.left = THREE.MathUtils.clamp(drop.left + drop.vx * dt, 0, Math.max(0, window.innerWidth - companion.offsetWidth));
     if (drop.top < floor) { placeCompanion(drop.left, drop.top); return; }
     placeCompanion(drop.left, floor, true);
     const crash = drop.crash;
     drop = null;
     if (!crash) { gesture = null; play("Idle", { fade: 0.25 }); return; }
-    fallOver({ from: 1.45, landed: () => {
-      if (!DROP_LINES.length) return;
-      sound.say(DROP_LINES[dropLine % DROP_LINES.length], { force: true });
-      dropLine += 1;
-    } });
+    // Der Spruch kommt genau im Moment des Aufpralls, nicht erst im Liegen
+    if (DROP_LINES.length) { sound.say(DROP_LINES[dropLine % DROP_LINES.length], { force: true }); dropLine += 1; }
+    fallOver({ from: 1.45 });
   }
   figureButton.addEventListener("pointerup", release);
   figureButton.addEventListener("pointercancel", release);
@@ -746,6 +792,11 @@ async function start() {
   let walkIn = null;
   let leave = null;
   let leaveHidden = false;
+  // Schwindel: Wer die Figur auf der Bühne schnell dreht, hört beim ersten und zweiten Mal einen Spruch. Beim dritten Mal
+  // haut sie ab: rechts aus dem Bild, eine Sekunde weg, lugt um die Ecke und rennt zurück aufs Podest.
+  const dizzy = { energy: 0, last: 0, count: 0, quietUntil: 0 };
+  let flee = null;
+  const LEAN_AXIS = new THREE.Vector3(0, 0, 1);
   const clock = new THREE.Clock();
   let frameRequest = 0;
   const companionFrame = { feet: -0.9, head: 0.84 };
@@ -835,8 +886,10 @@ async function start() {
   let lastTransform = "";
   let lastBlur = -1;
   function labLayout(rect) {
-    const feet = toImage(labPos);
-    const head = toImage(projected.set(labPos.x, labPos.y + (active?.height || 1.8) * LAB.scale, labPos.z));
+    // Rennt die Figur weg, bleibt der Ausschnitt dort stehen, wo sie losgelaufen ist
+    const at = flee ? flee.anchor : labPos;
+    const feet = toImage(at);
+    const head = toImage(projected.set(at.x, at.y + (active?.height || 1.8) * LAB.scale, at.z));
     const charHeight = Math.max(0.02, feet.y - head.y);
     // Nie kleiner als bildschirmfüllend, damit auch sehr breite Fenster keinen Rand zeigen
     const dispH = Math.max((view.k * rect.height) / charHeight, rect.height, rect.width / LAB.aspect);
@@ -847,7 +900,7 @@ async function start() {
     let top = view.ay * rect.height - anchorY * dispH;
     left = Math.min(0, Math.max(rect.width - dispW, left));
     top = Math.min(0, Math.max(rect.height - dispH, top));
-    return { left, top, dispW, dispH, feet };
+    return { left, top, dispW, dispH, feet, charHeight };
   }
   // Start genau dort, wo das Bild ohne 3D steht (object-fit: cover, 37 % 76 %), dann sanft heranfahren
   function initView(rect) {
@@ -942,6 +995,8 @@ async function start() {
         const feetX = toImage(labPos).x;
         view.x = damp(view.x ?? feetX, feetX, 3.4, dt);
         if (u >= 1) finishLeave();
+      } else if (flee) {
+        runFlee(dt, rect, table);
       } else {
         const focus = table[editing ? focusName : "ganz"];
         view.k = damp(view.k, focus.k, 5, dt);
@@ -954,7 +1009,8 @@ async function start() {
         runStunt(dt);
       }
       pivot.position.copy(labPos);
-      pivot.rotation.y = labYaw + (leave ? 0 : spin);
+      pivot.rotation.set(0, labYaw + (leave || flee ? 0 : spin), 0);
+      if (flee?.lean) pivot.rotateOnWorldAxis(LEAN_AXIS, flee.lean);
     } else if (walkIn) {
       walkIn.elapsed += dt;
       const progress = Math.min(1, walkIn.elapsed / walkIn.duration);
@@ -979,15 +1035,15 @@ async function start() {
       hang.angle += hang.omega * dt;
       hang.lift = damp(hang.lift, carry ? active?.height * 0.07 || 0 : 0, carry ? 12 : 9, dt);
       if (carry) {
-        // Hängt er eine Weile in der Luft, meldet er sich noch einmal
-        if (!carry.moaned && performance.now() - carry.since > 3800 && !sound.busy) carry.moaned = react(HANG_LINES, "hang");
-        carry.vx = damp(carry.vx, 0, 6, dt);
+        runHang();
+        if (carry) carry.vx = damp(carry.vx, 0, 6, dt);
         calmFor = 0;
         idleFor = 0;
         pivot.rotation.y = damp(pivot.rotation.y, 0.2, 8, dt);
       } else if (drop) {
         calmFor = 0;
         idleFor = 0;
+        if (drop.side) pivot.rotation.y = damp(pivot.rotation.y, drop.side * 0.9, 10, dt);
         runDrop(dt);
       } else if (scrollSpeed > 60 && !reduceMotion) {
         calmFor = 0;
@@ -1024,7 +1080,7 @@ async function start() {
       }
     }
 
-    shadow.visible = mode === "hero";
+    shadow.visible = mode === "hero" && !(flee?.lean > 0.02);
     active?.mixer.update(dt);
     renderView();
     if (mode) frameRequest = requestAnimationFrame(tick);
@@ -1045,8 +1101,8 @@ async function start() {
 
   function updateMode() {
     // Der Begleiter kommt bei allen mit, auch ohne Charakter-Editor
-    const wantCompanion = !editing && !leave && !heroVisible;
-    const next = lab && (heroVisible || editing || leave) ? "hero" : wantCompanion ? "companion" : null;
+    const wantCompanion = !editing && !leave && !flee && !heroVisible;
+    const next = lab && (heroVisible || editing || leave || flee) ? "hero" : wantCompanion ? "companion" : null;
     if (next === mode) { wake(); return; }
     const previous = mode;
     mode = next;
@@ -1070,7 +1126,7 @@ async function start() {
         pivot.rotation.y = 0.38;
         play("Idle", { fade: 0.2 });
       }
-    } else if (mode === "hero" && !leave) {
+    } else if (mode === "hero" && !leave && !flee) {
       walkIn = null;
       labPos.copy(feetHome);
       pivot.position.copy(labPos);
@@ -1084,10 +1140,109 @@ async function start() {
     wake();
   }
 
+  // Schwindel: Drehtempo spüren. Die Wucht klingt in einer halben Sekunde ab; gemächliches Drehen löst nichts aus.
+  function feelSpin(amount) {
+    const now = performance.now();
+    dizzy.energy = dizzy.energy * Math.exp(-(now - dizzy.last) / 500) + amount;
+    dizzy.last = now;
+    if (dizzy.energy < 3 || now < dizzy.quietUntil || flee || leave || mode !== "hero" || !active) return;
+    dizzy.energy = 0;
+    dizzy.quietUntil = now + 4200;
+    dizzy.count += 1;
+    idleFor = 0;
+    if (dizzy.count < 3) { sound.say(`drehen_${dizzy.count}`, { force: true }); return; }
+    dizzy.count = 0;
+    if (reduceMotion || !lab) { sound.say("drehen_3", { force: true }); return; }
+    startFlee();
+  }
+  function startFlee() {
+    gesture = null;
+    stunt = null;
+    spin = 0;
+    heroYaw = 0;
+    flee = { phase: "ruck", s: 0, speed: 1.6 * LAB.scale, t: 0, lean: 0, anchor: labPos.clone(), hidden: false };
+    view.x = toImage(labPos).x;
+    sound.say("drehen_3", { force: true });
+    // Erst ein Ruck, dann stürmt sie wütend los
+    if (active?.actions.HitReaction) play("HitReaction", { once: true, fade: 0.1 });
+    heroSection?.classList.add("is-fleeing");
+    updateMode();
+  }
+  function endFlee(greet = true) {
+    flee = null;
+    labPos.copy(feetHome);
+    pivot.visible = !leaveHidden && Boolean(active);
+    heroSection?.classList.remove("is-fleeing");
+    play("Idle", { fade: 0.3 });
+    if (greet) sound.say("zurueck_1", { force: true });
+    updateMode();
+  }
+  function runFlee(dt, rect, table) {
+    const focus = table.ganz;
+    view.k = damp(view.k, focus.k, 5, dt);
+    view.a = damp(view.a, focus.a, 5, dt);
+    view.ay = damp(view.ay, focus.ay, 5, dt);
+    // Rechter Bildrand und Körperhöhe in Bildanteilen (Breite)
+    const layout = labLayout(rect);
+    const edge = (rect.width - layout.left) / layout.dispW;
+    const tall = layout.charHeight / LAB.aspect;
+    const place = (s) => {
+      const u = THREE.MathUtils.clamp(s / exitLength, 0, 1);
+      labPos.copy(exitCurve.getPointAt(u));
+      exitCurve.getTangentAt(u, tangent);
+    };
+    flee.t += dt;
+    if (flee.phase === "ruck") {
+      labYaw = damp(labYaw, faceCamera, 12, dt);
+      if (flee.t > 0.34) { flee.phase = "raus"; flee.t = 0; play("Run", { fade: 0.15, timeScale: 1.35 }); }
+    } else if (flee.phase === "raus") {
+      flee.speed = damp(flee.speed, 5.6 * LAB.scale, 4, dt);
+      flee.s += flee.speed * dt;
+      place(flee.s);
+      labYaw = damp(labYaw, Math.atan2(tangent.x, tangent.z), 10, dt);
+      if (toImage(labPos).x > edge + 0.45 * tall || flee.s >= exitLength) {
+        flee.phase = "weg";
+        flee.t = 0;
+        flee.hidden = true;
+        pivot.visible = false;
+      }
+    } else if (flee.phase === "weg") {
+      // Eine Sekunde weg, der Spruch darf ausreden
+      if (flee.t >= 1 && (!sound.busy || flee.t > 3)) {
+        // Füße knapp außerhalb des Bildrands, der Oberkörper neigt sich ins Bild
+        let s = Math.min(flee.s, exitLength);
+        for (; s > 0; s -= 0.04) { place(s); if (toImage(labPos).x <= edge + 0.2 * tall) break; }
+        flee.s = Math.max(0, s);
+        flee.phase = "spickeln";
+        flee.t = 0;
+        flee.hidden = false;
+        pivot.visible = true;
+        labYaw = faceCamera - 0.35;
+        play("Idle", { fade: 0 });
+      }
+    } else if (flee.phase === "spickeln") {
+      flee.lean = damp(flee.lean, 0.5, 9, dt);
+      labYaw = damp(labYaw, faceCamera - 0.35, 8, dt);
+      if (flee.t > 1.35) { flee.phase = "zurueck"; flee.t = 0; flee.speed = 1.2 * LAB.scale; play("Run", { fade: 0.2, timeScale: 1.05 }); }
+    } else {
+      flee.lean = damp(flee.lean, 0, 12, dt);
+      if (flee.lean < 0.01) flee.lean = 0;
+      // Die letzten Schritte aufs Podest im Gehen
+      const walking = flee.s < 1.6 * LAB.scale;
+      flee.speed = damp(flee.speed, (walking ? 1.5 : 4.6) * LAB.scale, walking ? 5 : 3.2, dt);
+      if (walking && active?.currentName !== "Walk") play("Walk", { fade: 0.3, timeScale: 1.1 });
+      flee.s -= flee.speed * dt;
+      place(Math.max(0, flee.s));
+      labYaw = damp(labYaw, Math.atan2(-tangent.x, -tangent.z), 10, dt);
+      if (flee.s <= 0) endFlee();
+    }
+  }
+
   // Abgang nach „Fertig“
   // goto: Adresse, die nach dem Lauf durchs Tor geöffnet wird (Spielwiese); ohne goto geht es zum ersten Abschnitt
   let leaveGoto = "";
   function startLeave(goto = "") {
+    if (flee) endFlee(false);
     leaveGoto = goto;
     const target = document.querySelector("main > section[id]");
     const goOn = () => { if (goto) window.location.href = goto; else target?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" }); };
@@ -1170,7 +1325,10 @@ async function start() {
     });
     stage.addEventListener("pointermove", (event) => {
       if (dragX === null) return;
-      heroYaw += (event.clientX - dragX) * 0.012;
+      const turn = (event.clientX - dragX) * 0.012;
+      // Auf der Flucht lässt sie sich nicht aufhalten
+      if (!flee) heroYaw += turn;
+      feelSpin(Math.abs(turn));
       dragged += Math.abs(event.clientX - dragX);
       dragX = event.clientX;
       wake();
@@ -1178,14 +1336,15 @@ async function start() {
     const stopDrag = () => { dragX = null; stage.classList.remove("is-dragging"); };
     stage.addEventListener("pointerup", () => {
       // Kurz angetippt statt gedreht: die Figur antwortet
-      if (dragX !== null && dragged < 6 && performance.now() - pressedAt < 450 && active && !leave) poke();
+      if (dragX !== null && dragged < 6 && performance.now() - pressedAt < 450 && active && !leave && !flee) poke();
       stopDrag();
     });
     stage.addEventListener("pointercancel", stopDrag);
     stage.addEventListener("keydown", (event) => {
       if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
         event.preventDefault();
-        heroYaw += event.key === "ArrowRight" ? 0.35 : -0.35;
+        if (!flee) heroYaw += event.key === "ArrowRight" ? 0.35 : -0.35;
+        feelSpin(0.35);
         wake();
       }
     });
