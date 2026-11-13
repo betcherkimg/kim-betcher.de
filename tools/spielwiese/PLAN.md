@@ -176,15 +176,17 @@ Entscheidungen von Kim: alle Seiten außer /beratung; vorhandene Texte, neu geor
 - [x] Losreißen: Beide Hände greifen an den Zeiger, der Körper zerrt zweimal nach unten, das Oberteil spannt sich dabei ein Stück zum Zeiger (kleiner Kegel in der Farbe des Oberteils, nur wenn der Zeiger auf dem Oberteil sitzt), dann springt er weg
 - [ ] Von Kim prüfen lassen: Aufstehen und Losreißen in Bewegung (bei mir nur an Standbildern geprüft). Die Stofffalte ist klein; wenn sie zu unauffällig ist, größer machen.
 
-## Als Nächstes (Kims Auftrag von 07:13 bis 07:23, erst nach dem Veröffentlichen des Obigen)
+## Neu am 13.11. (Aufträge von 07:13 bis 07:23 und von 10:25): Wut, Zerstören, Weiter-Knopf, Abschnitt 2 raus
 
-- [ ] Wut-Anzeige: Kim ist ruhig, solange man ihn in Ruhe lässt. Hochheben, schnelles Drehen, Fallenlassen und Antippen machen ihn wütender.
-- [ ] Ist die Wut voll, muss er sie loswerden: Texte oder Bilder klauen und damit wegrennen, Buchstaben verschieben, Text kaputtschlagen, Bilder verunstalten und bemalen. Dazu `kim_wut_1` bis `kim_wut_3` im Wechsel. Die Anzeige leert sich dabei teilweise.
-- [ ] Aufhalten durch Hochheben: Er lässt Geklautes fallen (es liegt am unteren Rand), reißt sich in voller Wut aber wieder los.
-- [ ] Ein Klick auf die betroffene Stelle oder das liegende Stück stellt sie wieder her.
-- [ ] Schäden bleiben bis zum nächsten Besuch erhalten; ein Knopf setzt die ganze Seite zurück.
-- [ ] Überall außer im Charakter-Fenster, im Impressum und im Datenschutz.
-- [ ] »-Knopf: springt zum jeweils nächsten Abschnitt.
+- [x] Wut-Anzeige fest unten rechts (nicht über Kims Kopf). Kim ist ruhig, solange man ihn in Ruhe lässt; Antippen (+9), Hochheben (+16), Fallenlassen aus der Höhe (+14) und schnelles Drehen (+24) füllen sie. Nach fünf ruhigen Sekunden klingt sie ab.
+- [x] Volle Anzeige: Als Begleiter macht er genau eine Kleinigkeit kaputt, danach ist die Anzeige um 45 leerer. Dazu `kim_wut_1` bis `kim_wut_3` im Wechsel.
+- [x] Was kaputtgehen kann (`wut.js`): ein Bild übermalen, Wörter einer Zeile durchstreichen, auf die Seite kritzeln (alle drei mit sichtbarem Stift in der Hand), ein Wort verwischen, Buchstaben durcheinanderbringen, ein Wort zerschlagen, ein Bild springen lassen, eine Linie knicken, Buchstaben oder ein Bild klauen und damit wegrennen
+- [x] Aufhalten durch Hochheben: Geklautes fällt an den unteren Rand und bleibt dort liegen. In voller Wut reißt er sich nach 0,7 s wieder los und macht weiter, bis etwas kaputt ist.
+- [x] Heilen: Klick auf die Stelle oder auf das liegende Stück. Schäden bleiben im Browser gespeichert (`kb-wut-v2`, im Datenschutz ergänzt). Knopf „Seite zurücksetzen" heilt alles.
+- [x] Gilt auf der Startseite (unterhalb der Bühne) und auf „Private Einblicke"; nicht im Charakter-Fenster, nicht im Impressum, nicht im Datenschutz
+- [x] »-Knopf unten rechts springt zum nächsten Abschnitt und verschwindet am Seitenende
+- [x] Startseite: Abschnitt 2 („Das eigene Haus" und „Was mich erdet.") entfernt, er steht auf „Private Einblicke". Es bleiben drei Stationen.
+- [ ] Von Kim prüfen lassen: Wie schnell er wütend wird, ob die Schäden klein genug sind, Stift und Kritzeln in Bewegung, Lautstärke der Wut-Sprüche (bei mir an Standbildern und Abspielfolgen geprüft)
 
 ## LETZTER SCHRITT – IMMER, NIE ENTFERNEN
 

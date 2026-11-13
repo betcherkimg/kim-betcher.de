@@ -1048,3 +1048,60 @@ h3 { letter-spacing: -.005em; }
   .play-exit, .play-act { right: 8px; bottom: 72px; }
   .play-exit:not([hidden]) ~ .play-act { bottom: 126px; }
 }
+
+/* Kims Wut: Anzeige unten rechts, kaputte Stellen (ein Klick heilt sie), Stift, Beute, Knopf zum Zurücksetzen */
+.wut-ebene { position: absolute; top: 0; left: 0; width: 100%; height: 0; z-index: 15; }
+.wut-stelle { position: absolute; padding: 0; border: 0; border-radius: 4px; background: none; cursor: pointer; }
+.wut-stelle:hover, .wut-stelle:focus-visible { outline: 2px dashed var(--wood-deep); outline-offset: 4px; }
+.wut-stelle svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.wut-stelle.wut-klauen { outline: 2px dashed rgba(138, 91, 46, .55); outline-offset: 2px; }
+.wut-stelle.wut-linie { background: var(--wut-papier, #fff); border-radius: 0; }
+.wut-stelle.wut-neu { animation: wut-schlag .45s var(--ease); }
+@keyframes wut-schlag { 0% { transform: scale(1.12) rotate(-3deg); } 35% { transform: scale(.94) rotate(3deg); } 100% { transform: none; } }
+.wut-wort { display: inline-block; white-space: nowrap; }
+.wut-b { display: inline-block; }
+.wut-kaputt .wut-b { transform: translate(var(--x, 0), var(--y, 0)) rotate(var(--r, 0deg)); }
+.wut-kaputt .wut-liegt { opacity: .6; }
+.wut-weg { visibility: hidden; }
+.wut-verwischt { filter: blur(1.3px); transform: skewX(-18deg) scaleX(1.14); transform-origin: left center; text-shadow: .22em 0 .12em color-mix(in srgb, currentColor 55%, transparent), .5em .02em .2em color-mix(in srgb, currentColor 30%, transparent), .85em .03em .3em color-mix(in srgb, currentColor 14%, transparent); }
+.wut-schief { rotate: var(--wut-dreh, 3deg); translate: 0 6px; filter: grayscale(.3) contrast(1.05); }
+.wut-geklaut { visibility: hidden; }
+.wut-stift { position: fixed; z-index: 23; width: 14px; height: 50px; margin: -50px 0 0 -7px; transform-origin: 50% 100%; rotate: 32deg; pointer-events: none; filter: drop-shadow(0 2px 2px rgba(31, 45, 58, .3)); }
+.wut-stift svg { display: block; width: 100%; height: 100%; }
+.wut-beute { position: fixed; z-index: 22; max-width: 180px; padding: 6px 10px; border: 1px solid rgba(31, 45, 58, .18); border-radius: 4px; background: #fffdf6; color: var(--text); font: 700 20px/1.2 var(--font-head); text-align: left; box-shadow: 0 8px 18px rgba(31, 45, 58, .22); cursor: pointer; rotate: -4deg; }
+.wut-beute-bild { padding: 4px; }
+.wut-beute-bild img { display: block; width: 92px; height: 70px; object-fit: cover; border-radius: 2px; }
+.wut-beute.wut-am-boden { rotate: var(--wut-dreh, 6deg); transition: left .3s var(--ease), rotate .3s; }
+.wut-beute.wut-heim { transition: left .4s var(--ease), top .4s var(--ease), opacity .4s; opacity: .25; rotate: 0deg; }
+.wut-beute:hover, .wut-beute:focus-visible { outline: 2px dashed var(--wood-deep); outline-offset: 3px; }
+.wut-anzeige { position: fixed; right: 84px; bottom: 28px; z-index: 24; display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px 0 8px; border: 1px solid rgba(31, 45, 58, .12); border-radius: 999px; background: var(--surface); box-shadow: 0 6px 16px rgba(31, 45, 58, .16); color: #b5713a; }
+.wut-anzeige svg { width: 16px; height: 16px; }
+.wut-balken { display: block; width: 84px; height: 8px; border-radius: 4px; background: rgba(31, 45, 58, .14); overflow: hidden; }
+.wut-balken span { display: block; width: 0; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #d9a441, #c0392b); }
+.wut-anzeige.wut-voll { color: #c0392b; animation: wut-puls .45s ease-in-out infinite alternate; }
+@keyframes wut-puls { to { scale: 1.07; } }
+.wut-reset { position: fixed; right: 20px; bottom: 84px; z-index: 24; min-height: 44px; padding: 0 16px; border: 1px solid rgba(66, 87, 104, .5); border-radius: 8px; background: var(--surface); color: var(--gold); font: 600 16px var(--font); cursor: pointer; box-shadow: 0 6px 16px rgba(31, 45, 58, .16); }
+.wut-reset:hover { background: var(--wood-light); }
+.wut-anzeige[hidden], .wut-reset[hidden], .wut-stift[hidden], .next-section[hidden] { display: none; }
+body:has(.next-section[hidden]) .wut-anzeige, body:not(:has(.next-section)) .wut-anzeige { right: 20px; }
+/* Anzeige und Knöpfe sitzen fest unten rechts: Der Fuß der Seite bekommt Luft, damit sie keine Links verdecken */
+body:has(.wut-anzeige) .site-footer { padding-bottom: 72px; }
+/* Weiter zum nächsten Abschnitt */
+.next-section { position: fixed; right: 20px; bottom: 20px; z-index: 24; display: grid; place-items: center; width: 52px; height: 52px; padding: 0 0 4px; border: 0; border-radius: 50%; background: var(--gold); color: #fff; font: 700 28px/1 var(--font); cursor: pointer; box-shadow: 0 8px 18px rgba(31, 45, 58, .25); transition: background .2s, translate .2s; }
+.next-section:hover { background: var(--gold-bright); translate: 0 2px; }
+body:has(.music-player:not([hidden])) .next-section { bottom: 96px; }
+body:has(.music-player:not([hidden])) .wut-anzeige { bottom: 104px; }
+body:has(.music-player:not([hidden])) .wut-reset { bottom: 160px; }
+body:has(.hero.is-editing) .next-section, body:has(dialog[open]) .next-section, body:has(dialog[open]) .wut-reset, body:has(dialog[open]) .wut-anzeige { display: none; }
+body:has(.hero.is-editing) .wut-anzeige { right: 20px; }
+@media (max-width: 760px) {
+  .next-section { right: 14px; bottom: 14px; width: 48px; height: 48px; }
+  .wut-anzeige { right: 70px; bottom: 20px; }
+  .wut-balken { width: 64px; }
+  .wut-reset { right: 14px; bottom: 72px; font-size: 15px; padding: 0 12px; }
+  body:has(.next-section[hidden]) .wut-anzeige, body:not(:has(.next-section)) .wut-anzeige, body:has(.hero.is-editing) .wut-anzeige { right: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wut-beute, .next-section { transition: none; }
+  .wut-stelle.wut-neu, .wut-anzeige.wut-voll { animation: none; }
+}

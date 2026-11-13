@@ -46,14 +46,16 @@ try:
         page.route(re.compile(r"^https?://(?!127\.0\.0\.1)"), lambda route: (external.append(route.request.url), route.abort()))
         page.goto(origin + "/", wait_until="networkidle")
         expect(page.get_by_role("heading", level=1)).to_have_text("Hi, ich bin Kim.")
-        for heading in ("Kurz zu mir.", "Mein Weg.", "Was ich baue.", "Wofür ich stehe.", "Was mich erdet.", "Meld dich einfach."):
+        for heading in ("Kurz zu mir.", "Mein Weg.", "Was ich baue.", "Wofür ich stehe.", "Meld dich einfach."):
             expect(page.get_by_role("heading", name=heading)).to_be_attached()
-        expect(page.locator(".story .chapter")).to_have_count(4)
-        for voice in ("drehen_1", "drehen_2", "drehen_3", "zurueck_1", "loesen_1", "radio_1"):
+        expect(page.locator(".story .chapter")).to_have_count(3)
+        # „Was mich erdet." steht nur noch auf der Seite „Private Einblicke"
+        assert "Was mich erdet" not in page.content()
+        for voice in ("drehen_1", "drehen_2", "drehen_3", "zurueck_1", "loesen_1", "radio_1", "wut_1", "wut_2", "wut_3"):
             assert (ROOT / "assets" / "stimmen" / f"kim_{voice}.mp3").is_file(), voice
         # Die Stationen liegen in .story: Der Begleiter muss ihre Abschnitte trotzdem finden, sonst spricht er dort nicht
         assert 'querySelectorAll("main section[id]")' in (ROOT / "figur.js").read_text(encoding="utf-8")
-        assert page.evaluate('[...document.querySelectorAll("main section[id]")].map(s => s.id).join()') == "ueber-mich,weg,privat,werte,coding,kontakt"
+        assert page.evaluate('[...document.querySelectorAll("main section[id]")].map(s => s.id).join()') == "ueber-mich,weg,werte,coding,kontakt"
         # Die Stationsnummer liegt über dem Zollstock
         assert page.evaluate("getComputedStyle(document.querySelector('.story .chapter')).zIndex") == "2"
         assert not external, f"Start page loads external content: {external}"
@@ -124,7 +126,31 @@ try:
             page.wait_for_function("Math.abs(document.querySelector('.companion').getBoundingClientRect().bottom - innerHeight) < 2", timeout=20000)
             spot = page.evaluate("JSON.parse(localStorage.getItem('kb-figur-v1')).platz")
             assert 0 < spot["x"] < 1 and spot["y"] == 1, spot
+            # Wut: Antippen füllt die Anzeige unten rechts. Ist sie voll, geht genau eine Kleinigkeit kaputt;
+            # der Schaden wird gemerkt, der Knopf setzt die Seite zurück.
+            meter = page.locator(".wut-anzeige")
+            expect(meter).to_be_visible()
+            for _ in range(14):
+                figure.dispatch_event("click")
+                page.wait_for_timeout(60)
+            assert int(meter.get_attribute("aria-valuenow")) >= 100, meter.get_attribute("aria-valuenow")
+            expect(page.locator(".wut-stelle")).to_have_count(1, timeout=240000)
+            assert page.evaluate("JSON.parse(localStorage.getItem('kb-wut-v2')).index.length") == 1
+            assert int(meter.get_attribute("aria-valuenow")) < 100
+            expect(page.locator(".wut-reset")).to_be_visible()
+            page.locator(".wut-reset").click()
+            expect(page.locator(".wut-stelle")).to_have_count(0)
+            assert page.evaluate("localStorage.getItem('kb-wut-v2')") == "{}"
+            expect(page.locator(".wut-reset")).to_be_hidden()
             assert not errors, errors
+            # Weiter-Knopf: springt zum nächsten Abschnitt
+            page.evaluate("window.scrollTo(0, 0)")
+            page.wait_for_timeout(400)
+            expect(page.locator("[data-next]")).to_be_visible()
+            page.locator("[data-next]").click()
+            page.wait_for_function("Math.abs(document.getElementById('ueber-mich').getBoundingClientRect().top - 84) < 30", timeout=20000)
+            page.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
+            expect(page.locator("[data-next]")).to_be_hidden()
             page.evaluate("window.scrollTo(0, 0)")
         for key, count in (("blankoflex", 3), ("iquest", 3), ("heimello", 4), ("roadlands", 6)):
             page.locator(f'.build-shot[data-gallery="{key}"]').click()
@@ -252,6 +278,9 @@ try:
         assert "640815-7" in page.locator("main").inner_text()
         page.goto(origin + "/datenschutz.html", wait_until="networkidle")
         assert "kb-figur-v1" in page.locator("main").inner_text()
+        assert "kb-wut-v2" in page.locator("main").inner_text()
+        # Im Impressum und im Datenschutz gibt es keine Wut-Anzeige und nichts geht kaputt
+        expect(page.locator(".wut-anzeige")).to_have_count(0)
         for name in ("impressum.html", "datenschutz.html"):
             page.goto(f"{origin}/{name}", wait_until="networkidle")
             page.set_viewport_size({"width": 390, "height": 844})

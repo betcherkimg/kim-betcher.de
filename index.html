@@ -18,10 +18,10 @@
   <link rel="preload" href="assets/fonts/bitter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/source-sans-3-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/lab/werkstatt-3840.webp" as="image" type="image/webp">
-  <link rel="stylesheet" href="start.css?v=20261113-h6">
-  <script src="start.js?v=20261113-h6" defer></script>
-  <script type="importmap">{"imports": {"three": "./vendor/three/three.module.min.js"}}</script>
-  <script type="module" src="figur.js?v=20261113-h6"></script>
+  <link rel="stylesheet" href="start.css?v=20261113-h9">
+  <script src="start.js?v=20261113-h9" defer></script>
+  <script type="importmap">{"imports": {"three": "./vendor/three/three.module.min.js", "wut": "./wut.js?v=20261113-h9"}}</script>
+  <script type="module" src="figur.js?v=20261113-h9"></script>
 </head>
 <body>
   <a class="skip-link" href="#inhalt">Zum Inhalt</a>
@@ -141,37 +141,10 @@
       </div>
     </section>
 
-    <section class="services private-teaser" id="privat" aria-labelledby="private-title">
-      <div class="wrap chapter-wrap">
-        <div class="chapter reveal has-photo">
-          <span class="chapter-mark" aria-hidden="true">2</span>
-          <div class="chapter-card">
-            <p class="chapter-when">2024</p>
-            <p class="chapter-title">Das eigene Haus</p>
-            <p class="chapter-text">Gekauft und kernsaniert. Mein ganzer Stolz.</p>
-          </div>
-          <figure class="photo chapter-photo"><img src="ressources/klein/haus.jpg" alt="Mein Haus von außen" width="1100" height="1467" loading="lazy" decoding="async"></figure>
-        </div>
-      </div>
-      <div class="wrap">
-        <div class="section-head reveal">
-          <h2 id="private-title">Was mich erdet.</h2>
-          <p class="section-intro">Wenn ich nicht gerade arbeite, brauche ich einen Ausgleich: meine Familie, die Berge, das Angeln und die Musik.</p>
-        </div>
-        <ul class="tiles reveal">
-          <li><a class="tile" href="private-einblicke.html#ausgleich"><span class="photo"><img src="ressources/klein/familie.jpg" alt="Kim und Franziska" loading="lazy"></span><span class="tile-text"><strong>Meine Familie</strong><span>Meine Frau Franziska, zwei Katzen und ein Hund.</span></span></a></li>
-          <li><a class="tile" href="private-einblicke.html#ausgleich"><span class="photo"><img src="ressources/klein/berge.jpg" alt="Wanderweg vor einem Berggipfel" loading="lazy"></span><span class="tile-text"><strong>Bergwandern</strong><span>Ruhe finden und Weitblick genießen.</span></span></a></li>
-          <li><a class="tile" href="private-einblicke.html#ausgleich"><span class="photo"><img src="ressources/klein/angeln.jpg" alt="Kim mit einem gefangenen Fisch" loading="lazy"></span><span class="tile-text"><strong>Angeln</strong><span>Geduld üben und abschalten.</span></span></a></li>
-          <li><a class="tile" href="private-einblicke.html#musik"><span class="photo"><img src="ressources/klein/musik.jpg" alt="Kim singt auf einer Bühne" loading="lazy"></span><span class="tile-text"><strong>Musik</strong><span>Mein kreativer Ausgleich.</span></span></a></li>
-        </ul>
-        <p class="teaser-more reveal"><a class="btn" href="private-einblicke.html">Private Einblicke ansehen</a></p>
-      </div>
-    </section>
-
     <section class="progress values" id="werte" aria-labelledby="values-title">
       <div class="wrap chapter-wrap">
         <div class="chapter reveal">
-          <span class="chapter-mark" aria-hidden="true">3</span>
+          <span class="chapter-mark" aria-hidden="true">2</span>
           <div class="chapter-card">
             <p class="chapter-when">2026</p>
             <p class="chapter-title">Der Wendepunkt</p>
@@ -196,7 +169,7 @@
     <section class="services builds" id="coding" aria-labelledby="builds-title">
       <div class="wrap chapter-wrap">
         <div class="chapter reveal">
-          <span class="chapter-mark" aria-hidden="true">4</span>
+          <span class="chapter-mark" aria-hidden="true">3</span>
           <div class="chapter-card">
             <p class="chapter-when">Heute</p>
             <p class="chapter-title">Das Machen</p>
@@ -242,6 +215,7 @@
     </section>
   </main>
 
+  <button class="next-section" type="button" data-next hidden aria-label="Zum nächsten Abschnitt">»</button>
   <dialog class="project-dialog" aria-labelledby="preview-title" aria-describedby="preview-note">
     <div class="dialog-heading"><h2 id="preview-title">Bild</h2><button class="btn dialog-close" type="button" aria-label="Bildansicht schließen">Schließen</button></div>
     <div class="preview-stage"><img id="preview-image" alt=""></div>

@@ -6,6 +6,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "./vendor/three/GLTFLoader.js";
 import { MeshoptDecoder } from "./vendor/three/meshopt_decoder.module.js";
+import { setupWut } from "wut";
 
 const ROOT = new URL("./", import.meta.url).href;
 const STORE_KEY = "kb-figur-v1";
@@ -518,7 +519,7 @@ async function start() {
         unlocked = true;
         if (token !== playToken) return;
         pending = null;
-        if (!gesture && active?.actions.Talk && !leave && !flee) doGesture("Talk");
+        if (!gesture && active?.actions.Talk && !leave && !flee && !rage) doGesture("Talk");
       }).catch((error) => {
         if (token !== playToken) return;
         speaking = false;
@@ -587,6 +588,8 @@ async function start() {
   let gestureIndex = 0;
   let spokeLast = false;
   function poke() {
+    // Jedes Antippen ärgert ihn, auch wenn es ihn nur zum Schweigen bringt
+    annoy(9);
     if (sound.flush()) return;
     idleFor = 0;
     anticIn = Math.max(anticIn, 10);
@@ -674,6 +677,9 @@ async function start() {
         press.top = event.clientY - dy - companion.offsetHeight * 0.3;
       }
       const lying = stunt?.name === "Fall";
+      // Mitten im Wutanfall gepackt: Was er trägt, fällt zu Boden
+      if (rage) { if (rage.loot) wut.dropLoot(rage.loot, event.clientX); rage.loot = null; endRage(); }
+      annoy(16);
       // u, v: wo der Zeiger im Rahmen der Figur sitzt (bleibt beim Tragen gleich)
       carry = { vx: 0, since: performance.now(), step: 0, mark: 0, freeAt: 0, u: (press.x - press.left) / Math.max(1, companion.offsetWidth), v: (press.y - press.top) / Math.max(1, companion.offsetHeight) };
       stunt = null;
@@ -721,6 +727,7 @@ async function start() {
       if (reduceMotion) placeCompanion(rect.left, floor, true);
       else {
         drop = { left: rect.left, top: rect.top, speed: 0, crash: floor - rect.top > 60 && Boolean(active?.actions.FallBackward) };
+        if (floor - rect.top > 60) annoy(14);
         gesture = "Hang";
         play(active?.actions.Hang ? "Hang" : "Idle", { fade: 0.1, timeScale: 1.5 });
       }
@@ -731,6 +738,14 @@ async function start() {
   // und wenn das nichts hilft, reißt er sich los. Ohne Ton läuft dieselbe Folge stumm ab.
   function runHang() {
     const now = performance.now();
+    // In voller Wut lässt er sich nicht halten: Er reißt sich sofort wieder los
+    if (mood.furious && carry.step < 3 && now - carry.since > 700) {
+      sound.say(FREE_LINE, { force: true });
+      carry.step = 3;
+      carry.mark = now;
+      carry.freeAt = now + TUG_TIME;
+      return;
+    }
     if (carry.step === 0) {
       if (now - carry.since > 3800 && !sound.busy) { sound.say(HANG_LINES[0], { force: true }); carry.step = 1; carry.mark = now; }
     } else if (carry.step === 1) {
@@ -784,6 +799,59 @@ async function start() {
     if (skin.colors) return skin.colors.Oberteil;
     return findColor(clothColors(active.id, "Oberteil"), look.Oberteil);
   }
+  // Arm an einen Punkt führen (tugT, Weltkoordinaten): Ellbogen beugen, Oberarm ausrichten, Ellbogen nach unten schwenken.
+  // reach 0..1 blendet von der laufenden Bewegung zur Zielhaltung.
+  function reachArm(figure, side, reach) {
+    const arm = figure.model.getObjectByName(`${side}Arm`);
+    const fore = figure.model.getObjectByName(`${side}ForeArm`);
+    const hand = figure.model.getObjectByName(`${side}Hand`);
+    if (!arm || !fore || !hand) return;
+    const armMemo = tugBase(arm);
+    const foreMemo = tugBase(fore);
+    // 1. Ellbogen so weit beugen, dass die Hand genau bis zum Ziel reicht
+    arm.updateWorldMatrix(true, true);
+    arm.getWorldPosition(tugA);
+    fore.getWorldPosition(tugB);
+    hand.getWorldPosition(tugC);
+    const upper = tugA.distanceTo(tugB);
+    const lower = tugB.distanceTo(tugC);
+    const span = THREE.MathUtils.clamp(tugA.distanceTo(tugT), Math.abs(upper - lower) + 0.01, upper + lower - 0.005);
+    tugD.copy(tugA).sub(tugB).normalize();
+    tugE.copy(tugC).sub(tugB).normalize();
+    const bendNow = Math.acos(THREE.MathUtils.clamp(tugD.dot(tugE), -1, 1));
+    const bendWant = Math.acos(THREE.MathUtils.clamp((upper * upper + lower * lower - span * span) / (2 * upper * lower), -1, 1));
+    tugD.cross(tugE);
+    if (tugD.lengthSq() < 1e-6) tugD.set(side === "Left" ? 0.3 : -0.3, -1, 0);
+    tugD.normalize();
+    tugQ.setFromAxisAngle(tugD, bendWant - bendNow);
+    fore.getWorldQuaternion(tugW);
+    fore.parent.getWorldQuaternion(tugP);
+    tugNone.copy(tugP).invert().multiply(tugQ.multiply(tugW));
+    fore.quaternion.copy(foreMemo.base).slerp(tugNone, reach);
+    foreMemo.applied.copy(fore.quaternion);
+    // 2. Oberarm so drehen, dass die Hand auf das Ziel zeigt
+    arm.updateWorldMatrix(true, true);
+    hand.getWorldPosition(tugC);
+    tugD.copy(tugC).sub(tugA).normalize();
+    tugE.copy(tugT).sub(tugA).normalize();
+    tugQ.setFromUnitVectors(tugD, tugE);
+    arm.getWorldQuaternion(tugW);
+    arm.parent.getWorldQuaternion(tugP);
+    tugW.premultiply(tugQ);
+    // 3. Um die Linie Schulter–Ziel schwenken, bis der Ellbogen nach unten und etwas nach außen zeigt:
+    //    So kommen die Unterarme von unten an den Zeiger und verdecken die Stofffalte nicht
+    tugD.copy(tugB).sub(tugA).applyQuaternion(tugQ);
+    tugD.addScaledVector(tugE, -tugD.dot(tugE));
+    tugC.set(side === "Left" ? 0.45 : -0.45, -1, 0.1);
+    tugC.addScaledVector(tugE, -tugC.dot(tugE));
+    if (tugD.lengthSq() > 1e-6 && tugC.lengthSq() > 1e-6) {
+      tugQ.setFromUnitVectors(tugD.normalize(), tugC.normalize());
+      tugW.premultiply(tugQ);
+    }
+    tugNone.copy(tugP).invert().multiply(tugW);
+    arm.quaternion.copy(armMemo.base).slerp(tugNone, reach);
+    armMemo.applied.copy(arm.quaternion);
+  }
   function applyTug() {
     const figure = active;
     const height = figure.height;
@@ -797,59 +865,11 @@ async function start() {
     pivot.updateMatrixWorld(true);
     tug.tip.set(size * (2 * carry.u - 1) * box.width / Math.max(1, box.height), -companionFrame.feet * size + size * (1 - 2 * carry.v) + tug.pull * TUG_DROP * height, 0.15 * height);
     for (const side of ["Left", "Right"]) {
-      const arm = figure.model.getObjectByName(`${side}Arm`);
-      const fore = figure.model.getObjectByName(`${side}ForeArm`);
-      const hand = figure.model.getObjectByName(`${side}Hand`);
-      if (!arm || !fore || !hand) continue;
-      const armMemo = tugBase(arm);
-      const foreMemo = tugBase(fore);
       // Ziel fürs Handgelenk: knapp neben und unter dem Zeiger, damit die Finger ihn umschließen
       tugT.copy(tug.tip);
       tugT.x += (side === "Left" ? 1 : -1) * 0.045 * height;
       tugT.y -= 0.03 * height;
-      // 1. Ellbogen so weit beugen, dass die Hand genau bis zum Ziel reicht
-      arm.updateWorldMatrix(true, true);
-      arm.getWorldPosition(tugA);
-      fore.getWorldPosition(tugB);
-      hand.getWorldPosition(tugC);
-      const upper = tugA.distanceTo(tugB);
-      const lower = tugB.distanceTo(tugC);
-      const span = THREE.MathUtils.clamp(tugA.distanceTo(tugT), Math.abs(upper - lower) + 0.01, upper + lower - 0.005);
-      tugD.copy(tugA).sub(tugB).normalize();
-      tugE.copy(tugC).sub(tugB).normalize();
-      const bendNow = Math.acos(THREE.MathUtils.clamp(tugD.dot(tugE), -1, 1));
-      const bendWant = Math.acos(THREE.MathUtils.clamp((upper * upper + lower * lower - span * span) / (2 * upper * lower), -1, 1));
-      tugD.cross(tugE);
-      if (tugD.lengthSq() < 1e-6) tugD.set(side === "Left" ? 0.3 : -0.3, -1, 0);
-      tugD.normalize();
-      tugQ.setFromAxisAngle(tugD, bendWant - bendNow);
-      fore.getWorldQuaternion(tugW);
-      fore.parent.getWorldQuaternion(tugP);
-      tugNone.copy(tugP).invert().multiply(tugQ.multiply(tugW));
-      fore.quaternion.copy(foreMemo.base).slerp(tugNone, reach);
-      foreMemo.applied.copy(fore.quaternion);
-      // 2. Oberarm so drehen, dass die Hand auf das Ziel zeigt
-      arm.updateWorldMatrix(true, true);
-      hand.getWorldPosition(tugC);
-      tugD.copy(tugC).sub(tugA).normalize();
-      tugE.copy(tugT).sub(tugA).normalize();
-      tugQ.setFromUnitVectors(tugD, tugE);
-      arm.getWorldQuaternion(tugW);
-      arm.parent.getWorldQuaternion(tugP);
-      tugW.premultiply(tugQ);
-      // 3. Um die Linie Schulter–Ziel schwenken, bis der Ellbogen nach unten und etwas nach außen zeigt:
-      //    So kommen die Unterarme von unten an den Zeiger und verdecken die Stofffalte nicht
-      tugD.copy(tugB).sub(tugA).applyQuaternion(tugQ);
-      tugD.addScaledVector(tugE, -tugD.dot(tugE));
-      tugC.set(side === "Left" ? 0.45 : -0.45, -1, 0.1);
-      tugC.addScaledVector(tugE, -tugC.dot(tugE));
-      if (tugD.lengthSq() > 1e-6 && tugC.lengthSq() > 1e-6) {
-        tugQ.setFromUnitVectors(tugD.normalize(), tugC.normalize());
-        tugW.premultiply(tugQ);
-      }
-      tugNone.copy(tugP).invert().multiply(tugW);
-      arm.quaternion.copy(armMemo.base).slerp(tugNone, reach);
-      armMemo.applied.copy(arm.quaternion);
+      reachArm(figure, side, reach);
     }
     // Stofffalte: ein spitzer Kegel von der Brust zum Zeiger, in der Farbe des Oberteils
     if (!tug.cloth) {
@@ -904,7 +924,11 @@ async function start() {
     const floor = Math.max(0, window.innerHeight - companion.offsetHeight);
     drop.speed += 3200 * dt;
     drop.top += drop.speed * dt;
-    if (drop.vx) drop.left = THREE.MathUtils.clamp(drop.left + drop.vx * dt, 0, Math.max(0, window.innerWidth - companion.offsetWidth));
+    if (drop.vx) {
+      drop.left = THREE.MathUtils.clamp(drop.left + drop.vx * dt, 0, Math.max(0, window.innerWidth - companion.offsetWidth));
+      // Mit festem Landeplatz: dort anhalten
+      if (drop.goal !== undefined && (drop.vx > 0 ? drop.left >= drop.goal : drop.left <= drop.goal)) { drop.left = drop.goal; drop.vx = 0; }
+    }
     if (drop.top < floor) { placeCompanion(drop.left, drop.top); return; }
     placeCompanion(drop.left, floor, true);
     const crash = drop.crash;
@@ -920,6 +944,216 @@ async function start() {
     if (skipClick) { skipClick = false; return; }
     poke();
   });
+
+  // Wut: Kim ist ruhig, solange man ihn in Ruhe lässt. Antippen, Hochheben, Fallenlassen und schnelles Drehen machen ihn
+  // wütender. Ist die Anzeige voll, muss er als Begleiter etwas kaputt machen (wut.js): Text zerschlagen, Buchstaben
+  // verschieben, Bilder bemalen oder etwas klauen und damit wegrennen. Das leert die Anzeige zum Teil.
+  const wut = setupWut();
+  const WUT_LINES = ["kim_wut_1", "kim_wut_2", "kim_wut_3"];
+  // furious: Die Anzeige war voll. Bis er etwas kaputt gemacht hat, klingt nichts ab.
+  const mood = { anger: 0, calm: 0, line: 0, furious: false };
+  let rage = null;
+  function annoy(amount) {
+    if (!wut.enabled) return;
+    mood.anger = Math.min(100, mood.anger + amount);
+    if (mood.anger >= 100) mood.furious = true;
+    mood.calm = 0;
+    wake();
+  }
+  // Die Anzeige sitzt fest unten rechts
+  function showMood() { wut.meter(mood.furious ? 100 : mood.anger); }
+  // Rahmen frei setzen, auch über den Bildrand hinaus
+  function moveCompanion(left, top) {
+    companion.style.left = `${left}px`;
+    companion.style.top = `${top}px`;
+    companion.style.bottom = "auto";
+  }
+  function startRage() {
+    gesture = null;
+    stunt = null;
+    spin = 0;
+    rage = { phase: "suchen", t: 0, target: null, loot: null, draw: null, tip: null, pos: null, side: 1, done: false, rise: 0, home: companion.getBoundingClientRect().left };
+    if (reduceMotion) {
+      // Ohne Bewegung: Der Schaden passiert an Ort und Stelle, die Beute ist sofort weg
+      rage.target = wut.pick();
+      if (rage.target) {
+        rage.done = true;
+        if (rage.target.pen) { const draw = wut.sketch(rage.target); draw?.set(1); draw?.done(); }
+        vent();
+        if (rage.loot) wut.loseLoot(rage.loot);
+      } else { mood.furious = false; mood.anger = Math.max(0, mood.anger - 30); }
+      rage = null;
+    }
+    wake();
+  }
+  function endRage() {
+    if (!rage) return;
+    if (rage.loot) wut.loseLoot(rage.loot);
+    if (rage.draw) { rage.draw.set(1); rage.draw.done(); }
+    else if (rage.target && !rage.done) wut.cancel(rage.target);
+    wut.pen();
+    rage = null;
+    gesture = null;
+  }
+  // Der Moment, in dem etwas kaputtgeht (mit dem Stift: in dem er ansetzt)
+  function vent() {
+    sound.say(WUT_LINES[mood.line % WUT_LINES.length], { force: true });
+    mood.line += 1;
+    if (rage.target.kind === "klauen") rage.loot = wut.steal(rage.target);
+    else if (!rage.target.pen) wut.wreck(rage.target);
+    mood.furious = false;
+    mood.anger = Math.max(0, mood.anger - 45);
+    mood.calm = 0;
+  }
+  // Stift: Kims rechte Hand hält ihn ein Stück über der Spitze; der Rahmen folgt der Spitze, damit er mitkritzelt
+  const PEN_GRIP = { x: 15, y: -27 };
+  const PEN_HAND = { u: 0.33, v: 0.42 };
+  function penBox(tip, width, height, floor) {
+    return { left: tip.x + PEN_GRIP.x - PEN_HAND.u * width, top: Math.min(floor, tip.y + PEN_GRIP.y - PEN_HAND.v * height) };
+  }
+  function applyPenArm() {
+    if (!rage?.tip || !active) return;
+    const size = active.height / (companionFrame.head - companionFrame.feet);
+    const box = companion.getBoundingClientRect();
+    tug.on = true;
+    pivot.updateMatrixWorld(true);
+    tugT.set(
+      size * (2 * ((rage.tip.x + PEN_GRIP.x - box.left) / box.width) - 1) * box.width / Math.max(1, box.height),
+      -companionFrame.feet * size + size * (1 - 2 * ((rage.tip.y + PEN_GRIP.y - box.top) / Math.max(1, box.height))),
+      0.2 * active.height
+    );
+    reachArm(active, "Right", rage.phase === "hoch" ? THREE.MathUtils.smoothstep(rage.t, 0, 0.3) : 1);
+  }
+  function runRage(dt) {
+    calmFor = 0;
+    idleFor = 0;
+    rage.t += dt;
+    const width = companion.offsetWidth;
+    const height = companion.offsetHeight;
+    const floor = Math.max(0, window.innerHeight - height);
+    const maxLeft = Math.max(0, window.innerWidth - width);
+    const box = companion.getBoundingClientRect();
+    // Die Ecke unten rechts gehört Anzeige und Knöpfen: Dort bleibt er nicht stehen
+    const clearOfCorner = (left) => Math.min(left, Math.max(0, window.innerWidth - (window.innerWidth <= 760 ? 200 : 290) - width * 0.8));
+    const calmDown = () => {
+      rage = null;
+      gesture = null;
+      play("Idle", { fade: 0.3 });
+      placeCompanion(clearOfCorner(companion.getBoundingClientRect().left), floor, true);
+    };
+    if (rage.phase === "suchen") {
+      const target = wut.pick();
+      if (!target) {
+        // Nichts Greifbares im Bild: Er stampft auf der Stelle und beruhigt sich ein Stück
+        if (rage.t > 1.2) { mood.furious = false; mood.anger = Math.max(0, mood.anger - 30); calmDown(); doGesture("Jump"); }
+        return;
+      }
+      rage.target = target;
+      rage.phase = "hin";
+      rage.t = 0;
+      play("Run", { fade: 0.2, timeScale: 1.25 });
+    }
+    if (rage.phase === "hin") {
+      if (!wut.visible(rage.target)) { wut.cancel(rage.target); rage.target = null; rage.phase = "suchen"; rage.t = 0; return; }
+      const goal = wut.rect(rage.target);
+      const goalLeft = THREE.MathUtils.clamp(goal.left + goal.width / 2 - width / 2, 0, maxLeft);
+      const gap = goalLeft - box.left;
+      const step = 560 * dt;
+      if (Math.abs(gap) > 2) rage.side = Math.sign(gap);
+      pivot.rotation.y = damp(pivot.rotation.y, rage.side * 1.15, 10, dt);
+      if (Math.abs(gap) <= step + 2 && rage.target.pen) {
+        // Mit dem Stift: hochspringen, ansetzen und wild drauflos kritzeln
+        moveCompanion(goalLeft, floor);
+        rage.draw = wut.sketch(rage.target);
+        if (!rage.draw) { calmDown(); return; }
+        rage.draw.set(0);
+        rage.done = true;
+        rage.tip = rage.draw.at(0);
+        rage.pos = { left: goalLeft, top: floor };
+        rage.from = { left: goalLeft, top: floor };
+        rage.phase = "hoch";
+        rage.t = 0;
+        gesture = "Hang";
+        play(active?.actions.Hang ? "Hang" : "Idle", { fade: 0.15 });
+        vent();
+      } else if (Math.abs(gap) <= step + 2) {
+        moveCompanion(goalLeft, floor);
+        // Sprunghöhe: so hoch, dass sein Oberkörper die Stelle erreicht
+        rage.rise = THREE.MathUtils.clamp(floor + height * 0.4 - (goal.top + goal.height / 2), 30, Math.max(30, floor - 70));
+        rage.phase = "sprung";
+        rage.t = 0;
+        rage.done = false;
+        gesture = "Jump";
+        play(active?.actions.Jump ? "Jump" : "Idle", { once: true, fade: 0.12, timeScale: 1.5 });
+      } else moveCompanion(box.left + Math.sign(gap) * step, floor);
+    } else if (rage.phase === "hoch") {
+      const k = Math.min(1, rage.t / 0.32);
+      const eased = 1 - (1 - k) * (1 - k);
+      const goal = penBox(rage.tip, width, height, floor);
+      rage.pos.left = rage.from.left + (goal.left - rage.from.left) * eased;
+      rage.pos.top = rage.from.top + (goal.top - rage.from.top) * eased;
+      moveCompanion(rage.pos.left, rage.pos.top);
+      pivot.rotation.y = damp(pivot.rotation.y, 0.2, 8, dt);
+      wut.pen(rage.pos.left + PEN_HAND.u * width - PEN_GRIP.x, rage.pos.top + PEN_HAND.v * height - PEN_GRIP.y, rage.tip.color);
+      if (k >= 1) { rage.phase = "kritzeln"; rage.t = 0; }
+    } else if (rage.phase === "kritzeln") {
+      const length = rage.target.kind === "streichen" ? 0.9 : rage.target.kind === "malen" ? 1.7 : 1.4;
+      const progress = Math.min(1, rage.t / length);
+      rage.draw.set(progress);
+      rage.tip = rage.draw.at(progress);
+      const goal = penBox(rage.tip, width, height, floor);
+      rage.pos.left = damp(rage.pos.left, goal.left, 18, dt);
+      rage.pos.top = damp(rage.pos.top, goal.top, 18, dt);
+      moveCompanion(rage.pos.left, rage.pos.top);
+      pivot.rotation.y = damp(pivot.rotation.y, 0.2, 8, dt);
+      wut.pen(rage.tip.x, rage.tip.y, rage.tip.color);
+      if (progress >= 1) {
+        // Fertig: Stift weg, er fällt zurück auf den Boden
+        rage.draw.done();
+        wut.pen();
+        const from = companion.getBoundingClientRect();
+        rage = null;
+        const land = clearOfCorner(THREE.MathUtils.clamp(from.left, 0, maxLeft));
+        drop = { left: from.left, top: from.top, speed: -180, vx: (land - from.left) / 0.45, goal: land, crash: false, side: Math.sign(land - from.left) || 0 };
+      }
+    } else if (rage.phase === "sprung") {
+      const k = Math.min(1, rage.t / 0.85);
+      moveCompanion(box.left, floor - rage.rise * 4 * k * (1 - k));
+      pivot.rotation.y = damp(pivot.rotation.y, 0.2, 8, dt);
+      if (!rage.done && k >= 0.5) { rage.done = true; vent(); }
+      if (rage.loot) wut.moveLoot(rage.loot, box.left + width / 2, box.top + height * 0.14);
+      if (k >= 1) {
+        if (rage.loot) {
+          // Mit der Beute zur näheren Seite hinaus
+          rage.phase = "flucht";
+          rage.t = 0;
+          rage.side = box.left + width / 2 < window.innerWidth / 2 ? -1 : 1;
+          gesture = null;
+          play("Run", { fade: 0.15, timeScale: 1.3 });
+        } else calmDown();
+      }
+    } else if (rage.phase === "flucht") {
+      const left = box.left + rage.side * 640 * dt;
+      moveCompanion(left, floor);
+      pivot.rotation.y = damp(pivot.rotation.y, rage.side * 1.15, 10, dt);
+      wut.moveLoot(rage.loot, left + width / 2, floor + height * 0.14);
+      if (left < -width - 40 || left > window.innerWidth + 40) {
+        wut.loseLoot(rage.loot);
+        rage.loot = null;
+        rage.phase = "weg";
+        rage.t = 0;
+      }
+    } else if (rage.phase === "weg") {
+      if (rage.t > 2.2) { rage.phase = "zurueck"; rage.t = 0; play("Walk", { fade: 0.1 }); }
+    } else {
+      // Ohne Beute schlendert er wieder herein, zurück an seinen Platz
+      const goalLeft = clearOfCorner(THREE.MathUtils.clamp(rage.home, 0, maxLeft));
+      const left = box.left - rage.side * 230 * dt;
+      pivot.rotation.y = damp(pivot.rotation.y, -rage.side * 1.15, 10, dt);
+      if ((rage.side < 0 && left >= goalLeft) || (rage.side > 0 && left <= goalLeft)) { moveCompanion(goalLeft, floor); calmDown(); }
+      else moveCompanion(left, floor);
+    }
+  }
 
   // Ansichten: Lab (Startseite) oder Begleiter
   let heroVisible = false;
@@ -1183,6 +1417,10 @@ async function start() {
         idleFor = 0;
         if (drop.side) pivot.rotation.y = damp(pivot.rotation.y, drop.side * 0.9, 10, dt);
         runDrop(dt);
+      } else if (rage) {
+        runRage(dt);
+      } else if (mood.furious && wut.enabled && !stunt && active) {
+        startRage();
       } else if (scrollSpeed > 60 && !reduceMotion) {
         calmFor = 0;
         idleFor = 0;
@@ -1219,8 +1457,15 @@ async function start() {
     }
 
     shadow.visible = mode === "hero" && !(flee?.lean > 0.02);
+    if (wut.enabled) {
+      // Fünf Sekunden Ruhe, dann klingt die Wut langsam ab
+      mood.calm += dt;
+      if (!rage && !carry && !mood.furious && mood.calm > 5) mood.anger = Math.max(0, mood.anger - 3.5 * dt);
+      showMood();
+    }
     active?.mixer.update(dt);
     if (mode === "companion" && carry?.step === 3 && active && !reduceMotion) applyTug();
+    else if (mode === "companion" && (rage?.phase === "hoch" || rage?.phase === "kritzeln")) applyPenArm();
     else if (tug.on) endTug();
     renderView();
     if (mode) frameRequest = requestAnimationFrame(tick);
@@ -1247,6 +1492,7 @@ async function start() {
     const previous = mode;
     mode = next;
     companion.hidden = mode !== "companion";
+    if (mode !== "companion") endRage();
     if (mode === "companion") restoreCompanion();
     else if (carry || drop) { carry = null; press = null; drop = null; companion.classList.remove("is-carried"); }
     // Im Lab liegt die Figur unter Text und Knöpfen, als Begleiter darüber
@@ -1289,6 +1535,7 @@ async function start() {
     dizzy.energy = 0;
     dizzy.quietUntil = now + 4200;
     dizzy.count += 1;
+    annoy(24);
     idleFor = 0;
     if (dizzy.count < 3) { sound.say(`drehen_${dizzy.count}`, { force: true }); return; }
     dizzy.count = 0;

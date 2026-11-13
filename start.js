@@ -301,3 +301,23 @@ if (musicPlayer) {
     window.addEventListener("load", () => document.getElementById("musik")?.scrollIntoView({ block: "center" }));
   }
 }
+
+// Weiter-Knopf: springt zum nächsten Abschnitt, damit niemand selbst scrollen muss. Am letzten Abschnitt verschwindet er.
+const nextButton = document.querySelector("[data-next]");
+if (nextButton) {
+  const sections = Array.from(document.querySelectorAll("main section[id]"));
+  const edge = () => (document.querySelector(".site-header")?.offsetHeight || 0) + 40;
+  const nextSection = () => sections.find((section) => section.getBoundingClientRect().top > edge());
+  let checking = 0;
+  // Ganz unten gibt es nichts mehr, wohin man springen könnte
+  const atEnd = () => window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4;
+  const check = () => { checking = 0; nextButton.hidden = atEnd() || !nextSection(); };
+  const checkSoon = () => { if (!checking) checking = requestAnimationFrame(check); };
+  nextButton.addEventListener("click", () => {
+    nextSection()?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  });
+  window.addEventListener("scroll", checkSoon, { passive: true });
+  window.addEventListener("resize", checkSoon);
+  window.addEventListener("load", checkSoon);
+  check();
+}
