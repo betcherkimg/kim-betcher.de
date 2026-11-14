@@ -193,8 +193,9 @@ Entscheidungen von Kim: alle Seiten außer /beratung; vorhandene Texte, neu geor
 
 - [x] `seminar/` angelegt: Platzhalter der Seminar-Seite von Juschkin Labs, erreichbar unter kim-betcher.de/seminar. Sie liegt vorerst hier, bis Maksim seminar.juschkinlabs.de eingerichtet hat. Quelle ist der Ordner `seminar/` im Repo juschkinlabs.de; hier weichen nur die Adresse (canonical) und die Links zu Impressum und Datenschutz ab (zeigen auf kim-betcher.de).
 - [x] In sich geschlossen (eigene Schriften, gefaltetes Logo `jloai-hell.webp`), nicht im Menü verlinkt
-- [ ] `seminar/chat/` gehört Kim (er baut die Oberfläche selbst) und wird von mir nicht angelegt oder verändert
-- [ ] Umzug auf seminar.juschkinlabs.de, sobald Subdomain und Gitea-Repo stehen; danach hier entfernen oder weiterleiten (Kim fragen)
+- [x] 14.11. um 12:23: Kim hat das Seminarportal (Login, Chat, Trainerstudio) als Cloudflare-Worker live gestellt: `https://juschkinlabs-seminar.betcherkimg.workers.dev`. Es braucht einen Server und kann deshalb nicht auf GitHub Pages liegen. Der Quellcode liegt nicht in diesem Repository (er enthält die Seminarinhalte), sondern bei Kim im Ordner `JuschkinLabs_Seminarportal_live` auf dem Desktop.
+- [x] `seminar/`, `seminar/chat/` und `seminar/trainer/` sind seitdem Weiterleitungen dorthin (Refresh, Skript und ein Knopf als Rückfall). Die Adresse steht je Seite an vier Stellen und im Test.
+- [ ] Umzug auf seminar.juschkinlabs.de, sobald Maksim Subdomain und Weiterleitung auf den Worker eingerichtet hat; dann in den drei Seiten und im Test nur die Adresse tauschen
 
 ## LETZTER SCHRITT – IMMER, NIE ENTFERNEN
 

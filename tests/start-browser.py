@@ -287,20 +287,29 @@ try:
             page.goto(f"{origin}/{name}", wait_until="networkidle")
             page.set_viewport_size({"width": 390, "height": 844})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), name
-        # /seminar: Platzhalter der Seminar-Seite von Juschkin Labs (vorerst hier, bis es die Subdomain gibt)
-        for width in (320, 390, 1440):
-            page.set_viewport_size({"width": width, "height": 800})
-            page.goto(origin + "/seminar/", wait_until="networkidle")
-            assert page.title() == "Seminar | Juschkin Labs"
-            expect(page.get_by_role("heading", name="Seminar")).to_be_visible()
-            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), f"Overflow on seminar at {width}px"
-            assert page.evaluate("document.fonts.check('600 40px Saira')"), "Seminar: Schrift fehlt"
-            assert page.evaluate("document.querySelector('.brand-logo').naturalWidth") > 0, "Seminar: Logo fehlt"
-        seminar = (ROOT / "seminar" / "index.html").read_text(encoding="utf-8")
-        assert "noindex" not in seminar and "gmail" not in seminar.lower()
-        assert set(re.findall(r"[\w.+-]+@[\w-]+\.[\w.]+", seminar)) == {"kontakt@juschkinlabs.de"}
-        page.locator('a[href="../impressum.html"]').click()
-        expect(page.get_by_role("heading", name="Angaben gemäß § 5 DDG")).to_be_visible()
+        # /seminar: Weiterleitung zum Seminarportal von Juschkin Labs. Das Portal braucht einen Server und läuft
+        # vorerst unter einer workers.dev-Adresse, bis es seminar.juschkinlabs.de gibt.
+        portal = "https://juschkinlabs-seminar.betcherkimg.workers.dev"
+        for folder, target in (("seminar", portal + "/"), ("seminar/chat", portal + "/chat"), ("seminar/trainer", portal + "/trainer")):
+            source = (ROOT / folder / "index.html").read_text(encoding="utf-8")
+            assert f'<meta http-equiv="refresh" content="0; url={target}">' in source, folder
+            assert f'location.replace("{target}")' in source and f'<a class="button" href="{target}">' in source, folder
+            assert "gmail" not in source.lower() and not re.findall(r"[\w.+-]+@[\w-]+\.[\w.]+", source), folder
+        # Im Browser: Das Portal selbst wird hier nicht geladen, nur ob die Seite dorthin springt.
+        page.route(portal + "/**", lambda route: route.fulfill(status=200, content_type="text/html", body="<title>Portal</title>"))
+        for folder, target in (("seminar", portal + "/"), ("seminar/chat", portal + "/chat"), ("seminar/trainer", portal + "/trainer")):
+            page.goto(f"{origin}/{folder}/")
+            page.wait_for_url(target, timeout=15000)
+        # Ohne Weiterleitung (Skript und Refresh aus) bleibt eine lesbare Seite mit Knopf und Impressum stehen.
+        still = browser.new_context(java_script_enabled=False, viewport={"width": 320, "height": 800})
+        fallback = still.new_page()
+        fallback.route("**/*", lambda route: route.fulfill(status=200, content_type="text/html", body=re.sub(r'<meta http-equiv="refresh"[^>]*>', "", (ROOT / "seminar" / "index.html").read_text(encoding="utf-8"))) if route.request.url.rstrip("/").endswith("/seminar") else route.continue_())
+        fallback.goto(origin + "/seminar/", wait_until="networkidle")
+        expect(fallback.get_by_role("heading", name="Seminar")).to_be_visible()
+        expect(fallback.get_by_role("link", name="Zum Seminarportal")).to_be_visible()
+        assert fallback.evaluate("document.querySelector('.brand-logo').naturalWidth") > 0, "Seminar: Logo fehlt"
+        assert fallback.locator('a[href="../impressum.html"]').count() == 1
+        still.close()
         browser.close()
     assert not errors, errors
     print("PASS: start page with lab and editor (Kim only), no employer material, private insights with galleries, separated imprint, privacy note, standalone advisory page.")
