@@ -189,6 +189,13 @@ Entscheidungen von Kim: alle Seiten außer /beratung; vorhandene Texte, neu geor
 - [x] Der Stift ist ein 3D-Modell aus Blender (`tools/figuren/stift.py` → `assets/figuren/stift.glb`): Er liegt in Kims rechter Faust, die Spitze sitzt genau auf dem Strich, Kappe und Spitze tragen die Strichfarbe. Lädt das Modell nicht, erscheint ersatzweise der gezeichnete Stift.
 - [ ] Von Kim prüfen lassen: Wie schnell er wütend wird, ob die Schäden klein genug sind, Stift und Kritzeln in Bewegung, Lautstärke der Wut-Sprüche (bei mir an Standbildern und Abspielfolgen geprüft)
 
+## Neu am 14.11. um 11:33: /seminar
+
+- [x] `seminar/` angelegt: Platzhalter der Seminar-Seite von Juschkin Labs, erreichbar unter kim-betcher.de/seminar. Sie liegt vorerst hier, bis Maksim seminar.juschkinlabs.de eingerichtet hat. Quelle ist der Ordner `seminar/` im Repo juschkinlabs.de; hier weichen nur die Adresse (canonical) und die Links zu Impressum und Datenschutz ab (zeigen auf kim-betcher.de).
+- [x] In sich geschlossen (eigene Schriften, gefaltetes Logo `jloai-hell.webp`), nicht im Menü verlinkt
+- [ ] `seminar/chat/` gehört Kim (er baut die Oberfläche selbst) und wird von mir nicht angelegt oder verändert
+- [ ] Umzug auf seminar.juschkinlabs.de, sobald Subdomain und Gitea-Repo stehen; danach hier entfernen oder weiterleiten (Kim fragen)
+
 ## LETZTER SCHRITT – IMMER, NIE ENTFERNEN
 
 Vor jedem Veröffentlichen, Pushen oder Abgeben: alle neuen oder geänderten Texte nach AI-SMELL.md (Teil A, B, C) prüfen und den Bericht ausgeben. Wortlaut der Regel: siehe `CLAUDE.md` im Hauptordner.

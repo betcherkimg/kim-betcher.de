@@ -1,0 +1,73 @@
+/*
+  kim-betcher.de/seminar: Platzhalter für die Seminar-Seite von Juschkin Labs. Sie liegt vorerst hier,
+  bis es seminar.juschkinlabs.de gibt (Quelle: Repo juschkinlabs.de, Ordner seminar/).
+  Farben und Schriften wie auf juschkinlabs.de. Der Ordner ist in sich geschlossen, damit er später
+  unverändert umziehen kann. Der Unterordner chat/ gehört Kim und wird hier nicht angelegt.
+*/
+@font-face {
+  font-family: "Saira";
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 50% 125%;
+  font-display: swap;
+  src: url("assets/fonts/saira-latin-wdth-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Source Sans 3";
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url("assets/fonts/source-sans-3-latin-wght-normal.woff2") format("woff2");
+}
+:root {
+  color-scheme: dark;
+  --bg: #131618;
+  --text: #f1eee4;
+  --soft: #cdcabe;
+  --dim: #a19e92;
+  --line: rgba(241, 238, 228, .12);
+  --gold: #d7c791;
+  --gold-bright: #ecdcaa;
+  --ink: #17191a;
+  --font-head: "Saira", "Arial Narrow", Arial, sans-serif;
+  --font: "Source Sans 3", "Segoe UI", Arial, sans-serif;
+  --gutter: clamp(18px, 5vw, 56px);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100dvh;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 19px/1.55 var(--font);
+}
+a { color: var(--gold); text-underline-offset: 3px; }
+a:hover { color: var(--gold-bright); }
+:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+
+.site-header { padding: 22px var(--gutter); border-bottom: 1px solid var(--line); }
+.brand { display: inline-block; }
+/* Das gefaltete Logo hat feine Kanten und steht deshalb etwas größer als das flache der Hauptseite */
+.brand-logo { display: block; width: min(300px, 72vw); height: auto; }
+
+main { align-self: center; width: min(100%, 720px); padding: clamp(48px, 10vh, 120px) var(--gutter); }
+h1 { margin: 0 0 18px; font: 600 clamp(44px, 9vw, 84px)/1 var(--font-head); font-stretch: 88%; letter-spacing: -.01em; }
+p { margin: 0 0 12px; color: var(--soft); overflow-wrap: anywhere; }
+.lead { color: var(--text); font-size: clamp(21px, 2.6vw, 25px); }
+.button {
+  display: inline-block;
+  margin-top: 22px;
+  padding: 12px 22px;
+  background: var(--gold);
+  color: var(--ink);
+  font: 600 17px/1.2 var(--font-head);
+  text-decoration: none;
+}
+.button:hover { background: var(--gold-bright); color: var(--ink); }
+
+.site-footer { display: flex; flex-wrap: wrap; gap: 8px 24px; padding: 20px var(--gutter); border-top: 1px solid var(--line); font-size: 16px; }
+.site-footer a { color: var(--dim); }
+.site-footer a:hover { color: var(--text); }

@@ -137,7 +137,8 @@ try:
             assert int(meter.get_attribute("aria-valuenow")) >= 100, meter.get_attribute("aria-valuenow")
             expect(page.locator(".wut-stelle")).to_have_count(1, timeout=240000)
             assert page.evaluate("JSON.parse(localStorage.getItem('kb-wut-v2')).index.length") == 1
-            assert int(meter.get_attribute("aria-valuenow")) < 100
+            # Die Anzeige wird erst im nächsten Bild nachgeführt, deshalb warten statt sofort ablesen
+            page.wait_for_function("Number(document.querySelector('.wut-anzeige').getAttribute('aria-valuenow')) < 100", timeout=30000)
             expect(page.locator(".wut-reset")).to_be_visible()
             page.locator(".wut-reset").click()
             expect(page.locator(".wut-stelle")).to_have_count(0)
@@ -286,6 +287,20 @@ try:
             page.goto(f"{origin}/{name}", wait_until="networkidle")
             page.set_viewport_size({"width": 390, "height": 844})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), name
+        # /seminar: Platzhalter der Seminar-Seite von Juschkin Labs (vorerst hier, bis es die Subdomain gibt)
+        for width in (320, 390, 1440):
+            page.set_viewport_size({"width": width, "height": 800})
+            page.goto(origin + "/seminar/", wait_until="networkidle")
+            assert page.title() == "Seminar | Juschkin Labs"
+            expect(page.get_by_role("heading", name="Seminar")).to_be_visible()
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), f"Overflow on seminar at {width}px"
+            assert page.evaluate("document.fonts.check('600 40px Saira')"), "Seminar: Schrift fehlt"
+            assert page.evaluate("document.querySelector('.brand-logo').naturalWidth") > 0, "Seminar: Logo fehlt"
+        seminar = (ROOT / "seminar" / "index.html").read_text(encoding="utf-8")
+        assert "noindex" not in seminar and "gmail" not in seminar.lower()
+        assert set(re.findall(r"[\w.+-]+@[\w-]+\.[\w.]+", seminar)) == {"kontakt@juschkinlabs.de"}
+        page.locator('a[href="../impressum.html"]').click()
+        expect(page.get_by_role("heading", name="Angaben gemäß § 5 DDG")).to_be_visible()
         browser.close()
     assert not errors, errors
     print("PASS: start page with lab and editor (Kim only), no employer material, private insights with galleries, separated imprint, privacy note, standalone advisory page.")
