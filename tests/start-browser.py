@@ -134,7 +134,8 @@ try:
             for _ in range(14):
                 figure.dispatch_event("click")
                 page.wait_for_timeout(60)
-            assert int(meter.get_attribute("aria-valuenow")) >= 100, meter.get_attribute("aria-valuenow")
+            # Wie unten: Die Anzeige folgt erst im nächsten Bild, deshalb auf den vollen Stand warten statt sofort ablesen
+            page.wait_for_function("Number(document.querySelector('.wut-anzeige').getAttribute('aria-valuenow')) >= 100 || document.querySelectorAll('.wut-stelle').length > 0", timeout=30000)
             expect(page.locator(".wut-stelle")).to_have_count(1, timeout=240000)
             assert page.evaluate("JSON.parse(localStorage.getItem('kb-wut-v2')).index.length") == 1
             # Die Anzeige wird erst im nächsten Bild nachgeführt, deshalb warten statt sofort ablesen
@@ -287,17 +288,16 @@ try:
             page.goto(f"{origin}/{name}", wait_until="networkidle")
             page.set_viewport_size({"width": 390, "height": 844})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), name
-        # /seminar: Weiterleitung zum Seminarportal von Juschkin Labs. Das Portal braucht einen Server und läuft
-        # vorerst unter einer workers.dev-Adresse, bis es seminar.juschkinlabs.de gibt.
-        portal = "https://juschkinlabs-seminar.betcherkimg.workers.dev"
-        for folder, target in (("seminar", portal + "/"), ("seminar/chat", portal + "/chat"), ("seminar/trainer", portal + "/trainer")):
+        # /seminar: Weiterleitung zum Seminarportal von Juschkin Labs unter seminar.juschkinlabs.de.
+        portal = "https://seminar.juschkinlabs.de"
+        for folder, target in (("seminar", portal + "/"), ("seminar/chat", portal + "/chat/"), ("seminar/trainer", portal + "/trainer/")):
             source = (ROOT / folder / "index.html").read_text(encoding="utf-8")
             assert f'<meta http-equiv="refresh" content="0; url={target}">' in source, folder
             assert f'location.replace("{target}")' in source and f'<a class="button" href="{target}">' in source, folder
             assert "gmail" not in source.lower() and not re.findall(r"[\w.+-]+@[\w-]+\.[\w.]+", source), folder
         # Im Browser: Das Portal selbst wird hier nicht geladen, nur ob die Seite dorthin springt.
         page.route(portal + "/**", lambda route: route.fulfill(status=200, content_type="text/html", body="<title>Portal</title>"))
-        for folder, target in (("seminar", portal + "/"), ("seminar/chat", portal + "/chat"), ("seminar/trainer", portal + "/trainer")):
+        for folder, target in (("seminar", portal + "/"), ("seminar/chat", portal + "/chat/"), ("seminar/trainer", portal + "/trainer/")):
             page.goto(f"{origin}/{folder}/")
             page.wait_for_url(target, timeout=15000)
         # Ohne Weiterleitung (Skript und Refresh aus) bleibt eine lesbare Seite mit Knopf und Impressum stehen.

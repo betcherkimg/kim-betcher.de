@@ -195,7 +195,7 @@ Entscheidungen von Kim: alle Seiten außer /beratung; vorhandene Texte, neu geor
 - [x] In sich geschlossen (eigene Schriften, gefaltetes Logo `jloai-hell.webp`), nicht im Menü verlinkt
 - [x] 14.11. um 12:23: Kim hat das Seminarportal (Login, Chat, Trainerstudio) als Cloudflare-Worker live gestellt: `https://juschkinlabs-seminar.betcherkimg.workers.dev`. Es braucht einen Server und kann deshalb nicht auf GitHub Pages liegen. Der Quellcode liegt nicht in diesem Repository (er enthält die Seminarinhalte), sondern bei Kim im Ordner `JuschkinLabs_Seminarportal_live` auf dem Desktop.
 - [x] `seminar/`, `seminar/chat/` und `seminar/trainer/` sind seitdem Weiterleitungen dorthin (Refresh, Skript und ein Knopf als Rückfall). Die Adresse steht je Seite an vier Stellen und im Test.
-- [ ] Umzug auf seminar.juschkinlabs.de, sobald Maksim Subdomain und Weiterleitung auf den Worker eingerichtet hat; dann in den drei Seiten und im Test nur die Adresse tauschen
+- [x] 14.11. abends: seminar.juschkinlabs.de steht (Maksim), leitet bis zum Caddy-Proxy selbst zum Worker weiter. `seminar/`, `seminar/chat/` und `seminar/trainer/` zeigen jetzt auf seminar.juschkinlabs.de.
 
 ## LETZTER SCHRITT – IMMER, NIE ENTFERNEN
 
