@@ -128,11 +128,18 @@ with sync_playwright() as pw:
   expect(page.locator('#contribReportedGross')).to_have_js_property('readOnly',True)
   expect(page.locator('#contribValues')).to_contain_text('eigener RV-Anteil 0,00')
   fields=page.evaluate('__t.currentPortalFields()');assert fields['0100']==0 and fields['0500']>0
+  summary=page.locator('#lohn #monthFlow .mf-amount')
+  expect(summary.locator('#mfGrossLabel')).to_have_text('Voraussichtliches Oktober-Brutto')
+  expect(summary.locator('#mfGross')).to_have_text(page.locator('#contribProjectedGross').inner_text())
+  expect(summary.locator('#mfCharges')).to_have_text(page.locator('#contribEstimatedTotal').inner_text())
+  expect(summary.locator('#mfCorrectionLabel')).to_have_text('Korrektur September 2026')
+  expect(summary.locator('#mfPayable')).to_have_text(page.locator('#contribPayableTotal').inner_text())
   page.locator('#saveContributionBtn').click();expect(page.locator('#contribSaveStatus')).to_contain_text('noch nicht übermittelt');assert len(api.submissions)==1
   page.locator('#contribStatus').select_option('submitted');expect(page.locator('#contribSubmittedDate')).to_have_value('')
   page.locator('#saveContributionBtn').click();expect(page.locator('#contribSaveStatus')).to_contain_text('Erst tatsächlich');assert len(api.submissions)==1
   page.locator('#contribSubmittedDate').fill('2026-10-23');page.locator('#contribSubmissionConfirmed').check();page.locator('#saveContributionBtn').click()
   expect(page.locator('#contribNextSteps')).to_contain_text('von dir bestätigt');assert len(api.submissions)==2
+  expect(summary.locator('#mfGrossLabel')).to_have_text('Gemeldetes Oktober-Brutto')
   expect(page.locator('#contribManualGross')).to_be_disabled();assert api.submissions[-1]['submission_confirmed'] is True
   assert api.submissions[-1]['portal_fields']==fields
   page.screenshot(path=f'/tmp/office-contributions-{width}.png',full_page=True);check_width(page)

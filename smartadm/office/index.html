@@ -2194,8 +2194,14 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
 #lohn.lohn-simple .lohn-tabs,#lohn.lohn-simple .lohn-pane,#lohn.lohn-simple #payrollRateIntro{display:none!important}
 .month-flow h2{font-size:17px;margin:0 0 12px}
 .mf-amount{background:var(--ground,#f3f5f6);border-radius:14px;padding:14px 16px;margin-bottom:12px}
-.mf-amount span{display:block;color:var(--ink-soft,#5d6875);font-size:12.5px;font-weight:600}
-.mf-amount b{display:block;font-size:28px;letter-spacing:-.02em;margin:2px 0 2px}
+.mf-amount h3{margin:0 0 6px;font-size:14px}
+.mf-amount dl{max-width:32rem;margin:0;font-variant-numeric:tabular-nums}
+.mf-amount dl>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:4px 0}
+.mf-amount dt{color:var(--ink-soft);overflow-wrap:anywhere}
+.mf-amount dd{margin:0;text-align:right;white-space:nowrap;font-weight:600}
+.mf-amount .mf-total{margin-top:4px;padding:8px 0;border-top:1px solid var(--line)}
+.mf-total dt,.mf-total dd{color:var(--ink);font-weight:700}
+.mf-total dd{font-size:clamp(20px,4vw,26px)}
 .mf-amount small{display:block;color:var(--ink-soft,#5d6875);font-size:13px;line-height:1.35}
 .mf-steps{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .mf-limit{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:12px}
@@ -2712,7 +2718,16 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
         </div>
         <div class="card section-card month-flow" id="monthFlow">
           <h2 id="mfTitle">Monat</h2>
-          <div class="mf-amount"><span>Zu melden und zu zahlen · Minijob-Zentrale</span><b id="mfPayable">0,00 €</b><small id="mfPayableNote"></small></div>
+          <div class="mf-amount">
+            <h3>Beitragsnachweis Minijob-Zentrale</h3>
+            <dl id="mfAmounts">
+              <div><dt id="mfGrossLabel">Monatsbrutto</dt><dd id="mfGross">–</dd></div>
+              <div><dt>Abgaben daraus</dt><dd id="mfCharges">–</dd></div>
+              <div><dt id="mfCorrectionLabel">Korrektur aus dem Vormonat</dt><dd id="mfCorrection">–</dd></div>
+              <div class="mf-total"><dt>Zu melden und zu zahlen</dt><dd id="mfPayable">–</dd></div>
+            </dl>
+            <small id="mfPayableNote"></small>
+          </div>
           <div class="mf-year" id="mfYear" hidden>
             <b id="mfYearTitle">Beschäftigungsjahr</b>
             <div class="mf-year-grid"><div><span>Bisher verdient</span><strong id="mfYearEarned">0,00 €</strong></div><div><span>Jahresgrenze</span><strong id="mfYearLimit">0,00 €</strong></div><div><span>Noch möglich</span><strong id="mfYearRest">0,00 €</strong></div></div>
@@ -6367,13 +6382,28 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     const d = monthFlowData(userId, month);
     const test = isTestEmployee(userId);
     setText("mfTitle", `${monthName(month)} · ${first}`);
-    setText("mfPayable", test ? "–" : euro(d.total));
+    const incomplete = state.employeeDataError || state.closingsError || !contrib.remote || contrib.userId !== userId;
+    const missingGross = !d.record.confirmed && $("contribReportedGross").value === "";
+    const showAmounts = !test && !incomplete && !missingGross;
+    $("mfAmounts").hidden = !showAmounts;
+    let basis = "Voraussichtliches";
+    if (d.record.confirmed) basis = "Gemeldetes";
+    else if ($("contribManualGross").checked) basis = "Manuell angesetztes";
+    else if (!d.preliminary) basis = "Abgerechnetes";
+    setText("mfGrossLabel", `${basis} ${monthWord(month)}-Brutto`);
+    setText("mfGross", euro(d.gross));
+    setText("mfCharges", euro(d.own));
+    setText("mfCorrectionLabel", `Korrektur ${monthName(d.prevMonth)}`);
+    const sign = d.correction < 0 ? "−" : d.correction > 0 ? "+" : "";
+    setText("mfCorrection", sign + euro(Math.abs(d.correction)));
+    setText("mfPayable", euro(d.total));
     const closedRow = state.closings.find(c => c.payroll_month === month);
     const net = closedRow ? euro(closedRow.net ?? closedRow.gross) : "";
     const parts = [];
     if (test) parts.push("Testkonto – keine Meldung an die Minijob-Zentrale.");
-    else if (d.correction) parts.push(`${monthName(month)} ${euro(d.own)} ${d.correction < 0 ? "−" : "+"} Korrektur aus ${monthName(d.prevMonth)} ${euro(Math.abs(d.correction))} (${d.correction < 0 ? "zu viel" : "zu wenig"} gezahlt)`);
-    if (!test && d.preliminary) parts.push("Noch vorläufig – der Betrag wird bis zur Meldung genauer.");
+    else if (incomplete) parts.push("Abrechnungsdaten noch nicht vollständig geladen.");
+    else if (missingGross) parts.push("Bitte ein Brutto für den Beitragsnachweis eingeben.");
+    else if (d.preliminary) parts.push("Der Beitragsnachweis ist vorläufig.");
     if (net) parts.push(`Lohn an ${first}: ${net}`);
     renderMonthLimit(month, test);
     const ey = employmentYearView(month);
@@ -6738,6 +6768,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   $("contribManualGross").addEventListener("change", () => {
     $("contribReportedGross").readOnly = !$("contribManualGross").checked;
     if (!$("contribManualGross").checked) $("useCurrentGrossBtn").click();
+    else renderMonthFlow();
   });
   $("showSvValuesBtn").addEventListener("click", () => renderContributionValues(true));
   $("contribReportedGross").addEventListener("input", () => {
@@ -6746,6 +6777,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     setText("contribPayableTotal", euro(Math.round((c.total + priorMonthCorrection(payrollMonth())) * 100) / 100));
     $("contribSubmissionConfirmed").checked = false;
     renderContributionValues(true);
+    renderMonthFlow();
   });
   $("contribStatus").addEventListener("change", () => {
     if ($("contribStatus").value === "draft") $("contribSubmissionConfirmed").checked = false;

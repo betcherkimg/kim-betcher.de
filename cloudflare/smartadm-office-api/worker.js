@@ -5689,7 +5689,7 @@ const MONITORED_ASSETS = {
   "/kb.css": "94fc9d3b5382f0604a2772cc4d8573ea6a4b25b9c77cd8dc8d949e6fd790c432",
   "/smartadm/sales/index.html": "713465527ce4735ca6271c668e821a18deba69e359fe8524f8d8bd3031c4af41",
   "/smartadm/sales/cloud.js": "b62ef1f8fa93b3c9b8e6007c622c8e2771dda3220e979c77eb1c55084b5e0e26",
-  "/smartadm/office/": "e76f57a916ce9f9ba3f4932ed83200ec98be8346b4faecab6a88990b2b923345",
+  "/smartadm/office/": "b186d46589ed5d846ed403e14d62f7c521bcef5e1e71b90c4d10133e43b80e70",
   "/smartadm/office/sw.js": "89248953c02f2c92704c139fee346a205fe6522d7883a4b22f2ed5c941accad3",
   "/smartadm/office/week-planner.js": "1ff59ff97053f6702be28c7f57a78cf6b3b869271f15d0cb5344be7c61119bf2",
   "/smartadm/office/absence-calendar.js": "787a9a9b5f94c38183216681fa3f989731f2d97d4ef4983371972abb07aedbcc",
