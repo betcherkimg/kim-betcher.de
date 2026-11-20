@@ -1,0 +1,51 @@
+name: Sicherheitsmonitor aktualisieren
+on:
+  push:
+    branches: [KimBetcher]
+    paths:
+      - '*.html'
+      - kb.css
+      - smartadm/**
+      - unterschriften/**
+      - cloudflare/smartadm-office-api/worker.js
+      - cloudflare/security-monitor/wrangler.jsonc
+      - scripts/update-security-baseline.py
+      - .github/workflows/deploy-security-monitor.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: deploy-security-monitor
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/KimBetcher'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: KimBetcher
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Vergleichswerte aus dem Veröffentlichungsbranch bilden und Monitor prüfen
+        run: |
+          python3 scripts/update-security-baseline.py
+          node --test tests/office-contributions-security.test.cjs
+      - name: Monitor mit vorhandener Konfiguration aktualisieren
+        env:
+          CF_TOKEN: ${{ secrets.TOKEN_GITHUB || secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          config=cloudflare/security-monitor/wrangler.jsonc
+          account=$(jq -er .account_id "$config")
+          name=$(jq -er .name "$config")
+          url="https://api.cloudflare.com/client/v4/accounts/$account/workers/scripts/$name"
+          curl --fail --silent --show-error -H "Authorization: Bearer $CF_TOKEN" "$url/settings" |
+            jq -e '.success and any(.result.bindings[]; .name == "SECURITY_MONITOR_ONLY" and .text == "true")' >/dev/null
+          curl --fail --silent --show-error -X PUT "$url/content" -H "Authorization: Bearer $CF_TOKEN" \
+            -F 'metadata={"main_module":"worker.js"};type=application/json' \
+            -F 'worker.js=@cloudflare/smartadm-office-api/worker.js;filename=worker.js;type=application/javascript+module' |
+            jq -e '.success' >/dev/null

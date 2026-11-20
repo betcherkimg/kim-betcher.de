@@ -2968,7 +2968,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
         <!-- Boss: Posteingang von Mitarbeitern -->
         <div class="card section-card" data-role="boss">
           <div class="card-head">
-            <h2>Von deinen Mitarbeitern</h2>
+            <h2>Posteingang</h2>
             
           </div>
           <div id="taskInboxList" class="task-list"><div class="notice">Aufgaben werden geladen …</div></div>
@@ -4193,9 +4193,15 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     return status ? [status.label, status.cls] : ["", ""];
   }
 
+  function taskSender(task) {
+    if (task.created_by === "security-monitor") return "Sicherheitsmonitor";
+    if (task.created_by === "system") return "Office (automatisch)";
+    return task.creator_name || task.creator_email || "Mitarbeiter";
+  }
+
   function taskMeta(task) {
     const who = isInbox(task)
-      ? `Von: ${task.created_by === "system" ? "Office" : task.creator_name || task.creator_email || "Mitarbeiter"}`
+      ? `Von: ${taskSender(task)}`
       : `An: ${task.display_name || task.email || employeeName(findEmployee(task.assigned_to))}`;
     return [who, task.due_date ? `Fällig ${fmtDate(task.due_date)}` : `Erstellt ${fmtDate(String(task.created_at || "").slice(0, 10))}`].join(" · ");
   }
@@ -7090,7 +7096,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
 
     const person = boss
       ? inbox
-        ? `<span class="chip from">Von: ${esc(task.created_by === "system" ? "Office (automatisch)" : task.creator_name || task.creator_email || "Mitarbeiter")}</span>`
+        ? `<span class="chip from">Von: ${esc(taskSender(task))}</span>`
         : `<span class="chip">An: ${esc(task.display_name || task.email || employeeName(findEmployee(task.assigned_to)))}</span>`
       : inbox ? '<span class="chip from">An: Boss</span>' : "";
 

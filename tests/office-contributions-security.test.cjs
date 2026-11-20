@@ -128,6 +128,25 @@ test('monitor alerts only after two failed checks, deduplicates, and records rec
   await f.t.securityCheckResult(f.env,'/index.html',true,'matches');assert.equal(f.pushes.length,2);
  }finally{f.close()}
 });
+test('healthy check resolves orphaned alerts only for its own inbox and exact key',async()=>{
+ const f=fixture();try{
+  const key='/index.html';
+  await f.t.securityCheckResult(f.env,key,false,'mismatch');
+  await f.t.securityCheckResult(f.env,key,false,'mismatch');
+  const alert=f.db.prepare('SELECT * FROM office_tasks').get();
+  const insert=f.db.prepare("INSERT INTO office_tasks (assigned_to,created_by,title,status) VALUES (?,?,?,'open')");
+  insert.run(alert.assigned_to,alert.created_by,alert.title);
+  insert.run(alert.assigned_to,'employee',alert.title);
+  insert.run('another-inbox',alert.created_by,alert.title);
+  insert.run(alert.assigned_to,alert.created_by,alert.title+'.other');
+  f.db.prepare('DELETE FROM security_monitor_state WHERE check_key=?').run(key);
+  await f.t.securityCheckResult(f.env,key,false,'still mismatched');
+  assert.equal(f.db.prepare("SELECT COUNT(*) AS n FROM office_tasks WHERE status='open'").get().n,5);
+  await f.t.securityCheckResult(f.env,key,true,'matches');
+  const states=f.db.prepare('SELECT status FROM office_tasks ORDER BY id').all().map(r=>r.status);
+  assert.deepEqual(states,['completed','completed','open','open','open']);
+ }finally{f.close()}
+});
 test('signed Clerk tokens without expiry are rejected; legitimate expiring token verifies',async()=>{
  const f=fixture();try{
   const key=await webcrypto.subtle.generateKey({name:'RSASSA-PKCS1-v1_5',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},true,['sign','verify']);
