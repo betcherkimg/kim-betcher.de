@@ -1857,6 +1857,17 @@ html,body{font-size:15px;letter-spacing:-.003em}
 .standing-row .kpi-label{font-size:14px;font-weight:600;color:var(--ink)}
 .standing-sub{font-size:13px;color:var(--ink-soft);margin-top:2px}
 .standing-val{display:flex;align-items:center;gap:10px}.standing-val b{font-size:26px;font-weight:700;letter-spacing:-.03em}
+.appt-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-4px -8px 10px}
+.appt-nav b{font-size:14px;font-weight:600}
+.appt-nav .btn{min-width:40px;padding:6px 10px}
+.appt-calc{margin:12px 0 0;padding:10px 0 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.appt-calc>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:3px 0;font-size:14px}
+.appt-calc dt{color:var(--ink-soft);overflow-wrap:anywhere}.appt-calc dd{margin:0;text-align:right;font-weight:600;white-space:nowrap}
+.appt-calc .is-minus dd{color:var(--danger,#c0392b)}
+.appt-calc .appt-sum{border-top:1px solid var(--line);margin-top:4px;padding-top:7px}.appt-sum dt,.appt-sum dd{color:var(--ink);font-weight:700}
+.appt-days{margin-top:10px;font-size:14px}.appt-days summary{cursor:pointer;color:var(--accent);font-weight:600;padding:4px 0}
+.appt-days ul{list-style:none;margin:6px 0 0;padding:0}.appt-days li{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px solid var(--line)}
+.appt-days li:last-child{border-bottom:0}.appt-days li span{color:var(--ink-soft)}
 
 /* Kalender: auf dem Handy Markierungen statt abgeschnittener Texte */
 @media(max-width:600px){
@@ -4920,10 +4931,33 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     const p=appointmentStanding(entries,adjustment);
     return `<div class="standing-row"><div><div class="kpi-label">Termine im ${esc(fmtMonth(month).split(" ")[0])}</div>${p.hasDrafts?`<div class="standing-sub">${p.official} bestätigt + ${p.provisional} vorläufig</div>`:''}</div><div class="standing-val"><b>${p.total}</b><span class="chip ${p.hasDrafts?'warn':'good'}">${p.hasDrafts?'Vorläufig':'Bestätigt'}</span></div></div>`;
   }
+  // Mitarbeiter: eigene Termine je Monat – eingetragen, Abzüge/Gutschriften, was zählt, Termine nach Tagen.
+  function ownApptMonths(){
+    const now=isoMonth(),seen=[...state.entries.map(e=>e.date?.slice(0,7)),...asArray(state.ownAdjustments).map(r=>r.payroll_month)].filter(m=>m&&m<=now);
+    const months=[];let m=seen.length?seen.sort()[0]:now;
+    while(m<=now){months.push(m);const [y,mo]=m.split('-').map(Number);m=mo===12?`${y+1}-01`:`${y}-${String(mo+1).padStart(2,'0')}`;}
+    return months;
+  }
+  function ownAppointmentCardHtml(month){
+    const months=ownApptMonths(),i=months.indexOf(month),entries=inMonth(state.entries,month);
+    const adj=adjustmentsFor(state.ownAdjustments,month),sum=adjustSum(adj),p=appointmentStanding(entries,sum);
+    const raw=entries.reduce((n,e)=>n+Number(e.appointments||0),0),plural=n=>Math.abs(n)===1?'Termin':'Termine';
+    const days=entries.filter(e=>Number(e.appointments)>0).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);
+    const nav=months.length>1?`<div class="appt-nav"><button class="btn ghost" type="button" data-own-appt-month="${months[i-1]||''}" ${i>0?'':'disabled'} aria-label="Vorheriger Monat">‹</button><b>${esc(fmtMonth(month))}</b><button class="btn ghost" type="button" data-own-appt-month="${months[i+1]||''}" ${i<months.length-1?'':'disabled'} aria-label="Nächster Monat">›</button></div>`:'';
+    const rows=adj.map(r=>{const d=Number(r.delta||0);return `<div class="${d<0?'is-minus':''}"><dt>${d<0?'Abzug':'Gutschrift'} vom ${esc(fmtDate(String(r.created_at||'').slice(0,10)))} (Kundenabsage)</dt><dd>${d<0?'−':'+'}${Math.abs(d)} ${plural(d)}</dd></div>`;}).join('');
+    const calc=(raw||adj.length)?`<dl class="appt-calc"><div><dt>Eingetragen</dt><dd>${raw} ${plural(raw)}</dd></div>${rows}<div class="appt-sum"><dt>Zählt für ${esc(fmtMonth(month).split(' ')[0])}</dt><dd>${p.total} ${plural(p.total)}</dd></div></dl>`:'<p class="standing-sub">Keine Termine in diesem Monat.</p>';
+    const list=days.length?`<details class="appt-days"><summary>Termine nach Tagen</summary><ul>${days.map(e=>`<li><span>${esc(fmtDate(e.date))}${e.entryState==='draft'?' · noch nicht abgesendet':''}</span><b>${Number(e.appointments)}</b></li>`).join('')}</ul></details>`:'';
+    return nav+appointmentStandingHtml(entries,sum,month)+calc+list;
+  }
+  document.addEventListener('click',event=>{
+    const btn=event.target.closest('[data-own-appt-month]');if(!btn||btn.disabled||!btn.dataset.ownApptMonth)return;
+    state.ownApptMonth=btn.dataset.ownApptMonth;renderAppointmentStandings();
+  });
   function renderAppointmentStandings(){
     if(state.role==='employee'){
-      const month=isoMonth(),html=appointmentStandingHtml(inMonth(state.entries,month),adjustSum(adjustmentsFor(state.ownAdjustments,month)),month);
-      $$('[data-own-appointment-standing]').forEach(el=>el.innerHTML=html);
+      const months=ownApptMonths(),month=months.includes(state.ownApptMonth)?state.ownApptMonth:isoMonth();
+      const html=ownAppointmentCardHtml(month);
+      $$('[data-own-appointment-standing]').forEach(el=>{const open=el.querySelector('.appt-days')?.open;el.innerHTML=html;const d=el.querySelector('.appt-days');if(d&&open)d.open=true;});
     }else if(state.role==='boss'){
       const month=payrollMonth(),entries=inMonth(state.employeeEntries,month),adjustment=adjustSum(adjustmentsFor(state.employeeAdjustments,month));
       const html=state.employeeDataError?'Terminstand konnte nicht aktualisiert werden.':state.selectedUserId?appointmentStandingHtml(entries,adjustment,month):'Bitte Mitarbeiter auswählen.';
