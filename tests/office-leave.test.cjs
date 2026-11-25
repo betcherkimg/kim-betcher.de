@@ -287,13 +287,15 @@ test('submitted vacation is automatically priced and all regular-day holiday cre
  }finally{f.close()}
 });
 
-test('contract target scales with holiday credit and its paid release never invents worked hours',async()=>{
+test('contract target scales with holiday credit, cut counts after deductions and never releases days automatically',async()=>{
  const f=fixture();try{
   await signedRegular(f);f.setTime('2026-12-04T14:00:00Z');
   assert.equal((await record(f,'2026-12-02','2026-12-02',46)).status,201);
   const context=await f.t.leaveContext(f.env,'sasi'),patterns=await f.t.regularPatterns(f.env,'sasi'),info=await f.t.regularMonthInfo(f.env,'sasi','2026-12',patterns,context);
-  assert.equal(info.baseMinutes,1560);assert.equal(info.holidayMinutes,120);assert.equal(info.cutAppointments,46);assert.equal(info.cutDate,'2026-12-02');assert.ok(info.releaseDays.length>0);assert.ok(!info.releaseDays.some(d=>d.date==='2026-12-25'));
-  const w=await weekData(f,'2026-12-07');assert.equal(w.workMinutes,0);assert.equal(w.absenceMinutes,360);assert.equal(w.targetMinutes,0);
+  assert.equal(info.baseMinutes,1560);assert.equal(info.holidayMinutes,120);assert.equal(info.cutAppointments,46);assert.equal(info.cutDate,'2026-12-02');assert.equal(info.releaseDays.length,0);
+  f.db.prepare("INSERT INTO appointment_adjustments(clerk_user_id,payroll_month,delta,created_by) VALUES('sasi','2026-12',-6,'boss')").run();
+  const after=await f.t.regularMonthInfo(f.env,'sasi','2026-12',patterns,context);assert.equal(after.cutDate,null);assert.equal(after.releaseDays.length,0);
+  const w=await weekData(f,'2026-12-07');assert.equal(w.workMinutes,0);assert.equal(w.absenceMinutes,0);assert.equal(w.targetMinutes,360);
   const p=f.t.calculatePayroll({month:'2026-12',mins:1200,days:10,appts:46,profile:{employeeRv:false},targetAppointments:46,targetGrossCents:60000});assert.equal(p.cents.gross,60000);assert.equal(p.cents.targetBonus,9200);
  }finally{f.close()}
 });

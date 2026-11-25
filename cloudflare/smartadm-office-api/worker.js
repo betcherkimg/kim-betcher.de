@@ -5118,9 +5118,11 @@ async function regularMonthInfo(env,owner,month,patterns=null,context=null){
   const baseMinutes=dates.length*120,holidayMinutes=dates.filter(d=>holidays[d]).length*120,factor=baseMinutes?(baseMinutes-holidayMinutes)/baseMinutes:1;
   const appointments=Math.round((settings?.goal_appointments||40)*factor),cutAppointments=Math.round((settings?.cut_appointments||50)*factor);
   const performance=await all(env,'SELECT work_date,SUM(appointments) appointments FROM performance_entries WHERE clerk_user_id=? AND substr(work_date,1,7)=? GROUP BY work_date ORDER BY work_date',owner,month);
-  let n=0,cutDate=null;for(const p of performance){n+=p.appointments;if(!cutDate&&n>=cutAppointments)cutDate=p.work_date;}
-  const prefix='Automatische Freistellung: Monatsziel '+month;
-  const releaseDays=cutDate?dates.filter(date=>date>cutDate&&!holidays[date]&&!context.work.some(w=>w.work_date===date)&&!context.absences.some(a=>a.absence_date===date&&!String(a.note||'').startsWith(prefix))).map(date=>({date,absence_date:date,absence_type:'paid_leave',paid_minutes:120,paid_amount_cents:2*hourlyRateCents(date.slice(0,7)),note:prefix,source_cut_date:cutDate})):[];
+  // Cut zählt wie der Lohn: Termine abzüglich Kims Abzüge. Nur zur Anzeige.
+  const adjustments=await all(env,'SELECT delta FROM appointment_adjustments WHERE clerk_user_id=? AND payroll_month=?',owner,month).catch(()=>[]);
+  let n=adjustmentSum(adjustments),cutDate=null;for(const p of performance){n+=p.appointments;if(!cutDate&&n>=cutAppointments)cutDate=p.work_date;}
+  // Keine automatische Freistellung nach dem Cut: Kim entscheidet selbst, wann Saskia aufhört.
+  const releaseDays=[];
   return {month,baseMinutes,holidayMinutes,appointments,cutAppointments,cutDate,releaseDays};
 }
 async function groupLegacyRegularWeek(env,owner,patterns,week){

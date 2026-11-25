@@ -11650,25 +11650,13 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   const weekRangeLabel = ws => `${isoWeekLabel(ws)} · ${dayMonth(ws)}–${dayMonth(addDaysIso(ws, 6))}`;
   const planProblem = p => p.status === "missed" || p.status === "late" || (p.status === "cancelled" && !Number(p.cancelled_in_time));
 
-  // Tag, an dem im Monat der Cut erreicht wurde → danach Freistellung mit Fortzahlung (Vertrag § 6).
-  function cutDates(entries, cut) {
-    const months = {};
-    [...entries].sort((a, b) => a.date.localeCompare(b.date)).forEach(e => {
-      const m = months[e.date.slice(0, 7)] ||= { n: 0, date: null };
-      m.n += Number(e.appointments || 0);
-      if (!m.date && cut > 0 && m.n >= cut) m.date = e.date;
-    });
-    return Object.fromEntries(Object.entries(months).filter(([, m]) => m.date).map(([k, m]) => [k, m.date]));
-  }
-
   /*
-   * Wochenkonto: Soll 6 Std. je Kalenderwoche, anteilig in Wochen mit Ein-/Austritt und
-   * nach dem Monats-Cut. Ist = erfasste Arbeitszeit + Abwesenheiten (bezahlte Zeit bzw. 2 Std. je Tag).
+   * Wochenkonto: Soll 6 Std. je Kalenderwoche, anteilig in Wochen mit Ein-/Austritt. Ist = erfasste Arbeitszeit + Abwesenheiten (bezahlte Zeit bzw. 2 Std. je Tag).
    * Nacharbeit = vereinbarte Nacharbeit oder unentschuldigte Fehlstunden, abzüglich Mehrstunden danach.
    */
   function computeWeekAccount({ entries = [], absences = [], reviews = [], patterns=[], start, end, cut = 0, today = isoDate() }) {
     if (!start || start > today) return { weeks: [], owed: 0 };
-    const cuts = cutDates(entries, cut);
+    const cuts = {}; // keine automatische Freistellung nach dem Cut
     const reviewFor = Object.fromEntries(reviews.map(r => [r.week_start, normalizeWeekReview(r)]));
     const last = end && end < today ? end : today;
     const weeks = [];
