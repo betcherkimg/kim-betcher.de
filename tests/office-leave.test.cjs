@@ -7,7 +7,7 @@ function fixture(now='2026-10-27T10:00:00Z'){
  const DB={prepare:statement,async batch(items){db.exec('BEGIN');try{const out=[];for(const x of items)out.push(await x.run());db.exec('COMMIT');return out}catch(e){db.exec('ROLLBACK');throw e}}};
  let time=Date.parse(now);class Clock extends Date{constructor(...a){super(...(a.length?a:[time]))}static now(){return time}}
  const context=vm.createContext({console,Request,Response,Headers,URL,TextEncoder,TextDecoder,crypto:webcrypto,atob,btoa,AbortSignal,Date:Clock,Intl});
- vm.runInContext(source.replace('export default {','const worker={')+`;globalThis.t={worker,deleteEntry,saveRegularSlot,autoCompleteRegularWeeks,groupLegacyRegularWeek,regularMonthInfo,yearRules,calculatePayroll,calculateMinijobContributions,reopenRegularWeek,regularReminderSlot,remindRegularSubmissions,prepareCalendarPayroll,confirmPayrollPreparation,createMonthlyClosing,ensureRegular,regularAt,regularActive,regularPatterns,chooseRegularPattern,getRegularPattern,getRegularWeek,completeRegularWeek,regularHolidayRows,getRegularHolidays,decideRegularHoliday,regularClosingError,regularEntryError,createEntry,updateEntry,getLeaveSummary,ensureAdjustments,ensureLeave,leaveYearValue,leaveWaitingEnd,leaveHolidays,leaveAccount,leaveContext,getLeaveCalendar,addLeaveRequest,previewLeaveDecision,decideLeaveRequest,withdrawLeaveRequest,transferLeave,adjustLeave,setLeaveRate,getOwnAddendum,signOwnAddendum,signAdminAddendum,addendumState,renderAddendum,addendumBundle,replayCalendarIntro,seedCalendarTest,TEST_LEAVE_USER_ID,CALENDAR_ADDENDUM,ADDENDUM};notifyUser=async()=>[];pushBoss=async()=>{};notifyCalls=async()=>{};`,context);
+ vm.runInContext(source.replace('export default {','const worker={')+`;globalThis.t={worker,deleteEntry,saveRegularSlot,autoCompleteRegularWeeks,groupLegacyRegularWeek,regularMonthInfo,yearRules,calculatePayroll,calculateMinijobContributions,reopenRegularWeek,regularReminderSlot,remindRegularSubmissions,prepareCalendarPayroll,confirmPayrollPreparation,createMonthlyClosing,ensureRegular,regularAt,regularActive,regularPatterns,chooseRegularPattern,getRegularPattern,getRegularWeek,completeRegularWeek,regularHolidayRows,getRegularHolidays,decideRegularHoliday,regularClosingError,regularEntryError,createEntry,updateEntry,getLeaveSummary,ensureAdjustments,ensureLeave,leaveYearValue,leaveWaitingEnd,leaveHolidays,leaveAccount,leaveContext,getLeaveCalendar,addLeaveRequest,previewLeaveDecision,decideLeaveRequest,withdrawLeaveRequest,transferLeave,adjustLeave,setLeaveRate,getOwnAddendum,signOwnAddendum,signAdminAddendum,addendumState,renderAddendum,addendumBundle,replayCalendarIntro,seedCalendarTest,closeMonthEarly,reopenMonthEarly,cutoffMap,payMonthOf,payPeriod,monthGrossCents,mondayOfWeek,addDays,TEST_LEAVE_USER_ID,CALENDAR_ADDENDUM,ADDENDUM};notifyUser=async()=>[];pushBoss=async()=>{};notifyCalls=async()=>{};`,context);
  db.prepare("INSERT INTO office_employer(id,name,street,zip_city) VALUES(1,'Firma Test','Musterweg 1','89518 Heidenheim')").run();
  for(const [id,name,email] of [['sasi','Saskia Test','schreitersaskia@gmail.com'],[context.t.TEST_LEAVE_USER_ID,'Kim Test','betcherkimg@gmail.com'],['other','Andere Person','other@example.test']]){
   db.prepare('INSERT INTO employee_profiles(clerk_user_id,full_name,street,zip_city,birth_date,start_date)VALUES(?,?,?,?,?,?)').run(id,name,'Testweg 1','89567 Sontheim','2000-01-01','2026-10-01');
@@ -437,5 +437,47 @@ test('submitted October transition week can be reopened and refilled with actual
   for(const [d,s,e] of [['2026-10-27','09:00','11:00'],['2026-10-29','14:00','16:00']]){const r=await record(f,d,undefined,2,s,e);assert.equal(r.status,201,JSON.stringify(await r.json()));}
   w=await weekData(f,'2026-10-26');assert.equal(w.workMinutes,360);
   await read(await f.t.completeRegularWeek({env:f.env,userId:'sasi',exec:f.exec,request:f.request({week:w.week,state_hash:w.stateHash})}));
+ }finally{f.close()}
+});
+
+test('employee closes the month early: later days count to the next month, Kim can bill at once and the closed month stays locked',async()=>{
+ const f=fixture();try{
+  await signedRegular(f);f.db.prepare("INSERT INTO payroll_settings(clerk_user_id)VALUES('sasi')").run();
+  const early=month=>f.t.closeMonthEarly({env:f.env,userId:'sasi',exec:f.exec,request:f.request({month})});
+  f.setTime('2026-11-20T18:00:00Z');assert.equal((await early('2026-11')).status,400);
+  f.setTime('2026-11-27T19:00:00Z');
+  const patterns=await f.t.regularPatterns(f.env,'sasi'),start=patterns.map(p=>p.valid_from).filter(Boolean).sort()[0];
+  const weeks=[];for(let w=f.t.mondayOfWeek(start>'2026-11-01'?start:'2026-11-01');w<='2026-11-23';w=f.t.addDays(w,7))weeks.push(w);
+  assert.ok(weeks.length>0,'Regeltage im November aktiv');
+  for(const w of weeks){if(w<'2026-11-01')continue;const row=f.db.prepare("INSERT INTO work_entries(clerk_user_id,work_date,start_time,end_time,work_minutes,regular_slot)VALUES('sasi',?,'08:00','10:00',120,?)").run(w,w);f.db.prepare("INSERT INTO performance_entries(clerk_user_id,work_date,appointments,commissionable_appointments,work_entry_id)VALUES('sasi',?,2,2,?)").run(w,Number(row.lastInsertRowid));}
+  assert.equal((await early('2026-11')).status,409,'ungesendete Wochen blockieren');
+  for(const w of weeks){f.db.prepare("INSERT INTO week_reviews(clerk_user_id,week_start,result,note)VALUES('sasi',?,'excused','Abgestimmt')").run(w);const d=await weekData(f,w);await read(await f.t.completeRegularWeek({env:f.env,userId:'sasi',exec:f.exec,request:f.request({week:w,state_hash:d.stateHash,note:'Abgestimmt.'})}));}
+  assert.equal((await early('2026-12')).status,409,'falscher Monat');
+  const done=await read(await early('2026-11'));assert.equal(done.end_date,'2026-11-27');assert.equal(done.next,'2026-12');
+  const cuts=await f.t.cutoffMap(f.env,'sasi');assert.equal(f.t.payMonthOf(cuts,'2026-11-27'),'2026-11');assert.equal(f.t.payMonthOf(cuts,'2026-11-30'),'2026-12');
+  assert.equal(f.t.payPeriod(cuts,"2026-12").join(),"2026-11-28,2026-12-31");assert.equal(f.t.payPeriod(cuts,"2026-11").join(),"2026-11-01,2026-11-27");
+  // Kim rechnet noch am Wochenende ab
+  f.setTime('2026-11-28T10:00:00Z');
+  let p=await f.t.prepareCalendarPayroll(f.env,'sasi','2026-11');assert.equal(p.provisional,false);assert.equal(p.blockers.length,0,p.blockers.join(" | "));assert.equal(p.period.to,'2026-11-27');
+  await read(await f.t.confirmPayrollPreparation({env:f.env,owner:'sasi',userId:'boss',request:f.request({month:'2026-11',hash:p.hash,confirmed:true})}));
+  const closed=await f.t.createMonthlyClosing({env:f.env,owner:'sasi',userId:'boss',exec:f.exec,request:f.request({month:'2026-11'})});assert.equal(closed.status,201);
+  const snap=JSON.parse(f.db.prepare("SELECT snapshot_json FROM monthly_closings WHERE payroll_month='2026-11'").get().snapshot_json);assert.equal(snap.period.to,'2026-11-27');assert.equal(snap.period.early,true);
+  assert.equal((await f.t.reopenMonthEarly({env:f.env,owner:'sasi',exec:f.exec,url:url('/admin/month-cutoffs?month=2026-11')})).status,409);
+  // Montag 30.11. gehört zum Dezember: Eintrag geht trotz abgeschlossenem November
+  f.setTime('2026-11-30T18:00:00Z');
+  assert.equal((await record(f,'2026-11-30',null,4,'08:00','10:00')).status,201);
+  assert.throws(()=>f.db.prepare("INSERT INTO work_entries(clerk_user_id,work_date,start_time,end_time,work_minutes)VALUES('sasi','2026-11-26','08:00','09:00',60)").run(),/abgeschlossen/);
+  const dec=await f.t.regularMonthInfo(f.env,'sasi','2026-12');assert.equal(dec.from,'2026-11-28');
+  const week=await weekData(f,'2026-11-30');assert.equal(week.monthGoals.map(m=>m.month).join(),"2026-12");
+  assert.ok(await f.t.monthGrossCents(f.env,'sasi','2026-12')>0,'Montag zählt im Dezember');
+ }finally{f.close()}
+});
+
+test('Kim can undo an early close while the month is still open',async()=>{
+ const f=fixture();try{
+  await f.t.ensureLeave(f.env);
+  f.db.prepare("INSERT INTO month_cutoffs(clerk_user_id,payroll_month,end_date,created_by)VALUES('sasi','2026-11','2026-11-27','sasi')").run();
+  await read(await f.t.reopenMonthEarly({env:f.env,owner:'sasi',exec:f.exec,url:url('/admin/month-cutoffs?month=2026-11')}));
+  assert.deepEqual({...await f.t.cutoffMap(f.env,'sasi')},{});
  }finally{f.close()}
 });

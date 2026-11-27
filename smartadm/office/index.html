@@ -2154,6 +2154,10 @@ html[data-theme="dark"] .picker-close{background:var(--ground);color:var(--ink-s
 #zeiten [data-own-appointment-standing]{order:5}
 #zeiten #regularWeekCard{order:1}
 #zeiten #timeCard,#zeiten #legacyTimeOverview{order:2}
+#zeiten #earlyCloseCard{order:3}
+.early-close p{margin:0 0 12px;color:var(--ink-soft);font-size:14px}.early-close p b{color:var(--ink)}
+.early-close .btn{width:100%}
+.early-close.is-done p{margin:0}
 .wk-nav{background:none!important;border:0!important;padding:0;margin:0 0 6px}
 .wk-nav b{font-size:16px;font-weight:600}
 .wk-nav .btn{width:40px;height:40px;min-height:40px;padding:0;border-radius:50%;background:var(--surface)!important;border:1px solid var(--line)!important}
@@ -2357,7 +2361,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
         <div class="card shortcut" id="regularSendNotice" hidden><div><strong>Heute bitte die Arbeitszeiten abschicken</strong><span id="regularSendNoticeText">Bitte deine Stunden und Termine prüfen und die Woche spätestens Sonntag absenden.</span></div><button class="btn primary" type="button" data-page="zeiten">Zur Wochenliste</button></div><div class="my-widgets" id="myWidgets"></div>
       </section>
 
-      <section class="page" id="zeiten" data-role="employee"><div class="card section-card" data-own-appointment-standing aria-live="polite"></div><div class="card section-card" id="regularWeekCard" hidden><div class="card-head"><h2>Meine Woche</h2></div><div class="wk-nav"><button class="btn ghost" id="regularPrev" type="button" aria-label="Vorherige Woche">‹</button><b id="regularWeekLabel"></b><button class="btn ghost" id="regularNext" type="button" aria-label="Nächste Woche">›</button></div><div style="text-align:center"><button class="btn link" id="regularToday" type="button">Zur aktuellen Woche</button></div><div id="regularSummary" class="wk-progress"></div><p id="regularPhaseNotice" class="notice" hidden></p><div id="regularRows"></div><div class="wk-foot"><button class="btn primary" type="button" id="regularComplete">Woche absenden</button><p id="regularStatus" class="status-text" aria-live="polite"></p><button class="btn link" type="button" id="regularChooseDays">Regeltage ändern</button></div></div>
+      <section class="page" id="zeiten" data-role="employee"><div class="card section-card" data-own-appointment-standing aria-live="polite"></div><div class="card section-card" id="earlyCloseCard" hidden aria-live="polite"></div><div class="card section-card" id="regularWeekCard" hidden><div class="card-head"><h2>Meine Woche</h2></div><div class="wk-nav"><button class="btn ghost" id="regularPrev" type="button" aria-label="Vorherige Woche">‹</button><b id="regularWeekLabel"></b><button class="btn ghost" id="regularNext" type="button" aria-label="Nächste Woche">›</button></div><div style="text-align:center"><button class="btn link" id="regularToday" type="button">Zur aktuellen Woche</button></div><div id="regularSummary" class="wk-progress"></div><p id="regularPhaseNotice" class="notice" hidden></p><div id="regularRows"></div><div class="wk-foot"><button class="btn primary" type="button" id="regularComplete">Woche absenden</button><p id="regularStatus" class="status-text" aria-live="polite"></p><button class="btn link" type="button" id="regularChooseDays">Regeltage ändern</button></div></div>
         <div class="card section-card plan-card" id="planCard" hidden>
           <div class="card-head plan-head">
             <div>
@@ -3584,6 +3588,19 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   </div>
 </dialog>
 
+<!-- Mitarbeiterin: Monat vorzeitig abschließen -->
+<dialog id="earlyCloseDialog" class="form-dialog close-dialog" data-role="employee" aria-labelledby="earlyCloseTitle">
+  <div class="picker-head"><strong id="earlyCloseTitle">Monat abschließen?</strong></div>
+  <div class="form-dialog-body">
+    <p id="earlyCloseText"></p>
+    <div id="earlyCloseStatus" class="status-text" aria-live="polite"></div>
+    <div class="actions">
+      <button class="btn ghost" type="button" id="earlyCloseNo">Nein, noch nicht</button>
+      <button class="btn primary" type="button" id="earlyCloseYes">Ja, abschließen</button>
+    </div>
+  </div>
+</dialog>
+
 <!-- Mitarbeiterin: Monat abschließen? -->
 <dialog id="closeDialog" class="form-dialog close-dialog" data-role="employee" aria-labelledby="closeDialogTitle" closedby="none">
   <div class="picker-head"><strong id="closeDialogTitle">Monat abschließen?</strong></div>
@@ -3947,7 +3964,16 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     };
   }
 
-  const inMonth = (list, ym) => list.filter(e => e.date?.slice(0, 7) === ym);
+  // Vorzeitiger Monatsabschluss: Tage nach dem Abschlussdatum zählen zum Folgemonat (wie im Worker).
+  const nextMonthKey = ym => { const [y, m] = ym.split("-").map(Number); return m === 12 ? `${y + 1}-01` : `${y}-${String(m + 1).padStart(2, "0")}`; };
+  const prevMonthKey = ym => { const [y, m] = ym.split("-").map(Number); return m === 1 ? `${y - 1}-12` : `${y}-${String(m - 1).padStart(2, "0")}`; };
+  const cutsFrom = rows => Object.fromEntries(asArray(rows).map(r => [r.month, r.end_date]));
+  const payMonthOf = (date, cuts = {}) => { const m = String(date || "").slice(0, 7); return cuts[m] && date > cuts[m] ? nextMonthKey(m) : m; };
+  const payPeriodOf = (month, cuts = {}) => [cuts[prevMonthKey(month)] ? shiftIso(cuts[prevMonthKey(month)], 1) : `${month}-01`, cuts[month] || monthEnd(month)];
+  const shiftIso = (date, days) => { const d = new Date(date + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + days); return d.toISOString().slice(0, 10); };
+  const cutsFor = list => (list === state.employeeEntries || list === state.employeeAbsences) ? (state.employeeCuts || {}) : (state.ownCuts || {});
+  const ownPayMonth = () => payMonthOf(isoDate(), state.ownCuts || {});
+  const inMonth = (list, ym) => { const cuts = cutsFor(list); return list.filter(e => e.date && payMonthOf(e.date, cuts) === ym); };
   const byNewest = (a, b) => b.date.localeCompare(a.date) || String(b.start).localeCompare(String(a.start));
 
   function setText(id, text) {
@@ -4046,7 +4072,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     note: row.note || ""
   });
   const toAbsences = rows => asArray(rows).map(toAbsence);
-  const inMonthAbsences = (list, ym) => list.filter(a => a.date?.slice(0, 7) === ym);
+  const inMonthAbsences = (list, ym) => { const cuts = cutsFor(list); return list.filter(a => a.date && payMonthOf(a.date, cuts) === ym); };
 
   /* ================= Navigation ================= */
 
@@ -4933,7 +4959,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   }
   // Mitarbeiter: eigene Termine je Monat – eingetragen, Abzüge/Gutschriften, was zählt, Termine nach Tagen.
   function ownApptMonths(){
-    const now=isoMonth(),seen=[...state.entries.map(e=>e.date?.slice(0,7)),...asArray(state.ownAdjustments).map(r=>r.payroll_month)].filter(m=>m&&m<=now);
+    const now=ownPayMonth(),seen=[...state.entries.map(e=>e.date&&payMonthOf(e.date,state.ownCuts||{})),...asArray(state.ownAdjustments).map(r=>r.payroll_month)].filter(m=>m&&m<=now);
     const months=[];let m=seen.length?seen.sort()[0]:now;
     while(m<=now){months.push(m);const [y,mo]=m.split('-').map(Number);m=mo===12?`${y+1}-01`:`${y}-${String(mo+1).padStart(2,'0')}`;}
     return months;
@@ -4947,7 +4973,8 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     const rows=adj.map(r=>{const d=Number(r.delta||0);return `<div class="${d<0?'is-minus':''}"><dt>${d<0?'Abzug':'Gutschrift'} vom ${esc(fmtDate(String(r.created_at||'').slice(0,10)))} (Kundenabsage)</dt><dd>${d<0?'−':'+'}${Math.abs(d)} ${plural(d)}</dd></div>`;}).join('');
     const calc=(raw||adj.length)?`<dl class="appt-calc"><div><dt>Eingetragen</dt><dd>${raw} ${plural(raw)}</dd></div>${rows}<div class="appt-sum"><dt>Zählt für ${esc(fmtMonth(month).split(' ')[0])}</dt><dd>${p.total} ${plural(p.total)}</dd></div></dl>`:'<p class="standing-sub">Keine Termine in diesem Monat.</p>';
     const list=days.length?`<details class="appt-days"><summary>Termine nach Tagen</summary><ul>${days.map(e=>`<li><span>${esc(fmtDate(e.date))}${e.entryState==='draft'?' · noch nicht abgesendet':''}</span><b>${Number(e.appointments)}</b></li>`).join('')}</ul></details>`:'';
-    return nav+appointmentStandingHtml(entries,sum,month)+calc+list;
+    const [pFrom,pTo]=payPeriodOf(month,state.ownCuts||{}),range=(pFrom!==month+'-01'||pTo!==monthEnd(month))?`<p class="standing-sub">Zeitraum ${esc(fmtDate(pFrom))} – ${esc(fmtDate(pTo))}</p>`:'';
+    return nav+appointmentStandingHtml(entries,sum,month)+range+calc+list;
   }
   document.addEventListener('click',event=>{
     const btn=event.target.closest('[data-own-appt-month]');if(!btn||btn.disabled||!btn.dataset.ownApptMonth)return;
@@ -4955,7 +4982,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   });
   function renderAppointmentStandings(){
     if(state.role==='employee'){
-      const months=ownApptMonths(),month=months.includes(state.ownApptMonth)?state.ownApptMonth:isoMonth();
+      const months=ownApptMonths(),month=months.includes(state.ownApptMonth)?state.ownApptMonth:ownPayMonth();
       const html=ownAppointmentCardHtml(month);
       $$('[data-own-appointment-standing]').forEach(el=>{const open=el.querySelector('.appt-days')?.open;el.innerHTML=html;const d=el.querySelector('.appt-days');if(d&&open)d.open=true;});
     }else if(state.role==='boss'){
@@ -4985,9 +5012,9 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     renderAppointmentStandings();
     let {goalHours,goalAppointments,cutAppointments}=state.settings;
     const goals=state.regularGoalsByMonth?.[isoMonth()];if(goals){goalHours=(goals.baseMinutes-goals.holidayMinutes)/60;goalAppointments=goals.appointments;cutAppointments=goals.cutAppointments;}
-    const month = inMonth(state.entries, isoMonth());
+    const month = inMonth(state.entries, ownPayMonth());
     const { mins, appts: entryAppts, days } = summarize(month);
-    const ownAdjust = adjustSum(adjustmentsFor(state.ownAdjustments, isoMonth()));
+    const ownAdjust = adjustSum(adjustmentsFor(state.ownAdjustments, ownPayMonth()));
     const appts = Math.max(0, entryAppts + ownAdjust);
     const hours = mins / 60;
 
@@ -5050,14 +5077,16 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     state.loading = true;
     setFormBusy(true, "Daten werden geladen …");
     try {
-      const [entries, adjustments] = await Promise.all([
+      const [entries, adjustments, cutoffs] = await Promise.all([
         api("/entries"),
-        api("/appointment-adjustments").catch(() => [])
+        api("/appointment-adjustments").catch(() => []),
+        api("/month-cutoffs").catch(() => [])
       ]);
+      state.ownCuts = cutsFrom(cutoffs);
       state.entries = toEntries(entries);
       await regularWeek.load();
       state.ownAdjustments = asArray(adjustments);
-      renderEmployeeDashboard();renderMyStart();
+      renderEmployeeDashboard();renderMyStart();renderEarlyClose();
     } catch (error) {
       console.error(error);
       alert("Office-Daten konnten nicht geladen werden: " + error.message);
@@ -5336,7 +5365,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   async function loadEmployeeData(userId) {
     state.employeeDataError = true;
     try {
-      const [rows, absences, profile, master, adjustments, hr] = await Promise.all([
+      const [rows, absences, profile, master, adjustments, hr, cutoffs] = await Promise.all([
         api(forUser("/admin/entries", userId)),
         api(forUser("/admin/absences", userId)),
         api(forUser("/admin/payroll-settings", userId)),
@@ -5345,10 +5374,12 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
         fetchHr(userId).catch(error => {
           console.warn("Einsatzplan nicht verfügbar:", error);
           return emptyHr();
-        })
+        }),
+        api(forUser("/admin/month-cutoffs", userId)).catch(() => [])
       ]);
       if (state.selectedUserId !== userId) return; // inzwischen anderer Mitarbeiter gewählt
       state.employeeDataError = false;
+      state.employeeCuts = cutsFrom(cutoffs);
       state.hr = hr;
       state.employeeEntries = toEntries(rows);
       state.employeeAbsences = toAbsences(absences);
@@ -6479,7 +6510,8 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
         act: r.status !== "paid" && r.confirmed
           ? `<input type="date" id="mfPaidDate" value="${esc(isoDate())}" max="${esc(isoDate())}" aria-label="Bezahlt am"><button class="btn primary small" type="button" data-mf="paid">Bezahlt</button>` : "" });
     }
-    const running = !closed && isoDate() <= monthEnd(month);
+    // Vorzeitig abgeschlossen: Kim kann sofort abrechnen
+    const running = !closed && isoDate() <= monthEnd(month) && !(state.employeeCuts || {})[month];
     steps.push({ done: closed, title: "Monat abgeschlossen",
       sub: closed ? "Abrechnung ist eingefroren" : running ? `ab ${fmtDate(isoPlusDays(monthEnd(month), 1))}, wenn ${first} alle Wochen abgegeben hat`
         : ($("closeAskStatus")?.textContent || "").replace(/\boben /g, ""),
@@ -6973,6 +7005,11 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     else if (closed && slip && !slip.signatures?.employee) { label = "Monat abgeschlossen ✓"; disabled = true; text = `Wartet auf ${first}s Unterschrift – danach kannst du hier unterschreiben.`; }
     else if (closed) { label = "Monat abgeschlossen ✓"; disabled = true; text = "Gehaltsnachweis liegt im Monatsarchiv."; }
     else if (closeReqs.unsupported) { disabled = true; text = "Dafür braucht es den neuen Worker."; }
+    else if ((state.employeeCuts || {})[month]) {
+      // Vorzeitig abgeschlossen: Kim rechnet direkt ab, ohne Rückfrage
+      btn.dataset.mode = "direct";
+      text = `${first} hat den ${monthWord(month)} am ${fmtDate(state.employeeCuts[month])} abgeschlossen. Du kannst jetzt abrechnen. Danach bekommt ${first} den Gehaltsnachweis zum Unterschreiben.`;
+    }
     else if (isoDate() < end) {
       disabled = true;
       const prev = previousMonth();
@@ -7003,6 +7040,14 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
   $("closeAskBtn").addEventListener("click", event => withBusy(event.currentTarget, async () => {
     if (event.currentTarget.dataset.mode === "sign") return;
     const userId = state.selectedUserId, month = payrollMonth();
+    if (event.currentTarget.dataset.mode === "direct") {
+      try {
+        const result = await api(forUser("/admin/monthly-closings", userId), "POST", { month });
+        await loadClosings(userId);
+        toast(result?.skipped ? "Für diesen Monat gibt es keine Einträge." : `${monthWord(month)} abgeschlossen ✓`);
+      } catch (error) { alert(error.message); }
+      return;
+    }
     try {
       const row = await api(forUser("/admin/close-requests", userId), "POST", { month });
       if (closeReqs.userId === userId && row?.month) closeReqs.rows[month] = row;
@@ -10687,7 +10732,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
          <tbody>${adjustments.map(a => `<tr><td>${esc(fmtDateTime(a.created_at))}</td><td>${esc(a.note || "–")}</td><td class="num">${Number(a.delta) > 0 ? "+1" : "−1"}</td></tr>`).join("")}</tbody></table></div>`
       : "";
     return `${docHead(doc, "Arbeitszeit- & Abwesenheitsnachweis")}
-      <table class="pd-strip pd-keep"><tbody><tr><td style="width:50%"><span class="l">Mitarbeiter</span><b>${esc(name)}</b></td><td><span class="l">Personalnummer</span><b>${esc(orDash(emp.personnel_number))}</b></td><td><span class="l">Zeitraum</span><b>${esc(doc.monthLabel)}</b></td></tr></tbody></table>
+      <table class="pd-strip pd-keep"><tbody><tr><td style="width:50%"><span class="l">Mitarbeiter</span><b>${esc(name)}</b></td><td><span class="l">Personalnummer</span><b>${esc(orDash(emp.personnel_number))}</b></td><td><span class="l">Zeitraum</span><b>${esc(doc.monthLabel)}${doc.period?.early ? ` (${esc(fmtDate(doc.period.from))} – ${esc(fmtDate(doc.period.to))})` : ""}</b></td></tr></tbody></table>
       <div class="pd-sec"><div class="pd-sec-title">Arbeitszeit</div>${workTable}</div>
       <div class="pd-sec"><div class="pd-sec-title">Abwesenheiten</div>${absenceTable}</div>
       ${adjustTable}
@@ -10719,7 +10764,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
         <td style="width:46%"><span class="l">Mitarbeiter</span><b>${esc(name)}</b></td>
         <td><span class="l">Beitragsgruppe</span><b>${esc(p.contributionGroup || contributionGroup(profile))}</b></td>
         <td><span class="l">SV-Tage</span><b>${p.svDays ?? 30}</b></td>
-        <td><span class="l">Zeitraum</span><b>${esc(doc.monthLabel)}</b></td>
+        <td><span class="l">Zeitraum</span><b>${esc(doc.monthLabel)}${doc.period?.early ? ` (${esc(fmtDate(doc.period.from))} – ${esc(fmtDate(doc.period.to))})` : ""}</b></td>
       </tr></tbody></table>
 
       ${section("Vergütung", grid(`
@@ -11024,8 +11069,9 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     k.cell(emp.street || "", ax, top + 24.6, leftW - 8, { size: 10, mono: true, pad: 0 });
     k.cell(emp.zip_city || "", ax, top + 29.2, leftW - 8, { size: 10, mono: true, pad: 0 });
     const [yy, mm] = String(doc.month).split("-").map(Number);
-    const from = [emp.start_date, `${doc.month}-01`].filter(Boolean).sort().pop();
-    const to = [emp.end_date, monthEnd(doc.month)].filter(Boolean).sort()[0];
+    // Vorzeitiger Monatsabschluss: Zeitraum aus dem Abschluss (z. B. 01.11.–27.11. bzw. 28.11.–31.12.)
+    const from = [emp.start_date, doc.period?.from || `${doc.month}-01`].filter(Boolean).sort().pop();
+    const to = [emp.end_date, doc.period?.to || monthEnd(doc.month)].filter(Boolean).sort()[0];
     k.cell(`Abrechnungszeitraum ${pdfDate(from)} – ${pdfDate(to)}`, L, top + boxH - 1.8, leftW, { size: 7, color: VP.strong, pad: 1.6 });
     y = top + boxH + 4.5;
 
@@ -12430,10 +12476,10 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
     },
     monat(compact) {
       const { goalHours, goalAppointments, cutAppointments } = state.settings;
-      const month = inMonth(state.entries, isoMonth());
+      const month = inMonth(state.entries, ownPayMonth());
       const { mins, appts: raw } = summarize(month);
-      const appts = Math.max(0, raw + adjustSum(adjustmentsFor(state.ownAdjustments, isoMonth())));
-      const standing=appointmentStanding(month,adjustSum(adjustmentsFor(state.ownAdjustments,isoMonth())));
+      const appts = Math.max(0, raw + adjustSum(adjustmentsFor(state.ownAdjustments, ownPayMonth())));
+      const standing=appointmentStanding(month,adjustSum(adjustmentsFor(state.ownAdjustments,ownPayMonth())));
       const status=`<p class="my-muted">${standing.hasDrafts?`Vorläufig · ${standing.official} bestätigt + ${standing.provisional} vorläufig`:"Bestätigter Stand"}</p>`;
       if (compact) return `${status}<div class="my-big">${appts} von ${goalAppointments}</div><p class="my-muted">Terminen im ${esc(fmtMonth(isoMonth()))}</p>`;
       return `${status}<div class="my-rings">
@@ -12553,7 +12599,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
       <span class="my-tile-head"><span class="my-tile-icon">${myIcon(key)}</span><span class="my-tile-title">${esc(title)}</span><svg class="i my-tile-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
       ${value !== "" ? `<span class="my-tile-val">${esc(value)}</span>` : ""}${sub ? `<span class="my-tile-sub">${esc(sub)}</span>` : ""}${extra}</div>`;
     if (key === "telefon") { const open = (state.calls || []).filter(c => !isHeld(c)); return tile("telefon", "Telefonliste", String(open.length), open.length ? (big && open[0] ? `offen · als Nächstes ${open[0].customer_name}` : "offen") : "alles erledigt"); }
-    if (key === "monat") { const m = inMonth(state.entries, isoMonth()), adj = adjustSum(adjustmentsFor(state.ownAdjustments, isoMonth())), st = appointmentStanding(m, adj), goal = state.settings.cutAppointments || 50, p = Math.min(100, Math.round(st.total / goal * 100));
+    if (key === "monat") { const m = inMonth(state.entries, ownPayMonth()), adj = adjustSum(adjustmentsFor(state.ownAdjustments, ownPayMonth())), st = appointmentStanding(m, adj), goal = state.settings.cutAppointments || 50, p = Math.min(100, Math.round(st.total / goal * 100));
       return tile("zeiten", "Termine", `${st.total}/${goal}`, st.hasDrafts ? `${st.provisional} vorläufig` : "bestätigt", `<span class="my-tile-bar"><span style="width:${p}%"></span></span>`); }
     if (key === "kalender") return tile("kalender", "Kalender", big ? "" : fmtMonth(isoMonth()).split(" ")[0], big ? "" : "Urlaub & freie Tage", big ? miniCalendarHtml() : "");
     if (key === "aufgaben") { const open = displayedTasks().filter(t => t.status === "open" && !isInbox(t)); return tile("aufgaben", "Aufgaben", String(open.length), open.length ? (big ? open.slice(0, 2).map(t => t.title).join(" · ") : "offen") : "nichts offen"); }
@@ -12701,7 +12747,7 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
    */
 
   const regularWeek=window.OfficeRegularWeek.create({$,esc,api,role:()=>state.role,userId:()=>state.bootstrappedFor,today:isoDate,minutes:fmtMinutes,openDialog,closeDialog,showPage,toast,
-    changed:(pattern,data)=>{state.regularPatterns=pattern.patterns||[];state.regularGoalsByMonth??={};for(const g of data.monthGoals||[])state.regularGoalsByMonth[g.month]=g;queueMicrotask(renderMyStart);},
+    changed:(pattern,data)=>{state.regularPatterns=pattern.patterns||[];state.regularGoalsByMonth??={};for(const g of data.monthGoals||[])state.regularGoalsByMonth[g.month]=g;queueMicrotask(renderMyStart);queueMicrotask(renderEarlyClose);},
     openEntry:(slot,week,old)=>{resetForm();setTimeFormOpen(true);const date=slot>isoDate()?isoDate():slot;$("date").value=date;if(old){$("entryReplace").value=old.id;$("appointments").value=old.appointments||0;$("entryActualHint").textContent=`Bisher ohne Uhrzeit: ${fmtMinutes(old.work_minutes)} · ${old.appointments||0} Termine. Bitte Beginn und Ende eintragen – die alte Zeile wird beim Speichern ersetzt.`;}$("timeCard").scrollIntoView({block:"start",behavior:"smooth"});$("start").focus();},
     editEntry,removeEntry:id=>deleteEntry(id),onSaved:refreshOwnProgress,onSubmitted:loadOwnEntries,onOnboarded:async()=>{await afterEmployeeNotices();}
   });
@@ -12729,13 +12775,23 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
       if(!p.payroll){$("calendarPayrollCheck").hidden=true;return;}
       state.regularGoalsByMonth??={};state.regularGoalsByMonth[month]=p.goals;
       state.payrollPreparation={...p,owner};$("calendarPayrollCheck").hidden=!p.active;
-      $("calendarPayrollLines").innerHTML=p.items.map(i=>`<div class="duty"><div><b>${esc(fmtDate(i.date))} · ${i.kind==='holiday'?'Feiertag':i.kind==='paid_leave'?'Bezahlte Freistellung':'Genehmigter Urlaub'}</b><small>${esc(fmtMinutes(i.minutes))}${i.manual?' · gesondert geprüfter Betrag':' · automatisch berechnet'}</small></div><b>${euro(i.amount_cents/100)}</b></div>`).join('')+(p.payroll.targetBonus?`<p>Zielbonus: ${euro(p.payroll.targetBonus)}</p>`:'')+`<p><b>Brutto ${euro(p.payroll.gross)} · Auszahlung ${euro(p.payroll.net)}</b></p>`;
+      const early=p.period?.early,closedNow=state.closings.some(c=>c.payroll_month===month);
+      const earlyNote=early?`<div class="duty"><div><b>Vorzeitig abgeschlossen</b><small>Zeitraum ${esc(fmtDate(p.period.from))} – ${esc(fmtDate(p.period.to))} · ab ${esc(fmtDate(shiftIso(p.period.to,1)))} zählt alles zum ${esc(monthWord(nextMonthKey(month)))}</small></div>${closedNow?'':`<button class="btn ghost small" type="button" data-undo-early="${esc(month)}">Aufheben</button>`}</div>`:'';
+      $("calendarPayrollLines").innerHTML=earlyNote+p.items.map(i=>`<div class="duty"><div><b>${esc(fmtDate(i.date))} · ${i.kind==='holiday'?'Feiertag':i.kind==='paid_leave'?'Bezahlte Freistellung':'Genehmigter Urlaub'}</b><small>${esc(fmtMinutes(i.minutes))}${i.manual?' · gesondert geprüfter Betrag':' · automatisch berechnet'}</small></div><b>${euro(i.amount_cents/100)}</b></div>`).join('')+(p.payroll.targetBonus?`<p>Zielbonus: ${euro(p.payroll.targetBonus)}</p>`:'')+`<p><b>Brutto ${euro(p.payroll.gross)} · Auszahlung ${euro(p.payroll.net)}</b></p>`;
       $("calendarPayrollStatus").textContent=p.blockers.length?p.blockers.join(' '):p.checked?'Berechnung geprüft. Bei späteren Änderungen wird eine neue Bestätigung nötig.':p.provisional?'Aktueller Zwischenstand. Nach Monatsende erneut prüfen; endgültige Berechnungsgrundlagen können sich noch ändern.':'Alle Beträge berechnet. Bitte die angezeigten Grundlagen prüfen und übernehmen.';
       $("calendarPayrollConfirm").disabled=p.blockers.length>0||p.checked||p.provisional||state.closings.some(c=>c.payroll_month===month);
       renderPayrollPreview();
     }catch(error){state.payrollPreparation=null;$("calendarPayrollCheck").hidden=false;$("calendarPayrollStatus").textContent='Abrechnungsprüfung nicht verfügbar: '+error.message;}
   }
   $("calendarPayrollReload").addEventListener('click',loadCalendarPayroll);
+  $("calendarPayrollLines").addEventListener('click',event=>{
+    const button=event.target.closest('[data-undo-early]');if(!button)return;
+    const userId=state.selectedUserId,month=button.dataset.undoEarly,first=employeeName(findEmployee(userId)).split(' ')[0]||'Die Mitarbeiterin';
+    if(!confirm(`Vorzeitigen Abschluss für ${monthWord(month)} aufheben? Die Tage bis ${fmtDate(monthEnd(month))} zählen dann wieder zum ${monthWord(month)}. ${first} bekommt eine Mitteilung.`))return;
+    withBusy(button,async()=>{
+      try{await api(forUser('/admin/month-cutoffs',userId)+'&month='+month,'DELETE');state.employeeCuts=cutsFrom(await api(forUser('/admin/month-cutoffs',userId)));await loadCalendarPayroll();renderCloseAsk();toast('Vorzeitiger Abschluss aufgehoben.');}catch(error){alert(error.message);}
+    });
+  });
   $("calendarPayrollConfirm").addEventListener('click',event=>withBusy(event.currentTarget,async()=>{
     if(!await flushProfileSave())return;const p=state.payrollPreparation;if(!p||p.owner!==state.selectedUserId||p.month!==payrollMonth())return loadCalendarPayroll();
     try{await api(forUser('/admin/payroll-preparation',state.selectedUserId),'POST',{month:p.month,hash:p.hash,confirmed:true});await reloadAbsences(state.selectedUserId);await loadCalendarPayroll();toast('Berechnete Beträge geprüft und übernommen.');}catch(error){$("calendarPayrollStatus").textContent=error.message;}
@@ -12989,6 +13045,54 @@ html[data-theme="dark"] :is(.my-hero,.my-group,.wk-progress,#regularRows,.wk-nav
         loadMyPayslips();
       }
     } catch (error) { setStatus("closeStatus", error.message, true); }
+  }));
+
+  /* --- Monat vorzeitig abschließen (Mitarbeiterin) ---
+     In den letzten 7 Tagen des Monats, sobald die Woche abgesendet ist. Danach zählt alles zum Folgemonat. */
+  const EARLY_CLOSE_DAYS = 7;
+  const dayLong = date => `${new Intl.DateTimeFormat("de-DE", { weekday: "long", timeZone: "UTC" }).format(new Date(date + "T12:00:00Z"))} (${date.slice(8, 10)}.${date.slice(5, 7)}.)`;
+  function earlyCloseState() {
+    const today = isoDate(), cuts = state.ownCuts || {}, month = ownPayMonth(), end = monthEnd(month), cal = today.slice(0, 7);
+    // Bis Monatsende zeigen, dass der Monat schon abgeschlossen ist
+    if (cuts[cal]) return { done: true, month: cal, end: cuts[cal], next: nextMonthKey(cal) };
+    if (cuts[month] || today >= end || today < shiftIso(end, -(EARLY_CLOSE_DAYS - 1))) return null;
+    // Erst wenn die laufende Woche abgesendet ist
+    const wk = regularWeek.data, monday = shiftIso(today, -((new Date(today + "T12:00:00Z").getUTCDay() + 6) % 7));
+    if (wk?.week === monday && wk.active && !wk.confirmed) return null;
+    const rest = []; for (let d = shiftIso(today, 1); d <= end; d = shiftIso(d, 1)) { const w = new Date(d + "T12:00:00Z").getUTCDay(); if (w >= 1 && w <= 5) rest.push(d); }
+    return { done: false, month, end, next: nextMonthKey(month), rest };
+  }
+  function renderEarlyClose() {
+    const card = $("earlyCloseCard"); if (!card) return;
+    const s = state.role === "employee" ? earlyCloseState() : null;
+    card.hidden = !s; if (!s) return;
+    card.className = "card section-card early-close" + (s.done ? " is-done" : "");
+    card.innerHTML = s.done
+      ? `<p><b>${esc(monthWord(s.month))} ist abgeschlossen.</b> Ab ${esc(fmtDate(shiftIso(s.end, 1)))} zählt alles zum ${esc(monthWord(s.next))}.</p>`
+      : `<div class="card-head"><h2>Monat abschließen</h2></div><p>Fertig mit dem ${esc(monthWord(s.month))}? Dann kannst du ihn heute schon abschließen. Die restlichen Tage zählen zum ${esc(monthWord(s.next))}.</p><button class="btn primary" type="button" id="earlyCloseBtn">${esc(monthWord(s.month))} abschließen</button>`;
+  }
+  document.addEventListener("click", event => {
+    if (!event.target.closest("#earlyCloseBtn")) return;
+    const s = earlyCloseState(); if (!s || s.done) return;
+    const days = s.rest.map(dayLong), n = days.length;
+    setText("earlyCloseTitle", `${monthWord(s.month)} jetzt schon abschließen?`);
+    setText("earlyCloseText", n
+      ? `${n > 1 ? days.slice(0, -1).join(", ") + " und " + days.at(-1) : days[0]} ${n === 1 ? "ist noch ein Arbeitstag. Er zählt" : "sind noch Arbeitstage. Sie zählen"} dann zum ${monthWord(s.next)}. Danach kannst du für den ${monthWord(s.month)} nichts mehr ändern.`
+      : `Die restlichen Tage zählen dann zum ${monthWord(s.next)}. Danach kannst du für den ${monthWord(s.month)} nichts mehr ändern.`);
+    setStatus("earlyCloseStatus", "");
+    $("earlyCloseYes").dataset.month = s.month;
+    openDialog($("earlyCloseDialog"));
+  });
+  $("earlyCloseNo").addEventListener("click", () => closeDialog($("earlyCloseDialog")));
+  $("earlyCloseYes").addEventListener("click", event => withBusy(event.currentTarget, async () => {
+    const month = event.currentTarget.dataset.month;
+    try {
+      await api("/month-cutoffs", "POST", { month });
+      state.ownCuts = cutsFrom(await api("/month-cutoffs"));
+      closeDialog($("earlyCloseDialog"));
+      renderEmployeeDashboard(); renderMyStart(); renderAppointmentStandings(); renderEarlyClose();
+      toast(`${monthWord(month)} abgeschlossen ✓`);
+    } catch (error) { setStatus("earlyCloseStatus", error.message, true); }
   }));
 
   /* --- Unterschriftenfeld --- */

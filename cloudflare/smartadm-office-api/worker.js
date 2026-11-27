@@ -227,7 +227,8 @@ const listEntries = async ({ env, owner }) => {await ensureRegular(env);return j
 
 // Ein abgeschlossener Monat ist eingefroren – sonst stimmt der unterschriebene Gehaltsnachweis nicht mehr.
 async function closedMonthError(env, owner, ...dates) {
-  const months = [...new Set(dates.filter(Boolean).map(d => String(d).slice(0, 7)))];
+  const cuts = await cutoffMap(env, owner).catch(() => ({}));
+  const months = [...new Set(dates.filter(Boolean).map(d => payMonthOf(cuts, String(d))))];
   for (const month of months) {
     const row = await first(env, "SELECT id FROM monthly_closings WHERE clerk_user_id = ? AND payroll_month = ?", owner, month).catch(() => null);
     if (row) return err("Dieser Monat ist bereits abgeschlossen – Einträge können nicht mehr geändert werden.", 409);
@@ -245,16 +246,39 @@ async function ensureLimitOverrides(env) {
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, UNIQUE(clerk_user_id, payroll_month))`);
 }
 const shiftMonth = (month, n) => { const [y, m] = month.split("-").map(Number); return new Date(Date.UTC(y, m - 1 + n, 1)).toISOString().slice(0, 7); };
+
+/* ================= Vorzeitiger Monatsabschluss =================
+ * Saskia kann ihren Monat in den letzten 7 Tagen früher beenden. Alle Tage nach diesem Datum
+ * zählen zum Folgemonat (Stunden, Termine, Abwesenheiten, Lohn). Das echte Datum bleibt erhalten.
+ * month_cutoffs: payroll_month endet am end_date statt am Monatsletzten. */
+const cutoffsReady = new WeakMap();
+async function ensureCutoffs(env) {
+  if (cutoffsReady.get(env.DB)) return;
+  await run(env, `CREATE TABLE IF NOT EXISTS month_cutoffs (clerk_user_id TEXT NOT NULL, payroll_month TEXT NOT NULL,
+    end_date TEXT NOT NULL, created_by TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (clerk_user_id, payroll_month))`);
+  cutoffsReady.set(env.DB, true);
+}
+async function cutoffMap(env, owner) {
+  await ensureCutoffs(env);
+  return Object.fromEntries((await all(env, "SELECT payroll_month, end_date FROM month_cutoffs WHERE clerk_user_id = ?", owner)).map(r => [r.payroll_month, r.end_date]));
+}
+// Abrechnungsmonat eines Datums (nach einem vorzeitigen Abschluss: Folgemonat)
+const payMonthOf = (cuts, date) => { const m = String(date || "").slice(0, 7); return cuts?.[m] && date > cuts[m] ? shiftMonth(m, 1) : m; };
+// Erster und letzter Tag des Abrechnungsmonats
+const payPeriod = (cuts, month) => { const prev = cuts?.[shiftMonth(month, -1)]; return [prev ? addDays(prev, 1) : month + "-01", cuts?.[month] || monthEnd(month)]; };
+// Gleiche Zuordnung in SQL; uid = Spalte mit der Mitarbeiter-ID derselben Zeile
+const PM = (col, uid = "clerk_user_id") => `(CASE WHEN EXISTS(SELECT 1 FROM month_cutoffs mc WHERE mc.clerk_user_id=${uid} AND mc.payroll_month=substr(${col},1,7) AND mc.end_date<${col}) THEN strftime('%Y-%m',${col},'start of month','+1 month') ELSE substr(${col},1,7) END)`;
 // Monatsbrutto aus allen erfassten Einträgen (auch Entwürfen) – vorsichtig gerechnet
 async function monthGrossCents(env, owner, month, skipWorkIds = []) {
-  const from = month + "-01", to = shiftMonth(month, 1) + "-01";
+  const [from, to] = payPeriod(await cutoffMap(env, owner), month);
   const skip = skipWorkIds.filter(Boolean).map(Number);
   const marks = skip.length ? ` AND id NOT IN (${skip.map(() => "?").join(",")})` : "";
   const pmarks = skip.length ? ` AND (work_entry_id IS NULL OR work_entry_id NOT IN (${skip.map(() => "?").join(",")}))` : "";
   const [w, p, a, adj] = await Promise.all([
-    first(env, `SELECT COALESCE(SUM(work_minutes),0) mins FROM work_entries WHERE clerk_user_id=? AND work_date>=? AND work_date<?${marks}`, owner, from, to, ...skip),
-    first(env, `SELECT COALESCE(SUM(appointments),0) appts FROM performance_entries WHERE clerk_user_id=? AND work_date>=? AND work_date<?${pmarks}`, owner, from, to, ...skip),
-    first(env, "SELECT COALESCE(SUM(paid_amount_cents),0) paid FROM employee_absences WHERE clerk_user_id=? AND absence_date>=? AND absence_date<?", owner, from, to).catch(() => ({ paid: 0 })),
+    first(env, `SELECT COALESCE(SUM(work_minutes),0) mins FROM work_entries WHERE clerk_user_id=? AND work_date BETWEEN ? AND ?${marks}`, owner, from, to, ...skip),
+    first(env, `SELECT COALESCE(SUM(appointments),0) appts FROM performance_entries WHERE clerk_user_id=? AND work_date BETWEEN ? AND ?${pmarks}`, owner, from, to, ...skip),
+    first(env, "SELECT COALESCE(SUM(paid_amount_cents),0) paid FROM employee_absences WHERE clerk_user_id=? AND absence_date BETWEEN ? AND ?", owner, from, to).catch(() => ({ paid: 0 })),
     first(env, "SELECT COALESCE(SUM(delta),0) delta FROM appointment_adjustments WHERE clerk_user_id=? AND payroll_month=?", owner, month).catch(() => ({ delta: 0 }))
   ]);
   return Math.round(Number(w?.mins || 0) * hourlyRateCents(month) / 60) + (Number(p?.appts || 0) + Number(adj?.delta || 0)) * COMMISSION_RATE_CENTS + Number(a?.paid || 0);
@@ -278,7 +302,7 @@ async function employmentYearMonths(env, owner, month) {
 async function monthLimitError(env, owner, userId, date, minutes, appointments, skipWorkIds = []) {
   if (isBoss(env, userId) || !validDate(date)) return null;   // Kim darf korrigieren
   await ensureLimitOverrides(env);
-  const month = String(date).slice(0, 7);
+  const month = payMonthOf(await cutoffMap(env, owner), String(date));
   const delta = Math.round(Number(minutes || 0) * hourlyRateCents(month) / 60) + Number(appointments || 0) * COMMISSION_RATE_CENTS;
   const monthBefore = await monthGrossCents(env, owner, month, skipWorkIds);
   if (monthBefore + delta <= monthBefore) return null;        // weniger geht immer
@@ -1241,7 +1265,7 @@ async function createAdjustment({ request, env, owner, userId }) {
 
   const perf = await first(env,
     `SELECT COALESCE(SUM(appointments), 0) AS appts FROM performance_entries
-     WHERE clerk_user_id = ? AND substr(work_date, 1, 7) = ?`, owner, month);
+     WHERE clerk_user_id = ? AND ${PM("work_date")} = ?`, owner, month);
   const current = adjustmentSum(await adjustmentRows(env, owner, month));
   if (delta < 0 && Number(perf?.appts || 0) + current + delta < 0) {
     return err("Weniger als 0 Termine geht nicht.");
@@ -1267,21 +1291,24 @@ async function rollingYear(env, userId, month) {
   const [y, m] = month.split("-").map(Number);
   const from = new Date(Date.UTC(y, m - 12, 1)).toISOString().slice(0, 10);
   const to = new Date(Date.UTC(y, m, 1)).toISOString().slice(0, 10);
+  // Etwas früher lesen: Tage nach einem vorzeitigen Abschluss gehören zum Folgemonat.
+  const early = addDays(from, -10), inRange = r => r.month >= from.slice(0, 7) && r.month <= month;
 
   await ensureAdjustments(env);
+  await ensureCutoffs(env);
   const [work, perf, absence, closed, adjust] = await Promise.all([
     all(env,
-      `SELECT substr(work_date, 1, 7) AS month, SUM(work_minutes) AS mins
+      `SELECT ${PM("work_date")} AS month, SUM(work_minutes) AS mins
        FROM payroll_work_entries WHERE clerk_user_id = ? AND work_date >= ? AND work_date < ?
-       GROUP BY month`, userId, from, to),
+       GROUP BY month`, userId, early, to).then(rows => rows.filter(inRange)),
     all(env,
-      `SELECT substr(work_date, 1, 7) AS month, SUM(appointments) AS appts
+      `SELECT ${PM("work_date")} AS month, SUM(appointments) AS appts
        FROM payroll_performance_entries WHERE clerk_user_id = ? AND work_date >= ? AND work_date < ?
-       GROUP BY month`, userId, from, to),
+       GROUP BY month`, userId, early, to).then(rows => rows.filter(inRange)),
     all(env,
-      `SELECT substr(absence_date, 1, 7) AS month, SUM(paid_amount_cents) AS paid
+      `SELECT ${PM("absence_date")} AS month, SUM(paid_amount_cents) AS paid
        FROM employee_absences WHERE clerk_user_id = ? AND absence_date >= ? AND absence_date < ?
-       GROUP BY month`, userId, from, to),
+       GROUP BY month`, userId, early, to).then(rows => rows.filter(inRange)),
     all(env,
       `SELECT payroll_month AS month, gross_cents FROM monthly_closings
        WHERE clerk_user_id = ? AND payroll_month >= ? AND payroll_month < ?`,
@@ -1368,8 +1395,11 @@ async function getMonthlyClosings({ env, owner }) {
 async function createMonthlyClosing({ request, env, userId, owner, exec, confirmedByEmployee = false }) {
   const body = (await readJson(request)) || {};
   const month = String(body.month || "").trim();
+  const cuts = validMonth(month) ? await cutoffMap(env, owner) : {};
+  const [periodFrom, periodTo] = validMonth(month) ? payPeriod(cuts, month) : ["", ""];
 
-  if (confirmedByEmployee ? !monthOver(month) : !monthClosingAllowed(month)) {
+  // Hat Saskia den Monat vorzeitig abgeschlossen, darf Kim sofort abrechnen.
+  if (!cuts[month] && (confirmedByEmployee ? !monthOver(month) : !monthClosingAllowed(month))) {
     return err("Der Monat kann erst nach Ablauf der 7-tägigen Korrekturfrist abgeschlossen werden.");
   }
 
@@ -1389,16 +1419,16 @@ async function createMonthlyClosing({ request, env, userId, owner, exec, confirm
   const [work, perf, absences, settings, officeSettings, member, employee, employer, entries, yearWorkDates, yearAbsences, year] = await Promise.all([
     first(env,
       `SELECT COALESCE(SUM(work_minutes), 0) AS mins, COUNT(DISTINCT work_date) AS days, COUNT(*) AS n
-       FROM payroll_work_entries WHERE clerk_user_id = ? AND substr(work_date, 1, 7) = ?`,
-      owner, month),
+       FROM payroll_work_entries WHERE clerk_user_id = ? AND work_date BETWEEN ? AND ?`,
+      owner, periodFrom, periodTo),
     first(env,
       `SELECT COALESCE(SUM(appointments), 0) AS appts, COUNT(*) AS n
-       FROM payroll_performance_entries WHERE clerk_user_id = ? AND substr(work_date, 1, 7) = ?`,
-      owner, month),
+       FROM payroll_performance_entries WHERE clerk_user_id = ? AND work_date BETWEEN ? AND ?`,
+      owner, periodFrom, periodTo),
     all(env,
       `SELECT ${ABSENCE_COLS.join(", ")} FROM employee_absences
-       WHERE clerk_user_id = ? AND substr(absence_date, 1, 7) = ? ORDER BY absence_date`,
-      owner, month),
+       WHERE clerk_user_id = ? AND absence_date BETWEEN ? AND ? ORDER BY absence_date`,
+      owner, periodFrom, periodTo),
     first(env, "SELECT * FROM payroll_settings WHERE clerk_user_id = ?", owner),
     first(env, "SELECT * FROM office_settings WHERE id = 1"),
     first(env, "SELECT display_name, email FROM office_members WHERE clerk_user_id = ?", owner),
@@ -1409,17 +1439,17 @@ async function createMonthlyClosing({ request, env, userId, owner, exec, confirm
               COALESCE(p.appointments, 0) AS appointments
        FROM payroll_work_entries w
        LEFT JOIN payroll_performance_entries p ON p.work_entry_id = w.id
-       WHERE w.clerk_user_id = ? AND substr(w.work_date, 1, 7) = ?
+       WHERE w.clerk_user_id = ? AND w.work_date BETWEEN ? AND ?
        ORDER BY w.work_date, w.start_time`,
-      owner, month),
+      owner, periodFrom, periodTo),
     all(env,
       `SELECT DISTINCT work_date FROM payroll_work_entries
        WHERE clerk_user_id = ? AND substr(work_date, 1, 4) = ? AND work_date <= ?`,
-      owner, month.slice(0, 4), monthEnd(month)),
+      owner, month.slice(0, 4), periodTo),
     all(env,
       `SELECT ${ABSENCE_COLS.join(", ")} FROM employee_absences
        WHERE clerk_user_id = ? AND substr(absence_date, 1, 4) = ? AND absence_date <= ?`,
-      owner, month.slice(0, 4), monthEnd(month)),
+      owner, month.slice(0, 4), periodTo),
     rollingYear(env, owner, month)
   ]);
 
@@ -1449,6 +1479,7 @@ async function createMonthlyClosing({ request, env, userId, owner, exec, confirm
     monthLabel: new Intl.DateTimeFormat("de-DE", {
       timeZone: "Europe/Berlin", month: "long", year: "numeric"
     }).format(new Date(`${month}-15T00:00:00Z`)),
+    period: { from: periodFrom, to: periodTo, early: !!cuts[month] || periodFrom !== `${month}-01` },
     profile,
     payroll: { ...payroll, entryAppts: Number(perf?.appts || 0), apptAdjust },
     adjustments,
@@ -2145,6 +2176,61 @@ async function answerCloseRequest({ request, env, userId, exec }) {
   return ok({ status: "confirmed", slip });
 }
 
+/* Vorzeitiger Monatsabschluss durch die Mitarbeiterin (letzte 7 Tage, alle Wochen abgesendet).
+ * Danach zählt jeder weitere Tag zum Folgemonat; Kim kann sofort abrechnen oder den Abschluss aufheben. */
+const cutoffRows = async (env, owner) => { await ensureCutoffs(env); return all(env, "SELECT payroll_month AS month, end_date, created_at FROM month_cutoffs WHERE clerk_user_id = ? ORDER BY payroll_month", owner); };
+const listOwnCutoffs = async ({ env, userId }) => json(await cutoffRows(env, userId));
+const listAdminCutoffs = async ({ env, owner }) => json(await cutoffRows(env, owner));
+const EARLY_CLOSE_DAYS = 7;
+async function closeMonthEarly({ request, env, userId, exec }) {
+  if (isBoss(env, userId)) return err("Nur für Mitarbeiter.");
+  await ensureRegular(env); await ensureCutoffs(env);
+  const body = (await readJson(request)) || {}, today = berlinToday();
+  const cuts = await cutoffMap(env, userId), month = payMonthOf(cuts, today), end = monthEnd(month);
+  if (String(body.month || "") !== month) return err("Der Monat hat sich geändert. Bitte die Seite neu laden.", 409);
+  if (cuts[month]) return ok({ already: true, month, end_date: cuts[month] });
+  if (today >= end) return err("Heute ist der letzte Tag des Monats. Ein vorzeitiger Abschluss ist nicht nötig.");
+  if (today < addDays(end, -(EARLY_CLOSE_DAYS - 1))) return err(`Vorzeitig abschließen geht erst in den letzten ${EARLY_CLOSE_DAYS} Tagen des Monats.`);
+  if (await first(env, "SELECT 1 FROM monthly_closings WHERE clerk_user_id = ? AND payroll_month = ?", userId, month)) return err("Der Monat ist bereits abgeschlossen.", 409);
+  const [from] = payPeriod(cuts, month);
+  const later = await first(env, "SELECT COUNT(*) n FROM work_entries WHERE clerk_user_id = ? AND work_date > ? AND work_date <= ?", userId, today, end);
+  if (Number(later?.n || 0)) return err("Es gibt schon Einträge nach heute. Bitte zuerst klären.", 409);
+  const draft = await first(env, "SELECT COUNT(*) n FROM work_entries WHERE clerk_user_id = ? AND work_date BETWEEN ? AND ? AND entry_state = 'draft'", userId, from, today);
+  if (Number(draft?.n || 0)) return err("Bitte zuerst deine Woche absenden.", 409);
+  const patterns = await regularPatterns(env, userId);
+  for (let w = mondayOfWeek(from); w <= today; w = addDays(w, 7)) {
+    const hasDay = leaveDays(w, addDays(w, 4)).some(d => d >= from && d <= today && regularAt(patterns, d)?.weekdays.includes(regularWeekday(d)));
+    if (!hasDay) continue;
+    const sent = await first(env, "SELECT 1 FROM regular_week_confirmations WHERE clerk_user_id=? AND week_start=? AND id NOT IN(SELECT CAST(json_extract(detail_json,'$.submission_id') AS INTEGER) FROM regular_submission_events WHERE clerk_user_id=? AND week_start=? AND event='reopened') LIMIT 1", userId, w, userId, w);
+    if (!sent) return err(`Bitte zuerst ${isoWeekLabel(w)} absenden.`, 409);
+  }
+  await run(env, "INSERT OR IGNORE INTO month_cutoffs (clerk_user_id, payroll_month, end_date, created_by) VALUES (?, ?, ?, ?)", userId, month, today, userId);
+  const name = (await first(env, "SELECT full_name FROM employee_profiles WHERE clerk_user_id = ?", userId).catch(() => null))?.full_name || "Deine Mitarbeiterin";
+  await pushBoss(env, exec, {
+    title: `${monthLabelOf(month)} vorzeitig abgeschlossen`,
+    body: `${name} hat ${monthLabelOf(month)} am ${fmtDe(today)} abgeschlossen. Ab ${fmtDe(addDays(today, 1))} zählt alles zum ${monthLabelOf(shiftMonth(month, 1))}. Du kannst jetzt abrechnen.`,
+    tag: `early-close-${userId}-${month}`,
+    url: hrUrl("lohn")
+  });
+  return ok({ month, end_date: today, next: shiftMonth(month, 1) });
+}
+async function reopenMonthEarly({ env, owner, url, exec }) {
+  const month = String(url.searchParams.get("month") || "");
+  if (!validMonth(month)) return err("Ungültiger Monat.");
+  const cuts = await cutoffMap(env, owner);
+  if (!cuts[month]) return ok({ removed: false });
+  const closed = await first(env, "SELECT payroll_month FROM monthly_closings WHERE clerk_user_id = ? AND payroll_month IN (?, ?)", owner, month, shiftMonth(month, 1));
+  if (closed) return err("Der Monat ist bereits abgerechnet. Der vorzeitige Abschluss bleibt bestehen.", 409);
+  await run(env, "DELETE FROM month_cutoffs WHERE clerk_user_id = ? AND payroll_month = ?", owner, month);
+  await runLater(exec, notifyUser(env, owner, {
+    title: `${monthLabelOf(month)} wieder offen`,
+    body: `Kim hat deinen vorzeitigen Abschluss aufgehoben. Die Tage bis ${fmtDe(monthEnd(month))} zählen wieder zum ${monthLabelOf(month)}.`,
+    tag: `early-close-${month}`,
+    url: hrUrl("zeiten")
+  }));
+  return ok({ removed: true });
+}
+
 /* ================= Lohnnachweis an die Berufsgenossenschaft =================
  * Jahressummen aller Beschäftigten: Arbeitsentgelt, geleistete Arbeitsstunden, Zahl der Versicherten.
  * Abgeschlossene Monate mit ihrem abgerechneten Brutto, offene Monate mit dem aktuellen Stand.
@@ -2161,13 +2247,15 @@ async function getUvLohnnachweis({ env, url }) {
   const rows = [];
   for (const p of people) {
     const id = p.clerk_user_id;
+    await ensureCutoffs(env);
+    const early = addDays(from, -10), inYear = rows => rows.filter(r => String(r.month).startsWith(year));
     const [work, perf, absence, closed, adjust] = await Promise.all([
-      all(env, `SELECT substr(work_date, 1, 7) AS month, SUM(work_minutes) AS mins FROM payroll_work_entries
-                WHERE clerk_user_id = ? AND work_date >= ? AND work_date < ? GROUP BY month`, id, from, to),
-      all(env, `SELECT substr(work_date, 1, 7) AS month, SUM(appointments) AS appts FROM payroll_performance_entries
-                WHERE clerk_user_id = ? AND work_date >= ? AND work_date < ? GROUP BY month`, id, from, to),
-      all(env, `SELECT substr(absence_date, 1, 7) AS month, SUM(paid_amount_cents) AS paid FROM employee_absences
-                WHERE clerk_user_id = ? AND absence_date >= ? AND absence_date < ? GROUP BY month`, id, from, to),
+      all(env, `SELECT ${PM("work_date")} AS month, SUM(work_minutes) AS mins FROM payroll_work_entries
+                WHERE clerk_user_id = ? AND work_date >= ? AND work_date < ? GROUP BY month`, id, early, to).then(inYear),
+      all(env, `SELECT ${PM("work_date")} AS month, SUM(appointments) AS appts FROM payroll_performance_entries
+                WHERE clerk_user_id = ? AND work_date >= ? AND work_date < ? GROUP BY month`, id, early, to).then(inYear),
+      all(env, `SELECT ${PM("absence_date")} AS month, SUM(paid_amount_cents) AS paid FROM employee_absences
+                WHERE clerk_user_id = ? AND absence_date >= ? AND absence_date < ? GROUP BY month`, id, early, to).then(inYear),
       all(env, `SELECT payroll_month AS month, gross_cents FROM monthly_closings
                 WHERE clerk_user_id = ? AND payroll_month >= ? AND payroll_month < ?`, id, `${year}-01`, `${Number(year) + 1}-01`),
       all(env, `SELECT payroll_month AS month, SUM(delta) AS delta FROM appointment_adjustments
@@ -4624,7 +4712,7 @@ async function saveOwnPrefs({ request, env, userId }) {
 /* ================= Kalender, Anträge und Urlaubskonto ================= */
 const leaveSchemaReady = new WeakMap();
 const officeSchemaKnown=new WeakMap();
-async function officeSchemaCurrent(env){if(officeSchemaKnown.get(env.DB))return true;const r=await first(env,"SELECT version FROM office_schema_versions WHERE name='calendar' AND version=3").catch(()=>null);if(r)officeSchemaKnown.set(env.DB,true);return !!r;}
+async function officeSchemaCurrent(env){if(officeSchemaKnown.get(env.DB))return true;const r=await first(env,"SELECT version FROM office_schema_versions WHERE name='calendar' AND version=4").catch(()=>null);if(r)officeSchemaKnown.set(env.DB,true);return !!r;}
 async function ensureLeave(env) {
   if (leaveSchemaReady.has(env.DB)) return leaveSchemaReady.get(env.DB);
   const promise = (async () => {
@@ -4658,11 +4746,15 @@ async function ensureLeave(env) {
     triggers.push(stmt(env,`CREATE TRIGGER IF NOT EXISTS leave_absence_no_work BEFORE INSERT ON employee_absences WHEN EXISTS(SELECT 1 FROM work_entries w WHERE w.clerk_user_id=NEW.clerk_user_id AND w.work_date=NEW.absence_date) BEGIN SELECT RAISE(ABORT,'Arbeitszeit und volle Abwesenheit dürfen sich nicht überschneiden.'); END`));
     triggers.push(stmt(env,`CREATE TRIGGER IF NOT EXISTS leave_work_no_absence BEFORE INSERT ON work_entries WHEN EXISTS(SELECT 1 FROM employee_absences a WHERE a.clerk_user_id=NEW.clerk_user_id AND a.absence_date=NEW.work_date) BEGIN SELECT RAISE(ABORT,'Für diesen Tag besteht bereits eine Abwesenheit.'); END`));
     triggers.push(stmt(env,`CREATE TRIGGER IF NOT EXISTS leave_work_no_absence_update BEFORE UPDATE OF work_date,clerk_user_id ON work_entries WHEN EXISTS(SELECT 1 FROM employee_absences a WHERE a.clerk_user_id=NEW.clerk_user_id AND a.absence_date=NEW.work_date) BEGIN SELECT RAISE(ABORT,'Für diesen Tag besteht bereits eine Abwesenheit.'); END`));
+    // Sperre abgeschlossener Monate – mit vorzeitigem Abschluss (month_cutoffs) gehören spätere Tage zum Folgemonat.
+    await ensureCutoffs(env);
     for(const table of ['work_entries','employee_absences']){
       const col=table==='work_entries'?'work_date':'absence_date';
-      for(const [event,row] of [['INSERT','NEW'],['UPDATE','NEW'],['DELETE','OLD']])triggers.push(stmt(env,`CREATE TRIGGER IF NOT EXISTS leave_closed_${table}_${event.toLowerCase()} BEFORE ${event} ON ${table} WHEN EXISTS(SELECT 1 FROM monthly_closings c WHERE c.clerk_user_id=${row}.clerk_user_id AND c.payroll_month=substr(${row}.${col},1,7)) BEGIN SELECT RAISE(ABORT,'Dieser Monat ist bereits abgeschlossen.'); END`));
+      for(const event of ['insert','update','delete'])triggers.push(stmt(env,`DROP TRIGGER IF EXISTS leave_closed_${table}_${event}`));
+      triggers.push(stmt(env,`DROP TRIGGER IF EXISTS leave_closed_${table}_update_old`));
+      for(const [event,row] of [['INSERT','NEW'],['UPDATE','NEW'],['DELETE','OLD']])triggers.push(stmt(env,`CREATE TRIGGER IF NOT EXISTS leave_closed2_${table}_${event.toLowerCase()} BEFORE ${event} ON ${table} WHEN EXISTS(SELECT 1 FROM monthly_closings c WHERE c.clerk_user_id=${row}.clerk_user_id AND c.payroll_month=${PM(`${row}.${col}`,`${row}.clerk_user_id`)}) BEGIN SELECT RAISE(ABORT,'Dieser Monat ist bereits abgeschlossen.'); END`));
+      triggers.push(stmt(env,`CREATE TRIGGER IF NOT EXISTS leave_closed2_${table}_update_old BEFORE UPDATE ON ${table} WHEN EXISTS(SELECT 1 FROM monthly_closings c WHERE c.clerk_user_id=OLD.clerk_user_id AND c.payroll_month=${PM(`OLD.${col}`,'OLD.clerk_user_id')}) BEGIN SELECT RAISE(ABORT,'Dieser Monat ist bereits abgeschlossen.'); END`));
     }
-    for(const table of ['work_entries','employee_absences']){const col=table==='work_entries'?'work_date':'absence_date';triggers.push(stmt(env,`CREATE TRIGGER IF NOT EXISTS leave_closed_${table}_update_old BEFORE UPDATE ON ${table} WHEN EXISTS(SELECT 1 FROM monthly_closings c WHERE c.clerk_user_id=OLD.clerk_user_id AND c.payroll_month=substr(OLD.${col},1,7)) BEGIN SELECT RAISE(ABORT,'Dieser Monat ist bereits abgeschlossen.'); END`));}
     await env.DB.batch(triggers);
     // Repair activation after a network failure between saving the last signature and activation.
     const signed=await all(env,`SELECT clerk_user_id,MAX(signed_at) signed_at,MIN(doc_hash) doc_hash FROM addendum_signatures WHERE version=? GROUP BY clerk_user_id HAVING COUNT(DISTINCT role)=2 AND COUNT(DISTINCT doc_hash)=1`,CALENDAR_ADDENDUM.version);
@@ -4759,8 +4851,11 @@ async function leaveContext(env,owner) {
   const regionAt=date=>regions.filter(r=>r.effective_from<=date).at(-1)?.region||settings?.region||terms.at(-1)?.region||'BW';
   const region=regionAt(berlinToday());
   const dutyDates=[...new Set([...work.map(w=>w.work_date),...absences.map(a=>a.absence_date),...plans.filter(p=>p.status!=='cancelled').map(p=>p.plan_date)])];
-  return {owner,job,terms,region,regions,regionAt,work,absences,plans,requests,adjustments,transfers,closings,dutyDates};
+  const cuts=await cutoffMap(env,owner);
+  return {owner,job,terms,region,regions,regionAt,work,absences,plans,requests,adjustments,transfers,closings,dutyDates,cuts};
 }
+// Liegt ein Datum in einem bereits abgerechneten Monat (vorzeitigen Abschluss beachtet)?
+const closedOn=(context,date)=>context.closings.some(c=>c.payroll_month===payMonthOf(context.cuts,date));
 function leaveAllocatedDays(context){return context.requests.filter(r=>['approved','cancellation_requested'].includes(r.status)).flatMap(r=>(safeParse(r.snapshot_json)?.days||[]).flatMap(d=>d.leave_allocations?.length?d.leave_allocations.map(a=>({...d,leave_year:a.year,units:d.units>0?a.units:0})):d));}
 function leaveYearBucket(context,year,asOf=berlinToday()) {
   const value=leaveYearValue({year,asOf,job:context.job,terms:context.terms,dutyDates:context.dutyDates});
@@ -4858,7 +4953,7 @@ async function previewLeaveDecision({env,owner,id}) {
     const minutes=plan?plannedMinutes(plan):term?.day_minutes||120;
     if(!officePayRates.has(Number(date.slice(0,4))))return err('Bitte zuerst den Jahresstundensatz in den Kalendereinstellungen bestätigen.');
     const quote=await leavePayQuote(env,owner,date,minutes,r.kind,context,r.from_date);
-    days.push({...quote,plan_id:plan?.id||null,plan_status:plan?.status||null,legacy:!term,holiday:leaveHolidays(Number(date.slice(0,4)),context.region)[date]||null,closed:context.closings.some(c=>c.payroll_month===date.slice(0,7))});
+    days.push({...quote,plan_id:plan?.id||null,plan_status:plan?.status||null,legacy:!term,holiday:leaveHolidays(Number(date.slice(0,4)),context.region)[date]||null,closed:closedOn(context,date)});
   }
   return json({request:leaveRequestView(r),revision:r.revision,days,accounts:[...new Set(days.map(d=>Number(d.date.slice(0,4))))].map(year=>leaveAccount(context,year)),warning:'Vorschlag zur Prüfung, keine bereits ausgeführte Zahlung. Tatsächliche Solltage und vollständige Vergütung bestätigen.'});
 }
@@ -4882,7 +4977,7 @@ async function decideLeaveRequest({request,env,owner,userId,id,exec}) {
       const minutes=Number(input.minutes),amount=Number(input.amount_cents),year=Number(date.slice(0,4));
       if(!Number.isInteger(minutes)||minutes<1||minutes>1440||!Number.isInteger(amount)||amount<Math.round(minutes*hourlyRateCents(date.slice(0,7))/60)||amount>10000000)return err('Bitte gültige Ausfallstunden und mindestens die Grundvergütung bestätigen.');
       if(!officePayRates.has(year))return err('Stundensatz und Rechtsstand für dieses Jahr zuerst in den Kalendereinstellungen bestätigen.');
-      if(context.closings.some(c=>c.payroll_month===date.slice(0,7)))return err('Dieser Monat ist bereits abgeschlossen. Eine Korrektur darf die gespeicherte Abrechnung nicht überschreiben.');
+      if(closedOn(context,date))return err('Dieser Monat ist bereits abgeschlossen. Eine Korrektur darf die gespeicherte Abrechnung nicht überschreiben.');
       if(context.work.some(w=>w.work_date===date)||context.absences.some(a=>a.absence_date===date))return err('Für diesen Tag sind inzwischen Arbeitszeit oder Abwesenheiten vorhanden.',409);
       const holiday=leaveHolidays(year,context.regionAt(date))[date];if(r.kind==='vacation'&&holiday||r.kind==='holiday'&&!holiday)return err('Feiertagszuordnung hat sich geändert. Bitte Antrag prüfen.',409);
       const pattern=await regularActive(env,owner,date);if(r.kind==='vacation'&&pattern&&!pattern.weekdays.includes(regularWeekday(date)))return err('Dieser beantragte Tag ist nach der gültigen Regelverteilung arbeitsfrei. Bitte Antrag anpassen.',409);
@@ -4914,7 +5009,7 @@ async function decideLeaveRequest({request,env,owner,userId,id,exec}) {
   }else if(action==='sick'){
     if(r.status!=='approved'||r.kind!=='vacation'||body?.medical_proof!==true||!note)return err('Korrektur benötigt einen genehmigten Urlaub, den bestätigten AU-Nachweis und einen Grund.');
     const snap=safeParse(r.snapshot_json),date=String(body.date||''),day=snap?.days.find(d=>d.date===date&&d.units>0);if(!day)return err('Urlaubstag nicht gefunden.');
-    if(date>berlinToday()||context.closings.some(c=>c.payroll_month===date.slice(0,7)))return err('Nur vergangene Tage in noch offenen Abrechnungsmonaten können hier korrigiert werden.');
+    if(date>berlinToday()||closedOn(context,date))return err('Nur vergangene Tage in noch offenen Abrechnungsmonaten können hier korrigiert werden.');
     const amount=Number(body.amount_cents);if(!Number.isInteger(amount)||amount<0)return err('Bitte die geprüfte Krankheitsvergütung eintragen.');
     day.units=0;day.kind='sick';day.amount_cents=amount;day.correction_note=note;
     const token=crypto.randomUUID();
@@ -4926,7 +5021,7 @@ async function decideLeaveRequest({request,env,owner,userId,id,exec}) {
   }else{
     if(!note)return err('Bitte einen Entscheidungsgrund eintragen.');
     if(action==='reject'&&r.status!=='requested'||action==='cancel'&&!['approved','cancellation_requested'].includes(r.status))return err('Diese Entscheidung passt nicht mehr zum Antrag.',409);
-    if(action==='cancel'&&(safeParse(r.dates_json)||[]).some(d=>d<berlinToday()||context.closings.some(c=>c.payroll_month===d.slice(0,7))))return err('Vergangene oder abgerechnete Abwesenheiten benötigen eine gesonderte Korrektur.');
+    if(action==='cancel'&&(safeParse(r.dates_json)||[]).some(d=>d<berlinToday()||closedOn(context,d)))return err('Vergangene oder abgerechnete Abwesenheiten benötigen eine gesonderte Korrektur.');
     const token=crypto.randomUUID(),status=action==='reject'?'rejected':'cancelled';
     const result=await env.DB.batch([stmt(env,"UPDATE leave_requests SET status=?,revision=revision+1,decision_token=?,decision_note=?,decided_by=?,decided_at=CURRENT_TIMESTAMP,updated_at=CURRENT_TIMESTAMP WHERE id=? AND revision=?",[status,token,note,userId,id,r.revision]),stmt(env,"DELETE FROM employee_absences WHERE leave_request_id=? AND EXISTS(SELECT 1 FROM leave_requests WHERE id=? AND decision_token=?)",[id,id,token]),stmt(env,"INSERT INTO leave_audit(clerk_user_id,request_id,event,actor,detail_json) SELECT clerk_user_id,id,?, ?,? FROM leave_requests WHERE id=? AND decision_token=?",[status,userId,JSON.stringify({before:leaveRequestView(r),note}),id,token])]);if(!result[0].meta?.changes)return err('Antrag wurde gleichzeitig geändert.',409);
   }
@@ -5027,8 +5122,8 @@ async function ensureRegular(env) {
     ]);
     await run(env,"CREATE UNIQUE INDEX IF NOT EXISTS regular_one_allocation ON work_entries(clerk_user_id,regular_slot) WHERE record_kind='weekly_allocation'");
     await run(env,`CREATE TRIGGER IF NOT EXISTS regular_allocation_final_guard BEFORE UPDATE ON work_entries WHEN OLD.submission_id IS NOT NULL AND OLD.entry_state='final' AND NEW.entry_state='final' AND (NEW.record_kind<>OLD.record_kind OR NEW.entry_note<>OLD.entry_note) BEGIN SELECT RAISE(ABORT,'Abgesendete Wochenzuordnung ist festgeschrieben.'); END`);
-    await ensureAdjustments(env);
-    for(const table of ['work_entries','performance_entries','employee_absences','appointment_adjustments','week_reviews','regular_patterns','leave_regions','employee_profiles','payroll_settings','regular_week_confirmations','regular_submission_events','leave_requests']){
+    await ensureAdjustments(env);await ensureCutoffs(env);
+    for(const table of ['month_cutoffs','work_entries','performance_entries','employee_absences','appointment_adjustments','week_reviews','regular_patterns','leave_regions','employee_profiles','payroll_settings','regular_week_confirmations','regular_submission_events','leave_requests']){
       for(const [event,p] of [['INSERT','NEW'],['UPDATE','NEW'],['DELETE','OLD']])await run(env,`CREATE TRIGGER IF NOT EXISTS payroll_check_${table}_${event.toLowerCase()} AFTER ${event} ON ${table} BEGIN DELETE FROM payroll_checks WHERE clerk_user_id=${p}.clerk_user_id; END`);
     }
     for(const table of ['office_pay_rates','office_payroll_years','office_settings'])for(const event of ['INSERT','UPDATE','DELETE'])await run(env,`CREATE TRIGGER IF NOT EXISTS payroll_check_${table}_${event.toLowerCase()} AFTER ${event} ON ${table} BEGIN DELETE FROM payroll_checks; END`);
@@ -5044,7 +5139,7 @@ async function ensureRegular(env) {
       await run(env,`CREATE TRIGGER IF NOT EXISTS regular_work_${event} ${when} ON work_entries BEGIN INSERT INTO regular_work_history(clerk_user_id,entry_id,event,snapshot_json) VALUES(${p}.clerk_user_id,${p}.id,'${event}',json_object(${cols.map(c=>`'${c}',${p}.${c}`).join(',')})); END`);
     }
     await run(env,"CREATE TABLE IF NOT EXISTS office_schema_versions(name TEXT PRIMARY KEY,version INTEGER NOT NULL,installed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)");
-    await run(env,"INSERT OR REPLACE INTO office_schema_versions(name,version) VALUES('calendar',3)");officeSchemaKnown.set(env.DB,true);
+    await run(env,"INSERT OR REPLACE INTO office_schema_versions(name,version) VALUES('calendar',4)");officeSchemaKnown.set(env.DB,true);
   })();regularSchemaReady.set(env.DB,pending);
   try{await pending}catch(error){regularSchemaReady.delete(env.DB);throw error;}
 }
@@ -5112,18 +5207,18 @@ async function regularHolidayQuote(env,owner,date){
 }
 async function regularMonthInfo(env,owner,month,patterns=null,context=null){
   patterns=patterns||await regularPatterns(env,owner);context=context||await leaveContext(env,owner);
-  const settings=await first(env,'SELECT * FROM office_settings WHERE id=1'),holidays={};
-  for(const date of leaveDays(month+'-01',monthEnd(month))){const name=leaveHolidays(Number(date.slice(0,4)),context.regionAt(date))[date];if(name)holidays[date]=name;}
-  const dates=leaveDays(month+'-01',monthEnd(month)).filter(date=>regularAt(patterns,date)?.weekdays.includes(regularWeekday(date))&&date>=(context.job.start_date||date)&&(!context.job.end_date||date<=context.job.end_date));
+  const settings=await first(env,'SELECT * FROM office_settings WHERE id=1'),holidays={},[pFrom,pTo]=payPeriod(context.cuts,month);
+  for(const date of leaveDays(pFrom,pTo)){const name=leaveHolidays(Number(date.slice(0,4)),context.regionAt(date))[date];if(name)holidays[date]=name;}
+  const dates=leaveDays(pFrom,pTo).filter(date=>regularAt(patterns,date)?.weekdays.includes(regularWeekday(date))&&date>=(context.job.start_date||date)&&(!context.job.end_date||date<=context.job.end_date));
   const baseMinutes=dates.length*120,holidayMinutes=dates.filter(d=>holidays[d]).length*120,factor=baseMinutes?(baseMinutes-holidayMinutes)/baseMinutes:1;
   const appointments=Math.round((settings?.goal_appointments||40)*factor),cutAppointments=Math.round((settings?.cut_appointments||50)*factor);
-  const performance=await all(env,'SELECT work_date,SUM(appointments) appointments FROM performance_entries WHERE clerk_user_id=? AND substr(work_date,1,7)=? GROUP BY work_date ORDER BY work_date',owner,month);
+  const performance=await all(env,'SELECT work_date,SUM(appointments) appointments FROM performance_entries WHERE clerk_user_id=? AND work_date BETWEEN ? AND ? GROUP BY work_date ORDER BY work_date',owner,pFrom,pTo);
   // Cut zählt wie der Lohn: Termine abzüglich Kims Abzüge. Nur zur Anzeige.
   const adjustments=await all(env,'SELECT delta FROM appointment_adjustments WHERE clerk_user_id=? AND payroll_month=?',owner,month).catch(()=>[]);
   let n=adjustmentSum(adjustments),cutDate=null;for(const p of performance){n+=p.appointments;if(!cutDate&&n>=cutAppointments)cutDate=p.work_date;}
   // Keine automatische Freistellung nach dem Cut: Kim entscheidet selbst, wann Saskia aufhört.
   const releaseDays=[];
-  return {month,baseMinutes,holidayMinutes,appointments,cutAppointments,cutDate,releaseDays};
+  return {month,from:pFrom,to:pTo,baseMinutes,holidayMinutes,appointments,cutAppointments,cutDate,releaseDays};
 }
 async function groupLegacyRegularWeek(env,owner,patterns,week){
   const pattern=patterns[0];if(!pattern||!pattern.weekdays?.length)return;
@@ -5149,7 +5244,7 @@ async function getRegularWeek({env,owner,userId,url}){
   ]);
   const entries=await all(env,`SELECT w.*,COALESCE(p.appointments,0) appointments FROM work_entries w LEFT JOIN performance_entries p ON p.work_entry_id=w.id WHERE w.clerk_user_id=? AND w.work_date BETWEEN ? AND ? ORDER BY w.work_date,w.start_time`,owner,week,end);
   const holidays=await regularHolidayRows(env,owner,week,end,patterns,context);
-  const monthInfos=await Promise.all([...new Set([week.slice(0,7),end.slice(0,7)])].map(m=>regularMonthInfo(env,owner,m,patterns,context)));
+  const monthInfos=await Promise.all([...new Set([payMonthOf(context.cuts,week),payMonthOf(context.cuts,end)])].map(m=>regularMonthInfo(env,owner,m,patterns,context)));
   const absences=context.absences.filter(a=>a.absence_date>=week&&a.absence_date<=end);
   for(const day of monthInfos.flatMap(m=>m.releaseDays).filter(d=>d.date>=week&&d.date<=end))if(!absences.some(a=>a.absence_date===day.date))absences.push(day);
   const declared=patterns.find(p=>p.kind==='initial'&&p.declared_date<=end&&(!p.valid_from||week<=mondayOfWeek(p.valid_from)))||null;
@@ -5177,7 +5272,7 @@ async function getRegularWeek({env,owner,userId,url}){
   if(initial){for(let w=mondayOfWeek(initial),i=0;w<=mondayOfWeek(berlinToday())&&i<110;i++,w=addDays(w,7)){
     if(addDays(w,6)>berlinToday())continue;
     const confirmed=submittedWeeks.has(w);
-    if((!confirmed||w===week&&!confirmation)&&!context.closings.some(c=>c.payroll_month===addDays(w,4).slice(0,7)))pastWeeks.push(w);
+    if((!confirmed||w===week&&!confirmation)&&!closedOn(context,addDays(w,4)))pastWeeks.push(w);
   }}
   const recent=entries.map(e=>regularWeekday(e.work_date));
   const latestWeeks=[];
@@ -5305,7 +5400,7 @@ async function regularEntryError(env,owner,body,ignoreId=null){
 async function getRegularHolidays({env,owner,url}){
   const month=String(url.searchParams.get('month')||berlinToday().slice(0,7));if(!validMonth(month))return err('Ungültiger Monat.');
   await ensureAdjustments(env);
-  const rows=await regularHolidayRows(env,owner,month+'-01',monthEnd(month)),out=[];
+  const rows=await regularHolidayRows(env,owner,...payPeriod(await cutoffMap(env,owner),month)),out=[];
   for(const row of rows)out.push({...row,quote:await regularHolidayQuote(env,owner,row.date),closed:!!await first(env,'SELECT 1 FROM monthly_closings WHERE clerk_user_id=? AND payroll_month=?',owner,month)});
   return json(out);
 }
@@ -5333,7 +5428,7 @@ async function decideRegularHoliday({request,env,owner,userId,id}){
 async function regularClosingError(env,owner,month){
   if(!await regularActive(env,owner,monthEnd(month)))return null;
   await ensureAdjustments(env);
-  const rows=await regularHolidayRows(env,owner,month+'-01',monthEnd(month));
+  const rows=await regularHolidayRows(env,owner,...payPeriod(await cutoffMap(env,owner),month));
   for(const r of rows){
     if(r.status==='calculated')return err('Bitte zuerst die Feiertagsvergütung im Kalender prüfen und freigeben.',409);
     const q=await regularHolidayQuote(env,owner,r.date),s=r.snapshot?.quote;
@@ -5353,29 +5448,29 @@ async function getLeaveSummary({env,owner,url}){
 /* Payroll checks use the same server calculator and frozen sources as the final PDF. */
 async function prepareCalendarPayroll(env,owner,month){
   await ensureRegular(env);await ensureAdjustments(env);
-  const context=await leaveContext(env,owner),patterns=await regularPatterns(env,owner);
-  const holidayRows=await regularHolidayRows(env,owner,month+'-01',monthEnd(month),patterns,context),items=[],blockers=[];
+  const context=await leaveContext(env,owner),patterns=await regularPatterns(env,owner),[pFrom,pTo]=payPeriod(context.cuts,month),inPeriod=d=>d>=pFrom&&d<=pTo;
+  const holidayRows=await regularHolidayRows(env,owner,pFrom,pTo,patterns,context),items=[],blockers=[];
   const [work,perf,settings,office,adjustments]=await Promise.all([
-    all(env,'SELECT id,work_date,start_time,end_time,break_minutes,work_minutes,regular_slot,record_kind,entry_note FROM payroll_work_entries WHERE clerk_user_id=? AND substr(work_date,1,7)=? ORDER BY id',owner,month),
-    all(env,'SELECT id,work_date,appointments FROM payroll_performance_entries WHERE clerk_user_id=? AND substr(work_date,1,7)=? ORDER BY id',owner,month),
+    all(env,'SELECT id,work_date,start_time,end_time,break_minutes,work_minutes,regular_slot,record_kind,entry_note FROM payroll_work_entries WHERE clerk_user_id=? AND work_date BETWEEN ? AND ? ORDER BY id',owner,pFrom,pTo),
+    all(env,'SELECT id,work_date,appointments FROM payroll_performance_entries WHERE clerk_user_id=? AND work_date BETWEEN ? AND ? ORDER BY id',owner,pFrom,pTo),
     first(env,'SELECT * FROM payroll_settings WHERE clerk_user_id=?',owner),first(env,'SELECT * FROM office_settings WHERE id=1'),adjustmentRows(env,owner,month)
   ]);
-  const draft=await first(env,"SELECT COUNT(*) n FROM work_entries WHERE clerk_user_id=? AND substr(work_date,1,7)=? AND entry_state='draft'",owner,month);
+  const draft=await first(env,"SELECT COUNT(*) n FROM work_entries WHERE clerk_user_id=? AND work_date BETWEEN ? AND ? AND entry_state='draft'",owner,pFrom,pTo);
   if(draft.n)blockers.push(`${draft.n} Arbeitszeiteintrag/-einträge sind noch Entwürfe. Saskia muss die betroffenen Wochen absenden.`);
-  for(let w=mondayOfWeek(month+'-01');w<=monthEnd(month);w=addDays(w,7)){
-    const hasRegularDay=leaveDays(w,addDays(w,4)).some(d=>d.slice(0,7)===month&&regularAt(patterns,d)?.weekdays.includes(regularWeekday(d)));
+  for(let w=mondayOfWeek(pFrom);w<=pTo;w=addDays(w,7)){
+    const hasRegularDay=leaveDays(w,addDays(w,4)).some(d=>inPeriod(d)&&regularAt(patterns,d)?.weekdays.includes(regularWeekday(d)));
     if(!hasRegularDay)continue;
     const submitted=await first(env,"SELECT 1 FROM regular_week_confirmations WHERE clerk_user_id=? AND week_start=? AND id NOT IN(SELECT CAST(json_extract(detail_json,'$.submission_id') AS INTEGER) FROM regular_submission_events WHERE clerk_user_id=? AND week_start=? AND event='reopened') LIMIT 1",owner,w,owner,w);
     if(!submitted)blockers.push(`${isoWeekLabel(w)} ist noch nicht abgesendet. Vorher kann der Monat nicht endgültig abgerechnet werden.`);
   }
   const knownYear=yearRules(month).confirmed&&officePayRates.has(Number(month.slice(0,4)));
   if(!knownYear)blockers.push('Jahreswerte für Mindestlohn, Minijobgrenze und Abgabensätze vor der Abrechnung bestätigen. Kalender und Urlaub bleiben nutzbar.');
-  const pending=context.requests.filter(r=>['requested','cancellation_requested'].includes(r.status)&&(safeParse(r.dates_json)||[]).some(d=>d.slice(0,7)===month));
+  const pending=context.requests.filter(r=>['requested','cancellation_requested'].includes(r.status)&&(safeParse(r.dates_json)||[]).some(inPeriod));
   if(pending.length)blockers.push(`${pending.length} offener Urlaubs-/Abwesenheitsantrag im Monat: bitte im Kalender entscheiden.`);
   context.payrollPaidReference=[];
   for(const h of holidayRows){const q=await regularHolidayQuote(env,owner,h.date);context.payrollPaidReference.push({absence_date:h.date,paid_minutes:120,paid_amount_cents:h.status==='unpaid'?0:h.snapshot?.manual?h.amount_cents:q.suggested_cents});}
   const info=await regularMonthInfo(env,owner,month,patterns,context),autoPrefix='Automatische Freistellung: Monatsziel '+month;
-  const absences=context.absences.filter(a=>a.absence_date.slice(0,7)===month&&!a.regular_holiday_id&&!String(a.note||'').startsWith(autoPrefix));
+  const absences=context.absences.filter(a=>inPeriod(a.absence_date)&&!a.regular_holiday_id&&!String(a.note||'').startsWith(autoPrefix));
   for(const d of info.releaseDays){items.push({key:'release:'+d.date,date:d.date,kind:'paid_leave',minutes:120,amount_cents:d.paid_amount_cents,quote:{source_cut_date:d.source_cut_date},manual:false});absences.push(d);}
   for(const a of absences){
     if(a.absence_type!=='vacation'||!a.leave_request_id)continue;
@@ -5400,7 +5495,7 @@ async function prepareCalendarPayroll(env,owner,month){
   const result=calculatePayroll({month,mins,days:new Set(work.map(w=>w.work_date)).size,appts,profile:mapPayrollSettings(settings,owner),employment:context.job,absences,goalHours:office?.goal_hours||24,targetAppointments:info.cutAppointments,targetGrossCents:targetGrossFor(owner,month)});
   // A missing record is never itself an unexcused absence.
   const reviews=await all(env,'SELECT week_start,result,note FROM week_reviews WHERE clerk_user_id=?',owner);
-  for(let w=mondayOfWeek(month+'-01');w<=monthEnd(month);w=addDays(w,7)){
+  for(let w=mondayOfWeek(pFrom);w<=pTo;w=addDays(w,7)){
     if(addDays(w,6)>=berlinToday()||!regularAt(patterns,w))continue;
     const weekEntries=await all(env,'SELECT work_date,work_minutes FROM work_entries WHERE clerk_user_id=? AND work_date BETWEEN ? AND ?',owner,w,addDays(w,6));
     const hs=await regularHolidayRows(env,owner,w,addDays(w,6),patterns,context),as=context.absences.filter(a=>a.absence_date>=w&&a.absence_date<=addDays(w,6)&&a.absence_type!=='holiday');
@@ -5409,14 +5504,15 @@ async function prepareCalendarPayroll(env,owner,month){
     const covered=weekEntries.reduce((n,e)=>n+e.work_minutes,0)+hs.reduce((n,h)=>n+h.minutes,0)+as.reduce((n,a)=>n+a.paid_minutes,0)+virtual.reduce((n,a)=>n+a.paid_minutes,0);
     if(covered<expected&&!reviews.some(r=>r.week_start===w))blockers.push(`${isoWeekLabel(w)}: ${expected-covered} Minuten fehlen. Unter „Einsatz & Zeiten“ einordnen.`);
   }
-  const holidayMinutes=holidayRows.reduce((n,h)=>n+h.minutes,0),baseMinutes=leaveDays(month+'-01',monthEnd(month)).filter(date=>{const p=regularAt(patterns,date);return p?.weekdays.includes(regularWeekday(date))&&date>=(context.job.start_date||date)&&(!context.job.end_date||date<=context.job.end_date)}).length*120;
+  const holidayMinutes=holidayRows.reduce((n,h)=>n+h.minutes,0),baseMinutes=leaveDays(pFrom,pTo).filter(date=>{const p=regularAt(patterns,date);return p?.weekdays.includes(regularWeekday(date))&&date>=(context.job.start_date||date)&&(!context.job.end_date||date<=context.job.end_date)}).length*120;
   const factor=baseMinutes>0?Math.max(0,(baseMinutes-holidayMinutes)/baseMinutes):1;
   const goals={baseMinutes,holidayMinutes,appointments:info.appointments,cutAppointments:info.cutAppointments};
-  const sources={month,targetGrossCents:targetGrossFor(owner,month),yearRules:yearRules(month),work,perf,adjustments:adjustments.map(a=>[a.id,a.delta]),items:items.map(i=>({...i,quote:i.quote})),absences:absences.map(a=>[a.absence_date,a.absence_type,a.paid_minutes,a.paid_amount_cents]),profile:mapPayrollSettings(settings,owner),goals,requests:context.requests.filter(r=>(safeParse(r.dates_json)||[]).some(d=>d.slice(0,7)===month)).map(r=>[r.id,r.status]),reviews};
+  const sources={month,targetGrossCents:targetGrossFor(owner,month),yearRules:yearRules(month),work,perf,adjustments:adjustments.map(a=>[a.id,a.delta]),items:items.map(i=>({...i,quote:i.quote})),absences:absences.map(a=>[a.absence_date,a.absence_type,a.paid_minutes,a.paid_amount_cents]),profile:mapPayrollSettings(settings,owner),goals,requests:context.requests.filter(r=>(safeParse(r.dates_json)||[]).some(inPeriod)).map(r=>[r.id,r.status]),reviews};
+  if(pFrom!==month+'-01'||pTo!==monthEnd(month))sources.period=[pFrom,pTo];
   const hash=await sha256Hex(JSON.stringify(sources));
   await run(env,'CREATE TABLE IF NOT EXISTS payroll_checks(clerk_user_id TEXT NOT NULL,payroll_month TEXT NOT NULL,source_hash TEXT NOT NULL,checked_by TEXT NOT NULL,checked_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(clerk_user_id,payroll_month))');
   const checked=await first(env,'SELECT * FROM payroll_checks WHERE clerk_user_id=? AND payroll_month=? AND source_hash=?',owner,month,hash);
-  return {month,hash,blockers,items,absences,profile:mapPayrollSettings(settings,owner),payroll:result.payroll,cents:result.cents,goals,checked:!!checked,check:checked||null,provisional:berlinToday()<=monthEnd(month),active:!!regularAt(patterns,monthEnd(month))};
+  return {month,hash,blockers,items,absences,profile:mapPayrollSettings(settings,owner),payroll:result.payroll,cents:result.cents,goals,checked:!!checked,check:checked||null,provisional:!context.cuts[month]&&berlinToday()<=pTo,period:{from:pFrom,to:pTo,early:!!context.cuts[month]},active:!!regularAt(patterns,monthEnd(month))};
 }
 async function getPayrollPreparation({env,owner,url}){
   const month=String(url.searchParams.get('month')||'');if(!validMonth(month))return err('Ungültiger Monat.');return json(await prepareCalendarPayroll(env,owner,month));
@@ -5424,7 +5520,7 @@ async function getPayrollPreparation({env,owner,url}){
 async function confirmPayrollPreparation({env,owner,userId,request}){
   const body=await readJson(request),month=String(body?.month||'');if(!validMonth(month)||body?.confirmed!==true)return err('Bitte Monat und Berechnungsprüfung bestätigen.');
   const closed=await closedMonthError(env,owner,month+'-01');if(closed)return closed;
-  const p=await prepareCalendarPayroll(env,owner,month);if(p.active&&berlinToday()<=monthEnd(month))return err('Die endgültige Monatsberechnung kann nach Monatsende bestätigt werden. Der aktuelle Stand ist eine Vorschau.');if(body.hash!==p.hash)return err('Die Abrechnungsdaten wurden inzwischen geändert. Bitte neu laden.',409);
+  const p=await prepareCalendarPayroll(env,owner,month);if(p.active&&p.provisional)return err('Die endgültige Monatsberechnung kann nach Monatsende bestätigt werden. Der aktuelle Stand ist eine Vorschau.');if(body.hash!==p.hash)return err('Die Abrechnungsdaten wurden inzwischen geändert. Bitte neu laden.',409);
   if(p.blockers.length)return err(p.blockers.join(' '),409);
   const statements=[],token=crypto.randomUUID(),requestUpdates=new Map();
   for(const item of p.items){
@@ -5535,6 +5631,8 @@ const routes = [
   route("GET", "/payslips", listOwnPayslips),
   route("GET", "/close-requests", listOwnCloseRequests),
   route("POST", "/close-requests/answer", answerCloseRequest),
+  route("GET", "/month-cutoffs", listOwnCutoffs),
+  route("POST", "/month-cutoffs", closeMonthEarly),
   route("POST", "/payslips/sign", signOwnPayslip),
   route("POST", "/addendum/sign", signOwnAddendum),
   route("GET", "/documents", listOwnDocuments),
@@ -5601,6 +5699,8 @@ const routes = [
   route("GET", "/admin/addenda", listAdminAddenda),
   route("GET", "/admin/payslips", listAdminPayslips, { target: true }),
   route("GET", "/admin/close-requests", listAdminCloseRequests, { target: true }),
+  route("GET", "/admin/month-cutoffs", listAdminCutoffs, { target: true }),
+  route("DELETE", "/admin/month-cutoffs", reopenMonthEarly, { target: true }),
   route("POST", "/admin/close-requests", createCloseRequest, { target: true }),
   route("POST", "/admin/payslips/sign", signAdminPayslip, { target: true }),
   route("GET", "/admin/uv-lohnnachweis", getUvLohnnachweis),
@@ -5779,6 +5879,7 @@ export default {
   async scheduled(event, env, exec) {
     exec.waitUntil((async () => {
       if (env.SECURITY_MONITOR_ONLY === "true") { await monitorSecurity(env); return; }
+      await ensureCutoffs(env).catch(e => console.error("ensureCutoffs:", e.message));
       await checkPlans(env, exec).catch(e => console.error("checkPlans:", e.message));
       await autoCompleteRegularWeeks(env,exec).catch(e=>console.error("autoCompleteRegularWeeks:",e.message));
       await remindRegularSubmissions(env,exec).catch(e=>console.error("remindRegularSubmissions:",e.message));
@@ -5851,6 +5952,7 @@ export default {
       }
 
       try {
+        await ensureCutoffs(env);
         if (/^\/(?:admin\/)?(?:calendar|leave-|plans|absences|addendum|addenda)(?:\/|$|-)/.test(url.pathname)) await schemaStep(env, "leave", ensureLeave, leaveSchemaReady);
         if (/^\/(?:admin\/)?(?:settings|monthly-closings|contribution-reports|uv-lohnnachweis|absences)/.test(url.pathname)) await schemaStep(env, "regular", ensureRegular, regularSchemaReady);
         if (/^\/(?:admin\/)?(?:calls|pool|contact-history)(?:\/|$)/.test(url.pathname)) await schemaStep(env, "contact", ensureContactHistory, contactHistoryReady);
